@@ -17,7 +17,6 @@ function xmlRequest() {
   this.method   = arguments[0];
   this.url      = arguments[1];
   this.callback = arguments[2];
-  this.content  = arguments[3];
 
   this.timer = [];
   this.timerCount = [];
@@ -32,11 +31,13 @@ xmlRequest.prototype.start = function( content ) {
   var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
-  //  alert(this.callback.valueOf());
+  if( this.callback ) {
+    //    alert(this.callback.valueOf());
+  }
 
   var i = _xml.length;
 
-  if( 0 && window.XMLHttpRequest ) {
+  if( 1 && window.XMLHttpRequest ) {
 
     //----------------
     // XMLHttpRequest
@@ -44,18 +45,19 @@ xmlRequest.prototype.start = function( content ) {
 
     try {
       _xml[i] = new XMLHttpRequest();
-      _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 && _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); }' );
-//       _xml[i].onreadystatechange = function() {
-//         document.getElementById("dbg").value += "onreadystatechange" + i + "\n";
-//         if( _xml[i].readyState == 4 && _xml[i].status < 300 ) {
-//           alert(_xml[i].responseXML);
-//           this.callback(_xml[i].responseXML);
-//         }
-//       };
-      _xml[i].open( this.method, this.url, true);
+
+      if( this.callback ) {
+        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 && _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); }' );
+      }
+      _xml[i].open( this.method, this.url, this.callback ? true : false);
       _xml[i].setRequestHeader("SOAPAction", '""');
       _xml[i].send(content);
-      return true;
+
+      if( !this.callback ) {
+        return _xml[i].responseXML;
+      } else {
+        return true;
+      }
     } catch(e) {
       _xml[i] = null;
       alert("Exception:" + e);
@@ -89,10 +91,15 @@ xmlRequest.prototype.start = function( content ) {
     try {
       _xml[i] = new ActiveXObject(_msXmlHttp);
       _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { '+this.callback+'(_xml['+i+']); }' );
-      _xml[i].open( this.method, this.url, true);
+      _xml[i].open( this.method, this.url, this.callback ? true : false);
       _xml[i].setRequestHeader("SOAPAction", '""');
       _xml[i].send(content);
-      return true;
+
+      if( !this.callback ) {
+        return _xml[i].responseXML;
+      } else {
+        return true;
+      }
     } catch(e) {
       _xml[i] = null;
       alert("Exception1:" + e.message);
@@ -124,6 +131,7 @@ xmlRequest.prototype.start = function( content ) {
     document.body.appendChild(iframe);
 
     _xml[i] = this.callback;
+    _xmlTimer[i] = true;
     _xmlTimerCount[i] = 0;
 
     var self = this;
@@ -157,7 +165,20 @@ xmlRequest.prototype.start = function( content ) {
       _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
     }
 
-		return true;
+//       var count=0;
+//       while( _xmlTimer[i] && count++<10000000 ) {
+//       }
+
+//       alert(count);
+
+//       var timer = window.setInterval( function() {
+//         if( !_xmlTimer[i] ) {
+//           window.clearInterval(timer);
+//         }
+//       }, 0);
+    }
+
+		return "iframe";
 	}
 
   // Error
@@ -172,11 +193,15 @@ function customOnReadyStateChange() {
 	for( var i=0; i<_xml.length; i++ ) {
     if( _xmlTimer[i] &&_xml[i] ) {
 
+      document.getElementById("dbg").value += "\n=" + _xmlTimerCount[i] + ", ";
+
       try {
         if( _xmlTimerCount[i]<_xmlTimerCountMax ) {
           if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.innerHTML ) {
             _xmlTimerCount[i]++;
           } else {
+
+            sleepMSec(5000);
 
             //            alert( _xmlTimerCount[i] + "\n" + document.getElementById("pfxxmliframe"+i).contentWindow.document );
             
@@ -223,6 +248,20 @@ function cancelOnReadyStateChange( i, msg ) {
     document.body.removeChild(document.getElementById("pfxxmliframe"+i));
   } catch(e) {
     alert("Exception3:" + e);
+  }
+}
+
+//*****************************************************************************
+//
+//*****************************************************************************
+function sleepMSec( msec, i ) {
+
+  return;
+
+  var t0 = (new Date()).getTime();
+  var t1;
+
+  while( (new Date().getTime()-t0<msec) ) {
   }
 }
 //*****************************************************************************
