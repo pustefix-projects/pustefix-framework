@@ -65,8 +65,8 @@ public class LRUCache implements SPCache {
     public Iterator getIterator() {
         TreeMap tmphash = new TreeMap();
         synchronized (cache) {
-            for(Enumeration e = cache.keys(); e.hasMoreElements(); ) {
-                String k = (String) e.nextElement();
+            for (Iterator iter = cache.keys(); iter.hasNext(); ) {
+                String k = (String) iter.next();
                 tmphash.put(k, cache.getElement(k));
             }
         }
