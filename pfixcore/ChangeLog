@@ -1,3 +1,8 @@
+2004-19-05  Michael Hartmeier  <mhm@schlund.de>
+	* tests/junit/de/schlund/pfixxml/util/html.xml
+	* tests/junit/de/schlund/pfixxml/util/html.xsl
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java: add test for url encoding
+
 2004-07-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:

@@ -7,11 +7,15 @@
 package de.schlund.pfixxml.util;
 
 import java.io.File;
+import java.io.StringWriter;
+import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
 import net.sf.saxon.om.AbstractNode;
 import net.sf.saxon.om.NodeInfo;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -35,22 +39,40 @@ public class XsltTest extends TestCase {
         assertEquals("foo", hello.getAttribute("attr"));
     }
 
+    public void testUriEncodingWithHtmlOutput() throws Exception {
+        StreamResult result;
+        StringWriter writer;
+        Document doc;
+        String str;
+
+        // Xml.serialize does *not* encode urls, thus, I have to use Saxon's stream serialization  
+        writer = new StringWriter();
+        result = new StreamResult(writer);
+        transform("html", result);
+        doc = Xml.parseString(writer.getBuffer().toString());
+        assertEquals("m%C3%BCller", ((Attr) XPath.selectNode(doc, "/html/a/@href")).getValue());
+    }
+    
     //-- helper code
     
     private static Document transform(String name) throws Exception {
-        return transform(name + ".xml", name + ".xsl");
+        DOMResult result;
+
+        result = new DOMResult();
+        transform(name, result);
+        return (Document) result.getNode();
     }
-    private static Document transform(String xml, String xsl) throws Exception {
+
+    private static void transform(String name, Result result) throws Exception {
         final String PREFIX = "tests/junit/de/schlund/pfixxml/util/"; // TODO: windows
+        final String xml = name + ".xml";
+        final String xsl = name + ".xsl";
         Document doc;
         Templates trafo;
-        DOMResult result;
         
         doc    = Xml.parse(new File(PREFIX + xml));
         trafo  = Xslt.loadTemplates(Path.create(new File(PREFIX + xsl)));
-        result = new DOMResult();
         Xslt.transform(doc, trafo, null, result);
-        return (Document) result.getNode();
     }
     
 	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
