@@ -1,3 +1,7 @@
+2003-10-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java: killed extra imports to make it compile
+
 2003-10-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ContextXMLServer.java (needsSSL):
