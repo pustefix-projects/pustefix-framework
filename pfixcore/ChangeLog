@@ -1,5 +1,10 @@
 2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/ServletManager.java: bug fix: make it
+	work without cookies again: we actually have to believe that the
+	session is secure (if it is marked as such) when request doesn't
+	supply cookies at all.
+
 	* src/de/schlund/pfixxml/PfixServletRequest.java: removed the pagemessage stuff...
 	* src/de/schlund/pfixcore/workflow/Context.java: ...and moved it here completely. 
 	implemented the handling of args for pagemessages
