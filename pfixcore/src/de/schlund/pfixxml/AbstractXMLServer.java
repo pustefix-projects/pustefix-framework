@@ -376,8 +376,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (!spdoc.getNostore()) {
                 // RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
                 // if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                    SessionCleaner.getInstance().storeSPDocument(spdoc, session, servletname + SUFFIX_SAVEDDOM, scleanertimeout);
-                }
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session, servletname + SUFFIX_SAVEDDOM, scleanertimeout);
+                // }
             } else {
                 CAT.info("*** Got NOSTORE from SPDocument! ****");
             }
