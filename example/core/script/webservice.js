@@ -1254,8 +1254,8 @@ SOAP_Stub.prototype._createCall=function() {
 
 SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
   var argLen=args.length;
-  if(argLen==expLen+1 && typeof args[argLen-1]=="function") call.setUserCallback(args[argLen-1]);
-  else if(argLen==expLen+2 && typeof args[argLen-2]=="function" && typeof args[argLen-1]=="string") {
+  if(argLen==expLen+1 && (typeof args[argLen-1]=="function" || typeof args[argLen-1]=="object" )) call.setUserCallback(args[argLen-1]);
+  else if(argLen==expLen+2 && (typeof args[argLen-2]=="function" || typeof args[argLen-2]=="object") && typeof args[argLen-1]=="string") {
     call.setUserCallback(args[argLen-2]);
     call.setRequestID(args[argLen-1]);
   } else if(argLen!=expLen) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Stub._extractCallback");
