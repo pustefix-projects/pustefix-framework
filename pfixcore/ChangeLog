@@ -1,8 +1,36 @@
+2004-04-26  Benjamin Reitzammer <benjamin@schlund.de>
+
+    * example/core/build/create_propfiles.xsl
+      added exception-template to incorparate exception-configuration into the
+      servlet-property-files.
+
+    * src/de/schlund/pfixxml/ServletManager.java:
+      added initExceptionConfigs()-method for initialization of declarative
+      exception handling and the hook that calls the configured
+      ExceptionProcessors for appropriate exceptions (processException()-method).
+      If no exceptions are configured with the exception-tag, the behaviour
+      of this class is unchanged.
+
+    * src/de/schlund/pfixxml/exceptionprocessor/ExceptionConfig
+      Objects of this class encapsulate the configuration for one type
+      of exception done via the exception-tag; they are constructed during
+      servlet initialization in initExceptionConfigs().
+
+    * src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor
+      the interface that all classes must implement, that should act as an
+      ExceptionProcessor (configured via the processor-attribute of the
+      exception-tag).
+
+    * src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor
+      the default ExceptionProcessor, which is used, when the processor-attribute
+      of the exception-tag is absent.
+
+
 2004-04-26  Niels Schelbach <niels@schlund.de>
 
         * src/de/schlund/pfixxml/targets/TargetGenerator.java:
-          added extern control ability of generation process. Callback 
-          methods will be called after finishing a single target, to 
+          added extern control ability of generation process. Callback
+          methods will be called after finishing a single target, to
           inform previously registered TargetGenerationListener's
 
         * src/de/schlund/pfixxml/targets/TargetGeneratorListener.java:
@@ -20,13 +48,13 @@
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
 	(handleSubmittedData): now also insert the CRs when the state
 	wants to continue AND the corresponding FlowStep has Actions
-	that may need the DOM for their tests. 
+	that may need the DOM for their tests.
 
 	* src/de/schlund/pfixcore/workflow/PageFlow.java: use FlowSteps
 	as members of the flow. Fix return values of the relevant methods accordingly.
 
 	* src/de/schlund/pfixcore/workflow/Context.java: change
-	accordingly. 
+	accordingly.
 	(documentFromFlow): when the state returns and wants to continue,
 	let the state check it's FlowStepActions before the flow continues.
 
@@ -36,7 +64,7 @@
 	PageFlow. It contains the PageRequest, the "isstophere" flag
 	(aka stophere="true") and possible FlowStepActions (see
 	below). The method applyActionsOnContinue(...) applies all
-	matching actions before the page wants to continue with the flow. 
+	matching actions before the page wants to continue with the flow.
 
 	* src/de/schlund/pfixcore/workflow/FlowStepAction.java:
 	Interfaces for classes that define actions that should be
@@ -47,7 +75,7 @@
 	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java:
 	New class. Factory to produce FlowStepActions: type "jumpto" is
 	predefined to result in FlowStepJumpToAction, all other types are
-	interpreted as classes implementing FlowStepAction. 
+	interpreted as classes implementing FlowStepAction.
 
 	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java:
 	New class. Main FlowStepAction class that is able to set the
@@ -67,18 +95,18 @@
 	should be selected when the request is handled. It's no longer
 	needed to use the clumsy <pfx:argument name="__pageflow"> stuff
 	for this. As an added benefit, because there's no longer an
-	pfx:argument when only selecting a flow, it's no longer needed to 
+	pfx:argument when only selecting a flow, it's no longer needed to
 	specify nodata="true" to inhibit submit data handling in the states.
 
 	* example/core/xsl/forminput.xsl.in (forminput):
-	Handle (similar to the already present send-to-page) a new attribute send-to-pageflow 
+	Handle (similar to the already present send-to-page) a new attribute send-to-pageflow
 	to select the pageflow when the request is submitted.
 
 	* src/de/schlund/pfixcore/workflow/Context.java
 	(documentFromFlow): if the pagerequest is the special page
-	__STARTWITHFLOW, directly do a page flow run to determine the page that should 
+	__STARTWITHFLOW, directly do a page flow run to determine the page that should
 	be shown. CAUTION: there is no real support from the XSLT side, only some hackisch way
-	to do it, that is not guaranteed to work in the future.  
+	to do it, that is not guaranteed to work in the future.
 
 	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: changed
 	logging to recognize the STARTWITHFLOW_PAGE stuff
