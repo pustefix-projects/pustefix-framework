@@ -81,6 +81,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     JPanel buttonPanel;
 
     JButton button;
+    JButton hideButton;
     
     // Menu
     JMenu fileMenu;
@@ -160,9 +161,15 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         // Creating Button - Panel
         buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BorderLayout());
         button = new JButton("Submit");
+        hideButton = new JButton("Close");
         button.addActionListener(this);
-        buttonPanel.add(button);
+        hideButton.addActionListener(this);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        buttonPanel.add(button, BorderLayout.EAST);
+        buttonPanel.add(hideButton, BorderLayout.WEST);
+        
         
         
         //Setting Action
@@ -208,8 +215,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // Creating File Menu
         fileMenu = new JMenu("File");
         fileSubMenu = new JMenuItem("Check wellformed");
-        colorSubMenu = new JMenuItem("Color");
-        boldSubMenu = new JMenuItem("Bold");
+        // colorSubMenu = new JMenuItem("Color");
+        // boldSubMenu = new JMenuItem("Bold");
         colorizeMenu = new JMenuItem("Syntax Highlighting");
         tagClose = new JMenuItem("Close Tag (CTRL-E)");
         viewPortMenu = new JMenuItem("Testing ViewPort");
@@ -226,6 +233,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // Adding ActionListener
         colorizeMenu.addActionListener(this);
         fileSubMenu.addActionListener(this);
+        tagClose.addActionListener(this);
 
         
 
@@ -527,6 +535,18 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
             replace();
              
         }
+
+        if (e.getSource() == tagClose) {
+            syntaxPane.closeFinalTag();
+            syntaxPane.hilightAll();
+        }
+
+        if (e.getSource() == hideButton) {
+            hideApplet();
+             
+        }
+        
+        
         
         
     }
@@ -539,9 +559,11 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     public void keyReleased(KeyEvent keyEvent) {
         // Remove UndoListener !!
-        syntaxPane.getDocument().removeUndoableEditListener(undolistener);
-        syntaxPane.realtimeHilight();
-        syntaxPane.getDocument().addUndoableEditListener(undolistener);
+        if (!((keyEvent.getKeyCode() > 36) && (keyEvent.getKeyCode() < 41))) {            
+            syntaxPane.getDocument().removeUndoableEditListener(undolistener);
+            syntaxPane.realtimeHilight();
+            syntaxPane.getDocument().addUndoableEditListener(undolistener);
+        }
         
     }
 
