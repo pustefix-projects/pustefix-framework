@@ -379,7 +379,7 @@
         <!-- extract only if pfixcore-data.jar is newer than dir ${dir.projects}/core -->
         <uptodate property="upd.core-data">
             <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
-            <mapper type="merge" to="${dir.projects}/core"></mapper>
+            <mapper type="merge" to="${dir.projects}/core/TIMESTAMP"></mapper>
         </uptodate>
     </target>
     
@@ -388,6 +388,7 @@
         <untar dest="${dir.projects}" compression="gzip" overwrite="true">
             <fileset refid="id.fs.pfixcore_data_tgz"/>
         </untar>
+        <touch file="${dir.projects}/core/TIMESTAMP"></touch>
     </target>
     
     <target name="check-permissions">
