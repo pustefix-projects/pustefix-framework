@@ -19,13 +19,23 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.workflow.AuthContext;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.DirectOutputPageMap;
+import de.schlund.pfixcore.workflow.DirectOutputState;
+import de.schlund.pfixcore.workflow.PageRequest;
+import de.schlund.pfixcore.workflow.PageRequestProperties;
+import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 
 /**

@@ -59,33 +59,55 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     // store  exception occured during transformation here. 
     protected Exception storedException = null;
 
+    
     //~ Methods ....................................................................................
 
     // Target interface
+   /**
+    * @see de.schlund.pfixxml.targets.Target#getType()
+    */
     public TargetType getType() {
         return type;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getTargetKey()
+     */
     public String getTargetKey() {
         return targetkey;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getAuxDependencyManager()
+     */
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getTargetGenerator()
+     */
     public TargetGenerator getTargetGenerator() {
         return generator;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getXMLSource()
+     */
     public Target getXMLSource() {
         return xmlsource;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getXSLSource()
+     */
     public Target getXSLSource() {
         return xslsource;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getParams()
+     */
     public TreeMap getParams() {
         if (params == null) {
             return null;
@@ -96,6 +118,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
+   
     /**
      * @see de.schlund.pfixxml.targets.Target#getValue()
      */
@@ -158,6 +181,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public abstract String toString();
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#getCurrValue()
+     */
     public Object getCurrValue() throws TransformerException {
         Object obj = getValueFromSPCache();
         // look if the target exists in memory cache and if the file in disk cache is newer.
@@ -196,7 +222,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         return obj;
     }
 
-    // comparable interface
+    /**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     public int compareTo(Object inobj) {
         Target in = (Target) inobj;
         if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {
@@ -206,27 +234,22 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
+    
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
         long disk_mod_time = thefile.lastModified();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(
-                "File in DiskCache "
-                    + getTargetGenerator().getDisccachedir()
-                    + getTargetKey()
-                    + " ("
-                    + disk_mod_time
-                    + ") is "
+            CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir()
+                    + getTargetKey() + " (" + disk_mod_time + ") is "
                     + (disk_mod_time > target_mod_time ? " newer " : "older")
-                    + " than target("
-                    + target_mod_time
-                    + ")");
+                    + " than target(" + target_mod_time + ")");
         }
         // return true if file in diskcache newer than target
         return disk_mod_time > target_mod_time ? true : false;
     }
 
+    
     //
     // implementation
     //
@@ -238,6 +261,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         throws TargetGenerationException, XMLException, ParserConfigurationException, IOException;
 
     protected abstract void setModTime(long mtime);
+   
     /**
      * Sets the storedException.
      * @param storedException The storedException to set

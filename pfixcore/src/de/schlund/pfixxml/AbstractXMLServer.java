@@ -18,25 +18,6 @@
 */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.PageInfoFactory;
-import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.PublicXSLTProcessor;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetFactory;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.targets.TargetType;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
-import de.schlund.pfixxml.testenv.RecordManager;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
-
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,23 +30,31 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Category;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.PageInfoFactory;
+import de.schlund.pfixxml.targets.PageTargetTree;
+import de.schlund.pfixxml.targets.PublicXSLTProcessor;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TraxXSLTProcessor;
+import de.schlund.pfixxml.testenv.RecordManager;
+import de.schlund.pfixxml.testenv.RecordManagerFactory;
 
 
 /**
@@ -277,8 +266,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             } else if (tmp.toUpperCase().equals(PROP_XMLONLY_RESTRICTED_VALUE.toUpperCase())) {
                 isXMLOnlyAllowed = XML_ONLY_RESTRICTED;
             }
-            if (CAT.isInfoEnabled()) {
-                CAT.info("\nXML only is: "
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("\nXML only is: "
                          + (isXMLOnlyAllowed == XML_ONLY_ALLOWED ? "allowed" : "")
                          + (isXMLOnlyAllowed == XML_ONLY_RESTRICTED ? "restricted" : "")
                          + (isXMLOnlyAllowed == XML_ONLY_PROHIBITED ? "prohibited" : ""));
@@ -293,7 +282,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 while (iter.hasNext()) {
                     Object key = iter.next();
                     xmlOnlyValidHosts[i] = map.get(key).toString();
-                    if (CAT.isInfoEnabled()) {
+                    if (CAT.isDebugEnabled()) {
                         if (sb == null) {
                             sb = new StringBuffer();
                         }
@@ -301,9 +290,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                     }
                     i++;
                 }
-                if (CAT.isInfoEnabled()) {
+                if (CAT.isDebugEnabled()) {
                     sb.insert(0, "\nValid hosts for xml only are: \n");
-                    CAT.info(sb.toString());
+                    CAT.debug(sb.toString());
                 }
             }
         }
@@ -324,8 +313,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
             skip_getmodtimemaybeupdate = tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? true : false;
-            if (CAT.isInfoEnabled()) {
-                CAT.info("SKIP_GETMODTIMEMAYBEUPDATE: " + skip_getmodtimemaybeupdate);
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("SKIP_GETMODTIMEMAYBEUPDATE: " + skip_getmodtimemaybeupdate);
             }
         }
         return skip_getmodtimemaybeupdate;
@@ -345,8 +334,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
             recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase()) ? true : false;
-            if (CAT.isInfoEnabled()) {
-                CAT.info("RecordModeAllowed is: " + recordmodeAllowed);
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("RecordModeAllowed is: " + recordmodeAllowed);
             }
         }
     }

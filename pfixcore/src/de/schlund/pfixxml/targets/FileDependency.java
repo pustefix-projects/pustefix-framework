@@ -78,7 +78,7 @@ public class FileDependency extends AbstractDependency {
 
     public FileDependency() {}
 
-    public FileDependency (DependencyType type, String path, String dummy, String dummy2) {
+    public FileDependency (DependencyType type, String path) {
         this.type    = type;
         this.path    = path;
         this.part    = null;
