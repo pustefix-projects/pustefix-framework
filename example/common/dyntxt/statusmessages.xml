@@ -135,12 +135,12 @@
   </part>
   <part name="pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK">
     <product name="default">
-      <lang name="default"/></b> of features/color is out of stock.</lang>
+      <lang name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of features/color is out of stock.</lang>
     </product>
   </part>
   <part name="pfixcore.example.tshirt.SIZECOLOR_OUTOF_STOCK">
     <product name="default">
-      <lang name="default"/></b> of size/color is out of stock.</lang>
+      <lang name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of size/color is out of stock.</lang>
     </product>
   </part>
   <part name="pfixcore.generator.MISSING_PARAM">
