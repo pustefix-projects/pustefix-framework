@@ -8,7 +8,7 @@
 
 2003-06-06  Jens Lautenbacher  <jtl@schlund.de>
 
-	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java: made a sane menubar with acellerators.
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java: made a sane menubar with accelerators.
 	Removed some unused code (no need to handle the accelerators in a keymap)
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixTextPane.java: cosmetics
