@@ -129,6 +129,36 @@
       <version>1.2.mhm</version>
       <type>plugin</type>
     </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-ant</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxrpc</groupId>
+      <artifactId>jaxrpc</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>wsdl4j</groupId>
+      <artifactId>wsdl4j</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>saaj</groupId>
+      <artifactId>saaj</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>mhm</groupId>
+      <artifactId>wsif</artifactId>
+      <version>1.0</version>
+    </dependency>
     
   </dependencies>
 
