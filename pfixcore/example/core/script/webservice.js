@@ -339,8 +339,8 @@ XML_Writer.prototype.writeChars=function(chars) {
     this.xml+=">";
     this.inStart=false;
   }
-  chars=chars.replace(/&/,"&amp;");
-  chars=chars.replace(/</,"&lt;");
+  chars=chars.replace(/&/g,"&amp;");
+  chars=chars.replace(/</g,"&lt;");
   this.xml+=chars;
 }
 
