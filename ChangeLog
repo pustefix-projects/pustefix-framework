@@ -1,7 +1,10 @@
 2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java (generateSynthetics): 
-	one more instance to check for null values
+	- one more instance to check for null values
+	- Eeek, first fix didn't work out. we need to check the parameters
+	hashmap not the request as multi parameters are not accessible
+	through the request, but only the parameters map.
 
 2004-05-25  Jens Lautenbacher  <jtl@schlund.de>
 
