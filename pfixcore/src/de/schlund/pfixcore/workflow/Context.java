@@ -708,7 +708,7 @@ public class Context implements AppContext {
             String            name     = page.getName();
             PageRequest       pagereq  = new PageRequest(name);
             Element           pageelem = doc.createElement("page");
-            
+
             parent.appendChild(pageelem);
             pageelem.setAttribute("name", name);
             pageelem.setAttribute("handler", page.getHandler());
