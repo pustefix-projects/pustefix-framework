@@ -1,3 +1,10 @@
+2004-06-03  Michael Hartmier  <mhm@schlund.de>
+    * src/de/schlund/pfixxml/targets/TargetGenerator.java, 
+    src/de/schlund/pfixcore/util/TargetGeneratorTask.java: extract common code
+    * src/de/schlund/pfixcore/editor/EditorCommonsFactory.java,
+    src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java: fix 
+    ClassCastException when clicking on DynIncludes
+    
 2004-06-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in (pfx:include): added attribute
