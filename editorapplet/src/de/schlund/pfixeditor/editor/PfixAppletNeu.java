@@ -22,7 +22,7 @@ package de.schlund.pfixeditor.editor;
 
 
 
-
+import java.net.URLEncoder;
 import javax.swing.event.*; 
 import java.awt.AWTPermission;
 import java.awt.Frame;
@@ -46,18 +46,29 @@ import javax.swing.event.ChangeEvent;
 
 import java.net.*;
 
+
+/*
 import org.apache.commons.pfix_httpclient.HostConfiguration;
 import org.apache.commons.pfix_httpclient.HttpConnection;
 import org.apache.commons.pfix_httpclient.HttpException;
 import org.apache.commons.pfix_httpclient.HttpRecoverableException;
 import org.apache.commons.pfix_httpclient.HttpState;
 import org.apache.commons.pfix_httpclient.HttpStatus;
+
 import org.apache.commons.pfix_httpclient.NameValuePair;
+
 import org.apache.commons.pfix_httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.pfix_httpclient.URIException;
 import org.apache.commons.pfix_httpclient.methods.PostMethod;
 import org.apache.commons.pfix_httpclient.protocol.Protocol;
-import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory;
+import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory; */
+
+
+
+
+
+
+
 
 import javax.swing.*;
 import netscape.javascript.*;
@@ -67,9 +78,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.pfix_httpclient.NameValuePair;
 
-public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener {
+
+public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener, ItemListener {
     private static final String TITLE = "PfixEditor";
 
     // JSObject jsWin, jsDocu, jsForm, jsField;
@@ -102,8 +113,13 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     //JPanel
     JPanel panel;
     JPanel buttonPanel;
+    JPanel comboPanel;
     Panel iPanel;
 
+    JComboBox combox;
+
+
+    
     JButton button;
     JButton hideButton;
     
@@ -145,6 +161,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     // Boolean Pack
     boolean pack = false;
+
+    String [] incElements;
 
 
     public void init() {
@@ -207,12 +225,41 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         actions = createActionTable(resultArea);
 
         System.out.println("Menu Creating");
+
+        JPanel boxPanel = new JPanel();
+        boxPanel.setLayout(new BorderLayout());
+        
+
         
         // Creating the EditMenu
         mbar = new JMenuBar();
         this.createFileMenu();       
         this.createEditMenu();
         this.createIncludeMenu();
+
+        /*
+        JComboBox hallol = new JComboBox();
+        hallol.addItemListener(this);
+        hallol.addItem("Karlsruher SC");
+        hallol.addItem("Manchester United");
+        hallol.addItem("Bayern München");
+        hallol.addItem("Hamburger SV");
+        hallol.addItem("Bayer 04 Leverkusen");
+        hallol.addItem("Real Madrid");
+        hallol.setMaximumRowCount(4);
+        hallol.setEnabled(true);
+        // hallol.setPopupVisible(true);
+        
+        // hallol.addActionListener(this);
+        
+        boxPanel.add(hallol, BorderLayout.NORTH);
+
+        panel.add(boxPanel, BorderLayout.EAST);
+        
+        // hallol.showPopup();
+        // hallol.setPopupVisible(true);
+
+        panel.add(hallol, BorderLayout.EAST);*/
         
         // Layouting Applet
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -223,30 +270,56 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
        
         // Setting the Frames position
         frame.setLocation(300,100);
-        frame.pack();
+        // frame.pack();
         // frame.show();
-        System.out.println("Frame should now be seen");
         // Checking visibility of the applet
-        // haga();
-        System.out.println("Bayern wird Meister");
-        testConnection();
+        // getDoc();
+        frame.pack();
+        // testConnection();
         doTest();
-        getDocument();
+        // getDocument();
+
+        // frame.pack();
+        // frame.show();
 
     }
 
 
-    public void haga() {
-        System.out.println("Haga haga");
-    }
 
+    public void getDoc() {
+        PfixAppletInfo info = new PfixAppletInfo(getDocumentBase().toString());
+
+        incElements = info.getIncludeElements();
+
+        comboPanel = new JPanel();
+        combox = new JComboBox();
+        combox.addItemListener(this);
+        
+
+        for (int i=0; i<incElements.length; i++) {
+            System.out.println("Inc " + incElements[i]);
+            combox.addItem(incElements[i]);             
+        }
+
+        
+        comboPanel.setLayout(new BorderLayout());
+        comboPanel.add(combox, BorderLayout.NORTH);
+        panel.add(comboPanel, BorderLayout.WEST);
+        
+
+        
+                
+        
+    }
 
     public void getDocument() {
         URL		  url;
-        URLConnection	  urlConn;
+        HttpURLConnection urlConn ;
+        
         DataOutputStream  printout;
         InputStream	  input;
-
+        org.w3c.dom.Document docNeu;
+        
         try {
             System.out.println("<------------------------------------------------------------------->");
             
@@ -262,29 +335,52 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
             System.out.println("STRING: + " + preString + "AppletInfo" + afterString + "&__xmlonly=1&__nostore=1");
 
-             String urlLocation = preString + "/AppletInfo" + afterString; //+ "&__xmlonly=1&__nostore=1";
+             String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
             // String urlLocation =  preString + "/AppletInfo" + "&__xmlonly=1&__nostore=1";
             //String urlLocation = location + "&__xmlonly=1";
-            NameValuePair xmlonly = new NameValuePair("__xmlonly", "1");
-            PostMethod post = new PostMethod(urlLocation);
-            post.addParameter(xmlonly);
-            post.execute(new HttpState(), new HttpConnection("cmscore.zaich.ue.schlund.de", 80));
+            // NameValuePair xmlonly = new  org.apache.commons.pfix_httpclient.NameValuePair("__xmlonly", "1");
+            // PostMethod post = new PostMethod(urlLocation);
+            // post.addParameter(xmlonly);
+            // post.execute(new HttpState(), new HttpConnection("cmscore.zaich.ue.schlund.de", 80));
 
-            //url = new URL(urlLocation);
+            // String encoded = URLEncoder.encode(location);
+
+             System.out.println("URL -----> " + urlLocation);
+
+             
+
+             // url = new URL("http://cmscore.zaich.ue.schlund.de/xml/edit/AppletInfo?__xmlonly=1");
+             url = new URL(urlLocation);
+
+
+            System.out.println("Hier I am");
+
+
+            // urlConn.addRequestProperty("Bla", "Lub");
+            // urlConn.setDoInput(true);
+            // urlConn.setDoOutput(true);
        
-            //urlConn = url.openConnection();
+            // urlConn = url.openConnection();
 
+            // urlConn = new HttpURLConnection(url);
+
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+
+            // urlConn.addRequestProperty("Bla", "Lub");
+            // urlConn.setDoInput(true);
+            // urlConn.setDoOutput(true);
             
 
+
             
-            input = post.getResponseBodyAsStream();
+            input = connection.getInputStream();
             
 
             
             
             //input = urlConn.getInputStream();
 
-            System.out.println(input.toString());
+            // System.out.println(input.toString());
 
 
 
@@ -296,10 +392,59 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
             docBuilderFactory = DocumentBuilderFactory.newInstance();
             docBuilderFactory.setNamespaceAware(true);
             docBuilderFactory.setValidating(false);
-            // docBuilder = docBuilderFactory.newDocumentBuilder();
-            // docDo = docBuilder.parse(input);
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+            docDo = docBuilder.parse(input);
 
-            // org.w3c.dom.Element rootElement = docDo.getDocumentElement();
+            org.w3c.dom.Element rootElement = docDo.getDocumentElement();
+
+
+            System.out.println("Element: " + rootElement.toString());
+
+            // NodeList nl = docDo.getElementByTagName("allincludes");
+            org.w3c.dom.NodeList nl = docDo.getElementsByTagName("allincludes");
+            org.w3c.dom.Node node = nl.item(0);
+
+            comboPanel = new JPanel();
+            combox = new JComboBox();
+
+            org.w3c.dom.NodeList nldic = docDo.getElementsByTagName("include");
+            for (int i = 0; i < nldic.getLength(); i++) {
+                System.out.println("Include ---" + i);
+                org.w3c.dom.Element el = (org.w3c.dom.Element) nldic.item(i);
+
+                String part = el.getAttribute("part");
+                String path = el.getAttribute("path");
+
+                String newPath = path.substring(path.indexOf("example/"), path.length());
+                
+
+                String includeStr = "<pfx:include href=\"" + newPath + "\" part=\"" + part + "\">";
+
+                combox.addItem(includeStr);
+
+                
+
+
+                
+            }
+            
+            System.out.println("Und nu ?");
+            
+            System.out.println("NodeList" + nl.toString());
+
+            comboPanel.setLayout(new BorderLayout());
+            comboPanel.add(combox, BorderLayout.NORTH);
+            panel.add(comboPanel, BorderLayout.WEST);
+
+
+            JButton ebutton = new JButton("Hallo");
+            
+            
+            // repaint();
+            
+            
+
+            
 
             /*
 
@@ -323,22 +468,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
             */
-            byte[] buffer = new byte[200];
 
 
-       
-
-            String test = new String("");
-            // while not eof, read the file
-            int count;
-            do
-                {
-                count = input.read(buffer);
-                System.out.println(new String(buffer));
-                // test = test + new String(buffer);
-            }
-            while(count != -1);
-            
 
             //System.out.println("TEST:   " + doce.getText(1,20));
 
@@ -461,9 +592,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
             ImageIcon neuImg = new ImageIcon(url);
             JButton but = new JButton(neuImg);
            
-            panel.add(but, BorderLayout.WEST);
+            // panel.add(but, BorderLayout.WEST);
             // panel.add(img);
-            repaint();
+            // repaint();
 
             urlConn.setDoInput(true);
             urlConn.setDoOutput(true);
@@ -510,7 +641,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     public void createIncludeMenu() {
         includeMenu = new JMenu("Include");
 
-        tagMenu = new JMenuItem("Test Communication");
+        tagMenu = new JMenuItem("Includes");
         tagMenu.addActionListener(this);
         includeMenu.add(tagMenu);
         
@@ -790,6 +921,31 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     public void colorize() {
          syntaxPane.hilightAll(); 
     }
+
+
+
+
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getItem().equals("Hamburger SV")) {
+            syntaxPane.setText("Hamburch iss goil");
+             
+        }
+
+
+        /*
+        for (int i=0; i<incElements.length; i++) {
+            if (e.getItem().equals(incElements[i])) {
+                syntaxPane.setText("Included " + incElements[i]);
+                break;
+            }
+            
+        }
+        */
+        
+            
+    }
+
+
     
 
     // Action Handler
@@ -802,7 +958,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         }
 
         if (e.getSource() == tagMenu) {
-            onSendData();
+            // onSendData();
+            PfixIncludeDialog incDialog = new PfixIncludeDialog(getDocumentBase().toString(), syntaxPane);
              
         }
         
