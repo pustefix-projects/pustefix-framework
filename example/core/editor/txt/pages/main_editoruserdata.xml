@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
+               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  
+  <part name="logoutbutton">
+    <product name="default">
+      <lang name="default">
+        <pfx:button target="_top" mode="force" normalclass="editor_submit" page="editoruserdata">
+          <pfx:command  name="SELWRP">cancel</pfx:command>
+          <pfx:argument name="cancel.Cancel">true</pfx:argument>Cancel</pfx:button>
+      </lang>
+    </product>
+  </part>
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+          <pfx:forminput target="_top">
+            <displaycurrentuserforedit/><br/>
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Change your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <ixsl:if test="not(/formresult/cr_editorsession/user/@group = 'wheel')">
+                    <pfx:xinp type="hidden" name="change.Group">
+                      <ixsl:attribute name="value"><ixsl:value-of select="/formresult/cr_editorsession/user/@group"/></ixsl:attribute></pfx:xinp>
+                  </ixsl:if>
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" width="20%">
+                        <pfx:label name="change.Name">Name:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" type="text" name="change.Name"/>
+                      </td>
+                    </tr>
+                    <ixsl:if test="/formresult/cr_editorsession/user/@group = 'wheel'">
+                      <tr>
+                        <td align="right">
+                          <pfx:label name="change.Group">Group:</pfx:label>
+                        </td>
+                        <td>
+                          <pfx:xinp class="editor_input" type="text" name="change.Group"/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.Sect">Section:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" type="text" name="change.Sect"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.Phone">Phone:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" type="text" name="change.Phone"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.Pass1">Pwd:</pfx:label>
+                      </td>
+                      <td>
+                        <input class="editor_input_pwd" type="password" name="change.Pass1"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.Pass2">Pwd (Rep.):</pfx:label>
+                      </td>
+                      <td>
+                        <input class="editor_input_pwd" type="password" name="change.Pass2"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <hr/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2" align="right">
+                        <pfx:xinp type="submit" class="editor_submit" value="Submit data">
+                          <pfx:command name="SELWRP">change</pfx:command>
+                        </pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
