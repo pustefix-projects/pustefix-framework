@@ -93,9 +93,12 @@ public class PfixAppletInfo {
     // Location for Applet Info
     public String parseLocation(String location) {
          String preString = location.substring(0, location.lastIndexOf("/"));
-         String afterString = location.substring(location.lastIndexOf(";"), location.length());
+         String afterString = location.substring(location.lastIndexOf(";"), location.lastIndexOf(".foo")+4);
+
+         System.out.println("Loaaaacioont" + location);
+         System.out.println("AFTER STRING" + afterString);
          
-         String urlLocation = preString + "/AppletInfo" + afterString +  "&__xmlonly=1&__nostore=1";
+         String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
          System.out.println("URRRLLLL NEU " + urlLocation);
          
          return urlLocation;
@@ -133,7 +136,7 @@ public class PfixAppletInfo {
             // String part       = el.getAttribute("part");
             String path       = el.getAttribute("path");            
             // String newPath    = path.substring(path.indexOf("example/"), path.length());
-            String includeStr = "<pfx:imgage href=\"" + path + "\" />";
+            String includeStr = "<pfx:image href=\"" + path + "\" />";
             
             incImages[i] = includeStr;
             
