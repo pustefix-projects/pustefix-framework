@@ -97,14 +97,14 @@ public class DirectOutputServlet extends ServletManager {
      * Authorization of the context first.  After that, it asks the
      * {@link de.schlund.pfixcore.workflow.DirectOutputPageMap} for a
      * {@link de.schlund.pfixcore.workflow.DirectOutputState}
-     * that matches the current PageRequest (NOTE: this is <b>NOT</b> the
+     * that matches the current PageRequest (NOTE: this is NOT the
      * pagerequest that is returned from the foreign Context as the
      * current PageRequest!). The accessibility of the
      * DirectOutputState is checked, then the handleRequest(Context,
      * Properties, PfixServletRequest, HttpServletResponse) method of
      * the DirectOutputState is called. NOTE: The properties parameter
      * are the properties matching the current PageRequest. Again this
-     * is <b>NOT</b> what the foreign context would return!
+     * is not what the foreign context would return!
      *
      * @param preq a <code>PfixServletRequest</code> value
      * @param res a <code>HttpServletResponse</code> value

@@ -363,7 +363,7 @@ public class Context implements AppContext {
         return false;
     }
     
-    public SPDocument checkAuthorization() throws Exception {
+    public synchronized SPDocument checkAuthorization() throws Exception {
         if (authpage != null) {
             ResultDocument resdoc = null;
             LOG.debug("===> [" + authpage + "]: Checking authorisation");

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
 
   <xsl:param name="page"/>
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
