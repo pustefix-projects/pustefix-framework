@@ -310,7 +310,7 @@
     <antcall target="skeleton" inheritall="true">
       <param name="autotagmessage" value="${dist.autotagmessage}"/>
     </antcall>
-    <cvs command="tag ${autotagmessage}"/>
+    <cvs command="tag ${dist.autotagmessage}"/>
   </target>
 
   <target name="notag" depends="clean">
@@ -374,7 +374,6 @@
       <fileset dir="${basedir}" includes="META-INF/**"/>
       <fileset dir="${dir.build}"/>
       <fileset dir="${dir.res}"/>
-      <fileset dir="${basedir}" includes="jni/Makefile.pkg, jni/src/**"/>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
     </jar>
   </target>
@@ -382,9 +381,8 @@
   <target name="autotag" depends="init">
     <!-- property gets overridden when calling target dist -->
     <property name="autotagmessage" value="${tstamp.autotag} (not tagged in cvs)"/>
-    <!-- this form of echo is used to get a newline into the file-->
-    <echo file="${dir.metainf}/${name.cvsautotag}">${autotagmessage}
-    </echo>
+    <!-- make echo insert a newline into the file with &#010; -->
+    <echo file="${dir.metainf}/${name.cvsautotag}" message="${autotagmessage}&#010;"/>
   </target>
   
   <target name="test-skeleton" description="extracts skel.jar, copies sample files, runs ant">
