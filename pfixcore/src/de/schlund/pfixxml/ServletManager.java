@@ -566,6 +566,7 @@ public abstract class ServletManager extends HttpServlet {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
+        	CAT.error("Exception in process", e);
         	ExceptionConfig exconf = getExceptionConfigForThrowable(e);
         	
         	if(exconf != null && exconf.getProcessor()!= null) { 

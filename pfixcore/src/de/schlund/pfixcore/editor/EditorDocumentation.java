@@ -71,7 +71,7 @@ public class EditorDocumentation {
                 this.readFile(file);
             }
             catch (Exception ex) {
-                LOG.debug(" * File " + args[i] + " not found * ");
+            	LOG.error("Exception: File " + args[i] + " not found", ex);
             }
         }
     }
