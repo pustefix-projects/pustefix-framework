@@ -2,10 +2,19 @@
 
 <projects xmlns:cus="http://www.schlund.de/pustefix/customize">
 
+  <insertexternalprojects/>
+  
   <!-- some common definitions that are shared between all projects -->
   
   <common>
     <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
+    <documentation>
+      <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
+    </documentation>  
     <tomcat>
       <minprocessors>100</minprocessors>
       <maxprocessors>500</maxprocessors>
@@ -21,15 +30,9 @@
     </tomcat>
     <apache>
       <apachelogdir><cus:docroot/>servletconf/log</apachelogdir>
-      <!-- For all of the directories there will be an alias for direct handling by apache in ALL projects. -->
-      <!-- This is needed because every project can potentially use images from every other projects "img" directory  -->
       <passthrough>common/img</passthrough>
       <passthrough>core/img</passthrough>
       <passthrough>core/script</passthrough>
-      <passthrough>core/editor/img</passthrough>
-
-      <!-- FILL IN IMG DIRECTORIES OF NEW PROJECTS HERE -->
-      
     </apache>
   </common>
 
@@ -50,6 +53,7 @@
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>editor.<cus:fqdn/></servername>
     <serveralias>editor.<cus:machine/></serveralias>
+    <passthrough>core/editor/img</passthrough>
     <defpath>/xml/edit</defpath>
     <ports>
       <port number="80"/>
@@ -86,6 +90,5 @@
       <propfile><cus:docroot/>common/conf/factory.prop</propfile>
     </servlet>
   </project>
-
 
 </projects>
