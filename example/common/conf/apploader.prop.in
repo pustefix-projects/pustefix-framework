@@ -45,6 +45,7 @@
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
       <prop name="apploader.package.include.3">de.schlund.pfixcore.editor</prop>
+      <prop name="apploader.package.include.3">de.skelexamples</prop>
       
       <!--add classes which shouldn't be reloadable even though their packages are-->
       <prop name="apploader.class.exclude.1">de.schlund.pfixschlund.util.addresschecker.ReturnValue</prop>
