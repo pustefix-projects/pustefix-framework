@@ -57,7 +57,7 @@ public class TargetGenerationException extends Exception {
         targetkey = key;
     }
 
-    public Document toXMLRepresentation() throws ParserConfigurationException, FactoryConfigurationError {
+    public Document toXMLRepresentation() throws ParserConfigurationException {
         return createErrorTree(this);
     }
 
@@ -114,6 +114,10 @@ public class TargetGenerationException extends Exception {
         return sb.toString();
     }
 
+    private void appendStr(StringBuffer buf, String indent, String key, String value) {
+        buf.append("|").append(indent).append(key).append(": ").append(value).append("\n");
+    }
+
     private void printEx(Throwable e, StringBuffer buf, String indent) {
         String br = "\n";
         if (e == null) {
@@ -122,28 +126,28 @@ public class TargetGenerationException extends Exception {
         if (e instanceof SAXParseException) {
             SAXParseException sex = (SAXParseException) e;
             buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(sex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(sex.getMessage()).append("\n");
-            buf.append("|").append(indent).append("Id: ").append(sex.getSystemId()).append("\n");
-            buf.append("|").append(indent).append("Line: ").append(sex.getLineNumber()).append("\n");
-            buf.append("|").append(indent).append("Column: ").append(sex.getColumnNumber()).append("\n");
+            appendStr(buf, indent, "Type", sex.getClass().getName());
+            appendStr(buf, indent, "Message", sex.getMessage());
+            appendStr(buf, indent, "Id", sex.getSystemId());
+            appendStr(buf, indent, "Line", ""+sex.getLineNumber());
+            appendStr(buf, indent, "Column", ""+sex.getColumnNumber());
         } else if (e instanceof TargetGenerationException) {
             TargetGenerationException tgex = (TargetGenerationException) e;
             buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(tgex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(tgex.getMessage()).append("\n");
-            buf.append("|").append(indent).append("Target: ").append(tgex.getTargetkey()).append("\n");
+            appendStr(buf, indent, "Type", tgex.getClass().getName());
+            appendStr(buf, indent, "Message", tgex.getMessage());
+            appendStr(buf, indent, "Target", tgex.getTargetkey());
             printEx(tgex.getNestedException(), buf, indent + " ");
         } else if (e instanceof TransformerException) {
             TransformerException trex = (TransformerException) e;
             buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(trex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(trex.getMessage()).append("\n");
+            appendStr(buf, indent, "Type", trex.getClass().getName());
+            appendStr(buf, indent, "Message", trex.getMessage());
             printEx(trex.getCause(), buf, indent + " ");
         } else {
             buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(e.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(e.getMessage()).append("\n");
+            appendStr(buf, indent, "Type", e.getClass().getName());
+            appendStr(buf, indent, "Message", e.getMessage());
         }
         //printEx(e, buf, indent + " ");
     }

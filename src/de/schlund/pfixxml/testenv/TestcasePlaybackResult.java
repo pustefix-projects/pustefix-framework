@@ -9,8 +9,8 @@ import java.util.ArrayList;
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcasePlaybackResult {
-    private ArrayList stepResults;
-    
+    private ArrayList stepResults = null;
+    private TestClientException ex = null;
     /**
      * Constructor for TestcasePlaybackResult.
      */
@@ -32,6 +32,18 @@ public class TestcasePlaybackResult {
      */
     public void addTestcaseStepResult(TestcaseStepResult step) {
         stepResults.add(step);
+    }
+    
+    public void setException(TestClientException e) {
+        this.ex = e;
+    }
+    
+    public TestClientException getException() {
+        return ex;
+    }
+
+    public boolean hasException() {
+        return ex == null ? false : true;
     }
 
 }

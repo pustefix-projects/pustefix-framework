@@ -1,6 +1,11 @@
 package de.schlund.pfixxml.testenv;
 
+import java.io.IOException;
 import java.util.Hashtable;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 
 /**
@@ -40,7 +45,7 @@ public class RecordManagerFactory {
      * @param the path to the dependency configuration file. For one of 
      * these files, one RecordManager will be created.
      */
-    public RecordManager createRecordManager(String depxml) throws Exception {
+    public RecordManager createRecordManager(String depxml) throws ParserConfigurationException, SAXException, IOException  {
         RecordManager ret = null;
         if (hash.containsKey(depxml)) {
             ret = (RecordManager) hash.get(depxml);

@@ -1,3 +1,38 @@
+2003-05-09 Joerh Haecker <haecker@schlund.de>
+
+	* example/sample1/conf/depend.xml.in: remove recordmode_allowed attribute. If record_dir is set,
+	recordmode is allowed.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java,
+	src/de/schlund/pfixxml/testenv/RecordManager.java: made
+	more functions!
+
+	* example/core/editor/txt/pages/main_testcaseoverview.xml: use the
+	displayerrortree tag for representing exceptions from TestClient.
+
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java(createRecordManager):
+	now throws ParserConfigurationException, SAXException, IOException.
+
+	* src/de/schlund/pfixxml/testenv/TestClientException.java: added
+	getXMLRepresentation().
+
+	* src/de/schlund/pfixxml/testenv/TestcasePlaybackResult.java: added 
+	methods and field to hold an exception.
+
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java(executeTest):
+	throws now TestClientException.
+
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:
+	getAvailableTestcaseDir(): now throws TestClientException.
+	executeTest(): adjusted.
+	insertStatus: append the errortree to the resulttree if exceptions
+	occur.
+
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	(handleSubmittedData): finallay catch the TestClientException.
+	NOTE: error handling happens in CRTestcaseImpl.executeTest()
+	
+
 2003-05-09  Martin Leidig <mleidig@schlund.de>
 
 	Added dynamic class reloading support. New files:

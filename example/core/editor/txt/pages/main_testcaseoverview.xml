@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-
-
   <part name="content">
     <product name="default">
       <lang name="default">
@@ -59,6 +57,13 @@
                 <span style="color: #ffffff; font-weight: bold;">Results for testcase <ixsl:value-of select="@id"/></span>
               </td>
             </tr>
+            <ixsl:choose>
+              <ixsl:when test="./error_message">
+                  <displayerrortree errorpath="./error_message">
+                    TestClient Error
+                  </displayerrortree>
+              </ixsl:when>
+           <ixsl:otherwise>
             <tr>
               <td>
                 <table class="editor_box" width="100%" cellspacing="0" cellpadding="2">
@@ -118,11 +123,13 @@
                           </ixsl:choose>
                         </table>
                       </td>
-                    </tr>
+                  </tr>
                   </ixsl:for-each>
                 </table>
               </td>
             </tr>
+             </ixsl:otherwise>
+             </ixsl:choose>
           </table>
           <br/>
         </ixsl:for-each>
@@ -131,9 +138,12 @@
   </part>
   
 
-  
 </include_parts><!--
+
 Local Variables:
 mode: xml
 End:
 -->
+
+
+
