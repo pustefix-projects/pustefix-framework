@@ -1,27 +1,38 @@
 <div>
   <h1>The Pages page</h1>
-<center>
-  <table border="1">
-    <tr>
-      <td colspan="2">
-        <img alt="editor pages page" src="img/editor_pages.png"/>
-      </td>
-    </tr>
-    <tr>
+
+  <p>In the left frame all pages of the project are listed. if you select one of them,
+    detailed information on this page is dispayed in the right frame.</p>
+  
+  <table>
+    <tr valign="top">
       <td>
-        <p>In the left frame all pages are listed. Select one of them
-        an the right frame will appear.</p>
+        <stdimg alt="editor pages page" src="img/editor_pages.png">
+          The <i>Pages</i> page of the <pustefix/> editor
+        </stdimg>
       </td>
       <td>
-        <p>The right frame shows all information on the selected page.</p>
-        <p>Box No. 1 lists all targets for the current page. If you select
-        a target, you will see it in the <a href="editor_targets.html">Targets</a> page.</p>
-        <p>Box No. 2 shows all includes used by the current page. With a click on it
-        you will see it in the <a href="editor_includes.html">Includes</a> page.</p>
-        <p>Box No. 3 contains all images used by the current page. If you want to edit
-        an image, click on it and you will see it in the <a href="editor_images.html">Images</a> page.</p>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              <b>Box No. 1</b> lists all targets for the current page. If you select
+              a target, you will see it in the <a href="editor_targets.html">Targets</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 2</b> shows all includes used by the current page. With a click on it
+                you will see it in the <a href="editor_includes.html">Includes</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 3</b> contains all images used by the current page. If you want to edit
+                an image, click on it and you will see it in the <a href="editor_images.html">Images</a> page.
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>
-</center>
 </div>
