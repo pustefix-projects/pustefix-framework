@@ -91,7 +91,7 @@ public class FileDownloadDOState implements DirectOutputState {
     public synchronized void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception {
         String filename = props.getProperty(PROP_FILENAME);
         String mimetype = props.getProperty(PROP_MIMETYPE);
-        File   file     = new File(filename);
+        File   file     = PathFactory.getInstance().createPath(filename).resolve();
         
         res.setContentType(mimetype);
         FileInputStream  fin  = new FileInputStream(file);

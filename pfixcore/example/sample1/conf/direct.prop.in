@@ -9,8 +9,8 @@
   
   <directoutputpagerequest name="install">
     <directoutputstate class="de.schlund.pfixcore.workflow.app.FileDownloadDOState"/>
-    <param name="downloadfile">INSTALL.ps</param>
-    <param name="downloadmimetype">text/ps</param>
+    <param name="downloadfile">README.1st</param>
+    <param name="downloadmimetype">text/plain</param>
   </directoutputpagerequest>
   
   
