@@ -56,8 +56,11 @@ public class XsltIWrapperTask extends XsltGenericTask {
         // <xsl:param name="package"/>
         getTransformer().setParameter(new XsltParam("classname", classname));
         getTransformer().setParameter(new XsltParam("package", packagename));                
-        getTransformer().transform(in, out);
-        getTransformer().clearParameters();
+        try {
+            getTransformer().transform(in, out);
+        } finally {
+            getTransformer().clearParameters();
+        }
     }
 
 }

@@ -1,3 +1,27 @@
+2004-08-25  Adam Habermann  <adam.habermann@schlund.de>
+
+	"XML Schema validation"
+	* example/core/schema/interfacewrapper200401.xsd
+	Wrote an XML Schema for validating .iwrp files before transformation.
+	* src/de/schlund/pfixcore/util/*
+	Included Validation in the ant tasks.
+	* build.xml, skel/build.xml:
+	Included Validation in ant build files. More specifically turned on validation
+	for target "generate-src" (task pfx-iwrp). Validation is on by default, may be
+	turned off via "-Dvalidation=false" (see ant -projecthelp).
+	* src/**/*.iwrp
+	Adapted existing .iwrp files to conform to the new schema validation. Changes:
+	- The <interface> element must have a namespace declaration, must be tagged
+	as an XML Schema instance and needs the xsi:schemaLocation attribute:
+	<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401"
+	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	    xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401
+	    http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+	- Only one <default> element is allowed to appear within a <param> element.
+	The <default> element accepts one or more <value> elements. For Example:
+	old: <default value="foo"/><default value="bar"/>
+	new: <default><value>foo</value><value>bar</value></default>
+
 2004-08-18 Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/exceptionprocessor:

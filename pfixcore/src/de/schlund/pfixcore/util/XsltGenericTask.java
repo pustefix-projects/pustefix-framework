@@ -19,12 +19,14 @@
 package de.schlund.pfixcore.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Date;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.Path;
 
 /**
  * @author adam
@@ -39,6 +41,7 @@ public class XsltGenericTask extends MatchingTask {
     public static String ATTR_DESTDIR = "destdir";
     public static String ATTR_INFILE = "infile";
     public static String ATTR_OUTFILE = "outfile";
+    public static String ATTR_CATALOGFILE = "catalogfile";
     
     // --- Attributes ---
 
@@ -60,8 +63,14 @@ public class XsltGenericTask extends MatchingTask {
     /** extension of the files produced by XSL processing */
     protected String targetExtension = null;
 
-    /** Classpath to use when trying to load the XSL processor */
-    protected Path classpath = null;
+    ///** Classpath to use when trying to load the XSL processor */
+    //protected Path classpath = null;
+    
+    /** XML Schema Validation. Default: false. */
+    protected boolean validate = false;
+    
+    /** Catalog file compliant to http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd - optional */
+    protected String catalogfile = null;
 
     // --- other members --- 
 
@@ -70,6 +79,11 @@ public class XsltGenericTask extends MatchingTask {
      */
     protected XsltTransformer transformer;
 
+    /**
+     * 
+     */
+    protected PfixXmlCatalogEntityResolver pfixResolver;
+    
     /**
      * existent stylesheet (handled by {@link #executeSetup()})
      */
@@ -175,7 +189,7 @@ public class XsltGenericTask extends MatchingTask {
         int transformed = 0;
         int uptodate = 0;
         int candidates = 0;
-        int count;
+        int count; // number of files transformed per doTransformationMaybe() call, 0 or 1
         int dotPos;
         
         try {
@@ -189,7 +203,7 @@ public class XsltGenericTask extends MatchingTask {
                 scanner = getDirectoryScanner(srcdirResolved);
                 infilenames = scanner.getIncludedFiles();
                 candidates = infilenames.length;
-                uptodate = candidates;
+                uptodate = 0;
                 for (int i = 0; i < infilenames.length; i++) {
     
                     inname = infilenames[i];
@@ -203,15 +217,18 @@ public class XsltGenericTask extends MatchingTask {
                     }
                     outname = infilenameNoExt + getExtension();
                     out = new File(destdirResolved, outname);
-                    count = doTransformationMaybe();
+                    count = doTransformationMaybe(); // count is 0 or 1
                     transformed = transformed + count;
-                    uptodate = uptodate - count;
+                    if ( count <= 0 ) {
+                        uptodate++;
+                    }
                 }
             }
         } finally {
+
             // log only if not everything was uptodate
             if ( candidates != uptodate ) {
-                log("Transformed "+transformed+" of "+candidates+" file"+(candidates==1 ? "" : "s")+", "+uptodate+" "+(uptodate==1 ? "was" : "were")+" up to date", Project.MSG_INFO);
+                log("Transformed "+transformed+" of "+candidates+" file"+(candidates==1 ? "" : "s")+", "+uptodate+" "+(uptodate==1 ? "has been" : "have been")+" up to date", Project.MSG_INFO);
             }
             scanner = null;
             infilenames = null; /* input filenames relative to srcdirResolved */
@@ -256,7 +273,6 @@ public class XsltGenericTask extends MatchingTask {
         sb.append(" transformer=");
         sb.append(getTransformer());
         log(sb.toString(), Project.MSG_DEBUG);
-
         if ((outLastModified < styleLastModified) || (outLastModified < inLastModified)) {
             sb.setLength(0);
             sb.append("transform ");
@@ -300,10 +316,32 @@ public class XsltGenericTask extends MatchingTask {
         return transformer != null;
     }
     protected XsltTransformer getTransformer() {
+        // TODO set dynamic val
         if ( transformer == null ) {
-            transformer = new XsltTransformer();
+            transformer = new XsltTransformer(getProject());
+            transformer.setValidate(isValidate());
+            //transformer.setValidateDynamic(false); // Xerces-Default: false
+            //transformer.setNamespaceAware(true);   // Xerces-Default: true
+        }
+        if ( pfixResolver == null ) {
+            if ( getCatalogfile() != null ) {
+                try {
+                    pfixResolver = new PfixXmlCatalogEntityResolver(getCatalogfile());
+                } catch (MalformedURLException e) {
+                    throw new BuildException("Unable to initialize PfixXmlCatalogEntityResolver with catalogfile \""+getCatalogfile()+"\"",e);
+                } catch (IOException e) {
+                    throw new BuildException("Unable to initialize PfixXmlCatalogEntityResolver with catalogfile \""+getCatalogfile()+"\"",e);
+                }
+                transformer.setEntitiyResolver(pfixResolver);
+            }
         }
         return transformer;
+    }
+    protected void invalidateTransformer() {
+        transformer = null;
+    }
+    protected void invalidateXmlCatalog() {
+        pfixResolver = null;
     }
     
     public File getInfile() {
@@ -380,7 +418,7 @@ public class XsltGenericTask extends MatchingTask {
     }
 
     /**
-     * adds a configures instance of an XSLT parameter
+     * adds a configured instance of an XSLT parameter
      *
      * @param param a configured instance of the {@link XsltParam}
      */
@@ -388,8 +426,48 @@ public class XsltGenericTask extends MatchingTask {
         getTransformer().setParameter(param);
     }
     
+    public boolean isValidate() {
+        return validate;
+    }
+    public void setValidate(boolean validate) {
+        if ( this.validate != validate ) {
+            invalidateTransformer();
+        }
+        this.validate = validate;
+    }
+    public String getCatalogfile() {
+        return catalogfile;
+    }
+    public void setCatalogfile(String catalogfile) {
+        if ( XsltGenericTask.equals(this.catalogfile, catalogfile) == false ) {
+            invalidateXmlCatalog();
+        }
+        this.catalogfile = catalogfile;
+    }
+
     // --- Helper methods ---
     protected static boolean isNothing(String s) {
         return (s == null) || (s.trim().length() == 0);
     }
+    
+    /**
+     * Test for equality of {@param object1} and {@param object2}. 
+     * @param object1, may be null
+     * @param object2. may be null
+     * @return true if {@param object1} and {@param object2} are equal
+     */
+    protected static boolean equals(Object object1, Object object2) {
+        if ( object1 != null ) {
+            return object1.equals(object2);
+        } else {
+            // o1 == null
+            if ( object2 != null ) {
+                return object2.equals(object1);
+            } else {
+                // o1 == null && o2 == null
+                return true;
+            }
+        }
+    }
+    
 }

@@ -1,10 +1,12 @@
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:iwrp="http://pustefix.sourceforge.net/interfacewrapper200401"
+  >
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
 
   <xsl:param name="classname"/>
   <xsl:param name="package"/>
   
-  <xsl:template match="interface"><xsl:param name="extends">
+  <xsl:template match="iwrp:interface" ><xsl:param name="extends">
       <xsl:choose>
         <xsl:when test="@extends">
           <xsl:value-of select="@extends"/>
@@ -29,7 +31,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+    
 package <xsl:value-of select="$package"/>;
     
 import de.schlund.pfixcore.generator.*;
@@ -41,8 +43,8 @@ import de.schlund.pfixcore.generator.*;
 public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$extends"/> {
 
     public <xsl:value-of select="$classname"/>() {<xsl:choose>
-      <xsl:when test="/interface/ihandler">
-        handler = IHandlerFactory.getInstance().getIHandler("<xsl:value-of select="/interface/ihandler/@class"/>");</xsl:when>
+      <xsl:when test="/iwrp:interface/iwrp:ihandler">
+        handler = IHandlerFactory.getInstance().getIHandler("<xsl:value-of select="/iwrp:interface/iwrp:ihandler/@class"/>");</xsl:when>
       <xsl:otherwise>
         super();</xsl:otherwise>
     </xsl:choose>
@@ -60,7 +62,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         IWrapperParamCaster    caster;
         IWrapperParamPreCheck  pre;
         IWrapperParamPostCheck post;
-    <xsl:for-each select="/interface/param">
+    <xsl:for-each select="/iwrp:interface/iwrp:param">
       <xsl:variable name="occurance">
         <xsl:choose>
           <xsl:when test="@occurance = 'optional'">true</xsl:when>
@@ -74,19 +76,19 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         // <xsl:value-of select="$pname"/>
         pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>");
         idxprms.put("<xsl:value-of select="$pname"/>", pindx);
-          <xsl:if test="./caster">
+          <xsl:if test="./iwrp:caster">
             <xsl:call-template name="fmt_caster">
-              <xsl:with-param name="node" select="./caster"/>
+              <xsl:with-param name="node" select="./iwrp:caster"/>
               <xsl:with-param name="var">pindx</xsl:with-param>
             </xsl:call-template>
           </xsl:if>
-          <xsl:for-each select="./precheck">
+          <xsl:for-each select="./iwrp:precheck">
             <xsl:call-template name="fmt_precheck">
               <xsl:with-param name="node" select="current()"/>
               <xsl:with-param name="var">pindx</xsl:with-param>
             </xsl:call-template>
           </xsl:for-each>
-          <xsl:for-each select="./postcheck">
+          <xsl:for-each select="./iwrp:postcheck">
             <xsl:call-template name="fmt_postcheck">
               <xsl:with-param name="node" select="current()"/>
               <xsl:with-param name="var">pindx</xsl:with-param>
@@ -98,11 +100,11 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         // <xsl:value-of select="$pname"/>
         pinfo  = new IWrapperParamInfo("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurance"/><xsl:text>, </xsl:text>
           <xsl:choose>
-            <xsl:when test="./default">
+            <xsl:when test="./iwrp:default">
               <xsl:text>new de.schlund.pfixxml.RequestParam[] {</xsl:text>
-              <xsl:for-each select="./default">
-                <xsl:text>new de.schlund.pfixxml.SimpleRequestParam("</xsl:text><xsl:value-of select="@value"/><xsl:text>")</xsl:text>
-                <xsl:if test="count(following-sibling::default) > 0">
+              <xsl:for-each select="./iwrp:default/iwrp:value">
+                <xsl:text>new de.schlund.pfixxml.SimpleRequestParam("</xsl:text><xsl:value-of select="node()"/><xsl:text>")</xsl:text>
+                <xsl:if test="count(following-sibling::iwrp:value) > 0">
                   <xsl:text>, </xsl:text>
                 </xsl:if>
               </xsl:for-each>
@@ -114,19 +116,19 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         pinfo.setCustomSCode("<xsl:value-of select="@missingscode"/>");
           </xsl:if>
         params.put("<xsl:value-of select="$pname"/>", pinfo);
-          <xsl:if test="./caster">
+          <xsl:if test="./iwrp:caster">
             <xsl:call-template name="fmt_caster">
-              <xsl:with-param name="node" select="./caster"/>
+              <xsl:with-param name="node" select="./iwrp:caster"/>
               <xsl:with-param name="var">pinfo</xsl:with-param>
             </xsl:call-template>
           </xsl:if>
-          <xsl:for-each select="./precheck">
+          <xsl:for-each select="./iwrp:precheck">
             <xsl:call-template name="fmt_precheck">
               <xsl:with-param name="node" select="current()"/>
               <xsl:with-param name="var">pinfo</xsl:with-param>
             </xsl:call-template>
           </xsl:for-each>
-          <xsl:for-each select="./postcheck">
+          <xsl:for-each select="./iwrp:postcheck">
             <xsl:call-template name="fmt_postcheck">
               <xsl:with-param name="node" select="current()"/>
               <xsl:with-param name="var">pinfo</xsl:with-param>
@@ -137,7 +139,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
       </xsl:text>
     </xsl:for-each>
     }
-    <xsl:for-each select="/interface/param">
+    <xsl:for-each select="/iwrp:interface/iwrp:param">
       <xsl:variable name="occurance">
         <xsl:choose>
           <xsl:when test="@occurance = 'optional'">true</xsl:when>
@@ -225,7 +227,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     <xsl:param name="node"/>
     <xsl:param name="class"/>
     <xsl:param name="var"/>
-    <xsl:for-each select="$node/cparam">
+    <xsl:for-each select="$node/iwrp:cparam">
       <xsl:variable name="cpname" select="./@name"/>
       <xsl:variable name="cpvalue" select="./@value"/>
         ((<xsl:value-of select="$class"/>) <xsl:value-of select="$var"/>).put_<xsl:value-of select="$cpname"/>("<xsl:value-of select="$cpvalue"/>");
@@ -277,7 +279,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     public String toString() {
         StringBuffer sb = new StringBuffer(255);
         sb.append("\n*** All wrapper-data for <xsl:value-of select="$classname"/> ***\n");
-        <xsl:for-each select="/interface/param">
+        <xsl:for-each select="/iwrp:interface/iwrp:param">
           <xsl:variable name="freq">
             <xsl:choose>
               <xsl:when test="@frequency = 'multiple'">[]</xsl:when>
