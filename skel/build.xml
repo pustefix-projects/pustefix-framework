@@ -660,7 +660,6 @@ or delete the DOCTYPE definition -->
   <target name="tomcat.dir">
     <antcall target="tomcat.extract"/>
     <antcall target="tomcat.strip"/>
-    <antcall target="tomcat.jndi"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
     <available file="lib/tomcat/jmx.jar" property="jmx.found"/>
@@ -712,10 +711,6 @@ or delete the DOCTYPE definition -->
     </delete>
   </target>
 
-  <target name="tomcat.jndi">
-    <copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
-  </target>
-    
   <target name="tomcat.user">
     <echo file="${dir.tomcat}/conf/tomcat-users.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>

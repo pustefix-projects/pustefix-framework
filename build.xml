@@ -798,7 +798,6 @@ or delete the DOCTYPE definition -->
   <target name="tomcat.dir">
     <antcall target="tomcat.extract"/>
     <antcall target="tomcat.strip"/>
-    <antcall target="tomcat.jndi"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
     <available file="lib/tomcat/jmx.jar" property="jmx.found"/>
@@ -848,10 +847,6 @@ or delete the DOCTYPE definition -->
         <include name="server.xml"/>
       </fileset>
     </delete>
-  </target>
-
-  <target name="tomcat.jndi">
-    <copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
   </target>
 
   <target name="tomcat.user">
