@@ -304,12 +304,35 @@ SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 //ArraySerializer(type)
 //*********************************
 function ArraySerializer() {
-	this.type=n
+	this.type=xmltype.SOAP_ARRAY;
 }
 
-ArraySerializer.prototype.serialize=function(value,name,write) {
+ArraySerializer.prototype.serialize=function(value,name,writer) {
 	writer.startElement(name);
-	
+	var prefix=writer.getPrefix(this.type.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.type.localpart);
+	for(var i=0;i<value.length;i++) {
+		writer.startElement("item");
+		
+		/*
+		alert(typeof value[i]);
+		if( typeof value[i] == "number" ) {
+			if( (value[i]-Math.floor(value[i]))>0 ) {
+				// float
+			} else {
+				// int
+				var prefix=writer.getPrefix(xmltype.XSD_INT.namespaceUri);
+				writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+xmltype.XSD_INT.localpart);
+			}
+		} else if( typeof value[i] == "string" ) {
+			
+		}
+		*/
+		
+		writer.writeChars(value[i]);
+		writer.endElement("item");
+	}
+	writer.endElement(name);
 }
 
 
@@ -319,16 +342,18 @@ ArraySerializer.prototype.serialize=function(value,name,write) {
 function TypeMapping() {
 	this.mappings=new Array();
 	this.builtin=new Array();
-	this.SIMPLETYPE=1;
+	this.SER_SIMPLE=1;
+	this.SER_ARRAY=2;
 	this.initBuiltin();
 }
 
 //initBuiltin()
 TypeMapping.prototype.initBuiltin=function() {
-	this.builtin[xmltype.XSD_INT.hashKey()]=this.SIMPLETYPE;
-	this.builtin[xmltype.XSD_STRING.hashKey()]=this.SIMPLETYPE;
-	this.builtin[xmltype.SOAP_INT.hashKey()]=this.SIMPLETYPE;
-	this.builtin[xmltype.SOAP_STRING.hashKey()]=this.SIMPLETYPE;
+	this.builtin[xmltype.XSD_INT.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltype.XSD_STRING.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltype.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
+	this.builtin[xmltype.SOAP_INT.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltype.SOAP_STRING.hashKey()]=this.SER_SIMPLE;
 }
 
 //register(QName type,Serializer serializer)
@@ -338,7 +363,6 @@ TypeMapping.prototype.register=function(type,serializer) {
 
 //Serializer getSerializer(QName type) 
 TypeMapping.prototype.getSerializer=function(type) {
-	alert("get "+type.namespaceUri+" "+type.localpart);
 	var serializer=this.mappings[type.hashKey()];
 	if(serializer==null) serializer=this.getBuiltinSerializer(type);
 	if(serializer!=null) this.register(type,serializer);
@@ -349,8 +373,10 @@ TypeMapping.prototype.getSerializer=function(type) {
 //Serializer getBuiltinSerializer(QName type)
 TypeMapping.prototype.getBuiltinSerializer=function(type) {
 	var serType=this.builtin[type.hashKey()];
-	if(serType==this.SIMPLETYPE) {
+	if(serType==this.SER_SIMPLE) {
 		return new SimpleTypeSerializer(type);
+	} else if(serType==this.SER_ARRAY) {
+		return new ArraySerializer();
 	}
 }
 
@@ -370,7 +396,6 @@ RPCSerializer.prototype.serialize=function(writer) {
 	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
 	for(var i=0;i<this.params.length;i++) {
 		var serializer=typeMapping.getSerializer(this.params[i].xmlType);
-		alert(serializer);
 		serializer.serialize(this.params[i].value,this.params[i].name,writer);
 	}
 	writer.endElement(this.opName);
@@ -610,10 +635,11 @@ function test() {
 	call.setOperationName(new QName("add"));
 	call.addParameter("value1",xmltype.XSD_INT,"IN");
 	//call.addParameter("value2",xmltype.XSD_INT,"IN");
-	call.addParameter("test",xmltype.SOAP_STRING,"IN");
+	//call.addParameter("test",xmltype.SOAP_STRING,"IN");
+	call.addParameter("test",xmltype.SOAP_ARRAY,"IN");
 	call.setReturnType(xmltype.XSD_INT);
 	//try {
-		call.invoke(3,4);
+		call.invoke(4,new Array(4,"jj","fdfdfd"));
 	//} catch(exception) {
 	//	alert(exception);
 	//}
