@@ -1,10 +1,21 @@
+2004-04-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(documentFromFlow): if the pagerequest is the special page
+	__STARTWITHFLOW, directly do a page flow run to determine the page that should 
+	be shown. CAUTION: there is no real support from the XSLT side, only some hackisch way
+	to do it, that is not guaranteed to work in the future.  
+
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: changed
+	logging to recognize the STARTWITHFLOW_PAGE stuff
+
 2004-04-13  Benjamin Reitzammer  <benjamin@schlund.de>
 
 	* /home/benjamin/projects/pfixcore/example/core/build/create_propfiles.xsl:
-    added @copyfrom attribute to <pagerequest>. A pagerequest that uses this
-    attribute copies all configuration from another pagerequest, that is named by
-    the @copyfrom attribute. If @copyfrom is present on a pagerequest all other
-    attributes and elements are ignored
+	added @copyfrom attribute to <pagerequest>. A pagerequest that uses this
+	attribute copies all configuration from another pagerequest, that is named by
+	the @copyfrom attribute. If @copyfrom is present on a pagerequest all other
+	attributes and elements are ignored
 
 2004-04-13  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -31,7 +42,7 @@
 
 2004-04-07 Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionhandler/InstanceCheckerContainer.java(getReports):
+	* src/de/schlund/pfixxml/exceptionhandler/InstanceCheckerContainer.java(getReports):
         now we use the first line of the stacktrace for mail subject.
 
 2004-04-06  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
@@ -149,12 +160,12 @@
 
 2004-03-12  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext(createLastSteps):
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext(createLastSteps):
         fix for possible NPEx.
 
 2004-03-09  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createSTraceText):
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createSTraceText):
         throwable.getStackTrace seems not to work with nested exceptions. So
         printStackTrace(PrintWriter) is used.
 

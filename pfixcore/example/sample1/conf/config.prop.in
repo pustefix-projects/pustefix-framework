@@ -35,6 +35,8 @@
   <!-- *** PageRequests and associated properties *** -->
 
   <pagerequest name="admin"/>
+
+  <pagerequest name="test"/>
   
   <pagerequest name="home">
     <ihandler>
