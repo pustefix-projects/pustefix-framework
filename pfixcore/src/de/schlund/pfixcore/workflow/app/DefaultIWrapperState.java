@@ -70,7 +70,7 @@ public class DefaultIWrapperState extends StaticState {
             CAT.debug(">>> In SubmitHandling... ");
             preq.startLogEntry();
             container.handleSubmittedData();
-            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 1000);
+            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 500);
             if (container.errorHappened()) {
                 CAT.debug("=> Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
@@ -80,7 +80,9 @@ public class DefaultIWrapperState extends StaticState {
                 if (container.continueSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page...\n" +
                               "=> retrieving current status.");
+                    preq.startLogEntry();
                     container.retrieveCurrentStatus();
+                    preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
                     rfinal.onSuccess(container);
                 } else {
                     CAT.debug("... Container says he is ready: End of submit reached successfully.");
@@ -91,7 +93,9 @@ public class DefaultIWrapperState extends StaticState {
                     } else {
                         CAT.debug("Page is NOT part of current pageflow...\n" +
                                   "=> retrieving current status and stay here...");
+                        preq.startLogEntry();
                         container.retrieveCurrentStatus();
+                        preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
                     }
                     rfinal.onSuccess(container);
                 }
@@ -109,7 +113,9 @@ public class DefaultIWrapperState extends StaticState {
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
             CAT.debug(">>> In DirectTriggerHandling...\n" +
                       "=> retrieving current status.");
+            preq.startLogEntry();
             container.retrieveCurrentStatus();
+            preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
             rfinal.onRetrieveStatus(container);
         } else if (context.flowIsRunning()) {
             CAT.debug(">>> In FlowHandling...");
@@ -117,7 +123,7 @@ public class DefaultIWrapperState extends StaticState {
                 CAT.debug("=> needing data, retrieving current status.");
                 preq.startLogEntry();
                 container.retrieveCurrentStatus();
-                preq.endLogEntry("CONTAINER_RETRIEVE_CURRENT_STATUS", 10);
+                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
                 rfinal.onRetrieveStatus(container);
             } else {
                 CAT.debug("=> no need to handle, returning NULL.");

@@ -126,7 +126,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                 IHandler handler = (IHandler) i.next();
                 context.startLogEntry();
                 boolean  test    = handler.prerequisitesMet(context);
-                context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 2);
+                context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 3);
 
                 if (!test) {
                     return false;
@@ -164,7 +164,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     IHandler handler = (IHandler) i.next();
                     context.startLogEntry();
                     boolean  test    = handler.isActive(context);
-                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 2);
+                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     if (!test) {
                         retval = false;
                         break;
@@ -178,7 +178,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     IHandler handler = (IHandler) i.next();
                     context.startLogEntry();
                     boolean  test    = handler.isActive(context);
-                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 2);
+                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     if (test) {
                         retval = true;
                         break;
@@ -209,7 +209,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                 if (handler.isActive(context)) {
                     context.startLogEntry();
                     boolean  test    = handler.needsData(context);
-                    context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 2);
+                    context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 3);
                     if (test) {
                         return true;
                     }
