@@ -424,7 +424,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         params.put(XSLPARAM_URI, preq.getRequestURI(res));
         params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
-        if (preq.getRemoteAddr() != null) 
+        if (preq.getRemoteAddr() != null)
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
         if (preq.getServerName() != null)
             params.put(XSLPARAM_SERVER_NAME, preq.getServerName());
