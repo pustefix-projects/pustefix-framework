@@ -23,6 +23,7 @@ import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
 import de.schlund.pfixcore.webservice.monitor.*;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
 
 /**
@@ -46,8 +47,8 @@ public class WebServiceServlet extends AxisServlet {
         super.init(config);
         ArrayList al=new ArrayList();
         String common=config.getInitParameter(Constants.PROP_COMMON_FILE);
-        if(common!=null) al.add(new File(common));
-        String servlet= config.getInitParameter(Constants.PROP_SERVLET_FILE);
+        if(common!=null) al.add(PathFactory.getInstance().createPath(common).resolve());
+        String servlet=config.getInitParameter(Constants.PROP_SERVLET_FILE);
         if(servlet!=null) al.add(new File(servlet));
         try {
             File[] propFiles=new File[al.size()];
@@ -62,6 +63,7 @@ public class WebServiceServlet extends AxisServlet {
                 wsc.setAttribute(Monitor.class.getName(),monitor);
             }
         } catch(Exception x) {
+            CAT.error("Can't get web service configuration",x);
             throw new ServletException("Can't get web service configuration",x);
         }
     }
