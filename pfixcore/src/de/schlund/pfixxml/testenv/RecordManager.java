@@ -63,26 +63,16 @@ public final class RecordManager {
     //~ Constructors ...............................................................................
 
     public RecordManager(String depxml) throws Exception {
-        try {
-            if (CAT.isDebugEnabled()) {
-                CAT.debug(this.getClass().getName() + " initializing");
-            }
-            DocumentBuilderFactory dbfac = new DocumentBuilderFactoryImpl();
-            dbfac.setNamespaceAware(true);
-            dbfac.setValidating(false);
-            DocumentBuilder db  = dbfac.newDocumentBuilder();
-            Document        doc = db.parse(depxml);
-            getConfigFromXML(doc);
-            debug("RecordManager constructor end");
-        } catch (ParserConfigurationException e) {
-            throw new RecordManagerException("Error", e);
+        if (CAT.isDebugEnabled()) {
+            CAT.debug(this.getClass().getName() + " initializing");
         }
-         catch (IOException e) {
-            throw new RecordManagerException("Error", e);
-        }
-         catch (SAXException e) {
-            throw new RecordManagerException("Error", e);
-        }
+        DocumentBuilderFactory dbfac = new DocumentBuilderFactoryImpl();
+        dbfac.setNamespaceAware(true);
+        dbfac.setValidating(false);
+        DocumentBuilder db  = dbfac.newDocumentBuilder();
+        Document        doc = db.parse(depxml);
+        getConfigFromXML(doc);
+        debug("RecordManager constructor end");
     }
 
     //~ Methods ....................................................................................
