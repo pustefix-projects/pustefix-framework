@@ -27,6 +27,8 @@ import javax.swing.text.*;
 
 public class PfixHighlight extends DefaultStyledDocument {
 
+    PfixDebug log = new PfixDebug(true);
+
     PfixTextPane textpane;
 
     private Color colUnset = new Color(0,0,0);
@@ -135,8 +137,8 @@ public class PfixHighlight extends DefaultStyledDocument {
         StyleConstants.setBold (attr, true);
         Color color = getPrefixCol(index);                   
         StyleConstants.setForeground(attr, color);
-        // System.out.println("START " + start);
-        // System.out.println("END " + end);
+        log.debug("START " + start);
+        log.debug("END " + end);
         textpane.getStyledDocument().setCharacterAttributes(start, end, attr, false);
     }
 
@@ -169,7 +171,7 @@ public class PfixHighlight extends DefaultStyledDocument {
         try {
              textpane.getStyledDocument().setCharacterAttributes(start, end, attr, false);
         } catch (Exception e) {
-            // System.out.println("Message " + e.getMessage());
+            log.debug("Message " + e.getMessage());
         }
         
        
@@ -261,7 +263,7 @@ public class PfixHighlight extends DefaultStyledDocument {
 
 
     public void realtimeHilight(int code) {
-        // System.out.println("REEEEEEEEEEEEEEEEEEEEEEEEAAAAL TIMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe --- HIGHLIGHT ");
+        // log.debug("REEEEEEEEEEEEEEEEEEEEEEEEAAAAL TIMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe --- HIGHLIGHT ");
         int currentPos = textpane.getCaretPosition();
         boolean makegrey = false;
         
@@ -297,7 +299,7 @@ public class PfixHighlight extends DefaultStyledDocument {
         
             // very ugly, i know
             if (closeIt == currentPos - 2) {
-                // System.out.println("CLOSE IT !!");
+                log.debug("CLOSE IT !!");
                 Character car = new Character(preText.charAt(currentPos - 1));
                 Character carStart = new Character('a');
 
@@ -327,7 +329,7 @@ public class PfixHighlight extends DefaultStyledDocument {
             if (afterPos > -1) {
                 // 7 must be added because the Commentstart and the CommentEnd have at 4 resp. 3 Characters
                  setCommentStyle(comPos, afterPos + 7);
-                 // System.out.println("Found Comment End Tag");
+                 log.debug("Found Comment End Tag");
             }
 
             else {
@@ -367,72 +369,50 @@ public class PfixHighlight extends DefaultStyledDocument {
             
         }
 
-        // System.out.println("---------------- NOT CHECKING COMMENT !!!!!-----------------------------");
+        log.debug("---------------- NOT CHECKING COMMENT !!!!!-----------------------------");
                         
         if (!this.getInComment()) {
             int elPos = preText.lastIndexOf("<");
             int endPos = preText.lastIndexOf(">");
-
-
-
-
-
-
-
-
-
-            
-            
+                        
             if (elPos > -1){
 
-
-
                 if ((code == 50) || (code == 520)) {
-                    // System.out.println("Param CHECK");
+                    log.debug("Param CHECK");
 
                     Character car = new Character(text.charAt(currentPos - 1));
 
                     if (car.toString().equals("\"")){
-                        // System.out.println("PARAM SIGN FOUND");
+                        log.debug("PARAM SIGN FOUND");
 
                         String paramText = preText.substring(0, preText.length() - 1);
                         int paramOpenPos = paramText.lastIndexOf("=");
                         int blankPos = paramText.lastIndexOf("\"");
                         
 
-                        // System.out.println("PARAM TEXT " + paramText);
-                        // System.out.println("paramOpenPos " + paramOpenPos);
-                        
-                                           
-                                           
-
+                        log.debug("PARAM TEXT " + paramText);
+                        log.debug("paramOpenPos " + paramOpenPos);
+                                                                                                              
                         if (blankPos > paramOpenPos) {
-                            // System.out.println("re-Colering of Param");
+                            log.debug("re-Colering of Param");
                             String colString = preText.substring(blankPos, preText.length());
-                            // System.out.println("COLORIZED PARAM: " + colString);
+                            log.debug("COLORIZED PARAM: " + colString);
 
                             int attrStart = preText.lastIndexOf(colString);
                             int sepPos = colString.lastIndexOf("=");
                             int paramStart = attrStart + colString.indexOf("\"");
 
-                            // System.out.println("attrStart " + attrStart);
-                            // System.out.println("sepPos" + sepPos);
-                            // System.out.println("PARAM START " + paramStart);
+                            log.debug("attrStart " + attrStart);
+                            log.debug("sepPos" + sepPos);
+                            log.debug("PARAM START " + paramStart);
 
                             // colorizeAll("attribute", attrStart, sepPos);
                             colorizeAll("param", paramStart, colString.length());
                             
                         }
-                        
-
-                        
-                        
-                         
+                                                                                                 
                     }
-                    
-
-                    
-                    
+                                                            
                 }
 
                 if (code == 520) {
@@ -440,127 +420,84 @@ public class PfixHighlight extends DefaultStyledDocument {
                      Character car = new Character(text.charAt(currentPos - 1));
 
                     if (car.toString().equals("'")){
-                        // System.out.println("PARAM SIGN FOUND");
+                        log.debug("PARAM SIGN FOUND");
 
                         String paramText = preText.substring(0, preText.length() - 1);
                         int paramOpenPos = paramText.lastIndexOf("'");
                         int blankPos = paramText.lastIndexOf(" ");
                         
 
-                        // System.out.println("PARAM TEXT " + paramText);
-                        // System.out.println("paramOpenPos " + paramOpenPos);
+                        log.debug("PARAM TEXT " + paramText);
+                        log.debug("paramOpenPos " + paramOpenPos);
                         
                                            
                                            
 
                         if (paramOpenPos > blankPos) {
-                            // System.out.println("re-Colering of Param");
+                            log.debug("re-Colering of Param");
                             String colString = preText.substring(blankPos, preText.length());
-                            // System.out.println("COLORIZED PARAM: " + colString);
+                            log.debug("COLORIZED PARAM: " + colString);
                         }
-                        
-
-                        
-                        
-                         
+                                                                                                
                     }
                      
                 }
-                
-                
-
-
-
-
-
-
-
-
+                                
                 
 
                 if (code == 153) {
-                    // System.out.println("REAL CHECK ------------------------------------------ ");
+                    log.debug("REAL CHECK ------------------------------------------ ");
 
+                    int afterTag  =  afterText.indexOf(">");
+                    int nextTag   =  afterText.indexOf("<");                    
+                    int len       =  docNeed.getLength();
 
-
-
-
-                    
-                    int afterTag = afterText.indexOf(">");
-                    int nextTag = afterText.indexOf("<");
-
-
-
-
-
-
-
-                    
-                    int len = docNeed.getLength();
-
-                    // System.out.println("len " + len);
-                    // System.out.println("elPos " + elPos);
+                    log.debug("len " + len);
+                    log.debug("elPos " + elPos);
 
                     int diff = len - elPos;
 
                     if (diff > 1) {
 
-                        // System.out.println("-- Zeichen " + preText.lastIndexOf("-->"));
-                        // System.out.println("CurrentPos" + currentPos);
+                        log.debug("-- Zeichen " + preText.lastIndexOf("-->"));
+                        log.debug("CurrentPos" + currentPos);
 
                         int difference = endPos - preText.lastIndexOf("-->");
 
-                        if (difference != 2) {
-
-                            
-
+                        if (difference != 2) {                            
                             Character car = new Character(text.charAt(currentPos - 1));
-                            // System.out.println("PRESSDED CAR " + car.toString());
+                            log.debug("PRESSDED CAR " + car.toString());
 
 
 
                             if (car.toString().equals("<")) {
-                                // System.out.println("OPEN TAG FOUND");
-                                // System.out.println(".... LOOKING for  NEXT REGIONS");
+                                log.debug("OPEN TAG FOUND");
+                                log.debug(".... LOOKING for  NEXT REGIONS");
 
                                 if (afterTag > -1) {
-                                    // System.out.println("CLOSE TAG FOUND");
-                                    // System.out.println("REGION CLOSING");
+                                    log.debug("CLOSE TAG FOUND");
+                                    log.debug("REGION CLOSING");
                                      hilightRegion(currentPos-1, currentPos + afterTag);  
                                 }
                                 else {
-                                    // System.out.println("NO NEXT TAG FOUND");
-                                    // System.out.println("Highlighting the whole Document");
-                                    hilightRegion(currentPos-1, len-1);
-                                    
-                                    
-                                }
-                                
-                                
-                                
-                                 
+                                    log.debug("NO NEXT TAG FOUND");
+                                    log.debug("Highlighting the whole Document");
+                                    hilightRegion(currentPos-1, len-1);                                                                                                                                           }                                                                                                                                 
                             }
 
                             if (car.toString().equals(">")) {
-                                // System.out.println("CLOSE TAG PLACED");
+                                log.debug("CLOSE TAG PLACED");
                                                              
-
                                 if (nextTag > -1) {
-                                    // System.out.println("FOUND NEXT TAG");
-                                    // System.out.println("UNSET STYLE TO NEXT TAG");
+                                    log.debug("FOUND NEXT TAG");
+                                    log.debug("UNSET STYLE TO NEXT TAG");
                                      unsetStyle(currentPos, nextTag);
                                 }
                                 else {
-                                    // System.out.println("NO NEXT TAG FOUND");
-                                    // System.out.println("UNSET THE WHOLE DOCUMENT");
-                                    unsetStyle(currentPos-1, len-1);
-                                    
-                                    
-                                    
-                                }
-
-
-                                
+                                    log.debug("NO NEXT TAG FOUND");
+                                    log.debug("UNSET THE WHOLE DOCUMENT");
+                                    unsetStyle(currentPos-1, len-1);                                                                                                            
+                                }                                
                                 
                                 String     preTextNeu      =   preText.substring(0, preText.length() - 1);
                                 int        endLastTag      =   preTextNeu.lastIndexOf(">");
@@ -572,26 +509,14 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 if (startLastTag > -1) {
                                     
                                     if (startLastTag > endLastTag) {
-                                        // System.out.println("TAG CLOSES TAG -- re-HIGHLIGHT TAG");
+                                        log.debug("TAG CLOSES TAG -- re-HIGHLIGHT TAG");
                                         hilightRegion(startLastTag, currentPos-1);
                                     }
                                     
-                                }
-                                
-                                
-                                
-                                
-
-
+                                }                                                                                                                                
                                 
                             }
-                            
-                            
-                             
-
-
-
-
+                                                                                     
                             /*    
                         
 
@@ -613,17 +538,17 @@ public class PfixHighlight extends DefaultStyledDocument {
                             
                             
                             Character car = new Character(text.charAt(currentPos - 1));
-                            System.out.println("CAR " + car.toString());
-                            System.out.println("LENGE GESAMT " + len);
+                            log.debug("CAR " + car.toString());
+                            log.debug("LENGE GESAMT " + len);
 
 
                             
                             if (afterTag > -1) {
-                                System.out.println("Hallo bin drin");
-                                System.out.println("-------------");
-                                System.out.println("el POS " + elPos);
+                                log.debug("Hallo bin drin");
+                                log.debug("-------------");
+                                log.debug("el POS " + elPos);
                                 int coco = elPos + afterTag;
-                                System.out.println("el Pos + after" + coco);
+                                log.debug("el Pos + after" + coco);
 
                                 
                                 
@@ -634,12 +559,12 @@ public class PfixHighlight extends DefaultStyledDocument {
                                      int startLastElement = preText.lastIndexOf("<");
                                      int endLastElement = preText.lastIndexOf(">");
 
-                                     System.out.println("CLOSE TAG - CLOSE NOW ELEMENT");
-                                     System.out.println("start " + startLastElement);
-                                     System.out.println("end " + endLastElement);
+                                     log.debug("CLOSE TAG - CLOSE NOW ELEMENT");
+                                     log.debug("start " + startLastElement);
+                                     log.debug("end " + endLastElement);
 
                                      if (startLastElement > endLastElement) {
-                                         System.out.println("----> <-----");
+                                         log.debug("----> <-----");
                                          hilightRegion(startLastElement, currentPos);
                                 }
                                 
@@ -651,9 +576,9 @@ public class PfixHighlight extends DefaultStyledDocument {
                             }
 
                             if (nextTag > 1) {
-                                System.out.println("Next Tag > 1");
+                                log.debug("Next Tag > 1");
                                 if (car.toString().equals(">")) {
-                                    System.out.println("NEXT TAG CLOSING !!!");
+                                    log.debug("NEXT TAG CLOSING !!!");
                                     // hilightRegion(currentPos, nextTag);
                                     unsetStyle(currentPos, nextTag);
                                 }
@@ -661,40 +586,30 @@ public class PfixHighlight extends DefaultStyledDocument {
                                  
                             }
                             
-                            
-                            
-                    
                     
                             /*
 
                                 int startLastElement = preText.lastIndexOf("<");
                                 int endLastElement = preText.lastIndexOf(">");
 
-                                System.out.println("start " + startLastElement);
-                                System.out.println("end " + endLastElement);
+                                log.debug("start " + startLastElement);
+                                log.debug("end " + endLastElement);
 
                                 /*
                                 if (startLastElement > endLastElement) {
-                                    System.out.println("----> <-----");
+                                    log.debug("----> <-----");
                                     hilightRegion(startLastElement, currentPos);
                                 }
 
                             */
-                                
-                            
-                                
-                                
-
-                                
 
                             /*
                                 if (startNextElement > -1) {
 
                                     hilightRegion(elPos, currentPos);
                                     
-                                    System.out.println("Bazooka");
-                                    // System.out.println(elPos);
-                                    // System.out.println("Start Next Element: " + startNextElement);
+
+                                    // log.debug("Start Next Element: " + startNextElement);
                                     // hilightRegion(elPos, elPos + startNextElement);
                                     // hilightRegion(elPos, len);
                                     
@@ -707,32 +622,16 @@ public class PfixHighlight extends DefaultStyledDocument {
 
 
                         
-
-
-                        
                         else {
                              hilightRegion(endPos-2, docNeed.getLength());
                         }
                         
                         
-                }
-                    
-                        
-
-                    
+                    }
+                     
                     
                 }
                 
-
-
-                
-                
-                
-
-
-
-
-
                 
                 if (preText.lastIndexOf(">") < elPos) {
                     newStatus = "element";
@@ -744,57 +643,38 @@ public class PfixHighlight extends DefaultStyledDocument {
 
                     }
                     
-
                     int prePos = preText.lastIndexOf(":");
                     
                     if (prePos > elPos) {
                         String fix = preText.substring(elPos + 1, prePos);
 
-                        if (!prefixUnsetter) {
-                            
+                        if (!prefixUnsetter) {                            
                             if (currentPos == prePos + 1) {                                
                                 for (int j = 0; j < prefixes.length; j++) {
-                                if (prefixes[j].equals(fix)) {                                    
-                                    int lenge = prePos - elPos;
-                                    
-                                    setPrefixCol(elPos+1, lenge, j);
-                                    setPrefixCol(j);
-                                    prefixUnsetter = true;
-                                    // this.elemStartUnsetter = false;
-
-                                
-                                }
-                                String endfix = "/" + prefixes[j];
-                                
-                                if (fix.equals(endfix)) {                                    
-                                    setPrefixCol(elPos+1, prePos, j);
-                                    setPrefixCol(j);
-                                    prefixUnsetter = true;
-                                    // this.elemStartUnsetter = false; 
-                                }
-
-                            }  
-                            }
-                            
-
-                            
-                                
-                        }
-                        
-                            
-
-                        
-                                                 
-                    }
-                    
+                                    if (prefixes[j].equals(fix)) {                                    
+                                        int lenge = prePos - elPos;
                                         
-
-
-                        
+                                        setPrefixCol(elPos+1, lenge, j);
+                                        setPrefixCol(j);
+                                        prefixUnsetter = true;
+                                        // this.elemStartUnsetter = false;
+                                        
+                                        
+                                    }
+                                    String endfix = "/" + prefixes[j];
+                                
+                                    if (fix.equals(endfix)) {                                    
+                                        setPrefixCol(elPos+1, prePos, j);
+                                        setPrefixCol(j);
+                                        prefixUnsetter = true;
+                                        // this.elemStartUnsetter = false; 
+                                    }
+                                }  
+                            }                                                                                        
+                        }                                                   
+                    }  
                 }
 
-                
-                
                 else {
                     
                     int endCom = preText.lastIndexOf(">");
@@ -820,10 +700,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 unsetStyle();
                                 unsetStyle(endPos + 1, 1);
                                 // }
-                            
-                             
-                        }
-                        
+                        }                        
                         //                        unsetStyle();
                     }
 
@@ -831,12 +708,8 @@ public class PfixHighlight extends DefaultStyledDocument {
                     elemStartUnsetter = false;
                     newStatus = "none";
                     this.setInElement(false);
-                    this.setInAttribute(false);
-                    
-
-                }
-                
-                 
+                    this.setInAttribute(false);                    
+                }                                 
             }
                        
             
@@ -924,10 +797,7 @@ public class PfixHighlight extends DefaultStyledDocument {
         
     }
 
-    
 
-
-    /*
      public void hilightAll() {
         // unsetStyle();
         DefaultStyledDocument docNeed = (DefaultStyledDocument) textpane.getStyledDocument();
@@ -999,16 +869,12 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 
             if (!(getInComment())) {
                 if (car.toString().equals("<")) {
-                    String endString = text.substring(i, text.length());
-                    int closePos = endString.indexOf(">");
-                    String tagValue = text.substring(i, i+closePos);
-                    int startPos = i;
-
-
-
-                    StringTokenizer str = new StringTokenizer(tagValue);
+                    String endString    =   text.substring(i, text.length());
+                    int closePos        =   endString.indexOf(">");
+                    String tagValue     =   text.substring(i, i+closePos);
+                    int startPos        =   i;
+                    StringTokenizer str =   new StringTokenizer(tagValue);
                     
-
                     while (str.hasMoreTokens()) {
                         String elString = str.nextToken().toString();
                                             
@@ -1110,7 +976,7 @@ public class PfixHighlight extends DefaultStyledDocument {
         
     }
 
-    */
+
     public void hilightRegion(int startOffSet, int endOffSet) {
 
         // unsetStyle();
@@ -1125,10 +991,10 @@ public class PfixHighlight extends DefaultStyledDocument {
         }
 
 
-        // System.out.println("-->-->-->Highlight Region <<- <<- <<--");
-        // System.out.println("StartOffset " + startOffSet);
-        // System.out.println("endOffSet " + endOffSet);
-        // System.out.println("-->-->--> <<- --<-- <--< -");
+         log.debug("-->-->-->Highlight Region <<- <<- <<--");
+         log.debug("StartOffset " + startOffSet);
+         log.debug("endOffSet " + endOffSet);
+         log.debug("-->-->--> <<- --<-- <--< -");
         
         // unsetStyle(0, text.length());
         this.inComment = false;
@@ -1140,7 +1006,7 @@ public class PfixHighlight extends DefaultStyledDocument {
         
         for (int i=startOffSet; i< endOffSet; i++) {
 
-            // System.out.println(" I - Start " + i);
+            log.debug(" I - Start " + i);
             Character car = new Character(text.charAt(i));
             
             
@@ -1192,17 +1058,22 @@ public class PfixHighlight extends DefaultStyledDocument {
                 if (car.toString().equals("<")) {
                     String endString = text.substring(i, text.length());
                     int closePos = endString.indexOf(">");
-                    // System.out.println("REAL CLOSE POS" + closePos);
+                    log.debug("REAL CLOSE POS" + closePos);
                     // int closePos = endOffSet+1;
                     
+                    log.debug("I " + i);
                     
-                    
-                    // System.out.println("I " + i);
-                    int closPosPlus = i + closePos;
-                    // System.out.println("ClosePos " + closPosPlus);
+                    int iPosNeu = i + closePos;
+                    log.debug("ClosePos " + iPosNeu);
 
-                    // System.out.println("TEXT " + text);
-                    String tagValue = text.substring(i, closPosPlus);
+                    log.debug("TEXT " + text);
+
+                    String tagValue = "";
+
+                    if (closePos > -1) {
+                         tagValue = text.substring(i, iPosNeu);
+                    }
+                                                                                
                     String tagValueSave = tagValue;
                     int startPos = i;
 
@@ -1213,20 +1084,23 @@ public class PfixHighlight extends DefaultStyledDocument {
                     int j = 0;
                     
                     while (eqPos > -1) {                        
-                        String tempValue = tagValue.substring(0, eqPos+1);
-                        // System.out.println("--------------------------- TEMP VALUE" + tempValue);
+                        String tempValue = tagValue.substring(0, eqPos + 1);
+                        log.debug("--------------------------- TEMP VALUE" + tempValue);
 
                         int startParam = tempValue.indexOf("\"");
                         int firstBlankPos = tempValue.lastIndexOf(" ");
                         int temp = tempValue.lastIndexOf("\"");
                                                   
-                         if (j > 1 && tempValue.indexOf("\"") != 0) {                                                      
+                         if (j > 1 && tempValue.indexOf("\"") != 0) {
+                             log.debug("---------");
+                           
                              colorizeAll("element", i, tempValue.indexOf("\"") + 1);
                          }
 
                          
                          else {                                                                                                        
                              if (firstBlankPos < temp) {                                                                                     
+                                 log.debug("Parameter found ");
                                  colorizeAll("param", i, tempValue.length());
                              }                            
                              else {
@@ -1234,7 +1108,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                                  int blankPos = tempValue.lastIndexOf(" ");
 
                                  if (blankPos < 0) {
-                                     // Error 
+                                     // colorizeAll("param", i, tagValue.length());
                                      break;
                                  }
                                  
@@ -1242,7 +1116,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                                  String preTag = tempValue.substring(0, blankPos);
                                  String afterTag = tempValue.substring(blankPos, tempValue.length());                                                                                                                                                                                                                        
                                  
-                                if (j==0) {
+                                 if (j==0) {
                                      int posPreStart = tempValue.indexOf(":");
                                      
                                      if (posPreStart > 0) {
@@ -1250,44 +1124,41 @@ public class PfixHighlight extends DefaultStyledDocument {
                                  
                                          for (int count=0; count<prefixes.length; count++) {
                                              if (prefixes[count].equals(strPrefix)) {
-                                                 // System.out.println("i ---> " + i);
+                                                 log.debug("i ---> " + i);
                                                  // setPrefixCol(i+1, posPreStart, j);
                                                  // setPrefixCol(i+1, elString.length(), j);
+                                                 log.debug("elString: " + tempValue);
                                                  colorizeAll("element", i, 1);
                                                  setPrefixCol(i+1, tempValue.length()-1, count);
-                                                 break;
+                                                 // break;
                                              }
-                                             String closeFix = "/" + prefixes[count];
+                                             String closeFix = "/" + prefixes[j];
+                                             log.debug("CLOSE FIX " + closeFix);
+                                             log.debug("prefix " + prefixes[j]);
                                              if (closeFix.equals(strPrefix)) {
                                                  // setPrefixCol(i+1, posPreStart, j);
                                                  // setPrefixCol(i+1, elString.length(), j);
                                                  colorizeAll("element", i, 1);
                                                  setPrefixCol(i+1, tempValue.length(), count);
-                                                 break;
+                                                 // break;
                                              }                                                    
                                          }
+                                         log.debug("Doppelpunkt found");
                                      }
                                      
                                      else {
                                          colorizeAll("element", i-1, preTag.length()+1);    
-                                     }
-                                     
-                                     
-                                     
-                                     
-                                }
-                                else {                                    
-                                     // System.out.println("i --> " + i);
-                                     // System.out.println("Length " + preTag.length());
+                                     }                                                                                                                                                         
+                                 }
+                                 else {                                    
+                                     log.debug("i --> " + i);
+                                     log.debug("Length " + preTag.length());
                                      colorizeAll("param", i, preTag.length()); 
                                      
                                  }
-                                 
-                         
-                                 
+                                                                                           
                                  j++;
-                                 // System.out.println("After Tag" + afterTag);
-                                 
+                                 log.debug("After Tag" + afterTag);                                 
                                  
                                  colorizeAll("attribute", i + blankPos, afterTag.length());
                          
@@ -1295,44 +1166,36 @@ public class PfixHighlight extends DefaultStyledDocument {
 
                          }
                          
-                         
-                    
-                
+                                                                      
                          tagValue = tagValue.substring(tempValue.length(), tagValue.length());
-                         // System.out.println("New Tag: + " + tagValue);
+                         log.debug("New Value: + " + tagValue);
                          eqPos = tagValue.indexOf("=");
-                         
-                         i = i + tempValue.length();
-                         System.out.println(i);
-                         
-                    } // Schleifen-Ende
-        
                 
-        
-            
-            
+                         i = i + tempValue.length();
+                         log.debug("I " + i);
                     
-                    // System.out.println(tagValue);
+                    }
         
-            
-
+                    log.debug(tagValue);
+                    log.debug("SCHLEIFEN ENDE ???");            
             
                     i++;
             
-                    if (tagValue.indexOf("\"") == 0) {                        
+                    if (tagValue.indexOf("\"") == 0) {
+                        log.debug("Tag Value IndexOf" + text.indexOf(tagValue));
+                        log.debug("I " + i);
+                        
                         colorizeAll("param", i-1, tagValue.lastIndexOf("\"") + 1);                        
                         i = i + tagValue.lastIndexOf("\"") + 1;
                         
                     }
                     
                     
-                    // Element found without params and attribues
                     if (j == 0) {
-
-                        
-                        
+                        log.debug("NULL Round");
+                                                
                         String tempValue = tagValue;
-
+                        log.debug("TAGVALUE " + tempValue);
                         int posPreStart = tempValue.indexOf(":");
                                      
                         if (posPreStart > 0) {
@@ -1340,57 +1203,52 @@ public class PfixHighlight extends DefaultStyledDocument {
                             
                             for (int count=0; count<prefixes.length; count++) {
                                 if (prefixes[count].equals(strPrefix)) {
-                                    // System.out.println("i ---> " + i);
-                                    // System.out.println("elString: " + tempValue);
+                                    // log.debug("i ---> " + i);
+                                    // log.debug("elString: " + tempValue);
                                     colorizeAll("element", i-1, 1);
+                                    log.debug("Anzahl " + count);
                                     setPrefixCol(i, tempValue.length()-1, count);
-                                    break;
+                                    // break;
                                 }
                                 String closeFix = "/" + prefixes[count];
-                                // System.out.println("CloseFix " + closeFix);
+                                log.debug("prefix " + prefixes[count]);
+                                log.debug("CloseFix " + closeFix);
                                 if (closeFix.equals(strPrefix)) {
                                     colorizeAll("element", i-1, 1);
+                                    log.debug("Anzahl " + count);
                                     setPrefixCol(i, tempValue.length(), count);
-                                    break;
+                                    // break;
                                 }                                                    
                             }
                         }
                         else {
-                             
-
-                        
                             colorizeAll("element", i-1, tagValue.length()+1);
                         }
                         i = i + tagValue.length();
                         
-                    }                    
-                    
-                    
-                    
-                    
-                    
+                    }
+                                                                                                                        
                     colorizeAll("element", i-1, 1);
                     i=i-1;;
                     
-                    int preEndPos = tagValueSave.length() - 1;                    
-                    Character preEndCar = new Character(tagValueSave.charAt(preEndPos));
+                    int preEndPos = tagValueSave.length() - 1;
+                    log.debug("I " + i);
+                    log.debug("PREENDPOS " + preEndPos);
+
+                    if (preEndPos > -1) {
+                        Character preEndCar = new Character(tagValueSave.charAt(preEndPos));
                     
-                    if (preEndCar.toString().equals("/")) {
-                        colorizeAll("element", startPos+preEndPos,  2);
-                        // very ugly here ...
-                        unsetStyle(startPos+preEndPos+2, 3);
-                        i = i - 3;
+                        if (preEndCar.toString().equals("/")) {
+                            colorizeAll("element", startPos+preEndPos,  2);
+                            // very ugly here ...
+                            unsetStyle(startPos+preEndPos+2, 3);
+                            i = i - 3;
+                        }
+                        
                     }
-                    
-                    
-                    
-                    
-                    unsetStyle();
-                    
-                }
-                
-                
-                
+
+                    unsetStyle();                    
+                }                                
             }
             else {
                 this.inComment = false;
