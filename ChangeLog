@@ -1,3 +1,7 @@
+2004-09-01  Joerg Haecker <haecker@schlund.de>
+
+	* fixes for rendering errors to screen
+
 2004-08-25  Adam Habermann  <adam.habermann@schlund.de>
 
 	"XML Schema validation"

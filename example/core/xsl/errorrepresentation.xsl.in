@@ -14,7 +14,7 @@
               <td align="center" bgcolor="#cc0000" colspan="2">
                 <span style="color:#ffffff; font-weight: bold">
                   <xsl:choose>
-                    <xsl:when test="/error/@type ='de.schlund.pfixxml.targets.TargetGenerationException'">
+         	    <xsl:when test="/error[@type ='xslt']">
                       XML/XSLT Error!
                     </xsl:when>
                     <xsl:otherwise>
@@ -33,15 +33,15 @@
 
 
 
-  <xsl:template match="/error[@type != 'de.schlund.pfixxml.targets.TargetGenerationException']">
+  <xsl:template match="/error[@type != 'xslt']">
+    <xsl:call-template name="exception"/>
     <xsl:call-template name="sessioninfo"/>
     <xsl:call-template name="requestparams"/>
     <xsl:call-template name="laststeps"/>
     <xsl:call-template name="session_dump"/>
-    <xsl:call-template name="exception"/>
   </xsl:template>
   
-  <xsl:template match="/error[@type = 'de.schlund.pfixxml.targets.TargetGenerationException']">
+  <xsl:template match="/error[@type = 'xslt']">
     <xsl:call-template name="exceptions"/>
   </xsl:template>
 
