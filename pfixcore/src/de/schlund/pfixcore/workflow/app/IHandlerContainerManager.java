@@ -43,7 +43,7 @@ public class IHandlerContainerManager implements PropertyObject {
         // nothing :-)
     }
     
-    public IHandlerContainer getIHandlerContainer(Context context) {
+    public IHandlerContainer getIHandlerContainer(Context context) throws XMLException {
         String     classname = null;
         Properties props     = context.getPropertiesForCurrentPageRequest();
 
@@ -59,15 +59,15 @@ public class IHandlerContainerManager implements PropertyObject {
                         classname = DEF_HDL_CONTAINER;
                     }
                     retval = (IHandlerContainer) Class.forName(classname).newInstance();
-                    retval.initIHandlers(context);
+                    retval.initIHandlers(props);
                 } catch (InstantiationException e) {
-                    LOG.error("unable to instantiate class [" + classname + "]", e);
+                    throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    LOG.error("unable access class [" + classname + "]", e);
+                    throw new XMLException("unable access class [" + classname + "]" + e.getMessage());
                 } catch (ClassNotFoundException e) {
-                     LOG.error("unable to find class [" + classname + "]", e);
+                    throw new XMLException("unable to find class [" + classname + "]" + e.getMessage());
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface IHandlerContainer", e);
+                    throw new XMLException("class [" + classname + "] does not implement the interface IHandlerContainer" + e.getMessage());
                 }
                 known.put(page, retval);
             } else {

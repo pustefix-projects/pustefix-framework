@@ -317,6 +317,7 @@ public class Context implements AppContext {
     private void addNavigation(Navigation navi, SPDocument spdoc, PfixServletRequest preq) throws Exception {
         Document            doc   = spdoc.getDocument();
         if (navigation_element == null || autoinvalidate_navi) {
+            LOG.info(" **** MAKE NEW NAVIGATION !!! ****");
             long start = System.currentTimeMillis();
             NavigationElement[] pages = navi.getNavigationElements();
             navigation_element = doc.createElement("navigation");
@@ -324,6 +325,7 @@ public class Context implements AppContext {
             recursePages(pages, navigation_element, doc, preq);
             LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
         } else {
+            LOG.info(" **** REUSING NAVIGATION !!! ****");
             long start = System.currentTimeMillis();
             Node reusednavi = doc.importNode(navigation_element, true);
             doc.getDocumentElement().appendChild(reusednavi);
@@ -336,16 +338,20 @@ public class Context implements AppContext {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page = pages[i];
             String      name     = page.getName();
+            // LOG.info("====> looking at page " + name);
             PageRequest preq     = new PageRequest(name);
             Element     pageelem = doc.createElement("page");
             parent.appendChild(pageelem);
             pageelem.setAttribute("name", name);
             pageelem.setAttribute("handler", page.getHandler());
             if (preqprops.pageRequestIsDefined(preq)) {
+                // LOG.info("    * found props for page " + name);
                 State       state   = pagemap.getState(preq);
+                // LOG.info("    * found state " + state.getClass() + " for page " + name);
                 PageRequest saved   = getCurrentPageRequest();
                 setCurrentPageRequest(preq);
                 boolean     visible = state.isAccessible(this, pfixreq);
+                // LOG.info("    * state accessible? " + visible);
                 setCurrentPageRequest(saved);
                 if (visible) {
                     pageelem.setAttribute("visible", "1");
@@ -353,6 +359,7 @@ public class Context implements AppContext {
                     pageelem.setAttribute("visible", "0");
                 }
             } else {
+                // LOG.info("    * found NO PROPS for page " + name);
                 pageelem.setAttribute("visible", "-1");
             }
 
@@ -488,7 +495,7 @@ public class Context implements AppContext {
                 setCurrentPageRequest(currentpageflow.getFirstStep());
                 state = getPageMap().getState(getCurrentPageRequest());
                 if (state == null || !state.isAccessible(this, preq)) {
-                    throw new XMLException("Even first state of default flow was not accessible! Bailing out.");
+                    throw new XMLException("Even first state " + state + " of default flow was not accessible! Bailing out.");
                 }
             }
         }

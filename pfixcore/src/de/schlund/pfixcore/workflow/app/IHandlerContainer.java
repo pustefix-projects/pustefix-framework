@@ -32,8 +32,8 @@ import de.schlund.pfixxml.*;
  */
 
 public interface IHandlerContainer {
-    void    initIHandlers(Context context);
-    boolean isPageAccessible() throws Exception;
-    boolean areHandlerActive() throws Exception;
-    boolean needsData() throws Exception;
+    void    initIHandlers(Properties props);
+    boolean isPageAccessible(Context context) throws Exception;
+    boolean areHandlerActive(Context context) throws Exception;
+    boolean needsData(Context context) throws Exception;
 }
