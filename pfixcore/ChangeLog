@@ -1,3 +1,18 @@
+2003-04-09 Joerg Haecker <haecker@schlund.de>
+
+	* docs/Pustefix_testing_guide.txt: improved
+	
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:
+	application specific changes.
+	
+	* src/de/schlund/pfixxml/testenv/ConsoleTestClient.java:
+	removed spaghetti command line. Most command-line parameters
+	are optional now. If not given, default values will be used.
+	
+	* src/de/schlund/pfixxml/testenv/TestClient.java: added more
+	debugging info.
+
 2003-04-08 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import gnu.getopt.Getopt;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
@@ -19,9 +22,15 @@ public class ConsoleTestClient {
     private String src_dir = null;
     private String tmp_dir = null;
     private String style_dir = null;
+
     private static int  LOOP_COUNT = 1;
     private static Category CAT = Category.getInstance(ConsoleTestClient.class.getName());
-    
+    private static int LOGLEVEL_QUIET = 0;
+    private static int LOGLEVEL_VERBOSE = 1;
+    private static int LOGLEVEL_STD = 2;
+    private static String DEFAULT_TEMP_DIR = System.getProperties().getProperty("java.io.tmpdir");
+    private int loglevel = LOGLEVEL_STD;
+        
     public static void main(String[] args) {
         ConsoleTestClient ctc = null;
         
@@ -33,32 +42,56 @@ public class ConsoleTestClient {
                 return;
             }
 
-            DOMConfigurator.configure(ctc.log4j);
+            if(ctc.log4j != null) {
+                DOMConfigurator.configure(ctc.log4j);
+            } else { // hack
+                Category CAT = Category.getInstance(TestClient.class.getName());
+                PatternLayout layout = new PatternLayout("%m\n");
+                ConsoleAppender console = new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT);
+                console.setName("CONSOLE");
+                CAT.removeAllAppenders();
+                CAT.setAdditivity(false);
+                CAT.addAppender(console);
+                if(ctc.loglevel == LOGLEVEL_STD) {
+                    CAT.setPriority(Priority.WARN);
+                } else if(ctc.loglevel == LOGLEVEL_QUIET) {
+                    CAT.setPriority(Priority.ERROR);
+                } else if(ctc.loglevel == LOGLEVEL_VERBOSE) {
+                    CAT.setPriority(Priority.INFO);
+                }
+            }
+            if(ctc.tmp_dir == null) {
+                ctc.tmp_dir = DEFAULT_TEMP_DIR;
+            }
+            if(ctc.style_dir == null) {
+                ctc.style_dir = ctc.src_dir;
+            }
             ctc.tc.setOptions(ctc.src_dir, ctc.tmp_dir, ctc.style_dir);
-            CAT.info("|====================================================|");
-            CAT.info("|               Pustefix Test ConsoleClient          |");
-            CAT.info("|====================================================|");
+            if(ctc.loglevel != LOGLEVEL_QUIET) {
+                System.out.println("|====================================================|");
+                System.out.println("|               Pustefix Test ConsoleClient          |");
+                System.out.println("|====================================================|");
+            }
             
-            CAT.info("\n Starting test NOW!\n");
             for (int i = 0; i < LOOP_COUNT; i++) {
                 TestcasePlaybackResult result = ctc.tc.makeTest();
                 ctc.printResult(result);
             }
         } catch (TestClientException e) {
-            CAT.error("\n**********************************************");
-            CAT.error("ERROR in TestClient");
-            CAT.error("Exception:");
-            CAT.error(e.getMessage());
+            System.out.println("\n**********************************************");
+            System.out.println("ERROR in TestClient");
+            System.out.println("Exception:");
+            System.out.println(e.getMessage());
             e.printStackTrace();
-            CAT.error("Nested Exception:");
-            CAT.error(e.getExceptionCause().getMessage());
+            System.out.println("Nested Exception:");
+            System.out.println(e.getExceptionCause().getMessage());
             e.getExceptionCause().printStackTrace();
-            CAT.error("\n**********************************************");
+            System.out.println("\n**********************************************");
         }
     }
 
     private void printUsage() {
-        System.out.println("ConsoleTestClient -l [log4jconfig] -d [recorded dir] -t [temporary dir] -s [stylesheet dir]");
+        System.out.println("ConsoleTestClient -d path_to_testcase [-l log4jconfig]  [-t temporary dir] [-s stylesheet dir] [-q] [-v]");
     }
     
      private boolean scanOptions(String[] args) throws TestClientException {
@@ -78,17 +111,16 @@ public class ConsoleTestClient {
                 case 's':
                     style_dir = getopt.getOptarg();
                     break;
-                /*case 'q':
-                    CAT.setPriority(Priority.WARN);
+                case 'q':
+                    loglevel = LOGLEVEL_QUIET;
                     break;
                 case 'v':
-                    CAT.setPriority(Priority.DEBUG);
-                    break;*/
+                    loglevel = LOGLEVEL_VERBOSE;
+                    break;
                 default:
             }
         }
-        if (src_dir == null || src_dir.equals("") || tmp_dir == null || tmp_dir.equals("")
-            || style_dir == null || style_dir.equals("") || log4j == null || log4j.equals("")) {
+        if (src_dir == null || src_dir.equals("")) {
             return false;
         } else {
             return true;
@@ -96,21 +128,26 @@ public class ConsoleTestClient {
     }
   
     private void printResult(TestcasePlaybackResult result) {
-        CAT.info("*** Result for testcase: ***");
+        if(loglevel != LOGLEVEL_QUIET) {
+            System.out.println("*** Result for testcase: ***");
+        }
         ArrayList steps = result.getStepResults();
         for(int i=0; i<steps.size(); i++) {
             TestcaseStepResult step = (TestcaseStepResult) steps.get(i);
-            CAT.info("Step number "+i);
-            CAT.info("  Statuscode : "+step.getStatusCode());
-            String diff = step.getDiffString();
-            if(diff == null) {
-                diff = "NONE";
-            } else if(diff.equals("")) {
-                diff = ":-)";
+            if((step.getDiffString() == null || step.getDiffString().equals("")) && loglevel == LOGLEVEL_QUIET) { 
+                // print nothing in quiet mode
+            } else {   
+                System.out.println("Step number "+i);
+                System.out.println("  Statuscode : "+step.getStatusCode());
+                String diff = step.getDiffString();
+                if(diff == null) {
+                    diff = "NONE";
+                } else if(diff.equals("")) {
+                    diff = ":-)";
+                }
+                System.out.println("  Diff       : "+diff);
+                System.out.println("");
             }
-            
-            CAT.info("  Diff       : "+diff);
-            CAT.info("");
         } 
     }
     
