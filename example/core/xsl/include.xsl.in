@@ -18,7 +18,30 @@
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
-  
+
+  <xsl:template match="pfx:pagemessages">
+    <ixsl:if test="/formresult/pagemessages/message">
+      <table id="core_pagemessages_box">
+        <ixsl:for-each select="/formresult/pagemessages/message">
+          <ixsl:sort select="@level"/>
+          <tr>
+            <td>
+              <ixsl:attribute name="class">core_pagemessage_header_<ixsl:value-of select="@level"/></ixsl:attribute>
+              <ixsl:call-template name="pfx:include">
+                <ixsl:with-param name="href" select="'core/dyntxt/messages_level.xml'" />
+                <ixsl:with-param name="part" select="concat('pfixcore.pagemessages.level.', @level)"/>
+              </ixsl:call-template>
+            </td>
+            <td>
+              <ixsl:attribute name="class">core_pagemessage_<ixsl:value-of select="@level"/></ixsl:attribute>
+              <ixsl:apply-templates/>
+            </td>
+          </tr>
+        </ixsl:for-each>
+      </table>
+    </ixsl:if>
+  </xsl:template>
+
   <xsl:template match="pfx:editconsole">
     <cus:documentation>
       <responsible>JTL</responsible>
@@ -61,7 +84,7 @@
                 <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
                 <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
-            </td>  
+            </td>
           </tr>
           <tr>
             <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
@@ -106,7 +129,7 @@
 
   <xsl:template match="pfx:attribute">
     <cus:documentation>
-      <description>This template allows you to create dynamic attributes  
+      <description>This template allows you to create dynamic attributes
         for every tag that does an apply-templates of it's body.
       </description>
       <param required="1">
@@ -144,7 +167,7 @@
       <xsl:otherwise><b>[?]</b></xsl:otherwise>
     </xsl:choose>
   </xsl:template>
- 
+
   <xsl:template name="pfx:missinc">
     <xsl:param name="part"/>
     <xsl:param name="href"/>
@@ -188,7 +211,7 @@
         </xsl:choose>
       </xsl:if>
     </xsl:variable>
-    
+
     <xsl:variable name="realpath">
       <xsl:choose>
         <xsl:when test="not(string($href_int) = '')">
@@ -231,7 +254,7 @@
                   <xsl:when test="not($__target_key = '__NONE__')">
                     <xsl:choose>
                       <xsl:when test="not($incnodes/lang[not(@name = 'default')])">
-                        <xsl:choose> 
+                        <xsl:choose>
                           <xsl:when test="$incnodes/lang[@name = 'default']">
                             <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
                               <xsl:with-param name="__env" select="."/>
@@ -254,7 +277,7 @@
                               </xsl:apply-templates>
                             </ixsl:when>
                           </xsl:for-each>
-                          <xsl:choose> 
+                          <xsl:choose>
                             <xsl:when test="$incnodes/lang[@name = 'default']">
                               <ixsl:otherwise>
                                 <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
@@ -339,7 +362,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
   <xsl:template match="pfx:image" name="pfx:image">
     <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
     <img border="0" alt="">
@@ -455,5 +478,5 @@
       <description>Called by pfx:image</description>
     </cus:documentation>
   </xsl:template>
-  
+
 </xsl:stylesheet>
