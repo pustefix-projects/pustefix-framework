@@ -82,8 +82,8 @@ public class ExceptionDataValueHelper {
             } catch(Exception e) {
                 // Catch all exceptions here. If an exception occurs in context.toString
                 // we definitly want the exception-info to be generated.
-                CAT.error(e);
-                strvalue = e.getMessage();
+                CAT.error("Exception while dumping session!", e);
+                strvalue = e.getMessage() == null ? e.toString() : e.getMessage();
             }
             sessdata.put(key, strvalue);
         }
