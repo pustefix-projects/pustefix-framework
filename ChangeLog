@@ -1,3 +1,9 @@
+2005-03-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* started 0.8.5-pre
+
+	* released 0.8.4
+
 2005-03-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): get docroot from system parameter 
@@ -24,8 +30,8 @@
 
 2005-03-09  Tanjev Stuhr  <tanjev.stuhr@schlund.de>
 
-        * src/de/schlund/pfixcore/generator/casters/ToDouble.java: added new caster.
-        * example/common/dyntxt/statusmessages.xml: added new statusmessage (for new caster).
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java: added new caster.
+	* example/common/dyntxt/statusmessages.xml: added new statusmessage (for new caster).
 
 2005-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
