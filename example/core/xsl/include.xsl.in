@@ -82,12 +82,12 @@
             </ixsl:choose>
           </tr>
           <tr>
-            <td colspan="3" style="font-size: 10px; background-color: black; color: white; padding-left: 5px;">
+            <td nowrap="nowrap" colspan="3" style="font-size: 8px; background-color: black; color: white; padding-left: 5px;">
               P: <ixsl:value-of select="$page"/>
             </td>
           </tr>
           <tr>
-            <td colspan="3" style="font-size: 10px; background-color: black; color: white; padding-left: 5px;">
+            <td nowrap="nowrap" colspan="3" style="font-size: 8px; background-color: black; color: white; padding-left: 5px;">
               F: <ixsl:value-of select="$pageflow"/>
             </td>
           </tr>
