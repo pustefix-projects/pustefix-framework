@@ -27,10 +27,11 @@ import de.schlund.pfixxml.PfixServletRequest;
 import java.util.Map;
 
 /**
+ * Describe interface <code>ContainerUtil</code> here.
  *
- *
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
+ * @version 1.0
  */
-
 public interface ContainerUtil {
     public static final String SESSION_ID_URL = "__SESSION_ID_URL__";
     
