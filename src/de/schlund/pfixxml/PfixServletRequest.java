@@ -77,7 +77,7 @@ public class PfixServletRequest {
      *
      */
     public synchronized void initPerfLog() {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
         if (perflog == null) {
