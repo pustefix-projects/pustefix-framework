@@ -1,9 +1,15 @@
+2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: changed the created
+	property prefix for <param>s as children of <resource> nodes to
+	context.resoure.param.AContextResource.AName=AValue
+
 2004-02-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_propfiles.xsl: new recognize also
 	<param name="AName">AValue</param> nodes under <resource>. This
 	results in properties being set relative to the context resources
-	classname: context.param.AContextResource.AName=AValu
+	classname: context.param.AContextResource.AName=AValue
 
 	* lib/xalan-2.1.0.jar removed, java-1.4 already has the XPathAPI from xalan we use.
 	* lib/xercesImpl-2.6.1.jar
