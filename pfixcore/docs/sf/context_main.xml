@@ -162,9 +162,14 @@
   </p>
 
   <h2>The contract between States and Context</h2>
-  In this section we will describe in detail how the Context selects
-  the State to call and what a state is expected to return in which
-  situation.
-  ...
-  
+  <p>
+    In this section we will describe in detail how the Context selects
+    the State to call and what a state is expected to return in which
+    situation.
+  </p>
+  <p>
+    As already mentioned above, the pages the Context knows about are
+    optionally organized into PageFlow objects in the form of a linear
+    list of pages. A Page can be part of none, one or many PageFlow. 
+  </p>
 </div>
