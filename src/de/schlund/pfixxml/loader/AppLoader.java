@@ -57,6 +57,7 @@ public class AppLoader implements FactoryInit,Runnable {
     private CommandListener listener;
     private int interval;
     private HashSet incPacks=new HashSet();
+    private HashSet excClasses=new HashSet();
     private ArrayList travExcludes=new ArrayList();
     private HashSet travIncludes=new HashSet();
     private HashMap policies=new HashMap();
@@ -121,6 +122,10 @@ public class AppLoader implements FactoryInit,Runnable {
     protected void includePackage(String pack) {
         incPacks.add(pack);
     }
+    
+    protected void excludeClass(String clazz) {
+        excClasses.add(clazz);
+    }
   
     protected void excludeTraversePackage(String pack) {
         travExcludes.add(pack);
@@ -156,6 +161,11 @@ public class AppLoader implements FactoryInit,Runnable {
             if(incPacks.contains(pack)) return true;
             ind=packName.indexOf('.',ind+1);
         }
+        return false;
+    }
+    
+    protected boolean isExcludedClass(String className) {
+        if(excClasses.contains(className)) return true;
         return false;
     }
     

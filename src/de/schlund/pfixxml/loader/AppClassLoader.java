@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml.loader;
 
-import COM.rsa.jsafe.*;
 import java.io.*;
 import java.lang.ClassLoader;
 import java.net.*;
@@ -82,7 +81,7 @@ public class AppClassLoader extends java.lang.ClassLoader {
         //load from repository
         if(debug) CAT.debug("Try to load with AppClassLoader: "+name);
         String pack=getPackageName(name);
-        if(loader.isIncludedPackage(pack)) {
+        if(loader.isIncludedPackage(pack) && !loader.isExcludedClass(name)) {
             byte[] data=getClassData(name);
             if(data==null) {
                 if(debug) CAT.debug("AppClassLoader didn't find class: "+name);

@@ -46,6 +46,10 @@
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
       <prop name="apploader.package.include.3">de.schlund.pfixcore.editor</prop>
       
+      <!--add classes which shouldn't be reloadable even though their packages are-->
+      <prop name="apploader.class.exclude.1">de.schlund.pfixschlund.util.addresschecker.ReturnValue</prop>
+      <prop name="apploader.class.exclude.2">de.schlund.pfixschlund.util.addresschecker.soap.ReturnValueSoap</prop>
+      
       <!--add packages which don't have to be traversed for state transfer-->
       <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
       <prop name="apploader.traverse.excludepackage.2">org.apache.log4j</prop>
