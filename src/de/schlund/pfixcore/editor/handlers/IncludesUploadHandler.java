@@ -166,7 +166,8 @@ public class IncludesUploadHandler extends EditorStdHandler {
                 content = this.decodeAppletText(upl.getContent());
                 //System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
                 
-                content = "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
+                content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                    "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
                 DocumentBuilder domp = dbfac.newDocumentBuilder();
                 try {
                     impnode = (Node) domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
