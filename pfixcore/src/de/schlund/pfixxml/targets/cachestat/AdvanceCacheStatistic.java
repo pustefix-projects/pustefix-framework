@@ -32,10 +32,12 @@ public class AdvanceCacheStatistic {
             throw new IllegalArgumentException("A NP passed as timer is not valid here.");
         }
         if(queuesize < 1) {
-            throw new IllegalArgumentException("queuesize must not be < 1");
+            queuesize = 60;
+            //throw new IllegalArgumentException("queuesize must not be < 1");
         }
         if(queueticks < 1) {
-            throw new IllegalArgumentException("queueticks must not be < 1");
+            queueticks = 60000;
+            //throw new IllegalArgumentException("queueticks must not be < 1");
         }
         
         queueSize = queuesize;
