@@ -1,7 +1,16 @@
 2004-02-06  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: fixed generation of property fqdn for manually
-	specified machine value
+	specified machine value. Made build process fail if property makemode
+	(environment MAKE_MODE) unset, instead of defaulting to makemode=prod.
+	Using attribute loaderRef within task definition of target ant-tasks
+	for sharing one classloader between tasks.
+
+	* example/core/build/create_apacheconf.xsl: Added check on existence of
+	node serveralias, so ServerAlias directive is added only if there is one
+	defined.
+	* src/de/schlund/pfixcore/util/XsltTransformer.java: minor, cleanup
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java: minor, cleanup
 
 2004-02-05  Jens Lautenbacher  <jtl@schlund.de>
 

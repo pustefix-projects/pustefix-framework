@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
-    <classpathentry kind="lib" path="lib/ant-1.5.3-1.jar" sourcepath="/sources/apache-ant-1.5.3-1/src/main"/>
-    <classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
-    <classpathentry kind="lib" path="lib/bsf.jar"/>
-    <classpathentry kind="lib" path="lib/commons-logging.jar"/>
-    <classpathentry kind="lib" path="lib/commons-pfix_httpclient-2.0-beta1.jar"/>
-    <classpathentry kind="lib" path="lib/gnu-regexp-1.0.8.jar"/>
-    <classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
-    <classpathentry kind="lib" path="lib/jakarta-regexp-1.2.jar"/>
-    <classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
-    <classpathentry kind="lib" path="lib/jcert.jar"/>
-    <classpathentry kind="lib" path="lib/jnet.jar"/>
-    <classpathentry kind="lib" path="lib/jsse.jar"/>
-    <classpathentry kind="lib" path="lib/log4j-1.1.3.jar" sourcepath="/sources/jakarta-log4j-1.1.3/src"/>
-    <classpathentry kind="lib" path="lib/mail-1.3.jar"/>
-    <classpathentry kind="lib" path="lib/util-MINI-1.1.10.jar"/>
-    <classpathentry kind="lib" path="lib/xalan-2.1.0.jar"/>
-    <classpathentry kind="lib" path="lib/xerces-xalan-2.1.0.jar" sourcepath="/sources/xerces-2_1_0/src"/>
-    <classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet.jar"/>
-    <classpathentry kind="lib" path="lib/saxon6_5_3.jar" sourcepath="/sources/saxon-6.5.3/src"/>
-    <classpathentry kind="output" path="build"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/bsf.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/commons-pfix_httpclient-2.0-beta1.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-regexp-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
+	<classpathentry kind="lib" path="lib/jcert.jar"/>
+	<classpathentry kind="lib" path="lib/jnet.jar"/>
+	<classpathentry kind="lib" path="lib/jsse.jar"/>
+	<classpathentry sourcepath="/sources/jakarta-log4j-1.1.3/src" kind="lib" path="lib/log4j-1.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/mail-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/util-MINI-1.1.10.jar"/>
+	<classpathentry kind="lib" path="lib/xalan-2.1.0.jar"/>
+	<classpathentry sourcepath="/sources/xerces-2_1_0/src" kind="lib" path="lib/xerces-xalan-2.1.0.jar"/>
+	<classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet.jar"/>
+	<classpathentry sourcepath="/sources/saxon-6.5.3/src" kind="lib" path="lib/saxon6_5_3.jar"/>
+	<classpathentry sourcepath="/sources/apache-ant-1.5.3-1/src/main" kind="lib" path="lib/ant-1.5.3-1.jar"/>
+	<classpathentry kind="output" path="build"/>
 </classpath>
