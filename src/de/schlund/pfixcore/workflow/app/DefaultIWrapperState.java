@@ -94,7 +94,7 @@ public class DefaultIWrapperState extends StateImpl {
                 context.prohibitContinue();
             } else {
                 CAT.debug("    => No error happened during work ...");
-                if (container.stayAfterSubmit()) {
+                if (!context.isJumptToPageSet() && container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page and context.requestWantsContinue() doesn't object:");
                     CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
@@ -107,13 +107,6 @@ public class DefaultIWrapperState extends StateImpl {
                 } else {
                     CAT.debug("... Container says he is ready");
                     CAT.debug("    => end of submit reached successfully. Asking Context if it can continue:");
-//                     if (context.isCurrentPageRequestInCurrentFlow()) {
-//                         CAT.debug(">>> Page is part of current pageflow:");
-//                         CAT.debug("    => continue with pagflow...");
-//                     } else if (context.isCurrentPageFlowRequestedByUser()) {
-//                         CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
-//                         CAT.debug("    => continue with pagflow...");
-//                     } else {
                     if (!context.canContinue()) {
                         CAT.debug(">>> Context can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");

@@ -400,6 +400,10 @@ public class Context implements AppContext {
         return isPageRequestInFlow(currentpagerequest, currentpageflow);
     }
 
+    public boolean isJumptToPageSet() {
+        return jumptopagerequest != null;
+    }
+    
     public boolean canContinue() {
         if (prohibitcontinue) {
             LOG.debug(">>> Have already set prohibitcontinue to true!");
@@ -413,7 +417,7 @@ public class Context implements AppContext {
             LOG.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
             LOG.debug("    => continue with pagflow...");
             return true;
-        } else if (jumptopagerequest != null) {
+        } else if (isJumptToPageSet()) {
             LOG.debug(">>> Have been called with a jumptopage set:");
             LOG.debug("    => continue so we can jump to this page...");
             return true;

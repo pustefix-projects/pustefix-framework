@@ -1,3 +1,10 @@
+2005-03-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (isJumptToPageSet): new method.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: ask context if jumptopage is set, 
+	if yes, don't stop regardless of what the IWrapperContainer says.
+
 2005-03-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: allow another	value "step" 

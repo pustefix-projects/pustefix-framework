@@ -240,6 +240,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public boolean stayAfterSubmit() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
+        // TODO: IS this really a good idea at all?
         String[] suggestcontinue = reqdata.getCommands(SUGGEST_CONT);
         if (suggestcontinue != null && suggestcontinue.length > 0) {
             if (suggestcontinue[0].equals("true")) {
