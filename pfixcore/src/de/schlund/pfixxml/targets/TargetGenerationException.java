@@ -75,6 +75,7 @@ public class TargetGenerationException extends Exception {
     private Document createErrorTree(TargetGenerationException targetex) {
         Document doc = Xml.createDocument();
         Element e0 = doc.createElement("error");
+        e0.setAttribute("type", "xslt");
         doc.appendChild(e0);
         printEx(targetex, doc, e0);
         return doc;
