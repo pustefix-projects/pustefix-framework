@@ -1,14 +1,14 @@
 %!PS-Adobe-3.0
 %%Title: INSTALL
-%%For: Jens Lautenbacher
+%%For: Martin Leidig
 %%Creator: a2ps version 4.13
-%%CreationDate: Thu Mar  6 14:10:46 2003
-%%BoundingBox: 24 24 588 768
+%%CreationDate: Thu Jun  5 13:51:16 2003
+%%BoundingBox: 24 24 571 818
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
 %%Pages: 1
 %%PageOrder: Ascend
-%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentMedia: A4 595 842 0 () ()
 %%DocumentNeededResources: font Courier
 %%+ font Courier-Bold
 %%+ font Courier-BoldOblique
@@ -683,17 +683,17 @@ a2psdict begin
 ] def
 %%EndResource
 % Initialize page description variables.
-/sh 612 def
-/sw 792 def
+/sh 595 def
+/sw 842 def
 /llx 24 def
-/urx 768 def
-/ury 588 def
+/urx 818 def
+/ury 571 def
 /lly 24 def
 /#copies 1 def
 /th 15.000000 def
 /fnfs 11 def
-/bfs 7.493857 def
-/cw 4.496314 def
+/bfs 8.005733 def
+/cw 4.803440 def
 
 % Dictionary for ISO-8859-1 support
 /iso1dict 8 dict begin
@@ -718,7 +718,7 @@ currentdict end def
    cw 81.400000 mul
 def
 /ph
-   522.321860 th add
+   501.959430 th add
 def
 /pmw urx llx sub pw 2 mul sub 1 div def
 /pmh 0 def
@@ -756,7 +756,7 @@ iso1dict begin
 gsave
 llx lly 12 add translate
 /v 0 store
-/x0 x v get 3.147420 add sx cw mul add store
+/x0 x v get 3.362408 add sx cw mul add store
 /y0 y v get bfs th add sub store
 x0 y0 moveto
 (This file describes how to get the example package up and running.) p n
@@ -772,18 +772,17 @@ x0 y0 moveto
 (          with the Makefile. And belive me, you really want to use) N
 (          jikes, it's just lightning fast compared to javac.) N
 () N
-(        * A working apache installation with either a working) N
-(          mod_jserv \(the apache connection module for JServ\) or mod_jk) N
-(          \(the apache connection module for tomcat\) or both. You need) N
+(        * A working apache installation with a working mod_jk) N
+(          \(the apache connection module for tomcat\). You need) N
 (          to have these modules loaded, but you need no further) N
 (          configuration, the build process will take care of providing) N
 (          you with sample config files that sould at least get you) N
 (          started.) N
 () N
 (          Note that there have been problems with the order of) N
-(          inclusion of mod_rewrite and mod_jserv/mod_jk in the) N
-(          httpd.conf. It seems that mod_jserv/mod_jk need to be loaded) N
-(          BEFORE mod_rewrite. If you experience problems, try changing) N
+(          inclusion of mod_rewrite and mod_jk in the httpd.conf.) N
+(          It seems that mod_jk needs to be loaded BEFORE) N
+(          mod_rewrite. If you experience problems, try changing) N
 (          the order of these two modules.  Other problems that have) N
 (          been experienced are related to changing regexp syntax) N
 (          between different versions of mod_rewrite. You may have to) N
@@ -797,9 +796,9 @@ x0 y0 moveto
 (          created apache.conf or by tweaking the producing stylesheet) N
 (          core/build/create_apacheconf.xsl.) N
 () N
-(        * NOTE: you don't need a installation of JServ or tomcat,) N
+(        * NOTE: you don't need a installation of Tomcat,) N
 (          everything you need is contained in this package.  I suggest) N
-(          that even if you have your own JServ/Tomcat set up already,) N
+(          that even if you have your own Tomcat set up already,) N
 (          start with using the supplied versions, and, if all goes) N
 (          well, you can try to move the configuration into your own) N
 (          installation.) N
@@ -822,35 +821,26 @@ x0 y0 moveto
 () N
 (3\)  Put something  like the following) N
 () N
-(        # config for mod_jserv) N
-(        include <your path to this directory>/servletconf/jserv/jserv.conf) N
-(        # config for mod_jk) N
-(        include <your path to this directory>/servletconf/tomcat/jk.conf) N
-() N
-(        # virtual hosts for jserv:) N
-(INSTALL) (Page 1/2) (Jan 23, 03 15:52) title
+(INSTALL) (Page 1/2) (Jun 05, 03 12:04) title
 border
 /v 1 store
-/x0 x v get 3.147420 add sx cw mul add store
+/x0 x v get 3.362408 add sx cw mul add store
 /y0 y v get bfs th add sub store
 x0 y0 moveto
-(        include <your path to this directory>/servletconf/jserv/apache.conf) p n
+(        # config for mod_jk) p n
+(        include <your path to this directory>/servletconf/tomcat/jk.conf) N
+() N
 (        # virtual hosts for tomcat:) N
 (        include <your path to this directory>/servletconf/tomcat/apache.conf) N
 () N
 (    into your httpd.conf. Don't forget to restart your apache.) N
 () N
-(5\)  start JServ with the following command from the parent directory:  ) N
-() N
-(        ./startJServ.sh) N
-() N
-(    OR start Tomcat with the following command from the) N
+(5\)  start Tomcat with the following command from the) N
 (    parent directory:) N
 () N
 (        ./startTomcat.sh ) N
 () N
-(    Note: For stopping JServ or Tomcat, just press Control-C to interrupt the sc) N
-(ript.) N
+(    Note: For stopping Tomcat, just press Control-C to interrupt the script.) N
 () N
 (    Note: There have been problems with restarting or) N
 (    stopping/starting tomcat. Somtimes a restart of Apache is needed,) N
@@ -858,15 +848,14 @@ x0 y0 moveto
 () N
 (6\)  To see the sample1 application, point your browser to) N
 (        ) N
-(        http://sample1.<your.fully.qualified.hostname.here>        [For Tomcat]) N
-(        http://js-sample1.<your.fully.qualified.hostname.here>     [For JServ]) N
+(        http://sample1.<your.fully.qualified.hostname.here>) N
 () N
 (7\)  Have Fun.) N
-(INSTALL) (Page 2/2) (Jan 23, 03 15:52) title
+(INSTALL) (Page 2/2) (Jun 05, 03 12:04) title
 border
 grestore
-(Printed by Jens Lautenbacher) rhead
-(INSTALL) (1/1) (Thursday March 06, 2003) footer
+(Printed by Martin Leidig) rhead
+(INSTALL) (1/1) (Thursday June 05, 2003) footer
 end % of iso1dict
 pagesave restore
 showpage

@@ -52,7 +52,6 @@ TRFBUILD   = de.schlund.pfixcore.util.MultiTransform
 
 all: bin/setvars.sh depend propfiles targetdefs  zoneprops stylesheets \
      common/conf/pfixlog.xml common/conf/products.prj \
-     servletconf/jserv/apache.conf servletconf/jserv/jserv.conf servletconf/jserv/jserv.prop \
      servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
      common/dyntxt/statusmessages.xml
 
@@ -75,8 +74,6 @@ clean:
 	@echo "*** Removing generated .prop files..."
 	@rm -f $(PROPFILES:.prop.in=.prop)
 	@rm -f common/conf/products.prj common/conf/pfixlog.xml 
-	@echo "*** Removing generated jserv stuff..."
-	@rm -f servletconf/jserv/*.prop servletconf/jserv/apache.conf servletconf/jserv/jserv.conf
 	@echo "*** Removing generated tomcat stuff..."
 	@rm -f servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
         @rm -rf servletconf/tomcat/webapps
@@ -101,9 +98,7 @@ targetdefs:
 zoneprops:
 	java $(TRFBUILD) -x dummy -a zoneprops \
 			 -p docroot=$(DOCROOT) -p fqdn=$(FQDN) -p uid=$(UID) -p machine=$(MACHINE) -p mode=$(MAKE_MODE) \
-			 -p outdir-jserv=$(DOCROOT)/servletconf/jserv \
 			 -p outdir-tomcat=$(DOCROOT)/servletconf/tomcat \
-			 -p xslfile-jserv=core/build/create_jservzones.xsl \
 			 -p xslfile-tomcat=core/build/create_tomcatweb.xsl \
 			 $(PRJFILE)
 
@@ -169,32 +164,5 @@ servletconf/tomcat/conf/server.xml: $(PRJFILE) core/build/create_serverxml.xsl
 		fqdn="$(FQDN)" \
 		mode="$(MAKE_MODE)" \
 		container="tomcat" 
-
-servletconf/jserv/apache.conf: $(PRJFILE) core/build/create_apacheconf.xsl
-	$(SAXON) -o $@ $(PRJFILE) core/build/create_apacheconf.xsl \
-		docroot="$(DOCROOT)"  \
-		uid="$(UID)" \
-		machine="$(MACHINE)" \
-		fqdn="$(FQDN)" \
-		mode="$(MAKE_MODE)" \
-		container="jserv"
-
-servletconf/jserv/jserv.conf: $(PRJFILE) core/build/create_jservconf.xsl
-	$(SAXON) -o $@ $(PRJFILE) core/build/create_jservconf.xsl \
-		docroot="$(DOCROOT)"  \
-		uid="$(UID)" \
-		machine="$(MACHINE)" \
-		fqdn="$(FQDN)" \
-		mode="$(MAKE_MODE)" \
-		container="jserv"
-
-servletconf/jserv/jserv.prop: $(PRJFILE) core/build/create_jservprop.xsl
-	$(SAXON) -o $@ $(PRJFILE) core/build/create_jservprop.xsl \
-		docroot="$(DOCROOT)"  \
-		uid="$(UID)" \
-		machine="$(MACHINE)" \
-		fqdn="$(FQDN)" \
-		mode="$(MAKE_MODE)" \
-		container="jserv" 
 
 # </seal>

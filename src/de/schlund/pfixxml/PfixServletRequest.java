@@ -19,7 +19,7 @@
 package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.multipart.*;
-import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 import java.util.*;
 
@@ -65,7 +65,6 @@ public class PfixServletRequest {
     private HttpSession         session          = null;
     private int                 serverport;
     private HttpServletRequest  request;
-    private ContainerUtil       conUtil;
 
     //~ Constructors ...............................................................................
 
@@ -75,7 +74,7 @@ public class PfixServletRequest {
      * @param properties 
      * @param cUtil
      */
-    public PfixServletRequest(HttpServletRequest req, Properties properties, ContainerUtil cUtil) {
+    public PfixServletRequest(HttpServletRequest req, Properties properties) {
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();
@@ -84,7 +83,6 @@ public class PfixServletRequest {
         serverport  = req.getServerPort();
         request     = req;
         session     = req.getSession(false);
-        conUtil     = cUtil;
     }
 
     //~ Methods ....................................................................................
@@ -214,11 +212,7 @@ public class PfixServletRequest {
      * @return the request uri
      */
     public String getRequestURI(HttpServletResponse res) {
-        if (conUtil != null) {
-            return conUtil.encodeURI(request, res);
-        } else {
-            return request.getRequestURI();
-        }
+        return SessionHelper.encodeURI(request,res);
     }
 
     /**
@@ -226,7 +220,7 @@ public class PfixServletRequest {
      * @return the context path
      */
     public String getContextPath() {
-        return conUtil.getContextPath(request);
+        return request.getContextPath();
     }
 
     /**

@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * The purpose of this class is to log
@@ -87,7 +87,7 @@ public final class RecordManager {
      * @param session the current session for storing and reading data stored in the session
      * @param cUtil util needed for accessing sessiondata.
      */
-    public final void tryRecord(PfixServletRequest preq, HttpServletResponse resp, SPDocument resdoc, HttpSession session, ContainerUtil cutil)
+    public final void tryRecord(PfixServletRequest preq, HttpServletResponse resp, SPDocument resdoc, HttpSession session)
         throws Exception {
         boolean recording_enabled = false;
         if (!recordAllowed) {
@@ -97,7 +97,7 @@ public final class RecordManager {
             return;
         } else {
             debug("Start tryRecord");
-            debugSession(session, cutil, "Start tryRecord");
+            debugSession(session, "Start tryRecord");
             RequestParam param = preq.getRequestParam(REQ_PARAM_KEY_RECMODE);
             if (CAT.isDebugEnabled()) {
                 CAT.debug("param: " + ((param == null) ? "null" : param.getValue().toString()));
@@ -108,8 +108,8 @@ public final class RecordManager {
                     if (CAT.isDebugEnabled()) {
                         CAT.debug("Turning record mode OFF");
                     }
-                    cutil.setSessionValue(session, SESS_RECORDMODE_DIR, null);
-                    cutil.setSessionValue(session, SESS_RECORD_COUNTER, null);
+                    session.setAttribute(SESS_RECORDMODE_DIR, null);
+                    session.setAttribute(SESS_RECORD_COUNTER, null);
                 } else {
                     // users wants to turm recordmode on
                     if (CAT.isDebugEnabled()) {
@@ -117,8 +117,8 @@ public final class RecordManager {
                     }
                     String record_testcase_name = param.getValue();
                     String newname = tryFindNewDir(record_testcase_name, recordBaseDir);
-                    cutil.setSessionValue(session, SESS_RECORDMODE_DIR, newname);
-                    cutil.setSessionValue(session, SESS_RECORD_COUNTER, new Integer(0));
+                    session.setAttribute(SESS_RECORDMODE_DIR, newname);
+                    session.setAttribute(SESS_RECORD_COUNTER, new Integer(0));
                 }
             } else {
                 // param == null-> We are in record mode or not
@@ -126,15 +126,15 @@ public final class RecordManager {
                     CAT.debug("No parameter found");
                 }
                 // Look in the session if user is in record mode.
-                String dir = (String) cutil.getSessionValue(session, SESS_RECORDMODE_DIR);
+                String dir = (String)session.getAttribute(SESS_RECORDMODE_DIR);
                 recording_enabled = (dir == null || dir.equals(REQ_PARAM_VAL_RECMODE_OFF) || dir.equals("")) ? false : true;
                 if (recording_enabled) {
                     if (CAT.isDebugEnabled()) {
                         CAT.debug("We are in record mode");
                     }
-                    int count = ((Integer) cutil.getSessionValue(session, SESS_RECORD_COUNTER)).intValue();
+                    int count = ((Integer)session.getAttribute(SESS_RECORD_COUNTER)).intValue();
                     count++;
-                    cutil.setSessionValue(session, SESS_RECORD_COUNTER, new Integer(count));
+                    session.setAttribute(SESS_RECORD_COUNTER, new Integer(count));
                     doRecord(count, recordBaseDir, dir, preq.getRequestURI(resp), preq, resdoc);
                 } else {
                     if (CAT.isDebugEnabled()) {
@@ -144,7 +144,7 @@ public final class RecordManager {
             }
         }
         debug("End tryRecord");
-        debugSession(session, cutil, "End tryRecord");
+        debugSession(session, "End tryRecord");
     }
 
     /**
@@ -169,8 +169,8 @@ public final class RecordManager {
      * @param cutil util for accessing session data
      * @return the name of the testcase
      */
-    public final String getTestcaseName(HttpSession session, ContainerUtil cutil) {
-        String name = (String) cutil.getSessionValue(session, SESS_RECORDMODE_DIR);
+    public final String getTestcaseName(HttpSession session) {
+        String name = (String)session.getAttribute(SESS_RECORDMODE_DIR);
         return name;
     }
 
@@ -232,12 +232,12 @@ public final class RecordManager {
         }
     }
 
-    private void debugSession(HttpSession session, ContainerUtil cutil, String msg) {
+    private void debugSession(HttpSession session, String msg) {
         if (CAT.isDebugEnabled()) {
             StringBuffer sb = new StringBuffer();
             sb.append("\n").append(this.getClass().getName() + " session status: ").append("(").append(msg).append(")").append("\n");
-            sb.append("  SESS_RECORD_DIR   = " + cutil.getSessionValue(session, SESS_RECORDMODE_DIR)).append("\n");
-            Integer integer = (Integer) cutil.getSessionValue(session, SESS_RECORD_COUNTER);
+            sb.append("  SESS_RECORD_DIR   = " + session.getAttribute(SESS_RECORDMODE_DIR)).append("\n");
+            Integer integer = (Integer)session.getAttribute(SESS_RECORD_COUNTER);
             sb.append("  SESS_RECORD_COUNT = " + ((integer == null) ? "null" : ("" + integer.intValue()))).append("\n");
             CAT.debug(sb.toString());
         }

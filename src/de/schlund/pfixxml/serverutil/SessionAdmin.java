@@ -49,8 +49,8 @@ public class SessionAdmin implements HttpSessionBindingListener {
         return allsess;
     }
     
-    public void registerSession(HttpSession sess, ContainerUtil conutil) {
-        registerSession(sess, null, conutil);
+    public void registerSession(HttpSession sess) {
+        registerSession(sess, null);
     }
     
     /**
@@ -59,17 +59,17 @@ public class SessionAdmin implements HttpSessionBindingListener {
      * @param trailog a trailog from another session.
      * @param conutil. 
      */
-    public void registerSession(HttpSession session, LinkedList trailog, ContainerUtil conutil) {
+    public void registerSession(HttpSession session, LinkedList trailog) {
     
-        SessionInfoStruct info = new SessionInfoStruct(session, trailog, conutil);
+        SessionInfoStruct info = new SessionInfoStruct(session, trailog);
         
         synchronized (sessioninfo) {
-            conutil.setSessionValue(session, LISTENER, this);
+            session.setAttribute(LISTENER, this);
             sessioninfo.put(session.getId(), info);
         }
         synchronized (parentinfo) {
             synchronized (parentinfo_rev) {
-                String parentid = (String) conutil.getSessionValue(session, PARENT_SESS_ID);
+                String parentid = (String)session.getAttribute(PARENT_SESS_ID);
                 if (parentid != null && !parentid.equals("")) {
                     parentinfo.put(parentid, session);
                     parentinfo_rev.put(session.getId(), parentid);
@@ -101,7 +101,6 @@ public class SessionAdmin implements HttpSessionBindingListener {
         synchronized (sessioninfo) {
             SessionInfoStruct sessinf = (SessionInfoStruct) sessioninfo.get(id);
             if (sessinf != null) {
-                ContainerUtil conutil = sessinf.getContainerUtil();
                 synchronized (parentinfo) {
                     synchronized (parentinfo_rev) {
                         String parentid = (String) parentinfo_rev.get(id);

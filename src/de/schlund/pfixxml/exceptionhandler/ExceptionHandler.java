@@ -89,7 +89,7 @@ public class ExceptionHandler implements FactoryInit {
                                     Properties properties, 
                                     HttpServletResponse res) {
         PFUtil.getInstance().debug("Handling a " + e.getClass().getName());
-        // if propertyfile changed reload it, it's done in a jserv thread (clumsy;-))
+        // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
         // This is called from various threads, so everyone needs its own context !
         ExceptionContext excontext=new ExceptionContext(e, req, res, properties);

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * @author jtl
@@ -99,15 +99,14 @@ public class ContextXMLServer extends AbstractXMLServer {
     private AppContext getContext(PfixServletRequest preq) throws Exception {
         String        contextname = makeContextName();
         HttpSession   session     = preq.getSession(false);
-        ContainerUtil conutil     = getContainerUtil();
         if (session == null) {
             throw new XMLException("No valid session found! Aborting...");
         }
-        AppContext context = (AppContext) conutil.getSessionValue(session, contextname);
+        AppContext context = (AppContext)session.getAttribute(contextname);
         // Create new context and add it to contextMap, if context is null or contextClass has changed
         if ((context == null) || (!contextclassnname.equals(context.getClass().getName()))) {
             context = createContext();
-            conutil.setSessionValue(session, contextname, context);
+            session.setAttribute(contextname, context);
             synchronized (contextMap) {
                 contextMap.put(context,null);
             }
@@ -121,7 +120,7 @@ public class ContextXMLServer extends AbstractXMLServer {
     
     private AppContext createContext() throws Exception {
         AppContext context = (AppContext) Class.forName(contextclassnname).newInstance();
-        context.init(getProperties(), getContainerUtil(), makeContextName());
+        context.init(getProperties(), makeContextName());
         return context;
     }
 }

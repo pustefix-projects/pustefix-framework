@@ -42,8 +42,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.serverutil.ContainerUtil;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.PageTargetTree;
@@ -392,7 +392,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         Properties    params  = new Properties();
         HttpSession   session = preq.getSession(false);
         boolean       doreuse = doReuse(preq);
-        ContainerUtil conutil = getContainerUtil();
         SPDocument    spdoc   = null;
         RequestParam  value;
         long          currtime;
@@ -410,10 +409,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         params.put(XSLPARAM_SERVP, preq.getContextPath() + preq.getServletPath());
         if (session != null) {
             params.put(XSLPARAM_SESSID, 
-                       conutil.getSessionValue(session, ContainerUtil.SESSION_ID_URL));
+                       session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
-                    spdoc = (SPDocument) conutil.getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
+                    spdoc = (SPDocument)session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 }
             }
            
@@ -422,28 +421,28 @@ public abstract class AbstractXMLServer extends ServletManager {
             // Stylesheet params. Do the same for the parameter __language.
             if ((value = preq.getRequestParam(PARAM_LANG)) != null) {
                 if (value.getValue() != null) {
-                    conutil.setSessionValue(session, SESS_LANG, value.getValue());
+                    session.setAttribute(SESS_LANG, value.getValue());
                 }
             }
-            if (conutil.getSessionValue(session, SESS_LANG) != null) {
-                params.put(XSLPARAM_LANG, (String) conutil.getSessionValue(session, SESS_LANG));
+            if (session.getAttribute(SESS_LANG) != null) {
+                params.put(XSLPARAM_LANG, (String)session.getAttribute(SESS_LANG));
             }
             if ((value = preq.getRequestParam(PARAM_EDITMODE)) != null) {
                 if (value.getValue() != null) {
-                    conutil.setSessionValue(session, PARAM_EDITMODE, value.getValue());
+                    session.setAttribute(PARAM_EDITMODE, value.getValue());
                 }
             }
-            if (conutil.getSessionValue(session, PARAM_EDITMODE) != null) {
+            if (session.getAttribute(PARAM_EDITMODE) != null) {
                 // first we check if the properties prohibit editmode
                 if (editmodeAllowed) {
-                    params.put(PARAM_EDITMODE, (String) conutil.getSessionValue(session, PARAM_EDITMODE));
+                    params.put(PARAM_EDITMODE, (String)session.getAttribute(PARAM_EDITMODE));
                 }
             }
         }
 
         // Set stylesheet parameters for editconsole
         if(recordmodeAllowed) {
-            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session, conutil);         
+            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
             if(name != null) {
                 params.put(PARAM_RECORDMODE, name);            
             }
@@ -458,7 +457,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             // start recording if allowed and enabled
             if(recordmodeAllowed) {
                 RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
-                recorder.tryRecord(preq, res, spdoc, session, conutil);
+                recorder.tryRecord(preq, res, spdoc, session);
             }
             if (CAT.isDebugEnabled()) {
                 CAT.debug("* Document for XMLServer is" + spdoc);
@@ -482,7 +481,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
             if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil,
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session,
                                                              servletname + SUFFIX_SAVEDDOM, scleanertimeout);
             }
         }
@@ -511,7 +510,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
-        ContainerUtil conutil    = getContainerUtil();
         TreeMap       paramhash  = constructParameters(spdoc, params);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
@@ -615,7 +613,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
-            logbuff.append(conutil.getSessionValue(session, VISIT_ID) + "|");
+            logbuff.append(session.getAttribute(VISIT_ID) + "|");
             logbuff.append(session.getId() + "|");
             logbuff.append(preq.getRemoteAddr() + "|");
             logbuff.append(preq.getServerName() + "|");
@@ -719,7 +717,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = (SPDocument) getContainerUtil().getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
+                SPDocument saved = (SPDocument)session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 if (saved == null)
                     return false;
                 String stamp = saved.getTimestamp() + "";

@@ -22,9 +22,9 @@ import org.apache.log4j.Category;
 
 
 /**
- * Class to decouple the exception-throwing jserv-threads from the thread which 
+ * Class to decouple the exception-throwing tomcat-threads from the thread which 
  * handles the exception. It is a simple producer/consumer-problem where the
- * jserv threads are the producers and the exception-handling thread is the consumer.
+ * tomcat threads are the producers and the exception-handling thread is the consumer.
  * 
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CLASSPATH=`cd ..; make -s echo-classpath-jserv`
+export CLASSPATH=`cd ..; make -s echo-classpath`
 export LANG=C
 
 find . -type f | grep "/txt/" | grep "\.xml$"  > .ALLINCFILES
