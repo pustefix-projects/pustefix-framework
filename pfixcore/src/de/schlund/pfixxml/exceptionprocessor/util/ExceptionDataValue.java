@@ -19,10 +19,14 @@
 
 package de.schlund.pfixxml.exceptionprocessor.util;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import org.w3c.dom.Document;
 
 /**
  * @author jh
@@ -30,7 +34,7 @@ import java.util.List;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ExceptionDataValue  {
+public class ExceptionDataValue implements Serializable {
 	private Throwable throwable;
 	private String scheme;
 	private String servername;
@@ -44,6 +48,10 @@ public class ExceptionDataValue  {
 	private ArrayList lastSteps;
 	private HashMap sessionKeysAndValues;
 	private Integer hashCodeForThrowable;
+    
+    private String text;
+    private String subject;
+    private Document xmlpresentation;
 	
 	/**
 	 * @return Returns the sessionKeysAndValues.
@@ -181,13 +189,13 @@ public class ExceptionDataValue  {
 		return sb.toString();
 	}
 	
-	/*private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
 	}
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 	}
-    */
+    
 	/**
 	 * @return Returns the port.
 	 */
@@ -272,4 +280,27 @@ public class ExceptionDataValue  {
 	public void setLastSteps(ArrayList lastSteps) {
 		this.lastSteps = lastSteps;
 	}
+    
+    public void setTextBodyRepresentation(String text) {
+        this.text =text;
+    }
+    public void setTextSubjectRepresentation(String text) {
+        this.subject = text;
+    }
+    
+    public void setXMLRepresentation(Document doc) {
+        this.xmlpresentation = doc;
+    }
+    
+    public Document getXMLPresentation() {
+        return this.xmlpresentation;
+    }
+    
+    public String getTextSubject() {
+        return this.subject;
+    }
+    
+    public String getTextBody() {
+        return this.text;
+    }
 }

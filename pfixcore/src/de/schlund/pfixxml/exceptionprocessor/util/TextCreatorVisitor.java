@@ -111,6 +111,16 @@ public class TextCreatorVisitor implements ExceptionDataValueVisitor {
 				strwriter.getBuffer().toString();
 		
 		
+        String msg = data.getThrowable().getMessage();
+        if(msg == null) { 
+           StackTraceElement[] strace = data.getThrowable().getStackTrace();
+           if(strace.length > 0) {  
+               msg = strace[0].toString().trim();
+           } else {
+                msg = "No stacktrace available";
+            }
+        }
+                
 		 Object[] args = new Object[] {
 	    		data.getServername(), 
 				data.getServlet().startsWith("/") ?
@@ -118,24 +128,16 @@ public class TextCreatorVisitor implements ExceptionDataValueVisitor {
 						data.getServlet(),
 				data.getPage(),
 				data.getThrowable().getClass().getName(),
-				data.getThrowable().getMessage() == null ?
-						(data.getThrowable().getStackTrace()[0] == null ?
-								"No stacktrace" : 
-								data.getThrowable().getStackTrace()[0].toString()
-						) :
-                        data.getThrowable().getMessage()};
+                msg
+				};
 	    
 		 subject = MessageFormat.format("{0}|{1}|{2}|{3}:{4}", args);
+         
+         data.setTextSubjectRepresentation(subject);
+         data.setTextBodyRepresentation(text);
 	}
 
-	public String getText() {
-		return text;
-	}
 	
-	public String getSubject() {
-		return subject;
-	}
-
 	/* (non-Javadoc)
 	 * @see de.schlund.jmsexceptionhandler.tokenbucket.ReportDataValueVisitor#visit(de.schlund.jmsexceptionhandler.tokenbucket.ReportDataValue)
 	 */

@@ -74,8 +74,8 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
             data.accept(xv);
             TextCreatorVisitor tv = new TextCreatorVisitor();
             data.accept(tv);
-            doc = xv.getDocument();
-            text = tv.getText();
+            doc = data.getXMLPresentation();
+            text = data.getTextBody();
         }
         
         LOG.error(text);
