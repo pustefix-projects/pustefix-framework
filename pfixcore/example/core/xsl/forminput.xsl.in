@@ -588,7 +588,7 @@
       </children>
       <children>
         <name>pfx:dynoptions</name>
-        <description>render option tags given via the result XML tree</description>        
+        <description>render option tags given via the result tree</description>        
       </children>
       <example>
         <input>
