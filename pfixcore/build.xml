@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!DOCTYPE project PUBLIC "ant" "ant.dtd">
-
 <project name="pfixcore" default="all" basedir=".">
     
     <!-- set global properties for this build -->
-    
+
     <property file="build.properties"/>
     <property environment="env"/>
     <property name="project.name"           value="pfixcore"/>
