@@ -125,7 +125,7 @@ public final class Xml {
 
     public static Document parse(Source input) throws  TransformerException, TransformerConfigurationException {
         try {
-            Transformer trans  = Xslt.createTransformer();
+            Transformer trans  = Xslt.createIdentityTransformer();
             DOMResult   result = new DOMResult();
             trans.transform(input, result);
             return (TinyDocumentImpl) result.getNode();

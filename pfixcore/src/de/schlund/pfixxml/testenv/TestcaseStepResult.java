@@ -4,25 +4,16 @@
  */
 package de.schlund.pfixxml.testenv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 
+
+import de.schlund.pfixxml.util.*;
+import java.io.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
 import org.apache.log4j.Category;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
+import org.apache.oro.text.regex.*;
+import org.w3c.dom.*;
 
 /**
  * @author Joerg Haecker <haecker@schlund.de>
@@ -41,7 +32,7 @@ public class TestcaseStepResult {
     private long preProc = 0;
     private long getDom = 0;
     private long hdlDoc = 0;
-    
+
     public void setRecordedReferenceDoc(Document reference_data) {
         if (reference_data == null) {
             throw new IllegalArgumentException("A NP as referencedata is NOT allowed here!");
@@ -187,19 +178,23 @@ public class TestcaseStepResult {
             }
             Templates trafo;
             try {
-                trafo = Xslt.loadTemplates(stylesheetFile);
+                trafo = Xslt.loadTemplates(Path.create(stylesheetFile));
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);
             }
             try {
-                serverResponse = Xslt.transform(serverResponse, trafo);
+                DOMResult result = new DOMResult();
+                Xslt.transform(serverResponse, trafo, null, result);
+                serverResponse = (Document) result.getNode();
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
 
             try {
-                recordedReferenceDoc = Xslt.transform(recordedReferenceDoc, trafo);
+                DOMResult result = new DOMResult();
+                Xslt.transform(recordedReferenceDoc, trafo, null, result);
+                recordedReferenceDoc = (Document) result.getNode();
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }

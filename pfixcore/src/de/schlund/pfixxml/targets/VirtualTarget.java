@@ -18,21 +18,17 @@
 */
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerException;
 
+
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.util.Xslt;
+import java.io.*;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
-
-import de.schlund.pfixxml.AbstractXMLServer;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.util.Xslt;
 
 /**
  * VirtualTarget.java
@@ -245,7 +241,7 @@ public abstract class VirtualTarget extends TargetImpl {
             throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
         TreeMap tmpparams = getParams();
         AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
-        Xslt.transform(xmlobj, templ, tmpparams, new FileOutputStream(cachefile));
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

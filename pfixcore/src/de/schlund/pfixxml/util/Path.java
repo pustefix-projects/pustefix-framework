@@ -25,21 +25,25 @@ import java.io.File;
  * specified.  
  */
 public class Path implements Comparable {
-	private static final String SEP = File.separator; 
-	
-	public static final File ROOT = new File(SEP); // TODO: windows
-	public static final File HERE = new File(".").getAbsoluteFile();
-	public static final File USER = new File(System.getProperty("user.dir"));
-	
-	public static Path create(String path) {
-	    if (path.startsWith(SEP)) {
-		    return create(ROOT, path.substring(SEP.length()));
-	    } else {
-	        return create(USER, path);
-	    }
-	}
+    private static final String SEP = File.separator; 
+    
+    public static final File ROOT = new File(SEP); // TODO: windows
+    public static final File HERE = new File(System.getProperty("user.dir"));
+    public static final File USER = new File(System.getProperty("user.home"));
+    
+    public static Path create(File file) {
+        File root = file.getAbsoluteFile().getParentFile();
+        if (root == null) {
+            root = ROOT;
+        }
+        return create(root, file.getName());
+    }
 
-	public static Path create(File base, String relative) {
+    public static Path create(String path) {
+        return create(new File(path));
+    }
+
+    public static Path create(File base, String relative) {
         if (relative.startsWith(SEP)) {
             // TODO: move this check "up"
             relative = relative.substring(1);
@@ -48,15 +52,15 @@ public class Path implements Comparable {
         return new Path(base.getAbsoluteFile(), relative);
     }
 
-	public static String getRelativeString(File base, String absolute) {
-	    String prefix = base.getAbsolutePath() + SEP;
-	    if (absolute.startsWith(prefix)) {
-	        return absolute.substring(prefix.length());
-	    } else {
-	        return null;
-	    }
-	}
-	
+    public static String getRelativeString(File base, String absolute) {
+        String prefix = base.getAbsolutePath() + SEP;
+        if (absolute.startsWith(prefix)) {
+            return absolute.substring(prefix.length());
+        } else {
+            return null;
+        }
+    }
+    
     //--
     
     /** starts and ends with SEP */

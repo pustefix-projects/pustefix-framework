@@ -614,11 +614,11 @@ public abstract class AbstractXMLServer extends ServletManager {
                 Document errordoc = targetex.toXMLRepresentation();
                 errordoc = Xml.parse(errordoc);
                 Templates stvalue = (Templates) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-                Xslt.transform(errordoc, stvalue, null, res.getOutputStream());
+                Xslt.transform(errordoc, stvalue, null, new StreamResult(res.getOutputStream()));
                 return;
             }
             try {
-                Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, res.getOutputStream());
+                Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
             } catch (TransformerException e) {
             	if(e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());

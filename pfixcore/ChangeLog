@@ -1,3 +1,25 @@
+2004-06-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/Path.java (create(File file)): new method,
+	this will use the parent dir of the file argument as the Path base.
+
+	* src/de/schlund/pfixxml/util/Xslt.java: only one interface to the
+	load Templates objects remains. For every "base directory"
+	(usually one currently) there will be a new factory created with
+	it's own FileResolver. The class uses the Path class more consitently.
+	
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java:
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java:
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java:
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: only use the new
+	interface of Xslt.java
+
+	* src/de/schlund/pfixcore/util/XsltTransformer.java: reenabled a
+	private factory and transformation for now. We need to check how
+	to rewrite it again to use the new, smaller interface of Xslt.java
+
 2004-06-28  Michael Hartmier  <mhm@schlund.de>
 	- simplified AppLoader init
 	- minor cleanup

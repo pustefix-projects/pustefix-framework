@@ -18,7 +18,6 @@
 */
 package de.schlund.pfixxml.util;
 
-
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -26,64 +25,43 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.*;
-import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.*;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 public class Xslt {
-    private static final Category CAT = Category.getInstance(Xslt.class.getName());
-
-    // TransformerFactory.newInstance() does not work with ant, since the Factory
-    // does not seem to pick the correct classloader with saxon in its classpath.
-    // Simple instantiation or classloading works, since the current classloader is defined
-    // by ant and therefore has saxon in its classpath.
-    // TODO_AH check if object creation is really necessary here
-    private static final TransformerFactoryImpl uri_factory = new TransformerFactoryImpl();
-    private static final TransformerFactoryImpl rel_factory = new TransformerFactoryImpl();
+    private static final Category           CAT        = Category.getInstance(Xslt.class.getName());
+    private static final TransformerFactory ifactory   = new TransformerFactoryImpl();
+    private static final HashMap            factorymap = new HashMap();
     
-    static {
-        uri_factory.setErrorListener(new PFErrorListener());
-        rel_factory.setErrorListener(new PFErrorListener());
-    }
-
     //-- load documents
     
-    public static synchronized Transformer createTransformer() {
+    public static synchronized Transformer createIdentityTransformer() {
         try {
-            return uri_factory.newTransformer();
+            return ifactory.newTransformer();
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static synchronized Templates loadTemplates(File file) throws TransformerConfigurationException {
-        Source src = new StreamSource(file);
-        try {
-            return uri_factory.newTemplates(src);
-        } catch (TransformerConfigurationException e) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("TransformerConfigurationException in loadTemplates(file)!\n");
-            sb.append("File: ").append(file.getPath()).append("\n");
-            sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
-            Throwable cause = e.getException();
-            if (cause == null) cause = e.getCause();
-            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
-            CAT.error(sb.toString());
-            throw e;
+    public static synchronized Templates loadTemplates(Path path) throws TransformerConfigurationException {
+        InputSource        input   = new InputSource("file://" + path.getBase() + "/" + path.getRelative());
+        Source             src     = new SAXSource(Xml.createXMLReader(), input);
+        TransformerFactory factory = (TransformerFactory) factorymap.get(path.getBase());
+
+        if (factory == null) {
+            // Create a new factory with the correct URIResolver.
+            factory = new TransformerFactoryImpl();
+            factory.setURIResolver(new FileResolver(path.getBase()));
+            factory.setErrorListener(new PFErrorListener());
+            factorymap.put(path.getBase(), factory);
         }
-    }
-    
-    public static synchronized Templates loadTemplates(File docroot, String path) throws TransformerConfigurationException {
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException("absolute path expected: " + path);
-        }
-        Source src = new SAXSource(Xml.createXMLReader(), new InputSource("file://" + path));
+        
         try {
-            // FIXME FIXME This is ugly as hell.
-            rel_factory.setURIResolver(new FileResolver(docroot));
-            return rel_factory.newTemplates(src);
+            Templates retval = factory.newTemplates(src);
+            return retval;
         } catch (TransformerConfigurationException e) {
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerConfigurationException in doLoadTemplates!\n");
@@ -98,19 +76,7 @@ public class Xslt {
     }
 
     //-- apply transformation
-
-    public static Document transform(Document doc, Templates templates) throws TransformerException {
-        Transformer trafo  = templates.newTransformer();
-        DOMSource   src    = new DOMSource(doc);
-        DOMResult   result = new DOMResult();
-        trafo.transform(src, result);
-        return (Document) result.getNode();
-    }
-
-    public static void transform(Document xml, Templates templates, Map params, OutputStream out) throws TransformerException {
-        transform(xml, templates, params, new StreamResult(out));
-    }
-
+    
     public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
         Transformer trafo = templates.newTransformer();
         long        start = 0;
@@ -136,14 +102,11 @@ public class Xslt {
     
     static class FileResolver implements URIResolver {
     	private static final String SEP = File.separator; 
-        
-        // always with tailing /
-        private final File root;
+        private final File          root;
         
         public FileResolver(File root) {
             this.root = root;
         }
-        
         /**
          * Resolve file url relative to root. 
          * @param base ignored, always relative to root 
@@ -152,7 +115,6 @@ public class Xslt {
             URI    uri;
             String path;
             File   file;
-            
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
@@ -176,27 +138,16 @@ public class Xslt {
      * Implementation of ErrorListener interface.
      */
     static class PFErrorListener implements ErrorListener {
-        
-        /**
-         * @see javax.xml.transform.ErrorListener#warning(javax.xml.transform.TransformerException)
-         */
-        public void warning(TransformerException arg0) throws TransformerException {
-            throw arg0;
+        public void warning(TransformerException arg) throws TransformerException {
+            throw arg;
         }
         
-        /**
-         * @see javax.xml.transform.ErrorListener#error(javax.xml.transform.TransformerException)
-         */
-        public void error(TransformerException arg0) throws TransformerException {
-            throw arg0;
+        public void error(TransformerException arg) throws TransformerException {
+            throw arg;
         }
-
-        /**
-         * @see javax.xml.transform.ErrorListener#fatalError(javax.xml.transform.TransformerException)
-         */
-        public void fatalError(TransformerException arg0) throws TransformerException {
-            throw arg0;
+        
+        public void fatalError(TransformerException arg) throws TransformerException {
+            throw arg;
         }
     }
-    
 }

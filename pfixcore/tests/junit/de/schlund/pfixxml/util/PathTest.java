@@ -1,10 +1,16 @@
 package de.schlund.pfixxml.util;
 
-import java.io.File;
+import java.io.*;
 import junit.framework.TestCase;
 
 public class PathTest extends TestCase {
     private Path path;
+    
+    public void testNameOnly() {
+        path = Path.create("foo.bar");
+        assertEquals(Path.HERE, path.getBase());
+        assertEquals("foo.bar", path.getRelative());
+    }
     
     public void testNormal() {
         path = Path.create(Path.HERE, "foo/bar.tgz");
@@ -13,21 +19,25 @@ public class PathTest extends TestCase {
 
     public void testAbsolute() {
         path = Path.create("/foo/bar.tgz");
-        assertEquals(Path.ROOT, path.getBase());
+        assertEquals(new File("/foo"), path.getBase());
     }
     
     public void testEmptyRelative() {
         path = Path.create(Path.HERE, "");
+        assertEquals("", path.getRelative());
         assertEquals(Path.HERE, path.resolve());
     }
     
     public void testRoot() {
-        path = Path.create(Path.ROOT.getPath());
+        assertEquals("", Path.ROOT.getName());
+        path = Path.create("/");
+        assertEquals(Path.ROOT, path.getBase());
         assertEquals(Path.ROOT, path.resolve());
+        assertEquals("", path.getRelative());
     }
 
-    public void testAbsoluteBase() {
-        assertEquals(Path.HERE, Path.create(new File("."), "").getBase());
+    public void testAbsoluteBase() throws IOException {
+        assertEquals(Path.HERE, Path.create(new File("."), "").getBase().getCanonicalFile());
     }
     //--
     
@@ -43,7 +53,8 @@ public class PathTest extends TestCase {
     }
 
     public void testGetDir() {
-        assertEquals("bar", Path.create("/bar/foo.tgz").getDir());
+        assertEquals("baz", Path.create(new File("/bar"), "baz/foo.tgz").getDir());
+        assertNull(Path.create("/bar/foo.tgz").getDir());
         assertNull(Path.create("/foo").getDir());
         assertNull(Path.create("/").getDir());
     }

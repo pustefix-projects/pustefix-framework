@@ -19,11 +19,13 @@
 
 package de.schlund.pfixxml.targets;
 
+
+
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xslt;
 import java.io.File;
 import java.util.TreeMap;
-
 import javax.xml.transform.TransformerException;
-import de.schlund.pfixxml.util.Xslt;
 
 /**
  * XSLVirtualTarget.java
@@ -51,7 +53,10 @@ public class XSLVirtualTarget extends VirtualTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(generator.getDocroot(), thefile.getPath());
+            String docroot = getTargetGenerator().getDocroot().getAbsolutePath();
+            String cache   = getTargetGenerator().getDisccachedir().getAbsolutePath();
+            cache          = cache.substring(docroot.length());
+            return Xslt.loadTemplates(Path.create(getTargetGenerator().getDocroot(), cache + "/" + getTargetKey()));
         } else {
             return null;
         }

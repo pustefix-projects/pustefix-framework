@@ -6,21 +6,14 @@
  */
 package de.schlund.pfixcore.util;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.tools.ant.BuildException;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xslt;
+import java.io.File;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
+import org.apache.tools.ant.BuildException;
 
 /**
  * @author adam
@@ -30,6 +23,7 @@ import de.schlund.pfixxml.util.Xslt;
  */
 public class XsltTransformer {
 
+    protected TransformerFactory factory;
     protected Transformer transformer;
     protected File stylesheet;
     protected boolean isValidStylesheet = false;
@@ -58,6 +52,7 @@ public class XsltTransformer {
      */
     public XsltTransformer(File stylesheet) {
         setStylesheet(stylesheet);
+        factory = TransformerFactory.newInstance();
     }
 
     public void transform(File baseDir, String infilename, File destDir, String outfilename) {
@@ -99,7 +94,7 @@ public class XsltTransformer {
                     reload = reload || (stylesheet.equals(stylesheetOld) == false);
                     reload = reload || (lastModified > stylesheetOldLastModified);
                     if (reload) {
-                        transformer = Xslt.loadTemplates(stylesheet).newTransformer();
+                        transformer = factory.newTransformer(new StreamSource(stylesheet));
                         stylesheetOld = stylesheet;
                         stylesheetOldLastModified = lastModified;
                         isValidStylesheet = true;

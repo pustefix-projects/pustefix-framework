@@ -46,10 +46,11 @@ public class XsltTest extends TestCase {
         Templates trafo;
         DOMResult result;
         
-        doc = Xml.parse(new File(PREFIX + xml));
-        trafo = Xslt.loadTemplates(new File(PREFIX + xsl));
+        doc    = Xml.parse(new File(PREFIX + xml));
+        trafo  = Xslt.loadTemplates(Path.create(new File(PREFIX + xsl)));
         result = new DOMResult();
-        return Xslt.transform(doc, trafo);
+        Xslt.transform(doc, trafo, null, result);
+        return (Document) result.getNode();
     }
     
 	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
