@@ -5,9 +5,41 @@
   <part name="content">
     <product name="default">
       <lang name="default">
+       <ixsl:variable name="red">#CC0A0A</ixsl:variable>
+       <ixsl:variable name="green">#1D7C06</ixsl:variable> 
+       <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
+      
+
+      <table>
+        <tr>
+          <td>
+            <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
+            <font>
+              <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
+              Green(+)
+            </font>
+              nodes are added in the current result
+          </td>
+        </tr>
+          
+        <tr>
+          <td>
+            <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
+            <font>
+              <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
+                Red(-)
+            </font>
+              nodes are leaved out in the current result 
+          </td>
+        </tr>
+      </table>
+
+      
        <h1>Result:</h1>
        <ixsl:for-each select="/formresult/test_results/child::*">
-       <table border="1" bgcolor="#AAAAAA" cellspacing="0" cellpadding="0">
+       <br/><hr/><br/>
+       <table border="1" cellspacing="0" cellpadding="0">
+        <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
         <th><ixsl:value-of select="name()"/> Id=
           <ixsl:value-of select="@id"/>
         </th>
@@ -26,12 +58,14 @@
                         <ixsl:variable name="line" select="."/>
                         <ixsl:choose>
                           <ixsl:when test="substring($line, 1, 1)='-'">
-                            <td bgcolor="#CC0A0A">
+                            <td>
+                              <ixsl:attribute name="bgcolor"><ixsl:value-of select="$red"/></ixsl:attribute>
                               <ixsl:value-of select="$line"/>
                             </td>
                           </ixsl:when>
                           <ixsl:when test="substring($line, 1, 1)='+'">
-                            <td bgcolor="#1D7C06">
+                            <td>
+                              <ixsl:attribute name="bgcolor"><ixsl:value-of select="$green"/></ixsl:attribute>
                               <ixsl:value-of select="$line"/>
                             </td>
                           </ixsl:when>
@@ -58,6 +92,17 @@
         </ixsl:for-each>
        </table>
        </ixsl:for-each>
+       <br/>
+       <table>
+        <tr>
+          <td>
+            <pfx:button normalclass="editor_submit" page="testcaseselect">New test
+              <pfx:argument name="testcasereset.Reset">true</pfx:argument>
+              <pfx:command name="SELWRP" page="testcaseselect">testcasereset</pfx:command>
+            </pfx:button>
+          </td>
+        </tr>
+       </table>
       </lang>
       </product>
   </part>

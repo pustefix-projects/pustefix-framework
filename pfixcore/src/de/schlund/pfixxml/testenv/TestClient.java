@@ -151,6 +151,13 @@ public class TestClient {
         srcDir   = log_dir;
         styleDir = style_dir;
         tmpDir   = tmp_dir;
+        File tmp = new File(tmpDir);
+        if(! tmp.exists()) {
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("Creating tmp dir = "+tmpDir);
+            }
+            tmp.mkdirs();
+        }
         ArrayList    files = readFiles();
         StepConfig[] config = doPrepare(files);
         return doTest(config);
@@ -297,31 +304,52 @@ public class TestClient {
     }
 
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
+        
+        try {
+            removeSerialNumber(in);
+        } catch(TransformerException e) {
+            throw new TestClientException("Transformer exception", e);
+        }
+        
         // saxon
         TransformerFactoryImpl trans_fac     = (TransformerFactoryImpl) TransformerFactory.newInstance();
         String                 path          = styleDir + "/" + stylesheet_name;
-        StreamSource           stream_source = new StreamSource("file://" + path);
-        Templates              templates     = null;
-        try {
-            templates = trans_fac.newTemplates(stream_source);
-        } catch (TransformerConfigurationException e) {
-            throw new TestClientException("TransformerConfigurationException occured!", e);
+        File styesheet = new File(path);
+        if(styesheet.exists()) {
+            StreamSource           stream_source = new StreamSource("file://" + path);
+            Templates              templates     = null;
+            try {
+                templates = trans_fac.newTemplates(stream_source);
+            } catch (TransformerConfigurationException e) {
+                throw new TestClientException("TransformerConfigurationException occured!", e);
+            }
+            Transformer trafo = null;
+            try {
+                trafo = templates.newTransformer();
+            } catch (TransformerConfigurationException e) {
+                throw new TestClientException("TransformerConfigurationException occured!", e);
+            }
+            DOMSource dom_source = new DOMSource(in);
+            DOMResult dom_result = new DOMResult();
+            try {
+                trafo.transform(dom_source, dom_result);
+            } catch (TransformerException e) {
+                throw new TestClientException("TransformerException occured!", e);
+            }
+            return (Document) dom_result.getNode();
+        } else {
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("Stylesheet named "+path+" not found. Transformation skipped!");
+            }
         }
-        Transformer trafo = null;
-        try {
-            trafo = templates.newTransformer();
-        } catch (TransformerConfigurationException e) {
-            throw new TestClientException("TransformerConfigurationException occured!", e);
-        }
-        DOMSource dom_source = new DOMSource(in);
-        DOMResult dom_result = new DOMResult();
-        try {
-            trafo.transform(dom_source, dom_result);
-        } catch (TransformerException e) {
-            throw new TestClientException("TransformerException occured!", e);
-        }
-        return (Document) dom_result.getNode();
+        return in;
     }
+    
+    private void removeSerialNumber(Document in) throws TransformerException {
+        Node node = XPathAPI.selectSingleNode(in, "/formresult");
+        ((Element)node).setAttribute("serial", "0");
+    }
+    
 
     private void writeDocument(Document doc, String path) throws TestClientException {
         XMLSerializer ser        = new XMLSerializer();

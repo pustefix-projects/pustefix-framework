@@ -29,11 +29,15 @@ public class TestcaseStartFinalizer extends ResdocSimpleFinalizer {
         ContextResourceManager crm = context.getContextResourceManager();
         CRTestcase crtc = EditorRes.getCRTestcase(crm);
         ResultDocument resdoc = container.getAssociatedResultDocument();
+
+        
         
         Element ele = resdoc.createNode("selected_testcases");
-        String[] selected = crtc.getTestcasesForProcessing();
+        String[] selected = crtc.getSelectedTestcases();
         for(int i = 0; i < selected.length; i++) {
             Element e = resdoc.addTextChild(ele, "selected_testcase", selected[i]);
+            String tmp_dir = crtc.getTemporaryDirectoryForTestcase(selected[i]);
+            e.setAttribute("tmp_directory", tmp_dir);
             ele.appendChild(e);
         }
     }

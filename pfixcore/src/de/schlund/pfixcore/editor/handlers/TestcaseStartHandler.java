@@ -42,7 +42,7 @@ public class TestcaseStartHandler implements IHandler {
     public boolean prerequisitesMet(Context context) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
         CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-        return crtc.hasTestcasesForProcessing();
+        return crtc.hasSelectedTestcases();
     }
 
     /**

@@ -1,3 +1,31 @@
+2003-03-24  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/TestClient.java: formserial
+	is deleted by code, no stylesheet needed any more.
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java: code cleanup
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: Debug code + xsl
+	parameter changes for editconsole.
+
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseReset.iwrp: added
+
+	* example/core/editor/conf/config.prop.in
+	* example/core/editor/txt/navigation.xml
+	* example/core/editor/txt/pages/main_home.xml
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml
+	* example/core/xsl/include.xsl.in
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:
+	changes for play-back of recorded testcases in editor.
+	
 2003-03-21  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: removed code

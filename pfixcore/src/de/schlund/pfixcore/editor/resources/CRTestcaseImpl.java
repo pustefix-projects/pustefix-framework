@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.testenv.RecordManager;
+import de.schlund.pfixxml.testenv.RecordManagerFactory;
 import de.schlund.pfixxml.testenv.TestClient;
 import de.schlund.pfixxml.testenv.TestClientException;
 
@@ -21,15 +25,18 @@ import de.schlund.pfixxml.testenv.TestClientException;
  */
 public class CRTestcaseImpl implements CRTestcase {
 
-    private String [] testCasesForPrcessing = null;
+    private String [] selectedTestcases = null;
     private String availableTestcasesDirectory = null;
     private String availableTestcases = null;
     private ArrayList testOutput = null;
+    private ContextResourceManager cRM = null;
     private static Category CAT = Category.getInstance(CRTestcase.class.getName());
+    private static String TEMP_DIR_DEFAULT = "/tmp";
     /**
      * @see de.schlund.pfixcore.workflow.ContextResource#init(Context)
      */
     public void init(Context context) throws Exception {
+        cRM = context.getContextResourceManager();
     }
 
     /**
@@ -37,7 +44,6 @@ public class CRTestcaseImpl implements CRTestcase {
      */
     public void insertStatus(ResultDocument resdoc, Element elem)
         throws Exception {
-        //System.out.println(this.getClass().getName()+" : insertStatus");
     }
 
     /**
@@ -56,33 +62,33 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#setTestcasesForProcessing(String[])
      */
-    public void setTestcasesForProcessing(String[] cases) {
-        testCasesForPrcessing = new String[cases.length];
+    public void setSelectedTestcases(String[] cases) {
+        selectedTestcases = new String[cases.length];
         for(int i=0; i<cases.length; i++) {
-            testCasesForPrcessing[i] =  cases[i];
+            selectedTestcases[i] =  cases[i];
         }
     }
 
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#getTestcasesForProcessing()
      */
-    public String[] getTestcasesForProcessing() {
-        return testCasesForPrcessing;
+    public String[] getSelectedTestcases() {
+        return selectedTestcases;
     }
 
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#hasTestcasesForProcessing()
      */
-    public boolean hasTestcasesForProcessing() {
-        return ((testCasesForPrcessing == null) || 
-                (testCasesForPrcessing.length < 1)) ? false : true;
+    public boolean hasSelectedTestcases() {
+        return ((selectedTestcases == null) || 
+                (selectedTestcases.length < 1)) ? false : true;
     }
 
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#getAvailableTestcases()
      */
-    public String[] getAvailableTestcases() {
-        File dir = new File(availableTestcasesDirectory);
+    public String[] getAvailableTestcases() throws Exception {
+        File dir = new File(getAvailableTestcaseDir());
         String [] files = dir.list();
         if(files == null) {
             files = new String[0];
@@ -93,8 +99,11 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#getAvailableTestcasesDirectory()
      */
-    public String getAvailableTestcasesDirectory() {
-        return availableTestcasesDirectory;
+    public String getAvailableTestcasesDirectoryForProduct() throws Exception {
+        if(availableTestcasesDirectory == null) {
+            availableTestcases = getAvailableTestcaseDir();
+        }
+        return availableTestcases;
     }
 
     public void setAvailableTestcasesDirectory(String dir) {
@@ -104,17 +113,15 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#executeTest()
      */
-    public void executeTest() throws TestClientException {
-        //System.out.println("Execute test");
+    public void executeTest() throws Exception {
         testOutput = new ArrayList();
-        for(int i=0; i<testCasesForPrcessing.length; i++) {
+        for(int i=0; i<selectedTestcases.length; i++) {
             TestClient tc = new TestClient();
             try {
-                String dir = availableTestcasesDirectory + "/" + testCasesForPrcessing[i];
-                System.out.println("Passing "+dir+" to testclient");
+                String dir = getAvailableTestcaseDir() + "/" + selectedTestcases[i];
                 String[] result = tc.makeTest(dir, 
-                                "/home/jh/wuergspace/workspace/pfixcore/example/testenv",
-                                "/tmp");
+                                getAvailableTestcaseDir() + "/" + selectedTestcases[i],
+                                getTemporaryDirectoryForTestcase(selectedTestcases[i]));
                 testOutput.add(i, result);
             } catch(TestClientException e) {
                 CAT.error("TestClientException: "+e.getMessage()+" "+e.getCause().getMessage());
@@ -127,8 +134,38 @@ public class CRTestcaseImpl implements CRTestcase {
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#getTestResult()
      */
     public ArrayList getTestResult() {
-       // System.out.println("getTestResult");
         return testOutput;
     }
 
+    /**
+     * @see de.schlund.pfixcore.editor.resources.CRTestcase#getTemporaryDirectory()
+     */
+    public String getTemporaryDirectoryForTestcase(String casename) {
+        String tmp_dir = System.getProperties().getProperty("java.io.tmpdir");
+        if(tmp_dir == null || tmp_dir.equals("")) {
+            tmp_dir = TEMP_DIR_DEFAULT;
+        }
+        return tmp_dir + "/" + casename;
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.resources.CRTestcase#doReset()
+     */
+    public void doReset() {
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("Resetting CRTestcase!");
+        }
+        selectedTestcases = null;
+        availableTestcasesDirectory = null;
+        availableTestcases = null;
+        testOutput = null;
+    }
+
+    private String getAvailableTestcaseDir() throws Exception {
+        EditorSessionStatus esess = EditorRes.getEditorSessionStatus(cRM);
+        EditorProduct product = esess.getProduct();
+        String depend = product.getDepend();
+        RecordManager recman = RecordManagerFactory.getInstance().createRecordManager(depend);
+        return recman.getRecordmodeBaseDir();
+    }
 }

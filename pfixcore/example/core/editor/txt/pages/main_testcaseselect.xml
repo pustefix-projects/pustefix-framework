@@ -10,10 +10,10 @@
         <h3>The following testcases exist for this product:</h3>
         <br/>
         <pfx:forminput target="_top">
-            <ixsl:for-each select="/formresult/testcases/testcase">
-              <pfx:xinp type="check" name="testcase.case">   
-                <ixsl:variable name="myname" select="."/>
-                  <ixsl:attribute name="value"><ixsl:value-of select="$myname"/></ixsl:attribute>
+          <ixsl:for-each select="/formresult/testcases/testcase">
+            <pfx:xinp type="check" name="testcase.case">   
+              <ixsl:variable name="myname" select="."/>
+                <ixsl:attribute name="value"><ixsl:value-of select="$myname"/></ixsl:attribute>
                   <ixsl:for-each select="/formresult/formvalues/param">
                     <ixsl:variable name="myvalue" select="."/>
                     <ixsl:if test="$myvalue = $myname">
@@ -24,8 +24,10 @@
               </pfx:xinp>
               <br/>
             </ixsl:for-each>
-            <pfx:xinp type="submit" value="Next"/>
+            <pfx:xinp class="editor_submit" type="submit" value="Next"/>
+            <pfx:xinp class="editor_submit" type="submit" value="Delete selected testcases(Not implemented yet!)"/>
         </pfx:forminput>
+        <br/>
       </lang>
     </product>
   </part>

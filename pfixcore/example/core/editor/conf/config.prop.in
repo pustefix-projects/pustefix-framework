@@ -133,15 +133,14 @@
 
   <pagerequest name="testcaseselect">
     <finalizer class="de.schlund.pfixcore.editor.handlers.TestcaseSelectFinalizer"/>
-    <!--<finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/>-->
     <ihandler>
+      <interface prefix="testcasereset" class="de.schlund.pfixcore.editor.interfaces.TestcaseReset"/>
       <interface prefix="testcase" class="de.schlund.pfixcore.editor.interfaces.TestcaseSelect"/>
     </ihandler>
   </pagerequest>
   
   <pagerequest name="testcasestart">
     <finalizer class="de.schlund.pfixcore.editor.handlers.TestcaseStartFinalizer"/>
-    <!--<finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/>-->
     <ihandler>
       <interface prefix="testcase" class="de.schlund.pfixcore.editor.interfaces.TestcaseStart"/>
     </ihandler>
