@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.loader;
 
+import java.io.*;
+
 /**
  * AppLoaderConfigException.java 
  * 
@@ -55,8 +57,16 @@ public class StateTransferException extends Exception {
     }
 
 	public String toString() {
-        if(x==null) return "StateTransferException: Class '"+className+"': "+msg;
-        return "StateTransferException: Class '"+className+": "+x;
+        StringBuffer sb=new StringBuffer();
+        sb.append("StateTransferException: Class '"+className+"'");
+        if(msg!=null) sb.append(": "+msg);
+        if(x!=null) sb.append(": "+x);
+        if(getType()==UNHANDLED_EXCEPTION && x!=null) {
+            StringWriter sw=new StringWriter();
+            x.printStackTrace(new PrintWriter(sw));
+            sb.append(": "+sw.getBuffer().toString());
+        }
+        return sb.toString();
 	}
 
 	public String getMessage() {
