@@ -1,3 +1,12 @@
+2004-06-22  Benjamin Reitzammer <benjamin@schlund.de>
+
+   * example/core/build/create_tomcatweb.xsl
+     If you set project/includeexternalwebxml/@include to 'true' a web.xml that
+     lies in the project's conf directory will be included into the final web.xml
+     that's the result of the transformation. No checks regarding validity (beyond
+     well-formedness) are performed on the included configuration.
+
+
 2004-06-21  Jörg Häcker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
@@ -5,9 +14,9 @@
         be processed by a defined ExceptionProcessor.
         * src/de/schlund/pfixxml/targets/TargetGenerationException.java: minor changes.
         * example/core/xsl/errorrepresentation.xsl.in: stylesheet for rendering errors on screen.
-        * src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java: 
+        * src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
         ExceptionProcessor rendering errors on screen.
-        * src/de/schlund/pfixxml/ServletManager.java(callProcess): 
+        * src/de/schlund/pfixxml/ServletManager.java(callProcess):
         - if there is no processor defined for the passed throwable, use the old
           exceptionhandler.
         - check if the passed throwable is an instance of the defined
@@ -64,23 +73,23 @@
 	* A project generator has been integrated in pfixcore
 	- Therefore a new package exists: de.schlund.pfixcore.util.basicapp
 	- It consists of different packages with all necessary classes
-	- Each dom to change is represented by its own object in 
+	- Each dom to change is represented by its own object in
 	  de.schlund.pfixcore.util.basicapp.projectdom
-	  
+
 	* Two new files will be found in /example/conf
 	- newproject.prop.in can be used for project properties
 	- newprjlog.xml.in configures log4j
-	
-	* The directory "prjtemplates" in example/core has been created. All 
+
+	* The directory "prjtemplates" in example/core has been created. All
 	  xml files to generate a new project can be found there. To avoid problems
 	  with ant the suffix tmpl is used.
-	
-	* To generate a project in pfixcore or in the skel use the newproject.sh. 
+
+	* To generate a project in pfixcore or in the skel use the newproject.sh.
 	  This file (with a different project path) also exists in the skel folder.
-	
+
 	* follow the command-line instructions
-	
-	* Afterwards run ant, restart apache and type in 
+
+	* Afterwards run ant, restart apache and type in
 	  http://projectname.HOSTNAME.DOMAIN
 
 2004-06-03  Michael Hartmier  <mhm@schlund.de>
