@@ -34,7 +34,7 @@ xmlRequest.prototype.start = function( content ) {
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
   if( this.callback ) {
-        alert(this.callback.valueOf());
+    //        alert(this.callback.valueOf());
   }
 
   var i = _xml.length;
@@ -138,7 +138,7 @@ xmlRequest.prototype.start = function( content ) {
     iframe.src              = this.url;
     if( this.method.toUpperCase() == "POST" ) {
       // load dummy page to prevent cross-domain security error
-      iframe.src = iframe.src.replace(/(https?:\/\/[^\/]+)(.*)/, "$1/xml.html");
+      iframe.src = iframe.src.replace(/(https?:\/\/[^\/]+)(.*)/, "$1/blank.html");
     }
 
     document.body.appendChild(iframe);
@@ -154,16 +154,16 @@ xmlRequest.prototype.start = function( content ) {
 
         var iDoc;
         try {
-          iDoc = contentWindow.document;
+          iDoc =  iframe.contentDocument;
         } catch(e) {
           try {
-            iDoc =  iframe.contentDocument;
+            iDoc = contentWindow.document;
           } catch(e) {
             throw "could not use iframe";
           }
         }
 
-        alert("iDoc:" + iDoc);
+        //        alert("iDoc:" + iDoc);
         var attr;
         var form = iDoc.createElement("form");
                 //         attr = iDoc.createAttribute("action");
@@ -182,7 +182,7 @@ xmlRequest.prototype.start = function( content ) {
         iDoc.forms[iDoc.forms.length-1].submit();
 
         _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
-      }, 50 );
+      }, 100 );
     } else {
       _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
     }
@@ -211,7 +211,7 @@ function customOnReadyStateChange() {
             _xmlTimerCount[i]++;
           } else {
 
-            _xml[i].call( _xmlThis[i], window.frames['pfxxmliframe'+i].document );
+            _xml[i].call( _xmlThis[i].context, window.frames['pfxxmliframe'+i].document );
             _xml[i] = null;
             cancelOnReadyStateChange(i);
           }

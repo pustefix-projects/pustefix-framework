@@ -633,8 +633,8 @@ function getChildrenByName(elem,name) {
 
 Call.prototype.callback = function( xml ) {
 
-  //  alert("Call.callback()..." + xml);
-	
+  	  alert("Call.callback()..." + xml);
+	alert( this );
 	alert("XML:"+xml);
 	alert("XMLTYPE:"+typeof xml);
 	var soapMsg=new SOAPMessage(xml);
