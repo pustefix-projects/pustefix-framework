@@ -62,7 +62,7 @@ public class IncludeDocument {
         try {
             doc = Xml.parse(tmp);
         } catch (SAXParseException ex) {
-            StringBuffer      buf = new StringBuffer(100);
+            StringBuffer buf = new StringBuffer(100);
             buf.append("Caught SAXParseException!\n");
             buf.append("  Message  : ").append(ex.getMessage()).append("\n");
             buf.append("  SystemID : ").append(ex.getSystemId()).append("\n");
