@@ -83,7 +83,7 @@
       <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
     </xsl:variable>
     <xsl:variable name="uriencoding">
-    	<xsl:apply-templates select="/projects/common/tomcat/uriencoding/node()"/>
+      <xsl:apply-templates select="/projects/common/tomcat/uriencoding/node()"/>
     </xsl:variable>
     <Connector enableLookups="false" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" URIEncoding="UTF-8" protocol="AJP/1.3">		
       <xsl:attribute name="port">

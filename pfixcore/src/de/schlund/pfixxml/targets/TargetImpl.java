@@ -92,6 +92,18 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             return getTargetGenerator().getGlobalThemes();
         }
     }
+
+    public String getThemesString() {
+        String[]     allthemes = getThemes();
+        StringBuffer themesstr = new StringBuffer("");
+        for (int i = 0; i < allthemes.length; i++) {
+            if (themesstr.length() > 0) {
+                themesstr.append(" ");
+            }
+            themesstr.append(allthemes[i]);
+        }
+        return themesstr.toString();
+    }
     
     /**
      * @see de.schlund.pfixxml.targets.Target#getXMLSource()

@@ -1,3 +1,16 @@
+2005-04-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/master.xsl.in: enter a special template __enc into each created stylesheet
+	to encode the values of parameters at runtime via URIEncoder. Use the encoding as specified
+
+	* example/core/build/create_depend.xsl: bug fix: the themes list that has been constructed from a variant was wrong
+
+	* src/de/schlund/pfixxml/targets/Target.java (getThemesString): need to get the themes String 
+	also for the runtime transformation
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: implement it.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: use it.
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: use it.
+
 2005-04-04  Martin Leidig  <mleidig@schlund.de>
 
 	* example/core/build/create_depend.xsl: If no global or target specific outputencoding is specified,

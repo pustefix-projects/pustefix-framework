@@ -47,6 +47,10 @@
       <lang name="default">
         <center>
           <br/>
+          <pfx:button>
+            <pfx:argument name="foo">Halli üצה</pfx:argument>
+            <pfx:argument name="bar">Halli;+:&amp;#Hallo</pfx:argument>THE LINK
+          </pfx:button><br/>
           ~~~~ Requested variant: <ixsl:value-of select="/formresult/@requested-variant"/> ~~~~<br/>
           ~~~~ Selected variant: <ixsl:value-of select="$variant"/> ~~~~<br/>
           <pfx:include part="theme-test"/><br/>
