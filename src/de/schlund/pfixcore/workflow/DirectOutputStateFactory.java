@@ -19,9 +19,12 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixcore.util.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 import java.util.*;
 import org.apache.log4j.*;
-import de.schlund.pfixcore.util.*;
 
 /**
  * The <code>DirectOutputStateFactory</code> class is a singleton that manages and creates
@@ -30,11 +33,28 @@ import de.schlund.pfixcore.util.*;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
  */
-public class DirectOutputStateFactory {
+public class DirectOutputStateFactory implements Reloader {
     private static HashMap      knownstates = new HashMap();
     private static Category     LOG         = Category.getInstance(StateFactory.class.getName());
     private static DirectOutputStateFactory instance    = new DirectOutputStateFactory();
     
+    private DirectOutputStateFactory() {
+        AppLoader appLoader = AppLoader.getInstance();
+        if (appLoader.isEnabled()) appLoader.addReloader(this);
+    }
+    
+    public void reload() {
+        HashMap  knownNew = new HashMap();
+        Iterator it       = knownstates.keySet().iterator();
+        while (it.hasNext()) {
+            String            str  = (String) it.next();
+            DirectOutputState sOld = (DirectOutputState) knownstates.get(str);
+            DirectOutputState sNew = (DirectOutputState) StateTransfer.getInstance().transfer(sOld);
+            knownNew.put(str,sNew);
+        }
+        knownstates = knownNew;
+    }
+
     /**
      * The singleton's <code>getInstance</code> method.
      *
@@ -55,8 +75,13 @@ public class DirectOutputStateFactory {
             DirectOutputState retval = (DirectOutputState) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
-                    retval = (DirectOutputState) stateclass.newInstance();
+                    AppLoader appLoader = AppLoader.getInstance();
+                    if(appLoader.isEnabled()) {
+                        retval = (DirectOutputState) appLoader.loadClass(classname).newInstance();
+                    } else {
+                        Class stateclass = Class.forName(classname);
+                        retval = (DirectOutputState) stateclass.newInstance();
+                    }
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
