@@ -45,7 +45,7 @@
 
               <xs:element name="caster" minOccurs="0">
                 <xs:annotation>
-                  <xs:documentation xml:lang="en">// TODO_DOC Documentation</xs:documentation>
+                  <xs:documentation xml:lang="en">Each parameter must be casted from a String to the specific type (unless the type is java.lang.String itself, in this case, no caster need to be supplied). This is done by means of a class implementing de.schlund.pfixcore.generator.IWrapperParamCaster. For the usual simple types you can use a caster from the package de.schlund.pfixcore.generator.casters.</xs:documentation>
                 </xs:annotation>
                 <xs:complexType>
                   <xs:sequence>
