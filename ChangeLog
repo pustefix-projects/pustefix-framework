@@ -1,5 +1,8 @@
 2004-02-05  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: eeeek. bugfix,
+	don't set to null, but clear() it.
+
 	* src/de/schlund/pfixxml/targets/TargetRW.java:  (resetParams) new method.
 	* src/de/schlund/pfixxml/targets/TargetImpl.java: implement it
 
