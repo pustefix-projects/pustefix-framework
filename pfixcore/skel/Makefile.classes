@@ -2,6 +2,8 @@
 # Settings...
 #################################################################
 include defines.inc
+
+BUILDDIR  = build
 PWD       = $(shell pwd)
 DOCDIR    = javadoc
 JAVAVM    = java
