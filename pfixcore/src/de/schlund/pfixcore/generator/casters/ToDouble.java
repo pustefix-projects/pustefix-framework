@@ -29,7 +29,7 @@ import java.util.*;
  *
  * Created: Tue Mar 08 16:17:48 2005
  *
- * @author <a href="mailto:tanjev.stuhr@schlund.de "Tanjev Stuhr</a>
+ * @author <a href="mailto:tanjev.stuhr@schlund.de">Tanjev Stuhr</a>
  *
  *
  */
