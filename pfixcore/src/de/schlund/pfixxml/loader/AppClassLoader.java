@@ -51,7 +51,8 @@ public class AppClassLoader extends java.lang.ClassLoader {
         this.parent=parent;
         debug = CAT.isDebugEnabled();
         try {
-            repository = SyntheticRepository.getInstance(new ClassPath(AppLoader.getInstance().getRepository().getCanonicalPath()));
+            repository=SyntheticRepository.getInstance(new ClassPath(AppLoader.getInstance().getRepository().getCanonicalPath()));
+            repository.clear();
         } catch (IOException ex) {
             throw new RuntimeException(ex.toString());
         }
@@ -127,22 +128,36 @@ public class AppClassLoader extends java.lang.ClassLoader {
         byte[] data = null;
         File file   = null;
         try {
+            String pathName=name.replace('.','/');
             JavaClass klass    = repository.loadClass(name);
             ClassGen  klassgen = new ClassGen(klass);
             if (klassgen.isInterface()) {
                 if(debug) CAT.debug("**** Is an interface: " + name);
             } else {
                 if(debug) CAT.debug("**** Is a class: " + name);
-                if (klassgen.containsMethod("<init>", "()V") == null) {
-                    if(debug) CAT.debug("Didn't find empty constructor, creating one for " + name);
-                    klassgen.addEmptyConstructor(Constants.ACC_PRIVATE);
+                int ind=name.indexOf('$');
+                if(ind>-1) {
+                    //Handle inner classes
+                    String outerPath=pathName.substring(0,ind);
+                    String sign="(L"+outerPath+";)V";
+                    if(klassgen.containsMethod("<init>",sign)==null) {
+                        if(debug) CAT.debug("Didn't find default constructor, creating one for inner class "+name);
+                        String outer=name.substring(0,ind);
+                        createDefaultConstructor(name,outer,klassgen);
+                    }
                 } else {
-                    if(debug) CAT.debug("Already has empty constructor: " + name);
+                    //Handle normal classes
+                    if (klassgen.containsMethod("<init>", "()V") == null) {
+                        if(debug) CAT.debug("Didn't find empty constructor, creating one for " + name);
+                        klassgen.addEmptyConstructor(Constants.ACC_PRIVATE);
+                    } else {
+                        if(debug) CAT.debug("Already has empty constructor: " + name);
+                    }
                 }
             }
             klass = klassgen.getJavaClass();
             data = klass.getBytes();
-            file = new File(AppLoader.getInstance().getRepository(),name.replace('.','/') + ".class");
+            file = new File(AppLoader.getInstance().getRepository(),pathName + ".class");
             synchronized(modTimes) {
                 modTimes.put(file,new Long(file.lastModified()));
             }
@@ -152,6 +167,23 @@ public class AppClassLoader extends java.lang.ClassLoader {
         return data;
     }
 	
+    private void createDefaultConstructor(String className,String outerClassName,ClassGen classGen) {
+        ConstantPoolGen poolGen=classGen.getConstantPool();
+        InstructionFactory factory=new InstructionFactory(classGen,poolGen);
+        InstructionList insList=new InstructionList();
+        MethodGen method=new MethodGen(0,Type.VOID,new Type[] {new ObjectType(outerClassName)},new String[] {"arg0"},"<init>",className,insList,poolGen);
+        InstructionHandle insHandle0=insList.append(InstructionFactory.createLoad(Type.OBJECT,0));
+        insList.append(factory.createInvoke("java.lang.Object","<init>",Type.VOID,Type.NO_ARGS,Constants.INVOKESPECIAL));
+        insList.append(InstructionFactory.createLoad(Type.OBJECT,0));
+        insList.append(InstructionFactory.createLoad(Type.OBJECT,1));
+        insList.append(factory.createFieldAccess(className,"this$0",new ObjectType(outerClassName),Constants.PUTFIELD));
+        InstructionHandle insHandle9=insList.append(InstructionFactory.createReturn(Type.VOID));
+        method.setMaxStack();
+        method.setMaxLocals();
+        classGen.addMethod(method.getMethod());
+        insList.dispose();
+    }
+
     public boolean modified() {
         synchronized(modTimes) {
             Iterator it=modTimes.keySet().iterator();
@@ -180,7 +212,5 @@ public class AppClassLoader extends java.lang.ClassLoader {
     public InputStream getResourceAsStream(String name) {
         return parent.getResourceAsStream(name);
     }
-   
-   
    
 }
