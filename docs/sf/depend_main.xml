@@ -204,7 +204,7 @@
             <code>depaux</code> just adds more dependencies "by hand"
             that are not automatically detected. In the example
             above, the files referenced are XSLT stylesheets that are included via <code>xsl:include</code> into
-            the <code>master.xsl</code> stylesheet. Such external dependcies are not currently recognized automatically.</p>
+            the <code>master.xsl</code> stylesheet. Such external dependencies are not currently recognized automatically.</p>
           <p>E.g. if you use a <code>skin.xsl</code> stylesheet, you
             need to add the following line to the target
             definition of <code>master.xsl</code> and <code>metatags.xsl</code></p>
@@ -222,11 +222,11 @@
           that <b>need to be supplied</b> in the target definition of <code>master.xsl</code> and <code>metatags.xsl</code>:
           <ul>
             <li><b>product</b>: This parameter is needed so the system
-            knows which product branch of inlcude parts should be
+            knows which product branch of include parts should be
             used.</li>
             <li><b>lang</b>: This is the language that
             should be used for include parts if it isn't changed
-            explicitely at runtime.</li>
+            explicitly at runtime.</li>
           </ul>
           You <b>must never supply</b> a <code>param</code> named <code>docroot</code>. This parameter is inserted automatically
           during the transformation <code>depend.xml.in</code> => <code>depend.xml</code>.
@@ -259,7 +259,7 @@
       <br/>
     </xmlcodeOFF>
   </xmlcode>
-  <p>after performing the transformtion <code>depend.xml.in</code> => <code>depend.xml</code>
+  <p>after performing the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
     (automatically done by the build system in the skeleton package and the CVS checkout) this becomes</p>
   <xmlcode>
     <target name="home.xsl" type="xsl">
