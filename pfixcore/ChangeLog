@@ -1,3 +1,16 @@
+2003-09-16  Martin Leidig <mleidig@schlund.de>
+
+	* example/common/conf/apploader.prop.in:
+	Added property for excluding single classes from reload.
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java:
+	Excluded classes are loaded by parent classloader.
+	* src/de/schlund/pfixxml/loader/AppLoader.java:
+	Added code for excluding classes from reload (new methods 
+	excludeClass and isExcludedClass).
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java:
+	Added support for reading/processing new AppLoader configuration
+	property "apploader.class.exclude".
+
 2003-09-11  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java

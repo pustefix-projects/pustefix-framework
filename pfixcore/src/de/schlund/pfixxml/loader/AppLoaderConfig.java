@@ -186,6 +186,20 @@ public class AppLoaderConfig {
                     }
                 }
             } 
+            //class
+            name="apploader.class.exclude.";
+            enum=props.propertyNames();
+            while(enum.hasMoreElements()) {
+                String key=(String)enum.nextElement();
+                if(key.startsWith(name)) {
+                    val=props.getProperty(key);
+                    if(val!=null && !val.equals("")) {
+                        loader.excludeClass(val);
+                    } else {
+                        throw new AppLoaderConfigException("Property '"+key+"' needs class name as value.");
+                    }
+                }
+            }
             //traverse
             String exName="apploader.traverse.excludepackage";
             String inName="apploader.traverse.includeclass";
