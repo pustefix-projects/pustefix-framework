@@ -7,9 +7,11 @@
   
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
 
+  <xsl:param name="pwd"/>
 
   <xsl:template match="/">
-    <xsl:apply-templates select="/checkresult/incfile"/>
+    <xsl:apply-templates select="/checkresult/includefiles/incfile"/>
+    <xsl:apply-templates select="/checkresult/images/image"/>
   </xsl:template>
 
   <xsl:template match="incfile">
@@ -19,7 +21,7 @@ FILE UNUSED: <xsl:value-of select="@name"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="./part">
-          <xsl:with-param name="file"><xsl:value-of select="@name"/></xsl:with-param>
+          <xsl:with-param name="file"><xsl:value-of select="substring-after(@name, $pwd)"/></xsl:with-param>
         </xsl:apply-templates>
       </xsl:otherwise>
     </xsl:choose>
@@ -48,4 +50,10 @@ PROD UNUSED: <xsl:value-of select="$file"/> => <xsl:value-of select="$part"/> =>
     </xsl:if>
   </xsl:template>
   
+  <xsl:template match="image">
+    <xsl:if test="@UNUSED = 'true'">
+IMAG UNUSED: <xsl:value-of select="substring-after(@name, $pwd)"/>
+    </xsl:if>
+  </xsl:template>
+
 </xsl:stylesheet>
