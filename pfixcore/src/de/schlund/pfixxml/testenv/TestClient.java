@@ -139,8 +139,8 @@ public class TestClient {
             CAT.error(e.getMessage());
             e.printStackTrace();
             CAT.error("Nested Exception:");
-            CAT.error(e.getCause().getMessage());
-            e.getCause().printStackTrace();
+            CAT.error(e.getExceptionCause().getMessage());
+            e.getExceptionCause().printStackTrace();
             CAT.error("\n**********************************************");
         }
     }
@@ -180,7 +180,7 @@ public class TestClient {
             try {
                 current_output_tree = getResultFromFormInput(config[j].getRecordedInput());
             } catch (TestClientException e) {
-                if (e.getCause() instanceof HttpRecoverableException) {
+                if (e.getExceptionCause() instanceof HttpRecoverableException) {
                     CAT.warn("Uuuups...skipping...");
                     break;
                 } else {
