@@ -35,7 +35,7 @@ import org.apache.log4j.*;
 
 
 /**
- * ImagesHandler.java
+ * Handler which is responsible for uploading images.
  *
  *
  * Created: Mon Dec 03 23:34:24 2001
@@ -77,9 +77,15 @@ public class ImagesUploadHandler extends EditorStdHandler {
         // We don't want to shadow the value back to the UI.
         upload.setStringValBackup(null);
         
-        checkAccess(esess);
+        
         
         if (haveupl != null && haveupl.booleanValue() == true) {
+            if(CAT.isDebugEnabled())
+                CAT.debug("Checking access for image upload.");
+            // call checkAccess only if we have really an upload attempt
+            checkAccess(esess);
+            
+            
             File   file = null;
             String type = BACKUP;
             if (backup != null && backup.booleanValue() == true && backfile != null) {
@@ -136,6 +142,9 @@ public class ImagesUploadHandler extends EditorStdHandler {
             if (scode != null) {
                 upload.addSCodeHaveUpload(scode);
             }
+        } else {
+            if(CAT.isDebugEnabled())
+                CAT.debug("This seems NOT to be a real image upload");
         }
     }
     

@@ -221,7 +221,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
     }
 
     /**
-     * Document me!
+     * Convert from a W3C DOM to saxons TinyTree.
      */
     private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws TransformerException  {
         if (doc == null) {
@@ -267,7 +267,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
  */
 class PFErrorListener implements ErrorListener {
 
-    /* (non-Javadoc)
+    /**
      * @see javax.xml.transform.ErrorListener#warning(javax.xml.transform.TransformerException)
      */
     public void warning(TransformerException arg0) throws TransformerException {
@@ -276,7 +276,7 @@ class PFErrorListener implements ErrorListener {
         throw arg0;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.xml.transform.ErrorListener#error(javax.xml.transform.TransformerException)
      */
     public void error(TransformerException arg0) throws TransformerException {
@@ -285,7 +285,7 @@ class PFErrorListener implements ErrorListener {
         throw arg0;
     }
 
-    /* (non-Javadoc)
+    /**
      * @see javax.xml.transform.ErrorListener#fatalError(javax.xml.transform.TransformerException)
      */
     public void fatalError(TransformerException arg0) throws TransformerException {
@@ -294,7 +294,7 @@ class PFErrorListener implements ErrorListener {
         throw arg0;
     }
 
-    private void print(String msg, TransformerException ex) {
+    /*private void print(String msg, TransformerException ex) {
         System.out.println(msg+": hallo:"+ex.getMessage()+"-->"+ex.getLocationAsString()+"-->"+ex.getException());
-    }
+    }*/
 }

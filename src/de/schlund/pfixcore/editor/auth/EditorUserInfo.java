@@ -235,7 +235,7 @@ final public class EditorUserInfo {
      */
     public String toString() {
        StringBuffer sb = new StringBuffer();
-        sb.append("Id  = "+id).append("\n");
+        sb.append("\nId  = "+id).append("\n");
         sb.append("Global :\n"+global_perm.toString()).append("\n");
         Iterator iter = project_perm.keySet().iterator();
         while (iter.hasNext()) {

@@ -83,9 +83,7 @@ public class EditUserDataHandler implements IHandler {
             euser.setName(name);
             euser.setSect(sect);
             euser.setPhone(phone);
-            /*if (curr.isAdmin()) {
-                euser.setGroup(group);
-            }*/
+            
             if (crypt != null) {
                 euser.setPwd(crypt);
             }
@@ -93,6 +91,10 @@ public class EditUserDataHandler implements IHandler {
             
             // Permission stuff can only be edited by an admin!
             if(curr.getUserInfo().isAdmin()) {
+                
+                if(CAT.isDebugEnabled())
+                    CAT.debug("Admin is editing permissions.\n"+euser.toString()); 
+                
                 Boolean admin = data.getAdmin();
                 Boolean editDynDefault = data.getDynInclDef();
         
@@ -188,12 +190,17 @@ public class EditUserDataHandler implements IHandler {
                             euser.addProjectPermission(n, p);
                        }
                     }
-                }             
+                }
+                if(CAT.isDebugEnabled()) 
+                    CAT.debug("Permission editing done. \n"+euser.toString());             
+            } else {
+                CAT.warn("User is NOT admin. Permissions can only be edited by an admin.");
             }
             
             
             // make sure the user is really added
-            //TODO TODO
+            if(CAT.isDebugEnabled())
+                CAT.debug("Adding user.");
             EditorUser.addUser(euser);
             
             AuthManagerFactory.getInstance().getAuthManager().commit();

@@ -60,7 +60,8 @@ class Cubbyhole {
      */
     synchronized void put(Object x) throws InterruptedException {
         while (usedSlots_ == array_.length) {
-
+            if(CAT.isDebugEnabled())
+                CAT.debug("PUT: Cubbyhole was full. Calling 'wait()'.");      
             //cubbyhole is full->wait
             wait();
         }
@@ -74,7 +75,8 @@ class Cubbyhole {
         }
         putPtr_ = (putPtr_ + 1) % array_.length;
         if (usedSlots_++ == 0) {
-
+            if(CAT.isDebugEnabled()) 
+                CAT.debug("PUT: Cubbyhole was empty. Calling 'notifyAll()'.");
             //cubbyhole was empty, wakeup all takers
             notifyAll();
         }
@@ -88,7 +90,8 @@ class Cubbyhole {
      */
     synchronized Object take() throws InterruptedException {
         while (usedSlots_ == 0) {
-
+            if(CAT.isDebugEnabled())
+                CAT.debug("TAKE: Cubbyhole was empty. Calling 'wait()'.");      
             //cubbyhole is empty->wait
             wait();
         }
@@ -103,7 +106,8 @@ class Cubbyhole {
         array_[takePtr_] = null;
         takePtr_ = (takePtr_ + 1) % array_.length;
         if (usedSlots_-- == array_.length) {
-
+            if(CAT.isDebugEnabled())
+                CAT.debug("TAKE: Cubbyhole was full. Calling 'notifyAll()'.");
             //cubbyhole was full, wakeup all puters
             notifyAll();
         }

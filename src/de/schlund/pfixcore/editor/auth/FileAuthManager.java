@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
 import org.apache.xml.serialize.OutputFormat;
@@ -36,6 +37,7 @@ import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.util.UnixCrypt;
@@ -53,77 +55,115 @@ public class FileAuthManager implements AuthManager {
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static TreeMap knownusers = new TreeMap();
     private static TreeMap floatingusers = new TreeMap();
-    private static Category LOG = Category.getInstance(FileAuthManager.class.getName());
+    private static Category CAT = Category.getInstance(FileAuthManager.class.getName());
     private static FileAuthManager instance = new FileAuthManager();
 
-   
     public Object LOCK = new Object();
     private String userfile;
-    
 
     public static FileAuthManager getInstance() {
         return instance;
     }
 
     /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#login(java.lang.String, java.lang.String)
-     */
-    /*public void login(String name, String passwd) throws AuthManagerException {
-        EditorUser cur = getEditorUserById(name);
-        if(cur != null && UnixCrypt.matches(cur.getPwd(), passwd)) {
-            return cur;
-        } else {
-            return null;
-        }
-    }*/
-
-    
-    /**
      * @see de.schlund.pfixcore.editor.auth.AuthManager#commit()
      */
     public void commit() throws AuthManagerException {
-        // TODO Auto-generated method stub
         try {
             writeFile();
         } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AuthManagerException("Caught ParserConfigurationException.", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AuthManagerException("Caught IOException. ", e);
         }
     }
 
-  
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#getAllEditorUsers()
-     */
-   /* public EditorUser[] getAllEditorUsers() throws AuthManagerException {
-        // TODO Auto-generated method stub
-        return getAllEditorUsersHelp();
-    }
-    */
     /**
      * @see de.schlund.pfixcore.editor.auth.AuthManager#getEditorUserById(java.lang.String)
      */
-     public EditorUserInfo getEditorUserById(String id) throws AuthManagerException {
-        return getEditorUser(id); 
+    public EditorUserInfo getEditorUserById(String id) throws AuthManagerException {
+        return getEditorUser(id);
+    }
+
+    /**
+         * @see de.schlund.pfixcore.editor.auth.AuthManager#login(java.lang.String, de.schlund.pfixcore.editor.auth.EditorUserInfo)
+         */
+    public void login(String enteredPasswd, EditorUserInfo info) throws WrongPasswordException {
+        if (info == null)
+            throw new IllegalArgumentException("Null is not allowed here");
+
+        if (!UnixCrypt.matches(info.getPwd(), enteredPasswd)) {
+            if (CAT.isDebugEnabled())
+                CAT.debug("Paswords do not match. Throwing WrongPasswordException.");
+            throw new WrongPasswordException("Passwords do not match!");
+        }
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.auth.AuthManager#getEditorUserInfoById(java.lang.String)
+     */
+    public EditorUserInfo getEditorUserInfoById(String id) throws NoSuchUserException {
+        if (CAT.isDebugEnabled())
+            CAT.debug("Retrieving user information for user '" + id + "'.");
+        EditorUserInfo info = getEditorUser(id);
+        if (info == null) {
+            if (CAT.isDebugEnabled())
+                CAT.debug("User '" + id + "' not found. Throwing NoSuchUserException.");
+            throw new NoSuchUserException("User does not exist");
+        }
+        return info;
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.auth.AuthManager#getAllEditorUserInfo()
+     */
+    public EditorUserInfo[] getAllEditorUserInfo() throws AuthManagerException {
+        return getAllEditorUsersHelp();
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.auth.AuthManager#addEditorUser(de.schlund.pfixcore.editor.auth.EditorUserInfo)
+     */
+    public void addEditorUser(EditorUserInfo user) throws AuthManagerException {
+        addEditorUserHelp(user);
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.auth.AuthManager#delEditorUser(de.schlund.pfixcore.editor.auth.EditorUserInfo)
+     */
+    public void delEditorUser(EditorUserInfo user) throws AuthManagerException {
+        delEditorUserHelp(user);
     }
 
     public void setPwdFile(String filename) {
         this.userfile = filename;
     }
     //-------------------------------------------------------------------
-   /* private EditorUser createEditorUser(String id) {
-        EditorUser user = getEditorUser(id);
-        if (user == null) {
-            synchronized (floatingusers) {
-                user = new EditorUser(id);
-                floatingusers.put(id, user);
+
+    private void addEditorUserHelp(EditorUserInfo eu) throws AuthManagerException {
+        String id = eu.getId();
+        synchronized (knownusers) {
+            if (CAT.isDebugEnabled()) {
+                if (knownusers.containsKey(id))
+                    CAT.debug("User '" + id + "' exists. Overwriting user.");
+                else
+                    CAT.debug("User '" + id + "' not exists. Storing user.");
+            }
+            knownusers.put(id, eu);
+            try {
+                writeFile();
+            } catch (ParserConfigurationException e) {
+                throw new AuthManagerException("Caught ParserConfigurationException ", e);
+            } catch (IOException e) {
+                throw new AuthManagerException("Caught IOException ", e);
             }
         }
-        return user;
-    }*/
+        synchronized (floatingusers) {
+            if (floatingusers.get(id) != null) {
+                floatingusers.remove(id);
+            }
+        }
+    }
 
     private EditorUserInfo getEditorUser(String id) {
         synchronized (knownusers) {
@@ -138,8 +178,7 @@ public class FileAuthManager implements AuthManager {
         }
     }
 
- 
-     private void delEditorUserHelp(EditorUserInfo eui)  {
+    private void delEditorUserHelp(EditorUserInfo eui) throws AuthManagerException {
         synchronized (knownusers) {
             String id = eui.getId();
             knownusers.remove(id);
@@ -150,25 +189,32 @@ public class FileAuthManager implements AuthManager {
         try {
             writeFile();
         } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AuthManagerException("Caught ParserConfigurationException.", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    
-    public void init()  {
-        try {
-            readFile();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new AuthManagerException("Caught IOException", e);
         }
     }
 
-    private void readFile() throws Exception {
+    public void init() throws AuthManagerException {
+
+        try {
+            readFile();
+        } catch (ParserConfigurationException e) {
+            throw new AuthManagerException("Caught ParserConfigurationException.", e);
+        } catch (SAXException e) {
+            throw new AuthManagerException("Caught SAXException.", e);
+        } catch (IOException e) {
+            throw new AuthManagerException("Caught IOException.", e);
+        } catch (XMLException e) {
+            throw new AuthManagerException("Caught XMLException.", e);
+        } catch (TransformerException e) {
+            throw new AuthManagerException("Caught TransformerException", e);
+        }
+
+    }
+
+    private void readFile()
+        throws ParserConfigurationException, SAXException, IOException, XMLException, TransformerException {
         DocumentBuilder domp = dbfac.newDocumentBuilder();
         Document doc;
         synchronized (LOCK) {
@@ -190,29 +236,28 @@ public class FileAuthManager implements AuthManager {
             info.setSect(user.getAttribute("sect"));
             info.setPhone(user.getAttribute("phone"));
             info.setPwd(user.getAttribute("pwd"));
-            
-            NodeList gl_perms =  XPathAPI.selectNodeList(user, "permissions/global");
+
+            NodeList gl_perms = XPathAPI.selectNodeList(user, "permissions/global");
             NodeList prj_perms = XPathAPI.selectNodeList(user, "permissions/project");
-            
+
             Element gl = (Element) gl_perms.item(0);
-            
+
             GlobalPermissions globalp = new GlobalPermissions();
-            if(gl == null) {
+            if (gl == null) {
                 globalp.setAdmin(false);
                 globalp.setEditDynIncludesDefault(false);
             } else {
                 boolean b = gl.getAttribute("admin").equals("true");
                 globalp.setAdmin(b);
-               
+
                 b = gl.getAttribute("editDefaults").equals("true");
                 globalp.setEditDynIncludesDefault(b);
-               
+
             }
             info.setGlobalPermissions(globalp);
-            
-            
-            for(int j = 0; j < prj_perms.getLength(); j++ ) {
-                Element e = (Element)prj_perms.item(j);
+
+            for (int j = 0; j < prj_perms.getLength(); j++) {
+                Element e = (Element) prj_perms.item(j);
                 ProjectPermissions prjp = new ProjectPermissions();
                 boolean b = e.getAttribute("editDefaults").equals("true");
                 prjp.setEditDynIncludes(b);
@@ -222,13 +267,13 @@ public class FileAuthManager implements AuthManager {
                 prjp.setEditIncludes(b);
                 info.addProjectPermission(e.getAttribute("name"), prjp);
             }
-            
-            LOG.debug(">>> Found user " + info.getName() + " (" + info.getId() + ") <<<<");
+
+            CAT.debug(">>> Found user " + info.getName() + " (" + info.getId() + ") <<<<");
             knownusers.put(id, info);
         }
     }
 
-    private synchronized void writeFile() throws ParserConfigurationException, IOException  {
+    private synchronized void writeFile() throws ParserConfigurationException, IOException {
         Document doc = dbfac.newDocumentBuilder().newDocument();
         Element root = doc.createElement("userinfo");
         doc.appendChild(root);
@@ -241,35 +286,35 @@ public class FileAuthManager implements AuthManager {
             user.setAttribute("name", info.getName());
             user.setAttribute("sect", info.getSect());
             user.setAttribute("phone", info.getPhone());
-            
+
             Element perms = doc.createElement("permissions");
             Element globalp = doc.createElement("global");
             GlobalPermissions glp = info.getGlobalPerms();
-            globalp.setAttribute("admin", glp == null ? (""+false) : (""+glp.isAdmin()));
-            globalp.setAttribute("editDefaults", glp == null ? (""+false) : (""+glp.isEditDynIncludesDefault()));
+            globalp.setAttribute("admin", glp == null ? ("" + false) : ("" + glp.isAdmin()));
+            globalp.setAttribute("editDefaults", glp == null ? ("" + false) : ("" + glp.isEditDynIncludesDefault()));
             perms.appendChild(globalp);
-            
-            if(! info.isAdmin()) {
+
+            if (!info.isAdmin()) {
                 // for admin we do not need a permission node
-            
+
                 HashMap projectp = info.getAllProjectPerms();
-                if(projectp != null && ! projectp.isEmpty()) {
+                if (projectp != null && !projectp.isEmpty()) {
                     Iterator iter = projectp.keySet().iterator();
-                    while(iter.hasNext()) {
+                    while (iter.hasNext()) {
                         String name = (String) iter.next();
                         Element e = doc.createElement("project");
                         e.setAttribute("name", name);
                         ProjectPermissions prjp = info.getProjectPerms(name);
-                        e.setAttribute("editImages", (""+prjp.isEditImages()));
-                        e.setAttribute("editIncludes", (""+prjp.isEditIncludes()));
-                        e.setAttribute("editDefaults", (""+prjp.isEditDynIncludes()));
+                        e.setAttribute("editImages", ("" + prjp.isEditImages()));
+                        e.setAttribute("editIncludes", ("" + prjp.isEditIncludes()));
+                        e.setAttribute("editDefaults", ("" + prjp.isEditDynIncludes()));
                         perms.appendChild(e);
                     }
                 }
             }
             user.appendChild(perms);
         }
-        
+
         FileOutputStream output = new FileOutputStream(userfile);
         OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
         XMLSerializer ser = new XMLSerializer(output, outfor);
@@ -279,75 +324,5 @@ public class FileAuthManager implements AuthManager {
             ser.serialize(doc);
         }
     }
-
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#login(java.lang.String, de.schlund.pfixcore.editor.auth.EditorUserInfo)
-     */
-    public void login(String enteredPasswd, EditorUserInfo info) throws WrongPasswordException  {
-        // TODO Auto-generated method stub
-        if(info == null )
-            throw new IllegalArgumentException("Null is not allowed here");
-        
-        if (! UnixCrypt.matches(info.getPwd(), enteredPasswd)) {
-            throw new WrongPasswordException("Passwords do not match!"); 
-        }
-    }
-
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#getEditorUserInfoById(java.lang.String)
-     */
-    public EditorUserInfo getEditorUserInfoById(String id) throws NoSuchUserException {
-        // TODO Auto-generated method stub
-        EditorUserInfo info = getEditorUser(id);
-        if(info == null)
-            throw new NoSuchUserException("User does not exist");
-        return info;
-    }
-
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#getAllEditorUserInfo()
-     */
-    public EditorUserInfo[] getAllEditorUserInfo() throws AuthManagerException {
-        return getAllEditorUsersHelp();
-    }
-
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#addEditorUser(de.schlund.pfixcore.editor.auth.EditorUserInfo)
-     */
-    public void addEditorUser(EditorUserInfo user) throws AuthManagerException {
-        // TODO Auto-generated method stub
-        addEditorUserHelp(user);
-    }
-
-
-    public void addEditorUserHelp(EditorUserInfo eu)  {
-        String id = eu.getId();
-        synchronized (knownusers) {
-            knownusers.put(id, eu);
-            try {
-                writeFile();
-            } catch (ParserConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        synchronized (floatingusers) {
-            if (floatingusers.get(id) != null) {
-                floatingusers.remove(id);
-            }
-        }
-    }
-
-    /**
-     * @see de.schlund.pfixcore.editor.auth.AuthManager#delEditorUser(de.schlund.pfixcore.editor.auth.EditorUserInfo)
-     */
-    public void delEditorUser(EditorUserInfo user) throws AuthManagerException {
-        // TODO Auto-generated method stub
-        delEditorUserHelp(user);
-    }
-   
 
 } // EditorUserFactory

@@ -37,6 +37,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
 
 /**
@@ -52,6 +53,7 @@ class ExceptionContext {
     private final String COUNTRY_ = "DE";
     private final String LANGUAGE_ = "de";
     private final String TIMEZONE_ = "Europe/Berlin";
+    private static Category CAT = Category.getInstance(ExceptionContext.class.getName());
     private String date_ = null; // timestamp
     private Throwable throwable_ = null; //
     private String header_ = null; // header for message
@@ -175,6 +177,8 @@ class ExceptionContext {
      *  Initialise the exceptioncontext. A timestamp, the message and its header are created. 
      */
     void init() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("ExceptionContext init start.");
         TimeZone tz = TimeZone.getTimeZone(TIMEZONE_);
         Locale loc = new Locale(LANGUAGE_, COUNTRY_);
         Calendar cal = Calendar.getInstance(tz, loc);
@@ -182,6 +186,8 @@ class ExceptionContext {
         date_ = df.format(cal.getTime());
         createHeader();
         createMessage();
+        if(CAT.isDebugEnabled())
+            CAT.debug("ExceptionContext init end.");
     }
 
     /**
@@ -189,17 +195,22 @@ class ExceptionContext {
      * @return a String containing text.
      */
     private String createErrorText() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create error text start.");
         StringBuffer err = new StringBuffer();
         HttpSession session = pfrequest_.getSession(false);
         err.append(createInfoText());
         if (session != null) {
-            err.append(createLastSteps());
+            StringBuffer sb = createLastSteps();
+            err.append(sb);
             if (props_.getProperty("servlet.sessiondumponerror", "").equals("true")) {
                 err.append(createSessionDump());
             }
             err.append("======================================================\n");
         }
         err.append(createSTraceText());
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create error text end.");
         return err.toString();
     }
 
@@ -208,7 +219,11 @@ class ExceptionContext {
      * mail-subject.
      */
     private void createHeader() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create header start.");
         header_ = createMailSubject();
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create header end.");
     }
 
     /**
@@ -217,6 +232,8 @@ class ExceptionContext {
      * @return a StringBuffer containing text. 
      */
     private String createInfoText() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create info text start.");
         StringBuffer err = new StringBuffer();
         HttpSession session = pfrequest_.getSession(false);
         String server = null;
@@ -257,6 +274,8 @@ class ExceptionContext {
             err.append(" " + pnames[ii] + " = " + param.toString() + "\n");
         }
         err.append("\n");
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create info text start.");
         return err.toString();
     }
 
@@ -266,6 +285,8 @@ class ExceptionContext {
      * @return a StringBuffer containing text. 
      */
     private StringBuffer createLastSteps() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("Creating last step information start.");
         HttpSession session = pfrequest_.getSession(false);
         StringBuffer err = new StringBuffer();
         SessionAdmin sessadmin = SessionAdmin.getInstance();
@@ -279,6 +300,9 @@ class ExceptionContext {
                     "[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]\n");
             }
         }
+        if(CAT.isDebugEnabled()) 
+            CAT.debug("Create last step information end.");
+            
         return err;
     }
 
@@ -288,6 +312,8 @@ class ExceptionContext {
      * @return a String containg text.
      */
     private String createMailSubject() {
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create mail subject start.");
         String buf = null;
         String servername = pfrequest_.getServerName();
         if (servername == null) {
@@ -303,6 +329,8 @@ class ExceptionContext {
         }
         Object[] args = { date_, servername, exceptname, message };
         buf = MessageFormat.format("{0}:[{1}|{2}]:{3}", args);
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create mail subject end.");
         return buf;
     }
 
