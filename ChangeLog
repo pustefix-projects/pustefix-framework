@@ -1,7 +1,16 @@
+2004-11-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: remove the __foreceauth reg param again. For now, we better
+	try to re-auth just everytime we get a direct submit with __sendingauthdata set to 'true'.
+
+	* src/de/schlund/pfixxml/ServletManager.java: more security stuff. Now we allow more than one secure
+	session again by not only using one cookie, but instead naming the cookie according to the associated session 
+	(until now, the cookie was called __PFIX_SECURE_SESS__, now it's called __PFIX_SEC_<Session-Id>)
+
 2004-11-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: added __forceauth
-	parameter to force a re-authentification.
+	parameter to force a re-authentication.
 
 	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
 	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
@@ -28,7 +37,7 @@
 
 	* src/de/schlund/pfixxml/ServletManager.java: bug fix: make it
 	work without cookies again: we actually have to believe that the
-	session is secure (if it is marked as such) a when request doesn't
+	session is secure (if it is marked as such) when a request doesn't
 	supply cookies at all.
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: removed the pagemessage stuff...

@@ -52,7 +52,6 @@ public class Context implements AppContext {
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
     private final static String   PARAM_FLOW          = "__pageflow";
     private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
-    private final static String   PARAM_FORCEAUTH     = "__forceauth";
     private final static String   DEF_MESSAGE_LEVEL   = "info";
 
     // from constructor
@@ -549,11 +548,7 @@ public class Context implements AppContext {
             }
 
             // Now, check for possibly needed authorization
-            RequestParam forceparam = currentpreq.getRequestParam(PARAM_FORCEAUTH);
-            boolean      forceauth  = false;
-            if (forceparam != null && forceparam.getValue() != null && forceparam.getValue().equals("true")) {
-                forceauth = true;
-            }
+            boolean forceauth = StateImpl.requestParamSaysTrue(currentpreq.getRequestParam(State.SENDAUTHDATA));
             document = checkAuthorization(forceauth);
             if (document != null) {
                 return document;
