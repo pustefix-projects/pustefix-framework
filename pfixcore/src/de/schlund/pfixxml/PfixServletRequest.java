@@ -39,10 +39,10 @@ import org.apache.log4j.*;
  * <br/>
  * This class is an abstraction of a servlet request. Is provides wrapper functions
  * on a {@link javax.servlet.http.HttpServletRequest} but has also the possibility
- * to update the request and to retrieve both the current and orginal data. 
+ * to update the request and to retrieve both the current and orginal data.
  * Classes in the Pustefix system should use this class and not a
  * <code>HttpServletRequest</code>.<br/>
- * Note: All method with a 'getOrginal' prefix work on the orginal request, 
+ * Note: All method with a 'getOrginal' prefix work on the orginal request,
  * all others methods work on the currently set request, which may
  * be the original request used when the instance was created, or
  * any other request that has been set via <code>updateRequest()</code>.
@@ -51,17 +51,18 @@ public class PfixServletRequest {
 
     //~ Instance/static variables ..................................................................
 
-    private static final Category PFXPERF          = Category.getInstance("PFXPERF");
-    private static final String   INDENT           = "   ";
-    private static final String   DATA_PREFIX      = "__DATA:";
-    private static final String   PROP_TMPDIR      = "pfixservletrequest.tmpdir";
-    private static final String   PROP_MAXPARTSIZE = "pfixservletrequest.maxpartsize";
-    private static DecimalFormat  FORMAT           = new DecimalFormat("0000");
-    private static String         DEF_TMPDIR       = "/tmp";
-    private static String         DEF_MAXPARTSIZE  = "" + (10 * 1024 * 1024); // 10 MB
-    private ArrayList             exceptions       = new ArrayList();
-    private HashMap               parameters       = new HashMap();
-    private Category              CAT              = Category.getInstance(this.getClass());
+    private static final Category PFXPERF             = Category.getInstance("PFXPERF");
+    private static final String   INDENT              = "   ";
+    private static final String   DATA_PREFIX         = "__DATA:";
+    private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
+    private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
+    private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
+    private static DecimalFormat  FORMAT              = new DecimalFormat("0000");
+    private static String         DEF_TMPDIR          = "/tmp";
+    private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
+    private HashMap               parameters          = new HashMap();
+    private Category              CAT                 = Category.getInstance(this.getClass());
+    private ArrayList             multiPartExceptions = new ArrayList();
     private String                servername;
     private String                querystring;
     private String                scheme;
@@ -73,7 +74,6 @@ public class PfixServletRequest {
     private LinkedList            perfstack        = null;
     private long                  starttime        = 0;
 
-    
     public synchronized void initPerfLog() {
         if (perflog == null) {
             perflog   = new LinkedList();
@@ -86,7 +86,7 @@ public class PfixServletRequest {
     public synchronized void startLogEntry() {
         if (perflog != null) {
             long now   = System.currentTimeMillis();
-            
+
             PerfEvent evn = new PerfEvent(now, ">>>", PerfEvent.START);
             perflog.add(evn);
             perfstack.add(evn); // this will be decreased by stop events
@@ -145,7 +145,7 @@ public class PfixServletRequest {
         long             time;
         int              type;
         String           msg;
-        
+
         public PerfEvent (long time, String msg, int type) {
             this.time = time;
             this.msg  = msg;
@@ -156,13 +156,13 @@ public class PfixServletRequest {
         public long getTime() { return time; }
         public String getMessage() { return msg; }
     }
-    
+
     //~ Constructors ...............................................................................
 
     /**
      * Constructor for creating a PfixServletRequest
-     * @param req the orginal servlet request 
-     * @param properties 
+     * @param req the orginal servlet request
+     * @param properties
      * @param cUtil
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
@@ -179,10 +179,29 @@ public class PfixServletRequest {
 
     //~ Methods ....................................................................................
 
+    /**
+	 * Returns the value of the request-attribute that is stored under the key
+     * {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}
+	 */
+	public Throwable getLastException()
+	{
+		return (Throwable) request.getAttribute(ATTR_LASTEXCEPTION);
+	}
+
+	/**
+	 * Stores the given <code>exception</code>-object as an attribute in the request,
+     * under the key of {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}.
+	 * @param lastException The value to assign lastException.
+	 */
+	public void setLastException(Throwable lastException)
+	{
+		request.setAttribute(ATTR_LASTEXCEPTION, lastException);
+	}
+
     public long getCreationTimestamp() {
         return starttime;
     }
-    
+
     /**
      * Retrieve the server name form the orginal request
      * @return the name
@@ -224,10 +243,10 @@ public class PfixServletRequest {
     }
 
     /**
-     * Update the servlet request. After calling this method 
-     * the request data used by constructor are accesible 
+     * Update the servlet request. After calling this method
+     * the request data used by constructor are accesible
      * only by the 'getOriginal' methods.
-     * @param req the new request 
+     * @param req the new request
      */
     public void updateRequest(HttpServletRequest req) {
         this.request = req;
@@ -247,15 +266,15 @@ public class PfixServletRequest {
      * @return true if error happened, else false
      */
     public boolean errorHappened() {
-        return ! exceptions.isEmpty();
+        return ! multiPartExceptions.isEmpty();
     }
 
-    /** 
-     * Retrieve all happened exceptions
+    /**
+     * Retrieve all exceptions that happened during multipart-handling
      * @return a list containing all exceptions
      */
     public List getAllExceptions() {
-        return exceptions;
+        return multiPartExceptions;
     }
 
     // All these methods work on the currently set request, which may
@@ -265,7 +284,7 @@ public class PfixServletRequest {
 
     /**
      * Retrieve all cookies from the current request
-     * @return an array containing all cookies 
+     * @return an array containing all cookies
      */
     public Cookie[] getCookies() {
         return request.getCookies();
@@ -296,7 +315,7 @@ public class PfixServletRequest {
     }
 
     /**
-     * Retrieve the session id belonging to the current request 
+     * Retrieve the session id belonging to the current request
      * @return the session id
      */
     public String getRequestedSessionId() {
@@ -330,7 +349,7 @@ public class PfixServletRequest {
     /**
      * Retrieve the session belonging to the current request
      * @param create if true a new session will be created if not exists
-     * in the current request, if false the orginal session will be returned 
+     * in the current request, if false the orginal session will be returned
      * @return the http session
      */
     public HttpSession getSession(boolean create) {
@@ -388,8 +407,8 @@ public class PfixServletRequest {
     public String getServerName() {
         return request.getServerName();
     }
-    
-    
+
+
     /**
      *  Gets the part of this request's URI that refers to the servlet being invoked.
      * @ the servlet being invoked, as contained in this request's URI
@@ -403,7 +422,7 @@ public class PfixServletRequest {
     /**
      * Retrieve a {@link RequestParam} according to the name parameter
      * @param the name used as a key
-     * @return the request param or null if not exists 
+     * @return the request param or null if not exists
      */
     public RequestParam getRequestParam(String name) {
         RequestParam[] params = (RequestParam[]) parameters.get(name);
@@ -416,7 +435,7 @@ public class PfixServletRequest {
 
     /**
      * Retrieve all request params according to the name parameter
-     * @param the name used as a key 
+     * @param the name used as a key
      * @return an array containing all request params or null if not exists
      */
     public RequestParam[] getAllRequestParams(String name) {
@@ -477,7 +496,7 @@ public class PfixServletRequest {
             //avoid duplicate key/value pairs for input buttons with image type by
             //excluding the according duplicate parameter names from embedded data check
             if(paramname.endsWith(":.x")||paramname.endsWith(":.y")) {
-                paramname=paramname.substring(0,paramname.length()-2);  
+                paramname=paramname.substring(0,paramname.length()-2);
             }
             if(!processed.contains(paramname)) {
                 checkParameterNameForEmbeddedData(paramname);
@@ -500,9 +519,9 @@ public class PfixServletRequest {
         multi.setMaxPartSize((new Long(maxsize)).longValue());
         try {
             multi.parseRequest();
-            exceptions.addAll(multi.getExceptionList());
+            multiPartExceptions.addAll(multi.getExceptionList());
         } catch (Exception e) {
-            exceptions.add(e);
+            multiPartExceptions.add(e);
         }
         for (Enumeration enum = multi.getParameterNames(); enum.hasMoreElements();) {
             String key = (String) enum.nextElement();
