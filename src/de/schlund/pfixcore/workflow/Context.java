@@ -81,6 +81,10 @@ public class Context implements AppContext {
     private final static String ADMINPAGE         = "context.adminmode.page";
     private final static String ADMINMODE         = "context.adminmode";
 
+    // log, if duration of state's isAccesible method is longer than these values
+    private static int MAXTIME_ISACCESSIBLE_DEBUG = 10;
+    private static int MAXTIME_ISACCESSIBLE_WARN = 100;
+
     /**
      * <code>init</code> sets up the Context for operation.
      *
@@ -345,18 +349,33 @@ public class Context implements AppContext {
         Document doc     = spdoc.getDocument();
         Element  element = doc.createElement("navigation");
         doc.getDocumentElement().appendChild(element);
+        
+        StringBuffer debug_buffer = new StringBuffer();
+        StringBuffer warn_buffer = new StringBuffer();
+        
         if (autoinvalidate_navi) {
-            recursePages(navi.getNavigationElements(), element, doc, preq, null);
+            recursePages(navi.getNavigationElements(), element, doc, preq, null, warn_buffer, debug_buffer);
             LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
         } else {
-            recursePages(navi.getNavigationElements(), element, doc, preq, navigation_visible);
+            recursePages(navi.getNavigationElements(), element, doc, preq, navigation_visible, warn_buffer, debug_buffer);
             LOG.info(" **** REUSING NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
+        }
+        
+        // print the timing information on all isAccessibles
+        if(LOG.isDebugEnabled()) {
+            if(debug_buffer.length() > 0) {
+                LOG.debug("All isAccessibles which took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms:\n" + debug_buffer.toString());
+            }
+        }
+        
+        if(warn_buffer.length() > 0) { 
+            LOG.warn("All isAccessibles which took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms:\n" + warn_buffer.toString());
         }
         
     }
 
     private void recursePages(NavigationElement[] pages, Element parent,
-                              Document doc, PfixServletRequest pfixreq, HashMap vis_map) throws Exception {
+                              Document doc, PfixServletRequest pfixreq, HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page = pages[i];
             String            name = page.getName();
@@ -381,7 +400,22 @@ public class Context implements AppContext {
                     // LOG.info("    * found state " + state.getClass() + " for page " + name);
                     PageRequest saved   = getCurrentPageRequest();
                     setCurrentPageRequest(preq);
+                    
+                    // Get some timing infos about the state's isAccesible method
+                    long isaccessible_start =  System.currentTimeMillis();
                     boolean     visible = state.isAccessible(this, pfixreq);
+                    long duration = System.currentTimeMillis() - isaccessible_start;  
+                    
+                    if(duration > MAXTIME_ISACCESSIBLE_WARN) {
+                        warn_buffer.append("IsAccessible for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms! Duration="+duration+"\n");
+                    }
+                    
+                    if(LOG.isDebugEnabled()) {
+                        if(duration > MAXTIME_ISACCESSIBLE_DEBUG) {
+                            debug_buffer.append("IsAccessible for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms! Duration="+duration+"\n");
+                        }
+                    }
+                    
                     // LOG.info("    * state accessible? " + visible);
                     setCurrentPageRequest(saved);
                     if (visible) {
@@ -401,7 +435,7 @@ public class Context implements AppContext {
                 }
                 
                 if (page.hasChildren()) {
-                    recursePages(page.getChildren(), pageelem, doc, pfixreq, vis_map);
+                    recursePages(page.getChildren(), pageelem, doc, pfixreq, vis_map, warn_buffer, debug_buffer);
                 }
             }
         }

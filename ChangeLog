@@ -1,3 +1,11 @@
+2003-08-27  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (recursePages):
+	add timing infos to passed stringbuffers. If a state's isAccessible
+	method tooks longer than Context.MAXTIME_ISACCESSIBLE_DEBUG it is added to 
+	the debug buffer. If it tooks longer than Context.MAXTIME_ISACCESSIBLE_WARN 
+	it is added the warn buffer. After recursion is done, print the buffers.
+
 2003-08-26  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java (createMailSubject):
