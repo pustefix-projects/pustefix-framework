@@ -104,9 +104,12 @@ public abstract class AbstractXMLServer extends ServletManager {
     public  static final String PROP_NOEDIT      = "xmlserver.noeditmodeallowed";
     public  static final String PROP_NOXML       = "xmlserver.noxmlonlyallowed";
     public  static final String PROP_RENDER_EXT  = "xmlserver.output.externalrenderer";
-	public static final String PROP_RECORDMODE  = "xmlserver.recordmode_allowed";
-	public static final String PROP_RECORDMODE_LOGDIR  = "xmlserver.recordmode_logdir";
-	
+	private static final String PROP_RECORDMODE_KEY  = "xmlserver.recordmode_allowed";
+	private static final String PROP_RECORDMODE_ENABLED_VALUE  = "true";
+	private static final String PROP_RECORDMODE_LOGDIR  = "xmlserver.recordmode_logdir";
+	private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY = "targetgenerator.skip_getmodtimemaybeupdate";
+   	private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE = "true";
+   
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -151,12 +154,15 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
 		// analyze the RECORDMODE property
-		if(getProperties().getProperty(PROP_RECORDMODE) == null) {
-			CAT.fatal("Need property '" + PROP_RECORDMODE + "'");
-			throw new ServletException("Need property '" + PROP_RECORDMODE + "'"); 
+		if(getProperties().getProperty(PROP_RECORDMODE_KEY) == null) {
+			String msg = "Need property '" + PROP_RECORDMODE_KEY + "'"; 
+			CAT.fatal(msg);
+			throw new ServletException(msg); 
 		} else {
-			String tmp = getProperties().getProperty(PROP_RECORDMODE);
-			recordmodeAllowed = tmp.toUpperCase().equals("TRUE") ? true : false;
+			String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
+			recordmodeAllowed = 
+				tmp.toUpperCase().equals(PROP_RECORDMODE_ENABLED_VALUE.toUpperCase()) ? 
+				true : false;
 			if(CAT.isDebugEnabled()) {
 				CAT.debug("RecordModeAllowed is: "+recordmodeAllowed);
 			}
@@ -175,6 +181,22 @@ public abstract class AbstractXMLServer extends ServletManager {
         	}
         }
         
+        // analyze the SKIP_GETMODTIMEMAYBEUPDATE property
+        boolean skip_getmodtimemaybeupdate = false;
+        if(getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY) == null) {
+        	String msg = "Need property '" + PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY + "'";
+        	CAT.fatal(msg);
+        	throw new ServletException(msg);
+        } else {
+        	String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
+        	skip_getmodtimemaybeupdate = 
+        		tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? 
+        		true : false;
+        	if(CAT.isDebugEnabled()) {
+        		CAT.debug("SKIP_GETMODTIMEMAYBEUPDATE: "+skip_getmodtimemaybeupdate);
+        	}
+        }
+        
         
         try {
             generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
@@ -182,6 +204,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             CAT.error("Error: ",e);
             throw(new ServletException("Couldn't get TargetGenerator: " + e.toString()));
         }
+        // tell targetgenerator to skip getModTimeMaybeUpdate or not
+        generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
+        
+        
         
         String render_external_prop = getProperties().getProperty(PROP_RENDER_EXT);
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
@@ -243,7 +269,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean           doreuse    = doReuse(preq);
         ContainerUtil     conutil    = getContainerUtil();
         SPDocument        spdoc      = null;
-        Date              timestamp  = null;
         RequestParam      value;
         long              currtime;
 		boolean           recording_enabled = false;
@@ -455,7 +480,11 @@ public abstract class AbstractXMLServer extends ServletManager {
                                              generator.getTarget(stylesheet).getValue(),
                                              paramhash, res.getOutputStream());
             } catch (TransformerException e) {
-                CAT.warn("[Ignored TransformerException] ", e);
+                CAT.warn("[Ignored TransformerException] : "+e.getMessage());
+                if(CAT.isInfoEnabled()) {
+                	CAT.warn("[Ignored TransformerException]", e);
+            	}
+                
             }
                         
         } else if (plain_xml) {
