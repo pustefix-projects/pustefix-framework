@@ -306,6 +306,10 @@ public class Context implements AppContext {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() +
                                        " does not contain current pagerequest " + currentpagerequest);
         }
+        if (currentpagerequest.getStatus() == PageRequestStatus.FLOWBEFORECHECK) {
+            return false;
+        }
+
         PageRequest current  = currentpagerequest;
         FlowStep[]  workflow = currentpageflow.getAllSteps();
 
@@ -315,7 +319,8 @@ public class Context implements AppContext {
             if (page.equals(current)) {
                 return false;
             }
-            if (checkIsAccessible(current, current.getStatus()) && checkNeedsData(page, current.getStatus())) {
+            if (checkIsAccessible(current, PageRequestStatus.FLOWBEFORECHECK) &&
+                checkNeedsData(page, PageRequestStatus.FLOWBEFORECHECK)) {
                 return true;
             }
         }
