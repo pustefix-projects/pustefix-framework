@@ -279,7 +279,7 @@ or delete the DOCTYPE definition -->
     </exec>
   </target>
 
-  <target name="init-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
+  <target name="init-compile" depends="tomcat.dir.opt, init" description="compiles java files needed by ant-tasks and jni">
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
