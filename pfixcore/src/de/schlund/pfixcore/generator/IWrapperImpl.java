@@ -151,6 +151,25 @@ public abstract class IWrapperImpl implements IWrapper {
         return (IWrapperParamInfo[]) retpar.toArray(new IWrapperParamInfo[] {});
     }
 
+//     public final Object[] getParamValueByName(String key) {
+//         IWrapperParamInfo pinfo = gimmeParamInfoForKey(key);
+//         if (pinfo != null) {
+//             return pinfo.getValueArr();
+//         }
+//         return null;
+//     }
+    
+//     public final Object[] getIndexedParamValueByNameAndIndex(String key, String index) {
+//         IWrapperIndexedParam pindex = gimmeIndexedParamForKey(key);
+//         if (pindex != null) {
+//             IWrapperParamInfo pinfo = pindex.getParamInfoForIndex(index);
+//             if (pinfo != null) {
+//                 return pinfo.getValueArr();
+//             }
+//         }
+//         return null;
+//     }
+
     protected final IWrapperParamInfo gimmeParamInfoForKey(String key) {
         synchronized (params) {
             return (IWrapperParamInfo) params.get(key);
