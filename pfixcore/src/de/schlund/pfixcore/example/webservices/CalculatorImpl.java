@@ -13,6 +13,7 @@ package de.schlund.pfixcore.example.webservices;
 public class CalculatorImpl implements Calculator {
 
     public int add(int value1,int value2) {
+        if(value1 % 2 == 0) try {Thread.sleep(2000);} catch(Exception x) {};
         return value1+value2; 
     }
 
