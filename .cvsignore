@@ -9,3 +9,5 @@ testskel
 .externalToolBuilders
 .classpath
 .project
+target
+velocity.log
