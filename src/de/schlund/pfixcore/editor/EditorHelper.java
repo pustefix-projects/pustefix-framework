@@ -615,6 +615,9 @@ public class EditorHelper {
                 direlem = resdoc.createSubNode(root, "directory");
                 direlem.setAttribute("name", dir);
                 olddir = dir;
+                if (dir == null) {
+                    System.out.println("TODO: empty dir for path " + path);
+                }
             }
             if (!path.equals(oldpath) || olddir.equals("")) {
                 if (doshow  || (currinc != null && currinc.getPath().equals(path))) {
