@@ -38,6 +38,20 @@ public class DependencyTracker {
     public static String log(String type,String path, String part, String product,
                              String parent_href, String parent_part, String parent_product, String TargetGen, String TargetKey) {
         String RetVal = "0";
+        
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
+                "Type       = "+type+"\n"+
+                "Path        = "+path+"\n"+
+                "Part        = "+part+"\n"+
+                "Product     = "+product+"\n"+
+                "ParentHref  = "+parent_href+"\n"+
+                "ParentPart  = "+parent_part+"\n"+
+                "ParentProd  = "+parent_product+"\n"+
+                "TargetGen   = "+TargetGen+"\n"+
+                "TargetKey   = "+TargetKey+"\n");   
+            
+        }
         try {
             TargetGenerator Generator =
                 TargetGeneratorFactory.getInstance().createGenerator(TargetGen);

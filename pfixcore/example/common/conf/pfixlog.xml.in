@@ -153,6 +153,11 @@
     <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
   
+  <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+  
   <!-- special categories for additional logfiles -->
   
   <category name="LOGGER_VISIT" additivity="false">
