@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <table>
+          <th>You have selected to following testcases:</th>
+          <ixsl:for-each select="/formresult/selected_testcases/selected_testcase">
+          <tr>
+            <td>
+              <table border="1">
+                <th><ixsl:value-of select="."/></th>
+                <tr>
+                  <td>
+                    temporary directory is: <ixsl:value-of select="./@tmp_directory"/>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          </ixsl:for-each>
+          <tr>
+          </tr>
+          <tr>
+            <td>
+              <pfx:button normalclass="editor_submit" page="testcaseselect">
+                Back
+              </pfx:button>
+            </td>
+            <td>
+              <pfx:forminput target="_top">
+                <pfx:xinp class="editor_submit" type="submit" value="Start"/>
+              </pfx:forminput>
+            </td>
+          </tr>
+        </table>
+      </lang>
+      </product>
+  </part>
+
+
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->
