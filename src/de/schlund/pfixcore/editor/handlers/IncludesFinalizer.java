@@ -104,18 +104,30 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
             
+            // <comment>
+            // Here we must handle the case that an editoruser references a
+            // new include. When he selects it from the list, it is
+            // not written yet. So we must NOT call EditorHelper.getAffectedProductsForInclude!!!
+            // look if part exists
+            Element ele = EditorHelper.getIncludePart(esess.getProduct().getTargetGenerator(), 
+                                                        AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+                                                        path, part,esess.getProduct().getName()));   
             
-            // render all affected products for current include
-            Element aff_prods = resdoc.createNode("affectedproducts");
-            HashSet set = EditorHelper.getAffectedProductsForInclude(esess, path, part);
-            for(Iterator iter = set.iterator(); iter.hasNext(); ) {
-                EditorProduct prod = (EditorProduct) iter.next();
-                String name = prod.getName();
-                Element pr = resdoc.createNode("product");
-                pr.setAttribute("name", name);
-                aff_prods.appendChild(pr);
+            // if ele==null a new include has been referenced, but was not written yet                                           
+            if(ele != null ) {
+                // render all affected products for current include
+                Element aff_prods = resdoc.createNode("affectedproducts");
+                HashSet set = EditorHelper.getAffectedProductsForInclude(esess, path, part);
+                for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+                    EditorProduct prod = (EditorProduct) iter.next();
+                    String name = prod.getName();
+                    Element pr = resdoc.createNode("product");
+                    pr.setAttribute("name", name);
+                    aff_prods.appendChild(pr);
+                }
+                root.appendChild(aff_prods);
             }
-            root.appendChild(aff_prods);
+            //</comment>
             
             if (!lock) {
                 try {
