@@ -1,10 +1,12 @@
 package de.schlund.pfixxml.util;
 
+import java.io.ByteArrayOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import junit.framework.TestCase;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,8 +15,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import de.schlund.pfixxml.util.Xml;
-import junit.framework.TestCase;
 
 public class XmlTest extends TestCase {
     public void testCreateDocument() {
@@ -104,7 +104,7 @@ public class XmlTest extends TestCase {
     }
     
     public void testSerializeDecl() throws Exception {
-        assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n<a/>", serialize("<a/>", false, true));
+        assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><a/>", serialize("<a/>", false, true));
     }
 
     public void testSerializeElement() throws Exception {
@@ -132,6 +132,35 @@ public class XmlTest extends TestCase {
         }
     }
 
+    public void testSerializeEncoding() throws Exception {
+        final String STR = "<x>ö</x>";
+        ByteArrayOutputStream dest;
+        
+        dest= new ByteArrayOutputStream();
+        Xml.serialize(parse(STR), dest, false, true);
+        checkEquals(("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + STR).getBytes("ISO-8859-1"), dest.toByteArray());
+    }
+
+    private void checkEquals(byte[] expected, byte[] got) {
+        int len;
+        int i;
+        StringBuffer msg;
+        
+        msg = new StringBuffer();
+        len = Math.min(expected.length, got.length);
+        if (expected.length != got.length) {
+            msg.append("length: expected " + expected.length + ", got " + got.length + "\n");
+        }
+        for (i = 0; i < len; i++) {
+            if (expected[i] != got[i]) {
+                msg.append("ofs " + i  + ": expected " + ((int) (char) expected[i]) + ", got " + ((int) (char) got[i]) + "\n");
+            }
+        }
+        if (msg.length() != 0) {
+            fail(new String(expected) + " vs " + new String(got) + ": " + msg);
+        }
+    }
+    
     public void testSerializeExplicitNamespace() throws Exception {
         Document doc = parse(serialize("<ns:ok xmlns:ns='foo'/>", false, false));
         assertEquals("foo", doc.getDocumentElement().getNamespaceURI());
