@@ -177,7 +177,7 @@
   </category>
   
   <category name="de.schlund.pfixxml.IncludeDocumentExtension" additivity="false">
-    <priority value="WARN"/>
+    <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
