@@ -166,10 +166,5 @@ public class FileData extends PartData {
     public void setLocalFile(File localFile) {
         this.localFile = localFile;
     }
-
-    protected void finalize() throws Throwable {
-        //delete associated file when object is no longer in use
-        if(localFile!=null && localFile.exists()) localFile.delete();
-    }
     
 }
