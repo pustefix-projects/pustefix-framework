@@ -1,3 +1,14 @@
+2003-02-26  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: added
+	restricted mode for sending plain xml. Clients which
+	want to retrieve plain xml must be listed in config file.
+	Code cleanup: Made more functions and added ifXXXEnabled 
+	for debug output.
+
+	* example/common/conf/pustefix.prop.in: changed xmlonly
+	to restricted in prod. mode.
+
 2003-02-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java
