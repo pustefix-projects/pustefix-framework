@@ -1,4 +1,10 @@
-2004-06-07 Michael Hartmeier  <mhm@schlund.de>
+2004-07-20 Michael Hartmeier  <mhm@schlund.de>
+	* build.xml: generate ssl certificate for tomcat
+	* example/core/img/manager.gif: tomcat manager image
+	* example/core/build/create_serverxml.xsl: relative paths, configure tomcat manager
+	* src/de/schlund/pfixcore/util/XsltTransformer.java
+
+2004-07-07 Michael Hartmeier  <mhm@schlund.de>
 	* example/core/build/create_apacheconf.xsl: consider defpath decl
 	* example/core/build/create_serverxml.xsl: consider defpath and passthrough decls
 	* build.xml: removed tomcat.setup switch - always generate both setups

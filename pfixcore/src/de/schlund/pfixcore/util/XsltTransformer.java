@@ -218,7 +218,6 @@ public class XsltTransformer {
     // TODO: move into separate class?
     
     public static boolean exists(String file) {
-    	System.out.println("file: " + file);
     	return new File(file).exists();
     }
 }
