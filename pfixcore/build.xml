@@ -57,9 +57,6 @@ or delete the DOCTYPE definition -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
 
-  <!-- embedded or standalone -->
-  <property name="tomcat.setup" value="embedded"/>
-    
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
          - ant commandline via the '-Dparam=value' option
@@ -780,7 +777,6 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
-      <param name="setup"     expression="${tomcat.setup}"/>
     </pfx-xslt>
   </target>
   
