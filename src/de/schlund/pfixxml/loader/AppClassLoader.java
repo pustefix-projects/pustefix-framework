@@ -74,6 +74,7 @@ public class AppClassLoader extends ClassLoader {
                 CAT.debug("AppClassLoader didn't find class: "+name);
 	        } else {	
                 CAT.debug("AppClassLoader found class: "+name);
+                definePackage(name);
                 return defineClass(name,data,0,data.length);
 	        }
         } else {
@@ -95,6 +96,18 @@ public class AppClassLoader extends ClassLoader {
         throw new ClassNotFoundException(name);
     }
     
+    
+    protected void definePackage(String className) {
+        int ind=className.lastIndexOf('.');
+        if(ind!=-1) {
+            String pkgname=className.substring(0,ind);
+            Package pkg=getPackage(pkgname);
+            if(pkg==null) {
+                definePackage(pkgname,null,null,null,null,null,null,null);
+            }
+        }
+    }
+
     protected byte[] getClassData(String name) {
         byte[] data=null;
         File file=null;
@@ -141,5 +154,7 @@ public class AppClassLoader extends ClassLoader {
     public InputStream getResourceAsStream(String name) {
         return parent.getResourceAsStream(name);
     }
-
+   
+   
+   
 }
