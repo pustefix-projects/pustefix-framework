@@ -51,7 +51,7 @@ xmlRequest.IFRAMES_FALLBACK =  0;
 xmlRequest.IFRAMES_ONLY     =  1;
 
 // set iframe behaviour
-xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_ONLY;
+xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_NEVER;
 if( /^opera$/.test(_browser) ) {
   // opera 7.6 pr1 supports XMLHttpRequest but not setRequestHeader(), yet
   //xmlRequest.prototype.iframes = 1;
@@ -174,7 +174,6 @@ xmlRequest.prototype.start = function( content ) {
           }
         }
 
-        alert(content);
         xmlRequest._xml[i].send(content);
           
         if( !this.callback ) {
@@ -288,7 +287,6 @@ xmlRequest.prototype.start = function( content ) {
           document.getElementById("pfxxmlform"+i).target = "pfxxmliframe"+i;
 
           window.setTimeout( function() {
-            alert("submit");
             document.forms[document.forms.length-1].submit();
           }, 1 );
         }, 1 );        
@@ -331,7 +329,8 @@ xmlRequest.prototype._customOnReadyStateChange = function() {
             xmlRequest._xmlTimerCount[i]++;
           } else {
            
-            xmlRequest._xml[i].call( xmlRequest._xmlThis[i].context, window.frames['pfxxmliframe'+i].document.body );
+            xmlRequest._xml[i].call( xmlRequest._xmlThis[i].context, 
+                                     /^mshtml$/.test(_browser) ? window.frames['pfxxmliframe'+i].document.body : window.frames['pfxxmliframe'+i].document );
             xmlRequest._xml[i] = null;
             this.cancelOnReadyStateChange(i); //, "regular finalization");
           }

@@ -68,8 +68,9 @@ xmlException.extend(coreException);
 function xmlUtilities() {
 	this.scopeSupport=false;
 	try {
-		document.scopeName;
-		this.scopeSupport=true;
+		if( typeof document.firstChild.scopeName != "undefined") {
+      this.scopeSupport=true;
+    }
 	} catch(ex) {}
 }
 
@@ -89,7 +90,6 @@ xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
 	if(node.childNodes==null || node.childNodes.length==0) return null;
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
-    //    alert( xml.firstChild.scopeName + "::" + xml.firstChild.nodeName );
     if(this.scopeSupport) {
     	if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
 	 } else {
