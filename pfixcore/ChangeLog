@@ -1,4 +1,7 @@
 2004-08-04 Michael Hartmeier  <mhm@schlund.de>
+	* build.xml, skel/build.xml: remove jndi.jar
+
+2004-08-04 Michael Hartmeier  <mhm@schlund.de>
 	* build.xml, skel/build.xml: ant clean has to delete toncat/conf/Catalina
 
 2004-08-04  Jens Lautenbacher  <jtl@schlund.de>
