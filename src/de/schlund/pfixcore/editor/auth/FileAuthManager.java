@@ -196,6 +196,8 @@ public class FileAuthManager implements AuthManager {
     }
 
     public void init() throws AuthManagerException {
+        if(CAT.isDebugEnabled())
+            CAT.debug(this.getClass().getName()+" init start.");
 
         try {
             readFile();
@@ -210,6 +212,9 @@ public class FileAuthManager implements AuthManager {
         } catch (TransformerException e) {
             throw new AuthManagerException("Caught TransformerException", e);
         }
+        
+        if(CAT.isDebugEnabled())
+            CAT.debug(this.getClass().getName()+" init end.");
 
     }
 
