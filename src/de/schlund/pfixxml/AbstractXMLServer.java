@@ -383,14 +383,16 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @exception Exception
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        Properties   params  = new Properties();
-        HttpSession  session = preq.getSession(false);
-        boolean      doreuse = doReuse(preq);
-        SPDocument   spdoc   = null;
+        Properties   params      = new Properties();
+        HttpSession  session     = preq.getSession(false);
+        boolean      doreuse     = doReuse(preq);
+        SPDocument   spdoc       = null;
         RequestParam value;
         long         currtime;
-        long         getdomtime = -1;
-        long         handletime = -1;
+        long         preproctime = -1;
+        long         getdomtime  = -1;
+        long         handletime  = -1;
+        
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
         // they will be stored in the params properties and will be applied as stylesheet
@@ -450,16 +452,18 @@ public abstract class AbstractXMLServer extends ServletManager {
             boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
             params.put("recordmode_allowed", new Boolean(allowed).toString());
         }
-        
+
+        // Now we will store the time needed from the creation of the request up to now
+        currtime    = System.currentTimeMillis();
+        preproctime = currtime - preq.getCreationTimestamp();
+       
         if (spdoc == null) {
-            currtime   = System.currentTimeMillis();
             preq.startLogEntry();
-            spdoc      = getDom(preq);
+            spdoc = getDom(preq);
             preq.endLogEntry("GETDOM", 0);
-            getdomtime = System.currentTimeMillis() - currtime;
             
             // start recording if allowed and enabled
-            if(recordmodeAllowed) {
+            if (recordmodeAllowed) {
                 RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
                 recorder.tryRecord(preq, res, spdoc, session);
             }
@@ -492,9 +496,12 @@ public abstract class AbstractXMLServer extends ServletManager {
             } else {
                 CAT.warn("*** Got NOSTORE from SPDocument! ****");
             }
+            // this will remain at -1 when we don't have to enter the businesslogic codepath
+            // (whenever there is a stored spdoc already)
+            getdomtime = System.currentTimeMillis() - currtime;
         }
-        params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         currtime = System.currentTimeMillis();
+        params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         handleDocument(preq, res, spdoc, params, doreuse);
         handletime = System.currentTimeMillis() - currtime;
         if (isInfoEnabled()) {
@@ -504,7 +511,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
-                writer.write("\n<!-- GET_DOM: " + getdomtime +  " HDL_DOC: " + handletime + " -->");
+                writer.write("\n<!-- PRE_PROC: " + preproctime +
+                             " GET_DOM: " + getdomtime +
+                             " HDL_DOC: " + handletime + " -->");
                 writer.flush();
             }
         } catch (Exception e) {
