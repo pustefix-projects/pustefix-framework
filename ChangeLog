@@ -1,7 +1,19 @@
+2004-07-19  Benjamin Reitzammer <benjamin@schlund.de>
+
+    * added src/de/schlund/pfixcore/util/XsltCustomWebXmlTask.java
+    * added example/core/conf/web.xml
+    * added example/core/build/create_customtomcatweb.xsl
+    when the XsltCustomWebXmlTask is used instead of the XsltWebXmlTask, it is
+    detected at build time, if a project has a custom web.xml in it's conf folder.
+    If this is the case, this custom web.xml is used as a source document for the
+    transformation with create_customtomcatweb.xsl. If there is no custom web.xml
+    in the project's conf folder, the web.xml file in conf/core will be used as
+    source document.
+
 2004-07-13  Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/PerfEventType.java: removed
-        get/setMessage method. Added get/setPage and 
+        get/setMessage method. Added get/setPage and
         get/setHandlingClass instead.
         * src/de/schlund/pfixxml/PfixServletRequest.java:
         improved perfstat-logging. see above.
@@ -23,12 +35,12 @@
 
 2004-07-12  Michael Hartmeier  <mhm@schlund.de>
 
-	* src/de/schlund/pfixcore/editor/resources/EditorCommonsFactory: fix absolute 
+	* src/de/schlund/pfixcore/editor/resources/EditorCommonsFactory: fix absolute
 	path problem with dynincludes
 	* .classpath: remove libraries not available in lib
 	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatus.java: remove unused include
-	* project.properties, project.xml: remove rmiobj dependency 	
-	
+	* project.properties, project.xml: remove rmiobj dependency
+
 2004-07-09  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/projects/common/conf/factory.prop.in: Added SPCacheStatistic and PerfStat configuration
@@ -48,13 +60,13 @@
 	* src/de/schlund/pfixcore/editor/EditorHelper.java
 	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java
 	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java
-	Now we no longer show the full list of includes, but only when explicitely requested 
+	Now we no longer show the full list of includes, but only when explicitely requested
 	by clicking "show all". Only the includes in the same file as the current one are always shown.
-	
+
 2004-07-07  Jens Lautenbacher  <jtl@schlund.de>, Andreas Ecker <ae@schlund.de>
 
 	The new javascript based editing area has landed.
-	
+
 	* example/core/script/xmlEditorApplet.jar
 	* example/core/editor/xml/three_frames_applet.xml
 	* example/core/editor/txt/pages/main_AppletInfo.xml
@@ -86,7 +98,7 @@
 
 2004-07-05  Joerg Haecker <haecker@schlund.de>
 
-	* lib/rmiobj.jar: removed 
+	* lib/rmiobj.jar: removed
 	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValue.java
 	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java
 	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueVisitor.java
@@ -97,7 +109,7 @@
 
 	* example/core/xsl/xmlfontify.xsl.in: new file to fontify the xml-only output,
 	as not all browsers seem to be able to display a DOM tree view.
-	
+
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: really render the
 	saved DOM, not only serializing to text/xml
 
@@ -111,7 +123,7 @@
 	* src/de/schlund/pfixxml/PerfEventTypeConfig.java: more logging if
 	init  failed.
 	* lib/rmiobj.jar: new jar with exception-formatting utilities.
-	
+
 	* src/de/schlund/pfixxml/PerfEventTypeConfig.java: new class
 	getting delay times from factory.prop.in
 	* src/de/schlund/pfixxml/PerfEventType.java: adjusted to
@@ -143,12 +155,12 @@
          -adjusted perf-logging with typed perf-events.
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java:
-	prevent logging by doing nothing if not PFXPERF.isDebugEnabled 
+	prevent logging by doing nothing if not PFXPERF.isDebugEnabled
 	in initPerfLog, startLogEntry, endLogEntry, printLog
 
 2004-06-23  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): 
+	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData):
 	fixed stupid bug.
 
 2004-06-22  Jens Lautenbacher  <jtl@schlund.de>
@@ -182,7 +194,7 @@
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
 	Do not catch TargetGenerationExcpetions any more, they
 	be processed by a defined ExceptionProcessor.
-	* src/de/schlund/pfixxml/targets/TargetGenerationException.java: minor changes.	 
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java: minor changes.
 	* example/core/xsl/errorrepresentation.xsl.in: stylesheet for rendering errors on screen.
 	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
 	ExceptionProcessor rendering errors on screen.
@@ -203,13 +215,13 @@
 
 2004-06-21  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/ServletManager.java: fixed generated property 
-	__PROPERTIES_LOAD_INDEX to really get incremented every time the 
+	* src/de/schlund/pfixxml/ServletManager.java: fixed generated property
+	__PROPERTIES_LOAD_INDEX to really get incremented every time the
 	properties are reloaded.
 
 2004-06-19  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/core/editor/xsl/metatags.xsl: fixed again differently 
+	* example/core/editor/xsl/metatags.xsl: fixed again differently
 	(using "/" instead of ../../ to match the aliases defined anyway)
 
 2004-06-18  Michael Hartmier  <mhm@schlund.de>
