@@ -27,6 +27,9 @@ import de.schlund.pfixxml.*;
  */
 
 public interface State {
+    public final static String SENDDATA     = "__sendingdata";
+    public final static String SENDAUTHDATA = "__sendingauthdata";
+    
     boolean        isAccessible(Context context, PfixServletRequest preq) throws Exception;
     boolean        needsData(Context context, PfixServletRequest preq) throws Exception;
     ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception;

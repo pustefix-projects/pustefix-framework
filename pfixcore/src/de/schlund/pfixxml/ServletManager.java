@@ -57,7 +57,7 @@ public abstract class ServletManager extends HttpServlet {
     protected static final String DEF_CONTENT_TYPE              = "text/html; charset=iso-8859-1";
     private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
     private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
-    private   static final String SECURE_SESS_COOKIE            = "__PFIX_SECURE_SSL_SESS__";
+    private   static final String SECURE_SESS_COOKIE            = "__PFIX_SEC_";
     private   static final String TEST_COOKIE                   = "__PFIX_TEST__";
     private   static final String SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
     private   static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
@@ -177,9 +177,9 @@ public abstract class ServletManager extends HttpServlet {
                         CAT.debug("    ... and session is secure.");
                         if (does_cookies) {
                             CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
-                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE);
+                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + session.getId());
                             CAT.debug("*** Session expects to see the cookie value " + sec_testid);
-                            Cookie cookie = getSecureSessionCookie(req);
+                            Cookie cookie = getSecureSessionCookie(req, session.getId());
                             if (cookie != null) {
                                 CAT.debug("*** Found a matching cookie ...");
                                 if (cookie.getValue().equals(sec_testid)) {
@@ -338,13 +338,13 @@ public abstract class ServletManager extends HttpServlet {
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id  = secure_session.getId();
-                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE);
+                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + secure_id);
                 CAT.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
                 CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                 // But we need to make sure that the current request comes
                 // from the same user who created this secure session.
                 // We do this by checking for a (secure) cookie with a corresponding session id.
-                Cookie cookie = getSecureSessionCookie(req);
+                Cookie cookie = getSecureSessionCookie(req, secure_id);
                 if (cookie != null) {
                     CAT.debug("*** Found a matching cookie ...");
                     if (cookie.getValue().equals(sec_testid)) {
@@ -400,15 +400,15 @@ public abstract class ServletManager extends HttpServlet {
         session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
 
-        Cookie cookie = getSecureSessionCookie(req);
+        Cookie cookie = getSecureSessionCookie(req, session.getId());
         if (cookie != null) {
             cookie.setMaxAge(0);
             res.addCookie(cookie);
         }
         String sec_testid = req.getRemoteAddr() + ":" + Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
         CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
-        session.setAttribute(SECURE_SESS_COOKIE, sec_testid);
-        cookie = new Cookie(SECURE_SESS_COOKIE, sec_testid);
+        session.setAttribute(SECURE_SESS_COOKIE + session.getId(), sec_testid);
+        cookie = new Cookie(SECURE_SESS_COOKIE + session.getId(), sec_testid);
         cookie.setPath("/");
         cookie.setMaxAge(-1);
         cookie.setSecure(true);
@@ -494,13 +494,13 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
 
-    private Cookie getSecureSessionCookie(HttpServletRequest req) {
+    private Cookie getSecureSessionCookie(HttpServletRequest req, String id) {
         Cookie[] cookies = req.getCookies();
         Cookie   tmp;
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 tmp = cookies[i];
-                if (tmp.getName().equals(SECURE_SESS_COOKIE))
+                if (tmp.getName().equals(SECURE_SESS_COOKIE + id))
                     return tmp;
             }
         }

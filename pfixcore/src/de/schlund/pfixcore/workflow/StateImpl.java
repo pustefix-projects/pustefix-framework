@@ -29,13 +29,11 @@ import de.schlund.pfixxml.*;
  */
 
 public abstract class StateImpl implements State {
-    protected            Category CAT          = Category.getInstance(this.getClass().getName());
-    private final static String   SENDDATA     = "__sendingdata";
-    private final static String   SENDAUTHDATA = "__sendingauthdata";
-    
+    protected Category CAT = Category.getInstance(this.getClass().getName());
+   
     public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || !requestParamSaysSubmit(sdreq)));
+        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || !requestParamSaysTrue(sdreq)));
     }
     
     public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
@@ -49,8 +47,8 @@ public abstract class StateImpl implements State {
     }
 
     // private
-    private boolean requestParamSaysSubmit(RequestParam sdreq) {
-        if (sdreq != null) {
+    protected static boolean requestParamSaysTrue(RequestParam sdreq) {
+        if (sdreq != null && sdreq.getValue() != null) {
             String sd = sdreq.getValue();
             return (sd.equals("true") || sd.equals("1") || sd.equals("yes"));
         }
@@ -60,7 +58,7 @@ public abstract class StateImpl implements State {
     
     private boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
         return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
-                !context.jumpToPageIsRunning() && requestParamSaysSubmit(sdreq));
+                !context.jumpToPageIsRunning() && requestParamSaysTrue(sdreq));
     }
 
     // You may want to overwrite this 
