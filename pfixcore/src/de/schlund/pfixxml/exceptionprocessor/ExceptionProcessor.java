@@ -21,6 +21,8 @@ package de.schlund.pfixxml.exceptionprocessor;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import java.io.IOException;
+import java.util.Properties;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletContext;
@@ -60,13 +62,14 @@ public interface ExceptionProcessor {
      * in which the request is answered
      * @param req the {@link javax.servlet.http.HttpServletRequest HttpServletRequest} of the current request
      * @param res the {@link javax.servlet.http.HttpServletResponse HttpServletResponse} of the current request
+     * @param properties
      */
     public void processException(Throwable exception,
                                  ExceptionConfig exConfig,
                                  PfixServletRequest pfixReq,
                                  ServletContext servletContext,
                                  HttpServletRequest req,
-                                 HttpServletResponse res)
+                                 HttpServletResponse res, Properties properties)
                           throws IOException,
                                  ServletException;
 

@@ -21,6 +21,8 @@ package de.schlund.pfixxml.exceptionprocessor;
 
 import de.schlund.pfixxml.PfixServletRequest;
 import java.io.IOException;
+import java.util.Properties;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -58,7 +60,8 @@ public class PageForwardingExceptionProcessor implements ExceptionProcessor {
      */
     public void processException(Throwable exception, ExceptionConfig exConfig,
                                  PfixServletRequest pfixReq, ServletContext context,
-                                 HttpServletRequest req, HttpServletResponse res)
+                                 HttpServletRequest req, HttpServletResponse res,
+                                 Properties props)
                           throws IOException, ServletException {
         if ( !exConfig.getForward() || exConfig.getPage() == null )
             throw new ServletException("Wrong ExceptionConfig! 'forward' is false or 'page' is null : \n"+exConfig);

@@ -100,8 +100,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String PROP_PROHIBITDEBUG = "xmlserver.prohibitdebug";
     private static final String PROP_PROHIBITINFO  = "xmlserver.prohibitinfo";
     
-    // error handling
-    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
+    
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -599,16 +598,16 @@ public abstract class AbstractXMLServer extends ServletManager {
             TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             Object stylevalue = null;
             
-            try {
+          //  try {
                 stylevalue = generator.getTarget(stylesheet).getValue();
-            } catch (TargetGenerationException targetex) {
-                CAT.error("AbstractXMLServer caught Exception!", targetex);
-                Document errordoc = targetex.toXMLRepresentation();
-                errordoc = xsltproc.xmlObjectFromDocument(errordoc);
-                Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-                xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
-                return;
-            }
+           // } catch (TargetGenerationException targetex) {
+                //CAT.error("AbstractXMLServer caught Exception!", targetex);
+             //   Document errordoc = targetex.toXMLRepresentation();
+              //  errordoc = xsltproc.xmlObjectFromDocument(errordoc);
+              //  Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+              //  xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
+             //   return;
+           // }
             try {
                 xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
                                              stylevalue, paramhash, 

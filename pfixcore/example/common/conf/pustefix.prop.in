@@ -43,6 +43,13 @@
   <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
   
   <prop name="context.adminmode.default.status">off</prop>  
+  <cus:choose>
+    <cus:test mode="test">
+      <exceptions>
+        <exception type="java.lang.Throwable" processor="de.schlund.pfixxml.exceptionprocessor.UniversalExceptionProcessor"/>
+      </exceptions>
+    </cus:test>
+  </cus:choose>
 
 </properties>
 
