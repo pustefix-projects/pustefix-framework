@@ -51,7 +51,7 @@
   </servlet>
   <servlet name="download">
     <active>true</active>
-    <class>de.schlund.pfixxml.DirectOutputServlet</class>
+    <class>de.schlund.pfixxml.DirectOutputServer</class>
     <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
   </servlet>
 </project>
