@@ -1,3 +1,10 @@
+2004-11-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: excape "<" and ">" for
+	the displayed value of the link and urlencode the value used in
+	the href. Thanks to Sebastian Marsching for the report. I hope
+	this fixes the possible problem...
+
 2004-11-22  Martin Leidig  <mleidig@schlund.de>
 
 	Added client-side support of RPC/Literal encoding. Improved special

@@ -22,6 +22,7 @@ package de.schlund.pfixxml;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
@@ -49,7 +50,7 @@ public class DerefServer extends ServletManager {
         HttpSession  session = preq.getSession(false);
         RequestParam link    = preq.getRequestParam("link");
 
-        if (link == null) {
+        if (link == null || link.getValue() == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -64,19 +65,22 @@ public class DerefServer extends ServletManager {
             // res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
             // res.setHeader("Location", link.getValue());
             // res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            String display = link.getValue();
+            display = display.replaceAll("<", "&lt;");
+            display = display.replaceAll(">", "&gt;");
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link.getValue() + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + link.getValue() + "\">" + link.getValue() + "</a>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"" + URLEncoder.encode(link.getValue()) + "\">" + display + "</a>");
             writer.write("</small></center></body></html>");
         } else {
-            String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
-            
-            writer.write("<html><head>");
-            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + thelink + "\">");
-            writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + thelink + "\">" + thelink + "</a>");
-            writer.write("</small></center></body></html>");
+            String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+                SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
+            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            res.setHeader("Location", thelink);
+            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         }
         writer.flush();
     }
