@@ -44,7 +44,6 @@
           </pfx:forminput>
           <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
-          <b>Euro sign <font face="arial">&#128;</font> is written &apos;&amp;#128;&apos;!!</b>
         </center>
         <pfx:include part="sample_layers"/>
       </lang>
@@ -68,7 +67,7 @@
         
         <pfx:layer class="layer" name="B" pos-right="10" pos-top="10" visible="false">
           <b>This is Layer B</b><br/>
-          <pfx:image alt="Good morning" title="Good evening" src="/sample1/img/test.gif"/><br/>
+          <pfx:image alt="Good morning" src="/sample1/img/test.gif" title="Good evening"/><br/>
           <pfx:switch>
             <pfx:layer_ref name="C"/>
             Toggle Layer C
@@ -109,7 +108,7 @@
   <part name="buttons">
     <product name="default">
       <lang name="default">
-        <pfx:elink href="http://www.gimp.org" target="_popup">
+        <pfx:elink arget="_popup" href="http://www.gimp.org">
           <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
           Goto Gimp!</pfx:elink>  
         <pfx:button page="ssltest">SSL TEST</pfx:button>  

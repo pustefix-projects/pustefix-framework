@@ -31,6 +31,9 @@ import java.util.TimeZone;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import de.schlund.pfixcore.util.email.EmailSender;
+import de.schlund.pfixcore.util.email.EmailSenderException;
+
 
 /**
  * Generates a report mail by collecting data from all 
@@ -77,9 +80,16 @@ class ReportGeneratorTask extends TimerTask {
             Calendar cal       =Calendar.getInstance(tz, loc);
             SimpleDateFormat df=new SimpleDateFormat("H:mm:ss");
             String date        =df.format(cal.getTime());
-            pfutil_.sendMail(
-                    date + ":Report of collected exceptions (" + info_ + ")", 
-                    buf.toString());
+            String subject = date + ":Report of collected exceptions (" + info_ + ")";
+            MailConfig mailconfig = MailConfig.getInstance();
+            try {
+                EmailSender.sendMail(subject, buf.toString(), 
+                                    mailconfig.getTo(),
+                                    mailconfig.getFrom(),
+                                    mailconfig.getHost());
+            } catch (EmailSenderException e) {
+                pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
+            }
             pfutil_.debug("ReportGeneratorTask (" + info_ + ") mail sent");
         } else
             pfutil_.debug(" ReportGeneratorTask: no need to send mail");

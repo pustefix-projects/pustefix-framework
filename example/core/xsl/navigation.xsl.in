@@ -12,6 +12,7 @@
   <xsl:template match="pfx:invisible"></xsl:template>
   <xsl:template match="pfx:argument"></xsl:template>
   <xsl:template match="pfx:command"></xsl:template>
+  <xsl:template match="pfx:anchor"></xsl:template>
   <xsl:template match="pfx:host">
     <cus:documentation>
       <description>Always a child of &lt;pfx:elink&gt;. See there for usage information.</description>
@@ -130,6 +131,9 @@
           </xmlcode>
         </description>
       </children>
+      <children>
+        <name>pfx:anchor</name>
+      </children>
       <example>
         <input>
           <xmlcode>
@@ -192,6 +196,7 @@
       <xsl:with-param name="invisibleclass"><xsl:value-of select="@invisibleclass"/></xsl:with-param>
       <xsl:with-param name="args" select="./pfx:argument"/>
       <xsl:with-param name="cmds" select="./pfx:command"/>
+      <xsl:with-param name="anchors" select="./pfx:anchor"/>
       <xsl:with-param name="nodata" select="@nodata"/>
       <xsl:with-param name="buttpage" select="@page"/>
       <xsl:with-param name="frame" select="@frame"/>
@@ -296,6 +301,7 @@
       <xsl:with-param name="omout">top.__js_moveout(document,'<xsl:value-of select="@name"/>')</xsl:with-param>
       <xsl:with-param name="args" select="./pfx:argument"/>
       <xsl:with-param name="cmds" select="./pfx:command"/>
+      <xsl:with-param name="anchors" select="./pfx:anchor"/>
       <xsl:with-param name="nodata" select="@nodata"/>
       <xsl:with-param name="buttpage" select="@page"/>
       <xsl:with-param name="frame" select="@frame"/>
@@ -329,6 +335,7 @@
     <xsl:param name="nodata"/>
     <xsl:param name="args"/>
     <xsl:param name="cmds"/>
+    <xsl:param name="anchors"/>
     <xsl:param name="buttpage_impl">
       <xsl:choose>
         <xsl:when test="not(string($buttpage) = '')">
@@ -416,9 +423,9 @@
               <xsl:if test="$omout">
                 <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
               <xsl:if test="$target = '_popup'">
-                  <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each><xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
               </xsl:if>
-              <ixsl:attribute name="href"><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each></ixsl:attribute>
+              <ixsl:attribute name="href"><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each><xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each></ixsl:attribute>
               <xsl:copy-of select="$normal"/>
             </a>
           </xsl:otherwise> 

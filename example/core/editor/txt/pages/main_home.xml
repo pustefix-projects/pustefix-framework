@@ -5,67 +5,37 @@
     <product name="default">
       <lang name="default">
         <br/> 
-        <table border="0" width="100%">
+        <table border="0" width="75%" align="center">
           <tr>
-            <td align="center" colspan="3">
+            <td align="center">
               <pfx:include href="core/editor/txt/pages/main_home.xml" part="welcome"/>
             </td>
           </tr>
+        </table>
+        <table align="center" cellspacing="1" cellpadding="5">
           <tr>
-            <td align="center" colspan="3">
-              <br/><br/>
+            <td>
               <span class="editor_main_emph">
                 Schedule all pages of the product for updating:</span>  
+            </td>
+            <td align="center">
               <pfx:button mode="force" normalclass="editor_submit" page="home">
                 <pfx:command name="SELWRP">update</pfx:command>
                 <pfx:argument name="update.DoUpdate">true</pfx:argument>Do it!</pfx:button>
             </td>
           </tr>
           <tr>
-            <td align="center"><br/>
+            <td>
               <span class="editor_main_emph">
-              Play-back recorded </span>
+                Play-back recorded testcases:</span>
+            </td>
+            <td align="center">
               <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
-                testcases
                 <pfx:argument name="tcreset.Reset">true</pfx:argument>
-                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
-              </pfx:button>              
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>Go...</pfx:button>              
             </td>
           </tr>
         </table>
-        <table border="0" width="100%">
-         <tr>
-            <td align="center">           
-              <span style="color:#FFFFEE">
-              <span style="font-size:175%">
-                <p align="center">
-                  <b>Release Notes</b> <br/>
-                </p>
-              </span>
-              
-              <span align="center" style="font-size:120%">
-              <table class="editor_box">
-              <tr>
-              <td>
-                <p>
-                  Pustefix&apos;s capability are enhanced by a new editor textarea, which comes <br/>
-                  along with a more comfortable functionality for your work on xml code. <br/>
-                  It supports syntax highlighting, a search and replace feature, undo/redo of text changes.<br/>
-                  Furthermore, before uploading your code to the pustefix server, it finally checks,<br/> 
-                  if the xml code is wellformed. <br/>              
-                </p>
-                <p>
-                  Since the new text area is an applet, the <b>Java Plugin 1.4</b> needs to be installed in your browser.<br/>
-                  For downloading, please refer to the <br/><br/> <pfx:elink class="editor_submit" href="http://www.java.sun.com/getjava" target="__popup">java download page</pfx:elink> <br/>
-                </p>
-                </td>
-                </tr>
-                </table>
-              </span>
-              </span>
-            </td>
-          </tr>
-         </table>
       </lang>
     </product>
     
@@ -87,7 +57,8 @@
             </span>
           </b>
           <br/><pfx:blank height="40"/><br/>
-          Please use the menubar to go to the different sections of the CMS.
+          Please use the menubar to go to the different sections of the CMS.<br/>
+          <br/>
         </div>
       </lang>
     </product>

@@ -27,12 +27,16 @@ import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.PublicXSLTProcessor;
 import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetFactory;
+import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TargetType;
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 import de.schlund.pfixxml.testenv.RecordManager;
 import de.schlund.pfixxml.testenv.RecordManagerFactory;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +50,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -57,6 +63,9 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -121,7 +130,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int    XML_ONLY_ALLOWED                              = 0;
     private static final int    XML_ONLY_RESTRICTED                           = 1;
     private static final int    XML_ONLY_PROHIBITED                           = 2;
-
+    
+    // error handling
+    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -567,10 +578,21 @@ public abstract class AbstractXMLServer extends ServletManager {
         // Check if we are allowed and should just supply the xml doc
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+            TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+            Object stylevalue = null;
+            try {
+                stylevalue = generator.getTarget(stylesheet).getValue();
+            } catch (TargetGenerationException targetex) {
+                CAT.error("AbstractXMLServer caught Exception!", targetex);
+                Document errordoc = targetex.toXMLRepresentation();
+                errordoc = xsltproc.xmlObjectFromDocument(errordoc);
+                Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+                xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
+                return;
+            }
             try {
                 xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
-                                             generator.getTarget(stylesheet).getValue(), paramhash, 
+                                             stylevalue, paramhash, 
                                              res.getOutputStream());
             } catch (TransformerException e) {
                 CAT.warn("[Ignored TransformerException] : " + e.getMessage());
@@ -616,6 +638,14 @@ public abstract class AbstractXMLServer extends ServletManager {
             LOGGER_TRAIL.warn(logbuff.toString());
         }
     }
+
+    /**
+     * Method createErrorTree.
+     * @param e
+     * @return Document
+     */
+    
+
 
     /**
      * Check if the current request will retrieve plain xml.
@@ -728,7 +758,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         Map map = new HashMap();
         for (int i = 0; i < anchors.length; i++) {
             String value = anchors[i].getValue();
-            int    pos = value.indexOf(":");
+            int    pos = value.indexOf("|");
+            if (pos < 0) pos = value.indexOf(":"); // This is for backwards compatibility, but should not be used anymore!
             if (pos < (value.length() - 1) && pos > 0) {
                 String frame  = value.substring(0, pos);
                 String anchor = value.substring(pos + 1);

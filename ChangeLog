@@ -1,3 +1,28 @@
+2003-05-08  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:
+	added class implementing ErrorListener for handling corrupt
+	xsl-expressions during transformation. 
+	xslObjectFromDisc: Set this ErrorListener to the TransformerFactory.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java:
+	added getXMLRepresentation and getStringRepresentation which replace
+	the utility methods in AbstractXMLServer and TargetGenerator.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java,
+	src/de/schlund/pfixxml/targets/TargetGenerator.java: use functionality
+	from TargetGenerationException.
+
+2003-05-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (getValue):
+	really set the TargetKey in the Exception
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (insertErrInfo): new helper method
+	(printEx): much smaller now. reorder generated xml output.
+
+	* example/core/xsl/errorrepresentation.xsl.in: make it look cute.
+
 2003-05-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/editor/xsl/metatags.xsl: fix frame and target for "used Includes" to not always 
@@ -11,6 +36,69 @@
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
 	another little Syntax-Hilighting Bug fixed
 	Some Styles changed
+
+2003-05-07  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java,
+	* src/de/schlund/pfixxml/targets/PageInfoFactory.java,
+	* src/de/schlund/pfixxml/targets/PageTargetTree.java,
+	* src/de/schlund/pfixxml/targets/LRUCache.java,
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: organized
+	imports.
+
+	* src/de/schlund/pfixxml/targets/TargetRW.java(getCurrValue): now
+	throws TransformerException.
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java:
+	getValueFromDiscCache: now throws TransformerException.
+	getModTimeMaybeUpdate: now throws  TargetGenerationException,
+	 XMLException, ParserConfigurationException, IOException.
+	getValue: now throws TargetGenerationException, XMLException,
+	 ParserConfigurationException, IOException	
+	getCurrValue: adjusted.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java:
+	getModTimeMaybeUpdate: adjusted.
+	generateValue: now throws XMLException, TransformerException,
+	ParserConfigurationException, IOException. 
+	
+	* src/de/schlund/pfixxml/targets/X[M|S]L[Virtual|Leaf]Target.java:
+	getValueFromDiscCache: adjusted.
+
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	getModTimeMaybeUpdate: adjusted
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java,
+	src/de/schlund/pfixxml/IncludeDocumentExtension.java: minor
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java:
+	saveAuxdepend: now throws ParserConfigurationException, IOException
+
+	* src/de/schlund/pfixxml/targets/PublicXSLTProcessor.java:
+	applyTrafoForOutput, xmlObjectFromDocument: now throws
+	TransformerException.
+
+	* src/de/schlund/pfixxml/targets/PustefixXSLTProcessor.java:
+	xslObjectFromDisc: now throws TransformerConfigurationException
+	xmlObjectFromDisc: now throws TransformerException
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:
+	applyTrafoForOutput: adjusted.
+
+2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/editor/txt/pages/main_testcasestart.xml: 
+	* example/core/editor/txt/pages/main_testcaseoverview.xml: cosmetics.
+
+2003-05-07  Joerg Haecker <haecker@schlund.de>
+	
+	* src/de/schlund/pfixxml/testenv/RecordManager.java(doRecord): bugfix,
+	now we serialize to the right location.
+	
+2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (getModTimeMaybeUpdate): set storedException to null.
+	set modification time to -1 to force rebuild in all circumstances.
 
 2003-05-07  Volker Zaich <zaich@schlund.de>
 
@@ -39,6 +127,54 @@
 	All unused-Applet Classes removed
 	
 	
+2003-05-06  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/xsl/errorrepresentation.xsl.in: small changes.
+
+	* example/core/xsl/include.xsl.in: removed error-handling from 2003-04-28.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java: added
+	class representing all errors which can occur during generation of a
+	target.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	try/catch block around target.getValue(). Catches
+	TargetGenerationException now.
+
+	* src/de/schlund/pfixxml/IncludeDocument.java: createDocument now
+	throws SAXException, IOException and TransformerException. Moved
+	DocumentBuilder to a static class variable.
+
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: getIncludeDocument
+	now throws SAXException, IOException and TransformerException.
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get): catch
+	SAXExceptions only after getting IncludeDocument.
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:
+	xmlObjectFromDocument now throws TransformerException.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java(getModTimeMaybeUpdate):
+	throw a TargetGenerationException on target specific errors.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: prints a report
+	to screen after generation is complete.
+
+2003-05-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in: 
+	* example/core/xsl/forminput.xsl.in: 
+	* example/core/xsl/navigation.xsl.in: added <pfx:anchor frame="...">ANCHOR NAME</pfx:anchor>
+	as a new child of <pfx:button> und <pfx:xinp type="submit|image">. You can
+	still use the old <pfx:argument name="__anchor">FRAMENAME|ANCHORNAME</pfx:argument> but
+	this is deprecated (FRAMENAME:ANCHORNAME is deprecated anyway, see below).
+
+	* example/core/editor/xsl/metatags.xsl: changed to use <pfx:anchor>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (createAnchorMap):
+	chenged to prefer "|" as a separator between frame name and anchor
+	name (the ":" is still valid for now but deprecated).
+
 2003-05-05  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/test/LineNumber.java
@@ -56,6 +192,51 @@
 	The New Aplett jar-File
 
 	
+2003-05-02  Joerg Haecker <haecker@schlund.de>
+
+	NOTE: things in my entry from 2003-04-28 are not longer  valid.
+	Error handling works different now.
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: field added which
+	stores an exception.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java(getModTimeMaybeUpdate):
+	handle exceptions thrown by generateValue.
+	
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get): instead
+	of only throwing exceptions, we catch it, store it in the current target
+	and then throw it again.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument): Catch
+	exception thrown by target.getValue(). If exceptions occur, generate
+	an error page and write it directly to the client.
+
+	* example/core/xsl/errorrepresentation.xsl.in: added stylesheet 
+	for rendering error messages.
+
+2003-04-30  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/*: refactoring. now
+	uses de.schlund.pfixcore.util.email.EmailSender.
+
+2003-04-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): 
+	now we don't insert only the text extract but the whole content of the include.
+
+2003-04-28  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get):
+	returns an error-tree if exceptions occur when trying to
+	read include-documents from IncludeDocumentFactory.
+	CAUTION: IncludeDocumentExtension will only catch SAXParseExceptions,
+	others will be thrown again. 'Make generate' MUST report 
+	an error on corrupt XML files. IncludeDocument now prints
+	an error message on console via log4j if SAXParseExceptions
+	occur.
+
+	* example/core/xsl/include.xsl.in: render the error-tree
+	if necessary.
 	
 2003-04-25  Jens Lautenbacher  <jtl@schlund.de>
 

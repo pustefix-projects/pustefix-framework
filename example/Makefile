@@ -66,6 +66,8 @@ _generate:
 
 
 clean:
+	@echo "*** Removing *~..."
+	@find . -type f -name "*~" | xargs rm -f
 	@echo "*** Removing generated stylesheets..."
 	@rm -f $(CORE_XSL:.xsl.in=.xsl)
 	@echo "*** Removing generated configs..."
