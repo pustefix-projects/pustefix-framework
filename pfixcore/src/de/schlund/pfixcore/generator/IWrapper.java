@@ -48,13 +48,14 @@ public interface IWrapper extends Comparable {
     void tryParamLogging() throws IOException;
     void tryErrorLogging() throws IOException;
     void load(RequestData req) throws Exception;
+    boolean errorHappened();
+    void defineOrder(int order);
     // The reason for these to not being called get* is to avoid nameclashes with
     // descendents who may want to use a Parameter called e.g. "Prefix" (which would
     // result in a method getPrefix be generated)
+    Integer             gimmeOrder(); 
     String              gimmePrefix();
     IHandler            gimmeIHandler();
-    boolean             errorHappened();
     IWrapperParamInfo[] gimmeAllParamInfos();
     IWrapperParamInfo[] gimmeAllParamInfosWithErrors();
-    void                defineOrder(int order);
 }

@@ -152,7 +152,7 @@ public abstract class IWrapperImpl implements IWrapper {
         this.order = new Integer(order);
     }
 
-    protected final Integer gimmeOrder() {
+    public final Integer gimmeOrder() {
         return order;
     }
     
@@ -239,7 +239,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final int compareTo(Object inobj) {
-        IWrapperImpl in = (IWrapperImpl) inobj;
+        IWrapper in = (IWrapper) inobj;
         return (gimmeOrder().compareTo(in.gimmeOrder()));
     }
 
