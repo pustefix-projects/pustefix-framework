@@ -157,7 +157,7 @@ public class TargetGenerator {
     }
 
     private void loadConfig(Path confile) throws XMLException, IOException, SAXException {
-        CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
+        CAT.warn("\n***** CAUTION! ***** loading config " + confile.getRelative() + "...");
         Document config;
 
         config = Xml.parseMutable(confile.resolve());
