@@ -66,3 +66,8 @@ h2 {
 
 .stdtable tr td { 
   padding: 4px; border-top: 1px black dotted; }
+
+.stdimg { margin: 10px; text-align: center; }
+
+.stdimg-img { text-align: left; background-color: white; } 
+.stdimg-txt { background-color: black; color: white; text-align: left; padding: 5px; font-size: 10px; } 
