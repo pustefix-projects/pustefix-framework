@@ -103,6 +103,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     PfixTextPane syntaxPane;
 
     String actInclude = "";
+    String actImage = "";
     
 
 
@@ -314,7 +315,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                         
                         System.out.println(url);
 
-                        actInclude = path;
+                        actImage = path;
                         
                         neuImg = new ImageIcon(urli);
 
@@ -349,7 +350,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         }
 
         if (e.getSource() == imgbutton) {
-            syntaxPane.insertTag(actInclude);
+            syntaxPane.insertTag(actImage);
             
         }
         
