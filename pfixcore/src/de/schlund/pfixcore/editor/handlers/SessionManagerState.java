@@ -48,7 +48,6 @@ public class SessionManagerState extends StateImpl {
             try {
                 SessionInfoStruct info     = sessadmin.getInfo(sessid);
                 HttpSession       sess     = info.getSession();
-                ContainerUtil     conutil  = info.getContainerUtil();
                 LinkedList        trail    = info.getTraillog();
                 SimpleDateFormat  dateform = new SimpleDateFormat("d.M.yy, HH:mm:ss");
                 Element           sesselem = resdoc.createSubNode(root, "session");
@@ -80,7 +79,7 @@ public class SessionManagerState extends StateImpl {
                         }
                     }
                 }
-                Object ctmp = conutil.getSessionValue(sess, editorcname);
+                Object ctmp = sess.getAttribute(editorcname);
                 if (ctmp instanceof AuthContext) {
                     ContextResourceManager manager = ((AuthContext) ctmp).getContextResourceManager();
                     if (manager != null) {

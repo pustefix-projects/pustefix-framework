@@ -85,15 +85,17 @@ public class ExceptionHandler implements FactoryInit {
      * @param req the responsible request.
      * @param properties the current properties.
      */
-    synchronized public void handle(Exception e, PfixServletRequest req, 
+    synchronized public void handle(Throwable t, PfixServletRequest req, 
                                     Properties properties, 
                                     HttpServletResponse res) {
-        PFUtil.getInstance().debug("Handling a " + e.getClass().getName());
-        // if propertyfile changed reload it, it's done in a jserv thread (clumsy;-))
+        PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
+        // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
         // This is called from various threads, so everyone needs its own context !
-        ExceptionContext excontext=new ExceptionContext(e, req, res, properties);
+        ExceptionContext excontext=new ExceptionContext(t, req, res, properties);
+        PFUtil.getInstance().debug("Initialising exception context.");
         excontext.init();
+        PFUtil.getInstance().debug("Looking if properties have changed.");
         if(propman_.needsReinitialisation()) {
             PFUtil.getInstance().debug("Reinitialization needed");
             try {
@@ -106,7 +108,7 @@ public class ExceptionHandler implements FactoryInit {
                 PFUtil.getInstance().fatal(
                         "Configuration of exceptionhandler failed: " + 
                         ex.getMessage() + " reason: " + 
-                        ex.getCause().getClass()+":"+ex.getCause().getMessage());
+                        ex.getExceptionCause().getClass()+":"+ex.getExceptionCause().getMessage());
                 xhandler_.setErrorFlag(true);
             }
         } else
@@ -131,6 +133,7 @@ public class ExceptionHandler implements FactoryInit {
         try {
             propman_.init(propfile_);
             propman_.checkProperties();
+            propman_.printConfig();
             xhandler_.init();
             xhandler_.doIt();
         } catch(PFConfigurationException e) {
@@ -138,7 +141,7 @@ public class ExceptionHandler implements FactoryInit {
             PFUtil.getInstance().fatal(
                     "Configuration of exceptionhandler failed: " + 
                     e.getMessage() + " reason: " + 
-                    e.getCause().getClass()+":"+e.getCause().getMessage());
+                    e.getExceptionCause().getClass()+":"+e.getExceptionCause().getMessage());
             xhandler_.setErrorFlag(true);
             xhandler_.doIt();
             return;

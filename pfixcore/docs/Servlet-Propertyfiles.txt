@@ -1,0 +1,149 @@
+
+The Servlet Property files
+--------------------------
+
+This document describes the format of the property files that
+configure the running servlet instances (Every product consists of one or more
+servlets).
+
+Each property source file (*.prop.in) has the general form as follows:
+
+<properties>
+
+  <prop name="A_NAME">A_VALUE</prop>
+  ...
+
+<properties>
+
+This constitutes the most primitive way to write property files. The
+transformation is of course very simple: The example above would result
+in a java property file like this:
+
+A_NAME=A_VALUE
+...
+
+Using this format, you can write any java property in the source
+.prop.in file.
+
+For the most common case (in fact, in a "normal" project you would
+hardly ever see anything else) of a property file intended to be used
+for a ContextXMLServer, there are convenience tags defined to make the
+definition of pagerequests, state, context, resources and other stuff
+easier and more "xml-like".
+
+E.g. the property 
+
+     pagerequest.A_PAGENAME.statename=A_STATENAME
+
+could be written via the primitive <prop
+name="pagerequest.A_PAGENAME.statename">A_STATENAME</prop> but it's better
+and easier via the tags described in this document.
+
+Below is a sample definition which shows all the tags and explains how
+to use them:
+
+===================================================================================================
+
+<properties>
+
+  <servletinfo depend="rel-path/to/the/depend.xml" name="A_UNIQUE_NAME_FOR_THE_SERVLET">
+  <!-- @depend and @name are mandatory!. if @depend starts with a '/' the value is used
+       unchanged, otherwise (which is the normal case) it's interpreted as a path relative
+       to the docroot -->
+    <editmode  allow="true"/>                                 <!-- @allow needs to be set to "true"
+                                                                   if you want to be able to use 
+                                                                   the pustefix editor. The whole node is optional -->
+    <ssl       force="true"/>                                 <!-- @force must be set to "true" if the 
+                                                                   servlet needs to run under SSL. The whole
+                                                                   node is optional -->
+    <adminmode watch="A_NAME" page="A_PAGE"/>                 <!-- @watch and @page must both be given if the (optional)
+                                                                   <adminmode> node is used at all. -->
+  </servletinfo>
+  
+  <context defaultflow="A_FLOW_NAME" class="A_CONTEXT_CLASS authpage="AUTHENTIFICATION_PAGE">
+  <!-- @defaultflow is mandatory. @class is optional. @authpage must be given if the servlet should have
+       a login/authentification page. 
+
+       The property "context.classname" is determined as follows: 
+           * if @class is given, use this. else:
+              * if @authpage is given, use "de.schlund.pfixcore.workflow.AuthContext". else:
+                * use "de.schlund.pfixcore.workflow.Context".
+       
+       @authpage, if given, must reference a valid <pagerequest> with a <authhandler> child. (see below). 
+       @defaultflow must reference a valid <pageflow> (see below) -->
+       
+    <resource class="A_CONTEXTRESOURCE">                     <!-- @class is mandatory, must be a ContextResource -->
+      <implements class="AN_INTERFACE>                       <!-- @class is mandatory, must be an interface implemented
+                                                                  by the ContextResource. There may be more than one 
+                                                                  <implements> tags for a ContextResource. -->
+      ...                                                    <!-- each interface must be unique in the whole context -->
+    </resource>                               
+    ...                                                      <!-- there may be many resources listed -->
+  </context>
+
+  <pageflow name="A_FLOW_NAME" final="A_FINAL_PAGE">         <!-- @name is mandatory, must be a unique name -->
+                                                             <!-- @final is optional, must reference a valid <pagerequest> -->
+    <flowstep name="A_PAGE_NAME"/>                           <!-- @name is mandatory, must reference a valid <pagerequest> -->
+    ...                                                      <!-- there are usually many flowsteps in a pageflow defined -->
+  </pageflow>
+  ...                                                        <!-- there may be many pageflows defined -->
+
+
+  <pagerequest name="A_PAGE_NAME">                           <!-- @name is mandatory. The name of the page. 
+                                                                  This must be one of the pages defined in 
+                                                                  the corresponding depend.xml file. -->
+    <state class="A_CLASSNAME"/>                              
+    <!-- this is optional. The used State is determined as follows: 
+         * If <state> is given, use the value of it's @class attribute. Else:
+           * If the <pagerequest> has a <authhandler> child, use "de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState". Else:
+             * If the <pagerequest> has a <ihandler> child, use "de.schlund.pfixcore.workflow.app.DefaultIWrapperState". Else:
+               * use "de.schlund.pfixcore.workflow.app.StaticState".  -->
+
+    <finalizer class="A_FINALIZER"/>                        
+    <!-- this node optional. It may only be given for a State that is either "de.schlund.pfixcore.workflow.app.DefaultIWrapperState"
+         or a descendent of it! 
+         @class is mndatory and denotes a class implementing "de.schlund.pfixcore.workflow.app.ResdocFinalizer" --> 
+
+    <!-- CAUTION: only one of <ihandler> and <authhandler> may be given as a child node!! -->
+    <ihandler policy="ANY|ALL">                              <!-- @policy is optional. If given, it sets the property
+                                                                  "pagerequest.A_PAGE_NAME.ihandlercontainer.policy". The whole
+                                                                  node is optional -->
+      <interface prefix="A_PREFIX" class="A_IWRAPPER" activeignore="true" continue="true">
+                                                             <!-- @prefix is mandatory -->
+                                                             <!-- @class is mandatory. It must be a valid IWrapper -->
+                                                             <!-- @activeignore is optional. All interfaces
+                                                                  which have @activeignore == "true" are listed in the property
+                                                                  "pagerequest.A_PAGE_NAME.ignoreforactive". -->
+                                                             <!-- @continue is optional. All interfaces with @continue == "true"
+                                                                  are listed in the property
+                                                                  "pagerequest.A_PAGE_NAME.restrictedcontinue" -->
+      ...                                                    <!-- there can be many interfaces defined -->
+    </ihandler>
+   
+    <authhandler>                                            <!-- Only the <pagerequest> referred to via a @autpage property of <context>
+                                                                  MUST have, other <pagerequest> nodes MUST NOT have this subnode-->
+      <authinterface prefix="A_PREFIX" class="A_IWRAPPER"/>  <!-- @prefix/@class are mandatory. This denotes the single
+                                                                  interface that is responsible for the authentication.
+                                                                  The whole node is mandatory! -->
+      <auxinterface prefix="A_PREFIX" class="A_IWRAPPER"/>   <!-- @prefix/@class are mandatory if <auxinterface> is given. -->
+      ...                                                    <!-- you can have many auxinterfaces. These denote IHandlers that are
+                                                                  called on the authentication page, but no error handling is done. --> 
+    </authhandler>
+    
+    <output>                                                 <!-- the whole node is optional -->
+      <resource node="A_NODE" class="A_CR_INTERFACE"/>       <!-- @node/@class are mandatory.
+                                                                  @node is the node in the output tree ("/formresult/A_NODE") 
+                                                                        under which the ContextResource enters its data.
+                                                                  @class is one of the ContextResources defined via <implements class="">
+                                                                  above. -->
+      ...                                                    <!-- you can have many <resource> nodes. -->
+    </output>
+    
+    <param name="A_PROP_NAME">A_VALUE</param>                <!-- the whole node is optional. It will be transformed into the property
+                                                                  "pagerequest.A_PAGE_NAME.A_PROP_NAME=A_VALUE" -->
+    ...                                                      <!-- there can be many <param> nodes. -->
+  </pagerequest>
+
+</properties>
+
+=============================================================================================================

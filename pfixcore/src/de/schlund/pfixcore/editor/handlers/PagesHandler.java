@@ -30,6 +30,8 @@ import de.schlund.pfixxml.targets.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
 
+import org.apache.log4j.Category;
+
 /**
  * PagesHandler.java
  *
@@ -42,6 +44,7 @@ import java.util.*;
  */
 
 public class PagesHandler extends EditorStdHandler {
+    private static Category CAT = Category.getInstance(PagesHandler.class.getName());
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm      = context.getContextResourceManager();
@@ -56,7 +59,11 @@ public class PagesHandler extends EditorStdHandler {
         if (allpages.contains(newpage)) {
             Target target = ptree.getTargetForPageInfo(newpage);
             if (target != null) {
-                target.getValue(); // to force an update
+                try {
+                    target.getValue(); // to force an update
+                } catch(Exception e) {
+                    CAT.warn("Exception when forcing update!", e);
+                }
             }
             esess.setCurrentPage(newpage);
         } else {

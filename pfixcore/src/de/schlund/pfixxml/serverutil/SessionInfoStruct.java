@@ -19,10 +19,7 @@
 
 package de.schlund.pfixxml.serverutil;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
 import java.util.*;
-import javax.servlet.*;
 import javax.servlet.http.*;
 
 /**
@@ -33,7 +30,6 @@ import javax.servlet.http.*;
 public class SessionInfoStruct {
     private int           max_trail_elem = 25;
     private HttpSession   session;
-    private ContainerUtil conutil;
     private long          creationtime;
     private long          lastaccess;
     private long          numberofhits;
@@ -47,9 +43,8 @@ public class SessionInfoStruct {
                      May be null.
     * @param conutil 
     */
-    public SessionInfoStruct(HttpSession session, LinkedList traillog, ContainerUtil conutil) {
+    public SessionInfoStruct(HttpSession session, LinkedList traillog) {
         this.session  = session;
-        this.conutil  = conutil;
         creationtime  = new Date().getTime();
         lastaccess    = -1l;
         numberofhits  = 0;
@@ -94,16 +89,13 @@ public class SessionInfoStruct {
      * @return value of URI part with sessid.
      */
     public String getSessionIdURI() {
-        return (String) conutil.getSessionValue(session, ContainerUtil.SESSION_ID_URL);
+        return (String)session.getAttribute(SessionHelper.SESSION_ID_URL);
     }
     
     public HttpSession getSession() {
         return session;
     }
 
-    public ContainerUtil getContainerUtil() {
-        return conutil;
-    }
     /**
      * Get the value of creationtime.
      * @return value of creationtime.

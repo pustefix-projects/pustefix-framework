@@ -18,8 +18,7 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.TreeMap;
 
 
 /**

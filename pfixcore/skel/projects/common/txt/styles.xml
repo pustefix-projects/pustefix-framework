@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="standard">
+    <product name="default">
+      <lang name="default">
+        <!-- Put common CSS here -->
+        a         { text-decoration: none }
+        a:link    { color: #bb3333; }
+        a:visited { color: #773333; }
+        a:hover   { text-decoration: underline; }
+        a:active  { color: #ff0000; }
+      </lang>
+    </product>
+    
+  </part>
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

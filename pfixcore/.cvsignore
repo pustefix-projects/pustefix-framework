@@ -1,5 +1,6 @@
+xrefdb
 dist
 apidocs
 prj.el
 build
-
+semantic.cache

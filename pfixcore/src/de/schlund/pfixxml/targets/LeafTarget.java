@@ -21,7 +21,11 @@ package de.schlund.pfixxml.targets;
 import java.util.*;
 import java.io.*;
 import org.apache.log4j.*;
+
+import de.schlund.pfixxml.XMLException;
+
 import javax.xml.parsers.*;
+import javax.xml.transform.TransformerException;
 
 /**
  * LeafTarget.java
@@ -104,7 +108,7 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
-    protected long getModTimeMaybeUpdate() throws Exception {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
         long mymodtime  = getModTime(); 
         long maxmodtime = new File(getTargetGenerator().getDocroot() + getTargetKey()).lastModified(); 
         NDC.push("    ");

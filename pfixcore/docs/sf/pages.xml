@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pagedef>
+    
+  <page name="index" title="News"/>
+  <page name="overview" title="Overview">
+    <page name="xml" title="XML/XSLT"/>
+    <page name="java" title="Framework"/>
+  </page>
+  <page name="udocs" title="Userdocs"/>
+  <page name="misc" title="Misc."/>
+  
+</pagedef>
+  

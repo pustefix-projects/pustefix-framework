@@ -35,8 +35,18 @@
             <pfx:include href="core/txt/styles.xml" part="standard"/>
             <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
           </style>
+          <pfx:script>
+            function check_frameset() {
+              if (top.frames["top_navi"] == null) {
+                 var href = self.location.href;
+                 var pre  = href.substring(0, href.indexOf("__frame"));
+                 var post = href.substring(href.indexOf("bottom") + 6); 
+                 top.location.href = pre + "__frame=_top" + post;
+              }
+            }
+          </pfx:script>
         </head>
-	<body>
+	<body onload="check_frameset()">
 	  <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="content"/>
 	</body>
       </html>

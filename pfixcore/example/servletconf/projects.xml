@@ -10,8 +10,8 @@
     <depend><cus:docroot/>sample1/conf/depend.xml</depend>
     <!-- <namespace prefix="foo" uri="http://bar.foobaz"/> -->
     <virtualhost><cus:fqdn/></virtualhost>
-    <servername><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>sample1.<cus:fqdn/></servername>
-    <serveralias><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>sample1.<cus:machine/></serveralias>
+    <servername>sample1.<cus:fqdn/></servername>
+    <serveralias>sample1.<cus:machine/></serveralias>
     <!-- The default path you will be sent to when using the url -->
     <!-- "http://sample1.<servername>/" -->
     <defpath>/xml/config</defpath>
@@ -52,6 +52,11 @@
       <active>true</active>
       <class>de.schlund.pfixxml.DerefServer</class>
     </servlet>
+    <servlet name="download">
+      <active>true</active>
+      <class>de.schlund.pfixxml.DirectOutputServlet</class>
+      <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
+    </servlet>
     <documentation>
       <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
       <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
@@ -73,8 +78,8 @@
     <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
 
     <virtualhost><cus:fqdn/></virtualhost>
-    <servername><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>cmscore.<cus:fqdn/></servername>
-    <serveralias><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>cmscore.<cus:machine/></serveralias>
+    <servername>cmscore.<cus:fqdn/></servername>
+    <serveralias>cmscore.<cus:machine/></serveralias>
     <defpath>/xml/edit</defpath>
     <ports>
       <port number="80"/>
@@ -99,8 +104,8 @@
     <comment>Adminzone For Pfixcore</comment>
     
     <virtualhost><cus:fqdn/></virtualhost>
-    <servername><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>admcore.<cus:fqdn/></servername>
-    <serveralias><cus:choose><cus:test container="jserv">js-</cus:test></cus:choose>admcore.<cus:machine/></serveralias>
+    <servername>admcore.<cus:fqdn/></servername>
+    <serveralias>admcore.<cus:machine/></serveralias>
     <ports>
       <port number="80"/>
     </ports>
@@ -117,16 +122,10 @@
   
   <common>
     <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
-    <jserv>
-      <jservmanual>on</jservmanual>
-      <jservhost><cus:fqdn/></jservhost>
-      <!-- use something like this (according to your sites definition) for clustering with mod_jserv -->
-      <!-- NOTE: the generated sample jserv.conf file will need more tweaking to enable clustering! -->
-      <!--       this is not handled here! -->
-      <!-- <jservmountprefix>balance://cluster</jservmountprefix> -->
-      <jvmopts>-mx200M</jvmopts>
-    </jserv>
     <tomcat>
+      <minprocessors>100</minprocessors>
+      <maxprocessors>500</maxprocessors>
+      <connectorport>8009</connectorport>
       <debug>0</debug>
       <loglevel>info</loglevel>
       <jkhost><cus:fqdn/></jkhost>
