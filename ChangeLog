@@ -1,7 +1,11 @@
+2004-10-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* released 0.8.1 :-(
+
 2004-10-19  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: Eeeek. SC_MOVED_TEMPORARILY doesn't kill off
-	the referer... this is an emberassing one :-(
+	the referer... this is an embarassing one :-(
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed the cache
 	control stuff to something that may or may not be better suited to
