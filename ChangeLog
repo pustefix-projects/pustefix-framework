@@ -1,5 +1,8 @@
 2003-03-05  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/forminput.xsl.in: (<pfx:errorbox/>) 
+	just show one matching label when using <pfx:paramref>
+
 	* META-INF/pfixcore.version: released 0.2.8, started 0.2.9-pre
 
 	* src/de/schlund/pfixcore/workflow/Context.java: just add some
