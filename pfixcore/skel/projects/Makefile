@@ -79,9 +79,7 @@ targetdefs:
 zoneprops:
 	java $(TRFBUILD) -x dummy -a zoneprops \
 			 -p docroot=$(DOCROOT) -p fqdn=$(FQDN) -p uid=$(UID) -p machine=$(MACHINE) -p mode=$(MAKE_MODE) \
-			 -p outdir-jserv=/dev/null \
 			 -p outdir-tomcat=$(DOCROOT)/servletconf/tomcat \
-			 -p xslfile-jserv=core/build/create_jservzones.xsl \
 			 -p xslfile-tomcat=core/build/create_tomcatweb.xsl \
 			 $(PRJFILE)
 

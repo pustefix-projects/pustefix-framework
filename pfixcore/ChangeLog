@@ -1,3 +1,7 @@
+2003-05-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/MultiTransform.java (doServletZone): don't require to build jserv anymore
+
 2003-05-16  Joerg Haecker <haecker@schlund.de>
 
 	* skel: added skeleton project directory. Work in progress.
