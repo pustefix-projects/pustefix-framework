@@ -1,3 +1,13 @@
+2004-05-12  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml: fixed deletion of classes symlink in target
+	"clean" so no error message is shown if link does not exist.
+	* build.xml: Added description to targets dist and notag.
+	* skel/build.xml: added target "compile-xml".
+	Let target "statusmessages_xml" only depend on "propfiles" not "compile"
+	as class de.schlund.pfixcore.util.MakeStatusMessageXML is in pfixcore.jar
+	already so target "compile-xml" has no dependency on target "compile".
+
 2004-05-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperParamInfo.java
@@ -23,7 +33,7 @@
 
 	* lib/util-MINI-1.1.10.jar: REMOVED
 	
-2004-04-07  Adam Habermann  <adam.habermann@schlund.de>
+2004-05-10  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: changed creation of symlink from directory
 	tomcat shared/classes to directory build in target installjars.

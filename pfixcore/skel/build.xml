@@ -162,9 +162,14 @@
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
     </target>
     
-    <target name="all" 
-        depends="compile, post-compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
+    <target name="all"
+        depends="compile, post-compile, installjars, check-permissions, compile-xml"
         description="builds all files required to run"
+        />
+        
+    <target name="compile-xml"
+        depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+        description="performs xslt transformations in dir.projects"
         />
     
     <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
@@ -337,8 +342,7 @@
         </delete>
         <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
         <exec executable="find" os="Linux">
-
-            <arg file="${dir.projects}/servletconf/tomcat/shared/classes"/> <!-- symlink classes -->
+            <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink classes -->
             <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
             <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
         </exec>
@@ -536,7 +540,7 @@
         </pfx-xslt>
     </target>
     
-    <target name="statusmessages_xml" depends="compile, propfiles" description="creates common/dyntxt/statusmessages.xml">
+    <target name="statusmessages_xml" depends="propfiles" description="creates common/dyntxt/statusmessages.xml">
         <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
             <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
             <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>

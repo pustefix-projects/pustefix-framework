@@ -356,7 +356,7 @@
         </delete>
         <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
         <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat/shared/classes"/> <!-- symlink de -->
+            <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink de -->
             <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
             <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
         </exec>
@@ -395,7 +395,7 @@
         <delete dir="${dir.testskel}"/>
     </target>
 
-    <target name="dist" depends="clean, init">
+    <target name="dist" depends="clean, init" description="Builds release files in dist directory, tags cvs.">
         <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
         <!-- looks funny, but if someone called something like
         "ant jar dist" the jar file would have a wrong CVS_AUTOTAG file -->
@@ -405,7 +405,7 @@
         <cvs command="tag ${dist.autotagmessage}"/>
     </target>
 
-    <target name="notag" depends="clean">
+    <target name="notag" depends="clean" description="Builds release files in dist directory without tagging cvs.">
         <antcall target="skeleton" inheritall="true"/>
     </target>
 
