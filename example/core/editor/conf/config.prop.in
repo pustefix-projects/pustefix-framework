@@ -11,9 +11,6 @@
     <resource class="de.schlund.pfixcore.editor.resources.EditorSearchImpl">
       <implements class="de.schlund.pfixcore.editor.resources.EditorSearch"/>
     </resource>
-    <resource class="de.schlund.pfixcore.editor.resources.CRTestcaseImpl">
-      <implements class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
-    </resource>
   </context>
   
   <pageflow name="Editor">
@@ -32,12 +29,6 @@
     <flowstep name="editoruserdata"/>
   </pageflow>
 
-  <pageflow name="Testcases">
-    <flowstep name="testcaseselect"/>
-    <flowstep name="testcasestart"/>
-    <flowstep name="testcaseoverview"/>
-  </pageflow>
-  
   <pagerequest name="editoruserauth">
     <authhandler>
       <authinterface prefix="auth"      class="de.schlund.pfixcore.editor.interfaces.UserAuth"/>
@@ -130,37 +121,6 @@
     </ihandler>
   </pagerequest>
 
-  <pagerequest name="testcaseselect">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
-    <ihandler>
-      <interface prefix="tcselect" class="de.schlund.pfixcore.editor.interfaces.TestcaseSelect"/>
-      <interface prefix="tcreset" class="de.schlund.pfixcore.editor.interfaces.TestcaseReset"/>
-    </ihandler>
-    <output>
-      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
-    </output>
-  </pagerequest>
-  
-  <pagerequest name="testcasestart">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
-    <ihandler>
-      <interface prefix="tcstart" class="de.schlund.pfixcore.editor.interfaces.TestcaseStart"/>
-    </ihandler>
-    <output>
-      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
-    </output>
-  </pagerequest>
-  
-  <pagerequest name="testcaseoverview">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
-    <ihandler>
-      <interface prefix="tcoverview" class="de.schlund.pfixcore.editor.interfaces.TestcaseOverview"/>
-    </ihandler>
-    <output>
-      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
-    </output>
-  </pagerequest>
-  
   <pagerequest name="lockmanager">
     <finalizer class="de.schlund.pfixcore.editor.handlers.LockManagerFinalizer"/>
     <ihandler>
