@@ -380,7 +380,7 @@
         
         <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
-    
+
     <target name="clean-project" description="deletes files from ${dir.projects}">
         <delete>
             <fileset dir="${dir.projects}" includes="**/*.xsl">
@@ -398,14 +398,13 @@
                     <mapper type="glob" from="*.prop" to="*.prop.in"/>
                 </present>
             </fileset>
-            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml"/>
+            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>
         </delete>
-    	<echo>delete ${dir.tomcat}"</echo>
-        <delete dir="${dir.tomcat}"/>
     </target>
     
     <target name="realclean" depends="clean, clean-jni, clean-doc">
         <delete dir="${dir.projects}/.cache"/>
+        <delete dir="${dir.tomcat}"/>
         <delete dir="${dir.testskel}"/>
     </target>
 
@@ -807,6 +806,10 @@
 	
 	<target name="tomcat_strip">
 		<delete dir="${dir.tomcat}/conf/Catalina"/><!-- remove predefined web-apps -->
+		<delete dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
+		<mkdir dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
+		<delete dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
+		<mkdir dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
 		<delete>
 		    <fileset dir="${dir.tomcat}/conf">
 				<include name="jk2.properties"/>

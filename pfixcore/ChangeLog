@@ -1,6 +1,12 @@
 2004-06-xx Michael Hartmier  <mhm@schlund.de>
 	* switch to tomcat 5
-	* example/tomcat is generated now, not checked-in
+	* the tomcat directory 'example/servletconf/tomcat' is generated now, I've
+	  removed it from cvs
+	  o "ant all" generates the tomcat directory if it doesn't exist
+	  o the generation uses "lib/tomcat/jakarta-tomcat-x.y.z.tar.gz";
+        replaced this file to upgrade to a new tomcat version
+	  o ant realclean removes the tomcat directory;
+	    use this to force generating a fresh tomcat directory
 	* create_*.xsl  container parameter removed
 	* tomcat.setup switch added	
 	
