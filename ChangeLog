@@ -12,6 +12,7 @@
         cachestatistic.queuesize and cachestatistic.queueticks.
         * src/de/schlund/pfixxml/CacheStatisticServlet.java: minor
         * src/de/schlund/pfixxml/targets/TargetImpl.java: minor
+        * See javadoc for more info.
 
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
