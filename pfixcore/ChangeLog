@@ -2,6 +2,9 @@
 
 	* example/core/build/iwrapper.xsl: added generation of toString
 	method for wrapper which prints all String values of all params.
+	
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: added 
+	method for sending mail with bccs.
 
 2003-09-17  Jens Lautenbacher  <jtl@schlund.de>
 
