@@ -4,6 +4,14 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.6.7" date="2004-08-06">
+      <action dev="jenstl" type="fix">
+        Various Tomcat 5 fixes.
+      </action>
+      <action dev="mlhartme" type="add">
+        Enable stylechecker and fix missing copyright headers reported by it.
+      </action>
+    </release>
     <release version="0.6.6" date="2004-08-03">
       <action dev="mlhartme" type="update">
         Switched from Tomcat 4.1.30 to 5.0.27.

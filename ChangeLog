@@ -1,4 +1,5 @@
 2004-08-06 Michael Hartmeier  <mhm@schlund.de>
+
 	* configure and enable "checkstyle" report for website generation
 	* fix problems reported by checkstyle 
           (most important: missing copyrights and tabs in java sources)
@@ -10,9 +11,11 @@
 	* build.xml: no longer include tomcat into the skeleton tar.gz.
 
 2004-08-04 Michael Hartmeier  <mhm@schlund.de>
+
 	* build.xml, skel/build.xml: remove jndi.jar
 
 2004-08-04 Michael Hartmeier  <mhm@schlund.de>
+
 	* build.xml, skel/build.xml: ant clean has to delete toncat/conf/Catalina
 
 2004-08-04  Jens Lautenbacher  <jtl@schlund.de>
