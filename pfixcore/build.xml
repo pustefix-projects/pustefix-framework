@@ -149,14 +149,14 @@
         </exec>
     </target>
     
-    <target name="generate" depends="targetdefs, stylesheets, compile, installjars" description="Generates Targets to ${dir.projects}/.cache">
+    <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions" description="Generates Targets to ${dir.projects}/.cache">
         <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
         <echo message="As an alternative try target generate-mx, which forks an external java vm with more Heap Memory."/>
     </target>
 
     <target name="all" 
-        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
         description="builds all files required to run"
         />    
 
@@ -182,6 +182,10 @@
         <ant antfile="${file.build-include}" target="pre-compile"/>
     </target>
 
+    <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
+        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
+    </target>
+    
     <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac
             srcdir="${dir.src}"
@@ -199,10 +203,6 @@
         <ant antfile="${file.build-include}" target="post-compile"/>
     </target>
 
-    <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
-        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
-    </target>
-    
     <target name="jni" depends="init, init-compile">
         <ant dir="${dir.jni}"/>
     </target>
@@ -452,6 +452,13 @@
         </exec>
     </target>
 
+    <target name="check-permissions">
+        <apply executable="chmod" os="Linux">
+            <arg line="a+x"/>
+            <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
+        </apply>
+    </target>
+    
     <target name="force" description="disables uptodate checks">
         <!-- All targets *-check that have set the attribute unless="pfx.force"
              will be skipped, so the uptodate properties (upd.*), the execution of the actual tasks
@@ -692,6 +699,7 @@
 Targets
 -------
 all [default]:  Builds all files required to run ./startTomcat.sh
+generate-src:   Generates .java from .iwrp files
 compile:        Compiles all java files.
 generate:       Generates all top level targets to 
                 ${dir.projects}/.cache
@@ -702,7 +710,6 @@ run/debug:      Runs tomcat. Advantage over ./startTomcat.sh:
                 as an external process, there is one more java vm
                 in memory, that does nothing but waiting for tomcat
                 to exit.
-generate-src:   Generates .java from .iwrp files
 checkfiles:     Searches .xml files for unused include parts and
                 writes report to dir.projects/CHECKOUTPUT.xml
 noop:           Echos the name of the project

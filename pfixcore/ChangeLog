@@ -9,6 +9,8 @@
 	so generate may be performed on just a subset of pustefix projects.
 	Removed target generate-mx, for not having to maintain two different
 	launch mechanisms for TargetGenerator.
+	Using target check-permissions now also in build.xml.
+	* build.xml:
 	* skel/INSTALL: removed, INSTALL is now included in build of skeleton.
 	* example/INSTALL, example/INSTALL.ps: removed, now INSTALL
 
