@@ -1,6 +1,12 @@
+2004-04-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in: added @noerror attribute (and $noerror param) to 
+	pfx:include to suppress the insertion of a "missing include" warning. HANDLE WITH CARE. 
+
 2004-04-01  Corinna Herrmann  <ch17@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (readIWrappersConfigFromProperties): add prefix name for debug
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java 
+	(readIWrappersConfigFromProperties): add prefix name for debug
 
 2004-03-31  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -9,8 +15,8 @@
 
 2004-03-30  Jörg Häcker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
-        added pagename to mail subject.
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
+	added pagename to mail subject.
 
 2004-03-29  Jens Lautenbacher  <jtl@schlund.de>
 

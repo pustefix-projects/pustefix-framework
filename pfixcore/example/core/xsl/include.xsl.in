@@ -136,32 +136,6 @@
     </xsl:choose>
   </xsl:template>
  
-<!--   <xsl:template name="include_error"> -->
-<!--     <xsl:param name="errors"/> -->
-<!--     <center> -->
-<!--       <table cellpadding="2" style="border: 1px solid black"> -->
-<!--         <th colspan="2">Exception when getting part '<xsl:value-of select="$errors/@part"/>'!</th> -->
-<!--         <tr><td>Type:</td><td><xsl:value-of select="$errors/@type"/></td></tr> -->
-<!--         <tr><td>Message:</td><td><xsl:value-of select="$errors/@msg"/></td></tr> -->
-<!--         <xsl:if test="$errors/@id"> -->
-<!--           <tr><td>SystemId:</td><td><xsl:value-of select="$errors/@id"/></td></tr> -->
-<!--         </xsl:if> -->
-<!--         <xsl:if test="$errors/@line"> -->
-<!--           <tr><td>Line:</td><td><xsl:value-of select="$errors/@line"/></td></tr> -->
-<!--         </xsl:if> -->
-<!--         <xsl:if test="$errors/@column"> -->
-<!--           <tr><td>Column:</td><td><xsl:value-of select="$errors/@column"/></td></tr> -->
-<!--         </xsl:if> -->
-<!--       </table> -->
-<!--     </center> -->
-<!--     <cus:documentation> -->
-<!--       <description>This template will be executed if exceptions occur -->
-<!--       in class de.schlund.pfixxml.IncludeDocumentExtension.  -->
-<!--       </description> -->
-<!--     </cus:documentation> -->
-<!--  </xsl:template> -->
-
- 
   <xsl:template name="pfx:missinc">
     <xsl:param name="part"/>
     <xsl:param name="path"/>
@@ -201,6 +175,7 @@
         <xsl:value-of select="ancestor::product[position() = 1]/@name"/>
       </xsl:if>
     </xsl:param>
+    <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href">
       <xsl:choose>
@@ -235,7 +210,7 @@
         <b>[Error: &lt;pfx:include&gt; needs "href" attribute or a &lt;pfx:include&gt; parent]</b>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:variable name="incnodes" 
+        <xsl:variable name="incnodes"
                       select="include:get(string($path), string($part), string($product),
                       string($docroot), string($__target_gen), string($__target_key),
                       string($parent_path), string($parent_part), string($parent_product))"/>
@@ -252,12 +227,6 @@
         </xsl:choose>
         <!-- -->
         <xsl:choose>
-          <!--<xsl:when test="$incnodes and $incnodes[name() = 'include_error']">
-             Exception occured in extension function 
-            <xsl:call-template name="include_error">
-              <xsl:with-param name="errors" select="$incnodes"/>
-            </xsl:call-template>
-          </xsl:when>-->
           <xsl:when test="$incnodes and $incnodes[name() = 'product']">
             <xsl:choose>
               <xsl:when test="$incnodes/lang">
@@ -272,13 +241,13 @@
                               <xsl:with-param name="__env" select="."/>
                             </xsl:apply-templates>
                           </xsl:when>
-                          <xsl:otherwise>
+                          <xsl:when test="not($noerror = 'true')">
                             <xsl:call-template name="pfx:missinc">
                               <xsl:with-param name="href" select="$href"/>
                               <xsl:with-param name="part" select="$part"/>
                               <xsl:with-param name="path" select="$path"/>
                             </xsl:call-template>
-                          </xsl:otherwise>
+                          </xsl:when>
                         </xsl:choose>
                       </xsl:when>
                       <xsl:otherwise>
@@ -298,7 +267,7 @@
                                 </xsl:apply-templates>
                               </ixsl:otherwise>
                             </xsl:when>
-                            <xsl:otherwise>
+                            <xsl:when test="not($noerror = 'true')">
                               <ixsl:otherwise>
                                 <xsl:call-template name="pfx:missinc">
                                   <xsl:with-param name="href" select="$href"/>
@@ -306,7 +275,7 @@
                                   <xsl:with-param name="path" select="$path"/>
                                 </xsl:call-template>
                               </ixsl:otherwise>
-                            </xsl:otherwise>
+                            </xsl:when>
                           </xsl:choose>
                         </ixsl:choose>
                       </xsl:otherwise>
@@ -326,19 +295,19 @@
                           <xsl:with-param name="__env" select="."/>
                         </xsl:apply-templates>
                       </xsl:when>
-                      <xsl:otherwise>
+                      <xsl:when test="not($noerror = 'true')">
                         <xsl:call-template name="pfx:missinc">
                           <xsl:with-param name="href" select="$href"/>
                           <xsl:with-param name="part" select="$part"/>
                           <xsl:with-param name="path" select="$path"/>
                         </xsl:call-template>
-                      </xsl:otherwise>
+                      </xsl:when>
                     </xsl:choose>
                   </xsl:otherwise>
                 </xsl:choose>
                 <!-- End of having lang nodes as children -->
               </xsl:when>
-              <xsl:otherwise>
+              <xsl:when test="not($noerror = 'true')">
                 <!-- Have no language nodes as child -->
                 <xsl:call-template name="pfx:missinc">
                   <xsl:with-param name="href" select="$href"/>
@@ -346,16 +315,16 @@
                   <xsl:with-param name="path" select="$path"/>
                 </xsl:call-template>
                 <!-- End of have no language nodes as child -->
-              </xsl:otherwise>
+              </xsl:when>
             </xsl:choose>
           </xsl:when>
-          <xsl:otherwise>
+          <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
               <xsl:with-param name="href" select="$href"/>
               <xsl:with-param name="part" select="$part"/>
               <xsl:with-param name="path" select="$path"/>
             </xsl:call-template>
-          </xsl:otherwise>
+          </xsl:when>
         </xsl:choose>
         <!-- ===================================================== -->
         <xsl:choose>
