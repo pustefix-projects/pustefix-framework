@@ -91,7 +91,6 @@ public class Context implements AppContext {
     private boolean needs_update;
 
 
-
     /**
      * <code>init</code> sets up the Context for operation.
      *

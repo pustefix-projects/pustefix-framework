@@ -34,30 +34,38 @@
     </properties>
   </xmlcode>
 
-  <p><a name="custom"/><pustefix/> allows to customize the creation of the property files in certain ways. When the build system
-  starts the transformation of the <code>.prop.in</code> files to <code>.prop</code> files, it supplies certain parameters
-  to the transforming stylesheet.</p>
+  <p><a name="custom"/><pustefix/> allows to customize the creation of
+  the property files in certain ways. When the build system starts the
+  transformation of the <code>.prop.in</code> files to
+  <code>.prop</code> files, it supplies certain parameters to the
+  transforming stylesheet.</p>
 
   <ul>
     <li>
       The value of the <b>MAKE_MODE</b> environment variable, or
       "<b>test</b>" if the variable is not set (the default behavior
-      can be changed by tweaking the build.xml files). This can be used to
-      easily switch preferences depending on the "mode" that is active
-      when the application is made, e.g. "test" on the development
-      machines, and "prod" on the production servers. The value is supplied as the parameter <code>mode</code>.
-      Note that the value of MAKE_MODE also determines if certain features like the
-      possiblity to use the <pustefix/> editor or to get the XML result instead of the rendered page
-      are allowed. These features are turned off for security reasons when the mode is "prod".
+      can be changed by tweaking the build.xml files). This can be
+      used to easily switch preferences depending on the "mode" that
+      is active when the application is made, e.g. "test" on the
+      development machines, and "prod" on the production servers. The
+      value is supplied as the parameter <code>mode</code>.  Note that
+      the value of MAKE_MODE also determines if certain features are
+      allowed like the possiblity to use the <pustefix/> editor or to
+      get the XML result instead of the rendered page. These features
+      are turned off for security reasons when the mode is "prod".
     </li>
     
-    <li>The <code>docroot</code>, i.e. the directory where your project's configuration and XML/XSLT files are located in.</li>
+    <li>The <code>docroot</code>, i.e. the directory where your
+    project's configuration and XML/XSLT files are located in.</li>
 
-    <li>The user id (<code>uid</code>) of the user that starts the build process.</li>
+    <li>The user id (<code>uid</code>) of the user that starts the
+    build process.</li>
 
-    <li>The full qualified domainname (as the parameter <code>fqdn</code> of the machine you start the build process.</li>
+    <li>The full qualified domainname (as the parameter
+    <code>fqdn</code> of the machine you start the build process.</li>
 
-    <li>and the name  of the machine (<code>machine</code>) you start the build process on.</li> 
+    <li>and the name of the machine (<code>machine</code>) you start
+    the build process on.</li>
   </ul>
 
   <p>Certain customization tags work with these parameters:</p>
@@ -68,10 +76,12 @@
       <prop name="foo"><cus:docroot/>/bar/baz.xml</prop>
       <xmlcodeOFF>
         <div class="comment">
-          <p>Use this to enter pathnames that do not depend on
-            the absolute location of the <pustefix/> environment in your filesystem.</p>
-          <p>In the same way you can use <code>cus:machine</code>, <code>cus:fqdn</code> and <code>cus:uid</code>
-            to print out the value of the supplied XSLT parameter.</p>
+          <p>Use this to enter pathnames that do not depend on the
+          absolute location of the <pustefix/> environment in your
+          filesystem.</p>
+          <p>In the same way you can use <code>cus:machine</code>,
+          <code>cus:fqdn</code> and <code>cus:uid</code> to print out
+          the value of the supplied XSLT parameter.</p>
         </div>
       </xmlcodeOFF>
       <cus:choose>
@@ -221,11 +231,18 @@
         <defaultihandlerstate class="another.state.Class"/>
         <xmlcodeOFF>
           <div class="comment">
-            <b>&lt;defaultstate&gt;</b> and <b>&lt;defaultihandlerstate&gt;</b>
-            are both optional. The <code>class</code> attribute must be given. <code>a.state.Class</code>
-            should de a descendant of <code>de.schlund.pfixcore.workflow.app.StaticState</code> and <code>another.state.Class</code>
-            should be a descendant of <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code> (unless you really know what you are doing).
-            They are used to set defaults for values used when processing the <b>&lt;pagerequest&gt;</b> tag (see there for more info).
+            <b>&lt;defaultstate&gt;</b> and
+            <b>&lt;defaultihandlerstate&gt;</b> are both optional. The
+            <code>class</code> attribute must be
+            given. <code>a.state.Class</code> should de a descendant
+            of
+            <code>de.schlund.pfixcore.workflow.app.StaticState</code>
+            and <code>another.state.Class</code> should be a
+            descendant of
+            <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code>
+            (unless you really know what you are doing).  They are
+            used to set defaults for values used when processing the
+            <b>&lt;pagerequest&gt;</b> tag (see there for more info).
           </div>
         </xmlcodeOFF>
       </servletinfo>
@@ -240,7 +257,6 @@
             <tr>
               <td><code>class</code></td>
               <td>Optional. If given, use it as the classname for the <code>Context</code> Implementation to use. Else,
-                if <code>authpage</code> is given, use <code>de.schlund.pfixcore.workflow.AuthContext</code>. Else,
                 use <code>de.schlund.pfixcore.workflow.Context</code>. In other words: Normally there's no need to
                 explicitly supply this attribute.</td>
             </tr>
@@ -251,7 +267,7 @@
             <tr>
               <td><code>authpage</code></td> <td>Optional. It must be given, if the servlet should supply a
                 login/authentification page. If given, it must reference a valid <code>pagerequest</code> with
-                a <code>authhandler</code> child node.</td>
+                an <code>authhandler</code> child node.</td>
             </tr>
           </table>
         </xmlcodeOFF>
@@ -260,20 +276,21 @@
           <xmlcodeOFF>
             <div class="comment">
               <code>class</code> is <b>mandatory</b>, must be a
-              <code>ContextResource</code>. There may be many
-              <code>resource</code> tags given.
+              <code>ContextResource</code>. There may be multiple <code>resource</code> tags given.
             </div>
           </xmlcodeOFF>
           <implements class="An_Interface">
             <xmlcodeOFF>
               <div class="comment">
-                <code>class</code> is <b>mandatory</b>, must be an interface
-                implemented by the ContextResource. There may be more
-                than one <code>implements</code> tag for a
-                ContextResource, but each interface must the be unique
-                in the whole context. In other words: it's possible
-                for a ContextResource to implement more than one interface, but not possible for one
-                interface to be implemented by two ContextResources used in the same Context definition.
+                <code>class</code> is <b>mandatory</b>, must be an
+                interface implemented by the ContextResource. There
+                may be more than one <code>implements</code> tag for a
+                ContextResource, but each interface must be unique in
+                the whole context. In other words: it's possible for a
+                ContextResource to implement more than one interface,
+                but not possible for one interface to be implemented
+                by two ContextResources used in the same Context
+                definition.
               </div>
             </xmlcodeOFF>
           </implements>
@@ -295,55 +312,75 @@
       <xmlcodeOFF/>
       <pageflow name="AName" final="APageName" stopnext="true|false">
         <xmlcodeOFF>
+          <div class="comment">
+            There may be multiple <code>pageflow</code> tags
+            defined, but you need at least one (which must be
+            referenced by the <code>defaultflow</code> attribute above).
+            <br/><br/>
+            <table class="stdtable">
+              <tr>
+                <th>Attribute</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td>
+                  <code>name</code>
+                </td>
+                <td>
+                  <b>Mandatory</b>. Must be a unique name.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code>final</code>
+                </td>
+                <td>
+                  Optional, must reference a page with a valid
+                  <code>pagerequest</code> definition given in this
+                  property file.  There may be many pageflows defined
+                  for a servlet. A page may well be used in more than
+                  one pageflow.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code>stopnext</code>
+                </td>
+                <td>
+                  Optional, defaults to false. If given and true, the
+                  pageflow will stop at the next accessible page after
+                  the current page even if this page would normally be
+                  skipped in the workflow because it doesn't need any
+                  input.
+                </td>
+              </tr>
+            </table>
+            <br/>
+          </div>
+        </xmlcodeOFF>
+        <flowstep name="AnotherPageName" stophere="true|false"/>
+        <xmlcodeOFF>
           <table class="stdtable">
             <tr>
               <th>Attribute</th>
               <th>Description</th>
             </tr>
             <tr>
-              <td>
-                <code>name</code>
-              </td>
-              <td>
-                <b>Mandatory</b>. Must be a unique name. 
-              </td>
-            </tr>              
+              <td><code>name</code></td>
+              <td><b>Mandatory</b>, must reference a valid <code>pagerequest</code>.
+              Usually there are many flowsteps defined in a pageflow.</td>
+            </tr>
             <tr>
-              <td>
-                <code>final</code>
+              <td><code>stophere</code></td>
+              <td><b>Optional</b>, if true the pageflow will stop at
+              this step unconditionally if the submit originated from
+              a step that's before this one in the pageflow. See also
+              the <code>stopnext</code> attribute of the <pageflow/>
+              tag which is quivalent to specifying
+              <code>stophere="true"</code> for every single flowstep.
               </td>
-              <td>
-                Optional, must reference a page with a valid
-                <code>pagerequest</code> definition given in this
-                property file.  There may be many pageflows defined
-                for a servlet. A page may well be used in more than
-                one pageflow.
-              </td>
-            </tr>              
-            <tr>
-              <td>
-                <code>stopnext</code>
-              </td>
-              <td>
-                Optional, defaults to false. If given and true, states
-                inheriting from <code>StateImpl</code> (which should
-                be almost all states) handle the next accessible page
-                <i>after</i> the current page as if it had been
-                triggered directly. This has the effect that the
-                pageflow will stop at the next accessible page after
-                the current page even if this page would normally be
-                skipped in the workflow because it doesn't need any
-                input.
-              </td>
-            </tr>              
+            </tr>
           </table>
-        </xmlcodeOFF>
-        <flowstep name="AnotherPageName"/>
-        <xmlcodeOFF>
-          <div class="comment">
-            <code>name</code> is <b>mandatory</b>, must reference a valid <code>pagerequest</code>.
-            Usually there are many flowsteps defined in a pageflow.
-          </div>
         </xmlcodeOFF>
       </pageflow>
       <xmlcodeOFF/>
@@ -521,11 +558,6 @@
                       <code>continue</code> set to <b>true</b>, the
                       context again will switch to the next page.
                     </p>
-                    <p>
-                      Note that all of the explained behavior can be
-                      freely changed by the use of <b>Finalisers</b>
-                      (See above).
-                    </p>
                   </td>
                 </tr>
                 <tr>
@@ -551,8 +583,8 @@
                       submit has been handled without an error.</p>
                     <p>The default behaviour is to only call
                       retrieveCurrentStatus() on those IHandlers that
-                      are in the set of selected IHandlers (via the
-                      SELWRP command). For the remaining IHandlers,
+                      are in the set of selected (via the
+                      SELWRP command) IHandlers. For the remaining IHandlers,
                       only the (ignored) input is copied back verbatim
                       so the net effect is that all associated form
                       elements stay the same as they were before the
@@ -562,7 +594,7 @@
                       method of this IHandler is also called in the
                       described situation. You need this if a submit
                       handled in one or more IHandler(s) should change
-                      the filled in form values of another, not
+                      the filled-in form values of another, not
                       currently selected IHandler.
                     </p>
                   </td>
@@ -591,7 +623,7 @@
             <div class="comment">
               <p>
                 One and only one <code>authinterface</code> node <b>must</b> be given.
-                <code>auxinterface</code> nodes are optional.
+                <code>auxinterface</code> nodes are optional and can be given multiple times.
               </p>
               <p>
                 The <code>prefix</code> and <code>class</code> attributes are mandatory for both nodes.
@@ -600,12 +632,13 @@
               </p>
               <p>
                 The <code>authinterface</code> node denotes the one
-                IWrapper/IHandler combo that is responsible to check
+                IWrapper/IHandler combo that is responsible for checking
                 the authentification of a user session. The
                 <code>auxinterface</code> nodes denote additional
-                IWrappers/IHandlers that are called together with the
+                IWrappers/IHandlers that are called after the
                 authentification handler if the authorization is granted.
               </p>
+              <p>Note that no error handling whatsoever takes place for <code>auxinterface</code> IHandlers.</p>
             </div>
           </xmlcodeOFF>
         </authhandler>
@@ -634,7 +667,7 @@
               <tr>
                 <td><code>node</code></td>
                 <td><b>Mandatory</b>. <code>node</code> is the node in the output tree ("/formresult/<b>AName</b>") 
-                  under which the ContextResource enters its data.</td>
+                  under which the ContextResource inserts it's data.</td>
               </tr>
             </table>
           </xmlcodeOFF>
