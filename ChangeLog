@@ -1,3 +1,10 @@
+2003-05-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java: cosmetics 
+
+	* src/de/schlund/pfixxml/ResultDocument.java (init): we need to set the ixsl namespace here
+	now, as the content of nodes edited in the cms is inserted literally into the result tree.
+
 2003-05-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:

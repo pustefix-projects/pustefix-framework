@@ -11,7 +11,7 @@
           <table cellpadding="2" cellspacing="0" style="background-color: #aaaacc; border: 1px solid black">
             <tr>
               <td align="center" bgcolor="#cc0000" colspan="2">
-                <span style="color:#ffffff; font-weight: bold">Error while generating</span>
+                <span style="color:#ffffff; font-weight: bold">XML/XSLT Error!</span>
               </td>
             </tr>
             <xsl:apply-templates/>
@@ -39,7 +39,7 @@
           <xsl:otherwise>#ccccee</xsl:otherwise>
         </xsl:choose>
       </xsl:attribute>
-      <td><xsl:value-of select="@key"/></td>
+      <td><b><xsl:value-of select="@key"/>:</b></td>
       <td><xsl:value-of select="@value"/></td>
     </tr>
   </xsl:template>

@@ -69,6 +69,7 @@ public class ResultDocument {
         
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
+        formresult.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
         formresult.setAttribute("serial", "" + date.getTime());
         doc.appendChild(formresult);
     }
