@@ -23,7 +23,7 @@
   <siteAddress>pustefix.sourceforge.net</siteAddress>
 
   <repository>
-    <!--connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</connection-->
+    <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</connection>
     <developerConnection>scm:cvs:ext:mlhartme@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</developerConnection>
     <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore</url>
   </repository>
