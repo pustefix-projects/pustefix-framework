@@ -124,7 +124,7 @@ public class CRTestcaseImpl implements CRTestcase {
                                 getTemporaryDirectoryForTestcase(selectedTestcases[i]));
                 testOutput.add(i, result);
             } catch(TestClientException e) {
-                CAT.error("TestClientException: "+e.getMessage()+" "+e.getCause().getMessage());
+                CAT.error("TestClientException: "+e.getMessage()+" "+e.getExceptionCause().getMessage());
                 throw e;
             }
         }

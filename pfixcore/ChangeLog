@@ -1,3 +1,12 @@
+2003-04-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/servletconf/projects.xml: 
+	* example/core/build/create_serverxml.xsl: added a new config parameter for the server.xml: 
+	connectorport. If not given, it will default to 8009.
+
+	* src/de/schlund/pfixxml/ServletManager.java (registerSession): not simply uuse the last two digits,
+	but instead the part after the last "." from the session id as a suffix to the visit_id.
+
 2003-04-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/PFConfigurationException.java: 

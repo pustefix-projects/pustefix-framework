@@ -447,8 +447,9 @@ public abstract class ServletManager extends HttpServlet {
                 if (INC_ID >= 1000) {
                     CAT.warn("*** More than 999 connects/sec! ***");
                 }
-                conutil.setSessionValue(session, VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + "-" +
-                                        session.getId().substring(session.getId().length() - 2));
+                String sessid = session.getId();
+                String mach   = sessid.substring(sessid.lastIndexOf("."));
+                conutil.setSessionValue(session, VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + mach);
             }
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(conutil.getSessionValue(session, VISIT_ID) + "|" + session.getId() + "|");

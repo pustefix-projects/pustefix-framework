@@ -106,7 +106,7 @@ public class ExceptionHandler implements FactoryInit {
                 PFUtil.getInstance().fatal(
                         "Configuration of exceptionhandler failed: " + 
                         ex.getMessage() + " reason: " + 
-                        ex.getExceptionCause().getClass()+":"+ex.getCause().getMessage());
+                        ex.getExceptionCause().getClass()+":"+ex.getExceptionCause().getMessage());
                 xhandler_.setErrorFlag(true);
             }
         } else
@@ -138,7 +138,7 @@ public class ExceptionHandler implements FactoryInit {
             PFUtil.getInstance().fatal(
                     "Configuration of exceptionhandler failed: " + 
                     e.getMessage() + " reason: " + 
-                    e.getExceptionCause().getClass()+":"+e.getCause().getMessage());
+                    e.getExceptionCause().getClass()+":"+e.getExceptionCause().getMessage());
             xhandler_.setErrorFlag(true);
             xhandler_.doIt();
             return;
