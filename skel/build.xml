@@ -38,6 +38,7 @@ or delete the DOCTYPE definition -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
   <property name="standalone.tomcat"          value="true"/>
+  <property name="portbase.tomcat"            value="8000"/>
 
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
@@ -605,6 +606,7 @@ or delete the DOCTYPE definition -->
       <param name="mode"      expression="${makemode}"/>
       <param name="trusted"   expression="${trusted.tomcat}"/>
       <param name="standalone" expression="${standalone.tomcat}"/>
+      <param name="portbase"   expression="${portbase.tomcat}"/>
     </pfx-xslt>
   </target>
 
