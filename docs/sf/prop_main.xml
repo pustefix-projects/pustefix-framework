@@ -514,7 +514,7 @@
   <p>The servlet knows about one or many
     <code>directoutputpagerequest</code>. For the XML/XSLT side of
     things, they look like normal pages (in fact, the value of the
-    <code>directoutputpagerequest</code>s <code>name</code> attribute
+    <code>directoutputpagerequest</code>'s <code>name</code> attribute
     must be a page defined in <code>depened.xml</code>). But other
     than the usual <code>pagerequest</code>, a
     <code>directoutputpagerequest</code> has an associated
