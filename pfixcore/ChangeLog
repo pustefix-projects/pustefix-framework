@@ -7,8 +7,9 @@
 	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
 	Now works, all Includes are displayed in the ResultSet
 	
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java
+	Class PfixAppletInfo added. The AppletClass getting the Product-Include-Files from the Server.
 	
-
 	
 2003-07-03  Volker Zaich <zaich@schlund.de>
 
