@@ -388,11 +388,16 @@
             <xmlcodeOFF>
               <div class="comment">
                 <p>
-                  This tag (which is optional) starts a sequence of test/action pairs. The tests are
-                  XPath expressions which work on the DOM tree as produced by the flowsteps
-                  associated state (note that the navigation is not inserted into the DOM tree at
-                  this stage, and the <code>/formresult/formvalues</code>
-                  and <code>/formresult/formerrors</code> paths are also not present).
+                  This tag (which is optional) starts a sequence of
+                  test/action pairs. The tests are XPath expressions
+                  which work on the DOM tree as produced by the
+                  flowstep's associated state (note that the
+                  navigation is not inserted into the DOM tree at this
+                  stage, and the <code>/formresult/formvalues</code>
+                  and <code>/formresult/formerrors</code> paths are
+                  also not present). The pageflow system calls the
+                  tests whenever a state returns a ResultDocument with
+                  it's continue flag set to true.
                 </p>
                 <p>
                   The <code>applyall</code> attribute is <b>optional</b>. If given and <b>true</b>, all
