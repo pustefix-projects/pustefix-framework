@@ -5,8 +5,8 @@
 var _xml = [];
 var _xmlTimer = [];
 var _xmlTimerCount = [];
-var _xmlTimerCountMax = 400;
-var _xmlTimerInterval = 5;
+var _xmlTimerCountMax = 2;
+var _xmlTimerInterval = 1000;
 var _msXmlHttp;
 
 //*****************************************************************************
@@ -33,7 +33,7 @@ xmlRequest.prototype.start = function( content ) {
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
   if( this.callback ) {
-    //    alert(this.callback.valueOf());
+        alert(this.callback.valueOf());
   }
 
   var i = _xml.length;
@@ -130,17 +130,22 @@ xmlRequest.prototype.start = function( content ) {
     //    document.getElementById("dbg").value += "\n>" + i;
 
     var iframe = document.createElement("iframe");
-		iframe.style.visibility = "hidden";
+		iframe.style.visibility = "visible";
     //     iframe.style.position   = "absolute";
     //     iframe.style.left       = "0px";
     //     iframe.style.top        = "0px";
-    iframe.style.width      = "0px";
-    iframe.style.height     = "0px";    
+    iframe.style.width      = "600px";
+    iframe.style.height     = "400px";    
     iframe.id               = "pfxxmliframe"+i;
     iframe.name             = "pfxxmliframe"+i;
-    if( this.method == "GET" ) {
-      iframe.src              = this.url;
+
+    iframe.src              = this.url;
+
+    if( this.method.toUpperCase() == "POST" ) {
+      // load dummy page to prevent cross-domain security error
+      iframe.src = iframe.src.replace(/(https?:\/\/[^\/]+)(.*)/, "$1/xml.html");
     }
+
     document.body.appendChild(iframe);
 
     _xml[i] = this.callback;
@@ -148,13 +153,14 @@ xmlRequest.prototype.start = function( content ) {
     _xmlTimerCount[i] = 0;
 
     var self = this;
-    if( this.method == "POST" ) {
+    if( this.method.toUpperCase() == "POST" ) {
       setTimeout( function() {
-        var iDoc = iframe.contentWindow.document;
+        var iDoc = iframe.contentDocument || contentWindow.document;
 
+        alert(iDoc);
         var attr;
         var form = iDoc.createElement("form");
-        //         attr = iDoc.createAttribute("action");
+                //         attr = iDoc.createAttribute("action");
         //         attr.nodeValue = self.url;
         //         form.setAttributeNode(attr);
         form.action = self.url;
@@ -163,13 +169,10 @@ xmlRequest.prototype.start = function( content ) {
         var field = iDoc.createElement("textarea");
         field.name = "soapmessage";
         field.value = content;
-        //        field.value = '<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"              xmlns:xs="http://www.w3.org/1999/XMLSchema"              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">   <env:Header/>   <env:Body>      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">         <a0:in0 xsi:type="xs:int">3</a0:in0>         <a0:in1 xsi:type="xs:int">7</a0:in1>      </a0:multiply>   </env:Body></env:Envelope>';
-
         form.appendChild(field);
 
         iDoc.body.appendChild(form);
         
-        //        alert( iDoc.body.innerHTML );
         iDoc.forms[iDoc.forms.length-1].submit();
 
         _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
@@ -191,25 +194,18 @@ xmlRequest.prototype.start = function( content ) {
 function customOnReadyStateChange() {
 
   for( var i=0; i<_xml.length; i++ ) {
-    if( _xmlTimer[i] &&_xml[i] ) {
+    if( _xmlTimer[i] && _xml[i] ) {
 
       //      document.getElementById("dbg").value += "\n=" + _xmlTimerCount[i] + ", ";
 
       try {
         if( _xmlTimerCount[i]<_xmlTimerCountMax ) {
-          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.innerHTML ) {
+
+          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.body.innerHTML ) {
             _xmlTimerCount[i]++;
           } else {
 
-            sleepMSec(1000);
-
-            //            alert( _xmlTimerCount[i] + "\n" + document.getElementById("pfxxmliframe"+i).contentWindow.document );
-            
-            //            eval( _xml[i] + '(window.frames["pfxxmliframe'+i+'"].document);' );
-            //            alert("_xml[i]:\n" + _xml[i]);
-            //            alert("innerHTML:\n" + window.frames['pfxxmliframe'+i].document.innerHTML);
-            //            _xml[i](window.frames["pfxxmliframe'+i+'"].document);
-            eval( _xml[i] + '(document.getElementById("pfxxmliframe'+i+'").contentWindow.document);' );
+            _xml[i](document.getElementById("pfxxmliframe"+i).contentDocument);
             _xml[i] = null;
             cancelOnReadyStateChange(i);
           }
@@ -217,7 +213,6 @@ function customOnReadyStateChange() {
           cancelOnReadyStateChange(i, "too many intervals");
         }
       } catch(e) {
-        //        alert("Exception:" + e);
         cancelOnReadyStateChange(i, "Exception:" + e);
       }
     }
@@ -231,6 +226,7 @@ function cancelOnReadyStateChange( i, msg ) {
 
   try {
     if( msg ) {
+      alert("cancelOnReadyStateChange:" + i + ", " + msg);
       //      document.getElementById("dbg").value += "\n=" + i + " " + msg;
     }
     window.clearInterval(_xmlTimer[i]);
@@ -245,7 +241,8 @@ function cancelOnReadyStateChange( i, msg ) {
     //    for( var j=0; j<document.body.childNodes.length; j++ ) {
     //      alert( document.body.childNodes[j] );
     //    }
-    document.body.removeChild(document.getElementById("pfxxmliframe"+i));
+
+//    document.body.removeChild(document.getElementById("pfxxmliframe"+i));
   } catch(e) {
     alert("Exception3:" + e);
   }
