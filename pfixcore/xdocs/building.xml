@@ -55,7 +55,7 @@
         <ol>
             <li><p>Adjust version number in <code>build.xml</code>, <code>project.xml</code>,
               and <code>xdoc/index.xml</code>.</p></li>
-            <li><p>In <code>xdoc/changes.xml</code>: Adjust version number and release date.
+            <li><p>In <code>xdocs/changes.xml</code>: Adjust version number and release date.
               Document important changes.</p></li>
             <li><p>Optional: Run <code>ant notag</code> and test the results in pfixschlund</p></li>
             <li><p>Optional: Update the web site.</p></li>
