@@ -275,7 +275,7 @@ or delete the DOCTYPE definition -->
      />
     <taskdef
      name="pfx-webxml"
-     classname="de.schlund.pfixcore.util.XsltCustomWebXmlTask"
+     classname="de.schlund.pfixcore.util.XsltWebXmlTask"
      classpathref="cp.classpath"
      loaderref="pfx-loader"
      description="Creates WEB-INF/web.xml config files for each project"
