@@ -1,5 +1,7 @@
 2003-04-16  Jens Lautenbacher  <jtl@schlund.de>
 
+	* started 0.3.0-pre
+
 	* released 0.2.9
 	
 	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): Now also print out the
