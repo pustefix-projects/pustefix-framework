@@ -83,7 +83,7 @@ public abstract class ServletManager extends HttpServlet {
     private Properties       properties;
     private File             commonpropfile;
     private File             servletpropfile;
-    private String          servletEncoding;
+    private String           servletEncoding;
 
     protected Properties getProperties() {
         return properties;
@@ -840,28 +840,31 @@ public abstract class ServletManager extends HttpServlet {
     /**
      * Sets the servlet's encoding, which is used as character encoding for decoding/encoding 
      * requests/responses. Be aware that this setting only applies to the appropriate Readers, 
-     * Writers and body request parameters. It has no effect on the byte streams or the URI
-     * encoding (which is set on Tomcat connector level and can't be changed here).
+     * Writers and body request parameters. It has no effect on the byte streams. The URI
+     * encoding (which is set on Tomcat connector level and can't be changed here) is set always
+     * be the same as the body encoding.
      */
     private void initServletEncoding() {
-      //Try to get servlet encoding from properties:
-      String encoding=properties.getProperty(SERVLET_ENCODING);
-      if(encoding==null || encoding.trim().equals("")) CAT.warn("No servlet encoding property set");
-      else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
-      else servletEncoding=encoding;
-      //Try to get servlet encoding from init parameters:
-      if(servletEncoding==null) {
-          encoding=getServletConfig().getInitParameter(SERVLET_ENCODING);
-          if(encoding==null || encoding.trim().equals("")) CAT.warn("No servlet encoding init parameter set");
-          else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
-          else servletEncoding=encoding;
-      }
-      //Use default servlet encoding:
-      if(servletEncoding==null) {
-          servletEncoding=DEFAULT_ENCODING;
-          CAT.warn("Using default servlet encoding: "+DEFAULT_ENCODING);
-      }
-      CAT.debug("Servlet encoding was set to '"+servletEncoding+"'.");  
+        //Try to get servlet encoding from properties:
+        String encoding = properties.getProperty(SERVLET_ENCODING);
+        if (encoding == null || encoding.trim().equals("")) CAT.warn("No servlet encoding property set");
+        else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
+        else servletEncoding = encoding;
+        
+        //Try to get servlet encoding from init parameters:
+        if (servletEncoding == null) {
+            encoding = getServletConfig().getInitParameter(SERVLET_ENCODING);
+            if(encoding == null || encoding.trim().equals("")) CAT.warn("No servlet encoding init parameter set");
+            else if (!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
+            else servletEncoding=encoding;
+        }
+        //Use default servlet encoding:
+        if (servletEncoding == null) {
+            servletEncoding = DEFAULT_ENCODING;
+            CAT.warn("Using default servlet encoding: " + DEFAULT_ENCODING);
+        }
+        
+        CAT.debug("Servlet encoding was set to '" + servletEncoding + "'.");  
     }
     
     
