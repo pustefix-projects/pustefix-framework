@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -39,31 +40,31 @@ public class IncludeDocument {
     //~ Instance/static variables ..................................................................
 
     private Document                          doc;
-    // NOTE: here we want a XERCES-DocumentBuilderFactory
-    private static DocumentBuilderFactoryImpl docBuilderFactory = new DocumentBuilderFactoryImpl();
     private long                              modTime           = 0;
-    private static String                     INCPATH           = "incpath";
-    private static Category                   CAT               = Category.getInstance(IncludeDocument.class.getName());
-    private static DocumentBuilder            docBuilder        = null;
+    private static final String               INCPATH           = "incpath";
+    private static final Category             CAT               = Category.getInstance(IncludeDocument.class.getName());
+    private static final DocumentBuilder      docBuilder;
     
     //~ Constructors ...............................................................................
     static {
+        // NOTE: here we want a XERCES-DocumentBuilderFactory
+        DocumentBuilderFactory docBuilderFactory = new DocumentBuilderFactoryImpl();
+
+        if (! docBuilderFactory.isNamespaceAware())
+            docBuilderFactory.setNamespaceAware(true);
+        if (docBuilderFactory.isValidating())
+            docBuilderFactory.setValidating(false);
         try {
             docBuilder = docBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
             CAT.error(e.getMessage());
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }  
     }
     /**
      * Constructor
      */
     public IncludeDocument()  {
-        if (! docBuilderFactory.isNamespaceAware())
-            docBuilderFactory.setNamespaceAware(true);
-        if (docBuilderFactory.isValidating())
-            docBuilderFactory.setValidating(false);
     }
 
     //~ Methods ....................................................................................
@@ -90,10 +91,12 @@ public class IncludeDocument {
             CAT.error(buf.toString());
             throw ex;
         }
+        
         Element rootElement = doc.getDocumentElement();
         rootElement.setAttribute(INCPATH, path.getRelative());
-        if (! mutable)
+        if (! mutable) {
             doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
+        }
     }
 
     public Document getDocument() {

@@ -19,7 +19,6 @@ import org.xml.sax.SAXParseException;
 public class TargetGenerationException extends Exception {
 
     private String targetkey;
-    private Throwable cause;
 
     public TargetGenerationException() {
         super();
@@ -31,15 +30,11 @@ public class TargetGenerationException extends Exception {
 
     public TargetGenerationException(String msg, Throwable cause) {
         super(msg);
-        this.cause = cause;
+        initCause(cause);
     }
 
     public TargetGenerationException(Throwable cause) {
-        this.cause = cause;
-    }
-
-    public Throwable getNestedException() {
-        return cause;
+        initCause(cause);
     }
 
     /**
@@ -96,7 +91,7 @@ public class TargetGenerationException extends Exception {
         } else if (e instanceof TargetGenerationException) {
             TargetGenerationException tagex = (TargetGenerationException) e;
             insertErrInfo(error, "Key", tagex.getTargetkey());
-            printEx(tagex.getNestedException(), doc, root);
+            printEx(tagex.getCause(), doc, root);
         } else if (e instanceof TransformerException) {
             TransformerException trex = (TransformerException) e;
             insertErrInfo(error, "Location", trex.getLocationAsString());
@@ -136,7 +131,7 @@ public class TargetGenerationException extends Exception {
             appendStr(buf, indent, "Type", tgex.getClass().getName());
             appendStr(buf, indent, "Message", tgex.getMessage());
             appendStr(buf, indent, "Target", tgex.getTargetkey());
-            printEx(tgex.getNestedException(), buf, indent + " ");
+            printEx(tgex.getCause(), buf, indent + " ");
         } else if (e instanceof TransformerException) {
             TransformerException trex = (TransformerException) e;
             buf.append("|").append(br);

@@ -1,3 +1,14 @@
+2004-06-02  Michael Hartmeier <mhm@schlund.de>
+	cleanup to prepare for saxon 7:
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java:
+		use Java 1.4 nested exceptions to improve stack trace
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java:
+		removed commented-out lines
+    * src/de/schlund/pfixxml/IncludeDocument.java
+        minor optimization, more final fields
+    * src/de/schlund/pfixxml/targets/TargetImpl.java
+    	improved exception message 
+    	
 2004-06-01  Niels Schelbach    <niels@schlund.de>
 	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
 	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
