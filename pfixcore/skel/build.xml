@@ -317,16 +317,6 @@ or delete the DOCTYPE definition -->
         </present>
       </fileset>
     </delete>
-    <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
-    <exec executable="find" os="Linux">
-      <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink classes -->
-      <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
-      <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
-    </exec>
-    <!-- delete regular files using task delete -->
-    <delete>
-      <fileset dir="${dir.projects}/servletconf/tomcat/shared/lib" includes="*.jar"/>
-    </delete>
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
 
