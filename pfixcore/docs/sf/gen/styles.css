@@ -1,6 +1,5 @@
 body { 
-  font-family: verdana, arial, helvetica, sans; font-size: 10px;
-  margin: 0px; padding: 0px; background-color: white; height: 100%}
+  font-family: verdana, arial, helvetica, sans; font-size: 10px; margin: 0px; padding: 0px; background-color: black;}
 td { 
   font-family: verdana, arial, helvetica, sans; font-size: 10px; }
 
@@ -31,18 +30,15 @@ a:hover { background: #ee9999; color: black; }
   background-color: #88aa88; color: #ffffff;
   border-bottom: solid 1px black; border-top: solid 1px black; }
 
-.topframe { 
+#top { 
   text-align: right; padding-top: 10px; padding-bottom: 5px; padding-right: 5px;
-  color: white; background-color: black; font-size: 18px; 
-  position: absolute; top: 0px; left: 0px; right: 0px; height: 23px;}
+  color: white; background-color: black; font-size: 18px; }
 
 .mainbody { 
-  background-color: #ffeedd; padding-left: 10px; overflow: auto;
-  top: 38px; bottom: 0px; left: 126px; right: 0px; position: absolute; }
+  background-color: #ffeedd; padding-left: 10px;}
 
 .navibody { 
-  width: 125px; background-color:#aaccff; border-right: solid black 1px;  z-index: 1;
-  top: 38px; bottom: 0px; position: absolute;}
+  width: 126px; background-color:#aaccff; border-right: solid black 1px; }
 
 code {  background-color: #ffffee; font-family: "Anadale Mono", "Courier New", "Courier", monospace, font-size: 11px; }
 
