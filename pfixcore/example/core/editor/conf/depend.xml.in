@@ -1,5 +1,4 @@
-<make cachedir=".cache/editor" 
-      project="editor"
+<make project="editor"
       lang="en">
   
   <navigation>

@@ -1,6 +1,4 @@
-<make cachedir=".cache/sample1"
-      record_dir="sample1/recorded"
-      project="sample1"
+<make project="sample1"
       lang="en">
 
   <global>

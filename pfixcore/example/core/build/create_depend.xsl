@@ -11,21 +11,6 @@
 
   <xsl:template match="global"/>
 
-  <xsl:template match="make">
-    <xsl:param name="cache" select="./@cachedir"/>
-    <xsl:param name="recallow" select="./@record_allowed"/>
-    <xsl:if test="not($cache)">
-      <xsl:message terminate="yes">
-        *** Error *** You must specify a cachedir attribute to the make node
-      </xsl:message>
-    </xsl:if>
-    <xsl:copy>
-      <xsl:copy-of select="./@*"/>
-      <xsl:attribute name="docroot">../..</xsl:attribute>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-
   <xsl:template match="standardmaster">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>

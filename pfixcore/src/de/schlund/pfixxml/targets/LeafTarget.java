@@ -88,9 +88,6 @@ public abstract class LeafTarget extends TargetImpl {
         return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getConfigname() + "]";
     }
 
-    // still to implement from TargetImpl:
-    //protected abstract Object  getValueFromDiscCache() throws Exception;
-
     protected void setModTime(long mtime) {
         synchronized (sharedleaf) {
             sharedleaf.setModTime(mtime);

@@ -20,7 +20,6 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,11 +60,9 @@ public class TargetGenerator {
     private HashMap                       alltargets                     = new HashMap();
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
-    private final String                  configname;
+    private final File                    docroot;
+    private final String                  fullname;
     private final File                    confile;
-    private File                          docroot;
-    private File                          disccache;
-    private File                          recorddir; // may be null
     
     /* All registered TargetGenerationListener */
     private Set listeners = new HashSet();
@@ -89,15 +86,18 @@ public class TargetGenerator {
     public PageTargetTree getPageTargetTree() {
         return pagetree;
     }
+    
     public String getConfigname() {
-        return configname;
+        return fullname;
     }
     public File getDisccachedir() {
-        return disccache;
+        return new File(getDocroot(), ".cache" + File.separatorChar + confile.getName());
     }
+    
     public File getRecorddir() {
-        return recorddir;
+        return new File(getDocroot(), "record_dir" + File.separatorChar + confile.getName());
     }
+
     public File getDocroot() {
         return docroot;
     }
@@ -129,15 +129,26 @@ public class TargetGenerator {
     // -------------------------------------------------------------------------------------------
 
     public TargetGenerator(File confile) throws Exception {
+        this.docroot = findDocroot(confile);
         this.confile = confile;
         this.config_mtime = confile.lastModified();
-        this.configname = confile.getCanonicalPath();
+        this.fullname = confile.getCanonicalPath();
 
         Meminfo.print("TG: Before loading " + confile);
         loadConfig();
         Meminfo.print("TG: after loading targets for " + confile.getPath());
     }
 
+    private static File findDocroot(File file) { // TODO
+        while (!isDocroot(file.getName())) {
+            file = file.getParentFile();
+        }
+        return file;
+    }
+    private static boolean isDocroot(String name) {
+        return name.equals("projects") || name.equals("example");
+    }
+    
     public synchronized boolean tryReinit() throws Exception {
         if (confile.lastModified() > config_mtime) {
             CAT.warn(
@@ -168,24 +179,12 @@ public class TargetGenerator {
         Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
-        docroot = absolute(confile.getParentFile(), getFileAttribute(makenode, "docroot"));
-        if (docroot.getName().equals("core")) {
-            System.out.println("TODO: editor-up");
-            docroot = docroot.getParentFile();
-        }
-        CAT.debug("* Set docroot to " + docroot);
-
-        disccache = absolute(docroot, getFileAttribute(makenode, "cachedir"));
-        CAT.debug("* Set CacheDir to " + disccache);
-
-        recorddir = absolute(docroot, getFileAttributeOpt(makenode, "record_dir"));
-
+        File disccache = getDisccachedir();
         if (!disccache.exists()) {
             disccache.mkdirs();
         } else if (!disccache.isDirectory() || !disccache.canWrite() || !disccache.canRead()) {
             throw new XMLException("Directory " + disccache + " is not writeable, readeable or is no directory");
         }
-
 
         HashSet depxmls = new HashSet();
         HashSet depxsls = new HashSet();
@@ -315,7 +314,7 @@ public class TargetGenerator {
                     pageparam = value;
                 }
             }
-            virtual.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), configname));
+            virtual.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), fullname));
             virtual.addParam(XSLPARAM_TKEY, key);
 
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
@@ -597,33 +596,6 @@ public class TargetGenerator {
 
     //--
     
-    private static File getFileAttribute(Element node, String name) throws XMLException {
-        File file;
-        
-        file = getFileAttributeOpt(node, name);
-        if (file == null) {
-            throw new XMLException("missing attribute: " + name);
-        } else {
-            return file;
-        }
-    }
-
-    private static File getFileAttributeOpt(Element node, String name) throws XMLException {
-        String value;
-        File file;
-        
-        value = getAttributeOpt(node, name);
-        if (value == null) {
-            return null;
-        } else {
-            file = new File(value);
-            if (file.isAbsolute()) {
-                throw new XMLException("attribute " + name + ": relative path expected: " + value);
-            }
-            return file;
-        }
-    }
-
     private static String getAttribute(Element node, String name) throws XMLException {
         String value;
         
@@ -642,19 +614,6 @@ public class TargetGenerator {
             return null;
         }
         return attr.getValue();
-    }
-    
-    private static File absolute(File base, File relative) throws IOException {
-        File file;
-        
-        if (relative == null) {
-            return null;
-        }
-        if (relative.isAbsolute()) {
-            throw new IllegalArgumentException(relative.getPath());
-        }
-        file = new File(base.getAbsoluteFile(), relative.getPath());
-        return file.getCanonicalFile();
     }
 }
 

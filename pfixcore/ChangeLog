@@ -1,28 +1,40 @@
+2004-06-24  Michael Hartmier  <mhm@schlund.de>
+    * simplified depend.xml: the following attributes have been dumped
+      o docroot
+      o cachedir
+      o record_dir
+	* improved error message from "ant generate"
+    * move Path into util packages
+	* some API cleanup
+	* unit tests for TargetGenerator
+	* use more File objects
+    * affected files:     
+		example/core/build/create_depend.xsl
+		src/de/schlund/pfixcore/editor/EditorHelper.java
+		src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+		src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+		src/de/schlund/pfixxml/DependencyTracker.java
+		src/de/schlund/pfixxml/IncludeDocument.java
+		src/de/schlund/pfixxml/targets/LeafTarget.java
+		src/de/schlund/pfixxml/targets/TargetGenerator.java
+		src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+		src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+		src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+		src/de/schlund/pfixxml/util/Xslt.java
+		tests/junit/de/schlund/pfixxml/util/XsltTest.java
+	    tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+		example/core/build/create_depend.xsl
+		example/core/editor/conf/depend.xml.in
+		example/core/prjtemplates/depend.tmpl
+		example/sample1/conf/depend.xml.in
+		example/simpleform/conf/depend.xml.in
+		example/simplelink/conf/depend.xml.in
+		example/simplepage/conf/depend.xml.in
+
 2004-06-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: cleanup
 	* src/de/schlund/pfixxml/util/Xslt.java: cleanup
-
-2004-06-24  Michael Hartmier  <mhm@schlund.de>
-	* ChangeLog
-	* example/core/build/create_depend.xsl
-	* src/de/schlund/pfixcore/editor/EditorHelper.java
-	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
-	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
-	* src/de/schlund/pfixxml/DependencyTracker.java
-	* src/de/schlund/pfixxml/IncludeDocument.java
-	* src/de/schlund/pfixxml/targets/TargetGenerator.java
-	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
-	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
-	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
-	* src/de/schlund/pfixxml/util/Xslt.java
-	* tests/junit/de/schlund/pfixxml/util/XsltTest.java
-	- depend.xml changes:
-	  o docroot no longer needed in target elements
-	  o raise exception if mandatory attribute is missing
-	- improved error messages
-	- some API cleanup
-	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java unit tests for TargetGenerator
 
 2004-06-18  Michael Hartmier  <mhm@schlund.de>
 	* example/checkfiles.sh
