@@ -132,25 +132,31 @@
   </pagerequest>
 
   <pagerequest name="testcaseselect">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.TestcaseSelectFinalizer"/>
     <ihandler>
-      <interface prefix="testcasereset" class="de.schlund.pfixcore.editor.interfaces.TestcaseReset"/>
-      <interface prefix="testcase" class="de.schlund.pfixcore.editor.interfaces.TestcaseSelect"/>
+      <interface prefix="tcselect" class="de.schlund.pfixcore.editor.interfaces.TestcaseSelect"/>
+      <interface prefix="tcreset" class="de.schlund.pfixcore.editor.interfaces.TestcaseReset"/>
     </ihandler>
+    <output>
+    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+    </output>
   </pagerequest>
   
   <pagerequest name="testcasestart">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.TestcaseStartFinalizer"/>
     <ihandler>
-      <interface prefix="testcase" class="de.schlund.pfixcore.editor.interfaces.TestcaseStart"/>
+      <interface prefix="tcstart" class="de.schlund.pfixcore.editor.interfaces.TestcaseStart"/>
     </ihandler>
+    <output>
+    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+    </output>
   </pagerequest>
   
   <pagerequest name="testcaseoverview">
-    <finalizer class="de.schlund.pfixcore.editor.handlers.TestcaseOverviewFinalizer"/>
     <ihandler>
-      <interface prefix="testcase" class="de.schlund.pfixcore.editor.interfaces.TestcaseOverview"/>
+      <interface prefix="tcoverview" class="de.schlund.pfixcore.editor.interfaces.TestcaseOverview"/>
     </ihandler>
+    <output>
+    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+    </output>
   </pagerequest>
   
   <pagerequest name="lockmanager">

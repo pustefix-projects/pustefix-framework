@@ -1,3 +1,34 @@
+2003-04-03 Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get): Track the
+	dependencies if exceptions occur. Catch them, track the dependency and
+	throw them again.
+
+	* example/core/editor/conf/config.prop.in: removed ugly finalizers for
+	testcase-app.
+	* example/core/editor/txt/pages/main_home.xml
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml: gui changes
+
+	* src/de/schlund/pfixxml/testenv/ConsoleTestClient.java
+	* src/de/schlund/pfixxml/testenv/TestcasePlaybackResult.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseDelete.iwrp: added
+
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseSelect.iwrp
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseStart.iwrp
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:  application specific changes
+	
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/TestClient.java: changes
+
 2003-04-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/servletconf/projects.xml: 

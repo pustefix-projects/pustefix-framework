@@ -10,10 +10,9 @@
        <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
       
 
-      <table>
+      <table class="editor_box">
         <tr>
           <td>
-            <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
             <font>
               <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
               Green(+)
@@ -24,7 +23,6 @@
           
         <tr>
           <td>
-            <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
             <font>
               <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
                 Red(-)
@@ -35,22 +33,27 @@
       </table>
 
       
-       <h1>Result:</h1>
-       <ixsl:for-each select="/formresult/test_results/child::*">
+       <div class="doc_div"><h3>All results of play-backed testcases:</h3></div>
+       <ixsl:for-each select="/formresult/testcases/test_results/child::*">
        <br/><hr/><br/>
-       <table border="1" cellspacing="0" cellpadding="0">
-        <ixsl:attribute name="bgcolor"><ixsl:value-of select="$grey"/></ixsl:attribute>
-        <th><ixsl:value-of select="name()"/> Id=
-          <ixsl:value-of select="@id"/>
-        </th>
+        <div class="doc_div"><h4>Results for test <ixsl:value-of select="@id"/></h4></div><br/>
+       <table border="1" cellspacing="0" cellpadding="0" class="editor_box">
         <ixsl:for-each select="./child::*">
           <tr>
-            <td>
+            <th>Step</th>
+            <th>Statuscode</th>
+            <th>Diff</th>
+          </tr>
+          <tr>
+            <td align="center">
               <ixsl:value-of select="name()"/>
               <ixsl:value-of select="@id"/>
             </td>
+            <td align="center">
+              <ixsl:value-of select="@statuscode"/>
+            </td>
             <td>
-              <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0">
+              <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0" class="editor_box">
                 <ixsl:choose>
                   <ixsl:when test="./child::*">
                     <ixsl:for-each select="./child::*">
@@ -97,7 +100,7 @@
         <tr>
           <td>
             <pfx:button normalclass="editor_submit" page="testcaseselect">New test
-              <pfx:argument name="testcasereset.Reset">true</pfx:argument>
+              <pfx:argument name="tcreset.Reset">true</pfx:argument>
               <pfx:command name="SELWRP" page="testcaseselect">testcasereset</pfx:command>
             </pfx:button>
           </td>

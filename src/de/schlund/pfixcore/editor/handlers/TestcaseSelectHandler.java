@@ -1,5 +1,7 @@
 package de.schlund.pfixcore.editor.handlers;
 
+import java.util.Iterator;
+
 import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
 import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
 import de.schlund.pfixcore.editor.resources.CRTestcase;
@@ -25,11 +27,19 @@ public class TestcaseSelectHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper)
         throws Exception {
             TestcaseSelect testcase = (TestcaseSelect)wrapper;
-            String[] foo = testcase.getcase();
-            
+            boolean delete = testcase.getDoDelete().booleanValue();
+            boolean select = testcase.getDoSelect().booleanValue();
+            String[] foo = testcase.getSelect();
+                        
             ContextResourceManager crm = context.getContextResourceManager();
             CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-            crtc.setSelectedTestcases(foo);
+            if(select) {
+                crtc.setSelectedTestcases(foo);
+            } else if(delete) {
+                crtc.removeTestcase(foo);
+            } else {
+                // ERROR?
+            }
     }
 
     /**
@@ -41,10 +51,12 @@ public class TestcaseSelectHandler implements IHandler {
         CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
 
         if(crtc.hasSelectedTestcases()) {
-            TestcaseSelect testcase = (TestcaseSelect)wrapper;
-            String[] foo =  crtc.getSelectedTestcases();
-           
-            testcase.setStringValcase(foo);
+            String[] foo =  new String[crtc.getSelectedTestcases().size()];
+            Iterator iter = crtc.getSelectedTestcases().iterator();
+            int i=0;
+            while(iter.hasNext()) {
+                foo[i++] = (String)iter.next();
+            }
         }
     }
 
@@ -52,24 +64,28 @@ public class TestcaseSelectHandler implements IHandler {
      * @see de.schlund.pfixcore.generator.IHandler#prerequisitesMet(Context)
      */
     public boolean prerequisitesMet(Context context) throws Exception {
-        return true;
+        boolean ret = true;
+        return ret;
     }
 
     /**
      * @see de.schlund.pfixcore.generator.IHandler#isActive(Context)
      */
     public boolean isActive(Context context) throws Exception {
-        return true;
+        ContextResourceManager crm = context.getContextResourceManager();
+        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        boolean ret = crtc.getAvailableTestcases() != null && crtc.getAvailableTestcases().length > 0;
+        return ret;
     }
 
     /**
      * @see de.schlund.pfixcore.generator.IHandler#needsData(Context)
      */
     public boolean needsData(Context context) throws Exception {
-   
-        return false;
+        ContextResourceManager crm = context.getContextResourceManager();
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
+        boolean ret = !crtc.hasSelectedTestcases();
+        //System.out.println("TestcaseSelectHandler#needsData="+ret);
+        return ret;
     }
-
-   
-
 }
