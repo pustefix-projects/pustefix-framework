@@ -39,6 +39,8 @@ JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node
 <xsl:apply-templates select="$currentprj/documentroot"/>
 
 <xsl:apply-templates select="/projects/common/apache/passthrough"/>
+
+<!-- CAUTION: don't use 'select="$currentprj/passthrough"' here - jtl knows why -->
 <xsl:apply-templates select="/projects/project/passthrough"/>
 
 <xsl:apply-templates select="$currentprj/literalapache/node()"/>

@@ -96,8 +96,8 @@ public final class IncludeDocumentExtension {
 
         
         try {
-            Path            path        = pf.createPathMakeRelative(path_str);
-            Path            parent_path = "".equals(parent_path_str) ? null : pf.createPathMakeRelative(parent_path_str);
+            Path            path        = pf.createPath(path_str);
+            Path            parent_path = "".equals(parent_path_str) ? null : pf.createPath(parent_path_str);
             boolean         dolog       = !targetkey.equals(NOTARGET);
             File            incfile     = path.resolve();
             int             length      = 0;
