@@ -6,8 +6,59 @@
     environment. Additionally you can create images and include parts
     and edit them.</p>
   
+  <p><b>Note:</b> The source code of the Editor is not a good example
+  for writing applications with pustefix. For example see the sample application
+  in the CVS checkout.</p>
 
+  <h2>Getting started</h2>
+  <p>First we will have a closer look at the Sample Application.</p>
   
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/sample_editconsole1.png"></stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              In the red box you see the <i>EditConsole</i> divided into three different
+              sections. Press the button with the pen symbol showing the ToolTip 
+              <i>Switch edit mode ON</i> in section No. 1. Now, the
+              application will look like as follows.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Note: Section No. 3 is only visible if you have declared a <code>record_dir</code>
+              <a href="depend.html#record_dir">here</a>. 
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/sample_editconsole2.png"></stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              Here every include part is framed by curly braces. Remember that include parts
+              can be nested. After each closing curly brace there is a small box with a
+              pen symbol in it. Staying with to mouse over it shows the ToolTip
+              '<i>Edit include: ...</i>'. Pressing this box opens the Editor in a new
+              window starting with the <a href="editor_login.html">login</a> page.
+              After successful login the include is automatically opened in 
+              the <a href="editor_includes.html">includes</a> page.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
 <!--  
   <h2>Normal usage</h2>
   <h3>Login</h3>

@@ -22,6 +22,8 @@
   
   <p>The structure of the config file is show below:
   </p>
+
+  <a name="record_dir"/>
   
   <xmlcode>
     <make cachedir="..." recorddir="...">
