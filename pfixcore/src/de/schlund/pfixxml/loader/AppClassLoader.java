@@ -19,10 +19,17 @@
 
 package de.schlund.pfixxml.loader;
 
+import COM.rsa.jsafe.*;
 import java.io.*;
-import java.net.URL;
+import java.lang.ClassLoader;
+import java.net.*;
 import java.util.*;
-import org.apache.log4j.Category;
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.*;
+import org.apache.bcel.generic.*;
+import org.apache.bcel.util.ClassPath;
+import org.apache.bcel.util.SyntheticRepository;
+import org.apache.log4j.*;
 
 /**
  * AppClassLoader.java 
@@ -31,17 +38,23 @@ import org.apache.log4j.Category;
  * 
  * @author mleidig
  */
-public class AppClassLoader extends ClassLoader {
+public class AppClassLoader extends java.lang.ClassLoader {
 
-    private Category CAT=Category.getInstance(getClass().getName());
-    private boolean debug;
+    private Category    CAT = Category.getInstance(getClass().getName());
+    private boolean     debug;
     private ClassLoader parent;
-    private HashMap modTimes=new HashMap();
+    private HashMap     modTimes = new HashMap();
+    private SyntheticRepository  repository;
     
-    public AppClassLoader(ClassLoader parent) {
+    public AppClassLoader(java.lang.ClassLoader parent) {
         super(parent);
-	    this.parent=parent;
-        debug=CAT.isDebugEnabled();
+        this.parent=parent;
+        debug = CAT.isDebugEnabled();
+        try {
+            repository = SyntheticRepository.getInstance(new ClassPath(AppLoader.getInstance().getRepository().getCanonicalPath()));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex.toString());
+        }
     }
 
     public synchronized Class loadClass(String name) throws ClassNotFoundException {
@@ -49,22 +62,22 @@ public class AppClassLoader extends ClassLoader {
         AppLoader loader=AppLoader.getInstance();
         //load from cache
         if(debug) CAT.debug("Try to load from cache: "+name);
-	    Class c=findLoadedClass(name);
-	    if(c!=null) {
-	       if(debug) CAT.debug("Cache contains class: "+name);
-	       return c;
-	    } else {
-	       if(debug) CAT.debug("Cache doesn't contain class: "+name);
+        Class c=findLoadedClass(name);
+        if(c!=null) {
+            if(debug) CAT.debug("Cache contains class: "+name);
+            return c;
+        } else {
+            if(debug) CAT.debug("Cache doesn't contain class: "+name);
         }
 
         //load from system
         try {
-	       if(debug) CAT.debug("Try to load with system classloader: "+name);
-	       c=findSystemClass(name);
-	       if(debug) CAT.debug("System classloader found class: "+name);
-	       return c;
+            if(debug) CAT.debug("Try to load with system classloader: "+name);
+            c=findSystemClass(name);
+            if(debug) CAT.debug("System classloader found class: "+name);
+            return c;
         } catch(ClassNotFoundException x) {
-	       if(debug) CAT.debug("System classloader didn't find class: "+name);
+            if(debug) CAT.debug("System classloader didn't find class: "+name);
         }
 
         //load from repository
@@ -74,22 +87,22 @@ public class AppClassLoader extends ClassLoader {
             byte[] data=getClassData(name);
             if(data==null) {
                 if(debug) CAT.debug("AppClassLoader didn't find class: "+name);
-	        } else {	
+            } else {	
                 if(debug) CAT.debug("AppClassLoader found class: "+name);
                 definePackage(name);
                 return defineClass(name,data,0,data.length);
-	        }
+            }
         } else {
             if(debug) CAT.debug("No inclusion found for package: "+pack);
         }
 
         //load from parent
-	    if(parent!=null) {
+        if(parent!=null) {
             try {
                 if(debug) CAT.debug("Try to load with parent classloader: "+name);
-		        c=parent.loadClass(name);
-		        if(debug) CAT.debug("Parent classloader found class: "+name);
-		        return c;
+                c=parent.loadClass(name);
+                if(debug) CAT.debug("Parent classloader found class: "+name);
+                return c;
             } catch(ClassNotFoundException x) {
                 if(debug) CAT.debug("Parent classloader didn't find class: "+name);
             }
@@ -109,21 +122,32 @@ public class AppClassLoader extends ClassLoader {
             }
         }
     }
-
+    
     protected byte[] getClassData(String name) {
-        byte[] data=null;
-        File file=null;
+        byte[] data = null;
+        File file   = null;
         try {
-            String path=name.replace('.','/');
-            file=new File(AppLoader.getInstance().getRepository(),path+".class");
-            FileInputStream fis=new FileInputStream(file);
-            data=new byte[fis.available()];
-            fis.read(data);
+            JavaClass klass    = repository.loadClass(name);
+            ClassGen  klassgen = new ClassGen(klass);
+            if (klassgen.isInterface()) {
+                if(debug) CAT.debug("**** Is an interface: " + name);
+            } else {
+                if(debug) CAT.debug("**** Is a class: " + name);
+                if (klassgen.containsMethod("<init>", "()V") == null) {
+                    if(debug) CAT.debug("Didn't find empty constructor, creating one for " + name);
+                    klassgen.addEmptyConstructor(Constants.ACC_PRIVATE);
+                } else {
+                    if(debug) CAT.debug("Already has empty constructor: " + name);
+                }
+            }
+            klass = klassgen.getJavaClass();
+            data = klass.getBytes();
+            file = new File(AppLoader.getInstance().getRepository(),name.replace('.','/') + ".class");
             synchronized(modTimes) {
                 modTimes.put(file,new Long(file.lastModified()));
             }
-        } catch(IOException x) {
-            CAT.error("Can't get IO for file '"+file+"'.",x);
+        } catch(ClassNotFoundException x) {
+            CAT.error("Can't get Class for file '" + file + "'.",x);
         }
         return data;
     }
@@ -137,7 +161,7 @@ public class AppClassLoader extends ClassLoader {
                 long modNew=file.lastModified();
                 if(modOld!=modNew) return true;
             }
-        return false;
+            return false;
         }
     }
     
