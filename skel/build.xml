@@ -178,6 +178,10 @@
         <ant antfile="${file.build-include}" target="pre-compile"/>
     </target>
 
+    <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
+        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
+    </target>
+    
     <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac 
             srcdir="${dir.src}"
@@ -195,10 +199,6 @@
         <ant antfile="${file.build-include}" target="post-compile"/>
     </target>
 
-    <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
-        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
-    </target>
-    
     <target name="jni">
         <!-- unjar jni.tar.gz out of pfixcore.jar -->
         <!-- If overwrite="false", unjar overwrites a file if the modification times of the
@@ -357,7 +357,7 @@
     <target name="check-permissions">
         <apply executable="chmod" os="Linux">
             <arg line="a+x"/>
-            <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh"/>
+            <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
         </apply>
     </target>
     
@@ -601,6 +601,7 @@
 Targets
 -------
 all [default]:  Builds all files required to run ./startTomcat.sh
+generate-src:   Generates .java from .iwrp files
 compile:        Compiles all java files.
 generate:       Generates all top level targets to 
                 ${dir.projects}/.cache
@@ -611,7 +612,6 @@ run/debug:      Runs tomcat. Advantage over ./startTomcat.sh:
                 as an external process, there is one more java vm
                 in memory, that does nothing but waiting for tomcat
                 to exit.
-generate-src:   Generates .java from .iwrp files
 checkfiles:     Searches .xml files for unused include parts and
                 writes report to dir.projects/CHECKOUTPUT.xml
 noop:           Echos the name of the project
