@@ -23,82 +23,59 @@
 
   <xsl:template match="pfx:editconsole">
     <cus:documentation>
-      <description>Place an icon-button to switch to editmode and for showing the xml-tree</description>
-      
-       <example>
-        <input>
-          <xmlcode><pfx:editconsole/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><a target="_top" href="/xml/config;jsessionid=12345.foo?__editmode=admin">
-              <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
-            </a>
-            <a target="__xml_source__" href="/xml/config;jsessionid=12345.foo?__reuse=12345&amp;__xmlonly=1">
-              <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/>
-            </a>
-          </xmlcode>
-        </output>
-      </example>
-
-      
+      <description>Generates a toolbar when in development mode</description>
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
-     <table border="1">
-       <tr>
-         <td>
-           <ixsl:choose>
-             <ixsl:when test="$__editmode=&apos;admin&apos;">
-               <a target="_top">
-                 <ixsl:attribute name="href">
-                   <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-                 <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
-               </a>
-             </ixsl:when>
-             <ixsl:otherwise>
-               <a target="_top">
+      <table cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <ixsl:choose>
+              <ixsl:when test="$__editmode='admin'">
+                <a target="_top">
                   <ixsl:attribute name="href">
-                <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-                <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
-               </a>
-             </ixsl:otherwise>
-           </ixsl:choose>
-         </td>
-         <td>
-           <ixsl:choose>
-             <ixsl:when test="$__recordmode and $__recordmode!='0'">
-              <table>
-              <tr>
-                <td align="center">
-                 <a target="_top">
-                   <ixsl:attribute name="href">
-                   <ixsl:value-of select="$__uri"/>?__recordmode=0</ixsl:attribute>
-                   <img border="0" title="Switch record mode OFF" src="/core/img/player_pause.png"/>
-                 </a>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-               Using directory: <ixsl:value-of select="$__recordmode"/>
-                </td>
-              </tr>
-             </table>
-             </ixsl:when>
-             <ixsl:otherwise>
-               <form target="_top">
-                 <input align="center" name="__recordmode" type="text" size="10" maxlength="20"/>
-                 <input align="center" type="image" src="/core/img/player_play.png" title="Switch record mode ON"/>
-              </form>
-             </ixsl:otherwise>
-           </ixsl:choose>
-         </td>
-         <td>
-           <a target="__xml_source__">
-             <ixsl:attribute name="href">
-               <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
-             <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
-         </td>  
-       </tr>
-     </table>
+                    <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
+                  <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
+                </a>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <a target="_top">
+                  <ixsl:attribute name="href">
+                    <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
+                  <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
+                </a>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+          <td>
+            <a target="__xml_source__">
+              <ixsl:attribute name="href">
+                <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+              <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+          </td>  
+          <td nowrap="nowrap" style="border: black solid 1px; background-color: #999999;">
+            <ixsl:choose>
+              <ixsl:when test="$__recordmode and $__recordmode!='0'">
+                <form target="_top">
+                  <input style="margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
+                         readonly="readonly" align="center" name="__recordmode" type="text" size="5">
+                    <ixsl:attribute name="value"><ixsl:value-of select="$__recordmode"/></ixsl:attribute>
+                  </input>
+                  <pfx:xinp type="image" align="center" src="/core/img/player_pause.png" title="Switch record mode OFF">
+                    <pfx:argument name="__recordmode">0</pfx:argument>
+                  </pfx:xinp>
+                </form>
+              </ixsl:when>
+              <ixsl:otherwise>
+                <form target="_top">
+                  <pfx:xinp type="text" style="margin-left:3px; margin-right:1px; border: black solid 1px; color: #c00000;"
+                                  name="__recordmode" size="5" maxlength="20"/>
+                  <pfx:xinp type="image" align="center" src="/core/img/player_play.png" title="Switch record mode ON"/>
+                </form>
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </td>
+        </tr>
+      </table>
     </xsl:if>
   </xsl:template>
 
