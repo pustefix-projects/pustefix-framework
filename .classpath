@@ -21,7 +21,5 @@
     <classpathentry kind="lib" path="lib/xerces-xalan-2.1.0.jar" sourcepath="/sources/xerces-2_1_0/src"/>
     <classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet.jar"/>
     <classpathentry kind="lib" path="lib/saxon6_5_3.jar" sourcepath="/sources/saxon-6.5.3/src"/>
-    <classpathentry kind="lib"
-        path="/sources/apache-ant-1.5.3-1/lib/optional.jar" sourcepath="/sources/apache-ant-1.5.3-1/src"/>
     <classpathentry kind="output" path="build"/>
 </classpath>
