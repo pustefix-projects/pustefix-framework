@@ -18,7 +18,7 @@
 package de.schlund.pfixxml;
 
 import java.io.*;
-
+import de.schlund.pfixxml.serverutil.*;
 import java.util.*;
 
 import javax.servlet.http.*;
@@ -32,7 +32,7 @@ import org.w3c.dom.*;
  *
  *
  */
-public class SPDocument {
+public class SPDocument implements NoCopySessionData {
 
     //~ Instance/static variables ..................................................................
 
