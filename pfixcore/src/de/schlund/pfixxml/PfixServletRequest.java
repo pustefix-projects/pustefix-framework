@@ -230,7 +230,7 @@ public class PfixServletRequest {
             }
             sb2.append("\" machine=\""+localhost+"\"");
             sb2.append(" ]|");
-            PFXPERF.debug(sb2.toString()+sb.toString()+"\n");
+            PFXPERF.debug(sb2.toString()+sb.toString());
         }
     }
 
