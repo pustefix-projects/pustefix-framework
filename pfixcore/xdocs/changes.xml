@@ -35,7 +35,8 @@
           A complete documentation of the webservice development process has
           still to come, meanwhile interested people can have a look at the
           <code>webservice</code> example application, containing a range of
-          examples, containing a simple Chat application. 
+          examples, including a simple Chat application. For more details take
+          a look at the ChangeLog.
         </p>
       </action>
     </release>
