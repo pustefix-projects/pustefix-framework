@@ -1,5 +1,10 @@
 2004-05-25  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/forminput.xsl.in: pfx:xinp type="submit|image":
+	Fixed a big bug in the encoding of parameters and commands. Now it
+	should work that you can iterate at runtime over the DOM with
+	changing values to xinp parameters.
+
 	* example/core/xsl/navigation.xsl.in: eeek. bug fix for implementation of mode attribute in 
 	pfx:button...
 
