@@ -55,7 +55,7 @@ public class Context implements AppContext {
     private final static String   ADMINPAGE         = "context.adminmode.page";
     private final static String   ADMINMODE         = "context.adminmode";
     private final static String   AUTH_PROP         = "authcontext.authpage";
-
+    
     // from constructor
     private String     name;
     private Properties properties;
@@ -67,8 +67,9 @@ public class Context implements AppContext {
     
     // new instance for every Context
     private ContextResourceManager rmanager;
-    private Navigation             navigation = null;
-    private PageRequest            authpage   = null;
+    private Navigation             navigation    = null;
+    private PageRequest            authpage      = null;
+    private HashSet                visited_pages = null;
     
     // values read from properties
     private boolean     autoinvalidate_navi = true;
@@ -97,6 +98,7 @@ public class Context implements AppContext {
         this.properties = properties;
         this.name       = name;
         rmanager        = new ContextResourceManager();
+        visited_pages   = new HashSet();
         rmanager.init(this);
         reset();
     }
@@ -147,7 +149,7 @@ public class Context implements AppContext {
         if (spdoc != null && spdoc.getPagename() == null) {
             spdoc.setPagename(currentpagerequest.getName());
         }
-
+        
         if (spdoc != null && currentpageflow != null) {
             spdoc.setProperty("pageflow", currentpageflow.getName());
         }
@@ -157,8 +159,9 @@ public class Context implements AppContext {
             currentpageflow    = prevflow;
             return spdoc;
         }
-        
+
         if (navigation != null && spdoc != null) {
+            visited_pages.add(spdoc.getPagename());
             addNavigation(navigation, spdoc);
         }
         
@@ -246,8 +249,13 @@ public class Context implements AppContext {
 
     public boolean flowBeforeNeedsData() throws Exception {
         // This is needed when the navigation is built! we don't want to step through the pages of a different workflow every time.
+        // if (currentpagerequest.getStatus() == PageRequestStatus.NAVIGATION) {
+        //     return true;
+        // }
+        
         if (!currentpageflow.containsPageRequest(currentpagerequest)) {
-            throw new RuntimeException("*** current pageflow " + currentpageflow.getName() + " does not contain current pagerequest " + currentpagerequest);
+            throw new RuntimeException("*** current pageflow " + currentpageflow.getName() +
+                                       " does not contain current pagerequest " + currentpagerequest);
         }
         PageRequest   current  = currentpagerequest;
         PageRequest[] workflow = currentpageflow.getAllSteps();
@@ -343,7 +351,7 @@ public class Context implements AppContext {
         pageflowmanager = (PageFlowManager) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
         preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
         pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
-        
+
         // The navigation is possibly shared across more than one context, i.e. more than one properties object.
         // So we can't let it be handled by the PropertyObjectManager.
         if (properties.getProperty(NAVPROP) != null) {
@@ -630,7 +638,17 @@ public class Context implements AppContext {
             }
 
             if (page_vis != null) {
-                pageelem.setAttribute("visible", "" + page_vis.intValue());
+                int visible = page_vis.intValue();
+                pageelem.setAttribute("visible", "" + visible);
+                if (visible == -1) {
+                    pageelem.setAttribute("visited", "-1");
+                } else {
+                    if (visited_pages.contains(name)) {
+                        pageelem.setAttribute("visited", "1");
+                    } else {
+                        pageelem.setAttribute("visited", "0");
+                    }
+                }
             } else {
                 if (preqprops.pageRequestIsDefined(pagereq)) {
                     if (checkIsAccessible(pagereq,PageRequestStatus.NAVIGATION)) {
@@ -644,15 +662,22 @@ public class Context implements AppContext {
                             vis_map.put(page, new Integer(0));
                         }
                     }
+                    if (visited_pages.contains(name)) {
+                        pageelem.setAttribute("visited", "1");
+                    } else {
+                        pageelem.setAttribute("visited", "0");
+                    }
                 } else {
                     pageelem.setAttribute("visible", "-1");
+                    pageelem.setAttribute("visited", "-1");
                     if (vis_map != null) {
                         vis_map.put(page, new Integer(-1));
                     }
                 }
-                if (page.hasChildren()) {
-                    recursePages(page.getChildren(), pageelem, doc, vis_map, warn_buffer, debug_buffer);
-                }
+            }
+            
+            if (page.hasChildren()) {
+                recursePages(page.getChildren(), pageelem, doc, vis_map, warn_buffer, debug_buffer);
             }
         }
     }
