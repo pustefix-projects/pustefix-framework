@@ -5,7 +5,9 @@
     <product name="default">
       <lang name="default">
         <center>
-          <overviewinfo/>
+         <pfx:pagemessages/>
+         <br/>
+         <overviewinfo/>
         </center>
       </lang>
     </product>

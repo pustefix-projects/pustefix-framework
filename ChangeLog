@@ -1,5 +1,17 @@
 2004-10-28  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/sample1/txt/pages/main_order.xml: 
+	* example/sample1/txt/pages/main_overview.xml: both pages can display warnings now 
+
+	* src/de/schlund/pfixcore/workflow/Context.java: consolidated the addPageMessage to
+	have addPageMessage(Scode), addPageMessage(Scode, Level), addPageMessage(Scode, Level, Args[]).
+	(insertPageMessages): Still more work to do to handle arguments at all....
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java: only one
+	addPageMessage(Scode, Level, Args[]) method.
+
+	* src/de/schlund/pfixcore/example/CounterHandler.java: changed accordingly
+
 	* src/de/schlund/pfixxml/ServletManager.java: More security related work. 
 	The ServletManager will now prohibit the following cases:
 	- A valid secure session is used but the request was not made under SSL

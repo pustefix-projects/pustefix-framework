@@ -842,41 +842,35 @@ public class Context implements AppContext {
     /**
      *
      */
-    private void insertPageMessages(SPDocument spdoc)
-    {
-        if ( spdoc == null )
+    private void insertPageMessages(SPDocument spdoc) {
+        if (spdoc == null)
             return;
-
+        
         Map messagesMap = currentpreq.getPageMessages();
         LOG.debug("Adding "+messagesMap.size()+" PageMessages to result document");
+        
+        if (!messagesMap.isEmpty()) {
+            Document doc        = spdoc.getDocument();
+            Element  formresult = doc.getDocumentElement();
 
-        if ( !messagesMap.isEmpty() ) {
-
-            Document doc = spdoc.getDocument();
-            Element formresult = doc.getDocumentElement();
-
-            if ( formresult != null ) {
-                String  incfile = (String) getProperties().get("statuscodefactory.messagefile");
-
+            if (formresult != null) {
+                String  incfile      = (String) getProperties().get("statuscodefactory.messagefile");
                 Element messagesElem = doc.createElement("pagemessages");
                 formresult.appendChild(messagesElem);
 
                 Iterator iter = messagesMap.keySet().iterator();
-                while ( iter.hasNext() ) {
+                while (iter.hasNext()) {
                     StatusCode scode  = (StatusCode) iter.next();
                     List levelAndArgs = (List) messagesMap.get(scode);
 
-                    String   level = (String) levelAndArgs.remove(0);
+                    String   level = (String)   levelAndArgs.remove(0);
                     String[] args  = (String[]) levelAndArgs.toArray(new String[0]);
-                    Element  msg   =
-                            ResultDocument.addTextIncludeChild(messagesElem,
-                                                               "message",
-                                                               incfile,
-                                                               scode.getPart());
+                    Element  msg   = ResultDocument.addTextIncludeChild(messagesElem, "message",
+                                                                        incfile, scode.getPart());
                     msg.setAttribute("level", level);
-                    LOG.debug("Added PageMessage for level "+level+" with args "+levelAndArgs);
+                    
+                    LOG.debug("Added PageMessage for level " + level + " with args " + levelAndArgs);
                 }
-
             }
         }
     }
@@ -930,8 +924,7 @@ public class Context implements AppContext {
      * @return the last exception-object that was stored in the request object.
      * See {@link PfixServletRequest#getLastException() PfixServletRequest} for details.
      */
-    public Throwable getLastException()
-    {
+    public Throwable getLastException() {
         return currentpreq.getLastException();
     }
 
@@ -946,9 +939,8 @@ public class Context implements AppContext {
      * the request. If it's null, nothing will be stored in the request.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
      */
-    public void addPageMessage(StatusCode scode)
-    {
-        currentpreq.addPageMessage(scode);
+    public void addPageMessage(StatusCode scode) {
+        currentpreq.addPageMessage(scode, null, null);
     }
 
     /**
@@ -963,9 +955,8 @@ public class Context implements AppContext {
      * @param level the level associated with the specified <code>StatusCode</code>.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
      */
-    public void addPageMessage(StatusCode scode, String level)
-    {
-        currentpreq.addPageMessage(scode, level);
+    public void addPageMessage(StatusCode scode, String level) {
+        currentpreq.addPageMessage(scode, level, null);
     }
 
 
@@ -982,9 +973,8 @@ public class Context implements AppContext {
      * @param args arguments to the provided <code>StatusCode</code>.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[])
      */
-    public void addPageMessage(StatusCode scode, String[] args)
-    {
-        currentpreq.addPageMessage(scode, args);
+    public void addPageMessage(StatusCode scode, String level, String[] args) {
+        currentpreq.addPageMessage(scode, level, args);
     }
 
 
@@ -1000,9 +990,7 @@ public class Context implements AppContext {
      * @param level the level associated with the specified <code>StatusCode</code>.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[], String)
      */
-    public void addPageMessage(StatusCode scode, String[] args, String level)
-    {
-        currentpreq.addPageMessage(scode, args, level);
+    public void addPageMessage(StatusCode scode, String[] args, String level) {
+        currentpreq.addPageMessage(scode, level, args);
     }
-
 }

@@ -60,7 +60,7 @@ public class CounterHandler implements IHandler {
             context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), "warn");
         } else if ( cc.getCounter() > 3 ) {
             StatusCodeFactory sfac = new StatusCodeFactory("pfixcore.example.counter");
-            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), new String[] {"3"});
+            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), "info", new String[] {"3"});
         }
 
     }
