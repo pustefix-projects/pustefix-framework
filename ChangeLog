@@ -1,3 +1,21 @@
+2003-03-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	(RecordManager): some changes to help with weird errors on certain
+	machines (jserv only??)  Still don't really know the cause, but
+	changed some stuff nevertheless: DocumentBuilderFactory is now
+	inited statically. We don't force a saxxon DOM anymore.  We don't
+	use complicated xpath stuff to simply check an attribute in the
+	top level element.  The attribute "recodmode_allow" is no longer
+	used. We simple check for "record_dir", and if it's there, the
+	recordmode is allowed, if not recordmode is forbidden.
+
+	Removed some instances of RecordManagerException... If just
+	catching perfectly legal Exceptions, what is the point to NOT throw them, instead wrap
+	them in a new Exception type? This will not work like this anyway for 1.4.1 IIRC.
+
+	(writeDocument): use an FileOutputStream, not a FileWriter. see below.
+	
 2003-03-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (addNavigation): rewrote the 
