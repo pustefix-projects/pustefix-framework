@@ -1,3 +1,8 @@
+2004-10-04  Adam Habermann  <adam.habermann@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java:
+	Now creates directories for a file, if neccessary directories do not exist yet. 
+
 2004-09-30  Michael Hartmeier  <mhm@schlund.de>
 	Added Jmx support (which is disabled by default) and use it for test case recording:
 	o removed most of the recording code and documentation, it's in a separate project now
