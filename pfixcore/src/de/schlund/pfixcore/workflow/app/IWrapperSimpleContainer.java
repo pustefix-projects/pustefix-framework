@@ -549,7 +549,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                         for (; tok.hasMoreTokens(); ) {
                             String debwrp = tok.nextToken();
                             if (realprefix.equals(debwrp)) {
-                                wrapper.initLogging(logdir, context.getCurrentPageRequest().getName(),
+                                wrapper.initLogging(dir.getCanonicalPath(), context.getCurrentPageRequest().getName(),
                                                     context.getVisitId());
                                 break;
                             }
