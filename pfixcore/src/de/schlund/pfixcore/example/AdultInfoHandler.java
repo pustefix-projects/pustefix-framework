@@ -50,7 +50,7 @@ public class AdultInfoHandler implements IHandler {
         AdultInfo              info = (AdultInfo) wrapper;
         ContextAdultInfo       cai  = SampleRes.getContextAdultInfo(context);
         if (!cai.needsData()) {
-            info.setStringValAdult(cai.getAdult().toString());
+            info.setAdult(cai.getAdult());
         } 
     }
     

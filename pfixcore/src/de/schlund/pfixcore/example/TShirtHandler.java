@@ -76,19 +76,9 @@ public class TShirtHandler implements IHandler {
         ContextTShirt          ct     = SampleRes.getContextTShirt(context);
 
         if (!ct.needsData()) {
-            tshirt.setStringValColor(ct.getColor().toString());
-            tshirt.setStringValSize(ct.getSize());
-            Integer[] features = ct.getFeature();
-
-            if (features != null) {
-                String[]  feat = new String[features.length];
-                for (int i = 0; i < features.length; i++) {
-                    feat[i] = features[i].toString();
-                } 
-                tshirt.setStringValFeature(feat);
-            } else {
-                tshirt.setStringValFeature(null);
-            }
+            tshirt.setColor(ct.getColor());
+            tshirt.setSize(ct.getSize());
+            tshirt.setFeature(ct.getFeature());
         }
     }
     
