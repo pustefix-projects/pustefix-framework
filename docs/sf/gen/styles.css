@@ -63,11 +63,11 @@ h2 {
   vertical-align: top; }
 
 .stdtable tr th { 
-  padding: 4px; border-top: 1px black solid; font-size: 11px; text-align: left;
+  padding: 4px; padding-left: 10px; padding-right: 10px; border-top: 1px black solid; font-size: 11px; text-align: left;
   background-color: #ddcccc; }
 
 .stdtable tr td { 
-  padding: 4px; border-top: 1px black dotted; }
+  padding: 4px; padding-left: 10px; padding-right: 10px; border-top: 1px black dotted; }
 
 .stdimg { margin: 10px; text-align: center; }
 

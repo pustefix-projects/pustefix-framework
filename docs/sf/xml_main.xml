@@ -24,8 +24,27 @@
     Typical transformation steps used to generate a single page.
   </stdimg>
 
-  All the <span style="background-color: #ccccff">blue</span> boxes are files that you may need to edit.
+  <p>
+    <span style="background-color: #eb613d; border: black solid 1px;">red boxes</span> are supplied by the framework,
+    you don't need to create them yourself. Currently this is only the case for <code>master.xsl</code>. 
+  </p>
 
+  <p>
+    <span style="background-color: #94bd5e; border: black solid 1px;">green boxes</span> are the result of
+    XSL transformations.
+  </p>
+
+  <p>
+    All the <span style="background-color: #99ccff; border: black solid 1px;">blue boxes</span>
+    represent files that you need to create yourself. As you can see from the diagram, you only need one
+    <code>metatags.xsl</code> per project. The <code>skin.xsl</code>
+    file is special, as it is not a target (see below) but just another
+    XSLT stylesheet that can be included via <code>xsl:include</code> into both 
+    <code>master.xsl</code> and <code>metatags.xsl</code>. It contains templates that should apply on both
+    transformation stages, while <code>metatags.xsl</code> contains templates that apply only on the
+    first stage.</p>
+    
+  
   <h1>Targets</h1>
   <p>
     A <b>target</b> is everything that is the result of a XSLT
@@ -40,7 +59,7 @@
 
   <table class="stdtable">
     <tr>
-      <th>Main Category</th>
+      <th nowrap="nowrap">Main Category</th>
       <th>Type</th>
       <th>Example</th>
       <th>Notes</th>
