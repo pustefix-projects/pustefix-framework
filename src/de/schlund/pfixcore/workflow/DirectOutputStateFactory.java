@@ -76,7 +76,7 @@ public class DirectOutputStateFactory implements Reloader {
             if (retval == null) {
                 try {
                     AppLoader appLoader = AppLoader.getInstance();
-                    if(appLoader.isEnabled()) {
+                    if (appLoader.isEnabled()) {
                         retval = (DirectOutputState) appLoader.loadClass(classname).newInstance();
                     } else {
                         Class stateclass = Class.forName(classname);
