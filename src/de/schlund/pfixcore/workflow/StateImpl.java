@@ -42,10 +42,7 @@ public abstract class StateImpl implements State {
         if (sdreq != null) {
             sd = sdreq.getValue();
         }
-        return (context.flowIsStopped() || (!context.flowIsRunning() && 
-                                             (sd == null || (!sd.equals("true") &&
-                                                             !sd.equals("1") &&
-                                                             !sd.equals("yes")))));
+        return (!context.flowIsRunning() && (sd == null || (!sd.equals("true") && !sd.equals("1") && !sd.equals("yes"))));
     }
     
     public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
@@ -69,18 +66,21 @@ public abstract class StateImpl implements State {
     // private
     
     private boolean isSubmitTriggerAny(Context context, String sd) {
-        return (!context.flowIsStopped() && !context.flowIsRunning() && !context.finalPageIsRunning() && sd != null &&
+        return (!context.flowIsRunning() && !context.finalPageIsRunning() && sd != null &&
                 (sd.equals("true") || sd.equals("1") || sd.equals("yes")));
     }
 
     // You may want to overwrite this 
-    
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         return true;
     }
 
-    // You need to implement the state logic in this method.
+    // You may want to overwrite this 
+    public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
+        return true;
+    }
     
+    // You need to implement the state logic in this method.
     public abstract ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception;
-
+    
 }

@@ -29,5 +29,6 @@ import de.schlund.pfixxml.*;
 
 public interface State {
     boolean        isAccessible(Context context, PfixServletRequest preq) throws Exception;
+    boolean        needsData(Context context, PfixServletRequest preq) throws Exception;
     ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception;
 }

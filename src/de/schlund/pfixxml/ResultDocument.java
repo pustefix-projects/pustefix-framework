@@ -51,34 +51,34 @@ public class ResultDocument {
     protected ResultForm resultform = null;
     protected Document   doc;
     protected SPDocument spdoc;
-    // protected Properties spprop;
+    protected boolean    do_continue = false;
     
     public ResultDocument() throws ParserConfigurationException {
         init();
     }
-    
+
     protected void init() throws ParserConfigurationException {
         spdoc  = new SPDocument();
-        // spprop = new Properties();
         dbfac.setNamespaceAware(true);
         doc    = dbfac.newDocumentBuilder().newDocument();
         
         Date date = new Date();
 
         spdoc.setDocument(doc);
-        // spdoc.setProperties(spprop);
-        
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
-        // formresult.setAttribute("xmlns:ixsl", IXSL_NS);
         formresult.setAttribute("serial", "" + date.getTime());
         doc.appendChild(formresult);
     }
 
-    // public void setProperty(String name, String value) {
-    //     spprop.put(name, value);
-    // }
-
+    public void setContinue(boolean do_continue) {
+        this.do_continue = do_continue;
+    }
+    
+    public boolean wantsContinue() {
+        return do_continue;
+    }
+    
     public void addUsedNamespace(String prefix, String uri) {
         formresult.setAttribute("xmlns:" + prefix, uri);
     }

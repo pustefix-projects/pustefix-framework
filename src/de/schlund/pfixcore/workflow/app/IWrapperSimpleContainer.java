@@ -224,7 +224,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#continueSubmit() 
      */
-    public boolean continueSubmit() throws Exception {
+    public boolean stayAfterSubmit() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
         if (!is_splitted) splitIWrappers();

@@ -127,12 +127,9 @@ public class DirectOutputServlet extends ServletManager {
 
          ContextResourceManager crm = context.getContextResourceManager();
 
-         if (context instanceof AuthContext) {
-             // check the authentification first....
-             SPDocument spdoc = ((AuthContext) context).checkAuthorization(preq);
-             if (spdoc != null) return;
-         }
- 
+         // check the authentification first....
+         if (context.checkAuthorization() != null) return;
+         
          PageRequest       page  = new PageRequest(preq);
          DirectOutputState state = pagemap.getDirectOutputState(page);
          Properties        props = preqprops.getPropertiesForPageRequest(page);

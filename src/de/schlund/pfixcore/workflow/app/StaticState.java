@@ -75,7 +75,7 @@ public class StaticState extends StateImpl {
             for (Iterator iter = headers.keySet().iterator(); iter.hasNext(); ) {
                 String key = (String) iter.next();
                 String val = (String) headers.get(key);
-                CAT.warn("***Adding response header: " + key + " => " + val);
+                CAT.debug("* Adding response header: " + key + " => " + val);
                 doc.addResponseHeader(key, val);
             }
         }

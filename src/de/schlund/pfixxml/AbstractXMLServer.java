@@ -499,7 +499,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                                                                  servletname + SUFFIX_SAVEDDOM, scleanertimeout);
                 }
             } else {
-                CAT.warn("*** Got NOSTORE from SPDocument! ****");
+                CAT.info("*** Got NOSTORE from SPDocument! ****");
             }
             // this will remain at -1 when we don't have to enter the businesslogic codepath
             // (whenever there is a stored spdoc already)
@@ -758,7 +758,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = (SPDocument)session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+                SPDocument saved = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 if (saved == null)
                     return false;
                 String stamp = saved.getTimestamp() + "";
