@@ -7,11 +7,10 @@
   <body>
     <section name="Glossary">
       <ul>
-        <li><p><b>Pustefix:</b> A web application framework. Includes core, environment, editor, and 
-          example projects. Technically, pustefix is a cvs module. Caution: The cvs module name 
-          pfix<i>core</i>.</p></li>
+        <li><p><b>Framework:</b> A web application framework. Includes environment, documentation
+          and examples. pfix<i>core</i> implements the framework.</p></li>
         <li><p><b>Environment:</b> Pustefix SDK. What you install to develop your own projects with 
-          pustefix. Includes core, editor and sample projects. Caution: The respective download is called 
+          pustefix. Includes core, editor, and Tomcat. Caution: The respective download is called 
           "skeleton".</p></li>
         <li><p><b>Core:</b> Pustefix runtime. Java code for servlets, workflow, and editor. And basic 
           configuration used by projects. </p></li>
@@ -22,6 +21,9 @@
           <code>core</code>, <code>servletconf</code>.</p></li>
         <li><p><b>Editor</b> Modifies projects in a web browser. The editor is itself a project which is
           part of the core. </p></li>
+        <li><p><b>pfixcore:</b> The cvs module that implements the framework.</p></li>
+        <li><p><b>Pustefix</b> Denotes either framework, core, or environment, depending on the 
+          context.</p></li>
       </ul>
     </section>
   </body>

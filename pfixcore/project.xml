@@ -7,9 +7,9 @@
   <groupId>pfix</groupId>
   <currentVersion>0.6.6-pre</currentVersion>
   <organization>
-    <name>The Pustefix Project</name>
+    <name>The Pustefix Group</name>
     <url>http://pustefix.sourceforge.net</url>
-    <logo>/images/logo.gif</logo>
+    <logo>http://sourceforge.net/sflogo.php?group_id=72089&amp;type=5</logo>
   </organization>
   <description>Pustefix is a framework that helps you to develop web based applications.</description>
   <shortDescription>Web application framework</shortDescription>
@@ -109,7 +109,7 @@
       <name>Andreas Kurth</name>
       <id>akurth</id>
       <email>akurth@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -120,7 +120,7 @@
       <name>Corinna Herrmann</name>
       <id>ch17</id>
       <email>ch17@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -131,7 +131,7 @@
       <name>Andreas Ecker</name>
       <id>ecker</id>
       <email>ecker@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -142,7 +142,7 @@
       <name>Benjamin Reitzammer</name>
       <id>firstbman</id>
       <email>firstbman@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -153,7 +153,7 @@
       <name>Adam Habermann</name>
       <id>habermann</id>
       <email>habermann@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -164,7 +164,7 @@
       <name>Jörg Häcker</name>
       <id>haexel</id>
       <email>haexel@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -175,7 +175,7 @@
       <name>Jens Lautenbacher</name>
       <id>jenstl</id>
       <email>jenstl@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -186,7 +186,7 @@
       <name>Marcus Knappe</name>
       <id>marcusatschlund</id>
       <email>marcusatschlund@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -197,7 +197,7 @@
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
       <email>mlhartme@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -208,7 +208,7 @@
       <name>Martin Leidig</name>
       <id>mtld</id>
       <email>mtld@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -219,7 +219,7 @@
       <name>Ralf Rapude</name>
       <id>rrapude</id>
       <email>rrapude@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -230,7 +230,7 @@
       <name>Niels Schelbach</name>
       <id>schelby</id>
       <email>schelby@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -241,7 +241,7 @@
       <name>Tim Schuppener</name>
       <id>schuppi</id>
       <email>schuppi@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -252,7 +252,7 @@
       <name>Tanjev Stuhr</name>
       <id>tanjev</id>
       <email>tanjev@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -263,7 +263,7 @@
       <name>Tobias Fehrenbach</name>
       <id>tfehrenbach</id>
       <email>tfehrenbach@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -274,7 +274,7 @@
       <name>Tobias Kraft</name>
       <id>tobik74</id>
       <email>tobik74@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -285,7 +285,7 @@
       <name>Thomas Braun</name>
       <id>tombraun</id>
       <email>tombraun@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -296,7 +296,7 @@
       <name>Thomas Stieler</name>
       <id>tstieler</id>
       <email>tstieler@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -307,7 +307,7 @@
       <name>Ute Platzer</name>
       <id>uplatze</id>
       <email>uplatze@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -318,7 +318,7 @@
       <name>Sebastian Werner</name>
       <id>wpbasti</id>
       <email>wpbasti@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -329,7 +329,7 @@
       <name>Sonja Pieper</name>
       <id>yashima</id>
       <email>yashima@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -340,7 +340,7 @@
       <name>Volker Zaich</name>
       <id>zaich</id>
       <email>zaich@users.sourceforge.net</email>
-      <organization>The Pustefix Project</organization>
+      <organization>The Pustefix Group</organization>
       <roles>
         <role>Java Development</role>
       </roles>
@@ -362,7 +362,8 @@
 	<report>maven-developer-activity-plugin</report>
 	<report>maven-file-activity-plugin</report>
 	<report>maven-javadoc-plugin</report>
-	<report>maven-jdepend-plugin</report>
+	<!-- TODO: i don't understand the results:
+	     report>maven-jdepend-plugin</report -->
 	<report>maven-junit-report-plugin</report>
 	<report>maven-jxr-plugin</report>
 	<!-- we don't have a LICENSE.txt file:

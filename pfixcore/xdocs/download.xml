@@ -75,6 +75,7 @@
 
   <p>
     There are a few things you need to have installed prior to using Pustefix. See the table below for references.
+    Note that you don't need Tomcat, it's part of the pustefix environment.
   </p>
   
   <table>
@@ -87,17 +88,13 @@
       </th>
     </tr>
     <tr>
-      <td>
-	        A unixoid OS. 
-	    </td>
-      <td>
-                          Yes, java should be platform independent.
+      <td>A unixoid OS.</td>
+      <td>Yes, java should be platform independent.
           Unfortunately portions of the build environment and code
           are unix specific. Although these platform independant
           portions mainly deal with file system path secifications -
           they exist. There may be even more places where the thing
-          wouldn't work on win32.
-	    </td>
+          wouldn't work on win32.</td>
     </tr>
     <tr>
       <td>
@@ -113,7 +110,7 @@
         <a href="http://ant.apache.org/">ant</a>
       </td>
       <td>
-          Apache Ant, the Java-based build tool in version 1.5.4 or higher.
+          Apache Ant, the Java-based build tool in version 1.6 or higher.
           If you have really large projects consider increasing the memory
           for the java vm ant runs in: To do this set the ANT_OPTS
           environment variable to something like "-mx200m". This variable
@@ -126,8 +123,10 @@
         <a href="http://oss.software.ibm.com/developerworks/opensource/jikes/">jikes</a>
       </td>
       <td>
-        Jikes is a blazingly fast java compiler from IBM. You need it in order for the build environment to work out of the box.
-        If you want to use javac, this is no problem, adjust the ant property build.compiler to value modern and javac will be used.
+        Jikes is a blazingly fast java compiler from IBM. You need it in 
+        order for the build environment to work out of the box. If you want to use javac, 
+        this is no problem, adjust the ant property build.compiler to value modern and javac 
+        will be used.
       </td>
     </tr>
     <tr>
@@ -135,13 +134,31 @@
         <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">mod_jk</a>
       </td>
       <td>
-        <b>Optional:</b> A working installation of the Apache webserver (complete with
-        mod_rewrite) and a working mod_jk (the apache connection
-        module for tomcat - get the jakarta-tomcat-connectors package to compile it).
-        You need to have this module loaded, but
+        <p><b>Optional:</b> A working installation of the Apache webserver (complete with
+        mod_rewrite - which should be pretty standard nowadays) and a working mod_jk 
+        (the apache connection module for tomcat - get the jakarta-tomcat-connectors 
+        package to compile it). You need to have this module loaded, but
         you need no further configuration, the build process (skeleton
         application and CVS) will take care of providing you with a
-        sample config file that should at least get you started.
+        sample config file that should at least get you started.</p>
+        <p>Note that there have been problems with the order of
+        inclusion of mod_rewrite and mod_jk in the
+        httpd.conf. It seems that mod_jk needs to be loaded
+        BEFORE mod_rewrite. If you experience problems, try changing
+        the order of these two modules.  Other problems that have
+        been experienced are related to a changed regexp syntax
+        between different versions of mod_rewrite. You may have to
+        customize the relevant regexps in the file core/build/create_apacheconf.xsl.
+        </p>
+        <p>Your apache needs to have enabled name-based virtual servers
+        for the default hostname of your machine. Furthermore you should have 
+        a <code>* entry</code> for your machine in DNS (This means that a lookup 
+        to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no matter 
+        what NAME is). If you don't have DNS configured like this you can 
+        still supply the names (if you use the skelelton distribution) 
+        <code>cmsskel.HOSTNAME.DOMAIN</code> and <code>admskel.HOSTNAME.DOMAIN</code>
+        or, in case you work with the cvs checkout <code>cmscore.HOSTNAME.DOMAIN</code>
+        and <code>admcore.HOSTNAME.DOMAIN</code> via your /etc/hosts file.</p>
       </td>
     </tr>
   </table>
