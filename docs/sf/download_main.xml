@@ -126,7 +126,7 @@
         <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">mod_jk</a>
       </td>
       <td>
-        A working installation of the Apache webserver (complete with
+        <b>Optional:</b> A working installation of the Apache webserver (complete with
         mod_rewrite) and a working mod_jk (the apache connection
         module for tomcat - get the jakarta-tomcat-connectors package to compile it).
         You need to have this module loaded, but
