@@ -128,9 +128,33 @@ public class PfixAppletInfo {
     }
     
 
+
+    public String[] getRealElements() {
+         org.w3c.dom.NodeList  nl          = this.doc.getElementsByTagName("include");
+         String [] incElements = new String[nl.getLength()];
+         
+         for (int i = 0; i < nl.getLength(); i++) {
+             org.w3c.dom.Element el = (org.w3c.dom.Element) nl.item(i);
+             
+             String part       = el.getAttribute("part");
+             String path       = el.getAttribute("path");
+             String includeStr = path+"/"+part;
+             // String includeStr = "<pfx:include href=\"" + path + "\" part=\"" + part + "\"/>";
+             
+             incElements[i] = includeStr;
+             
+         }        
+         return incElements;        
+         
+    }
+
+
+    
     public String[] getImages() {
         org.w3c.dom.NodeList  nl          = this.doc.getElementsByTagName("image");
         String [] incImages = new String[nl.getLength()];
+        TreeSet tree = new TreeSet();
+        
         
         for (int i = 0; i < nl.getLength(); i++) {
             org.w3c.dom.Element el = (org.w3c.dom.Element) nl.item(i);
@@ -140,14 +164,35 @@ public class PfixAppletInfo {
             String includeStr = "<pfx:image href=\"" + path + "\" />";
             
             incImages[i] = includeStr;
+            tree.add(path);
             
         }
-                
-        return incImages;
         
+        return incImages;                
+    }
+
+
+    public String[] getRealImages() {
+        org.w3c.dom.NodeList  nl          = this.doc.getElementsByTagName("image");
+        String [] incImages = new String[nl.getLength()];
+       
+        
+        for (int i = 0; i < nl.getLength(); i++) {
+            org.w3c.dom.Element el = (org.w3c.dom.Element) nl.item(i);
+            // String part       = el.getAttribute("part");
+            String path       = el.getAttribute("path");            
+            // String newPath    = path.substring(path.indexOf("example/"), path.length());
+            
+            incImages[i] = path;
+
+            
+        }        
+        return incImages;                        
     }
     
-    
+
+
+
     
    
     
