@@ -126,7 +126,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         + "\n    </product>";
                 DocumentBuilder domp = dbfac.newDocumentBuilder();
                 try {
-                    impnode = (Node) domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
+                    impnode = domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
                 } catch (SAXParseException e) {
                     int line = (e.getLineNumber() - 1);
                     int col = (e.getColumnNumber() - 1);

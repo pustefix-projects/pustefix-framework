@@ -64,7 +64,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if (userhandler.needsData(context)) {
             return true;
         } else {
-            RequestData rdata = (RequestData) new RequestDataImpl(context, preq);
+            RequestData rdata = new RequestDataImpl(context, preq);
             ArrayList   aux   = getAuxWrapper(context);
             auxLoadData(aux, context, rdata);
             return false;
@@ -153,7 +153,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         Properties     properties  = context.getProperties();
         ResultDocument resdoc      = new ResultDocument();
         ResultForm     resform     = resdoc.createResultForm();
-        RequestData    rdata       = (RequestData) new RequestDataImpl(context, preq);
+        RequestData    rdata       = new RequestDataImpl(context, preq);
         ArrayList      aux         = getAuxWrapper(context);
 
         // Two cases: we are actively submitting data, or not.

@@ -113,11 +113,11 @@ public class TargetGenerator {
     }
 
     public Target createXMLLeafTarget(String key) {
-        return (Target) createTarget(TargetType.XML_LEAF, key);
+        return createTarget(TargetType.XML_LEAF, key);
     }
 
     public Target createXSLLeafTarget(String key) {
-        return (Target) createTarget(TargetType.XSL_LEAF, key);
+        return createTarget(TargetType.XSL_LEAF, key);
     }
 
     public String toString() {
