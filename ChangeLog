@@ -1,5 +1,7 @@
 2004-10-26  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: print path.getRelative(), not path
+
 	* example/core/conf/generator_tree.xml: 
 	* example/core/conf/generator_quiet.xml: 
 	* example/core/conf/generator_full.xml: added log4j NS 
