@@ -10,9 +10,9 @@
     
     <menu name="Quick Links">
       <item name="News" href="/index.html"/>
-      <item name="Getting started" href="/start.html"/>
-      <item name="Download" href="/download.html"/>
       <item name="Changes" href="/changes-report.html"/>
+      <item name="Download" href="/download.html"/>
+      <item name="Getting started" href="/start.html"/>
     </menu>
     <menu name="Architecture">
       <item name="Overview" href="/overview.html"/>
@@ -26,6 +26,7 @@
       <item name="Servlet definition" href="/prop.html"/>
       <item name="Page definition" href="/depend.html"/>
       <item name="IWrapper" href="/iwrapper.html"/>
+      <item name="Structural xml format" href="/structural.html"/>
     </menu>
     <menu name="Editor">
       <item name="Overview" href="/editor/overview.html"/>
