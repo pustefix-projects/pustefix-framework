@@ -9,6 +9,7 @@ import org.apache.axis.deployment.wsdd.WSDDRequestFlow;
 import org.apache.axis.deployment.wsdd.WSDDResponseFlow;
 import org.apache.axis.deployment.wsdd.WSDDService;
 
+import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -47,6 +48,7 @@ public class WebServiceTask extends Task {
     private File prjdir;
     private File prjfile;
     private File srcdir;
+    private File builddir;
     private File webappsdir;
     private File wsddSkel;
     
@@ -59,7 +61,16 @@ public class WebServiceTask extends Task {
     //SOAP encoding use: encoded|literal
     private String encUse="encoded";
     
+    public void checkAttributes() throws BuildException {
+    	if(srcdir==null) throw new BuildException("No source directory specified.");
+        if(!(srcdir.exists()&&srcdir.isDirectory())) throw new BuildException("Source directory '"+srcdir+"' doesn't exist.");
+        if(builddir==null) throw new BuildException("No build directory specified.");
+        if(!(builddir.exists()&&builddir.isDirectory())) throw new BuildException("Build directory '"+builddir+"' doesn't exist.");
+    }
+    
     public void execute() throws BuildException {
+        
+        checkAttributes();
         
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
         
@@ -154,6 +165,12 @@ public class WebServiceTask extends Task {
                             reqFlow.addHandler(monitorHandler);
                             resFlow.addHandler(monitorHandler);
                         }
+                        /**
+                        WSDDHandler errorHandler=new WSDDHandler();
+                        errorHandler.setType(new QName("ErrorHandler"));
+                        reqFlow.addHandler(errorHandler);
+                        resFlow.addHandler(errorHandler);
+                        */
                     }
                     
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
@@ -187,10 +204,11 @@ public class WebServiceTask extends Task {
                         String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
                         File wsItfFile=new File(srcdir,wsItfPath);
                         if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
+    
                         File wsdlFile=new File(wsdlDir,wsName+".wsdl");
                         
                         //Generate WSDL
-                        if(!wsdlFile.exists() || wsdlFile.lastModified()<wsItfFile.lastModified() || !confPropsFile.exists() || 
+                        if(!wsdlFile.exists() || checkChanges(wsItf,wsdlFile) || !confPropsFile.exists() || 
                                 propsChanged || conf.doesDiff(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
                             
                                 checkInterface(wsItf);
@@ -205,7 +223,7 @@ public class WebServiceTask extends Task {
                                 task.setNamespace(wsNS);
                                 task.setLocation(wsUrl+"/"+wsName);
                                 task.setImplClassName(conf.getImplementationName());
-                                task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
+                                //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
                                 task.setStyle(wsEncStyle);
                                 task.setUse(wsEncUse);
                                 task.generate();
@@ -399,7 +417,60 @@ public class WebServiceTask extends Task {
             }
         }
            
-      
+        private boolean checkChanges(String className,File wsdlFile) throws BuildException {
+            try {
+            	Class clazz=Class.forName(className);
+            	if(!clazz.isInterface()) throw new BuildException("Web service interface class '"+className+"' doesn't define an interface type.");
+                //Check if interface or dependant interfaces changed
+                boolean changed=checkTypeChange(clazz,wsdlFile);
+                if(changed) return true;
+                //Check if method parameter or return type classes changed
+                Method[] meths=clazz.getMethods();
+                for(int i=0;i<meths.length;i++) {
+                    Class ret=meths[i].getReturnType();
+                    changed=checkTypeChange(ret,wsdlFile);
+                    if(changed) return true;
+                    Class[] pars=meths[i].getParameterTypes();
+                    for(int j=0;j<pars.length;j++) {
+                    	changed=checkTypeChange(pars[j],wsdlFile);
+                    	if(changed) return true;
+                    }
+                }
+                return false;
+            } catch(ClassNotFoundException x) {
+            	throw new BuildException("Web service interface class '"+className+"' not found.",x);
+            }
+        }
+        
+        private boolean checkTypeChange(Class clazz,File wsdlFile) {
+        	if(!clazz.isPrimitive()) {
+                ClassLoader cl=clazz.getClassLoader();
+                if(cl instanceof AntClassLoader) {
+                    if(clazz.isArray()) return checkTypeChange(getArrayType(clazz),wsdlFile);   
+                    String path=clazz.getName().replace('.',File.separatorChar)+".class";
+                    File file=new File(builddir,path);
+                    if(!file.exists()) return false;
+                    if(wsdlFile.lastModified()<file.lastModified()) return true;
+                    if(clazz.isInterface()) {
+                        Class[] itfs=clazz.getInterfaces();
+                        for(int i=0;i<itfs.length;i++) {
+                        	boolean changed=checkTypeChange(itfs[i],wsdlFile);
+                        	if(changed) return true;
+                        }
+                    } else {
+                        Class sup=clazz.getSuperclass();
+                        boolean changed=checkTypeChange(sup,wsdlFile);
+                        if(changed) return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        private Class getArrayType(Class clazz) {
+        	if(clazz.isArray()) return getArrayType(clazz.getComponentType());
+            else return clazz;
+        }
         
         
         private boolean delete(File file) {
@@ -457,6 +528,10 @@ public class WebServiceTask extends Task {
         
         public void setSrcdir(File srcdir) {
             this.srcdir=srcdir;
+        }
+        
+        public void setBuildDir(File builddir) {
+        	this.builddir=builddir;
         }
         
         public void setWsddskel(File wsddSkel) {

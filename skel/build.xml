@@ -747,7 +747,8 @@ or delete the DOCTYPE definition -->
       prjdir="${dir.projects}"
       wsddskel="${dir.projects}/common/conf/server-config.wsdd"
       prjfile="${file.projects_xml}" 
-      srcdir="${dir.src}" 
+      srcdir="${dir.src}"
+      builddir="${dir.build}"
       webappsdir="${dir.tomcat}/webapps"
     />
   </target>
