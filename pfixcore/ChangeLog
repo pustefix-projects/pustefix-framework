@@ -15,7 +15,7 @@
 
 2004-03-12  Joerg Haecker <haecker@schlund.de>
 
-	* Integrated tomcat 4.1.30 into pfixcore(but not skel yet)
+	* Integrated tomcat 4.1.30 into pfixcore
 	
 	* example/servletconf/tomcat/common/lib/:
 	Replaced jndi.jar, naming-common.jar, naming-resources.jar, servlet.jar
