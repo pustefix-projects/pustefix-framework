@@ -60,9 +60,9 @@ public class ConfigProperties {
     public Iterator getPropertyKeys(String regex) {
         Pattern pat=Pattern.compile(regex);
         ArrayList al=new ArrayList();
-        Enumeration enum=properties.propertyNames();
-        while(enum.hasMoreElements()) {
-            String key=(String)enum.nextElement();
+        Enumeration eeek_java_5_enum=properties.propertyNames();
+        while(eeek_java_5_enum.hasMoreElements()) {
+            String key=(String)eeek_java_5_enum.nextElement();
             Matcher mat=pat.matcher(key);
             if(mat.matches()) al.add(key);
         }
