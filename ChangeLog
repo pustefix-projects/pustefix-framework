@@ -1,6 +1,10 @@
 2003-06-17  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/PfixServletRequest.java (checkParameterNameForEmbeddedData): Eeek. 
+	needed to remove bug fix from Martin (see below) as it didn't work for some cases (need to check further)
+
 	* META-INF/pfixcore.version:  released 0.3.5
+	started 0.3.6-pre
 
 	* docs/sf/*: new files. Start of sourceforge web site online documentation. Real content follows (I hope)
 
