@@ -1,11 +1,13 @@
+2004-11-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* released 0.8.2
+
 2004-11-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl:
 	Implemented filtering out of duplicate Alias (<passthrough>) directives.
 
 2004-10-31  Jens Lautenbacher  <jtl@schlund.de>
-
-	* released 0.8.2
 
 	* src/de/schlund/pfixxml/ServletManager.java: final pieces in the security work: now we mark a session when it's used with a cookie
 	enabled client and invalidate it whenever a later request doesn't supply cookies anymore.  This defeats clients who were
