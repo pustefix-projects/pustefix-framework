@@ -47,6 +47,7 @@ import org.xml.sax.*;
 /**
  * IncludesUploadHandler.java
  *
+ *  Handler responsible for uploading includes.
  *
  * Created: Wed Dec 19 12:34:24 2001
  *

@@ -36,6 +36,7 @@ import org.w3c.dom.*;
 /**
  * CommonsHandler.java
  *
+ *  Handler responsible for selecting commons.
  *
  * Created: Tue Feb 05 2002
  *
@@ -52,7 +53,6 @@ public class CommonsHandler extends EditorStdHandler {
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         Commons                includes = (Commons) wrapper;
         EditorProduct          prod     = esess.getProduct();
-        TargetGenerator        tgen     = prod.getTargetGenerator();
         String                 path     = includes.getPath();
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
@@ -68,7 +68,8 @@ public class CommonsHandler extends EditorStdHandler {
                 esess.setCurrentCommon(incprod);
                 String editor_product = esess.getProduct().getName();
                 String incl_product = esess.getCurrentCommon().getProduct();
-                if(esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product)) {
+                boolean allowed = esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product);
+                if(allowed) {
                     esess.getLock(incprod); 
                 } else {
                     if(CAT.isDebugEnabled()) 
@@ -79,7 +80,8 @@ public class CommonsHandler extends EditorStdHandler {
                 esess.setCurrentCommon(incdef);
                 String editor_product = esess.getProduct().getName();
                 String incl_product = esess.getCurrentCommon().getProduct();
-                if(esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product)) 
+                boolean allowed = esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product);
+                if(allowed) 
                     esess.getLock(incdef);
                 else {
                     if(CAT.isDebugEnabled())
@@ -97,8 +99,15 @@ public class CommonsHandler extends EditorStdHandler {
         ContextResourceManager crm    = context.getContextResourceManager();
         EditorSessionStatus    esess  = EditorRes.getEditorSessionStatus(crm);
         AuxDependency          common = esess.getCurrentCommon();
+        
         if (common != null) {
-            esess.getLock(common);
+            boolean allowed = esess.getUser().getUserInfo().isDynIncludeEditAllowed(esess.getProduct().getName(), common.getProduct());
+            if(allowed)
+                esess.getLock(common);
+            else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("User is not allowed to edit thsi dyninclude. No lock required.");
+            }
         }
     }
 

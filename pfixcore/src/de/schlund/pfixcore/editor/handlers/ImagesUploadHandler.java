@@ -36,7 +36,7 @@ import org.apache.log4j.*;
 
 
 /**
- * Handler which is responsible for uploading images.
+ * Handler responsible for uploading images.
  *
  *
  * Created: Mon Dec 03 23:34:24 2001
