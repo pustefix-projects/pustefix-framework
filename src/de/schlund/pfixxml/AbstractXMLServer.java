@@ -533,7 +533,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
         TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
-        stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
+        Target    target = generator.getTarget(stylesheet);
+        paramhash.put("themes", target.getThemesString());
+        stylevalue = (Templates) target.getValue();
         if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
             CAT.warn("stylevalue must not be null; stylevalue=" +
                      stylevalue + "; stylesheet=" + stylesheet + "; spdoc.getPagename()=" +

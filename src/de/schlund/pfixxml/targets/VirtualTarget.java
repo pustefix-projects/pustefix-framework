@@ -251,24 +251,16 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Document     xmlobj    = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
-        Templates    templ     = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
+        Document  xmlobj    = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
+        Templates templ     = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
             throw new XMLException("**** xml source " +
                                    tmpxmlsource.getTargetKey() + " (" + tmpxmlsource.getType() + ") doesn't have a value!");
         if (templ == null) 
             throw new XMLException("**** xsl source " +
                                    tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
-        TreeMap      tmpparams = getParams();
-        String[]     allthemes = getThemes();
-        StringBuffer themesstr = new StringBuffer("");
-        for (int i = 0; i < allthemes.length; i++) {
-            if (themesstr.length() > 0) {
-                themesstr.append(" ");
-            }
-            themesstr.append(allthemes[i]);
-        }
-        tmpparams.put("themes", themesstr.toString());
+        TreeMap   tmpparams = getParams();
+        tmpparams.put("themes", getThemesString());
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();

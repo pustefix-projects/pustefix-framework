@@ -34,6 +34,7 @@ public interface Target {
     Target          getXMLSource();
     Target          getXSLSource();
     String[]        getThemes();
+    String          getThemesString();
     TreeMap         getParams();
     TreeSet         getPageInfos();
     long            getModTime();

@@ -34,7 +34,7 @@
   
   <standardpage name="home"     xml="sample1/xml/two_frames.xml"/>
   <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo"/>
-  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo:bar"/>
+  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo:bar:baz"/>
   <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="baz"/>
 
   <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>

@@ -66,8 +66,8 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
-    private   static final String SERVLET_ENCODING = "servlet.encoding";
-    private   static final String DEFAULT_ENCODING = "UTF-8";
+    private   static final String SERVLET_ENCODING              = "servlet.encoding";
+    private   static final String DEFAULT_ENCODING              = "UTF-8";
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 

@@ -85,7 +85,9 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl">
+    <ixsl:stylesheet version="1.1"
+                     xmlns:url="xalan://java.net.URLEncoder"
+                     exclude-result-prefixes="url pfx cus xsl">
 
       <ixsl:output indent="no" >
         <xsl:if test="not($outputmethod = '')">
@@ -153,6 +155,18 @@
         <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
       </xsl:call-template>
 
+      <ixsl:template name="__enc">
+        <ixsl:param name="in"/>
+        <ixsl:param name="enc">
+          <xsl:if test="not($outputencoding = '')">
+            <xsl:value-of select="$outputencoding"/>
+          </xsl:if>
+        </ixsl:param>
+        <ixsl:if test="$in">
+          <ixsl:value-of select="url:encode(string($in),$enc)"/>
+        </ixsl:if>
+      </ixsl:template>
+      
       <ixsl:template match="/">
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->
