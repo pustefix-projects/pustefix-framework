@@ -46,7 +46,18 @@ import javax.swing.event.ChangeEvent;
 
 import java.net.*;
 
-
+import org.apache.commons.pfix_httpclient.HostConfiguration;
+import org.apache.commons.pfix_httpclient.HttpConnection;
+import org.apache.commons.pfix_httpclient.HttpException;
+import org.apache.commons.pfix_httpclient.HttpRecoverableException;
+import org.apache.commons.pfix_httpclient.HttpState;
+import org.apache.commons.pfix_httpclient.HttpStatus;
+import org.apache.commons.pfix_httpclient.NameValuePair;
+import org.apache.commons.pfix_httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.pfix_httpclient.URIException;
+import org.apache.commons.pfix_httpclient.methods.PostMethod;
+import org.apache.commons.pfix_httpclient.protocol.Protocol;
+import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory;
 
 import javax.swing.*;
 import netscape.javascript.*;
@@ -55,6 +66,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.apache.commons.pfix_httpclient.NameValuePair;
 
 public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener {
     private static final String TITLE = "PfixEditor";
@@ -249,25 +262,27 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
             System.out.println("STRING: + " + preString + "AppletInfo" + afterString + "&__xmlonly=1&__nostore=1");
 
-            // String urlLocation = preString + "/AppletInfo" + afterString + "&__xmlonly=1&__nostore=1";
+             String urlLocation = preString + "/AppletInfo" + afterString; //+ "&__xmlonly=1&__nostore=1";
             // String urlLocation =  preString + "/AppletInfo" + "&__xmlonly=1&__nostore=1";
-            String urlLocation = location + "&__xmlonly=1";
-            System.out.println(urlLocation);
-            System.out.println(urlLocation);
+            //String urlLocation = location + "&__xmlonly=1";
+            NameValuePair xmlonly = new NameValuePair("__xmlonly", "1");
+            PostMethod post = new PostMethod(urlLocation);
+            post.addParameter(xmlonly);
+            post.execute(new HttpState(), new HttpConnection("cmscore.zaich.ue.schlund.de", 80));
 
-            url = new URL(urlLocation);
+            //url = new URL(urlLocation);
        
-            urlConn = url.openConnection();
+            //urlConn = url.openConnection();
 
             
 
             
-            
+            input = post.getResponseBodyAsStream();
             
 
             
             
-            input = urlConn.getInputStream();
+            //input = urlConn.getInputStream();
 
             System.out.println(input.toString());
 
