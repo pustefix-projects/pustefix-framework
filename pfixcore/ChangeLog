@@ -1,5 +1,10 @@
 2003-05-09  Volker Zaich <zaich@schlund.de>
 
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+	Close button added		
+	
+2003-05-09  Volker Zaich <zaich@schlund.de>
+
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixTextPane.java
 	Closing Tags should work now ! Comment-Tags and already-Closed-tags
 	will be ignored.
