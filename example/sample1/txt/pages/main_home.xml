@@ -44,8 +44,8 @@
           </pfx:forminput>
           <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
+          <pfx:include part="sample_layers"/>
         </center>
-        <pfx:include part="sample_layers"/>
       </lang>
     </product>
   </part>
@@ -77,6 +77,34 @@
         <pfx:layer class="layer" name="C" pos-bottom="100" pos-left="50" pos-right="50" visible="false">
           <b>This is Layer C</b><br/>
         </pfx:layer>
+
+        
+        <pfx:switch method="on">
+          <pfx:layer_ref name="FOO"/>
+          <pfx:layer_check name="FOO">
+            <pfx:on class="core_button_invisible">Show it...</pfx:on>
+            <pfx:off>Show it...</pfx:off>
+          </pfx:layer_check>
+        </pfx:switch>
+        <br/>
+        <table cellpadding="5" border="1">
+          <tr>
+            <td colspan="2">You can hide the</td>
+          </tr>
+          <tr>
+            <td>last</td>
+            <pfx:layer store="false" element="td" name="FOO"><b>cell</b></pfx:layer>
+          </tr>
+        </table>
+        <pfx:switch method="off">
+          <pfx:layer_ref name="FOO"/>
+          <pfx:layer_check name="FOO">
+            <pfx:on>Hide it...</pfx:on>
+            <pfx:off class="core_button_invisible">Hide it...</pfx:off>
+          </pfx:layer_check>
+        </pfx:switch>
+        <br/>
+        <br/>
       </lang>
     </product>
   </part>
