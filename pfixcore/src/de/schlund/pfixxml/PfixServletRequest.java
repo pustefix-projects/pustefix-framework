@@ -295,8 +295,7 @@ public class PfixServletRequest {
      * Returns the value of the request-attribute that is stored under the key
      * {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}
      */
-    public Throwable getLastException()
-    {
+    public Throwable getLastException() {
         return (Throwable) request.getAttribute(ATTR_LASTEXCEPTION);
     }
 
@@ -305,8 +304,7 @@ public class PfixServletRequest {
        * under the key of {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}.
      * @param lastException The value to assign lastException.
      */
-    public void setLastException(Throwable lastException)
-    {
+    public void setLastException(Throwable lastException) {
         request.setAttribute(ATTR_LASTEXCEPTION, lastException);
     }
 
@@ -322,49 +320,8 @@ public class PfixServletRequest {
      * element <code>0</code> always being the message-level, and all list-elements
      * &gt; <code>0</code> being String arguments to the <code>StatusCode</code>
      */
-    public Map getPageMessages()
-    {
+    public Map getPageMessages() {
         return messageSCodes;
-    }
-
-    /**
-     * Adds the parameter to the list of StatusCode, that get inserted into
-     * the requests result-tree. The value of
-     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used as level.
-     *
-     * @param scode an instance of <code>StatusCode</code>, that should be added
-     * to the collection of message codes, for this request.
-     */
-    public void addPageMessage(StatusCode scode)
-    {
-        addPageMessage(scode, null, null);
-    }
-
-    /**
-     * @param scode an instance of <code>StatusCode</code>, that should be added
-     * to the collection of message codes, for this request.
-     * @param level the value, that's used to this message's level. If this value
-     * is <code>null</code> or an empty String, the value of
-     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
-     */
-    public void addPageMessage(StatusCode scode, String level)
-    {
-        addPageMessage(scode, null, level);
-    }
-
-    /**
-     * Adds the <code>StatusCode</code>, along with the provided arguments,
-     * to the list of <code>StatusCodes</code>, that get
-     * inserted into the requests result-tree. The value of
-     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used as level.
-
-     * @param scode an instance of <code>StatusCode</code>, that should be added
-     * to the collection of message codes, for this request.
-     * @param args arguments to the provided <code>StatusCode</code>.
-     */
-    public void addPageMessage(StatusCode scode, String[] args)
-    {
-        addPageMessage(scode, args, null);
     }
 
     /**
@@ -379,25 +336,20 @@ public class PfixServletRequest {
      * is <code>null</code> or an empty String, the value of
      * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
      */
-    public void addPageMessage(StatusCode scode, String[] args, String level)
-    {
-        if ( scode == null )
+    public void addPageMessage(StatusCode scode, String level, String[] args) {
+        if (scode == null)
             return;
-
+        
         level = level == null || "".equals(level) ? DEF_MESSAGE_LEVEL : level;
-
+        
         List list = new ArrayList();
         list.add(level.toLowerCase());
-
-        if ( args != null )
-          list.addAll(Arrays.asList(args));
-
+        
+        if (args != null)
+            list.addAll(Arrays.asList(args));
+        
         messageSCodes.put(scode, list);
     }
-
-    /*public long getCreationTimestamp() {
-        return starttime;
-    }*/
 
     /**
      * Retrieve the server name form the orginal request
