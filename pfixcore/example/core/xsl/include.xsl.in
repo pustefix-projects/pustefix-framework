@@ -176,6 +176,7 @@
       </xsl:if>
     </xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
+    <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href">
       <xsl:choose>
@@ -216,6 +217,7 @@
                       string($parent_path), string($parent_part), string($parent_product))"/>
         <!-- Start image of edited region -->
         <xsl:choose>
+          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode='admin'">
               <img border="0" src="/core/img/edit_start.gif"/>
@@ -328,6 +330,7 @@
         </xsl:choose>
         <!-- ===================================================== -->
         <xsl:choose>
+          <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
@@ -360,12 +363,9 @@
     </img>
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>You can add images by using this tag. Standard Value for Border is 0. If
-        you want to change this, add the border attribute. All other attributes will be
-        copied. (Better use Cascading Style Sheets). A list of all built-in images could be found
-        in the Editor (Button Images). Usually images will be  put the directory /webdir/img/.
-        Names shouldn't be used twice and the name of the image should have a prefix.
-        e.g. Button - p_button.gif, Icon - i_icon.gif, Background - bg_background.gif.
+      <description>Used to add images. Standard value for border is 0. If
+        you want to change this, add the border attribute. All other attributes are
+        copied into the resulting img tag.
      </description>
      <param required="1">
         <name>src</name>

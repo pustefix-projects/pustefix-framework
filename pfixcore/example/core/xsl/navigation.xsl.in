@@ -471,7 +471,7 @@
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $buttpage_impl]"/>
     <xsl:variable name="mode_impl">
       <xsl:choose>
-        <xsl:when test="not(string($mode = ''))"><xsl:value-of select="$mode"/></xsl:when>
+        <xsl:when test="not(string($mode) = '')"><xsl:value-of select="$mode"/></xsl:when>
         <xsl:when test="string($buttpage) = ''">force</xsl:when>
       </xsl:choose>
     </xsl:variable>
