@@ -17,7 +17,7 @@
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
   <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
   <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
-  <!-- comment-in to start a jmx server: prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop -->
+  <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
