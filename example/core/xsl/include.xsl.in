@@ -66,11 +66,22 @@
          <td>
            <ixsl:choose>
              <ixsl:when test="$__recordmode and $__recordmode!='0'">
-               <a target="_top">
-                 <ixsl:attribute name="href">
+              <table>
+              <tr>
+                <td align="center">
+                 <a target="_top">
+                   <ixsl:attribute name="href">
                    <ixsl:value-of select="$__uri"/>?__recordmode=0</ixsl:attribute>
-                 <img border="0" title="Switch record mode OFF" src="/core/img/player_pause.png"/>
-              </a>
+                   <img border="0" title="Switch record mode OFF" src="/core/img/player_pause.png"/>
+                 </a>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+               Using directory: <ixsl:value-of select="$__recordmode"/>
+                </td>
+              </tr>
+             </table>
              </ixsl:when>
              <ixsl:otherwise>
                <form target="_top">
