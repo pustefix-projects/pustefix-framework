@@ -370,6 +370,9 @@ public final class Xml {
         int start;
         int end;
         
+        if (ele.startsWith("<?")) {
+            throw new IllegalArgumentException(ele);
+        }
         if (!ele.startsWith("<")) {
             throw new IllegalArgumentException(ele);
         }
