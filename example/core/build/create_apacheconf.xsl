@@ -5,6 +5,9 @@
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
   
+  <!-- for filtering out duplicate Alias directives -->
+  <xsl:key name="passthroughKey" match="/projects/common/apache/passthrough | /projects/project/passthrough" use="text()"/>
+  
   <xsl:template match="projects">
     <xsl:apply-templates select="./project"/>
   </xsl:template>
@@ -40,7 +43,8 @@ JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node
 
 <xsl:apply-templates select="/projects/common/apache/passthrough"/>
 
-<!-- CAUTION: don't use 'select="$currentprj/passthrough"' here - jtl knows why -->
+<!-- CAUTION: don't use 'select="$currentprj/passthrough"' here -->
+<!-- for beeing able to reference all resources from all projects/products -->
 <xsl:apply-templates select="/projects/project/passthrough"/>
 
 <xsl:apply-templates select="$currentprj/literalapache/node()"/>
@@ -93,7 +97,8 @@ AddHandler cgi-script .cgi
       ErrorDocument <xsl:value-of select="@error"/><xsl:text> </xsl:text><xsl:apply-templates select="./node()"/>
   </xsl:template>
   
-  <xsl:template match="passthrough">
+  <!-- predicate is for filtering out duplicate Alias directives -->
+  <xsl:template match="passthrough[generate-id() = generate-id( key('passthroughKey', text())[1] )]">
     <xsl:variable name="pass"><xsl:apply-templates select="node()"/></xsl:variable>
       Alias        /<xsl:value-of select="$pass"/><xsl:text> </xsl:text><xsl:value-of select="$docroot"/>/<xsl:value-of select="$pass"/>
   </xsl:template>
