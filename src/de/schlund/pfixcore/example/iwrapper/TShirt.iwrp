@@ -12,7 +12,7 @@
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
   </param>
 
-  <param name="Feature" type="java.lang.Integer" frequency="multiple" occurance="optional">
+  <param name="Feature" type="java.lang.Integer" frequency="multiple" occurence="optional">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
     <postcheck class="de.schlund.pfixcore.generator.postchecks.IntegerRange">
       <cparam name="range" value="0:2"/>

@@ -5,21 +5,21 @@
   <!--<param name="Group" type="String"/>-->
   <param name="Sect" type="String"/>
   <param name="Phone" type="String"/>
-  <param name="Pass1" type="String" occurance="optional"/>
-  <param name="Pass2" type="String" occurance="optional"/>
-  <param name="Admin" type="java.lang.Boolean" occurance="optional">
+  <param name="Pass1" type="String" occurence="optional"/>
+  <param name="Pass2" type="String" occurence="optional"/>
+  <param name="Admin" type="java.lang.Boolean" occurence="optional">
     <default>
       <value>false</value>
     </default>
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
-  <param name="DynInclDef" type="java.lang.Boolean" occurance="optional">
+  <param name="DynInclDef" type="java.lang.Boolean" occurence="optional">
     <default>
       <value>false</value>
     </default>
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
-  <param name="editincl" type="String" occurance="indexed"/>
-  <param name="editimg" type="String" occurance="indexed"/>
-  <param name="editcom" type="String" occurance="indexed"/>
+  <param name="editincl" type="String" occurence="indexed"/>
+  <param name="editimg" type="String" occurence="indexed"/>
+  <param name="editcom" type="String" occurence="indexed"/>
 </interface>

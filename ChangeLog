@@ -1,3 +1,14 @@
+2004-12-06  Adam Habermann  <adam.habermann@schlund.de>
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java
+	Changed task, so the validate attribute may be true|false|dynamic.
+	* skel/build.xml
+	Added validation for target "propfiles". Changed property "validate" to
+	dynamic validation to allow .prop.in files in old format to be transformed.
+	* example/core/build/iwrapper.xsl
+	Made it work with occurence and occurance.
+	* src/**/*.iwrp
+	replaced attribute name occurance by occurence.
+
 2004-12-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: added public addCookies method. 
