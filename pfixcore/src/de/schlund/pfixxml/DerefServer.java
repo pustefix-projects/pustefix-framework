@@ -20,7 +20,8 @@
 package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.serverutil.SessionHelper;
-import java.io.PrintWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
@@ -46,52 +47,30 @@ public class DerefServer extends ServletManager {
         return (false);
     }
 
-    protected void process(PfixServletRequest preq, HttpServletResponse res)
-        throws Exception {
-        HttpSession session = preq.getSession(false);
-        RequestParam link = preq.getRequestParam("link");
+    protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        HttpSession  session = preq.getSession(false);
+        RequestParam link    = preq.getRequestParam("link");
 
         if (link == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
+        
         if (session == null) {
-            DEREFLOG.info(
-                preq.getServerName()
-                    + "|"
-                    + link
-                    + "|"
-                    + preq.getRequest().getHeader("Referer"));
+            DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
-            res.setHeader(
-                "Cache-Control",
-                "no-cache, no-store, private, must-revalidate");
+            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
             res.setHeader("Location", link.getValue());
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         } else {
-            PrintWriter writer = res.getWriter();
-            String thelink =
-                preq.getScheme()
-                    + "://"
-                    + preq.getServerName()
-                    + ":"
-                    + preq.getServerPort()
-                    + SessionHelper.getClearedURI(preq, res)
-                    + "?link="
-                    + link.getValue();
-            writer.println("<html><head>");
-            writer.println(
-                "<meta http-equiv=\"refresh\" content=\"0; URL="
-                    + thelink
-                    + "\">");
-            writer.println(
-                "</head><body bgcolor=\"#ffffff\"><a href="
-                    + thelink
-                    + ">"
-                    + thelink
-                    + "</a></body></html>");
+            OutputStream       out     = res.getOutputStream();
+            OutputStreamWriter writer  = new OutputStreamWriter(out, res.getCharacterEncoding());
+            String             thelink = preq.getScheme() + ": //" + preq.getServerName() + ":" + preq.getServerPort()
+                + SessionHelper.getClearedURI(preq, res) + "?link = " + link.getValue();
+            writer.write("<html><head>");
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + thelink + "\">");
+            writer.write("</head><body bgcolor=\"#ffffff\"><a href=" + thelink + ">" + thelink + "</a></body></html>");
         }
     }
 }

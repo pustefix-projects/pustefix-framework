@@ -168,9 +168,11 @@ public class Context implements AppContext {
         }
         if (!page.isEmpty()) {
             Properties props = preqprops.getPropertiesForPageRequest(page);
-            String needssl = props.getProperty(PROP_NEEDS_SSL);
-            if (needssl != null && needssl.equals("true")) {
-                return true;
+            if (props != null) {
+                String     needssl = props.getProperty(PROP_NEEDS_SSL);
+                if (needssl != null && needssl.equals("true")) {
+                    return true;
+                }
             }
         }
         return false;
