@@ -50,7 +50,7 @@
     <span class="ltgt">&lt;</span>
     <span><xsl:attribute name="class"><xsl:value-of select="$col"/>
       </xsl:attribute><xsl:value-of select="name()"/></span>
-    <xsl:for-each select="./xmlcodeNS">&#160;<span class="attrkey">xmlns:<xsl:value-of select="@ns"/></span>
+    <xsl:for-each select="./xmlcodeNS">&#160;<span class="attrkey">xmlns<xsl:if test="string-length(@ns) &gt; 0">:</xsl:if><xsl:value-of select="@ns"/></span>
       <xsl:text>="</xsl:text><span class="attrval"><xsl:value-of select="./text()"/></span><xsl:text>"</xsl:text></xsl:for-each>
     <xsl:for-each select="@*">&#160;<span class="attrkey">
         <xsl:value-of select="name()"/></span><xsl:text>="</xsl:text><span class="attrval">
