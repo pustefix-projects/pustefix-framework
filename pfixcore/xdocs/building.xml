@@ -20,6 +20,8 @@
         <p>Pustefix core features an <a href="http://ant.apache.org">Ant</a> build.</p>
         <p>To build the core with all projects:</p>
         <source>ant -Dmakemode=test</source>
+        <p>Alternatively you can set the environment variable MAKE_MODE to the value "test" instead
+        of having to supply it via the commandline every time</p>
         <p>You may want to run
         <source>ant generate -Dmakemode=test</source>
         to pre-process all the templates up-front. This speeds up the first hit of a page
@@ -69,26 +71,21 @@
          </ol>
       </subsection>
       <subsection name="Upgrade environment">
-        <p>To replace the core in an existing environment:</p>
+        <p>To replace the core files in an existing environment:</p>
         <ol>
-            <li><p>In pfixcore: Adjust the version number in <code>build.xml</code>.</p></li>
-            <li><p>In pfixcore: Make sure that all changes in <code>build.xml</code> have
-              been incorporated into <code>skel/build.xml</code>.</p></li>
-            <li><p>In pfixcore: Run
-                <source>ant dist -Dmakemode=test</source>
-              (or <code>ant notag -Dmakemode=test</code>) to build a distribution.</p></li>
-            <li><p>Make sure that your environment contains a current versions of <code>pfixcore/lib/*.jar</code>
-              and <code>pfixcore/lib/tomcat/*</code>.</p></li>
-            <li><p>Update the build file:
-                <source>cp pfixcore/skel/build.xml yourenv/build.xml</source>
-              </p></li>
-            <li><p>Replace the core files in <core>yourenv/lib</core>:
-                <source>
- rm yourenv/lib/pfixcore-*
- cp pfixcore/dist/pfixcore-* yourenv/lib
-</source>
-              </p></li>
-         </ol>
+          <li>Download the new <code>pfixcore-x.y.z.jar</code> file and the corresponding
+          <code>pfixcore-data.x.y.z.tar.gz</code> file
+          from <a href="download.html">here</a></li>
+          <li><p>Replace the core files in <code>yourenv/lib</code>
+          with the downloaded version.
+          </p></li>
+          <li>Rebuild your environment with ant</li>
+        </ol>
+        <p> If your environment is somewhat old, it's possible that
+        the build process itself has changed, too. In this case it may help
+        to copy the file <code>skel/build.xml</code> to the file
+        <code>build-skel.xml</code> in your environment.
+        </p>
       </subsection>
     </section>
   </body>
