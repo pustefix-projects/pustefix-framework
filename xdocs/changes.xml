@@ -4,7 +4,7 @@
     <title>Changes</title>
   </properties>
   <body>
-    <release version="0.7.0" date="in cvs">
+    <release version="0.7.0" date="2004-08-19">
       <action dev="jenstl" type="update">
         <p>
           More relative paths for configuration files. We try to remove
@@ -35,16 +35,17 @@
       </action>
       <action dev="mlhartme" type="remove">
         <p>
-        Removed the following properties from depend.xml: record_dir, cachedir and docroot. 
-        Pustefix automatically passes them to the xslt processor, you don't have to
-        mention them in depend files.
+        Removed the following properties from depend.xml: record_dir, cachedir and 
+        docroot. Pustefix automatically passes them to the xslt processor, you don't 
+        have to mention them in depend files.
         </p>
       </action>
       <action dev="mlhartme" type="update">
         <p>
         XML dependencies are concentrated in three files (in the <code>de.schlund.pfixxml.util</code> package):
         <code>Xml.java</code> for parsing and serialization, <code>XPath</code> for xpath compuations, and 
-        <code>Xslt</code> for XSL processing. 
+        <code>Xslt</code> for XSL processing. E.g. if you have to parse or serialize an xml document,
+        you should have a look at <code>Xml.java</code>.
         </p>
       </action>
     </release>
