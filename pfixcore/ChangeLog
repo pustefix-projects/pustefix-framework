@@ -1,7 +1,16 @@
+2004-05-25  Benjamin Reitzammer <benjamin@schlund.de>
+
+	* example/core/build/create_propfiles.xsl changed exception template to transform
+    exception configuration into a more sensible property format (no more numbers
+    in property names) -> this allows overriding of exception configuration from
+    pustefix.prop.in in project specific *.prop.in files
+    * src/de./schlund/pfixxml/ServletManager.java adapted initializing of
+    ExceptionConfig objects to new property format
+
 2004-05-24  Michael Hartmeier <mhm@schlund.de>
 
-	* simplified dependencies: removed FileDependency, StaticFileDependency and 
-	ProductIncludePart since they don't have specific functionality - everything 
+	* simplified dependencies: removed FileDependency, StaticFileDependency and
+	ProductIncludePart since they don't have specific functionality - everything
 	is defined in one of the base classes or DependencyType.
         * removed AbstractDependency, all functionality is in AuxDependency now
 	* more final fields
@@ -40,25 +49,25 @@
 
 2004-05-18 	Ralf Rapude <rapude@schlund.de>
 	* There are three new directories in the example dir called simplepage,
-	simplelink and simpleform. 
+	simplelink and simpleform.
 	Each consists of a simple application for pustefix in order to deliver basic
 	functionalities as a turorial.
-	
-	* A new target called "dist-examples" has been added to the build.xml. It 
+
+	* A new target called "dist-examples" has been added to the build.xml. It
 	builds a tar to the dist directory containing the example projects and
-	also a src folder with all appropriate files. This target will be 
+	also a src folder with all appropriate files. This target will be
 	also called if you run "ant notag" or "ant dist".
 	Ant realclean will delete all generated files from "example" as well as from
 	src/de/skelexamples.
-	
-	* A README_EXAMPLES.txt has been added to the example directory. This file 
+
+	* A README_EXAMPLES.txt has been added to the example directory. This file
 	supplies basic informations related to the examples.
-	
-	* INSTALL has a new topic (No 6). It is a short hint to the 
+
+	* INSTALL has a new topic (No 6). It is a short hint to the
 	new sample applications.
-	
-	* There's now a package "skelexamples" in the src folder. 
-	The java files for the examples are stored in this folder and also 
+
+	* There's now a package "skelexamples" in the src folder.
+	The java files for the examples are stored in this folder and also
 	the DemoText.iwrp will generate the related file in this folder.
 
 
@@ -218,7 +227,7 @@
 2004-05-17  Michael Hartmeier <mhm@schlund.de>
 
 	* all paths in .cache are relative now, and file:// has been stripped
-	* relative paths are represented by instances of de.schlund.pfixxml.targets.Path 
+	* relative paths are represented by instances of de.schlund.pfixxml.targets.Path
 	* use chained exceptions to improve error messages (e.g in AbstractXMLServer)
 
 2004-05-17  Jens Lautenbacher  <jtl@schlund.de>
@@ -245,22 +254,22 @@
 	setStringValue(String[]) method, unless toString() isn't good enough.
 
 	* example/core/build/iwrapper.xsl: we now generate for every
-	parameter FOO of type BAR another method called: 
+	parameter FOO of type BAR another method called:
 	setFOO(BAR) or setFOO(BAR[]) or setFOO(BAR, String) or setFOO(BAR[], String)
 	depending on if the parameter is multiple or not and if it's indexed or not.
 
-	* src/de/schlund/pfixcore/example/TrouserHandler.java: 
-	* src/de/schlund/pfixcore/example/TShirtHandler.java: 
+	* src/de/schlund/pfixcore/example/TrouserHandler.java:
+	* src/de/schlund/pfixcore/example/TShirtHandler.java:
 	* src/de/schlund/pfixcore/example/AdultInfoHandler.java: Use the above...
-	
 
-	* src/de/schlund/util/statuscodes/StatusCodeException.java: 
-	* src/de/schlund/util/statuscodes/StatusCodeFactory.java: 
-	* src/de/schlund/util/statuscodes/StatusCode.java: 
-	* src/de/schlund/util/FactoryInit.java: new files. Added from util-MINI.jar 
+
+	* src/de/schlund/util/statuscodes/StatusCodeException.java:
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java:
+	* src/de/schlund/util/statuscodes/StatusCode.java:
+	* src/de/schlund/util/FactoryInit.java: new files. Added from util-MINI.jar
 
 	* lib/util-MINI-1.1.10.jar: REMOVED
-	
+
 2004-05-10  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: changed creation of symlink from directory
@@ -275,7 +284,7 @@
 	'sendtoflow', which, if set to true, will trigger the first page
 	of the current pageflow, and not the page given (this is only used
 	for determining the link status (active/normal/invisible)
-	
+
 	* example/core/xsl/forminput.xsl.in: generate_coded_name: removed.
 	generate_coded_input: new template, used to put
 	pfx:argument/pfx:anchor/pfx:command in special named hidden input
@@ -290,7 +299,7 @@
 	uniq id to look like: '__SBMT:<UNIQ_ID>:' All arguments / commands
 	associated to this button are encoded as hidden input fields with
 	a name that looks like this: __SYNT:<UNIQ_ID>:<REAL_PARAM_NAME>
-	This solves among other stuff the problem that the ':' was special as 
+	This solves among other stuff the problem that the ':' was special as
 	as seperator of the name/value in the old case of encoded names.
 
 	Another thing that changes is that commands are no longer of the
@@ -300,19 +309,19 @@
 	simply the value of the hidden input field
 	'__SYNT:<UNIQ_ID>:<REAL_PARAM_NAME>' with REAL_PARAM_NAME being
 	'__CMD[page]:<CMD_NAME>'.
-	
+
 	(generateSynthetics): new method, used to generate the synthetic
 	parameters which match a submitted __SBMT parameter <UNIQ_ID>:
-	
-	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java: 
+
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java:
 	we no longer store cmds or parameters as hashsets, but use arrays instead.
 	(parseNameForPrefix): removed
 	(addCmds): removed
-	(initData): heavily simplified. As cmds are simple parameters, we no longer need to 
-	parse through parameter names. Also drop parameters starting with __SBMT or __SYNTH from 
+	(initData): heavily simplified. As cmds are simple parameters, we no longer need to
+	parse through parameter names. Also drop parameters starting with __SBMT or __SYNTH from
 	adding to the data map (as the are already parsed and handled in the PfixServletRequest)
 
-	* src/de/schlund/pfixcore/workflow/Context.java: reworked the way "sendtoflow" works: 
+	* src/de/schlund/pfixcore/workflow/Context.java: reworked the way "sendtoflow" works:
 	it no longer assumes some arbitrary predefined pagename, but rather looks for the
 	request parameter __sendtoflow.
 
@@ -321,7 +330,7 @@
 	a post-checker, that allows to check an inputs min and max length.
 	it provides two parameters. namely min_length and max_length, that
 	have a their defaults set to 1 and 64, respectivly.
-	
+
 2004-05-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
@@ -332,23 +341,23 @@
 	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: remove
 	the variant of pageFlowToPageRequest, that was responsible for
 	setting the pageflow from a submitted __pageflow parameter. This
-	now done in the context's trySettingPageRequestAndFlow method. 
+	now done in the context's trySettingPageRequestAndFlow method.
 
 	* src/de/schlund/pfixcore/workflow/Context.java (isCurrentPageFlowRequestedByUser)
-	new method: check to see if the current pagerequest was set 
+	new method: check to see if the current pagerequest was set
 	explicitely set from a submitted __pageflow parameter.
 	(trySettingPageRequestAndFlow) now do the ckecking for the
 	__pageflow parameter directly here, no onger in PageFlowManager.
 
 2004-04-28  Joerg Haecker <haecker@schlund.de>
-        
+
 	* src/de/schlund/pfixcore/util/email/EmailSender.java: throw
         IllegalArgumentException if to[] contains NULL or "" values.
 
 2004-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/*.xsl: moved from XSLT 1.0 to 1.1. Still pending some
-	testing if other projects don't regress. This will help to bridge the time until 
+	testing if other projects don't regress. This will help to bridge the time until
 	we finally switch to 2.0
 
 	* src/de/schlund/pfixcore/workflow/Context.java
@@ -368,20 +377,20 @@
 	for the depend.xml.in (see docs for details). Main achievments:
 	metatags now handled similar to master: customizable template
 	stylesheets that will be included by a core/xsl/metatags.xsl.
-	parameters or (runtime) stylesheets for pages are now directly 
-	given in the standardpage tag (or a new "global" section) 
+	parameters or (runtime) stylesheets for pages are now directly
+	given in the standardpage tag (or a new "global" section)
 
 	* example/core/xsl/customizemaster.xsl:
 	* example/core/xsl/master.xsl.in: changed accordingly
 
-	* example/core/editor/conf/depend.xml.in: 
+	* example/core/editor/conf/depend.xml.in:
 	* example/sample1/conf/depend.xml.in: use the new format
 	(standardmaster, standardmetatags etc.)
 
 	* example/core/xsl/metatags.xsl.in: new file. aggregate the common
 	header of all metatags.xsl files into one core file.
 
-	* example/sample1/xsl/metatags.xsl: 
+	* example/sample1/xsl/metatags.xsl:
 	* example/core/editor/xsl/metatags.xsl: remove framework header,
 	be only a client xsl included by core/xsl/metatags.xsl
 
@@ -390,27 +399,27 @@
 	* example/core/build/create_propfiles.xsl
 	added exception-template to incorparate exception-configuration into the
 	servlet-property-files.
-	
+
 	* src/de/schlund/pfixcore/workflow/Context.java:
 	added getLastException()-method which simply calls getLastException()
 	on the current request.
-	
+
 	* src/de/schlund/pfixxml/PfixServletRequest.java:
 	added getLastException/setLastException which stores/retrieves the
 	provided parameter (a Throwable-instance) in/from the original request
-	
+
 	* src/de/schlund/pfixxml/ServletManager.java:
 	added initExceptionConfigs()-method for initialization of declarative
 	exception handling and the hook that calls the configured
 	ExceptionProcessors for appropriate exceptions (processException()-method).
 	If no exceptions are configured with the exception-tag, the behaviour
 	of this class is unchanged.
-	
+
 	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionConfig
 	Objects of this class encapsulate the configuration for one type
 	of exception done via the exception-tag; they are constructed during
 	servlet initialization in initExceptionConfigs().
-	
+
 	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor
 	the interface that all classes must implement, that should act as an
 	ExceptionProcessor (configured via the processor-attribute of the
