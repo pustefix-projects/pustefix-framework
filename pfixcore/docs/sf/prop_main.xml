@@ -1,3 +1,97 @@
-<div>
-  coming soon...
-  </div>
+<div xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <h1>Property files in <pustefix/></h1>
+
+  <h2>Overview</h2>
+
+  <p>The configuration of the Java part of the framework (which
+    encompasses all the servlets and other services used by the application) is done
+    with standard java property files. Those property files are not
+    edited directly, but instead property source files (with the extension
+    <code>.prop.in</code>) are used. These files use XML tags to
+    describe properties. Additionally a customization mechanism is
+    provided that helps to configure the configuration files according
+    to local needs.</p>
+
+  <p>The general structure of a <code>.prop.in</code> file is very easy:</p>
+  
+  <xmlcode>
+    <properties>
+      <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
+      <xmlcodeOFF>
+        <div class="comment">
+          The <code>cus</code> namespace is needed to use the customization tags explained below.
+        </div>
+      </xmlcodeOFF>
+      <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
+      <xmlcodeOFF>
+        <div class="comment">
+          The <code>prop</code> tag is the most primitive way to enter a single property.
+          The example above would simply result in the java property<br/><br/>
+          <code>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</code><br/>
+        </div>
+      </xmlcodeOFF>
+    </properties>
+  </xmlcode>
+
+  <p><pustefix/> allows to customize the creation of the property files in certain ways. When the build system
+  starts the transformation of the <code>.prop.in</code> files to <code>.prop</code> files, it supplies certain parameters
+  to the transforming stylesheet.</p>
+
+  <ul>
+    <li>
+      The value of the <b>MAKE_MODE</b> environment variable, or
+      "<b>test</b>" if the variable is not set (the default behaviour
+      can be changed by tweaking the makefiles). This can be used to
+      easily switch preferences depending on the "mode" that is active
+      when the application is made, e.g. "test" on the development
+      machines, and "prod" on the production servers. The value is supplied as the parameter <code>mode</code>.</li>
+    
+    <li>The <code>docroot</code>, i.e. the directory where your project's configuration and XML/XSLT files are located in.</li>
+
+    <li>The user id (<code>uid</code>) of the user that starts the build process.</li>
+
+    <li>The full qualified domainname (as the parameter <code>fqdn</code> of the machine you start the build process.</li>
+
+    <li>and the name  of the machine (<code>machine</code>) you start the build process on.</li> 
+  </ul>
+
+  <p>Certain customization tags work with these parameters:</p>
+
+  <xmlcode>
+    <properties>
+      <prop name="foo"><cus:docroot/>/bar/baz.xml</prop>
+      <xmlcodeOFF>
+        <div class="comment">
+          <p>Use this to enter absolute pathnames that do not depend on
+          the absolute location of the <pustefix/> environment in your filesystem.</p>
+          <p>In the same way you can use <code>cus:machine</code>, <code>cus:fqdn</code> and <code>cus:uid</code>
+            to print out the value of the supplied XSLT parameter.</p>
+        </div>
+      </xmlcodeOFF>
+      <cus:choose>
+        <cus:test mode="test">
+          ...
+        </cus:test>
+        <cus:test uid="pfixuser">
+          ...
+        </cus:test>
+        <cus:test machine="server1">
+          ...
+        </cus:test>
+        <cus:test mode="prod" uid="pfixuser">
+          ...
+        </cus:test>
+        <cus:test bool="or" mode="prod" machine="server1">
+          ...
+        </cus:test>
+        <cus:test>
+          ...
+        </cus:test>
+      </cus:choose>
+    </properties>
+  </xmlcode>
+  
+    <h2>Servlet propery file</h2>
+  
+</div>
