@@ -271,8 +271,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
         Action act = new TextAction("Ctrl-Z") {
                 public void actionPerformed(ActionEvent e) {
-                    // pane.replaceSelection("ZZZ");
-                    System.out.println("Here I Am");
+                    // pane.replaceSelection("ZZZ");                    
                     // this.closeFinalTag();
                     syntaxPane.closeFinalTag();
                     syntaxPane.hilightAll();

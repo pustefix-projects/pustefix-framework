@@ -59,9 +59,7 @@ public class PfixTextPane extends JTextPane {
     }
 
     public void realtimeHilight() {
-        hilight.realtimeHilight();
-        System.out.println("------------------ AFTER CLLe -----------------");
-      
+        hilight.realtimeHilight();     
     }
 
 
@@ -154,7 +152,6 @@ public class PfixTextPane extends JTextPane {
 
         }
         catch (Exception exc) {
-            System.out.println("Not possible here");
             // l_error.setText("Not possible here");
             System.out.println("ex " + exc.getMessage());
         }
