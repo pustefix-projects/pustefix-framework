@@ -40,10 +40,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import org.apache.log4j.Category;
 
- /*
- *
- */
-
 /**
  * ServletManager.java
  *
@@ -133,23 +129,27 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug(">>>>> Cookie: " + tmp.getName() + " -> " + tmp.getValue());
                 }
             }
-            Enumeration enum = req.getHeaderNames();
-            TreeSet     hset = new TreeSet();
-            for ( ; enum.hasMoreElements(); ) {
-                hset.add(enum.nextElement());
-            }
-            for (Iterator iter = hset.iterator(); iter.hasNext();) {
-                String name = (String) iter.next();
-                String value = req.getHeader(name);
-                CAT.warn("*** [HEADER " + name + " => " + value + "] ***");
-            }
+            // Enumeration enum = req.getHeaderNames();
+            // TreeSet     hset = new TreeSet();
+            // for ( ; enum.hasMoreElements(); ) {
+            //     hset.add(enum.nextElement());
+            // }
+            // for (Iterator iter = hset.iterator(); iter.hasNext();) {
+            //     String name = (String) iter.next();
+            //     String value = req.getHeader(name);
+            //     CAT.debug("*** [HEADER " + name + " => " + value + "] ***");
+            // }
         }
             
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
         AppLoader loader=AppLoader.getInstance();
-        if(loader.isEnabled()) {
-            while(loader.isLoading()) {
-                try {Thread.sleep(100);} catch(InterruptedException x) {}
+        if (loader.isEnabled()) {
+            while (loader.isLoading()) {
+                try {
+                    Thread.sleep(100);
+                } catch(InterruptedException x) {
+                    // 
+                }
             }
         }
         HttpSession session                  = null;
@@ -216,7 +216,7 @@ public abstract class ServletManager extends HttpServlet {
         
         PfixServletRequest preq = null;
         if (has_session) {
-            preq = (PfixServletRequest)session.getAttribute(STORED_REQUEST);
+            preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
             if (preq != null) {
                 CAT.debug("*** Found old PfixServletRequest object in session");
                 session.removeAttribute(STORED_REQUEST);
@@ -282,7 +282,8 @@ public abstract class ServletManager extends HttpServlet {
 
     private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session  = req.getSession(false);
-        String      parentid = (String)session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
+        String      visit_id = (String) session.getAttribute(VISIT_ID);
+        String      parentid = (String) session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
         if (parentid != null && !parentid.equals("")) {
             CAT.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
@@ -305,6 +306,8 @@ public abstract class ServletManager extends HttpServlet {
                         CAT.debug("   ... but the value is WRONG!");
                         throw new RuntimeException("Wrong Session-ID for running secure session from cookie.");
                     }
+                } else {
+                    CAT.debug("*** NO matching SecureSessionCookie (not even a wrong one...)");
                 }
             }
         }
@@ -319,7 +322,7 @@ public abstract class ServletManager extends HttpServlet {
         if (infostruct != null) {
             traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
         } else {
-            CAT.warn("Infostruct is NULL? trying to handle gracefully...");
+            CAT.warn("*** Infostruct == NULL ***");
         }
         
         CAT.debug("*** Invalidation old session (Id: " + old_id + ")");
@@ -327,9 +330,14 @@ public abstract class ServletManager extends HttpServlet {
         session = req.getSession(true);
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
         session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
-        // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
-        // Now we register the new session with saved traillog
-        SessionAdmin.getInstance().registerSession(session, traillog);
+        if (visit_id != null) {
+            // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
+            // Now we register the new session with saved traillog
+            SessionAdmin.getInstance().registerSession(session, traillog);
+        } else {
+            // Register a new session now.
+            registerSession(req, session);
+        }
         CAT.debug("*** Got new Session (Id: " + session.getId() + ")");
         CAT.debug("*** Copying data back to new session");
         SessionHelper.copySessionData(map, session);
@@ -363,7 +371,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         HttpSession session = req.getSession(true);
         if (!reuse_session) {
-            registerSession(req, res, session);
+            registerSession(req, session);
         }
         session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req, res));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
@@ -377,9 +385,9 @@ public abstract class ServletManager extends HttpServlet {
     private void forceRedirectBackToInsecureSSL(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         // When we come here, we KNOW that there's a secure SSL session already running, so this session here is
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
-        // Because of this we don't bother copying the VISIT_ID or register the session with the SessionAdmin.
         String      parentid      = req.getRequestedSessionId();
         HttpSession session       = req.getSession(true);
+        // registerSession(req, session);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
@@ -397,7 +405,7 @@ public abstract class ServletManager extends HttpServlet {
         // statistic clean :-)
         String      parentid      = req.getRequestedSessionId();
         HttpSession child         = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
-        String      curr_visit_id = (String)child.getAttribute(VISIT_ID);
+        String      curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session       = req.getSession(true);
         LinkedList  traillog      = SessionAdmin.getInstance().getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
@@ -412,7 +420,7 @@ public abstract class ServletManager extends HttpServlet {
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
-        registerSession(req, res, session);
+        registerSession(req, session);
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, res);
@@ -444,7 +452,7 @@ public abstract class ServletManager extends HttpServlet {
         return null;
     }
     
-    private void registerSession(HttpServletRequest req, HttpServletResponse res, HttpSession session) {
+    private void registerSession(HttpServletRequest req, HttpSession session) {
         if (session != null) {
             synchronized (TIMESTAMP_ID) {
                 SimpleDateFormat sdf       = new SimpleDateFormat("yyyyMMddHHmmss");
