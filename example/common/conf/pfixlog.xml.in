@@ -137,8 +137,8 @@
   </category>
   
   <category name="de.schlund.pfixxml.loader" additivity="false">
-  	<priority value="INFO"/>
-  	<appender-ref ref="LOGGER_APPLOADER"/>
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
   
   <!-- special categories for additional logfiles -->

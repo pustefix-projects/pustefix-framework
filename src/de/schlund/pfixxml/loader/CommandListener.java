@@ -56,44 +56,44 @@ public class CommandListener implements Runnable {
     public void run() {
         try {
             ServerSocket serverSocket=new ServerSocket(port);
-	        CAT.info("Listen on port '"+port+"' for new commands.");  
+            CAT.info("Listen on port '"+port+"' for new commands.");  
             Thread theThread=Thread.currentThread();
-	        while(thread==theThread) {
+            while(thread==theThread) {
                 try {
                     Socket clientSocket=serverSocket.accept();
-		            PrintWriter out=new PrintWriter(clientSocket.getOutputStream(),true);
-		            BufferedReader in=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		            String inLine=in.readLine();
+                    PrintWriter out=new PrintWriter(clientSocket.getOutputStream(),true);
+                    BufferedReader in=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    String inLine=in.readLine();
                     if(inLine!=null) {
                         try {
                             CAT.info("Process command '"+inLine+"' from '"+clientSocket.getInetAddress().getHostName()+"'.");
-			                String response=cmdProc.process(inLine);
+                            String response=cmdProc.process(inLine);
                             if(response==null) {
                                 out.println("OK"); 
                             } else {
                                 out.println("OK "+response);
                             }
-			            } catch(IllegalCommandException x) {
+                        } catch(IllegalCommandException x) {
                             CAT.error(x);
-			                out.println("ERROR ["+x.getMessage()+"]");
+                            out.println("ERROR ["+x.getMessage()+"]");
                         } 
                     }
                     out.println(".");
-		            out.close();
-		            in.close();
-		            clientSocket.close();
+                    out.close();
+                    in.close();
+                    clientSocket.close();
                 } catch (IOException e) {
                     CAT.error("Accept failed.",e);
-		        }
+                }
             }
             serverSocket.close();
         } catch (IOException e) {
             CAT.error("Can't listen on port "+port+".",e);
         }
     }
-
+    
     public void stop() {
-	   thread=null;
+        thread=null;
     }
-
+    
 }
