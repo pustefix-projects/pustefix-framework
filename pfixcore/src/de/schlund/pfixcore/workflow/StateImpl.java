@@ -28,8 +28,6 @@ import org.apache.log4j.*;
 
 /**
  * @author jtl
- *
- *
  */
 
 public abstract class StateImpl implements State {

@@ -21,11 +21,6 @@ package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.*;
 
-/**
- *
- *
- */
-
 public interface State {
     public final static String SENDDATA     = "__sendingdata";
     public final static String SENDAUTHDATA = "__sendingauthdata";

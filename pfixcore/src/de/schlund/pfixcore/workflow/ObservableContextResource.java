@@ -24,7 +24,6 @@ package de.schlund.pfixcore.workflow;
  * 
  * @author jtl
  *
- *
  */
 
 public interface ObservableContextResource extends ContextResource {

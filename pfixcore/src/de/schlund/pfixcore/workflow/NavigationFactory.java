@@ -29,7 +29,6 @@ import org.apache.log4j.*;
 /**
  * @author jtl
  *
- *
  */
 
 public class NavigationFactory {

@@ -26,11 +26,6 @@ import java.util.*;
 import org.apache.log4j.*;
 import org.w3c.dom.*;
 
-/**
- *
- *
- */
-
 public class Navigation {
     private Category CAT = Category.getInstance(Navigation.class.getName());
 

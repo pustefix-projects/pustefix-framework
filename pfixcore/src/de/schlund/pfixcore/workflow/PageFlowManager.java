@@ -27,7 +27,6 @@ import org.apache.log4j.*;
 /**
  * @author: jtl
  *
- *
  */
 
 public class PageFlowManager implements PropertyObject {
