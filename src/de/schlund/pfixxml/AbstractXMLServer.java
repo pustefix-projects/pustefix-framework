@@ -21,7 +21,8 @@ package de.schlund.pfixxml;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.testenv.*;
+import de.schlund.pfixxml.testenv.RecordManager;
+import de.schlund.pfixxml.testenv.RecordManagerFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -32,8 +33,10 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
@@ -52,20 +55,27 @@ import org.w3c.dom.*;
 public abstract class AbstractXMLServer extends ServletManager {
 
     //~ Instance/static variables ..................................................................
+    // how to write xml to the result stream
+    private static final int RENDER_NORMAL   = 0;
+    private static final int RENDER_EXTERNAL = 1;
+    private static final int RENDER_FONTIFY  = 2;
+    private static final int RENDER_XMLONLY  = 3;
 
     private static final String FONTIFY_SSHEET   = "core/xsl/xmlfontify.xsl";
     private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
-    private static final String SESS_RECORDMODE          = "__RECORDMODE__";
     private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
-    private static final String PARAM_XMLONLY            = "__xmlonly";
+    public  static final String PARAM_XMLONLY            = "__xmlonly";
+    public  static final String PARAM_XMLONLY_FONTIFY    = "1"; // -> RENDER_FONFIFY
+    public  static final String PARAM_XMLONLY_XMLONLY    = "2"; // -> RENDER_XMLONLY
+    
     public  static final String PARAM_ANCHOR             = "__anchor";
     private static final String PARAM_EDITMODE           = "__editmode";
     private static final String PARAM_LANG               = "__language";
     private static final String PARAM_FRAME              = "__frame";
     private static final String PARAM_NOSTORE            = "__nostore";
     private static final String PARAM_REUSE              = "__reuse"; // internally used
-    private static final String PARAM_RECORDMODE         = "__recordmode";
-    private static final String PARAM_VAL_RECORDMODE_OFF = "0";
+    public static final String PARAM_RECORDMODE         = "__recordmode";
+    public static final String PARAM_VAL_RECORDMODE_OFF = "0";
     private static final String XSLPARAM_LANG            = "lang";
     private static final String XSLPARAM_SESSID          = "__sessid";
     private static final String XSLPARAM_URI             = "__uri";
@@ -444,11 +454,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         // Set stylesheet parameters for editconsole
         if (recordmodeAllowed) {
             String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
+            
             if (name != null) {
                 params.put(PARAM_RECORDMODE, name);
             }
-            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
-            params.put("recordmode_allowed", new Boolean(allowed).toString());
+            params.put("recordmode_allowed", new Boolean(recordmodeAllowed).toString());
         }
 
         // Now we will store the time needed from the creation of the request up to now
@@ -471,7 +481,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             
             // start recording if allowed and enabled
             if (recordmodeAllowed) {
-                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
+                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);         
                 recorder.tryRecord(preq, res, spdoc, session);
             }
             if (isDebugEnabled()) {
@@ -605,53 +615,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        // Check if we are allowed and should just supply the xml doc
-        boolean plain_xml = false;
-        plain_xml = isXMLOnlyCurrentlyEnabled(preq);
-        if (! render_external && ! plain_xml) {
-            Templates stylevalue;
-            
-            stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
-            try {
-                Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
-            } catch (TransformerException e) {
-            	if (e.getException() instanceof SocketException) {
-                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                    if (isInfoEnabled()) {
-                        CAT.info("[Ignored TransformerException]", e);
-                    }
-                } else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                } else 
-                    throw e;
-            }
-        } else if (plain_xml) {
-            Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
-            try {
-                Xslt.transform(spdoc.getDocument(), stylevalue, null, new StreamResult(res.getOutputStream()));
-            } catch (TransformerException e) {
-                CAT.warn("*** Ignored exception when trying to render XML tree ***");
-            }
-        } else {
-            Document ext_doc = Xml.createDocument();
-            Element  root    = ext_doc.createElement("render_external");
-            ext_doc.appendChild(root);
-            Element  ssheet  = ext_doc.createElement("stylesheet");
-            root.appendChild(ssheet);
-            ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
-            for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
-                String  key   = (String) i.next();
-                String  val   = (String) paramhash.get(key);
-                Element param = ext_doc.createElement("param");
-                param.setAttribute("key", key);
-                param.setAttribute("value", val);
-                root.appendChild(param);
-            }
-            Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
-            root.appendChild(imported);
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc), 
-                                                                        new StreamResult(res.getOutputStream()));
-        }
+
+        render(spdoc, getRendering(preq), res, paramhash, stylesheet);
+        
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
@@ -672,44 +638,118 @@ public abstract class AbstractXMLServer extends ServletManager {
         PerfEventType et = PerfEventType.XMLSERVER_HANDLEDOCUMENT;
         et.setPage(spdoc.getPagename());
         preq.endLogEntry(et);
-        //preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
     }
 
+    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
+        switch (rendering) {
+            case RENDER_NORMAL:
+                renderNormal(spdoc, res, paramhash, stylesheet);
+                break;
+            case RENDER_FONTIFY:
+                renderFontify(spdoc, res);
+                break;
+        	case RENDER_EXTERNAL:
+        	    renderExternal(spdoc, res, paramhash, stylesheet);
+        	    break;
+        	case RENDER_XMLONLY:
+        	    renderXmlonly(spdoc, res);
+        	    break;
+        	default:
+        	    throw new IllegalArgumentException("unkown rendering: " + rendering);
+        }
+    }
 
-    /**
-     * Check if the current request will retrieve plain XML.
-     * @param the {@link PfixServletRequest} containing all
-     * submitted parameters.
-     * @return true if the <see>PARAM_XMLONLY</see> is 1 and
-     * plain XML is allowed or the client host is valid in
-     * restricted mode, false if plain XML is prohibited.
-     */
-    private boolean isXMLOnlyCurrentlyEnabled(PfixServletRequest pfreq) {
+    private void renderXmlonly(SPDocument spdoc, HttpServletResponse res) throws IOException {
+        Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
+    }
+
+    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TargetGenerationException, IOException, TransformerException {
+        Templates stylevalue;
+        stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
+        try {
+            Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
+        } catch (TransformerException e) {
+            if (e.getException() instanceof SocketException) {
+                CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                if (isInfoEnabled()) {
+                    CAT.info("[Ignored TransformerException]", e);
+                }
+            } else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+            } else 
+                throw e;
+        }
+    }
+
+    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
+        Document ext_doc = Xml.createDocument();
+        Element  root    = ext_doc.createElement("render_external");
+        ext_doc.appendChild(root);
+        Element  ssheet  = ext_doc.createElement("stylesheet");
+        root.appendChild(ssheet);
+        ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
+        for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
+            String  key   = (String) i.next();
+            String  val   = (String) paramhash.get(key);
+            Element param = ext_doc.createElement("param");
+            param.setAttribute("key", key);
+            param.setAttribute("value", val);
+            root.appendChild(param);
+        }
+        Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
+        root.appendChild(imported);
+        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc), 
+                                                                new StreamResult(res.getOutputStream()));
+    }
+
+    private void renderFontify(SPDocument spdoc, HttpServletResponse res) throws TargetGenerationException, IOException {
+        Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
+        try {
+            Xslt.transform(spdoc.getDocument(), stylevalue, null, new StreamResult(res.getOutputStream()));
+        } catch (TransformerException e) {
+            CAT.warn("*** Ignored exception when trying to render XML tree ***");
+        }
+        
+    }
+    private int getRendering(PfixServletRequest pfreq) {
+        String value;
+        int rendering;
+        RequestParam xmlonly;
+        
+        if (render_external) {
+            return RENDER_EXTERNAL;
+        }
+        xmlonly = pfreq.getRequestParam(PARAM_XMLONLY);
+        if (isXMLOnlyAllowed == XML_ONLY_PROHIBITED || xmlonly == null) {
+            return RENDER_NORMAL;
+        }
+        value = xmlonly.getValue();
+        if (value.equals(PARAM_XMLONLY_XMLONLY)) {
+            rendering = RENDER_XMLONLY;
+        } else if (value.equals(PARAM_XMLONLY_FONTIFY)) {
+            rendering = RENDER_FONTIFY;
+        } else {
+            throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
+        }
         if (isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
-            RequestParam doplainxml = pfreq.getRequestParam(PARAM_XMLONLY);
-            if (doplainxml != null && doplainxml.getValue().equals("1")) {
-                return true;
-            }
+            return rendering;
         } else if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
-            RequestParam doplainxml = pfreq.getRequestParam(PARAM_XMLONLY);
-            if (doplainxml != null && doplainxml.getValue().equals("1")) {
-                String client_ip = pfreq.getRemoteAddr();
-                for (int i = 0; i < xmlOnlyValidHosts.length; i++) {
-                    if (client_ip.equals(xmlOnlyValidHosts[i])) {
-                        if (isInfoEnabled()) {
-                            CAT.info("\nEnabling plain xml for client " + client_ip);
-                        }
-                        return true;
-                    } else {
-                        CAT.warn("\n The host " + client_ip
-                                 + " is NOT allowed to retrieve plain XML!");
+            String client_ip = pfreq.getRemoteAddr();
+            for (int i = 0; i < xmlOnlyValidHosts.length; i++) {
+                if (client_ip.equals(xmlOnlyValidHosts[i])) {
+                    if (isInfoEnabled()) {
+                        CAT.info("\nEnabling plain xml for client " + client_ip);
                     }
+                    return rendering;
+                } else {
+                    CAT.warn("\n The host " + client_ip
+                             + " is NOT allowed to retrieve plain XML!");
                 }
             }
-        } else if (isXMLOnlyAllowed == XML_ONLY_PROHIBITED) {
-            return false;
+            return RENDER_NORMAL;
+        } else {
+            throw new IllegalStateException("" + isXMLOnlyAllowed);
         }
-        return false;
     }
 
     private TreeMap constructParameters(SPDocument spdoc, Properties gen_params) {
