@@ -1,3 +1,8 @@
+2003-06-18  Volker Zaich <zaich@schlund.de>
+	
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java:
+	Some bug fixed
+	
 2003-06-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.3.6, started 0.3.7-pre
