@@ -117,6 +117,12 @@
         <xsl:value-of select="@prefix"/><xsl:text> </xsl:text>
       </xsl:for-each><xsl:text>&#xa;</xsl:text>
     </xsl:if>
+    <xsl:if test="./interface[@alwaysretrieve = 'true']">
+      <xsl:value-of select="$prefix"/><xsl:text>.alwaysretrieve=</xsl:text>
+      <xsl:for-each select="./interface[@alwaysretrieve = 'true']">
+        <xsl:value-of select="@prefix"/><xsl:text> </xsl:text>
+      </xsl:for-each><xsl:text>&#xa;</xsl:text>
+    </xsl:if>
     <xsl:for-each select="interface">
       <xsl:value-of select="$prefix"/>.interface.<xsl:value-of select="position()"/>.<xsl:value-of select="@prefix"/>
       <xsl:text>=</xsl:text><xsl:value-of select="@class"/><xsl:text>&#xa;</xsl:text>

@@ -60,10 +60,15 @@ import de.schlund.pfixxml.loader.*;
 public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     private   HashMap            wrappers           = new HashMap();
     private   HashMap            prefixmap          = new HashMap();
+
+    // depends on request
     private   ArrayList          activegroups       = new ArrayList();
     private   IWrapperGroup      currentgroup       = null;
     private   IWrapperGroup      selectedwrappers   = null;
+
     private   IWrapperGroup      contwrappers       = null;
+    private   IWrapperGroup      always_retrieve    = null;
+
     private   Context            context            = null;
     private   ResultDocument     resdoc             = null;
     private   PfixServletRequest preq               = null;
@@ -75,6 +80,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     public  static final String  PROP_CONTAINER     = "iwrappercontainer";
     private static final String  PROP_INTERFACE     = "interface";
     public  static final String  PROP_RESTRICED     = "restrictedcontinue";
+    public  static final String  PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
     
     private static final String  GROUP_STATUS_PARAM = "__groupdisplay";
     private static final String  GROUP_STATUS       = "__GROUPDISPLAY__STATUS__";
@@ -231,25 +237,26 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
             // always remain on the page/group, even when the submit handling was sucessfull.
             // We init a set of wrappers here from the property PROP_RESTRICED. If all of the
             // restricted wrappers of a submit are members of this group, continueSubmit() will return false.
-            Properties props      = context.getPropertiesForCurrentPageRequest();
-            String     restricted = props.getProperty(PROP_RESTRICED);
-            if (restricted != null && !restricted.equals("")) {
-                contwrappers = new IWrapperGroup();
-                StringTokenizer tok = new StringTokenizer(restricted);
-                for (; tok.hasMoreTokens(); ) {
-                    String prefix = tok.nextToken();
-                    String iface  = (String) prefixmap.get(prefix);
-                    if (iface == null) {
-                        CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-                    } else {
-                        if(CAT.isDebugEnabled()) {
-                            CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
-                        }
-                        IWrapper wrapper = (IWrapper) wrappers.get(iface);
-                        contwrappers.addIWrapper(wrapper);
-                    }
-                }
-            }
+
+            // Properties props      = context.getPropertiesForCurrentPageRequest();
+            // String     restricted = props.getProperty(PROP_RESTRICED);
+            // if (restricted != null && !restricted.equals("")) {
+            //     contwrappers = new IWrapperGroup();
+            //     StringTokenizer tok = new StringTokenizer(restricted);
+            //     for (; tok.hasMoreTokens(); ) {
+            //         String prefix = tok.nextToken();
+            //         String iface  = (String) prefixmap.get(prefix);
+            //         if (iface == null) {
+            //             CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
+            //         } else {
+            //             if(CAT.isDebugEnabled()) {
+            //                 CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
+            //             }
+            //             IWrapper wrapper = (IWrapper) wrappers.get(iface);
+            //             contwrappers.addIWrapper(wrapper);
+            //         }
+            //     }
+            // }
 
             if (contwrappers != null && contwrappers.containsAll(selectedwrappers)) {
                 if(CAT.isDebugEnabled()) {
@@ -406,12 +413,18 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     public void retrieveCurrentStatus() throws Exception {
         if (!is_splitted)
             splitIWrappers();
-        IWrapper[] allwrappers = selectedwrappers.getIWrappers();
-        for (int i = 0; i < allwrappers.length; i++) {
-            IWrapper wrapper = allwrappers[i];
-            IHandler handler = wrapper.gimmeIHandler();
-            if (handler.isActive(context)) {
-                handler.retrieveCurrentStatus(context, wrapper);
+        IWrapper[] selwrappers = selectedwrappers.getIWrappers();
+        retrieveCurrentStatusForWrappers(selwrappers);
+
+        if (always_retrieve != null && !always_retrieve.isEmpty()) {
+            for (int i = 0; i < always_retrieve.getIWrappers().length; i++) {
+                IWrapper wrapper = always_retrieve.getIWrappers()[i];
+                if (!selectedwrappers.contains(wrapper) && currentgroup.contains(wrapper)) {
+                    IHandler handler = wrapper.gimmeIHandler();
+                    if (handler.isActive(context)) {
+                        handler.retrieveCurrentStatus(context, wrapper);
+                    }
+                }
             }
         }
     }
@@ -420,6 +433,16 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     //
     //   PRIVATE
     // 
+
+    private void retrieveCurrentStatusForWrappers(IWrapper[] allwrappers) throws Exception {
+        for (int i = 0; i < allwrappers.length; i++) {
+            IWrapper wrapper = allwrappers[i];
+            IHandler handler = wrapper.gimmeIHandler();
+            if (handler.isActive(context)) {
+                handler.retrieveCurrentStatus(context, wrapper);
+            }
+        }
+    }
 
     private void splitIWrappers() throws Exception {
         reqdata = (RequestData) (new RequestDataImpl(context, preq));
@@ -510,10 +533,13 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         Properties props      = context.getPropertiesForCurrentPageRequest();
         HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
 
+        contwrappers    = new IWrapperGroup();
+        always_retrieve = new IWrapperGroup();
+        
         if (interfaces.isEmpty()) {
-            if(CAT.isDebugEnabled()) {
+            if (CAT.isDebugEnabled()) {
                 CAT.debug("*** Found no interfaces for this page (page=" +
-                    context.getCurrentPageRequest().getName() + ")!!!");
+                          context.getCurrentPageRequest().getName() + ")!!!");
             }
         } else {
             // Initialize all wrappers
@@ -537,9 +563,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 Class thewrapper = null;
                 IWrapper wrapper = null;
                 try {
-                    AppLoader appLoader=AppLoader.getInstance();
-                    if(appLoader.isEnabled()) {
-                        wrapper=(IWrapper)appLoader.loadClass(iface).newInstance();
+                    AppLoader appLoader = AppLoader.getInstance();
+                    if (appLoader.isEnabled()) {
+                        wrapper = (IWrapper) appLoader.loadClass(iface).newInstance();
                     } else {
                         thewrapper = Class.forName(iface);
                         wrapper    = (IWrapper) thewrapper.newInstance();
@@ -554,7 +580,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                     throw new XMLException("class [" + iface + "] does not implement the interface IWrapper :" + e.getMessage());
                 }
                 
-
                 if (order > -1) {
                     wrapper.defineOrder(order);
                 }
@@ -562,8 +587,44 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 wrappers.put(iface, wrapper);
                 wrapper.init(realprefix);
                 
-                AppLoader appLoader=AppLoader.getInstance();
-                if(appLoader.isEnabled()) appLoader.addReloader(this);
+                AppLoader appLoader = AppLoader.getInstance();
+                if (appLoader.isEnabled()) appLoader.addReloader(this);
+            }
+
+            String retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
+            if (retrieve != null && !retrieve.equals("")) {
+                StringTokenizer tok = new StringTokenizer(retrieve);
+                for (; tok.hasMoreTokens(); ) {
+                    String prefix = tok.nextToken();
+                    String iface  = (String) prefixmap.get(prefix);
+                    if (iface == null) {
+                        CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
+                    } else {
+                        if (CAT.isDebugEnabled()) {
+                            CAT.debug("*** Adding interface '" + iface + "' to the always_retrieve group...");
+                        }
+                        IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                        always_retrieve.addIWrapper(wrapper);
+                    }
+                }
+            }
+
+            String restricted = props.getProperty(PROP_RESTRICED);
+            if (restricted != null && !restricted.equals("")) {
+                StringTokenizer tok = new StringTokenizer(restricted);
+                for (; tok.hasMoreTokens(); ) {
+                    String prefix = tok.nextToken();
+                    String iface  = (String) prefixmap.get(prefix);
+                    if (iface == null) {
+                        CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
+                    } else {
+                        if(CAT.isDebugEnabled()) {
+                            CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
+                        }
+                        IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                        contwrappers.addIWrapper(wrapper);
+                    }
+                }
             }
         }
     }
