@@ -9,7 +9,6 @@ package de.schlund.pfixcore.util;
 import java.io.File;
 import java.util.Date;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.TransformerFactory;
 
 import org.apache.tools.ant.BuildException;

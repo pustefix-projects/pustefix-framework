@@ -37,6 +37,10 @@ public class DependencyTracker {
         File targetFile = Path.create(docroot, targetGen).resolve();
         TargetGenerator gen = TargetGeneratorFactory.getInstance().createGenerator(targetFile);
 		VirtualTarget target = (VirtualTarget) gen.getTarget(targetKey);
+		if (target == null) {
+	        CAT.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
+	        return "1";
+		}
 		if (path.length() == 0) {
 	        CAT.error("Error adding Dependency: empty path"); 
 	        return "1"; 
