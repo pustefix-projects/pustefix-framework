@@ -158,6 +158,10 @@ public final class Xml {
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {
+        if (file.isDirectory()) { 
+            // otherwise, I get obscure content-not-allowed-here exceptions 
+            throw new IOException("expected file, got directory: " + file);
+        }
         return parseMutable(new InputSource(toUri(file)));
     }
     

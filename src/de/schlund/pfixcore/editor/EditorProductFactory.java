@@ -182,8 +182,11 @@ public class EditorProductFactory implements FactoryInit {
         for (int k = 0; k < nliste.getLength(); k++) {
             Element el   = (Element) nliste.item(k);
             String  node = ((Text) XPath.select(el, "./text()").get(0)).getNodeValue();
-            LOG.debug("Documentation found in: " + node);
-            result.add(node);
+            node = node.trim();
+            if (node.length() > 0) {
+                LOG.debug("Documentation found in: " + node);
+                result.add(node);
+            }
         }
     }
     
