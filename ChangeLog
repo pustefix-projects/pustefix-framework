@@ -1,3 +1,12 @@
+2003-09-11  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/DependencyTracker.java(log):
+	Added debug output.
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get):
+	Log the part as default product, if it could not be found
+	or any errors occured.
+
 2003-09-04  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java

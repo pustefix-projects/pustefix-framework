@@ -98,7 +98,7 @@ public final class IncludeDocumentExtension {
             iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
         } catch(SAXException saxex) {
             if(dolog)
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
             
             
             target.setStoredException(saxex);
@@ -117,7 +117,7 @@ public final class IncludeDocumentExtension {
             ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
         } catch (Exception e) {
             if(dolog)
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
             throw e;
         }
         
@@ -125,7 +125,7 @@ public final class IncludeDocumentExtension {
             length = ns.getCount();
         } catch (XPathException e) {
             if(dolog)
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
             throw e;
         }
         if (length == 0) {
@@ -135,14 +135,14 @@ public final class IncludeDocumentExtension {
             //CAT.debug("*** Part '" + part + "' is 0 times defined.");
             CAT.debug(sb.toString());
             if (dolog) {
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
             return new EmptyNodeSet();
         } else if (length > 1) {
         	// too many parts. Error!
             if (dolog) {
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
             sb.delete(0, sb.length());
@@ -161,7 +161,7 @@ public final class IncludeDocumentExtension {
             ns     = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
         } catch (Exception e) {
             if(dolog)
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
             throw e;
         }
         
@@ -169,7 +169,7 @@ public final class IncludeDocumentExtension {
             length = ns.getCount();
         } catch (XPathException e) {
             if(dolog)
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
             throw e;
         }
         if (length == 0) {
@@ -190,7 +190,7 @@ public final class IncludeDocumentExtension {
                 len = ns.getCount();
             } catch (XPathException e) {
                 if(dolog)
-                    DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                    DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
                 throw e;
             }
             if (len == 1 | len == 0) {
@@ -218,6 +218,11 @@ public final class IncludeDocumentExtension {
                 }
             } else {
             	// too many default products found. Error!
+                if (dolog) {
+                    DependencyTracker.log("text", path, part, DEFAULT, parent_path, 
+                                          parent_part, parent_product, targetgen, 
+                                          targetkey);
+                }
                 sb.delete(0, sb.length());
                 sb.append("*** Part '").append(part).
                 	append("' has multiple default product branches! Must be 1.");
@@ -240,7 +245,7 @@ public final class IncludeDocumentExtension {
         } else {
         	// too many specific products found. Error!
             if (dolog) {
-                DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
+                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
             sb.delete(0, sb.length());
