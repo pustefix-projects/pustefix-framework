@@ -54,13 +54,20 @@
     <code>metatags.xsl</code> mentioned above (and <a href="#caution">below</a>), but not shown in the diagram.
   </p>
 
+  <p>
+    The <code>FooBase.xml</code> file defines the <i>structure</i> of
+    the "BazPage" page (e.g. frames, the outer table structure if you do the
+    layout with tables or divs and the like). You define one of these
+    <b>structural xml</b> files for every layout you want to use in your project (the number of
+    structural xml files is typically quite small, as many pages share the same layout).
+  </p>
+  
   <p><span style="background-color: #99ccff; border: black solid 1px;">blue discs</span> represent <b>include parts</b>.
     These are little snippets of XML code that make up the actual
     content of the page. As can be seen from the diagram, they can
     include themselves recursively. Include parts have a <i>name</i>
     and are organized into so called <b>include documents</b>. These
-    can hold an arbitray number of parts. Learn more about include parts and the way they are used on
-    <a href="includeparts.html">this page</a>.
+    can hold an arbitray number of parts. Learn more about include parts and the way they are used below.
   </p>
   
   <h1>Targets</h1>
@@ -139,5 +146,49 @@
   <p>
     In almost all cases, you can just forget about this added
     complexity when reading the documentation. We will explicitely make it clear where you can't.</p>
+
+  <h1>Include parts</h1>
+  Include parts hold the content that is displayed on your pages.
+  The parts are organized into include files.
+
+  <xmlcode>
+    
+    <include_parts>
+      <xmlcodeNS ns="ixsl">http://www.w3.org/1999/XSL/Transform</xmlcodeNS>
+      <xmlcodeNS ns="pfx">http://www.schlund.de/pustefix/core</xmlcodeNS>
+      <part name="Foo">
+        <product name="default">
+          <lang  name="default">
+            <xmlcodeOFF>
+              <div class="comment">The <b>default</b> content of part <b>Foo</b> goes here...</div>
+            </xmlcodeOFF>
+          </lang>
+          <lang name="fr">
+            <xmlcodeOFF>
+              <div class="comment">Default content in <b>french</b> goes here...</div>
+            </xmlcodeOFF>
+          </lang>
+        </product>
+        <product name="">
+          <lang name="default">
+            <xmlcodeOFF>
+              <div class="comment">The default content for product <b>prod_b</b> goes here...</div>
+            </xmlcodeOFF>
+          </lang>
+          <lang name="fr">
+            <xmlcodeOFF>
+              <div class="comment">Content for <b>prod_b</b> in <b>french</b> goes here...</div>
+            </xmlcodeOFF>
+          </lang>
+        </product>
+      </part>
+      <xmlcodeOFF/>
+      <part name="partBaz">
+        <xmlcodeOFF>
+          <div class="comment">Other parts...</div>
+        </xmlcodeOFF>
+      </part>
+    </include_parts>
+  </xmlcode>
   
 </div>
