@@ -1,0 +1,68 @@
+body { 
+  font-family: verdana, arial, helvetica; font-size: 10px; margin: 0px; padding: 0px; background-color: black;}
+td { 
+  font-family: verdana, arial, helvetica; font-size: 10px; }
+
+a:hover { background: #ee9999; color: black; }
+
+#navigation   { 
+  padding: 0px; background-color: #aaccff; }
+#navigation a { 
+  text-decoration: none; color: #aa0000; }
+
+.menuentry { 
+  padding: 1px 15px 1px 5px;
+  border-bottom: solid 1px #aaccff; border-top: solid 1px #aaccff; }
+
+.menuentry:hover { 
+  background-color: #88aa88; color: #ffffff;
+  border-bottom: solid 1px #88aa88; border-top: solid 1px #88aa88; }
+
+.submenuentry {
+  background-color: #99bbee; padding: 1px 2px 1px 20px; padding-left: 20px;
+  border-bottom: solid 1px #99bbee; border-top: solid 1px #99bbee; }
+
+.submenuentry:hover { 
+  background-color: #88aa88; color: #ffffff;
+  border-bottom: solid 1px #88aa88; border-top: solid 1px #88aa88; }
+
+.selected, .selected:hover { 
+  background-color: #88aa88; color: #ffffff;
+  border-bottom: solid 1px black; border-top: solid 1px black; }
+
+#top { 
+  text-align: right; padding-top: 10px; padding-bottom: 5px; padding-right: 5px;
+  color: white; background-color: black; font-size: 18px; }
+
+.mainbody { 
+  background-color: #ffeedd; padding-left: 10px;}
+
+.navibody { 
+  width: 126px; background-color:#aaccff; border-right: solid black 1px; }
+
+h1 { 
+  background-color: #6688bb; color: white; font-family: arial, helvetica;
+  font-weight: bold; font-size: 16px; margin-top: 10px; }
+
+h1:before { 
+  content: url("img/triangle.gif") }
+
+h2 { 
+  color: #6688bb; font-family: arial, helvetica; font-weight: bold; font-size: 14px; }
+
+.mainbody > div > p { 
+  padding-left: 10px; padding-right: 10px; }
+
+.stdtable       { 
+  border-bottom: black solid 1px; border-spacing: 0px;
+  margin-right: 40px; margin-left: 40px; background-color: #eedddd; }
+
+.stdtable tr    { 
+  vertical-align: top; }
+
+.stdtable tr th { 
+  padding: 4px; border-top: 1px black solid; font-size: 11px; text-align: left;
+  background-color: #ddcccc; }
+
+.stdtable tr td { 
+  padding: 4px; border-top: 1px black dotted; }

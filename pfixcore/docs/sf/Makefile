@@ -20,6 +20,7 @@ install: transform
 	@echo "*** Installing pages on Sourceforge site ***"
 	-$(shell ssh $(USER)@$(SF) mkdir $(SFWEB)/img/)
 	$(shell scp gen/*.html $(USER)@$(SF):$(SFWEB)/)
+	$(shell scp gen/*.css $(USER)@$(SF):$(SFWEB)/)
 	$(shell scp gen/img/*.gif $(USER)@$(SF):$(SFWEB)/img/)
 	$(shell scp gen/img/*.jpg $(USER)@$(SF):$(SFWEB)/img/)
 	@echo "*** Fixing permissions ***"
