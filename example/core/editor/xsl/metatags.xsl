@@ -1364,7 +1364,7 @@
     <table cellpadding="2" cellspacing="0" style="background-color: #aaaacc; border: 1px solid black">
       <tr>
         <td align="center" bgcolor="#cc0000" colspan="2">
-          <span style="color:#ffffff; font-weight: bold">XML/XSLT Error!</span>
+          <span style="color:#ffffff; font-weight: bold"><xsl:apply-templates select="./title/node()"/></span>
         </td>
       </tr>
       <ixsl:for-each select="{$path}/error">
