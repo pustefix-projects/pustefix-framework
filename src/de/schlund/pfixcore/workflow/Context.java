@@ -71,7 +71,8 @@ public class Context implements AppContext {
     private Navigation             navigation    = null;
     private PageRequest            authpage      = null;
     private HashSet                visited_pages = null;
-
+    private String                 variant       = null;
+    
     // values read from properties
     private boolean     autoinvalidate_navi = true;
     private boolean     in_adminmode        = false;
@@ -199,6 +200,11 @@ public class Context implements AppContext {
             spdoc.setProperty("pageflow", currentpageflow.getName());
         }
 
+        if (spdoc != null && variant != null) {
+            spdoc.setVariant(variant);
+            spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", variant);
+        }
+        
         if (spdoc.getResponseError() != 0) {
             currentpagerequest = prevpage;
             currentpageflow    = prevflow;
@@ -337,6 +343,14 @@ public class Context implements AppContext {
         for (Iterator i = cookielist.iterator(); i.hasNext();) {
             spdoc.addCookie((Cookie) i.next());
         }
+    }
+
+    public String getVariant() {
+        return variant;
+    }
+
+    public void setVariant(String variant) {
+        this.variant = variant;
     }
     
     /**

@@ -49,7 +49,8 @@ public class PagesHandler extends EditorStdHandler {
         EditorProduct          eprod    = esess.getProduct();
         TargetGenerator        tgen     = eprod.getTargetGenerator();
         Pages                  pages    = (Pages) wrapper;
-        PageInfo               newpage  = PageInfoFactory.getInstance().getPage(tgen, pages.getPage());  
+        // FIXME FIXME! Handle variants!
+        PageInfo               newpage  = PageInfoFactory.getInstance().getPage(tgen, pages.getPage(), null);  
         PageTargetTree         ptree    = tgen.getPageTargetTree();
         TreeSet                allpages = ptree.getPageInfos();
 

@@ -28,16 +28,17 @@ import java.util.TreeSet;
  */
 
 public interface Target {
-    TargetType           getType();
-    String               getTargetKey();
-    TargetGenerator      getTargetGenerator();
-    Target               getXMLSource();
-    Target               getXSLSource(); 
-    TreeMap              getParams();
-    TreeSet              getPageInfos();
-    long                 getModTime();
-    String               toString();
-    boolean              needsUpdate() throws Exception;
+    TargetType      getType();
+    String          getTargetKey();
+    TargetGenerator getTargetGenerator();
+    Target          getXMLSource();
+    Target          getXSLSource();
+    String[]        getThemes();
+    TreeMap         getParams();
+    TreeSet         getPageInfos();
+    long            getModTime();
+    String          toString();
+    boolean         needsUpdate() throws Exception;
     /**
      * Get the value of the target. Depending on the 
      * circumstances this will trigger a recursive 

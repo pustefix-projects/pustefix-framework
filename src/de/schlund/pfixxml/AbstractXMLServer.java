@@ -679,11 +679,27 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
-        String pagename = spdoc.getPagename();
+        String pagename             = spdoc.getPagename();
         if (pagename != null) {
+            String[]       variants = spdoc.getVariantFallbackArray();
             PageTargetTree pagetree = generator.getPageTargetTree();
-            PageInfo       pinfo    = PageInfoFactory.getInstance().getPage(generator, pagename);
-            Target         target   = pagetree.getTargetForPageInfo(pinfo);
+            PageInfo       pinfo    = null;
+            Target         target   = null;
+            String         variant  = null;
+            if (variants != null) {
+                for (int i = 0; i < variants.length; i++) {
+                    variant = variants[i];
+                    CAT.info("   ** Trying variant '" + variant + "' **");
+                    pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant);
+                    target  = pagetree.getTargetForPageInfo(pinfo);
+                    if (target != null) break;
+                }
+            }
+            if (target == null) {
+                CAT.info("   ** Trying root variant **");
+                pinfo = PageInfoFactory.getInstance().getPage(generator, pagename, null);
+                target = pagetree.getTargetForPageInfo(pinfo);
+            }
             if (target == null) {
                 CAT.warn("\n********************** NO TARGET ******************************");
                 return null;

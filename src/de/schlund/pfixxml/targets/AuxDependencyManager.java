@@ -173,9 +173,9 @@ public class AuxDependencyManager implements DependencyParent {
         }
     }
 
-    public long getMaxTimestamp() {
+    public long getMaxTimestamp(boolean willrebuild) {
         synchronized (auxset) {
-            return lookForTimestamp(auxset);
+            return lookForTimestamp(auxset, willrebuild);
         }
     }
 
@@ -183,14 +183,14 @@ public class AuxDependencyManager implements DependencyParent {
     // Private Stuff
     //
 
-    private long lookForTimestamp(Set in) {
+    private long lookForTimestamp(Set in, boolean willrebuild) {
         long max = 0;
         for (Iterator i = in.iterator(); i.hasNext(); ) {
             AuxDependency aux = (AuxDependency) i.next();
-            max = Math.max(max, aux.getModTime());
+            max = Math.max(max, aux.getModTime(willrebuild));
             Set children = aux.getChildren();
             if (children != null) {
-                max = Math.max(max, lookForTimestamp(children));
+                max = Math.max(max, lookForTimestamp(children, willrebuild));
             }
         }
         return max;

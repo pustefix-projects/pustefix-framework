@@ -18,9 +18,6 @@
  */
 package de.schlund.pfixxml.targets;
 
-
-
-
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.util.*;
 import java.io.*;
@@ -80,6 +77,10 @@ public abstract class VirtualTarget extends TargetImpl {
         xslsource = source;
     }
 
+    public void setThemes(String[] themes) {
+        this.themes = themes;
+    }
+
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
      */
@@ -110,21 +111,23 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.Target#needsUpdate()
      */
     public boolean needsUpdate() throws Exception {
-        long mymodtime = getModTime();
-        long xmlmod;
-        long xslmod;
+        long    mymodtime = getModTime();
+        long    xmlmod;
+        long    xslmod;
         boolean xmlup;
         boolean xslup;
-        Target tmp;
-        tmp = getXMLSource();
-        xmlup = tmp.needsUpdate();
+        Target  tmp;
+        
+        tmp    = getXMLSource();
+        xmlup  = tmp.needsUpdate();
         xmlmod = tmp.getModTime();
-        tmp = getXSLSource();
-        xslup = tmp.needsUpdate();
+        tmp    = getXSLSource();
+        xslup  = tmp.needsUpdate();
         xslmod = tmp.getModTime();
+        
         if (xslup || xmlup)
             return true;
-        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp(false) > mymodtime)
             return true;
         return false;
     }
@@ -182,7 +185,7 @@ public abstract class VirtualTarget extends TargetImpl {
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
         storedException = null;
         // check all the auxilliary sources from auxsource
-        tmpmodtime = getAuxDependencyManager().getMaxTimestamp();
+        tmpmodtime = getAuxDependencyManager().getMaxTimestamp(true);
         // if (tmpmodtime > currmodtime) {
         //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
         // }

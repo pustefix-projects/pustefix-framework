@@ -62,6 +62,8 @@
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
 
+  <xsl:param name="variant"/>
+    
   <xsl:include href="core/xsl/include.xsl"/>
   
   <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
@@ -99,7 +101,7 @@
           <xsl:attribute name="doctype-public"><xsl:value-of select="$outputdoctype-public"/></xsl:attribute>
         </xsl:if>
       </ixsl:output>
-      
+
       <!-- these parameters will always be passed in by the servlet -->
       <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>
@@ -138,7 +140,10 @@
       
       <!-- Needed for includes to work -->
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
-      <ixsl:param name="product"><xsl:value-of select="$product"/></ixsl:param>
+
+      <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
+      <ixsl:variable name="variant"><xsl:value-of select="$variant"/></ixsl:variable>
+
       <ixsl:include href="core/xsl/include.xsl"/>
 
       <!-- the copy rule -->

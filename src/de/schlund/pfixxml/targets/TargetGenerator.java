@@ -54,6 +54,7 @@ public class TargetGenerator {
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
     private String name;
+    private String[] global_themes;
     
     private String language;
     
@@ -78,6 +79,10 @@ public class TargetGenerator {
     
     public String getName() {
         return name;
+    }
+
+    public String[] getGlobalThemes() {
+        return global_themes;
     }
 
     public String getLanguage() {
@@ -167,6 +172,22 @@ public class TargetGenerator {
 
         name = getAttribute(root, "project");
         language = getAttribute(root, "lang");
+
+        String gl_theme_str = null;
+        if (root.hasAttribute("themes")) {
+            gl_theme_str = getAttribute(root, "themes");
+        }
+        if (gl_theme_str == null || gl_theme_str.equals("")) {
+            gl_theme_str = name + " default"; 
+        }
+        
+        StringTokenizer gl_tok  = new StringTokenizer(gl_theme_str);
+        ArrayList       gl_list = new ArrayList();
+        while (gl_tok.hasMoreElements()) {
+            String currtok = gl_tok.nextToken();
+            gl_list.add(currtok);
+        }
+        global_themes = (String[]) gl_list.toArray(new String[]{});
         
         File disccache = getDisccachedir().resolve();
         if (!disccache.exists()) {
@@ -184,7 +205,8 @@ public class TargetGenerator {
             Element      node   = (Element) targetnodes.item(i);
             String       nameattr = node.getAttribute("name");
             String       type   = node.getAttribute("type");
-            TargetStruct struct = new TargetStruct(nameattr, type);
+            String       themes = node.getAttribute("themes");
+            TargetStruct struct = new TargetStruct(nameattr, type, themes);
             HashMap      params = new HashMap();
             HashSet      depaux = new HashSet();
             Element      xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
@@ -283,7 +305,18 @@ public class TargetGenerator {
             VirtualTarget virtual = (VirtualTarget) createTarget(reqtype, key);
             virtual.setXMLSource(xmlsource);
             virtual.setXSLSource(xslsource);
+            String themes = struct.getThemes();
+            if (themes != null && !themes.equals("")) {
+                StringTokenizer tok  = new StringTokenizer(themes);
+                ArrayList       list = new ArrayList();
+                while (tok.hasMoreElements()) {
+                    String currtok = tok.nextToken();
+                    list.add(currtok);
+                }
+                virtual.setThemes((String[]) list.toArray(new String[]{}));
+            }
 
+            
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
             for (Iterator i = auxdeps.iterator(); i.hasNext();) {
@@ -291,8 +324,10 @@ public class TargetGenerator {
                 manager.addDependency(DependencyType.FILE, path, null, null, null, null, null);
             }
             
-            HashMap params    = struct.getParams();
-            String  pageparam = null;
+            HashMap params       = struct.getParams();
+            String  pageparam    = null;
+            String  variantparam = null;
+            
             // we want to remove already defined params (needed when we do a reload)
             virtual.resetParams();
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
@@ -302,6 +337,9 @@ public class TargetGenerator {
                 virtual.addParam(pname, value);
                 if (pname.equals("page")) {
                     pageparam = value;
+                }
+                if (pname.equals("variant")) {
+                    variantparam = value;
                 }
             }
             virtual.addParam(XSLPARAM_TG, tgParam);
@@ -314,7 +352,7 @@ public class TargetGenerator {
                              + unnamedcount + "' instead");
                     pageparam = "Unamed_" + unnamedcount++;
                 }
-                PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam);
+                PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam, variantparam);
                 pagetree.addEntry(info, virtual);
             }
             return virtual;
@@ -358,12 +396,18 @@ public class TargetGenerator {
         String name;
         String xsldep;
         String xmldep;
-
-        public TargetStruct(String name, String type) {
-            this.name = name;
-            this.type = type;
+        String themes;
+        
+        public TargetStruct(String name, String type, String themes) {
+            this.name   = name;
+            this.type   = type;
+            this.themes = themes;
         }
 
+        public String getThemes() {
+            return themes;
+        }
+        
         public String getXMLDep() {
             return xmldep;
         }

@@ -32,15 +32,21 @@ package de.schlund.pfixxml.targets;
 
 public class PageInfo implements Comparable {
     private String          name;
+    private String          variant;
     private TargetGenerator generator;
     
-    protected PageInfo(TargetGenerator gen, String pagename) {
+    protected PageInfo(TargetGenerator gen, String pagename, String pagevariant) {
         name      = pagename;
+        variant   = pagevariant;
         generator = gen;
     }
         
     public String getName() {
         return name;
+    }
+
+    public String getVariant() {
+        return variant;
     }
 
     public TargetGenerator getTargetGenerator() {
@@ -52,12 +58,24 @@ public class PageInfo implements Comparable {
         if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
             return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {
-            return getName().compareTo(in.getName());
+            if (!getName().equals(in.getName())) {
+                return getName().compareTo(in.getName());
+            } else {
+                if (getVariant() == null && in.getVariant() == null) {
+                    return 0;
+                } else if (getVariant() == null && in.getVariant() != null) {
+                    return 1;
+                } else if (getVariant() != null && in.getVariant() == null) {
+                    return -1;
+                } else {
+                    return getVariant().compareTo(in.getVariant());
+                }
+            }
         }
     }
 
     public String toString() {
-        return "[PAGE: " + name + " " + generator.getName() + "]";
+        return "[PAGE: " + name + " " + generator.getName() + "/" + getVariant() + "]";
     }
     
 }// PageInfo

@@ -55,6 +55,7 @@
   <pagerequest name="test"/>
   
   <pagerequest name="home">
+    <state class="de.schlund.pfixcore.example.RandomVariantState"/>
     <input>
       <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
     </input>
