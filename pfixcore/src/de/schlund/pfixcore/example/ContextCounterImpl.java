@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
  *
  */
 
-public class ContextCounterImpl implements ContextResource, ContextCounter{
+public class ContextCounterImpl implements ContextResource, ContextCounter {
 
     private Boolean           showcounter = Boolean.FALSE;
     private int               counter     = 0;
