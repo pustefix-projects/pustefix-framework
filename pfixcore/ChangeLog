@@ -1,3 +1,8 @@
+2004-01-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java: small cosmetic changes
+
 2004-01-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 

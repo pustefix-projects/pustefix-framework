@@ -15,7 +15,14 @@
     <param name="File"><cus:docroot/>servletconf/log/pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+      <cus:choose>
+        <cus:test uid="jtl">
+          <param name="ConversionPattern" value="%-5p %c [%M():%L] %m\n"/>
+        </cus:test>
+        <cus:test>
+          <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+        </cus:test>
+      </cus:choose>
     </layout>
   </appender>
   
@@ -122,12 +129,34 @@
   </category>
 
   <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
+    <cus:choose>
+      <cus:test uid="jtl">
+        <priority value="WARN"/>
+      </cus:test>
+      <cus:test>
+        <priority value="DEBUG"/>
+      </cus:test>
+    </cus:choose>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
+  <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
     <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
+  <category name="de.schlund.pfixcore.workflow.AuthContext" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
+  <category name="de.schlund.pfixxml.testenv.RecordManager" additivity="false">
     <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+        
+  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -212,6 +241,9 @@
 
   <root>
     <cus:choose>
+      <cus:test uid="jtl">
+        <priority value="DEBUG"/>
+      </cus:test>
       <cus:test mode="prod">
         <priority value="WARN"/>
       </cus:test>
