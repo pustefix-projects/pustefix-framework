@@ -1,7 +1,8 @@
 
 PROJECT = pfixeditorapplet
 PROJECT_ROOT= $(shell pwd)
-PFIXCORE_APPLETPATH=$(PROJECT_ROOT)/../example/core/script
+#PFIXCORE_APPLETPATH=$(PROJECT_ROOT)/../example/core/script
+PFIXCORE_APPLETPATH=~/try
 
 SRCROOT    = src
 BUILDDIR   = build
@@ -23,6 +24,7 @@ EXTERNAL_JAVADOC =
 PACKAGES = \
 	de.schlund.pfixeditor.misc \
 	de.schlund.pfixeditor.xml \
+	de.schlund.pfixeditor.test \
 	org.gjt.sp.jedit.textarea \
 	org.gjt.sp.jedit \
 	org.gjt.sp.jedit.gui \
@@ -34,7 +36,20 @@ PACKAGES = \
 	gnu.regexp \
 	de.schlund.pfixeditor
 
-SUBDIRS = $(subst .,/,$(PACKAGES))
+VERSUCH =  de.schlund.pfixeditor.xml \
+           com.microstar.xml \
+	   de.schlund.pfixeditor.netscape \
+           de.schlund.pfixeditor.test
+
+#VERSUCH = de.schlund.pfixeditor..neu
+          
+
+
+
+#SUBDIRS = $(subst .,/,$(PACKAGES))
+SUBDIRS = $(subst .,/,$(VERSUCH))
+
+#SUBDIRS_NEU = $(subst .,/,$(VERSUCH))
 
 ################################################################
 # normally, there's no need to change anything below this line #
@@ -50,7 +65,7 @@ export JAR        = ${JDK_HOME}/bin/jar
 #export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar
+BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:/home/zaich/eclipse-m5/prj/sourceforge/pfixcore/editorapplet/src/java40.jar
 
 JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
 SRCDIRS        =$(patsubst %, $(SRCROOT)/%,$(SUBDIRS))
@@ -75,8 +90,14 @@ compile:
 	@(cd $(PROJECT_ROOT)/$(SRCROOT))
 	@echo
 	@echo "*** Building all *.java-files..."
-	@${JAVAC} -classpath ${BUILDPATH} \
+	@echo ${JAVAC}
+	@echo ${BUILDPATH}
+	@ ${JAVAC} -classpath ${BUILDPATH} \
                   -d $(PROJECT_ROOT)/${BUILDDIR} -sourcepath $(PROJECT_ROOT)/${SRCROOT} $(ALLJAVA)
+
+
+                  
+
 	@echo "*** ...Done!"
 
 jar:
