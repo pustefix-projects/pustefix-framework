@@ -40,242 +40,242 @@
     <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
     
     <target name="properties">
-    <!-- Ant properties are immutable, the order of definition is:
-    - ant commandline via the '-Dparam=value' option
-    - file build.properties in java.util.Properties format
-    - environment variables, e.g. export makemode=test
-    Note: MAKE_MODE environment variable is supported for backwards
-    compatibility to make based build process
-    -->
-    <condition property="makemode"     value="test">
-        <equals arg1="${env.MAKE_MODE}" arg2="test"/>
-    </condition>
-    <property  name="makemode"         value="prod"/>
-    
-    <condition property="prohibitedit" value="no">
-        <equals arg1="${makemode}" arg2="test"/>
-    </condition>
-    <property  name="prohibitedit"     value="yes"/>
+        <!-- Ant properties are immutable, the order of definition is:
+        - ant commandline via the '-Dparam=value' option
+        - file build.properties in java.util.Properties format
+        - environment variables, e.g. export makemode=test
+        Note: MAKE_MODE environment variable is supported for backwards
+        compatibility to make based build process
+        -->
+        <condition property="makemode"     value="test">
+            <equals arg1="${env.MAKE_MODE}" arg2="test"/>
+        </condition>
+        <property  name="makemode"         value="prod"/>
+        
+        <condition property="prohibitedit" value="no">
+            <equals arg1="${makemode}" arg2="test"/>
+        </condition>
+        <property  name="prohibitedit"     value="yes"/>
 
-    <condition property="debug"        value="true">
-        <equals arg1="${makemode}" arg2="test"/>
-    </condition>
-    <property  name="debug"            value="false"/>
-    <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
-    <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
-    <!-- Create time stamp in ISO 8601 alike format.
-    17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
-    <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
+        <condition property="debug"        value="true">
+            <equals arg1="${makemode}" arg2="test"/>
+        </condition>
+        <property  name="debug"            value="false"/>
+        <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
+        <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
+        <!-- Create time stamp in ISO 8601 alike format.
+        17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
+        <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
     </target>
     
     <path id="cp.classpath">
-    <fileset dir="${dir.lib}" includes="*.jar"/>
-    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
-    <pathelement location="${dir.build}"/>
-    <pathelement location="${dir.res}"/>
+        <fileset dir="${dir.lib}" includes="*.jar"/>
+        <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
+        <pathelement location="${dir.build}"/>
+        <pathelement location="${dir.res}"/>
     </path>
     
     <target name="init" depends="properties">
-    <mkdir dir="${dir.build}"/>
-    <mkdir dir="${dir.dist}"/>
-    <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
-    <!-- pathconvert dumps classpath on ant -verbose -->
-    <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.dist}"/>
+        <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
+        <!-- pathconvert dumps classpath on ant -verbose -->
+        <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
     </target>
     
     <target name="noop" description="just prints the name of the project">
-    <echo message="${project.name}"/>
+        <echo message="${project.name}"/>
     </target>
     
     <target name="echoproperties">
-    <echoproperties/>
+        <echoproperties/>
     </target>
     
     <target name="debug" depends="all" description="builds all and runs tomcat with debugging options">
-    <!-- added suspend=n to default debugging option, as without this option
-    Ctrl-C would not stop tomcat without leaving java processes hanging around
-    suspend=y target VM is to be suspended immediately before the main class is loaded
-    suspend=n do not suspend target VM
-    see http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html -->
-    <antcall target="_run" inheritall="true">
-        <param name="run.debugopts" value="${debugopts}"/>
-    </antcall>
+        <!-- added suspend=n to default debugging option, as without this option
+        Ctrl-C would not stop tomcat without leaving java processes hanging around
+        suspend=y target VM is to be suspended immediately before the main class is loaded
+        suspend=n do not suspend target VM
+        see http://java.sun.com/j2se/1.4.2/docs/guide/jpda/conninv.html -->
+        <antcall target="_run" inheritall="true">
+            <param name="run.debugopts" value="${debugopts}"/>
+        </antcall>
     </target>
     
     <target name="run" depends="all" description="builds all and runs tomcat">
-    <antcall target="_run" inheritall="true">
-        <param name="run.debugopts" value=""/>
-    </antcall>
+        <antcall target="_run" inheritall="true">
+            <param name="run.debugopts" value=""/>
+        </antcall>
     </target>
     
     <target name="_run">
-    <property name="run.debugopts" value=""/>
-    <path id="run.path.ld_library_path">
-        <pathelement path="${env.LD_LIBRARY_PATH}"/>
-        <pathelement location="${dir.jni}/build"/>
-    </path>
-    <property name="run.ld_library_path" refid="run.path.ld_library_path"/>
-    <exec dir="${dir.projects}/servletconf/tomcat" executable="${dir.projects}/servletconf/tomcat/bin/catalina.sh" vmlauncher="false">
-        <env key="LD_LIBRARY_PATH" value="${run.ld_library_path}"/>
-        <env key="JAVA_OPTS" value="-mx200M ${run.debugopts}"/>
-        <env key="JSSE_HOME" value="${basedir}/lib/jsse"/>
-        <env key="LANG" value="C"/>
-        <arg line="run"/>
-    </exec>
+        <property name="run.debugopts" value=""/>
+        <path id="run.path.ld_library_path">
+            <pathelement path="${env.LD_LIBRARY_PATH}"/>
+            <pathelement location="${dir.jni}/build"/>
+        </path>
+        <property name="run.ld_library_path" refid="run.path.ld_library_path"/>
+        <exec dir="${dir.projects}/servletconf/tomcat" executable="${dir.projects}/servletconf/tomcat/bin/catalina.sh" vmlauncher="false">
+            <env key="LD_LIBRARY_PATH" value="${run.ld_library_path}"/>
+            <env key="JAVA_OPTS" value="-mx200M ${run.debugopts}"/>
+            <env key="JSSE_HOME" value="${basedir}/lib/jsse"/>
+            <env key="LANG" value="C"/>
+            <arg line="run"/>
+        </exec>
     </target>
     
     <target name="generate" depends="targetdefs, stylesheets, compile, installjars">
-    <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
+        <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
     </target>
 
     <target name="all" 
-    depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
-    description="builds all files required to run"
-    />    
+        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+        description="builds all files required to run"
+        />    
 
     <target name="compile" depends="generate-src, jni" description="compiles all .java files">
-    <javac 
-        srcdir="${dir.src}"
-        destdir="${dir.build}"
-        debug="${debug}"
-        classpathref="cp.classpath"
-        excludes="${excludes.src}"
-        >
-    </javac>
+        <javac 
+            srcdir="${dir.src}"
+            destdir="${dir.build}"
+            debug="${debug}"
+            classpathref="cp.classpath"
+            excludes="${excludes.src}"
+            >
+        </javac>
     </target>
     
     <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
-    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
+        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
     <target name="jni" depends="pre-compile">
-    <exec dir="${dir.jni}" executable="make" failonerror="true"/>
+        <exec dir="${dir.jni}" executable="make" failonerror="true"/>
     </target>
 
     <target name="clean-jni">
-    <exec dir="${dir.jni}" executable="make" failonerror="true"><arg line="clean"/></exec>
+        <exec dir="${dir.jni}" executable="make" failonerror="true"><arg line="clean"/></exec>
     </target>
 
     <target name="installjars" >
-    <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
-    as ${dir.build} is specified as location it always resolves to an absolute path;
-    does not work for filenames containing spaces -->
-    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
-    <mkdir dir="${dir.projects}/servletconf/tomcat/classes"/>
-    <exec executable="sh">
-        <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
-    </exec>
-    <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
-    <delete>
-        <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
-    </delete>
-    <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-${project.version}-res.jar">
-        <fileset dir="${basedir}" includes="META-INF/**"/>
-        <fileset dir="${dir.res}"/>
-    </jar>
-    <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
-    <exec executable="sh">
-        <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
-    </exec>
+        <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
+        as ${dir.build} is specified as location it always resolves to an absolute path;
+        does not work for filenames containing spaces -->
+        <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
+        <mkdir dir="${dir.projects}/servletconf/tomcat/classes"/>
+        <exec executable="sh">
+            <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
+        </exec>
+        <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
+        <delete>
+            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+        </delete>
+        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-${project.version}-res.jar">
+            <fileset dir="${basedir}" includes="META-INF/**"/>
+            <fileset dir="${dir.res}"/>
+        </jar>
+        <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
+        <exec executable="sh">
+            <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+        </exec>
     </target>
     
     <target name="pre-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
-    <javac 
-        srcdir="${dir.src}"
-        destdir="${dir.build}"
-        includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
-        debug="${debug}"
-        classpathref="cp.classpath"
-        sourcepath="${dir.src}"
-        >
-    </javac>
+        <javac 
+            srcdir="${dir.src}"
+            destdir="${dir.build}"
+            includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
+            debug="${debug}"
+            classpathref="cp.classpath"
+            sourcepath="${dir.src}"
+            >
+        </javac>
     </target>
     
     <target name="ant-tasks" depends="init, pre-compile" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
-    <taskdef
-        name="pfx-xslt"
-        classname="de.schlund.pfixcore.util.XsltGenericTask"
-        classpathref="cp.classpath"
-        description="Performs generic XSLT transformations"
-        ><classpath></classpath>
-    </taskdef>
-    <taskdef 
-        name="pfx-iwrp"
-        classname="de.schlund.pfixcore.util.XsltIWrapperTask"
-        classpathref="cp.classpath"
-        description="Generates .java files out of .iwrp (Interface Wrapper) files"
-        />
-    <taskdef
-        name="pfx-webxml"
-        classname="de.schlund.pfixcore.util.XsltWebXmlTask"
-        classpathref="cp.classpath"
-        description="Creates WEB-INF/web.xml config files for each project"
-        />
-    <taskdef
-        name="pfx-generate"
-        classname="de.schlund.pfixcore.util.TargetGeneratorTask"
-        classpathref="cp.classpath"
-        description="Creates dependencies in ${dir.projects}/.cache"
-        />
-    <antstructure output="ant.dtd"/>
+        <taskdef
+            name="pfx-xslt"
+            classname="de.schlund.pfixcore.util.XsltGenericTask"
+            classpathref="cp.classpath"
+            description="Performs generic XSLT transformations"
+            ><classpath></classpath>
+        </taskdef>
+        <taskdef 
+            name="pfx-iwrp"
+            classname="de.schlund.pfixcore.util.XsltIWrapperTask"
+            classpathref="cp.classpath"
+            description="Generates .java files out of .iwrp (Interface Wrapper) files"
+            />
+        <taskdef
+            name="pfx-webxml"
+            classname="de.schlund.pfixcore.util.XsltWebXmlTask"
+            classpathref="cp.classpath"
+            description="Creates WEB-INF/web.xml config files for each project"
+            />
+        <taskdef
+            name="pfx-generate"
+            classname="de.schlund.pfixcore.util.TargetGeneratorTask"
+            classpathref="cp.classpath"
+            description="Creates dependencies in ${dir.projects}/.cache"
+            />
+        <antstructure output="ant.dtd"/>
     </target>
     
     <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
-    <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
-    <delete dir="${dir.build}"/>
-    <delete dir="${dir.dist}"/>
-    <delete>
-        <fileset dir="${dir.src}" includes="**/*.java">
-        <present present="both" targetdir="${dir.src}">
-            <mapper type="glob" from="*.java" to="*.iwrp"/>
-        </present>
-        </fileset>
-    </delete>
-    <delete>
-        <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
-    </delete>
-    <delete file="${dir.metainf}/${name.cvsautotag}"/>
+        <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
+        <delete dir="${dir.build}"/>
+        <delete dir="${dir.dist}"/>
+        <delete>
+            <fileset dir="${dir.src}" includes="**/*.java">
+                <present present="both" targetdir="${dir.src}">
+                    <mapper type="glob" from="*.java" to="*.iwrp"/>
+                </present>
+            </fileset>
+        </delete>
+        <delete>
+            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+        </delete>
+        <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
     
     <target name="clean-project" description="deletes files from ${dir.projects}">
-    <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
-    <delete>
-        <fileset dir="${dir.projects}" includes="**/*.xsl">
-        <present present="both" targetdir="${dir.projects}">
-            <mapper type="glob" from="*.xsl" to="*.xsl.in"/>
-        </present>
-        </fileset>
-        <fileset dir="${dir.projects}" includes="**/depend.xml">
-        <present present="both" targetdir="${dir.projects}">
-            <mapper type="glob" from="*depend.xml" to="*depend.xml.in"/>
-        </present>
-        </fileset>
-        <fileset dir="${dir.projects}" includes="**/*.prop">
-        <present present="both" targetdir="${dir.projects}">
-            <mapper type="glob" from="*.prop" to="*.prop.in"/>
-        </present>
-        </fileset>
-        <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
-    </delete>
-    <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
+        <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
+        <delete>
+            <fileset dir="${dir.projects}" includes="**/*.xsl">
+                <present present="both" targetdir="${dir.projects}">
+                    <mapper type="glob" from="*.xsl" to="*.xsl.in"/>
+                </present>
+            </fileset>
+            <fileset dir="${dir.projects}" includes="**/depend.xml">
+                <present present="both" targetdir="${dir.projects}">
+                    <mapper type="glob" from="*depend.xml" to="*depend.xml.in"/>
+                </present>
+            </fileset>
+            <fileset dir="${dir.projects}" includes="**/*.prop">
+                <present present="both" targetdir="${dir.projects}">
+                    <mapper type="glob" from="*.prop" to="*.prop.in"/>
+                </present>
+            </fileset>
+            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
+        </delete>
+        <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     </target>
     
     <target name="realclean" depends="clean, clean-jni">
-    <delete dir="${dir.projects}/.cache"/>
+        <delete dir="${dir.projects}/.cache"/>
     </target>
 
     <target name="dist" depends="clean, init">
-    <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
-    <!-- looks funny, but if someone called something like
-    "ant jar dist" the jar file would have a wrong CVS_AUTOTAG file -->
-    <antcall target="skeleton" inheritall="true">
-        <param name="autotagmessage" value="${dist.autotagmessage}"/>
-    </antcall>
-    <cvs command="tag ${dist.autotagmessage}"/>
+        <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
+        <!-- looks funny, but if someone called something like
+        "ant jar dist" the jar file would have a wrong CVS_AUTOTAG file -->
+        <antcall target="skeleton" inheritall="true">
+            <param name="autotagmessage" value="${dist.autotagmessage}"/>
+        </antcall>
+        <cvs command="tag ${dist.autotagmessage}"/>
     </target>
 
     <target name="notag" depends="clean">
-    <antcall target="skeleton" inheritall="true"/>
+        <antcall target="skeleton" inheritall="true"/>
     </target>
 
     <target name="fixtabs">
@@ -283,234 +283,234 @@
     </target>
 
     <target name="skeleton" depends="fixtabs, compile, jar, data">
-    <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
-    <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
-        <tarfileset dir="${dir.skel}" prefix="skel"/>
-        <tarfileset dir="${dir.metainf}" includes="${name.cvsautotag}" prefix="skel"/>
-        <tarfileset dir="${dir.lib}" includes="*.jar" prefix="skel/lib"/>
-        <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
-        <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
-        <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
-    </tar>
+        <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
+        <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
+            <tarfileset dir="${dir.skel}" prefix="skel"/>
+            <tarfileset dir="${dir.metainf}" includes="${name.cvsautotag}" prefix="skel"/>
+            <tarfileset dir="${dir.lib}" includes="*.jar" prefix="skel/lib"/>
+            <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
+            <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
+            <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
+        </tar>
     </target>    
 
     <target name="data" depends="init, stylesheets, autotag">
-    <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
-    <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
-    <tar destfile="${file.pfixcore_data_tgz}" basedir="${dir.projects}/core" compression="gzip"/>
-    <delete file="${dir.projects}/core/${name.cvsautotag}"/>
+        <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
+        <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
+        <tar destfile="${file.pfixcore_data_tgz}" basedir="${dir.projects}/core" compression="gzip"/>
+        <delete file="${dir.projects}/core/${name.cvsautotag}"/>
     </target>
 
     <target name="jar" depends="autotag">
-    <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
-    <jar destfile="${file.pfixcore_jar}">
-        <fileset dir="${basedir}" includes="META-INF/**"/>
-        <fileset dir="${dir.build}"/>
-        <fileset dir="${dir.res}"/>
-        <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
-    </jar>
+        <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
+        <jar destfile="${file.pfixcore_jar}">
+            <fileset dir="${basedir}" includes="META-INF/**"/>
+            <fileset dir="${dir.build}"/>
+            <fileset dir="${dir.res}"/>
+            <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
+        </jar>
     </target>
     
     <target name="autotag" depends="init">
-    <!-- property gets overridden when calling target dist -->
-    <property name="autotagmessage" value="${tstamp.autotag} (not tagged in cvs)"/>
-    <!-- make echo insert a newline into the file with &#010; -->
-    <echo file="${dir.metainf}/${name.cvsautotag}" message="${autotagmessage}&#010;"/>
+        <!-- property gets overridden when calling target dist -->
+        <property name="autotagmessage" value="${tstamp.autotag} (not tagged in cvs)"/>
+        <!-- make echo insert a newline into the file with &#010; -->
+        <echo file="${dir.metainf}/${name.cvsautotag}" message="${autotagmessage}&#010;"/>
     </target>
     
     <target name="test-skeleton" description="extracts skel.jar, copies sample files, runs ant">
-    <delete dir="${dir.testskel}"/>
-    <mkdir dir="${dir.testskel}"/>
-    <untar src="${file.pfixcore_skel_tgz}" dest="${dir.testskel}" compression="gzip"/>
-    <copy todir="${dir.testskel}/skel/src">
-        <fileset dir="${dir.src}" includes="de/schlund/pfixcore/example/**"/>
-    </copy>
-    <copy todir="${dir.testskel}/skel/projects">
-        <fileset dir="${dir.projects}" includes="sample1/**"/>
-    </copy>
-    <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
-    </exec>
+        <delete dir="${dir.testskel}"/>
+        <mkdir dir="${dir.testskel}"/>
+        <untar src="${file.pfixcore_skel_tgz}" dest="${dir.testskel}" compression="gzip"/>
+        <copy todir="${dir.testskel}/skel/src">
+            <fileset dir="${dir.src}" includes="de/schlund/pfixcore/example/**"/>
+        </copy>
+        <copy todir="${dir.testskel}/skel/projects">
+            <fileset dir="${dir.projects}" includes="sample1/**"/>
+        </copy>
+        <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
+        </exec>
     </target>
     
     <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
-    <pfx-xslt 
-        style="${dir.projects}/core/build/create_propfiles.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}"
-        includes="**/*.prop.in"
-        extension=""
-        >
-        <param name="docroot" expression="${dir.docroot}"/>
-        <param name="fqdn"    expression="${fqdn}"/>
-        <param name="uid"     expression="${uid}"/>
-        <param name="mode"    expression="${makemode}"/>
-    </pfx-xslt>
+        <pfx-xslt 
+            style="${dir.projects}/core/build/create_propfiles.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}"
+            includes="**/*.prop.in"
+            extension=""
+            >
+            <param name="docroot" expression="${dir.docroot}"/>
+            <param name="fqdn"    expression="${fqdn}"/>
+            <param name="uid"     expression="${uid}"/>
+            <param name="mode"    expression="${makemode}"/>
+        </pfx-xslt>
     </target>
 
     <target name="targetdefs" depends="ant-tasks" description="creates **/depend.xml">
-    <pfx-xslt 
-        style="${dir.projects}/core/build/create_depend.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}"
-        includes="**/depend.xml.in"
-        extension=""
-        >
-        <param name="prohibitEdit" expression="${prohibitedit}"/>
-        <param name="docroot" expression="${dir.docroot}"/>
-    </pfx-xslt>
+        <pfx-xslt 
+            style="${dir.projects}/core/build/create_depend.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}"
+            includes="**/depend.xml.in"
+            extension=""
+            >
+            <param name="prohibitEdit" expression="${prohibitedit}"/>
+            <param name="docroot" expression="${dir.docroot}"/>
+        </pfx-xslt>
     </target>
     
     <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
-    <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
-    <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep=" ">
-        <map from="${dir.projects}/" to=""/>
-    </pathconvert>
-    <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
-    <dependset>
-        <srcfileset refid="id.fileset.projectxmlin"/>
-        <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
-    </dependset>
-    <pfx-xslt
-        style="${dir.projects}/core/build/create_projects.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}"
-        includes="servletconf/projects.xml.in"
-        >
-        <param name="docroot" expression="${dir.docroot}"/>
-        <param name="files"   expression="${projectxmlins}"/>
-    </pfx-xslt>
+        <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
+        <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep=" ">
+            <map from="${dir.projects}/" to=""/>
+        </pathconvert>
+        <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
+        <dependset>
+            <srcfileset refid="id.fileset.projectxmlin"/>
+            <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
+        </dependset>
+        <pfx-xslt
+            style="${dir.projects}/core/build/create_projects.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}"
+            includes="servletconf/projects.xml.in"
+            >
+            <param name="docroot" expression="${dir.docroot}"/>
+            <param name="files"   expression="${projectxmlins}"/>
+        </pfx-xslt>
     </target>
 
     <target name="web_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
-    <!-- old target name in Makefile was "zoneprops" -->
-    <pfx-webxml
-        style="${dir.projects}/core/build/create_tomcatweb.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}/servletconf/tomcat"
-        includes="servletconf/projects.xml"
-        extension=".xml"
-        >
-        <param name="docroot" expression="${dir.docroot}"/>
-        <param name="fqdn"    expression="${fqdn}"/>
-        <param name="uid"     expression="${uid}"/>
-        <param name="mode"    expression="${makemode}"/>
-    </pfx-webxml>
+        <!-- old target name in Makefile was "zoneprops" -->
+        <pfx-webxml
+            style="${dir.projects}/core/build/create_tomcatweb.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}/servletconf/tomcat"
+            includes="servletconf/projects.xml"
+            extension=".xml"
+            >
+            <param name="docroot" expression="${dir.docroot}"/>
+            <param name="fqdn"    expression="${fqdn}"/>
+            <param name="uid"     expression="${uid}"/>
+            <param name="mode"    expression="${makemode}"/>
+        </pfx-webxml>
     </target>
     
     <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
-    <pfx-xslt
-        style="${dir.projects}/core/build/create_stylesheet.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}"
-        includes="**/*.xsl.in"
-        extension=""
-        >
-        <param name="docroot" expression="${dir.docroot}"/>
-        <param name="fqdn"    expression="${fqdn}"/>
-        <param name="uid"     expression="${uid}"/>
-        <param name="machine" expression="${machine}"/>
-        <param name="mode"    expression="${makemode}"/>
-    </pfx-xslt>
+        <pfx-xslt
+            style="${dir.projects}/core/build/create_stylesheet.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}"
+            includes="**/*.xsl.in"
+            extension=""
+            >
+            <param name="docroot" expression="${dir.docroot}"/>
+            <param name="fqdn"    expression="${fqdn}"/>
+            <param name="uid"     expression="${uid}"/>
+            <param name="machine" expression="${machine}"/>
+            <param name="mode"    expression="${makemode}"/>
+        </pfx-xslt>
     </target>
     
     <target name="statusmessages_xml" depends="compile, propfiles" description="creates common/dyntxt/statusmessages.xml">
-    <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
-        <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
-        <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>
-        <classpath refid="cp.classpath"/>
-    </java>
+        <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
+            <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
+            <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>
+            <classpath refid="cp.classpath"/>
+        </java>
     </target>
 
     <target name="pfixlog_xml" depends="ant-tasks" description="creates common/conf/pfixlog.xml from common/conf/pfixlog.xml.in with core/build/create_log4j_config.xsl">
-    <pfx-xslt
-        style="${dir.projects}/core/build/create_log4j_config.xsl"
-        srcdir="${dir.projects}"
-        destdir="${dir.projects}"
-        includes="common/conf/pfixlog.xml.in"
-        extension=""
-        >
-        <param name="docroot" expression="${dir.docroot}"/>
-        <param name="fqdn"    expression="${fqdn}"/>
-        <param name="uid"     expression="${uid}"/>
-        <param name="machine" expression="${machine}"/>
-        <param name="mode"    expression="${makemode}"/>
-    </pfx-xslt>
+        <pfx-xslt
+            style="${dir.projects}/core/build/create_log4j_config.xsl"
+            srcdir="${dir.projects}"
+            destdir="${dir.projects}"
+            includes="common/conf/pfixlog.xml.in"
+            extension=""
+            >
+            <param name="docroot" expression="${dir.docroot}"/>
+            <param name="fqdn"    expression="${fqdn}"/>
+            <param name="uid"     expression="${uid}"/>
+            <param name="machine" expression="${machine}"/>
+            <param name="mode"    expression="${makemode}"/>
+        </pfx-xslt>
     </target>
     
     <target name="products_prj" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_products.xsl">
-    <pfx-xslt
-        infile="${dir.projects}/servletconf/projects.xml"
-        outfile="${dir.projects}/common/conf/products.prj"
-        style="${dir.projects}/core/build/create_products.xsl"
-        >
-        <param name="docroot"   expression="${dir.docroot}"/>
-        <param name="fqdn"      expression="${fqdn}"/>
-        <param name="uid"       expression="${uid}"/>
-        <param name="machine"   expression="${machine}"/>
-        <param name="mode"      expression="${makemode}"/>
-        <param name="container" expression="tomcat"/>
-    </pfx-xslt>
+        <pfx-xslt
+            infile="${dir.projects}/servletconf/projects.xml"
+            outfile="${dir.projects}/common/conf/products.prj"
+            style="${dir.projects}/core/build/create_products.xsl"
+            >
+            <param name="docroot"   expression="${dir.docroot}"/>
+            <param name="fqdn"      expression="${fqdn}"/>
+            <param name="uid"       expression="${uid}"/>
+            <param name="machine"   expression="${machine}"/>
+            <param name="mode"      expression="${makemode}"/>
+            <param name="container" expression="tomcat"/>
+        </pfx-xslt>
     </target>
 
     <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_apacheconf.xsl">
-    <pfx-xslt
-        infile="${dir.projects}/servletconf/projects.xml"
-        outfile="${dir.projects}/servletconf/tomcat/apache.conf"
-        style="${dir.projects}/core/build/create_apacheconf.xsl"
-        >
-        <param name="docroot"   expression="${dir.docroot}"/>
-        <param name="fqdn"      expression="${fqdn}"/>
-        <param name="uid"       expression="${uid}"/>
-        <param name="machine"   expression="${machine}"/>
-        <param name="mode"      expression="${makemode}"/>
-        <param name="container" expression="tomcat"/>
-    </pfx-xslt>
+        <pfx-xslt
+            infile="${dir.projects}/servletconf/projects.xml"
+            outfile="${dir.projects}/servletconf/tomcat/apache.conf"
+            style="${dir.projects}/core/build/create_apacheconf.xsl"
+            >
+            <param name="docroot"   expression="${dir.docroot}"/>
+            <param name="fqdn"      expression="${fqdn}"/>
+            <param name="uid"       expression="${uid}"/>
+            <param name="machine"   expression="${machine}"/>
+            <param name="mode"      expression="${makemode}"/>
+            <param name="container" expression="tomcat"/>
+        </pfx-xslt>
     </target>
 
     <target name="jk_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
-    <pfx-xslt
-        infile="${dir.projects}/servletconf/projects.xml"
-        outfile="${dir.projects}/servletconf/tomcat/jk.conf"
-        style="${dir.projects}/core/build/create_jkconf.xsl"
-        >
-        <param name="docroot"   expression="${dir.docroot}"/>
-        <param name="fqdn"      expression="${fqdn}"/>
-        <param name="uid"       expression="${uid}"/>
-        <param name="machine"   expression="${machine}"/>
-        <param name="mode"      expression="${makemode}"/>
-        <param name="container" expression="tomcat"/>
-    </pfx-xslt>
+        <pfx-xslt
+            infile="${dir.projects}/servletconf/projects.xml"
+            outfile="${dir.projects}/servletconf/tomcat/jk.conf"
+            style="${dir.projects}/core/build/create_jkconf.xsl"
+            >
+            <param name="docroot"   expression="${dir.docroot}"/>
+            <param name="fqdn"      expression="${fqdn}"/>
+            <param name="uid"       expression="${uid}"/>
+            <param name="machine"   expression="${machine}"/>
+            <param name="mode"      expression="${makemode}"/>
+            <param name="container" expression="tomcat"/>
+        </pfx-xslt>
     </target>
     
     <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
-    <pfx-xslt
-        infile="${dir.projects}/servletconf/projects.xml"
-        outfile="${dir.projects}/servletconf/tomcat/workers.prop"
-        style="${dir.projects}/core/build/create_workersprop.xsl"
-        >
-        <param name="docroot"   expression="${dir.docroot}"/>
-        <param name="fqdn"      expression="${fqdn}"/>
-        <param name="uid"       expression="${uid}"/>
-        <param name="machine"   expression="${machine}"/>
-        <param name="mode"      expression="${makemode}"/>
-        <param name="java_home" expression="${javahome}"/>
-        <param name="container" expression="tomcat"/>
-    </pfx-xslt>
+        <pfx-xslt
+            infile="${dir.projects}/servletconf/projects.xml"
+            outfile="${dir.projects}/servletconf/tomcat/workers.prop"
+            style="${dir.projects}/core/build/create_workersprop.xsl"
+            >
+            <param name="docroot"   expression="${dir.docroot}"/>
+            <param name="fqdn"      expression="${fqdn}"/>
+            <param name="uid"       expression="${uid}"/>
+            <param name="machine"   expression="${machine}"/>
+            <param name="mode"      expression="${makemode}"/>
+            <param name="java_home" expression="${javahome}"/>
+            <param name="container" expression="tomcat"/>
+        </pfx-xslt>
     </target>
     
     <target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
-    <pfx-xslt
-        infile="${dir.projects}/servletconf/projects.xml"
-        outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
-        style="${dir.projects}/core/build/create_serverxml.xsl"
-        >
-        <param name="docroot"   expression="${dir.docroot}"/>
-        <param name="fqdn"      expression="${fqdn}"/>
-        <param name="uid"       expression="${uid}"/>
-        <param name="machine"   expression="${machine}"/>
-        <param name="mode"      expression="${makemode}"/>
-        <param name="container" expression="tomcat"/>
-    </pfx-xslt>
+        <pfx-xslt
+            infile="${dir.projects}/servletconf/projects.xml"
+            outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
+            style="${dir.projects}/core/build/create_serverxml.xsl"
+            >
+            <param name="docroot"   expression="${dir.docroot}"/>
+            <param name="fqdn"      expression="${fqdn}"/>
+            <param name="uid"       expression="${uid}"/>
+            <param name="machine"   expression="${machine}"/>
+            <param name="mode"      expression="${makemode}"/>
+            <param name="container" expression="tomcat"/>
+        </pfx-xslt>
     </target>
     
 </project>
