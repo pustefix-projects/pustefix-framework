@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.util.Calendar;
@@ -27,7 +24,7 @@ import java.util.Calendar;
 
 /**
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
- *
+ *  <br/>
  * This class handles incoming exceptions which will be checked by their stacktrace.
  */
 class STraceCheckerContainer {

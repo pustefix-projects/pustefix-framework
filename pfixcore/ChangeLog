@@ -1,3 +1,7 @@
+2003-06-18  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler: cosmetics.
+
 2003-06-18  Martin Leidig  <mleidig@schlund.de>
 
         * src/de/schlund/pfixxml/PfixServletRequest.java (getRequestParams):
@@ -33,6 +37,7 @@
 
 	* docs/sf/*: new files. Start of sourceforge web site online documentation. Real content follows (I hope)
 
+>>>>>>> 1.142
 2003-06-17  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java(callProcess):

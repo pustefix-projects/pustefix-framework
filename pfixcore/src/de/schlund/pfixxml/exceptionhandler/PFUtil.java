@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.util.Hashtable;
@@ -29,7 +26,7 @@ import org.apache.log4j.Category;
 
 /**
  * Utility class for internal usage. It is a singleton.
- * 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class PFUtil {

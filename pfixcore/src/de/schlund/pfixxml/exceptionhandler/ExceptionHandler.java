@@ -17,9 +17,6 @@
 *
 */
 
-/*
-*
-*/
 package de.schlund.pfixxml.exceptionhandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
