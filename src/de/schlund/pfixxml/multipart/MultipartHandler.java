@@ -45,6 +45,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.apache.log4j.helpers.NullEnumeration;
+import org.apache.oro.text.perl.Perl5Util;
 
 /**
  *
@@ -52,12 +53,12 @@ import org.apache.log4j.helpers.NullEnumeration;
  */
 
 public class MultipartHandler {
-    
+
     public static final String DEFAULT_DIR = "/tmp";
     public static final String CTYPE_HEADER = "Content-Type";
     public static final String MULTI_FORM_DATA = "multipart/form-data";
     public static final String PARAM_BOUNDARY = "boundary";
-    public static final String DEFAULT_CHARSET = "iso-8859-1";    
+    public static final String DEFAULT_CHARSET = "iso-8859-1";
     public static final String DEFAULT_TRANS_ENC = "7bit";
     public static final String DEFAULT_CTYPE = "text/plain; charset=" + DEFAULT_CHARSET;
     public static final String CHARSET_PARAM = "charset";
@@ -70,10 +71,10 @@ public class MultipartHandler {
     public static final String READ_DATE_PARAM = "read-date";
     public static final String SIZE_PARAM = "size";
     public static final String FNAME_PATTERN = "00000000";
-    
+
     private static Object lock = new Object();
     private static DecimalFormat format = new DecimalFormat(FNAME_PATTERN);
-    
+
     private HttpServletRequest req = null;
     private String dir = null;
     private File dirFile = null;
@@ -82,18 +83,17 @@ public class MultipartHandler {
     private ArrayList fileuploads = null;
     private ArrayList failedParts = null;
     private long maxPartSize = -1;
-   
+
     private static Category LOG = null;
-    
+
     static {
         LOG = Category.getInstance(MultipartHandler.class.getName());
         // if (LOG.getAllAppenders() instanceof NullEnumeration) {
         //     LOG = null;
         // }
     }
-    
-    protected static File getDestFile(File dir, String fName)
-        throws IOException {
+
+    protected static File getDestFile(File dir, String fName) throws IOException {
         File rc = null;
         synchronized (lock) {
             StringBuffer buf = new StringBuffer(fName);
@@ -112,12 +112,11 @@ public class MultipartHandler {
         }
         return rc;
     }
-    
-    public MultipartHandler(HttpServletRequest pReq, String pDir)
-        throws IllegalArgumentException {
+
+    public MultipartHandler(HttpServletRequest pReq, String pDir) throws IllegalArgumentException {
         this(null, pReq, pDir);
     }
-    
+
     /**
      * Constructor for MulitpartHandler.
      */
@@ -129,11 +128,11 @@ public class MultipartHandler {
         if (req == null) {
             throw new IllegalArgumentException("Got no request req == null.");
         }
-        
+
         if (!req.getContentType().toLowerCase().startsWith(MULTI_FORM_DATA)) {
             throw new IllegalArgumentException("Request is not a multipart/form-data");
-        }        
-        
+        }
+
         if (dir == null) {
             dir = DEFAULT_DIR;
         }
@@ -148,46 +147,47 @@ public class MultipartHandler {
         fileuploads = new ArrayList();
         failedParts = new ArrayList();
     }
-    
+
     public Enumeration getParameterNames() {
         return Collections.enumeration(parameter.keySet());
     }
-    
+
     public PartData getParameter(String name) {
         PartData rc = null;
-        ArrayList list = (ArrayList)parameter.get(name);
+        ArrayList list = (ArrayList) parameter.get(name);
         if (list != null && 0 < list.size()) {
-            rc =  (PartData)list.get(0);
+            rc = (PartData) list.get(0);
         }
         return rc;
     }
-    
+
     public List getAllParameter(String name) {
-        return (List)parameter.get(name);
+        return (List) parameter.get(name);
     }
-    
+
     public List getFileUploads() {
         return fileuploads;
     }
-    
+
     public List getExceptionList() {
         return failedParts;
     }
-    
-    public void parseRequest()
-        throws IllegalArgumentException, MessagingException, IOException {
+
+    public void parseRequest() throws IllegalArgumentException, MessagingException, IOException {
         String baseCType = req.getHeader(CTYPE_HEADER);
         printDebug("******** Content-Type is: '" + baseCType + "'");
         ContentType cType = new ContentType(baseCType);
         String boundary = cType.getParameter(PARAM_BOUNDARY);
         printDebug("******** Boundary is: '" + boundary + "'");
-        if (boundary == null || boundary.length() <= 0) return;
-        
+        if (boundary == null || boundary.length() <= 0)
+            return;
+
         ServletInputStream inS = req.getInputStream();
-        
+
         MultipartStream ms = new MultipartStream(inS);
-        if (0 < maxPartSize) ms.setMaxPartSize(maxPartSize);
-        
+        if (0 < maxPartSize)
+            ms.setMaxPartSize(maxPartSize);
+
         ms.setBoundary(boundary);
         ms.skipBoundary();
         boolean doLoop = true;
@@ -213,10 +213,12 @@ public class MultipartHandler {
                 String filename = struct.getParam(FILENAME_PARAM);
                 if (filename != null) {
                     isfile = true;
+                    //System.out.println("File============"+filename);
                 }
             }
             printDebug("*** IS FILE? " + isfile);
             
+
             if (curCt.match("text/*") && !isfile) {
                 printDebug("parsing text field (" + curCt + ")");
                 parseTextField(ms, curHeaders, curCt);
@@ -254,8 +256,9 @@ public class MultipartHandler {
         printDebug("transEnc: " + transEnc);
         String fieldName = cdStruct.getParam(NAME_PARAM);
         printDebug("fieldname: " + fieldName);
-        if (fieldName == null) return;
-        
+        if (fieldName == null)
+            return;
+
         InputStream dataIn = MimeUtility.decode(ms, transEnc);
         InputStreamReader inReader = new InputStreamReader(dataIn, charEnc);
         int tmpVal = -1;
@@ -265,7 +268,7 @@ public class MultipartHandler {
             do {
                 tmpVal = inReader.read();
                 if (tmpVal != -1) {
-                    tmpBuf.append((char)tmpVal);
+                    tmpBuf.append((char) tmpVal);
                 }
             } while (tmpVal != -1);
         } catch (PartToLongException e) {
@@ -278,8 +281,8 @@ public class MultipartHandler {
             fPart.setSubType(ct.getSubType());
             fPart.setCharacterset(charEnc);
             fPart.setTransferEncoding(transEnc);
-            fPart.setValue(tmpBuf.toString());            
-        
+            fPart.setValue(tmpBuf.toString());
+
             addParameterPart(fPart);
         } else {
             ex.setFieldName(fieldName);
@@ -290,15 +293,15 @@ public class MultipartHandler {
     protected void addParameterPart(PartData part) {
         try {
             String fieldName = part.getFieldname();
-    	   	ArrayList params = (ArrayList)parameter.get(fieldName);
-		    if (params == null) {
+            ArrayList params = (ArrayList) parameter.get(fieldName);
+            if (params == null) {
                 params = new ArrayList();
                 parameter.put(fieldName, params);
             }
-            params.add(part);            
-		} catch (NullPointerException e) {
+            params.add(part);
+        } catch (NullPointerException e) {
         }
-	}
+    }
 
     protected void parseMultiFile(MultipartStream ms, InternetHeaders headers, ContentType ct, ContentType parentCt)
         throws MessagingException, IOException {
@@ -310,7 +313,8 @@ public class MultipartHandler {
         String[] tmpHeaders = null;
         HeaderStruct cdStruct = getHeaderStruct(headers, CONTENT_DISP_HEADER);
         String fieldName = cdStruct.getParam(NAME_PARAM);
-        if (fieldName != null && fieldName.length() <= 0) fieldName = null;
+        if (fieldName != null && fieldName.length() <= 0)
+            fieldName = null;
         while (!ms.isEndOfMultipart()) {
             localHeaders = new InternetHeaders(ms);
             tmpHeaders = localHeaders.getHeader(CTYPE_HEADER);
@@ -318,11 +322,12 @@ public class MultipartHandler {
                 tmpCt = new ContentType(tmpHeaders[0]);
                 parseFile(ms, localHeaders, tmpCt, fieldName);
             }
-            if (!ms.isEndOfMultipart()) ms.skipBoundary();
-        }       
+            if (!ms.isEndOfMultipart())
+                ms.skipBoundary();
+        }
         ms.setBoundary(localBoundary);
     }
-    
+
     protected void parseFile(MultipartStream ms, InternetHeaders headers, ContentType ct, String defFieldName)
         throws MessagingException, IOException {
         HeaderStruct cdStruct = getHeaderStruct(headers, CONTENT_DISP_HEADER);
@@ -338,7 +343,8 @@ public class MultipartHandler {
         if (fieldName == null) {
             fieldName = cdStruct.getParam(NAME_PARAM);
         }
-        if (fieldName == null) return;
+        if (fieldName == null)
+            return;
         File localFile = null;
         String filename = cdStruct.getParam(FILENAME_PARAM);
         PartToLongException ex = null;
@@ -370,7 +376,7 @@ public class MultipartHandler {
             fileP.setTransferEncoding(transEnc);
             fileP.setModificationDate(getDateFromParam(cdStruct.getParam(MODIFICATION_DATE_PARAM)));
             fileP.setReadDate(getDateFromParam(cdStruct.getParam(READ_DATE_PARAM)));
-            
+
             if (localFile != null) {
                 fileP.setLocalFilename(localFile.getAbsolutePath());
                 fileP.setSize(localFile.length());
@@ -380,15 +386,15 @@ public class MultipartHandler {
                 fileP.setLocalFilename("");
                 fileP.setSize(0);
             }
-            
+
             addParameterPart(fileP);
         } else {
-           ex.setFieldName(fieldName);
-           failedParts.add(ex);         
+            ex.setFieldName(fieldName);
+            failedParts.add(ex);
         }
 
     }
-    
+
     protected Date getDateFromParam(String inStr) {
         Date rc = null;
         try {
@@ -410,11 +416,17 @@ public class MultipartHandler {
             try {
                 String[] valArr = headers.getHeader(name);
                 if (valArr != null && 0 < valArr.length) {
+                    if (name.equals("Content-Disposition")) {
+                        //System.out.println("val before:"+valArr[0]);
+                        valArr[0] = removeIEDirtyPath(valArr[0]);
+                        //System.out.println("val after :"+valArr[0]);
+                    }
                     String value = MimeUtility.decodeText(valArr[0]);
                     int idx = value.indexOf(';');
                     if (0 <= idx) {
                         rc.setValue(value.substring(0, idx).trim());
-                        rc.initParams(value.substring(idx));                        
+
+                        rc.initParams(value.substring(idx));
                     } else {
                         rc.setValue(value.trim());
                     }
@@ -427,7 +439,7 @@ public class MultipartHandler {
         }
         return rc;
     }
-    
+
     protected void printDebug(String msg) {
         try {
             if (LOG != null) {
@@ -452,6 +464,30 @@ public class MultipartHandler {
      */
     public void setMaxPartSize(long maxPartSize) {
         this.maxPartSize = maxPartSize;
+    }
+
+    private String removeIEDirtyPath(String str) {
+        Perl5Util perl = new Perl5Util();
+        String ret = str;
+
+        int fnindex = str.indexOf("filename");
+        if (fnindex != -1) {
+            int blindex = str.indexOf("\\"); 
+            if(blindex > -1 && blindex > fnindex ) {
+                perl.match("/filename=\"(.*[^\"])\"/", str);
+                String fullpath = "";
+                fullpath = perl.group(1);
+
+                int index = fullpath.lastIndexOf("\\");
+                if (index != -1) {
+                    String file = "";
+                    file = fullpath.substring(index + 1);
+                    file = "\"" + file + "\"";
+                    ret = perl.substitute("s/filename=\"(.*[^\"])\"/filename=" + file + "/", str);
+                } 
+            }
+        }
+        return ret;
     }
 
 }
