@@ -51,7 +51,8 @@ public class IncludeDocument {
     /**
      * Create the internal document.
      * @param path the path in the filesystem to create the document from.
-     * @param mutable determine if the document is mutable or not.
+     * @param mutable determine if the document is mutable or not. Any attempts
+     * to modify an immutable document will cause an exception.
      */
     public void createDocument(String path, boolean mutable) throws Exception {
         File tmp = new File(path);

@@ -20,6 +20,7 @@ package de.schlund.pfixxml.targets;
 
 import com.icl.saxon.Controller;
 import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.aelfred.SAXDriver;
 import com.icl.saxon.om.Builder;
 import com.icl.saxon.om.DocumentInfo;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
@@ -45,36 +46,36 @@ import org.apache.log4j.Category;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 
-public class TraxXSLTProcessor implements PustefixXSLTProcessor {
-    private static Category               CAT             = 
-            Category.getInstance(TraxXSLTProcessor.class.getName());
-    private static Object                 FUCKUP_LOCK     = new Object();
-    private static DocumentBuilderFactory dbfac           = DocumentBuilderFactory.newInstance();
-    private static TraxXSLTProcessor      instance        = new TraxXSLTProcessor();
-    private static String                 TRANS_FAC_XALAN = 
-            "org.apache.xalan.processor.TransformerFactoryImpl";
-    private static String                 TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
-    private static String                 DOCB_FAC_XERCES = 
-            "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
-    private static String                 SAXP_FAC_XERCES = 
-            "org.apache.xerces.jaxp.SAXParserFactoryImpl";
-    private static String                 DOCB_FAC_SAXON  = 
-            "com.icl.saxon.om.DocumentBuilderFactoryImpl";
-    private static String                 SAXP_FAC_SAXON  = 
-            "com.icl.saxon.aelfred.SAXParserFactoryImpl";
-    public static String                  TRANS_FAC_KEY   = 
-            "javax.xml.transform.TransformerFactory";
-    public static String                  DOCB_FAC_KEY    = 
-            "javax.xml.parsers.DocumentBuilderFactory";
-    public static String                  SAXP_FAC_KEY    = "javax.xml.parsers.SAXParserFactory";
-    public static String                  TRANS_FAC_VALUE = TRANS_FAC_SAXON;
-    public static String                  DOCB_FAC_VALUE  = DOCB_FAC_XERCES;
-    public static String                  SAXP_FAC_VALUE  = SAXP_FAC_XERCES;
-    
-   
+/**
+ * This class implements the singleton pattern and handles all XSLT transformations
+ * in the PUSTEFIX-system. Currently our favoured XSLT processor is saxon. That's why
+ * this class includes some saxon-specfic stuff. However, its interface should be
+ * stable enough to intergrate other XSLT processors (e.g. XSLTC) easy.
+ */
+public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
+
+    //~ Instance/static variables ..................................................................
+
+    private static Category          CAT             = Category.getInstance(TraxXSLTProcessor.class.getName());
+    private static TraxXSLTProcessor instance        = new TraxXSLTProcessor();
+    private static final String      TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
+    private static final String      DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
+    private static final String      SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
+    private static final String      DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
+    private static final String      SAXP_FAC_SAXON  = "com.icl.saxon.aelfred.SAXParserFactoryImpl";
+    public static final String       TRANS_FAC_KEY   = "javax.xml.transform.TransformerFactory";
+    public static final String       DOCB_FAC_KEY    = "javax.xml.parsers.DocumentBuilderFactory";
+    public static final String       SAXP_FAC_KEY    = "javax.xml.parsers.SAXParserFactory";
+    public static final String       TRANS_FAC_VALUE = TRANS_FAC_SAXON;
+    public static final String       DOCB_FAC_VALUE  = DOCB_FAC_XERCES;
+    public static final String       SAXP_FAC_VALUE  = SAXP_FAC_XERCES;
+
+    //~ Initializers ...............................................................................
 
     static {
         if (CAT.isInfoEnabled()) {
@@ -85,101 +86,125 @@ public class TraxXSLTProcessor implements PustefixXSLTProcessor {
                     " to ").append(SAXP_FAC_VALUE);
             CAT.info(b.toString());
         }
+        //wuerg!
         System.getProperties().put(TRANS_FAC_KEY, TRANS_FAC_VALUE);
         System.getProperties().put(DOCB_FAC_KEY, DOCB_FAC_VALUE);
         System.getProperties().put(SAXP_FAC_KEY, SAXP_FAC_VALUE);
-        dbfac.setNamespaceAware(true);
-        dbfac.setValidating(false);
     }
 
-    private TraxXSLTProcessor() {
-        //
-    }
+    //~ Methods ....................................................................................
 
-    public static TraxXSLTProcessor getInstance() {
+    /**
+     * Get the one and only instance of this class
+     * @return the instance
+     */
+    public static final TraxXSLTProcessor getInstance() {
         return instance;
     }
 
-    public void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, OutputStream out)
-                             throws Exception {
+    /**
+     * Do a transformation with a given source document, a stylesheet, parameters for
+     * the transformator and write the result to a given outputstream.
+     * @param xmlobj the source document. Note: Currently an instance of saxons
+     * TinyDocumentImpl must be passed.  
+     * @param xslobj the stylesheet. Note: Currently an instance of saxons
+     * PerparedStyleSheet must be passed.
+     * @param params parameters for the transformator
+     * @param out the outputstream where the result is written to
+     * @throws exception on all errors
+     */
+    public final void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, 
+                                          OutputStream out) throws Exception {
         Document    doc   = (Document) xmlobj;
         Templates   xsl   = (Templates) xslobj;
         Transformer trafo = xsl.newTransformer();
-        long        start;
+        long        start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
                 String name  = (String) e.next();
                 String value = (String) params.get(name);
                 if (name != null && value != null) {
-
                     //if(CAT.isDebugEnabled())
                     //  CAT.debug("*** Setting param " + name + " to value " + value);
                     trafo.setParameter(name, value);
                 }
             }
         }
-        start = new Date().getTime();
-        if (TRANS_FAC_VALUE.equals(TRANS_FAC_SAXON)) {
-            trafo.transform( (TinyDocumentImpl) xmlobj, new StreamResult(out));
-        } else {
-            synchronized (FUCKUP_LOCK) {
-                // is this really fast ??
-                trafo.transform(new DOMSource(doc), new StreamResult(out));
-            }
-        }
         if (CAT.isDebugEnabled())
-            CAT.debug("      ===========> Transforming and serializing took "
-                      + (new Date().getTime() - start) + " ms.");
+            start = System.currentTimeMillis();
+        // do the transformation
+        StreamResult stream_result = new StreamResult(out);
+        trafo.transform((TinyDocumentImpl) xmlobj, stream_result);
+        if (CAT.isDebugEnabled()) {
+            long stop = System.currentTimeMillis();
+            CAT.debug("      ===========> Transforming and serializing took " + (stop - start)
+                      + " ms.");
+        }
+        stream_result = null;
     }
 
     // FIXME: We need to change the processing in AbstractXMLServer to not simply use spdoc.getDocument(), but instead
     //        route the Document through this method first. But we also need to make sure that this happens only once,
     //        and the resulting Object is stored for reuse (this applies to frame handling).
     //
-    public Document xmlObjectFromDocument(Document doc) throws Exception {
-       if (TRANS_FAC_VALUE.equals(TRANS_FAC_SAXON)) {
-            Document o = tinyTreeFromDocument(doc);
-           /* if (CAT.isDebugEnabled())
-                CAT.debug("SAXON detected. Returning " + o == null ? "null" : o.getClass().getName());*/
-            return o;
-        } else if (TRANS_FAC_VALUE.equals(TRANS_FAC_XALAN)) {
-           /* if (CAT.isDebugEnabled())
-                CAT.debug("XALAN detected. Returning " + doc == null ? "null" : doc.getClass().getName());*/
-            return doc;
-        }
-        CAT.warn("Could not detect current transfomer!");
-        return null;
+
+    /**
+     * Convert the document implementation which is used for write-access 
+     * by {@link SPDocument} to the document implementation which is used 
+     * by the XSLTProcessor. Note: Currently we convert here from a mutable
+     * DOM implementation to an immutable NodeInfo implementation(saxon).
+     * @param doc the document as source for conversion(mostly a Node implementation
+     * when using xerces)
+     * @return a document as result of conversion(currently saxons TinyDocumentImpl)
+     * @throws Exception on all errors 
+     */
+    public final Document xmlObjectFromDocument(Document doc) throws Exception {
+        return tinyTreeFromDocument(doc);
     }
 
-    public Object xslObjectFromDisc(String path) throws Exception {
-        TransformerFactory transFac = TransformerFactory.newInstance();
-       /* if (CAT.isDebugEnabled())
-            CAT.debug("TransformerFactory is: " + transFac.getClass().getName());
-            */
-        Object val = transFac.newTemplates(new StreamSource("file://" + path));
+    /**
+     * Create a stylesheet from a sourcefile in the filesystem
+     * @param path the path to the source file in the filesystem
+     * @return the created stylesheet(currently saxons PreparedStyleSheet)
+     * @throws Exception on all errors
+     */
+    public final Object xslObjectFromDisc(String path) throws Exception {
+        TransformerFactory transFac      = TransformerFactory.newInstance();
+        StreamSource       stream_source = new StreamSource("file://" + path);
+        Object             val           = transFac.newTemplates(stream_source);
+        stream_source = null;
         return val;
     }
 
-    public Document xmlObjectFromDisc(String path) throws Exception {
-       /* if (CAT.isDebugEnabled())
-            CAT.debug("DocumentBuilderFactory is: " + dbfac.getClass().getName());
-        Document doc = dbfac.newDocumentBuilder().parse(path);
-        
-        return tinyTreeFromDocument(doc);*/
-        SAXSource saxS = new SAXSource();
-        saxS.setInputSource(new InputSource("file://"+path));
-        Controller saxonController = new Controller();
-        Builder builder = saxonController.makeBuilder();
-        DocumentInfo dInfo = builder.build(saxS);
+    /**
+     * Create a document from a sourcefile in the filesystem. Note: currently we use
+     * the aelfred sax parser shipped with saxon here.
+     * @param path the path to the source file in the filesystem
+     * @return the created document(currenly saxons TinyDocumentImpl)
+     * @throws Exception on all errors
+     */
+    public final Document xmlObjectFromDisc(String path) throws Exception {
+        InputSource  input      = new InputSource("file://" + path);
+        XMLReader    xml_reader = new SAXDriver();
+        SAXSource    saxsource  = new SAXSource(xml_reader, input);
+        Controller   controller = new Controller();
+        Builder      builder    = controller.makeBuilder();
+        DocumentInfo dInfo      = builder.build(saxsource);
+        saxsource  = null;
+        controller = null;
+        input      = null;
+        xml_reader = null;
         return (Document) dInfo;
     }
 
-    private TinyDocumentImpl tinyTreeFromDocument(Document doc)
-                                          throws Exception {
-        if(doc == null) {
-            // thats a request to an unkown page! 
+    /**
+     * Document me!
+     */
+    private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws Exception {
+        if (doc == null) {
+            // thats a request to an unkown page!
             // return null, cause we  want a 404 and no NPExpection
-            if(CAT.isDebugEnabled()) {
+            if (CAT.isDebugEnabled()) {
                 CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
             }
             return null;
@@ -188,31 +213,24 @@ public class TraxXSLTProcessor implements PustefixXSLTProcessor {
         long stop = 0;
         if (CAT.isInfoEnabled())
             start = System.currentTimeMillis();
-        DOMSource domSource = new DOMSource(doc);
-        Controller saxonController = new Controller();
-        saxonController.setTreeModel(Builder.TINY_TREE);
-        TransformerFactoryImpl tfFImpl      = new TransformerFactoryImpl();
-        SAXSource        saxSource = tfFImpl.getSAXSource(domSource, false);
-        Builder bi = saxonController.makeBuilder();
-        
-        /*if (CAT.isInfoEnabled()) {
-            stop = System.currentTimeMillis();
-            CAT.info("Initialisation :" + (stop - start));
-        }
-        if (CAT.isDebugEnabled())
-            CAT.debug("TransformerFactoryImpl is: " + tfFImpl.getClass().getName());
-        */
-        
-        DocumentInfo     dInfo   = bi.build(saxSource);
-        TinyDocumentImpl tinyDoc = (TinyDocumentImpl) dInfo;
+        DOMSource  domsource  = new DOMSource(doc);
+        Controller controller = new Controller();
+        controller.setTreeModel(Builder.TINY_TREE);
+        SAXSource        saxsource = controller.getTransformerFactory().getSAXSource(domsource, 
+                                                                                     false);
+        Builder          bi    = controller.makeBuilder();
+        DocumentInfo     dInfo = bi.build(saxsource);
+        TinyDocumentImpl tiny  = (TinyDocumentImpl) dInfo;
         if (CAT.isInfoEnabled()) {
             stop = System.currentTimeMillis();
             StringBuffer b = new StringBuffer(100);
-            b.append("Conversion from ").append(doc.getClass().getName()).append(" to ").append(tinyDoc.getClass().getName())
+            b.append("Conversion from ").append(doc.getClass().getName()).append(" to ").append(tiny.getClass().getName())
              .append(" took ").append(stop - start).append("ms");
             CAT.info(b.toString());
+            b = null;
         }
-        return tinyDoc;
+        domsource  = null;
+        controller = null;
+        return tiny;
     }
-    
 }

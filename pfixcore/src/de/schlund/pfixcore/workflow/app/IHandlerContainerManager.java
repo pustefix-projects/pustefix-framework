@@ -19,12 +19,13 @@
 
 package de.schlund.pfixcore.workflow.app;
 import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.*;
 import de.schlund.util.*;
 import java.util.*;
 import org.apache.log4j.*;
 
 /**
- * IHandlerContainerFactory.java
+ * IHandlerContainerManager.java
  *
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
@@ -33,36 +34,44 @@ import org.apache.log4j.*;
  *
  */
 
-public class IHandlerContainerFactory {
-    private static Category                 LOG      = Category.getInstance(IHandlerContainerFactory.class.getName());
-    private static HashMap                  known    = new HashMap();
-    private static IHandlerContainerFactory instance = new IHandlerContainerFactory();
-    
-    public static IHandlerContainerFactory getInstance() {
-        return instance;
-    }
+public class IHandlerContainerManager implements PropertyObject {
+    private static Category LOG               = Category.getInstance(IHandlerContainerManager.class.getName());
+    private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
+    private        HashMap  known             = new HashMap();
 
-    public IHandlerContainer getIHandlerContainer(String classname, Context context) {
+    public void init(Properties properties) {
+        // nothing :-)
+    }
+    
+    public IHandlerContainer getIHandlerContainer(Context context) {
+        String     classname = null;
+        Properties props     = context.getPropertiesForCurrentPageRequest();
+
         synchronized (known) {
-            String            pagename    = context.getCurrentPageRequest().getName();
-            String            contextname = context.getName();
-            String            key         = pagename + "@" + contextname;
-            IHandlerContainer retval      = (IHandlerContainer) known.get(key); 
+            PageRequest       page   = context.getCurrentPageRequest();
+            IHandlerContainer retval = (IHandlerContainer) known.get(page); 
             if (retval == null) {
+                // LOG.debug("----- cachemiss for IHandlerContainer on page " + page.getName());
                 try {
-                    Class theclass = Class.forName(classname);
-                    retval = (IHandlerContainer) theclass.newInstance();
+                    
+                    classname = props.getProperty(IHandlerSimpleContainer.PROP_CONTAINER);
+                    if (classname == null) {
+                        classname = DEF_HDL_CONTAINER;
+                    }
+                    retval = (IHandlerContainer) Class.forName(classname).newInstance();
                     retval.initIHandlers(context);
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
                     LOG.error("unable access class [" + classname + "]", e);
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                     LOG.error("unable to find class [" + classname + "]", e);
                 } catch (ClassCastException e) {
                     LOG.error("class [" + classname + "] does not implement the interface IHandlerContainer", e);
                 }
-                known.put(key, retval);
+                known.put(page, retval);
+            } else {
+                // LOG.debug("+++++ cachehit for IHandlerContainer on page " + page.getName());
             }
             return retval;
         }
