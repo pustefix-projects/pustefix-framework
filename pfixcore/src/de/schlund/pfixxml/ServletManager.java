@@ -637,44 +637,50 @@ public abstract class ServletManager extends HttpServlet {
         	String propName = (String) props.nextElement();
 
         	if ( propName.startsWith(PROP_EXCEPTION) ) {
-                String propValue = properties.getProperty(propName);
-                String exConfNum = propName.substring(len+1, len+3);
-                ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(exConfNum);
+              String propValue = properties.getProperty(propName);
 
-                CAT.debug("Property found for exception processing: "+propName +"="+propValue);
+              StringTokenizer tokenizer = new StringTokenizer(propName, ".");
+              if ( tokenizer.countTokens() < 3 )
+                  throw new ServletException("Exception configuration has wrong format: "+ propName);
 
-                if ( exConf == null ) {
-                    exConf = new ExceptionConfig();
-                    tmpExConf.put(exConfNum, exConf);
-                }
+              tokenizer.nextToken();
+              String exConfName = tokenizer.nextToken();
+              ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(exConfName);
 
-        		try {
-                    String attrName = propName.substring(len+4).trim();
-                    CAT.debug(attrName);
-                    if ( "type".equals(attrName) ) {
-                        exConf.setType(propValue);
-                    } else if ( "forward".equals(attrName) ) {
-                        exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
-                    } else if ( "page".equals(attrName) ) {
-                        exConf.setPage(propValue);
-                    } else if ( "jms".equals(attrName) ) {
-                        exConf.setJms(propValue);
-                    } else if ( "processor".equals(attrName) ) {
-                        Class procClass = Class.forName(propValue);
-                        ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
-                        exConf.setProcessor(exProc);
-                    }
-                } catch (ClassCastException ex) {
-                    throw new ServletException("INVALID CONF: Class "+propValue+" is not an instance of 'ExceptionProcessor'");
-                } catch (IllegalAccessException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-                } catch (SecurityException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-                } catch (ClassNotFoundException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-                } catch (InstantiationException ex) {
-                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-                }
+              CAT.debug("Property found for exception processing: "+propName +"="+propValue);
+
+              if ( exConf == null ) {
+                  exConf = new ExceptionConfig();
+                  tmpExConf.put(exConfName, exConf);
+              }
+
+              try {
+                  String attrName = tokenizer.nextToken();
+                  CAT.debug(attrName);
+                  if ( "type".equals(attrName) ) {
+                      exConf.setType(propValue);
+                  } else if ( "forward".equals(attrName) ) {
+                      exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
+                  } else if ( "page".equals(attrName) ) {
+                      exConf.setPage(propValue);
+                  } else if ( "jms".equals(attrName) ) {
+                      exConf.setJms(propValue);
+                  } else if ( "processor".equals(attrName) ) {
+                      Class procClass = Class.forName(propValue);
+                      ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
+                      exConf.setProcessor(exProc);
+                  }
+              } catch (ClassCastException ex) {
+                  throw new ServletException("INVALID CONF: Class "+propValue+" is not an instance of 'ExceptionProcessor'");
+              } catch (IllegalAccessException ex) {
+                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+              } catch (SecurityException ex) {
+                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+              } catch (ClassNotFoundException ex) {
+                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+              } catch (InstantiationException ex) {
+                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+              }
         	}
     	}
 
@@ -689,6 +695,11 @@ public abstract class ServletManager extends HttpServlet {
                 throw new ServletException("INVALID ExceptionConfig: \n"+ exConfig);
             else
                 exceptionConfigs.put(exConfig.getType(), exConfig);
+        }
+
+        if ( CAT.isDebugEnabled() ) {
+            CAT.debug("Complete ExceptionConfig is:");
+            CAT.debug("\n"+ exceptionConfigs);
         }
     }
 
