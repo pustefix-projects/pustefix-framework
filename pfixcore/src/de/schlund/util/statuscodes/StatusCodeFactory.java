@@ -19,10 +19,14 @@
 
 package de.schlund.util.statuscodes;
 
-import java.util.*;
-import org.apache.log4j.*; 
+import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.util.FactoryInit;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import org.apache.log4j.Category;
 
 /**
  * factory object that produces StatusCode objects for all framework classes
@@ -33,13 +37,13 @@ import java.net.URL;
 public class StatusCodeFactory implements FactoryInit {
     private final static String            PROP_SCFILE = "statuscodefactory.propertyfile";
     private final static String            PROP_SCODE  = "statuscodefactory.statuscode";
-    private       static Category          LOG         = Category.getInstance(StatusCodeFactory.class.getName());
-    private       static HashMap           allscodes   = new HashMap();
-    private       static HashSet           propurls    = new HashSet();
-    private       static StatusCodeFactory instance    = new StatusCodeFactory();
-    private       static Object            LOCK        = new Object();
+    private final static Category          LOG         = Category.getInstance(StatusCodeFactory.class.getName());
+    private final static HashMap           allscodes   = new HashMap();
+    private final static HashSet           propurls    = new HashSet();
+    private final static StatusCodeFactory instance    = new StatusCodeFactory();
+    private final static Object            LOCK        = new Object();
     
-    private String localdomain = "";
+    private final String localdomain;
 
     public  static StatusCodeFactory getInstance() {
         return instance;
@@ -53,14 +57,13 @@ public class StatusCodeFactory implements FactoryInit {
     
     public void init (Properties props) throws Exception {
         LOG.debug( ">>> StatusCodeFactory: initializing ..." );
-        HashMap propfiles = selectProperties(props,  PROP_SCFILE);
+        HashMap propfiles = PropertiesUtils.selectProperties(props,  PROP_SCFILE);
         for (Iterator i = propfiles.values().iterator(); i.hasNext(); ) {
             String name = (String) i.next();
             URL    url  = null;
             if (name.startsWith("/")) {
                 url = new URL("file:" + name);
             } else {
-                //url = ClassLoader.getSystemResource(name);
                 url = getClass().getClassLoader().getResource(name);
             }
             if (url != null) {
@@ -87,7 +90,7 @@ public class StatusCodeFactory implements FactoryInit {
                 throw e;
             }
         
-            HashMap scprops = selectProperties(props, PROP_SCODE);
+            HashMap scprops = PropertiesUtils.selectProperties(props, PROP_SCODE);
             for (Iterator i = scprops.keySet().iterator(); i.hasNext(); ) {
                 String fullsc = (String) i.next();
                 String defmsg = (String) scprops.get(fullsc);
@@ -121,9 +124,9 @@ public class StatusCodeFactory implements FactoryInit {
      * @exception StatusCodeException if domain is not set with setLocalDomain()
      */
     public boolean statusCodeExists(String code) throws StatusCodeException {
-	synchronized (allscodes) {
+        synchronized (allscodes) {
             return allscodes.containsKey(code);
-	}
+	    }
     }
     
     /**
@@ -132,13 +135,14 @@ public class StatusCodeFactory implements FactoryInit {
      * @exception StatusCodeException if StatusCode can't be found  
      */
     public StatusCode getStatusCode(String code) throws StatusCodeException {
-        String name = null;
+        String name;
+        StatusCode scode;
+        
         if (localdomain.equals("")) { 
             name = code;
         } else {
             name = localdomain + "." + code;
         }
-        StatusCode scode = null;
         synchronized (LOCK) {
             scode = (StatusCode) allscodes.get(name);
         }
@@ -150,25 +154,9 @@ public class StatusCodeFactory implements FactoryInit {
         return scode;
     }
 
-    private static HashMap selectProperties(Properties props, String prefix) {
-    	String p;
-    	Enumeration enm;
-    	HashMap     result = new HashMap();
-
-    	prefix += '.';
-    	enm = props.propertyNames();
-    	while (enm.hasMoreElements()) {
-            p = (String) enm.nextElement();
-            if (p.startsWith(prefix)) {
-                String suffix = p.substring(prefix.length(),p.length());
-                result.put(suffix,props.get(p));
-            }
-    	}
-        
-    	return result;
+    public StatusCodeFactory() {
+        this("");
     }
-    
-    public StatusCodeFactory() {}
 
     public StatusCodeFactory(String localdomain) {
         this.localdomain = localdomain;

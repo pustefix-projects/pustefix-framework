@@ -32,17 +32,17 @@ public class StatusCode {
     /**
      * the Domain of the StatusCode without trailing "."
      */
-    private String scdomain = null;
+    private final String scdomain;
 
     /**
     * the StatusCodeIdentifier without any domain
     */
-    private String scid = null;
+    private final String scid;
 
     /**
      * the default StatusMessage itself
      */
-    private String scmsg = null;
+    private final String scmsg;
    
     /**
      * gets the StatusCode without domain, do no comparisons with it - just for output

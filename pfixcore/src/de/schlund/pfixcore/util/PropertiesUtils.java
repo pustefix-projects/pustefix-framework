@@ -65,7 +65,6 @@ public class PropertiesUtils {
     	return result;
     }
 
-
     /**
      * Select the Properties with the given prefix and return them in a
      * TreeMap, using the natural Ordering.
