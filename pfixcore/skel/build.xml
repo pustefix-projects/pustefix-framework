@@ -6,6 +6,7 @@
 
     <property file="build.properties"/>
     <property environment="env"/>
+	<property name="project.name"             value="${ant.project.name}"/>
     <property name="uid"                      value="${env.USER}"/>
     <property name="javahome"                 value="${env.JAVA_HOME}"/>
     <property name="build.compiler"           value="jikes"/>
@@ -58,38 +59,36 @@
         <property       name="debug"        value="false"/>
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
         <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
+        <!-- Create time stamp in ISO 8601 alike format.
+             17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
+        <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
     </target>
 
     <path id="cp.classpath">
         <fileset dir="${dir.lib}" includes="*.jar"/>
+	    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
         <pathelement location="${dir.build}"/>
         <pathelement location="${dir.res}"/>
     </path>
-    <path id="cp.buildpath">
-        <path refid="cp.classpath"/>
-        <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
-    </path>
-    <path id="cp.taskpath" refid="cp.classpath">
-    </path>
     
     <target name="init" depends="properties, core-data">
-        <!-- Create time stamp in ISO 8601 alike format.
-             17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
-        <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
-        <!-- Create the build directory structure needed for compile -->
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.src}"/>
         <!-- apache fails to start if its serverroot does not exist -->
         <mkdir dir="${dir.htdocs}"/>
-        <!-- if running with -v pathconvert already logs what it is doing, no need to echo again -->
-        <pathconvert property="echo.cp.buildpath" refid="cp.buildpath" pathsep="&#013;"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
+	    <!-- pathconvert dumps classpath on ant -verbose -->
+	    <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
     </target>
     
     <target name="noop" description="just prints the name of the project">
-        <echo message="${ant.project.name}"/>
+        <echo message="${project.name}"/>
     </target>
     
+	<target name="echoproperties">
+		<echoproperties/>
+	</target>
+  
     <target name="debug" depends="all" description="builds all and runs tomcat with debugging options">
         <!-- added suspend=n to default debugging option, as without this option
              Ctrl-C would not stop tomcat without leaving java processes hanging around
@@ -136,7 +135,7 @@
             srcdir="${dir.src}"
             destdir="${dir.build}"
             debug="${debug}"
-            classpathref="cp.buildpath"
+            classpathref="cp.classpath"
             excludes="${excludes.src}"
         />    
     </target>
@@ -173,25 +172,25 @@
         <taskdef
             name="pfx-xslt"
             classname="de.schlund.pfixcore.util.XsltGenericTask"
-            classpathref="cp.taskpath"
+            classpathref="cp.classpath"
             description="Performs generic XSLT transformations"
         />
         <taskdef 
             name="pfx-iwrp"
             classname="de.schlund.pfixcore.util.XsltIWrapperTask"
-            classpathref="cp.taskpath"
+            classpathref="cp.classpath"
             description="Generates .java files out of .iwrp (Interface Wrapper) files"
         />
         <taskdef
             name="pfx-webxml"
             classname="de.schlund.pfixcore.util.XsltWebXmlTask"
-            classpathref="cp.taskpath"
+            classpathref="cp.classpath"
             description="Creates WEB-INF/web.xml config files for each project"
         />
         <taskdef
             name="pfx-generate"
             classname="de.schlund.pfixcore.util.TargetGeneratorTask"
-            classpathref="cp.taskpath"
+            classpathref="cp.classpath"
             description="Creates dependencies in ${dir.projects}/.cache"
         />
     </target>
@@ -222,19 +221,28 @@
     	</apply>
     </target>
     
-    <!-- Makefile
-    clean: 
-        @echo "*** Removing all under '$(BUILDDIR)'..."
-        @rm -rf $(BUILDDIR)/*
-        @echo "*** Removing generated files..."
-        @rm -f $(ALLWRAPPERS:.iwrp=.java)
-        @echo "*** Removing all files matching: *~ ..."
-        @find $(SUBDIRS) -type f -name "*~" | xargs rm -f
-        @cd example && make -f Makefile clean
-        @rm -f example/servletconf/tomcat/lib/*.jar
-        @cd $(JNIDIR) && make -f Makefile clean
-    -->
-
+    <target name="installjars" >
+        <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
+             as ${dir.build} is specified as location it always resolves to an absolute path;
+             does not work for filenames containing spaces -->
+	    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
+        <exec executable="sh">
+          <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
+        </exec>
+        <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
+        <delete>
+            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+        </delete>
+        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
+            <fileset dir="${basedir}" includes="META-INF/**"/>
+            <fileset dir="${dir.res}"/>
+        </jar>
+        <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
+        <exec executable="sh">
+          <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+        </exec>
+    </target>
+    
     <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
@@ -252,31 +260,6 @@
         <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
     
-    <!-- example/Makefile
-    clean:
-        @echo "*** Removing *~..."
-        @find . -type f -name "*~" | xargs rm -f
-        @echo "*** Removing generated stylesheets..."
-        @rm -f $(CORE_XSL:.xsl.in=.xsl)
-        @echo "*** Removing generated configs..."
-        @rm -f $(CONFIGS:.xml.in=.xml)
-        @echo "*** Removing generated .prop files..."
-        @rm -f $(PROPFILES:.prop.in=.prop)
-        @rm -f common/conf/products.prj common/conf/pfixlog.xml 
-        @echo "*** Removing generated tomcat stuff..."
-        @rm -f servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
-        @rm -rf servletconf/tomcat/webapps
-
-    CONFIGS   = $(shell find . -type f | grep 'depend.xml.in$$')
-    PROPFILES = $(shell find . -type f | grep '\.prop.in$$')
-    DOCROOT   = $(shell pwd)
-    MACHINE   = $(shell hostname -s)
-    FQDN      = $(MACHINE).$(shell dnsdomainname)
-    UID       = $(USER)
-    
-    #CORE_XSL = $(shell find . -type f | grep 'core/xsl/.*\.xsl.in$$')
-    CORE_XSL  = $(shell find . -type f | grep '.*\.xsl.in$$')
-    -->    
     <target name="clean-project" description="deletes files from ${dir.projects}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete>
@@ -304,28 +287,6 @@
         <delete dir="${dir.projects}/.cache"/>
     </target>
 
-    <target name="installjars" >
-        <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
-             as ${dir.build} is specified as location it always resolves to an absolute path;
-             does not work for filenames containing spaces -->
-        <echo level="verbose">Setting symlink from example/servletconf/tomcat/classes to ${dir.build}</echo>
-        <exec executable="sh">
-          <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
-        </exec>
-        <echo level="verbose">Building ${ant.project.name}-res.jar in tomcat's lib directory</echo>
-        <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
-        </delete>
-        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${ant.project.name}-res.jar">
-            <fileset dir="${basedir}" includes="META-INF/**"/>
-            <fileset dir="${dir.res}"/>
-        </jar>
-        <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
-        <exec executable="sh">
-          <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
-        </exec>
-    </target>
-    
     <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
         <pfx-xslt 
             style="${dir.projects}/core/build/create_propfiles.xsl"
@@ -362,14 +323,13 @@
         <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
         <dependset>
             <srcfileset refid="id.fileset.projectxmlin"/>
-            <targetfilelist dir="${dir.projects}/servletconf" files="projects.xml" description="// TODO better declaration "/>
+	        <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
         </dependset>
         <pfx-xslt
             style="${dir.projects}/core/build/create_projects.xsl"
             srcdir="${dir.projects}"
             destdir="${dir.projects}"
             includes="servletconf/projects.xml.in"
-            description="// TODO depend on all project.xml.in"
         >
             <param name="docroot" expression="${dir.docroot}"/>
             <param name="files"   expression="${projectxmlins}"/>
@@ -408,7 +368,7 @@
         </pfx-xslt>
     </target>
     
-    <target name="statusmessages_xml" depends="compile" description="creates common/dyntxt/statusmessages.xml">
+    <target name="statusmessages_xml" depends="compile, propfiles" description="creates common/dyntxt/statusmessages.xml">
         <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
             <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
             <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>

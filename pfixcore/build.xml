@@ -61,32 +61,32 @@
     <property  name="debug"            value="false"/>
     <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
     <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
-  </target>
-  
-  <target name="init" depends="properties">
-    <!-- Create the time stamp in ISO 8601 format. The 17th September 2003 at 11:58:23 formats to AUTO_TAG_2003-09-17T11:58:23 in property -->
+    <!-- Create time stamp in ISO 8601 alike format.
+         17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
     <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${dir.build}"/>
-    <mkdir dir="${dir.dist}"/>
-    <pathconvert property="echo.cp.buildpath" refid="cp.buildpath" pathsep="&#013;"/>
-    <echo message="using machine=${machine} fqdn=${fqdn} buildpath=${echo.cp.buildpath}" level="verbose"/>
   </target>
   
   <path id="cp.classpath">
     <fileset dir="${dir.lib}" includes="*.jar"/>
+    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
     <pathelement location="${dir.build}"/>
     <pathelement location="${dir.res}"/>
   </path>
-  <path id="cp.buildpath">
-    <path refid="cp.classpath"/>
-    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
-  </path>
-  <path id="cp.taskpath" refid="cp.classpath">
-  </path>
+  
+  <target name="init" depends="properties">
+    <mkdir dir="${dir.build}"/>
+    <mkdir dir="${dir.dist}"/>
+    <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
+    <!-- pathconvert dumps classpath on ant -verbose -->
+    <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
+  </target>
   
   <target name="noop" description="just prints the name of the project">
     <echo message="${project.name}"/>
+  </target>
+  
+  <target name="echoproperties">
+  	<echoproperties/>
   </target>
   
   <target name="debug" depends="all" description="builds all and runs tomcat with debugging options">
@@ -126,27 +126,17 @@
     <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
   </target>
 
-  <!--
-  list of targets for dir.projects/all
-  bin/setvars.sh $(PRJFILE) depend propfiles targetdefs  zoneprops stylesheets \
-  common/conf/pfixlog.xml common/conf/products.prj \
-  servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf \
-  servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
-  common/dyntxt/statusmessages.xml
-  
-  we have no depend, was just a virtual target we don't need
-  -->
-  
   <target name="all" 
     depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
     description="builds all files required to run"
     />    
+
   <target name="compile" depends="generate-src, jni" description="compiles all .java files">
     <javac 
 	  srcdir="${dir.src}"
       destdir="${dir.build}"
       debug="${debug}"
-      classpathref="cp.buildpath"
+      classpathref="cp.classpath"
 	  excludes="${excludes.src}"
       >
     </javac>
@@ -170,7 +160,7 @@
       destdir="${dir.build}"
       includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
       debug="${debug}"
-      classpathref="cp.buildpath"
+      classpathref="cp.classpath"
       sourcepath="${dir.src}"
       >
     </javac>
@@ -180,42 +170,29 @@
     <taskdef
       name="pfx-xslt"
       classname="de.schlund.pfixcore.util.XsltGenericTask"
-      classpathref="cp.taskpath"
+      classpathref="cp.classpath"
       description="Performs generic XSLT transformations"
       />
     <taskdef 
       name="pfx-iwrp"
       classname="de.schlund.pfixcore.util.XsltIWrapperTask"
-      classpathref="cp.taskpath"
+      classpathref="cp.classpath"
       description="Generates .java files out of .iwrp (Interface Wrapper) files"
       />
     <taskdef
       name="pfx-webxml"
       classname="de.schlund.pfixcore.util.XsltWebXmlTask"
-      classpathref="cp.taskpath"
+      classpathref="cp.classpath"
       description="Creates WEB-INF/web.xml config files for each project"
       />
     <taskdef
       name="pfx-generate"
       classname="de.schlund.pfixcore.util.TargetGeneratorTask"
-      classpathref="cp.taskpath"
+      classpathref="cp.classpath"
       description="Creates dependencies in ${dir.projects}/.cache"
       />
   </target>
   
-  <!-- Makefile
-  clean: 
-  @echo "*** Removing all under '$(BUILDDIR)'..."
-  @rm -rf $(BUILDDIR)/*
-  @echo "*** Removing generated files..."
-  @rm -f $(ALLWRAPPERS:.iwrp=.java)
-  @echo "*** Removing all files matching: *~ ..."
-  @find $(SUBDIRS) -type f -name "*~" | xargs rm -f
-  @cd example && make -f Makefile clean
-  @rm -f example/servletconf/tomcat/lib/*.jar
-  @cd $(JNIDIR) && make -f Makefile clean
-  -->
-
   <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
     <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
     <delete dir="${dir.build}"/>
@@ -233,31 +210,6 @@
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
   
-  <!-- example/Makefile
-  clean:
-  @echo "*** Removing *~..."
-  @find . -type f -name "*~" | xargs rm -f
-  @echo "*** Removing generated stylesheets..."
-  @rm -f $(CORE_XSL:.xsl.in=.xsl)
-  @echo "*** Removing generated configs..."
-  @rm -f $(CONFIGS:.xml.in=.xml)
-  @echo "*** Removing generated .prop files..."
-  @rm -f $(PROPFILES:.prop.in=.prop)
-  @rm -f common/conf/products.prj common/conf/pfixlog.xml 
-  @echo "*** Removing generated tomcat stuff..."
-  @rm -f servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
-  @rm -rf servletconf/tomcat/webapps
-
-  CONFIGS   = $(shell find . -type f | grep 'depend.xml.in$$')
-  PROPFILES = $(shell find . -type f | grep '\.prop.in$$')
-  DOCROOT   = $(shell pwd)
-  MACHINE   = $(shell hostname -s)
-  FQDN      = $(MACHINE).$(shell dnsdomainname)
-  UID       = $(USER)
-  
-  #CORE_XSL = $(shell find . -type f | grep 'core/xsl/.*\.xsl.in$$')
-  CORE_XSL  = $(shell find . -type f | grep '.*\.xsl.in$$')
-  -->    
   <target name="clean-project" description="deletes files from ${dir.projects}">
     <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
     <delete>
@@ -285,24 +237,6 @@
     <delete dir="${dir.projects}/.cache"/>
   </target>
 
-  <!--
-  dist:   _dist clean compile jar data skeleton
-  @rm -f example/core/CVS_AUTOTAG
-  @rm -f skel/CVS_AUTOTAG
-  
-  notag:    _notag clean compile jar data skeleton
-  @rm -f example/core/CVS_AUTOTAG
-  @rm -f skel/CVS_AUTOTAG
-  
-  _dist:
-  @echo "*** tag cvs with ${JARAUTOTAG}!"
-  @(cvs tag ${JARAUTOTAG})
-  $(shell echo ${JARAUTOTAG} > META-INF/CVS_AUTOTAG) 
-  
-  _notag:
-  @echo "*** Remove autotag, because we don't tag in cvs!"
-  $(shell echo no-tag-set > META-INF/CVS_AUTOTAG) 
-  -->
   <target name="dist" depends="clean, init">
     <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
     <!-- looks funny, but if someone called something like
@@ -317,21 +251,6 @@
     <antcall target="skeleton" inheritall="true"/>
   </target>
 
-  <!--    
-  skeleton:
-  @echo "Building $(PROJECT)-skel.jar in directory dist."
-  cp META-INF/CVS_AUTOTAG skel/CVS_AUTOTAG
-  cp -a lib/*.jar skel/lib/
-  cp dist/$(PROJECT)-${VERSION}.jar dist/$(PROJECT)-data-$(VERSION).tar.gz skel/lib
-  @echo "...copying the tomcat installation files into the skeleton distribution..."  
-  @(cd example/servletconf/tomcat; tar cf - `find bin common server -type f | grep -v "/CVS/"` | \
-  tar xf - -C ../../../skel/projects/servletconf/tomcat) 
-  @rm -f dist/$(PROJECT)-skel-*.tar.gz
-  tar cvzf dist/$(PROJECT)-skel-$(VERSION).tar.gz  `find skel -type f | grep -v CVS`
-  @rm -f skel/lib/*.jar
-  @rm -f skel/lib/$(PROJECT)-data-$(VERSION).tar.gz
-  @(cd skel/projects/servletconf/tomcat; rm -rf bin common server)
-  -->
   <target name="skeleton" depends="compile, jar, data">
     <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
@@ -344,13 +263,6 @@
     </tar>
   </target>    
 
-  <!--
-  data:
-  @echo "Building $(PROJECT)-data.jar in directory dist."
-  @cp META-INF/CVS_AUTOTAG example/core/CVS_AUTOTAG
-  @(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && \
-  tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-  -->
   <target name="data" depends="init, stylesheets, autotag">
     <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
     <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
@@ -358,16 +270,6 @@
     <delete file="${dir.projects}/core/${name.cvsautotag}"/>
   </target>
 
-  <!--
-  jar:
-  @echo "Building $(PROJECT).jar in directory dist."
-  @(if ! test -d dist; then mkdir dist; fi)
-  @(rm -f dist/*.jar)    
-  @${JAR} cvf dist/$(PROJECT)-$(VERSION).jar `find META-INF -type f | grep -v "CVS/"`
-  @(cd $(BUILDDIR); ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar *)
-  @(cd res; ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar `find . -type f | grep -v "CVS/"`)
-  @(cd $(JNIDIR); ${JAR} uvf ../dist/$(PROJECT)-$(VERSION).jar $(JNIPKG))
-  -->
   <target name="jar" depends="autotag">
     <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
     <jar destfile="${file.pfixcore_jar}">
@@ -399,23 +301,11 @@
     </exec>
   </target>
   
-  <!--
-  dev:
-  @echo "Setting link to $(BUILDDIR)/de in example/servletconf/tomcat/classes."
-  @(cd example/servletconf/tomcat/; if ! test -d classes; then mkdir classes; fi)
-  @(cd example/servletconf/tomcat/classes; if ! test -h de; then ln -s ../../../../$(BUILDDIR)/de; fi)
-  @echo "Building $(PROJECT)-res.jar in tomcat's lib directory."
-  @rm -f example/servletconf/tomcat/lib/*.jar
-  @${JAR} cf example/servletconf/tomcat/lib/$(PROJECT)-$(VERSION)-res.jar `find META-INF -type f | grep -v "CVS/"`
-  @(cd res; ${JAR} uf ../example/servletconf/tomcat/lib/$(PROJECT)-${VERSION}-res.jar `find . -type f | grep -v "CVS/"`)
-  @echo "Install jars in tomcat-lib directory!"
-  @(cd example/servletconf/tomcat/lib/; ln -s ../../../../lib/*.jar .)
-  -->
   <target name="installjars" >
     <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
     as ${dir.build} is specified as location it always resolves to an absolute path;
     does not work for filenames containing spaces -->
-    <echo level="verbose">Setting symlink to ${dir.build}/de in example/servletconf/tomcat/classes</echo>
+    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
     <mkdir dir="${dir.projects}/servletconf/tomcat/classes"/>
     <exec executable="sh">
       <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
@@ -515,7 +405,7 @@
     </pfx-xslt>
   </target>
   
-  <target name="statusmessages_xml" depends="compile" description="creates common/dyntxt/statusmessages.xml">
+  <target name="statusmessages_xml" depends="compile, propfiles" description="creates common/dyntxt/statusmessages.xml">
     <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
       <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
       <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>
