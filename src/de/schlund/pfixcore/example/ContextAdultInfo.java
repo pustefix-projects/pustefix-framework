@@ -36,4 +36,5 @@ import java.util.*;
 public interface ContextAdultInfo extends ContextResource {
     public Boolean getAdult();
     public void    setAdult(Boolean adult);
+    public boolean needsData();
 }// ContextAdultInfo

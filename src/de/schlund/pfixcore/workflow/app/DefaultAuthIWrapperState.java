@@ -100,6 +100,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     private IWrapper getAuthWrapper(Context context, boolean do_init) throws Exception {
+        String     pagename  = context.getCurrentPageRequest().getName();
         Properties props     = context.getPropertiesForCurrentPageRequest();
         HashMap    authwrp   = PropertiesUtils.selectProperties(props, PROP_AUTHIFACE);
         AppLoader  appLoader = AppLoader.getInstance();
@@ -107,9 +108,9 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if (authwrp == null || authwrp.size() != 1) {
             String msg;
             if (authwrp == null) {
-                msg = "authwrp == null";
+                msg = "authwrp == null (" + pagename + ")";
             } else {
-                msg = "authwrp.size = " + authwrp.size();
+                msg = "authwrp.size = " + authwrp.size() + " (" + pagename + ")";
             }
             throw new XMLException("FATAL: Need exactly one interface definition for authpage! " + msg);
         }

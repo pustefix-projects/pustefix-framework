@@ -1,6 +1,15 @@
+2004-04-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: added more debug to
+	maybe find the mysterious authwrapper count > 1 bug. 
+
+	* src/de/schlund/pfixcore/workflow/ContextResource.java: removed
+	needsData() as part of the interface. This was never really needed anyway.
+	Fixed some CRs to implement needsData() themself.
+
 2004-04-08  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/FactoryInitServlet.java: 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: 
         new method : public static boolean isConfigured()
 
 2004-04-07  Adam Habermann  <adam.habermann@schlund.de>

@@ -41,4 +41,5 @@ public interface ContextTShirt extends ContextResource {
     public void setColor(Integer color);
     public void setSize(String size);
     public void setFeature(Integer[] features);
+    public boolean needsData();
 }// ContextTShirt

@@ -54,7 +54,7 @@ public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
         beenthere  = true;
     }
 
-    public boolean needsData() throws Exception{
+    public boolean needsData() {
         return !beenthere;
     }
 
