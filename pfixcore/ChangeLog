@@ -1,3 +1,16 @@
+2004-10-28  Benjamin Reitzammer  <benjamin@schlund.de>
+
+	* Implemented the new pagemessages feature: Context has several new methods
+    called addPageMessage(). With these you can associate a Statuscode with the
+    next displayed page, no matter which page this is (this works with all
+    pageflow/jumptopage stuff pustefix can do). Depending on the level, that's
+    supplied with the StatusCode, the StatusCodes are wrapped in an according
+    CSS class and a header is displayed too.
+    To finally show the messages on a page, simply include use the <pfx:pagemessages />
+    tag anywhere on your page, where you want messages to be shown.
+    Take a look at the Context's Javadoc for details how to add StatusCodes
+    tp pages.
+
 2004-10-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* added xercesImpl-2.6.2 again. Seems it's still needed... :-(
@@ -6,9 +19,9 @@
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: print path.getRelative(), not path
 
-	* example/core/conf/generator_tree.xml: 
-	* example/core/conf/generator_quiet.xml: 
-	* example/core/conf/generator_full.xml: added log4j NS 
+	* example/core/conf/generator_tree.xml:
+	* example/core/conf/generator_quiet.xml:
+	* example/core/conf/generator_full.xml: added log4j NS
 
 2004-10-23  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -24,7 +37,7 @@
 	* Removed res.jar files. Instead, the compile target copies the res directory (if there
 	is one) into the build directory.
 	* Removed FactoryInit base class, the init method is called via reflection now.
-	(Rationale: dependency on FactoryInit class was problematic because it's 
+	(Rationale: dependency on FactoryInit class was problematic because it's
 	from util.jar)
 
 2004-10-21  Jens Lautenbacher  <jtl@schlund.de>
@@ -48,14 +61,14 @@
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed the cache
 	control stuff to something that may or may not be better suited to
 	a) always request a new copy when really clicking on the link b) serve
-	the content from cache when using the back button. This cache stuff really 
+	the content from cache when using the back button. This cache stuff really
 	makes my day - not.
 
 2004-10-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.1-pre
 
-	* build.xml: relased 0.8.0 
+	* build.xml: relased 0.8.0
 
 	* example/core/xsl/navigation.xsl.in: fixed handling of pfx:active/pfx:normal/pfx:invisible
 
@@ -63,7 +76,7 @@
 
 2004-10-15  Martin Leidig  <mleidig@schlund.de>
 
-	* example/core/schema/wsconfig200401.xsd: Added optional SSL configuration 
+	* example/core/schema/wsconfig200401.xsd: Added optional SSL configuration
 	element to force SSL connections for webservices
 	* example/core/script/webservice.js: SOAP_Stub now automatically sets request
 	protocol to the one used within the calling site
@@ -114,7 +127,7 @@
 
 2004-10-11  Martin Leidig  <mleidig@schlund.de>
 
-	Added a "real world" webservice example application: a simple 
+	Added a "real world" webservice example application: a simple
 	HTML/Javascript chat client and Pustefix based server, doing
 	all necessary communication via the Pustefix SOAP mechanism.
 
@@ -138,10 +151,10 @@
 	bean representing chat message
 
 	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java: Bugfix
-	* example/core/script/webservice.js: Now creates Javascript Error 
+	* example/core/script/webservice.js: Now creates Javascript Error
 	objects instead of SOAP_Exceptions for SOAP faults. Added handling
 	of void return types.
-	* example/core/script/xmlRequest.js: Now for asynchronous Mozilla 
+	* example/core/script/xmlRequest.js: Now for asynchronous Mozilla
 	XMLHttpRequests returning a HTTP error no exception is thrown, so
 	that the callback function can be called to process the response body.
 
@@ -189,7 +202,7 @@
 	* example/core/xsl/include.xsl.in: Added template for generating
 	webservice console, which creates links to some webservice specific
 	tools (Web service monitor, Web service admin) when inserted into
-	the xml via the pfx:webserviceconsole tag (automatically disabled 
+	the xml via the pfx:webserviceconsole tag (automatically disabled
 	in production mode)
 
 	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java:
@@ -201,7 +214,7 @@
 
 	* skel/projects/common/conf/server-config.wsdd: Added server
 	skeleton to skel
-	
+
 	Improved SOAP error display handling for all examples:
 	* example/webservice/htdocs/calc-pfxsoap.js
 	* example/webservice/htdocs/counter-pfxsoap.js
@@ -224,14 +237,14 @@
 
 	Added webservice support to Pustefix, which now makes it possible
 	to exchange data/access application state via SOAP by providing
-	special webservice capabilities. This is done by a close webservice 
-	server integration on the server side (with Apache Axis as default 
-	server) and a client side Javascript SOAP implementation supporting 
-	all important browsers (with some special features, like automatically 
-	generated Javascript webservice stubs). 
-	
+	special webservice capabilities. This is done by a close webservice
+	server integration on the server side (with Apache Axis as default
+	server) and a client side Javascript SOAP implementation supporting
+	all important browsers (with some special features, like automatically
+	generated Javascript webservice stubs).
+
 	Added webservice libraries (Apache Axis and dependent libraries):
-	
+
 	* lib/axis-ant.jar
 	* lib/axis.jar
 	* lib/commons-discovery.jar
@@ -247,12 +260,12 @@
 	Added special webservice task for generation of descriptors and code:
 	* build.xml
 
-	Added webservice targets, e.g. "webservice-config" for building 
+	Added webservice targets, e.g. "webservice-config" for building
 	webservice configuration, "webservice" for building WSDL, WSDD and stub
 	files:
 	* skel/build.xml
 
-	Added xml schema, defining the webservice configuration (server and 
+	Added xml schema, defining the webservice configuration (server and
 	services):
 	* example/core/schema/wsconfig200401.xsd
 
@@ -262,14 +275,14 @@
 	Added catalog entry for webservice configuration schema:
 	* example/core/schema/catalog.xml
 
-	Added webservice logger, customized Axis and apache.commons Digester 
+	Added webservice logger, customized Axis and apache.commons Digester
 	logging (see comment within this file):
 	* example/common/conf/pfixlog.xml.in
 
 	Added axis webservice deployment descriptor skeleton:
 	* example/common/conf/server-config.wsdd
 
-	Added stylesheet for creating webservice.conf from customizable 
+	Added stylesheet for creating webservice.conf from customizable
 	webservice.conf.in:
 	* example/core/build/create_webservice.xsl
 
@@ -284,60 +297,60 @@
 
 	Roundup of the most important webservice application files:
 
-	Webservice configuration, containing global server settings and 
+	Webservice configuration, containing global server settings and
 	definitions of some demo and test services:
 	* example/webservice/conf/webservice.conf.in
 
-	Some examples provide usage of different clientside soap 
-	calling mechanisms, which are placed in files with the a naming 
-	convention (SERVICE-pfxsoap.js for the Pustefix Javascript SOAP 
-	implementation, SERVICE-soap.js for Mozilla Low Level SOAP and 
-	SERVICE-wsdl.js for Mozilla WSDL proxying), example: 
+	Some examples provide usage of different clientside soap
+	calling mechanisms, which are placed in files with the a naming
+	convention (SERVICE-pfxsoap.js for the Pustefix Javascript SOAP
+	implementation, SERVICE-soap.js for Mozilla Low Level SOAP and
+	SERVICE-wsdl.js for Mozilla WSDL proxying), example:
 	* example/webservice/htdocs/calc-pfxsoap.js
 	* example/webservice/htdocs/calc-soap.js
 	* example/webservice/htdocs/calc-wsdl.js
 
-	Added webservice example classes (webservice interfaces and 
-	implementations, beans, etc.). The service classes follow an optional 
-	naming convention (SERVICE.java for interfaces and SERVICEImpl.java 
+	Added webservice example classes (webservice interfaces and
+	implementations, beans, etc.). The service classes follow an optional
+	naming convention (SERVICE.java for interfaces and SERVICEImpl.java
 	for the according implementation), example:
 	* src/de/schlund/pfixcore/example/webservices/Calculator.java
 	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
 
-	Added lots of classes, only the important ones will be listed and 
+	Added lots of classes, only the important ones will be listed and
 	shortly described:
-	
-	* src/de/schlund/pfixcore/webservice: Main package, containing general 
+
+	* src/de/schlund/pfixcore/webservice: Main package, containing general
 	webservice classes, important classes:
 
-	* src/de/schlund/pfixcore/webservice/AbstractService.java: Base class 
-	of all service implementations, which need access to the application 
+	* src/de/schlund/pfixcore/webservice/AbstractService.java: Base class
+	of all service implementations, which need access to the application
 	state (ContextResources),
-	* src/de/schlund/pfixcore/webservice/WebServiceContext.java: Class, 
-	which provides access to webservice container internals (i.e. service 
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java: Class,
+	which provides access to webservice container internals (i.e. service
 	configuration), similar to Servlet API's ServletContext
 	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: This class
-	extends AxisServlet from the Axis distribution to provide additional 
+	extends AxisServlet from the Axis distribution to provide additional
 	features and smoothly integrate Axis into Pustefix.
-	
-	* src/de/schlund/pfixcore/webservice/config: Package, containing all 
+
+	* src/de/schlund/pfixcore/webservice/config: Package, containing all
 	the stuff for configuration reading and management, important classes:
 
-	* src/de/schlund/pfixcore/webservice/config/Configuration.java: Main 
-	configuration class, providing access to Webservice container and 
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java: Main
+	configuration class, providing access to Webservice container and
 	webservices configuration
-	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java: 
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java:
 	Manages global/container configuration
-	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: 
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java:
 	Manages service configuration
 
 	* src/de/schlund/pfixcore/webservice/generate: Package, containing all
-	the stuff for creation of deployment descriptors, WSDL and code 
+	the stuff for creation of deployment descriptors, WSDL and code
 	generation, important classes:
 
 	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: Ant
-	task, which generates descriptors, WSDL and code (and is responsible 
-	for deploying them to the according webapplication), using the 
+	task, which generates descriptors, WSDL and code (and is responsible
+	for deploying them to the according webapplication), using the
 	following subtasks:
 	* src/de/schlund/pfixcore/webservice/generate/Java2Wsdl.java: Generates
 	WSDL descriptions from Java interfaces
@@ -346,28 +359,28 @@
 	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java: Generates
 	Javascript SOAP stubs from WSDL descriptions
 
-	* src/de/schlund/pfixcore/webservice/handler: Package, containing 
-	Message handlers, working as interceptors during SOAP Message 
+	* src/de/schlund/pfixcore/webservice/handler: Package, containing
+	Message handlers, working as interceptors during SOAP Message
 	processing, important classes:
-	
+
 	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java: Base
 	class for handlers which provides methods to access servlet-/webservice
 	context and request.
 	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java:
 	Handler, which is responsible for handling the different authentication
- 	mechanisms, e.g. authentication via Pustefix session and calling 
+ 	mechanisms, e.g. authentication via Pustefix session and calling
 	checkAuthorization on context
-	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java: 
-	Handler, which intercepts message processing, to provide monitoring 
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java:
+	Handler, which intercepts message processing, to provide monitoring
 	capabilities
 
-	* src/de/schlund/pfixcore/webservice/monitor: Package, implementing 
+	* src/de/schlund/pfixcore/webservice/monitor: Package, implementing
 	message monitoring capabilities (message history)
-	
+
 2004-10-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java:
-	Now creates directories for a file, if neccessary directories do not exist yet. 
+	Now creates directories for a file, if neccessary directories do not exist yet.
 
 2004-09-30  Michael Hartmeier  <mhm@schlund.de>
 	Added Jmx support (which is disabled by default) and use it for test case recording:
@@ -375,8 +388,8 @@
 	o extract a new sub-object from SessionInfoStruct holding serializable data (which
 	  can be transferred to jmx clients)
 	o xslt parameter removed: __recordmode, recordmode_allowed
-	o removed from pustefix.prop.in: xmlserver.noxmlonlyallowed, recordmode_allowed 
-	
+	o removed from pustefix.prop.in: xmlserver.noxmlonlyallowed, recordmode_allowed
+
 2004-09-21  Michael Hartmeier  <mhm@schlund.de>
 	* build.xml
 	* skel/build.xml: eliminate duplicated core. skel/build.xml is the main build
@@ -389,7 +402,7 @@
 
 2004-09-15  Michael Hartmeier  <mhm@schlund.de>
 
-	* src/de/schlund/pfixcore/editor/* 
+	* src/de/schlund/pfixcore/editor/*
  	* example/core/editor/*:
 	remove testcase playback from editor, this is part of the testalizer now
 
@@ -409,7 +422,7 @@
 	"apploader.package.exclude" you can specify certain packages which should not
 	be loaded by the AppLoader even though their parent packages are.
 
-	* example/common/conf/apploader.prop.in 
+	* example/common/conf/apploader.prop.in
 	* skel/projects/common/conf/apploader.prop.in
         * src/de/schlund/pfixxml/loader/AppLoaderConfig.java
 
@@ -417,10 +430,10 @@
 	for the new extended class inclusion/exclusion mechanism, updated dependant
 	classes.
 
-	* src/de/schlund/pfixxml/FactoryInitServlet.java 
-	* src/de/schlund/pfixxml/loader/AppClassLoader.java 
-	* src/de/schlund/pfixxml/loader/AppLoader.java 
- 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java
+	* src/de/schlund/pfixxml/loader/AppLoader.java
+
 2004-09-01  Joerg Haecker <haecker@schlund.de>
 
 	* fixes for rendering errors to screen
