@@ -269,13 +269,12 @@
         <description>link stylesheet</description>
       </param>
 
-<!--       <param required="0"> -->
-<!--         <name>method</name> -->
-<!--         <standard>toggle</standard> -->
-<!--         <possible_values>on|off|toggle</possible_values> -->
-<!--         <description>The method called on the associated layer. "On" -->
-<!--         shows the layer, "off" hides it and "toggle" toggles it's state.</description> -->
-<!--       </param> -->
+      <param required="0">
+        <name>method</name>
+        <values><oneof><option>on</option><option>off</option><option default="true">toggle</option></oneof></values>
+        <description>The method called on the associated layer. "On"
+        shows the layer, "off" hides it and "toggle" toggles it's state.</description>
+      </param>
 
       <children>
         <name>pfx:layer_ref</name>
@@ -291,9 +290,6 @@
             </pfx:switch>
           </xmlcode>
         </input>
-        <output>
-          <xmlcode></xmlcode>
-        </output>
       </example>
     </cus:documentation>  
     <xsl:param name="class">
@@ -313,7 +309,7 @@
           <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
           <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'off']) > 0">,</xsl:if>
         </xsl:for-each>);
-        return false;</xsl:attribute>      
+        return true;</xsl:attribute>      
       <xsl:apply-templates/>
     </a>
   </xsl:template>
@@ -321,25 +317,58 @@
   <xsl:template match="pfx:layer_check">
     <cus:documentation>
     <responsible>JTL</responsible>
-      <description>Checks the visibility of a sub-layer. </description>
+      <description>Checks the visibility of a pfx:layer. </description>
       <param required="0">
         <name>name</name>
         <values><string/></values>
-        <description>Name of the sub-layer</description>
+        <description>Name of the pfx:layer</description>
+      </param>
+
+      <param required="0">
+        <name>type</name>
+        <values><oneof><option>radio</option><option>checkbox</option></oneof></values>
+        <description>If type is given and one of the allowed options, create an input tag of the resp. type whose state
+          mirrors the visibility of the referenced pfx:layer.
+        </description>
       </param>
       
+      <param required="0">
+        <name>class</name>
+        <values><string/></values>
+        <description>
+          Applies only when the type attribute is given and one of the allowed options. Sets the "class" attribute of the created input tag
+        </description>
+      </param>
+
+      <param required="0">
+        <name>style</name>
+        <values><string/></values>
+        <description>
+          Applies only when the type attribute is given and one of the allowed options. Sets the "style" attribute of the created input tag
+        </description>
+      </param>
+
+      <param required="0">
+        <name>disabled</name>
+        <values><oneof><option>disabled</option></oneof></values>
+        <description>
+          Applies only when the type attribute is given and one of the allowed options. Sets the "disabled" attribute of the created input tag
+        </description>
+      </param>
+
       <parent>
-        <name>pfx:switch</name>
+        <name>pfx:switch (Note: This tag can also be used without a pfx:switch to create a view only element that mirrors the state of a pfx:layer.)
+        </name>
       </parent>
 
       <children>
         <name>pfx:on</name>
-        <description>Will displayed, if the sub-layer is visible</description>        
+        <description>Will displayed, if the sub-layer is visible (does not apply when the type attribute is given)</description>        
       </children>
 
       <children>
         <name>pfx:off</name>
-        <description>Will displayed, if the sub-layer is invisible</description>        
+        <description>Will displayed, if the sub-layer is invisible (does not apply when the type attribute is given)</description>        
       </children>
 
       <example>
@@ -355,7 +384,7 @@
           The "user visible part" (there is also some javascript generated):
           <xmlcode>
             <span id="SWITCH_ON_d1e174">
-             Swith Layer B OFF
+             Switch Layer B OFF
             </span>
             <span id="SWITCH_OFF_d1e174">
               Switch Layer B ON
@@ -367,24 +396,47 @@
     
     <xsl:variable name="name"><xsl:value-of select="concat($page,'_',@name)"/></xsl:variable>
     <xsl:variable name="unique"><xsl:value-of select="generate-id(.)"/></xsl:variable>
-    <span>
-      <xsl:attribute name="id">SWITCH_ON_<xsl:value-of select="$unique"/></xsl:attribute>
-      <xsl:if test="./pfx:on/@class">
-        <xsl:attribute name="class"><xsl:value-of select="./pfx:on/@class"/></xsl:attribute>
-      </xsl:if>
-      <xsl:apply-templates select="./pfx:on/node()"/>
-    </span>
-    <span>
-      <xsl:attribute name="id">SWITCH_OFF_<xsl:value-of select="$unique"/></xsl:attribute>
-      <xsl:if test="./pfx:off/@class">
-        <xsl:attribute name="class"><xsl:value-of select="./pfx:off/@class"/></xsl:attribute>
-      </xsl:if>
-      <xsl:apply-templates select="./pfx:off/node()"/>
-    </span>
-    <script>
-      top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOn(window.document.getElementById('SWITCH_ON_<xsl:value-of select="$unique"/>'));
-      top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOff(window.document.getElementById('SWITCH_OFF_<xsl:value-of select="$unique"/>'));
-    </script>
+    <xsl:variable name="type"><xsl:value-of select="@type"/></xsl:variable>
+    <xsl:choose>
+      <xsl:when test="$type = 'radio' or $type = 'checkbox'">
+        <input>
+          <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
+          <xsl:attribute name="id">INPUT_<xsl:value-of select="$unique"/></xsl:attribute>
+          <xsl:if test="@disabled">
+            <xsl:copy-of select="@disabled"/>
+          </xsl:if>
+          <xsl:if test="@class">
+            <xsl:copy-of select="@class"/>
+          </xsl:if>
+          <xsl:if test="@style">
+            <xsl:copy-of select="@style"/>
+          </xsl:if>
+        </input>
+        <script>
+          top.__js_getLayer('<xsl:value-of select="$name"/>').addInputElem(window.document.getElementById('INPUT_<xsl:value-of select="$unique"/>'));
+        </script>
+      </xsl:when>
+      <xsl:otherwise>
+        <span>
+          <xsl:attribute name="id">SWITCH_ON_<xsl:value-of select="$unique"/></xsl:attribute>
+          <xsl:if test="./pfx:on/@class">
+            <xsl:attribute name="class"><xsl:value-of select="./pfx:on/@class"/></xsl:attribute>
+          </xsl:if>
+          <xsl:apply-templates select="./pfx:on/node()"/>
+        </span>
+        <span>
+          <xsl:attribute name="id">SWITCH_OFF_<xsl:value-of select="$unique"/></xsl:attribute>
+          <xsl:if test="./pfx:off/@class">
+            <xsl:attribute name="class"><xsl:value-of select="./pfx:off/@class"/></xsl:attribute>
+          </xsl:if>
+          <xsl:apply-templates select="./pfx:off/node()"/>
+        </span>
+        <script>
+          top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOn(window.document.getElementById('SWITCH_ON_<xsl:value-of select="$unique"/>'));
+          top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOff(window.document.getElementById('SWITCH_OFF_<xsl:value-of select="$unique"/>'));
+        </script>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template match="pfx:layer_ref">
@@ -405,10 +457,16 @@
         shows the layer, "off" hides it. Don't specifying the
         attribute or giving it the value "toggle" toggles the layer's state.</description>
       </param>
+      <param required="0">
+        <name>autoclose</name>
+        <values><oneof><option>true</option><option default="true">false</option></oneof></values>
+        <description>if autoclose is "true", and the pfx:layer_ref tag is contained in another pfx:layer (which is the "parent"),
+          automatically close the referenced layer when the parent layer is closed.</description>
+      </param>
     </cus:documentation>
     <xsl:param name="parent">
       <xsl:choose>
-        <xsl:when test="count(ancestor::pfx:layer) > 0">
+        <xsl:when test="count(ancestor::pfx:layer) > 0 and @autoclose = 'true'">
           <xsl:value-of select="concat($page, '_', ancestor::pfx:layer[position() = 1]/@name)"/>
         </xsl:when>
         <xsl:otherwise>__ROOT_LAYER__</xsl:otherwise>
