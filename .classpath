@@ -6,7 +6,6 @@
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pfix_httpclient-2.0-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-regexp-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/jcert.jar"/>
 	<classpathentry kind="lib" path="lib/jnet.jar"/>
