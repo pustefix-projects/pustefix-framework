@@ -39,7 +39,7 @@ xmlRequest.prototype.start = function( content ) {
 
   var i = _xml.length;
 
-  if( 1 && window.XMLHttpRequest ) {
+  if( 0 && window.XMLHttpRequest ) {
 
     //----------------
     // XMLHttpRequest
@@ -163,7 +163,7 @@ xmlRequest.prototype.start = function( content ) {
           }
         }
 
-        alert(iDoc);
+        alert("iDoc:" + iDoc);
         var attr;
         var form = iDoc.createElement("form");
                 //         attr = iDoc.createAttribute("action");
@@ -211,7 +211,7 @@ function customOnReadyStateChange() {
             _xmlTimerCount[i]++;
           } else {
 
-            _xml[i].call( _xmlThis[i], window.frames['pfxxmliframe'+i].contentDocument );
+            _xml[i].call( _xmlThis[i], window.frames['pfxxmliframe'+i].document );
             _xml[i] = null;
             cancelOnReadyStateChange(i);
           }

@@ -31,7 +31,7 @@ function pfxsoapCall(method,val1,val2) {
 	var param2=parseInt(val2);
 	var result=null;
 	
-	try {
+	//try {
 		
 		if(method=="getValue") result=wsCounter.getValue();
 		else if(method=="addValue") result=wsCounter.addValue(param1);
@@ -39,12 +39,12 @@ function pfxsoapCall(method,val1,val2) {
    	var t2=d2.getTime();
    	var t=t2-t1;
    	pfxsoapPrint(result,t);
-	} catch(x) {
+	/*} catch(x) {
 		var d2=new Date();
    	var t2=d2.getTime();
    	var t=t2-t1;
 		pfxsoapPrintError(x.toString(),t);
-	}
+	}*/
 
 	
 
