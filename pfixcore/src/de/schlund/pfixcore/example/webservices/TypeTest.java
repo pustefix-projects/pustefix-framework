@@ -23,6 +23,8 @@ public interface TypeTest {
     
     public int[] echoIntArray(int[] vals);
     
+    public long echoLong(long val);
+    
     public float echoFloat(float val);
     
     public float[] echoFloatArray(float[] vals);

@@ -421,20 +421,20 @@ SOAP_SimpleSerializer.prototype.deserialize=function(typeInfo,element) {
 
 
 //*********************************
-//SOAP_IntSerializer(XML_QName xmlType)
+//SOAP_NumberSerializer(XML_QName xmlType)
 //*********************************
-function SOAP_IntSerializer(xmlType) {
+function SOAP_NumberSerializer(xmlType) {
 	SOAP_SimpleSerializer.call(this,xmlType);
 }
-SOAP_IntSerializer.extend(SOAP_SimpleSerializer);
-SOAP_IntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
-	if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_IntSerializer.serialize");
-	if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_IntSerializer.serialize");
+SOAP_NumberSerializer.extend(SOAP_SimpleSerializer);
+SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
+	if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_NumberSerializer.serialize");
 	this.superclass.serialize(value,name,typeInfo,writer);
 }
-SOAP_IntSerializer.prototype.deserialize=function(typeInfo,element) {
+SOAP_NumberSerializer.prototype.deserialize=function(typeInfo,element) {
 	var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
-	if(isNaN(val)) throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_IntSerializer.deserialize");
+	if(isNaN(val)) throw new SOAP_SerializeEx("Illegal value: "+val,"SOAP_NumberSerializer.deserialize");
 	return val;
 }
 
@@ -685,7 +685,9 @@ function SOAP_TypeMapping() {
 //init()
 SOAP_TypeMapping.prototype.init=function() {
 	this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=new SOAP_BooleanSerializer();
-	this.mappings[XML_Types.XSD_INT.hashKey()]=new SOAP_IntSerializer();
+	var numSer=new SOAP_NumberSerializer();
+	this.mappings[XML_Types.XSD_INT.hashKey()]=numSer;
+	this.mappings[XML_Types.XSD_LONG.hashKey()]=numSer;
 	this.mappings[XML_Types.XSD_FLOAT.hashKey()]=new SOAP_FloatSerializer();	
 	this.mappings[XML_Types.XSD_STRING.hashKey()]=new SOAP_StringSerializer();
 	this.mappings[XML_Types.XSD_DATETIME.hashKey()]=new SOAP_DateTimeSerializer();

@@ -124,6 +124,19 @@ function pfxsoapCall() {
 			pfxsoapPrint("echoIntArray",(t2-t1),ex);
 		}
 		
+		//echoLong
+		t1=(new Date()).getTime();
+		try {
+			var longVal=parseInt(2);
+			var resVal=wsType.echoLong(longVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=longVal) throw "Wrong result";
+			pfxsoapPrint("echoLong",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			pfxsoapPrint("echoLong",(t2-t1),ex);
+		}
+		
 		//echoFloat
 		t1=(new Date()).getTime();
 		try {
