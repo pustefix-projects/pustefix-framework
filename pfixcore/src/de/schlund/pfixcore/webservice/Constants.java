@@ -34,4 +34,7 @@ public class Constants {
     public static final String HEADER_SOAP_ACTION="SOAPAction";
     public static final String PARAM_SOAP_MESSAGE="soapmessage";
     
+    public static final String CONTENT_TYPE_URLENCODED="application/x-www-form-urlencoded";
+    
+    
 }

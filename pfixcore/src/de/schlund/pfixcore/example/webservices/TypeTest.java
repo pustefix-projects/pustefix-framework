@@ -3,7 +3,7 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import java.util.Date;
+import java.util.Calendar;
 
 import org.w3c.dom.Element;
 
@@ -33,13 +33,15 @@ public interface TypeTest {
     
     public double[] echoDoubleArray(double[] vals);
     
-    public Date echoDate(Date date);
+    public Calendar echoDate(Calendar date);
     
-    public Date[] echoDateArray(Date[] dates);
+    public Calendar[] echoDateArray(Calendar[] dates);
     
     public String echoString(String str);
     
     public String[] echoStringArray(String[] strs);
+    
+    public Object[] echoObjectArray(Object[] objs);
     
     public Element echoElement(Element elem) throws Exception;
     

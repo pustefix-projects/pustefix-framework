@@ -26,6 +26,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+
+
+import de.schlund.pfixcore.webservice.Constants;
+
 /**
  * @author mleidig
  *
@@ -75,6 +79,8 @@ public class MonitorFilter implements Filter {
         MonitorRequestWrapper reqWrapper=new StreamingRequestWrapper((HttpServletRequest)request);
         MonitorResponseWrapper resWrapper=new StreamingResponseWrapper((HttpServletResponse)response);
         
+        System.out.println(req.getContentType());
+        
         HttpSession session=req.getSession(false);
         String ip=req.getRemoteAddr();
         String method=req.getMethod();
@@ -94,16 +100,30 @@ public class MonitorFilter implements Filter {
         }
         HttpHeader[] reqHdrs=new HttpHeader[reqHeaders.size()];
         for(int i=0;i<reqHeaders.size();i++) reqHdrs[i]=(HttpHeader)reqHeaders.get(i);
-        
-      
-        
-        
        
         long t1=System.currentTimeMillis();
         chain.doFilter(reqWrapper,resWrapper);
         long t2=System.currentTimeMillis();
         
-        HttpRequest httpReq=new HttpRequest(method,uri,date,(t2-t1),reqHdrs,reqWrapper.getBytes());
+        byte[] reqbody=null;
+        if(req.getContentType()!=null && req.getContentType().equals(Constants.CONTENT_TYPE_URLENCODED)) {
+            StringBuffer sb=new StringBuffer();
+            Enumeration parEnum=req.getParameterNames();
+            while(parEnum.hasMoreElements()) {
+                String parName=(String)enum.nextElement();
+                String[] parValues=req.getParameterValues(parName);
+                for(int i=0;i<parValues.length;i++) {
+                    if(i>0) sb.append("&");
+                    sb.append(parName+"="+parValues[i]);
+                }
+                if(parEnum.hasMoreElements()) sb.append("&");
+            }
+            reqbody=sb.toString().getBytes();
+        } else {
+            reqbody=reqWrapper.getBytes();
+        }
+        
+        HttpRequest httpReq=new HttpRequest(method,uri,date,(t2-t1),reqHdrs,reqbody);
         HttpResponse httpRes=new HttpResponse(resWrapper.getHeaders(),resWrapper.getBytes());
        
       

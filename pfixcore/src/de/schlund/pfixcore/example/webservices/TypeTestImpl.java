@@ -3,7 +3,7 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import java.util.Date;
+import java.util.Calendar;
 import org.w3c.dom.*;
 
 import de.schlund.pfixcore.example.DataBean;
@@ -45,11 +45,11 @@ public class TypeTestImpl implements TypeTest {
         return vals;
     }
     
-    public Date echoDate(Date date) {
+    public Calendar echoDate(Calendar date) {
         return date;
     }
     
-    public Date[] echoDateArray(Date[] dates) {
+    public Calendar[] echoDateArray(Calendar[] dates) {
         return dates;
     }
     
@@ -59,6 +59,10 @@ public class TypeTestImpl implements TypeTest {
     
     public String[] echoStringArray(String[] strs) {
         return strs;
+    }
+    
+    public Object[] echoObjectArray(Object[] objs) {
+        return objs;
     }
     
     public Element echoElement(Element elem) throws Exception {

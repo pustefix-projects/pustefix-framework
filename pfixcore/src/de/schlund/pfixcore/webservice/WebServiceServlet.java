@@ -93,24 +93,27 @@ public class WebServiceServlet extends AxisServlet {
         if(session!=null) {
             MonitoringCache cache=(MonitoringCache)wsc.getAttribute(MonitoringCache.class.getName());
             MonitoringCacheEntry entry=cache.getLastEntry(session);
-            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            writer.println("<table border=\"2\">");
-            writer.println("<tr><td align=\"left\">Start:</td><td>"+format.format(new Date(entry.getStart()))+"</td></tr>");
-            writer.println("<tr><td align=\"left\">Time:</td><td>"+entry.getTime()+" ms</td></tr>");
-            writer.println("<tr><td align=\"left\">Service:</td><td>"+entry.getTarget()+"</td></tr>");
-            writer.println("</table>");
-            writer.println("<div name=\"detail_entry\">");
-            writer.println("<table width=\"100%\">");
-            writer.println("<tr>");
-            writer.println("<td width=\"50%\"><b>Request:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
-            writer.println(entry.getRequest());
-            writer.println("</textarea></td>");
-            writer.println("<td width=\"50%\"><b>Response:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
-            writer.println(entry.getResponse());
-            writer.println("</textarea></td>");
-            writer.println("</tr>");
-            writer.println("</table>");
-            writer.println("</div");
+            if(entry==null) writer.println("<h2>No data available</h2");
+            else {
+                SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                writer.println("<table border=\"2\">");
+                writer.println("<tr><td align=\"left\">Start:</td><td>"+format.format(new Date(entry.getStart()))+"</td></tr>");
+                writer.println("<tr><td align=\"left\">Time:</td><td>"+entry.getTime()+" ms</td></tr>");
+                writer.println("<tr><td align=\"left\">Service:</td><td>"+entry.getTarget()+"</td></tr>");
+                writer.println("</table>");
+                writer.println("<div name=\"detail_entry\">");
+                writer.println("<table width=\"100%\">");
+                writer.println("<tr>");
+                writer.println("<td width=\"50%\"><b>Request:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
+                writer.println(entry.getRequest());
+                writer.println("</textarea></td>");
+                writer.println("<td width=\"50%\"><b>Response:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
+                writer.println(entry.getResponse());
+                writer.println("</textarea></td>");
+                writer.println("</tr>");
+                writer.println("</table>");
+                writer.println("</div");
+            }
         }
         writer.println("</div></body></html>");
         writer.close();
@@ -170,7 +173,7 @@ public class WebServiceServlet extends AxisServlet {
                 String repoPath=wsc.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
                 InputStream in=getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
                 if(in!=null) {
-                    if(type==Constants.SESSION_TYPE_SERVLET) {
+                    if(type.equals(Constants.SESSION_TYPE_SERVLET)) {
                         StringBuffer sb=new StringBuffer();
                         BufferedInputStream bis=new BufferedInputStream(in);
                         int ch=0;

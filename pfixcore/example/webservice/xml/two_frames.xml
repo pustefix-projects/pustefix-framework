@@ -47,8 +47,8 @@
 			</ixsl:when>
 			
 		  </ixsl:choose>
-                  <script type="text/javascript" src="/webservice_helper.js"></script>
-                  <script type="text/javascript" src="/webservice.js"></script>
+                 <!-- <script type="text/javascript" src="/webservice_helper.js"></script>
+                  <script type="text/javascript" src="/webservice.js"></script>-->
         </head>
         <body style="padding-left:10pt;">
           <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/>

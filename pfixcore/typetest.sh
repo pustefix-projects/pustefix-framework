@@ -1,4 +1,5 @@
 #!/bin/sh
 
-java -classpath .:`find ./lib -name "*.jar" -printf "%p:"` TypeTestClient $*
+TESTSTUBLIB=example/.webservice/webservice
+java -classpath .:$TESTSTUBLIB:`find ./lib -name "*.jar" -printf "%p:"` TypeTestClient $*
 

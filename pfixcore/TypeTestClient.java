@@ -1,3 +1,6 @@
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.axis.client.Call;
 import org.apache.axis.Constants;
 import org.apache.axis.client.Service;
@@ -6,17 +9,38 @@ import org.apache.axis.utils.Options;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
 
+import TypeTest_pkg.*;
+
+import de.schlund.pfixcore.example.DataBean;
+
 public class TypeTestClient {
 
 	public static void main(String [] args) throws Exception {
-		new TypeTestClient();
+		TypeTestService tts=new TypeTestServiceLocator();
+		TypeTest tt=tts.getTypeTest();
+		tt.echoInt(1);
+		tt.echoIntArray(new int[] {1,2,3});
+		tt.echoFloat(1f);
+		tt.echoFloatArray(new float[] {1f,2f,3f});
+		tt.echoDouble(1d);
+		tt.echoDoubleArray(new double[] {1d,2d,3d});
+		tt.echoString("a");
+		tt.echoStringArray(new String[] {"a","b","c"});
+		tt.echoDate(Calendar.getInstance());
+		tt.echoDateArray(new Calendar[] {Calendar.getInstance(),Calendar.getInstance(),Calendar.getInstance()});
+		tt.echoObjectArray(new Object[] {new Integer(34),"testtext",new Object[] {"a","b"}});	
+		//new TypeTestClient();
 	}
 
 	public TypeTestClient() throws Exception {
 		System.out.println("echoInt(3) -> "+echoInt(3));
 		System.out.println("echoIntArray(new int[] {1,2,3,4,5,6,7,8}) -> "+toString(echoIntArray(new int[] {1,2,3,4,5,6,7,8})));
 		System.out.println("echoFloat(7.54f) -> "+echoFloat(7.54f));
+		System.out.println("echoFloatArray(new float[] {1f,2f,3f,4f,5f,6f,7f,8f}) -> "+toString(echoFloatArray(new float[] {1f,2f,3f,4f,5f,6f,7f,8f})));
 		System.out.println("echoDouble(4.67d) -> "+echoDouble(4.67d));
+		System.out.println("echoDoubleArray(new double[] {1d,2d,3d,4d,5d,6d,7d,8d}) -> "+toString(echoDoubleArray(new double[] {1d,2d,3d,4d,5d,6d,7d,8d})));
+		System.out.println("echoString(testtext) -> "+echoString("testtest"));
+		System.out.println("echoStringArray(a,b,c,d,e,f,g,h) -> "+toString(echoStringArray(new String[] {"a","b","c","d","e","f","g","h"})));
 	}	
 
 	private String toString(int[] vals) {
@@ -24,7 +48,26 @@ public class TypeTestClient {
 		for(int i=0;i<vals.length;i++) sb.append(""+vals[i]+" ");
 		return sb.toString();
 	}
+
+        private String toString(float[] vals) {
+                StringBuffer sb=new StringBuffer();
+                for(int i=0;i<vals.length;i++) sb.append(""+vals[i]+" ");
+                return sb.toString();
+        }
 	
+        private String toString(double[] vals) {
+                StringBuffer sb=new StringBuffer();
+                for(int i=0;i<vals.length;i++) sb.append(""+vals[i]+" ");
+                return sb.toString();
+        }
+
+        private String toString(Object[] vals) {
+                StringBuffer sb=new StringBuffer();
+                for(int i=0;i<vals.length;i++) sb.append(""+vals[i].toString()+" ");
+                return sb.toString();
+        }
+
+
 
 	private Call createCall() throws Exception {
 		String endpoint="http://webservice.zap.ue.schlund.de/xml/webservice/TypeTest";
@@ -64,6 +107,17 @@ public class TypeTestClient {
 		return ret.floatValue();
 	}
 
+        public float[] echoFloatArray(float[] vals) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoFloatArray");
+                call.addParameter(new QName("urn:TypeTest","vals"),new QName("urn:TypeTest","ArrayOf_xsd_float"),ParameterMode.IN);
+                call.setReturnType(new QName("urn:TypeTest","ArrayOf_xsd_float"));
+                Float[] objVals=new Float[vals.length];
+                for(int i=0;i<vals.length;i++) objVals[i]=new Float(vals[i]);
+                float[] retVals=(float[])call.invoke(new Object[] {objVals});
+                return retVals;
+        }
+
 	public double echoDouble(double val) throws Exception {
 		Call call=createCall();
 		call.setOperationName("echoDouble");
@@ -71,6 +125,53 @@ public class TypeTestClient {
                 call.setReturnType(XMLType.XSD_DOUBLE);
                 Double ret=(Double)call.invoke(new Object[] {new Double(val)});
                 return ret.doubleValue();
+        }
+
+        public double[] echoDoubleArray(double[] vals) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoDoubleArray");
+                call.addParameter(new QName("urn:TypeTest","vals"),new QName("urn:TypeTest","ArrayOf_xsd_double"),ParameterMode.IN);
+                call.setReturnType(new QName("urn:TypeTest","ArrayOf_xsd_double"));
+                Double[] objVals=new Double[vals.length];
+                for(int i=0;i<vals.length;i++) objVals[i]=new Double(vals[i]);
+                double[] retVals=(double[])call.invoke(new Object[] {objVals});
+                return retVals;
+        }
+
+        public String echoString(String val) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoString");
+                call.addParameter(new QName("urn:TypeTest","val"),XMLType.XSD_STRING,ParameterMode.IN);
+                call.setReturnType(XMLType.XSD_STRING);
+                String ret=(String)call.invoke(new Object[] {val});
+                return ret;
+        }
+
+        public String[] echoStringArray(String[] vals) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoStringArray");
+                call.addParameter(new QName("urn:TypeTest","vals"),new QName("urn:TypeTest","ArrayOf_xsd_string"),ParameterMode.IN);
+                call.setReturnType(new QName("urn:TypeTest","ArrayOf_xsd_string"));
+                String[] retVals=(String[])call.invoke(new Object[] {vals});
+                return retVals;
+        }
+
+        public Date echoDate(Date val) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoDate");
+                call.addParameter(new QName("urn:TypeTest","val"),XMLType.XSD_DATE,ParameterMode.IN);
+                call.setReturnType(XMLType.XSD_DATE);
+                Date ret=(Date)call.invoke(new Object[] {val});
+                return ret;
+        }
+
+        public Date[] echoDateArray(Date[] vals) throws Exception {
+                Call call=createCall();
+                call.setOperationName("echoDateArray");
+                call.addParameter(new QName("urn:TypeTest","vals"),new QName("urn:TypeTest","ArrayOf_xsd_date"),ParameterMode.IN);
+                call.setReturnType(new QName("urn:TypeTest","ArrayOf_xsd_date"));
+                Date[] retVals=(Date[])call.invoke(new Object[] {vals});
+                return retVals;
         }
 
 

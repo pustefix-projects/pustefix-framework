@@ -45,7 +45,7 @@ public class AuthenticationHandler extends AbstractHandler {
         ServiceConfig srvConf=config.getServiceConfig(target);
         if(srvConf==null) throw AxisFault.makeFault(new Exception("Target service doesn't exist"));
         if(srvConf.getContextName()!=null) {
-            if(srvConf.getSessionType()==Constants.SESSION_TYPE_SERVLET) {
+            if(srvConf.getSessionType().equals(Constants.SESSION_TYPE_SERVLET)) {
                 HttpSession session=getSession(messageContext);
                 if(session==null) throw AxisFault.makeFault(new Exception("Authentication failed: No valid session."));
                 Context pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
