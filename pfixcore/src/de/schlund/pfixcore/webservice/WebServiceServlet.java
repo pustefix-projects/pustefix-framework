@@ -49,7 +49,7 @@ public class WebServiceServlet extends AxisServlet {
         String common=config.getInitParameter(Constants.PROP_COMMON_FILE);
         if(common!=null) al.add(PathFactory.getInstance().createPath(common).resolve());
         String servlet=config.getInitParameter(Constants.PROP_SERVLET_FILE);
-        if(servlet!=null) al.add(new File(servlet));
+        if(servlet!=null) al.add(PathFactory.getInstance().createPath(servlet).resolve());
         try {
             File[] propFiles=new File[al.size()];
             for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
