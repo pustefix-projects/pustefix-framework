@@ -22,6 +22,9 @@ package de.schlund.pfixxml.targets;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Document;
 
 /**
@@ -30,6 +33,6 @@ import org.w3c.dom.Document;
  */
 
 public interface PublicXSLTProcessor {
-    void     applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, OutputStream out) throws Exception;
-    Document xmlObjectFromDocument(Document doc) throws Exception;
+    void     applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, OutputStream out) throws TransformerException;
+    Document xmlObjectFromDocument(Document doc) throws TransformerException;
 }

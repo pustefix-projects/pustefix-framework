@@ -19,8 +19,10 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.util.*;
-import java.io.*;
+
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.*;
 
 /**
@@ -29,6 +31,6 @@ import org.w3c.dom.*;
  */
 
 interface PustefixXSLTProcessor extends PublicXSLTProcessor {
-    Object   xslObjectFromDisc(String path) throws Exception;
-    Document xmlObjectFromDisc(String path) throws Exception;
+    Object   xslObjectFromDisc(String path) throws TransformerConfigurationException;
+    Document xmlObjectFromDisc(String path) throws TransformerException;
 }

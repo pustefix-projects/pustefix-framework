@@ -107,7 +107,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @throws exception on all errors
      */
     public final void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, 
-                                          OutputStream out) throws Exception {
+                                          OutputStream out) throws TransformerException  {
         Templates   xsl   = (Templates) xslobj;
         Transformer trafo = xsl.newTransformer();
         long        start = 0;
@@ -168,12 +168,15 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
             val = transFac.newTemplates(stream_source);
         } catch (TransformerConfigurationException e) {
             StringBuffer sb = new StringBuffer();
-            sb.append("TransformerException in xslObjectFromDisc!\n");
+            sb.append("TransformerConfigurationException in xslObjectFromDisc!\n");
             sb.append("Path: ").append(path).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
             Throwable cause = e.getException();
+            if(cause == null)
+                cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
             CAT.error(sb.toString());
+            //System.out.println(e.getLocator().getSystemId());
             throw e;
         }
         stream_source = null;

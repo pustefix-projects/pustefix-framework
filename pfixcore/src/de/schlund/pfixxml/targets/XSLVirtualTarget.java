@@ -20,9 +20,16 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.TreeMap;
 
+import javax.xml.transform.TransformerException;
+
+/**
+ * @author jh
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
 /**
  * XSLVirtualTarget.java
  *
@@ -43,7 +50,7 @@ public class XSLVirtualTarget extends VirtualTarget {
         auxdepmanager.tryInitAuxdepend();
     }
 
-    protected Object getValueFromDiscCache() throws Exception {
+    protected Object getValueFromDiscCache() throws TransformerException {
         PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {

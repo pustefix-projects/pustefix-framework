@@ -64,6 +64,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 
@@ -582,6 +583,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             try {
                 stylevalue = generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
+                CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = createErrorTree(targetex);
                 errordoc = xsltproc.xmlObjectFromDocument(errordoc);
                 Object stvalue = ((Target)TargetFactory.getInstance().getTarget(TargetType.XSL_LEAF, generator, ERROR_STYLESHEET)).getValue();
@@ -733,6 +735,23 @@ public abstract class AbstractXMLServer extends ServletManager {
             e3.appendChild(t3);
             e0.appendChild(e3);
             printEx(trex.getCause(), doc, e0);
+        } else if(e instanceof SAXException) {
+            SAXException saxex = (SAXException) e; 
+            Element ee = doc.createElement("break");
+            e0.appendChild(ee);
+            
+            Element e11 = doc.createElement("error");
+            e11.setAttribute("key", "Type:");
+            Text t11 = doc.createTextNode(saxex.getClass().getName());
+            e11.appendChild(t11);
+            e0.appendChild(e11);
+            
+            Element e12 = doc.createElement("error");
+            e12.setAttribute("key", "Message:");
+            Text t12 = doc.createTextNode(saxex.getMessage());
+            e12.appendChild(t12);
+            e0.appendChild(e12);
+            printEx(saxex.getException(), doc, e0);
         }
         else {
             

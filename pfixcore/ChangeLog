@@ -2,9 +2,49 @@
 
 	* src/de/schlund/pfixxml/targets/AuxDependency.java,
 	* src/de/schlund/pfixxml/targets/PageInfoFactory.java,
-	* src/de/schlund/pfixxml/targets/PageTargetTree.java: organized
+	* src/de/schlund/pfixxml/targets/PageTargetTree.java,
+	* src/de/schlund/pfixxml/targets/LRUCache.java,
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: organized
 	imports.
 
+	* src/de/schlund/pfixxml/targets/TargetRW.java(getCurrValue): now
+	throws TransformerException.
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java:
+	getValueFromDiscCache: now throws TransformerException.
+	getModTimeMaybeUpdate: now throws  TargetGenerationException,
+	 XMLException, ParserConfigurationException, IOException.
+	getValue: now throws TargetGenerationException, XMLException,
+	 ParserConfigurationException, IOException	
+	getCurrValue: adjusted.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java:
+	getModTimeMaybeUpdate: adjusted.
+	generateValue: now throws XMLException, TransformerException,
+	ParserConfigurationException, IOException. 
+	
+	* src/de/schlund/pfixxml/targets/X[M|S]L[Virtual|Leaf]Target.java:
+	getValueFromDiscCache: adjusted.
+
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	getModTimeMaybeUpdate: adjusted
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java,
+	src/de/schlund/pfixxml/IncludeDocumentExtension.java: minor
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java:
+	saveAuxdepend: now throws ParserConfigurationException, IOException
+
+	* src/de/schlund/pfixxml/targets/PublicXSLTProcessor.java:
+	applyTrafoForOutput, xmlObjectFromDocument: now throws
+	TransformerException.
+
+	* src/de/schlund/pfixxml/targets/PustefixXSLTProcessor.java:
+	xslObjectFromDisc: now throws TransformerConfigurationException
+	xmlObjectFromDisc: now throws TransformerException
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:
+	applyTrafoForOutput: adjusted.
 
 2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
 
