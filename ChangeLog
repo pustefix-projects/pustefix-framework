@@ -1,5 +1,8 @@
 2003-01-28  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (init): make a second, separate loop ovr
+	the contextressources to call init() on them. So all CRs are instantiated first, THEN they a init'ed.
+
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java
 	(PROP_INSERTCR): change from "resdocfinalizer.insert" =>
 	"insertcr" *** CAUTION *** this means that all property files have
