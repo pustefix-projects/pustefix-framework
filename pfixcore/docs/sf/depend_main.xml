@@ -61,7 +61,7 @@
             children. The tree of pages matches the hierarchy of the
             project's sitetree.</div>
         </xmlcodeOFF>
-        <page name="foo" handler="/xml/static">
+        <page name="foo" handler="/xml/static" accesskey="F">
           <page name="sub_foo1" handler="/xml/static"/>
           <page name="sub_foo2" handler="/xml/static"/>
           ...
@@ -105,29 +105,42 @@
                 </p>
               </td>
             </tr>
+            <tr>
+              <td>
+                accesskey
+              </td>
+              <td>
+                <p>This attribute defines a default access key that will be used by the <code>pfx:button</code> and
+                  <code>pfx:jsbutton</code> tags for the links they generate.
+                </p>
+                <p>
+                  This attribute is <b>optional</b>
+                </p>
+              </td>
+            </tr>
           </table>
         </xmlcodeOFF>
-
-        <target name="a_target_name.xsl"       type="[xsl|xml]">...</target>
-        <target name="another_target_name.xml" type="[xsl|xml]">...</target>
-        ...
-        <standardpage name="a_page_name"       xml="a_base_xml_file.xml">...</standardpage>
-        <standardpage name="another_page_name" xml="a_base_xml_file.xml">...</standardpage>
-        ...
-        <xmlcodeOFF>
-          <div class="comment">
-            <p>The only other tags allowed besides the
-              <code>navigation</code> tag are <code>target</code>
-              and <code>standardpage</code>. <b>The latter is only a
-                convenience tag that can be expressed fully in terms
-                of <code>target</code> tags</b> (Expanding the
-              <code>standardpage</code> tag is one of the duties
-              of the transformation <code>depend.xml.in</code>
-              => <code>depend.xml</code> mentioned above).</p>
-            <p> See below for a detailed explanation of targets and their configuration</p>
-          </div>
-        </xmlcodeOFF>
       </navigation>
+      <xmlcodeOFF/>
+      <target name="a_target_name.xsl"       type="[xsl|xml]">...</target>
+      <target name="another_target_name.xml" type="[xsl|xml]">...</target>
+      ...
+      <standardpage name="a_page_name"       xml="a_base_xml_file.xml">...</standardpage>
+      <standardpage name="another_page_name" xml="a_base_xml_file.xml">...</standardpage>
+      ...
+      <xmlcodeOFF>
+        <div class="comment">
+          <p>The only other tags allowed besides the
+            <code>navigation</code> tag are <code>target</code>
+            and <code>standardpage</code>. <b>The latter is only a
+              convenience tag that can be expressed fully in terms
+              of <code>target</code> tags</b> (Expanding the
+            <code>standardpage</code> tag is one of the duties
+            of the transformation <code>depend.xml.in</code>
+            => <code>depend.xml</code> mentioned above).</p>
+          <p> See below for a detailed explanation of targets and their configuration</p>
+        </div>
+      </xmlcodeOFF>
     </make>
   </xmlcode>
 
