@@ -4,7 +4,7 @@
   <page name="index" title="News"/>
   <page name="overview" title="Overview">
     <page name="xml" title="XML/XSLT"/>
-    <page name="java" title="Framework"/>
+    <page name="java" title="Java framework"/>
   </page>
   <page name="download" title="Download"/>
   <page name="udocs" title="Userdocs">

@@ -47,6 +47,13 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="stdimg">
+    <div class="stdimg">
+      <div class="stdimg-img"><img src="{@src}"/></div>
+      <div class="stdimg-txt"><xsl:apply-templates/></div>
+    </div>
+  </xsl:template>
+  
   <xsl:template match="pustefix">
     <i><b>Pustefix</b></i>
   </xsl:template>
