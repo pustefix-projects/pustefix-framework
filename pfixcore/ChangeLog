@@ -1,3 +1,12 @@
+2004-07-05  Joerg Haecker <haecker@schlund.de>
+
+        * lib/rmiobj.jar: removed 
+        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValue.java
+        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java
+        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueVisitor.java
+        * src/de/schlund/pfixxml/exceptionprocessor/util/TextCreatorVisitor.java
+        * src/de/schlund/pfixxml/exceptionprocessor/util/XMLCreatorVisitor.java
+
 2004-07-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/xmlfontify.xsl.in: new file to fontify the xml-only output,

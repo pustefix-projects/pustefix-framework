@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package de.schlund.pfixxml.exceptionprocessor;
+package de.schlund.pfixxml.exceptionprocessor.util;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
 
-import de.schlund.jmsexceptionhandler.rmiobj.ExceptionDataValue;
+
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
