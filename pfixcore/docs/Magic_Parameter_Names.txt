@@ -1,4 +1,16 @@
 
+
+UPDATE: This document is outdated. It no longer describes correctly
+the way the submitted data or commands are encoded (jtl, may
+2004). The general idea of parameters and commands being associated to 
+a special submit button still holds, though.
+
+--------------------------------------------------------------------
+
+
+
+
+
 Magic parameter names in Pfixcore                                (author: jtl)
 =================================
 
