@@ -13,7 +13,7 @@
     <code>BazPage.xsl</code> (this is slightly simplified,
     <code>master.xsl</code> and <code>metatags.xsl</code> are in fact
     the product of yet another transformation, but the only thing these transformations
-    do is to customize the resulting stylesheets to your particulary environment
+    do is to customize the resulting stylesheets to your particular environment
     so they can be written without using e.g. absolute pathnames).</p>
   <p>
     Note that we only discuss the common case here, arbitrary complex
@@ -67,7 +67,7 @@
     content of the page. As can be seen from the diagram, they can
     include themselves recursively. Include parts have a <i>name</i>
     and are organized into so called <b>include documents</b>. These
-    can hold an arbitray number of parts. Learn more about include parts and the way they are used below.
+    can hold an arbitrary number of parts. Learn more about include parts and the way they are used below.
   </p>
   
   <h1>Targets</h1>
@@ -79,7 +79,7 @@
     transformations are called targets, too.
   </p>
   <p>
-    The <pustefix/> system knows four different types of tragets:
+    The <pustefix/> system knows four different types of targets:
   </p>
 
   <table class="stdtable">
@@ -169,7 +169,7 @@
     Every page "knows" to which project it belongs, and therefore it
     is possible to decide which product branch to use on generation
     time. The language on the other hand can be changed dynamically
-    while the user clickes through the application, so the selection
+    while the user clicks through the application, so the selection
     of the right <code>lang</code> subtree to use is done at runtime.</p>
   
   

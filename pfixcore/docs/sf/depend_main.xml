@@ -137,7 +137,7 @@
         <table class="stdtable">
           <tr>
             <th>
-              Atribute
+              Attribute
             </th>
             <th>
               Notes
@@ -183,7 +183,7 @@
       <xmlcodeOFF>
         <div class="comment">
           <p>
-            <code>depaux</code> tags create user defined dendencies on
+            <code>depaux</code> tags create user defined dependencies on
             the files they reference in their <code>name</code>
             attribute. Whenever the target generation system is asked
             for a target, all its dependencies are checked whether their
@@ -218,7 +218,7 @@
     <standardpage name="home"  xml="core/editor/xml/two_frames.xml"/>
     <xmlcodeOFF>
       <div class="comment">
-        after performing the transformtion <code>depend.xml.in</code> => <code>depend.xml</code>
+        after performing the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
         (automatically done by the build system in the skeleton package and the CVS checkout) this becomes
       </div>
       <br/>
