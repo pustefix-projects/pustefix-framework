@@ -373,7 +373,7 @@ or delete the DOCTYPE definition -->
       <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop"/>
     </delete>
     <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
-  	<delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
+    <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
   </target>
   
   <target name="realclean" depends="clean, clean-jni">
