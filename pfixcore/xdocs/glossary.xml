@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Building Pustefix</title>
+  </properties>
+
+  <body>
+    <section name="Glossary">
+      <ul>
+        <li><p><b>Pustefix:</b> A web application framework. Includes core, environment, editor, and 
+          example projects. Technically, pustefix is a cvs module. Caution: the cvs module 
+          called pfix<i>core</i>.</p></li>
+        <li><p><b>Environment:</b> Pustefix SDK. What you install to develop your own projects with 
+          pustefix. Includes core, editor and sample projects. Caution: the respective download is called 
+          "skeleton".</p></li>
+        <li><p><b>Core:</b> Pustefix runtime. Java code for servlets, workflow, and editor. And basic 
+          configuration used by projects. </p></li>
+        <li><p><b>Project:</b> An web application that uses pustefix core.
+          Projects reside in the <code>projects</code> directory. A single environment hosts 
+          an arbitray number of projects. Caution 1: the editor also uses the term <i>product</i>.
+          Caution 2: the following directories in projects are <em>not</em> projects: <code>common</code>,
+          <code>core</code>, <code>servletconf</code>.</p></li>
+        <li><p><b>Editor</b> Modifies projects in a web browser. The editor is itself a project which is
+          part of the core. </p></li>
+      </ul>
+    </section>
+  </body>
+</document>

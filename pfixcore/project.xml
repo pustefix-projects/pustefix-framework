@@ -15,17 +15,21 @@
   <shortDescription>Web application framework</shortDescription>
   
   <url>http://pustefix.sourceforge.net</url>
-  <inceptionYear>2002,2003,2004</inceptionYear>
+  <inceptionYear>2002</inceptionYear><!-- when pfix was first published -->
   <package>de.schlund</package>
   <logo>/images/logo.gif</logo>
 
-  <!-- not enabled for pustefix: issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl -->
+  <!-- disabled on sourceforge: issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl -->
+
   <siteAddress>pustefix.sourceforge.net</siteAddress>
+  
+  <!-- TODO: we rename this (to $pom.sideDirectory/../htdocs) in a postGoal because maven doesn't properly 
+       replace existing directories -->
+  <siteDirectory>/home/groups/p/pu/pustefix/test/htdocs-new</siteDirectory>
 
   <repository>
-    <!-- specify devel connection only because sourceforge's "normal" connection has a delay of 3+ hours? -->
+    <!-- TODO: using the devel connection avoids sourceforge's 3+ hours delay -->
     <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</connection>
-
     <developerConnection>scm:cvs:ext:${maven.username}@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</developerConnection>
     <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore/</url>
   </repository>
@@ -368,11 +372,6 @@
 	
 	<!-- we don't use javadoc @todo tags: 
 	     report>maven-tasklist-plugin</report -->
-
-
-    <!-- additional reports -->
-
-    <!-- TODO: stat-cvs -->    	
   </reports>
 </project>
 

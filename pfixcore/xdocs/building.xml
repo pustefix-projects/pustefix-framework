@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Building Pustefix</title>
+  </properties>
+
+  <body>
+    <section name="Building pustefix">
+      <subsection name="Core">
+        <p>Pustefix core features an <a href="http://ant.apache.org">Ant</a> build.</p>
+	    <p>To build the core with all projects:</p>
+	    <source>ant</source>
+  	    <p>To get a list of available targets:</p>
+        <source>ant -projecthelp</source>
+      </subsection>
+      <subsection name="Web site">
+        <p>The web site is built with <a href="http://maven.apache.org">Maven</a>.</p>
+        <p>To update the website:</p>
+        <ol>
+          <li><p>Make sure that <code>currentVersion</code> in <code>project.xml</code>
+            is set propertly.</p></li>
+          <li><p>Optional: Run
+	        <source>maven xdoc</source>
+            to build the documentation from the <code>xdocs</code> directory. Check the result 
+            at <code>target/docs/index.html</code>. Fix problems and repeat if necessary.</p></li>
+          <li><p>Run
+	        <source>maven site</source>
+            to generate the website on your machine. Check the result (in particular: the
+            project reports) at <code>target/docs/index.html</code>. Fix problems and repeat if 
+            necessary.</p></li>
+          <li><p>Run
+            <source>maven site:sshdeploy -Dmaven.username=&lt;yourlogin&gt;</source>
+            to upload the website. Uses ssh to transfer the website into a temporary directory 
+            and - if successfull - replaces the existing site with a single <code>mv</code> command. 
+            If you're asked for an ssh username you probably forgot to specify
+	        <code>-Dmaven.username</code>.
+          </p></li>
+        </ol>
+      </subsection>
+    </section>
+  </body>
+</document>
