@@ -4,7 +4,9 @@
 
 LANG=C
 
-PRJFILE = servletconf/projects.xml
+PRJFILE     = servletconf/projects.xml
+PRJFILESRC  = servletconf/projects.xml.in
+PRJFILESEXT = $(shell find . -type f | grep 'project.xml.in$$')
 
 ifndef MAKE_MODE
 #MAKE_MODE = prod
@@ -50,7 +52,7 @@ SAXON      = java -mx120M -Djavax.xml.transform.TransformerFactory=com.icl.saxon
 
 TRFBUILD   = de.schlund.pfixcore.util.MultiTransform
 
-all: bin/setvars.sh depend propfiles targetdefs  zoneprops stylesheets \
+all: bin/setvars.sh $(PRJFILE) depend propfiles targetdefs  zoneprops stylesheets \
      common/conf/pfixlog.xml common/conf/products.prj \
      servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
      common/dyntxt/statusmessages.xml
@@ -80,6 +82,12 @@ clean:
 
 bin/setvars.sh: core/src/setvars.sh.template
 	$(error '$<' seems to be newer than '$@'. Copy '$<' to ./'$@' and edit it to match your site!)
+
+
+$(PRJFILE):  $(PRJFILESRC) $(PRJFILESEXT)
+	$(SAXON) -o $@ $(PRJFILESRC) core/build/create_projects.xsl \
+		docroot="$(DOCROOT)"  \
+		files="$(shell echo $(PRJFILESEXT) | sed -e 's/ /|/')"
 
 
 depend:  targetdefs $(patsubst %.prj.in,%.prj,$(filter %.prj.in, $(CONFIGS)))

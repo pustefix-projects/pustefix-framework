@@ -1,3 +1,17 @@
+2003-07-10  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/servletconf/projects.xml: REMOVED. see below.
+
+	* example/sample1/conf/project.xml.in: New file. This is the
+	sample1 project part of the old servletconf/projects.xml file
+
+	* example/servletconf/projects.xml.in: New file. This is the
+	common part of the old servletconf/projects.xml file
+
+	* example/core/build/create_projects.xsl: New file. This is used to combine the 
+	servletconf/projects.xml.in + all found project.xml.in into the old servletconf/projects.xml 
+	file. 
+
 2003-07-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl: now <passthrough> nodes can also be
