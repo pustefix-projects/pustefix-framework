@@ -2,58 +2,58 @@
   <h1>The Test client</h1>
   <h2>About</h2>
 
-  <p>Development of web applications often is a quite fast moving
-  target.Most often only the initial release of the software is tested
-    intensively (if at all), but after a while, nobody can really tell
-  if the current version has the same functionality and quality as the
-  tested initial release.</p>
+  <p>With the typical fast changing web application, most often only
+  the initial release of the software is tested thoroughly (if at
+  all), but after a while, nobody can really tell if the current
+  version has the same functionality and quality as the tested
+  release.</p>
 
   <p>Because of this a testing framework has been developed for
     <pustefix/>.</p>
-
+  
   <p>When your application runs well it is time to record example
     <i>click trails</i>. The user input and the
     resulting output of the business logic are written to a
     file as long as the recording takes place.
 
-    Recorded click trails can be used to test if all the functionality
-    is still present by playback of the recorded data. The recorded
-    user input is sent (as a HTTP request) to you application and the
-    actual result (the output of the business logic) will be compared
-    to the recorded result. If these outputs differ you know that
-    something changed in the busness logic of your application.
-    The tools for playback shipped with <pustefix/> will show you these
-    differences in a proper way.</p>
+    Recorded click trails can be used to test if the application is
+    still working as expected by playing back the recorded data.  The
+    recorded user input is sent (as a HTTP request) to your application
+    and the actual result (the output of the business logic) will be
+    compared to the recorded result. If these outputs differ you know
+    that something changed in the busness logic of your application.
+    The tools for playback shipped with <pustefix/> will show you
+    these differences in a proper way.</p>
   
   <h2>Configuration</h2>
-    <p>The basic configuration is done in the <code>depend.xml.in</code> file.</p>
-    <xmlcode>
-      <make cachedir="..." record_dir="...">
-        <xmlcodeOFF>
-          <table class="stdtable">
-            <tr>
-              <th>Attribute</th>
-              <th>Notes</th>
-            </tr>
-            <tr>
-              <td>cachedir</td>
-              <td>
+  <p>The basic configuration is done in the <code>depend.xml.in</code> file.</p>
+  <xmlcode>
+    <make cachedir="..." record_dir="...">
+      <xmlcodeOFF>
+        <table class="stdtable">
+          <tr>
+            <th>Attribute</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>cachedir</td>
+            <td>
               <p>See the documentation the <a href="depend.html">depend.xml.in</a> file.</p>
-              </td>
-            </tr>
-            <tr>
-              <td>record_dir</td>
-              <td>This attribute designates if recording can be used for your project. If
+            </td>
+          </tr>
+          <tr>
+            <td>record_dir</td>
+            <td>This attribute designates if recording can be used for your project. If
               the attribute does not exist, you will not be able to record click trails for this
               project. If it exists, its value will be interpreted as a directory relative 
               to <b>docroot</b>. When recording is turned on, all recorded data will
               be written to this directory.
-              </td>
-            </tr>
-          </table>
-        </xmlcodeOFF>
-      </make>
-    </xmlcode>
+            </td>
+          </tr>
+        </table>
+      </xmlcodeOFF>
+    </make>
+  </xmlcode>
   <h2>Recording data</h2>
   <p>Starting to record click trails is quite simple. Just append <code>__recordmode=TESTCASE_NAME</code>
     as a parameter to the URL. <code>TESTCASE_NAME</code> is an
@@ -62,7 +62,7 @@
     <code>TESTCASE_NAME_N</code> will be used instead where
     <code>N</code> is the next available positive Integer that doesn't
     result in a name used already earlier.</p>
-
+  
   <p>All recorded data will be written to the directory
     <code>YOUR_RECORD_DIR_FROM_DEPEND.XML/TESTCASENAME</code>.
   </p>
