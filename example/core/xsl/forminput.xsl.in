@@ -450,31 +450,6 @@
     </cus:documentation>  
   </xsl:template>
 
-<!--   <xsl:template match="pfx:argument"/> -->
-<!--   <xsl:template match="pfx:command"/> -->
-<!--   <xsl:template match="pfx:anchor"/> -->
-
-<!--   <xsl:template name="generate_coded_name"> -->
-<!--     <ixsl:attribute name="name"> -->
-<!--       <xsl:for-each select="./pfx:argument">__DATA:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each> -->
-<!--       <xsl:for-each select="./pfx:anchor">__DATA:__anchor:<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/>:</xsl:for-each> -->
-<!--       <xsl:for-each select="./pfx:command">__CMD[<xsl:choose> -->
-<!--           <xsl:when test="@page"> -->
-<!--             <xsl:value-of select="@page"/> -->
-<!--           </xsl:when> -->
-<!--           <xsl:when test="ancestor::pfx:forminput[position() = 1 and @send-to-page != '']"> -->
-<!--             <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/> -->
-<!--           </xsl:when> -->
-<!--           <xsl:otherwise> -->
-<!--             <xsl:value-of select="$page"/> -->
-<!--           </xsl:otherwise> -->
-<!--         </xsl:choose>]:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each> -->
-<!--     </ixsl:attribute> -->
-<!--     <cus:documentation> -->
-<!--       <description>Called by pfx:button, pfx:jsbutton etc. Generates the parameters for pfx:argument, pfx:command and pfx:anchor</description> -->
-<!--     </cus:documentation> -->
-<!--   </xsl:template> -->
-
   <xsl:template name="generate_coded_input">
     <xsl:param name="prefix"/>
     <xsl:for-each select="./pfx:argument">
