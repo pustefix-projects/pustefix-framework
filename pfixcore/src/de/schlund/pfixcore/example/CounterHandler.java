@@ -19,11 +19,12 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixcore.example.iwrapper.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import org.apache.log4j.*;
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.example.iwrapper.Counter;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * CounterHandler.java
