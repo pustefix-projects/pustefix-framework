@@ -61,8 +61,10 @@ public class PageFlowManager implements PropertyObject {
             PageFlow flow = getPageFlowByName(flowname.getValue());
             if (flow != null) {
                 LOG.debug("===> Flow '" + flowname.getValue() + "' exists...");
-                if  (flow.containsPageRequest(page)) {
+                if (flow.containsPageRequest(page)) {
                     LOG.debug("===> and it contains page '" + page.getName() + "'");
+                } else if (page.getName().equals(Context.STARTWITHFLOW_PAGE)) {
+                    LOG.debug("===> CAUTION: page to use will be determined from flow.");
                 } else {
                     LOG.debug("===> CAUTION: it doesn't contain page '" +
                               page.getName() + "'! Make sure this is what you want...");
