@@ -1,4 +1,6 @@
 
+/bin/zsh is needed to run this script.
+
 propconv.sh is for converting .prop.in files from the old format to the new one which is validated by XML Schema.
 
 usage: propconv.sh [options]
@@ -39,9 +41,9 @@ the project to convert
 /home/user/workspace/project/projects/project1
 
 /home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --copy
-/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='^\./project1/.*' --convert
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='project1/conf/.*' --convert
 If propconv says, that not everything could be converted automatically, find and correct manually with:
-/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='^\./project1/.*' --todo
+/home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --pattern='project1/conf/.*' --todo
 /home/user/workspace/pfixcore/stuff/propconv200401/propconv.sh --propconv=/home/user/workspace/pfixcore/stuff/propconv200401 --docroot=/home/user/workspace/project/projects --remove
 
 Note: if your project is not built (e.g. .prop files are non existent) some errors may occur during script execution. These can be ignored.

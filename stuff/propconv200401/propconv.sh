@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 # A small example program for using the new getopt(1) program.
 # This program will only work with bash(1)
@@ -30,7 +30,7 @@ usage: $AH_BN [options]
       --diffsort      sorts and diffs all .prop.orig.sorted to .prop.sorted files
   -D, --dump          show all files that would be processed
       --pattern=PAT   egreps PAT against filenames of docroot relative .prop.in filenames
-                      which are "./" prefixed. E.g.: ./someapp/conf/help.prop.in
+                      E.g.: someapp/conf/help.prop.in
                       Performs operations only on matching filenames
       --project=VER   modifies DOCROOT/**/project.xml.in by replacing
                       <class>de.schlund.pfixxml.DirectOutputServ[^<]*</class> with
