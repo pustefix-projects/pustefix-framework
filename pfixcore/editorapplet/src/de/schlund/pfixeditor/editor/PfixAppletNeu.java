@@ -59,7 +59,7 @@ import javax.xml.transform.TransformerException;
 
 
 
-public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener, ItemListener {
+public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener {
     private static final String TITLE = "PfixEditor";
 
     // JSObject jsWin, jsDocu, jsForm, jsField;
@@ -222,7 +222,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         panel.add(mbar, BorderLayout.NORTH);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        System.out.println("Menu Added");
        
         // Setting the Frames position
         frame.setLocation(300,100);
@@ -232,7 +231,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
 
-
+    /*
     public void getDoc() {
         PfixAppletInfo info = new PfixAppletInfo(getDocumentBase().toString());
 
@@ -257,7 +256,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
                 
         
-    }
+        } */
 
 
 
@@ -384,6 +383,18 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         editMenu.add(replaceedit);
         replaceedit.addActionListener(this);
         replaceedit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+
+        editMenu.addSeparator();
+
+        tagMenu = new JMenuItem("Includes");
+        tagMenu.addActionListener(this);
+        tagMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+        editMenu.add(tagMenu);
+        
+
+
+        
+        
         
         this.mbar.add(editMenu);
     }
@@ -571,30 +582,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
          syntaxPane.hilightAll(); 
     }
 
-
-
-
-    public void itemStateChanged(ItemEvent e) {
-        if (e.getItem().equals("Hamburger SV")) {
-            syntaxPane.setText("Hamburch iss goil");
-             
-        }
-
-
-        /*
-        for (int i=0; i<incElements.length; i++) {
-            if (e.getItem().equals(incElements[i])) {
-                syntaxPane.setText("Included " + incElements[i]);
-                break;
-            }
-            
-        }
-        */
-        
-            
-    }
-
-
     
 
     // Action Handler
@@ -607,9 +594,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // }
 
         if (e.getSource() == tagMenu) {
-            // onSendData();
-            PfixIncludeDialog incDialog = new PfixIncludeDialog(getDocumentBase().toString(), syntaxPane);
-             
+            PfixIncludeDialog incDialog = new PfixIncludeDialog(getDocumentBase().toString(), syntaxPane);             
         }
         
         

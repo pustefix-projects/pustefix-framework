@@ -40,6 +40,8 @@ import javax.swing.undo.*;
 
 import javax.swing.*;
 import java.net.*;
+import javax.swing.tree.*;
+import javax.swing.border .*;
 
 
 
@@ -67,10 +69,14 @@ import java.net.*;
 
 
 
-public class PfixIncludeDialog extends JFrame implements ItemListener, ActionListener{
+public class PfixIncludeDialog extends JFrame implements ItemListener, ActionListener, TreeSelectionListener{
 
     // JFrame dialogFrame;
+    GridBagLayout gridbag;
 
+    URL ucont;
+
+    
     JPanel panel;
     JPanel incPanel;
     JPanel imgPanel;
@@ -78,6 +84,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     JPanel selPanel;
     JPanel butPanel;
     JPanel imgbutPanel;
+    JPanel imgFilter;
 
     JButton imgbutton;
     JButton button;
@@ -87,6 +94,9 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
     JLabel img;
     JLabel incText;
+    JTree tree;
+    JTree jimagetree;
+        
 
     JTextField incTextField;
     
@@ -104,21 +114,27 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
     String actInclude = "";
     String actImage = "";
+
+    PfixAppletInfo info;
+
     
-
-
     public PfixIncludeDialog(String docBase, PfixTextPane pane) {
         super();
 
-        documentBase = docBase;
+        this.documentBase = docBase;
+
+        info = new PfixAppletInfo(documentBase);
 
         setHost(this.documentBase);
         
         syntaxPane = pane;
         panel = new JPanel();
+
+        // panel.setMinimumSize(new Dimension(300,300));
         setContentPane( panel );
+        
         panel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        // panel.setPreferredSize(new Dimension(500,200));
+        panel.setPreferredSize(new Dimension(700,446));
         panel.setLayout(new BorderLayout());
         
         setTitle("PfixDialog Includes/Images");
@@ -126,10 +142,11 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         System.out.println("Hier noch ");
         createTabInc();
         createTabImg();
-
+        
         jTabbedPane.setLocation(new java.awt.Point(10, 10));
         jTabbedPane.setVisible(true);
-        jTabbedPane.setSize(new java.awt.Dimension(550, 600));               
+        // jTabbedPane.setSize(new java.awt.Dimension(550, 400));
+        // jTabbedPane.setMinimumSize(new Dimension(300,300));
 
         // jTabbedPane.add(label);
 
@@ -141,6 +158,42 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         // Dimension dim = new Dimension(600,400);
         // setSize(dim);
 
+        // tree = new PfixTree(incTextPanel, info.getRealElements());
+
+        this.tree = buildTree(info.getRealElements());
+        tree.addTreeSelectionListener(this);
+        tree.setRootVisible(false);
+        // tree.setMinimumSize(new Dimension(200,200));
+
+        selPanel.add(new JScrollPane(tree), BorderLayout.CENTER);
+        expandAll(this.tree);
+
+        this.jimagetree = buildTree(info.getRealImages());
+        jimagetree.addTreeSelectionListener(this);
+        // imgFilter.add(new JScrollPane(jimagetree), GridBagConstraints.WEST);
+        expandAll(this.jimagetree);
+
+        but = new JButton();
+
+        createGridBagLayout();
+                
+        // setSize(1200, 500);
+        setLocation(350,250);
+        setVisible(true);
+        //setResizable(false);
+
+        // Dimension minimumSize = new Dimension(200, 150);
+        // setMinimumSize(minimumSize);
+
+        // this.MinimumSize = new Dimension(200,150);
+        
+        tree.getSelectionModel().setSelectionMode
+            (TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        jimagetree.getSelectionModel().setSelectionMode
+            (TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+        jimagetree.setRootVisible(false);        
         pack();
         show();
 
@@ -148,11 +201,105 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         
     }
 
+
+
+
+
+    private void createGridBagLayout() {
+
+        imgFilter = new JPanel();
+        
+        JSplitPane jsp = new JSplitPane();        
+        jsp.setLeftComponent(new JScrollPane(jimagetree));
+
+        String url = getHost() + "/core/editor/img/alpha.gif" ;
+
+        URL		urli;
+        URLConnection	urlConn;
+        
+        try {
+            urli = new URL(url);
+            urlConn = urli.openConnection();
+            ucont = urli;            
+            neuImg = new ImageIcon(urli);
+        }
+        catch (Exception e ) {
+            System.out.println("Background Image not Found");
+                     
+        }
+        
+        JPanel imgButPanel;
+
+        if (ucont != null) {
+            imgButPanel = new JPanel(){
+                    public void paintComponent(Graphics g)	{
+                        ImageIcon bgImage = new ImageIcon(ucont);
+                        g.drawImage(bgImage.getImage(), 0, 0, this);
+                        super.paintComponent(g);
+                        
+                        if(bgImage != null) { 
+                            int x = 0, y = 0; 
+                            while(y < size().height) { 
+                                x = 0; 
+                                while(x< size().width) { 
+                                    g.drawImage(bgImage.getImage(), x, y, this); 
+                                    x=x+bgImage.getImage().getWidth(null); 
+                                } 
+                                y=y+bgImage.getImage().getHeight(null); 
+                            } 
+                        } 
+                        else {
+                            g.clearRect(0, 0, size().width, size().height); 
+                        } 
+                    }                    
+                };
+            imgButPanel.setOpaque(false);
+            
+        }
+        else {
+            imgButPanel = new JPanel();
+        }
+        
+
+        // JPanel neu = imgButPanel;
+
+        imgButPanel.setLayout(new BorderLayout());
+        but.setOpaque( false );
+        but.setBorder(new EmptyBorder(0,0,0,0));
+        imgButPanel.add(but, BorderLayout.CENTER);
+
+        // JButton bla = new JButton("Bla");
+        // neu.add(bla, BorderLayout.SOUTH);
+
+
+        
+        jsp.setRightComponent(imgButPanel);
+        GridBagLayout grid = new GridBagLayout();        
+        GridBagConstraints c = new GridBagConstraints();
+
+        // Setting GridBagLayout to panel
+        imgFilter.setLayout(grid);        
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weightx = 0.5;
+        grid.setConstraints(jsp, c);
+        
+        imgFilter.add(jsp);
+        imgPanel.add(imgFilter, BorderLayout.NORTH);
+
+                
+        
+
+        
+    }
+
+
+
     private void createTabInc() {
         incPanel = new JPanel();
         selPanel = new JPanel();
         butPanel = new JPanel();
-        System.out.println("Here bin ich");
         incPanel.setLayout(new BorderLayout());
         // selPanel.setPreferredSize(new Dimension(400,200));
         // incPanel.setPreferredSize(new Dimension(100,70));
@@ -173,17 +320,17 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         button = new JButton("Choose");
         button.addActionListener(this);
 
-        getDocument();
+        // getDocument();
        
         selPanel.setLayout(new BorderLayout());
         butPanel.setLayout(new BorderLayout());
 
-        selPanel.add(combox, BorderLayout.NORTH);
+        // selPanel.add(combox, BorderLayout.NORTH);
         butPanel.add(button, BorderLayout.CENTER);
         
         
         incPanel.add(selPanel, BorderLayout.NORTH);
-        incPanel.add(incTextPanel, BorderLayout.CENTER);
+        // incPanel.add(incTextPanel, BorderLayout.CENTER);
         incPanel.add(butPanel, BorderLayout.SOUTH);                        
     }
 
@@ -194,8 +341,12 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         imgPanel = new JPanel();
         img = new JLabel("Choose Another Image");
         imgPanel.setLayout(new BorderLayout());
-        getImages();
-        imgPanel.add(imbox, BorderLayout.NORTH);
+        // getImages();
+        // imgPanel.add(imbox, BorderLayout.NORTH);
+
+        // imgFilter = new JPanel();
+        // gridbag = new GridBagLayout();
+        // imgFilter.setLayout(gridbag);
 
         imgbutton = new JButton("Choose");
         imgbutton.addActionListener(this);
@@ -203,13 +354,14 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
         imgbutPanel.setLayout(new BorderLayout());
         imgbutPanel.add(imgbutton, BorderLayout.CENTER);
-        imgPanel.add(imgbutPanel, BorderLayout.SOUTH);        
+        imgPanel.add(imgbutPanel, BorderLayout.SOUTH);
+        // imgPanel.add(imgFilter, BorderLayout.NORTH);
         
     }
 
 
     private void getDocument() {
-        PfixAppletInfo info = new PfixAppletInfo(documentBase);
+        // PfixAppletInfo info = new PfixAppletInfo(documentBase);
         
         incElements = info.getIncludeElements();
         incImages = info.getImages();
@@ -231,7 +383,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
     private void getImages() {
-        PfixAppletInfo info = new PfixAppletInfo(documentBase);
+        // PfixAppletInfo info = new PfixAppletInfo(documentBase);
                
         imbox = new JComboBox();
         imbox.addItemListener(this);
@@ -249,28 +401,16 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
     public void setHost(String base) {
-        // String base = documentBase;
         int pos = 0;
-        
-        System.out.println("DocumentBase: " + base);
                     
         for (int k = 0; k < 3; k++) {
-            // System.out.println("Count + " + k);
             int neupos = base.indexOf("/");
-            // System.out.println("NeuPos " + neupos);
             String temp = base.substring(0, base.indexOf("/"));
-            // System.out.println("Temp: " + temp);
             pos = pos + base.indexOf("/") + 1;
-            base = base.substring(neupos + 1, base.length());
-            // System.out.println("base neu " + base);
-            
-            
-            
+            base = base.substring(neupos + 1, base.length());            
         }
         
         this.host = documentBase.substring(0, pos);
-
-        System.out.println("Host found: " + this.host);
     }
 
 
@@ -279,10 +419,11 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     }
 
     
-    
-    public void itemStateChanged(ItemEvent e) {
 
-        
+
+    // this method isnt needed at the Moment, and will be removed l8ter
+    
+    public void itemStateChanged(ItemEvent e) {        
         
         for (int i=0; i<incElements.length; i++) {
             if (e.getItem().equals(incElements[i])) {
@@ -290,14 +431,17 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                 actInclude = incElements[i];
                 break;
             }
-            
+                
         }
 
         if (incImages.length > 0) {
             for (int j=0; j<incImages.length; j++) {
                 if (e.getItem().equals(incImages[j])) {
+
+                    // System.out.println(" IMAGE PATH = " + path);
                                         
-                    String path = incImages[j];                                       
+                    String path = incImages[j];
+                    System.out.println(" IMAGE PATH = " + path);
                     String addPath = path.substring(path.indexOf("\"")+1, path.lastIndexOf("\""));                   
 
 
@@ -321,7 +465,8 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
                         if ((but == null)) {
                              but = new JButton(neuImg);
-                             imgPanel.add(but, BorderLayout.CENTER);
+                             imgPanel.add(but, BorderLayout.SOUTH);
+                             System.out.println("Here bin ische drinne !!");
                         }
                         else {
                             but.setIcon(neuImg);
@@ -342,6 +487,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         }        
         
     }
+    
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button) {
@@ -355,8 +501,259 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         }
         
     }
+
+
     
+    public JTree buildTree(String [] url) {
+        JTree temptree;
+
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Hallo");
+        DefaultMutableTreeNode root_neu = new DefaultMutableTreeNode();
     
+        DefaultTreeModel treeModel = new DefaultTreeModel( root );
     
+
+        for (int i=0; i<url.length; i++) {
+            root_neu = root;
+
+            String path = url[i];
+                    
+            while (path.indexOf("/") > 0) {
+                String knoten = path.substring(0, path.indexOf("/"));                
+                
+                Enumeration en = root_neu.children();
+                
+                int count = 0;                
+                boolean found = false;
+                DefaultMutableTreeNode temp_node = new DefaultMutableTreeNode();
+                
+                while (en.hasMoreElements()) {                    
+                    count ++;
+                    temp_node = (DefaultMutableTreeNode) en.nextElement();
+                    String tempStr = temp_node.toString();
+                    // System.out.println("Found:" +  tempStr);
+                    // System.out.println("Knoten " + temp_node);
+                    
+                    
+                    if (tempStr.equals(knoten)) {
+                        found = true;
+                        break;
+                        // root_neu = node;
+                        
+                    }
+                    else {
+                        found = false;                                
+                        
+                    }
+                    
+                    
+                    
+                }
+                
+            
+                if (count == 0) {                    
+                    path = path.substring(knoten.length() + 1, path.length());
+                
+                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(knoten);
+                    root_neu.add(node);
+                    root_neu = node;
+                    
+                    // System.out.println("Root-Knoten: " + root_neu.toString());
+                
+                
+                }
+            
+                else {
+                    if (found) {
+                        // System.out.println("Knoten Found");
+                        path = path.substring(knoten.length() + 1, path.length());
+                        System.out.println("ROOOT-NEU ---> " + root_neu.toString());
+                        DefaultTreeModel trModel = new DefaultTreeModel(root_neu.getRoot());
+                        
+                        root_neu = temp_node;
+                        // System.out.println(trModel.getChild(knoten,0).toString());
+                        // root_neu = root_neu.getNextNode();
+                        // System.out.println("Sein Nexter knoten ist " + root_neu.toString());
+                        
+                    }
+                    else 
+                        
+                        {
+                            // System.out.println("Knoten not Found");
+                            // System.out.println("Pfad " + path);
+                            // System.out.println("Knoten " + knoten);
+                            path = path.substring(knoten.length() + 1, path.length());
+                            // System.out.println("Neu Pfad: " + path);
+                            
+                            DefaultMutableTreeNode node = new DefaultMutableTreeNode(knoten);
+                            root_neu.add(node);
+                            root_neu = node;
+                            // System.out.println("Root-Knoten: " + root_neu.toString());
+                            
+                            
+                        }
+                    
+                }                
+                
+            } 
+            
+            DefaultMutableTreeNode element = new DefaultMutableTreeNode(path);
+            root_neu.add(element);
+        }
+        
+        
+        temptree = new JTree(treeModel);
+        temptree.addTreeSelectionListener(this);
+        
+        return temptree;
+                
+
+        
+    }
+
+
+    public void valueChanged(TreeSelectionEvent e) {
+
+        if (e.getSource() == tree) {
+
+        
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+            // System.out.println("in VALUE CHANGER");
+                    
+                    
+            if (node == null) {
+                System.out.println("Node = Null");
+                return;
+            }
+        
+            Object nodeInfo = node.getUserObject();
+            if (node.isLeaf()) {
+                String property = (String)nodeInfo;   
+                // System.out.println("Property + " + property);
+                
+                TreeNode[] trnode = node.getPath();                
+                String pfad = gettingRootPath(trnode);
+                
+                System.out.println("Path to Root " + pfad);                
+                
+                // remove last slash
+                String pfadNeu = pfad.substring(0, pfad.length() - 1);
+                
+                // getting the Part
+                String partName = pfadNeu.substring(pfadNeu.lastIndexOf("/") + 1, pfadNeu.length());
+                // System.out.println("part name " + partName);
+                
+                String realPath = pfadNeu.substring(0, pfadNeu.lastIndexOf("/"));
+                // System.out.println("real Path " + realPath);
+                
+                String includeElement = "<pfx:include path=\"" + realPath + "\" part=\"" + partName + "\" />";
+                
+                // System.out.println(includeElement);
+                                                
+                
+                // incTextField.setText(includeElement);
+                
+                this.actInclude = includeElement;
+                
+                
+                
+                
+
+            } else {
+                System.out.println("Error while retrieving nodes");
+            }
+
+        }
+
+        if (e.getSource() == jimagetree) {
+             
+            DefaultMutableTreeNode nodeImg = (DefaultMutableTreeNode) jimagetree.getLastSelectedPathComponent();
+            System.out.println("in VALUE CHANGER");
+                    
+                    
+            if (nodeImg == null) {
+                System.out.println("Node = Null");
+                return;
+            }
+        
+            Object nodeInfoImg = nodeImg.getUserObject();
+            if (nodeImg.isLeaf()) {
+                String property = (String)nodeInfoImg;   
+                
+
+                
+
+                TreeNode[] trnode = nodeImg.getPath();
+                
+                String pfad = gettingRootPath(trnode);
+                
+                System.out.println("Pfad " + pfad);
+                
+                String neuImgPfad = pfad.substring(0, pfad.length()-1);
+                
+                String imgEl = "<pfx:image path=\"" + neuImgPfad + "\" />";
+                
+                String url = getHost() + neuImgPfad;
+                
+                
+                try {
+                    URL		urli;
+                    URLConnection	urlConn;
+                    
+                    urli = new URL(url);
+                    urlConn = urli.openConnection();                    
+                    
+                    actImage = imgEl;                    
+                    neuImg = new ImageIcon(urli);
+                    
+                    if ((but == null)) {
+                        but = new JButton(neuImg);
+                        but.setVisible(true);                        
+                        imgFilter.add(but);
+                    }
+                    else {
+                        but.setIcon(neuImg);
+                    }
+                    
+                } catch (Exception es) {
+                    System.out.println("Couldnt get image");
+                    System.out.println("Exception " +  es.getMessage());
+                }
+                                                                                
+            } else {
+
+                System.out.println("Error while getting nodes");
+            }
+
+        }
+        
+
+
+
+
+
+        
+    }
+
+    public void expandAll(JTree temptree) {
+
+        Enumeration e = ((DefaultMutableTreeNode) temptree.getModel().getRoot()).depthFirstEnumeration();
+        for (; e.hasMoreElements();) {
+            TreePath t = new TreePath(((DefaultMutableTreeNode)e.nextElement()).getPath());
+            temptree.expandPath(t);
+        }
+    }
+
+
+    private String gettingRootPath(TreeNode [] trnode) {
+        String pfad = new String();
+        for (int i = 1; i < trnode.length; i++) {
+            // System.out.println(trnode[i].toString());
+            pfad = pfad + trnode[i].toString() + "/";
+            
+        }
+        return pfad;
+    }
+
     
 }
