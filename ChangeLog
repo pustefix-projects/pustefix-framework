@@ -1,3 +1,25 @@
+2003-08-15  Joerg Haecker <haecker@schlund.de> / Jens Lautenbacher <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java (getAllEditorProducts):
+	important bugfix: do not read the file always!
+	* src/de/schlund/pfixcore/editor/EditorHelper.java (getAffectedProductsForInclude): 
+	completely rewritten.
+ 	* src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java (isIncludeEditAllowed):
+	pass the affected products, do not retrieve it here.
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java (renderDefault): 
+	src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java(handleSubmittedData,
+	retrieveCurrentStatus),
+	src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java(checkAccess)
+	logging, retrieve the affected products here.
+	* src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java,
+	src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java: minor
+	* src/de/schlund/pfixcore/editor/resources/CurrentIncludeInfo.java:
+	added, holds various infos about current include.
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatus.java,
+	src/de/schlund/pfixcore/editor/resources/EditorSessionStatusImpl.java:
+	use CurrentIncludeInfo
+
+
 2003-08-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (needToGenerate): new mthod to

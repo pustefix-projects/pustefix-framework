@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.editor.resources;
 
 import java.util.*;
+
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.workflow.*;
@@ -49,10 +50,11 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     private PageInfo      currentpage    = null;
     private Target        currenttarget  = null;
     private AuxDependency currentimage   = null;
-    private AuxDependency currentinclude = null;
+    //private AuxDependency currentinclude = null;
     private AuxDependency currentcommon  = null;
     private Context       context        = null;
     private String        currentdokuid  = null;
+    private CurrentIncludeInfo currentIncludeInfo = new CurrentIncludeInfo();
         
     public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
         root.setAttribute("loginallowed", "" + getLoginAllowed());
@@ -86,7 +88,8 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
         currentpage    = null;    
         currenttarget  = null;    
         currentimage   = null;    
-        currentinclude = null;    
+       // currentinclude = null;
+        currentIncludeInfo.resetAll();    
         currentcommon  = null;
         releaseLock();
     }
@@ -131,7 +134,9 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public PageInfo      getCurrentPage() {return currentpage;}
     public Target        getCurrentTarget() {return currenttarget;}
     public AuxDependency getCurrentImage() {return currentimage;}
-    public AuxDependency getCurrentInclude() {return currentinclude;}
+    public AuxDependency getCurrentInclude() {
+        return currentIncludeInfo.getCurrentInclude();
+    }
     public AuxDependency getCurrentCommon() {return currentcommon;}
     public String        getCurrentDocumentationId() {return currentdokuid; }
     public boolean       getLoginAllowed() {return login_allowed; }
@@ -141,9 +146,25 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public void          setCurrentPage(PageInfo page) {currentpage = page;}
     public void          setCurrentTarget(Target target) {currenttarget = target;}
     public void          setCurrentImage(AuxDependency image) {currentimage = image;}
-    public void          setCurrentInclude(AuxDependency include) {currentinclude = include;}
+    public void          setCurrentInclude(AuxDependency include) {
+        currentIncludeInfo.setCurrentInclude(include);
+    }
     public void          setCurrentCommon(AuxDependency common) {currentcommon = common;}
     public void          setCurrentDocumentationId(String id) { currentdokuid = id; }
     public void          setLoginAllowed(boolean status) {login_allowed = status;}
+
+    /**
+     * @see de.schlund.pfixcore.editor.resources.EditorSessionStatus#getAffectedProductsforCurrentInclude()
+     */
+    public HashSet getAffectedProductsForCurrentInclude() throws Exception {
+        return currentIncludeInfo.getAfftectedProducts(this);
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.resources.EditorSessionStatus#resetAffectedProductsForCurrentInclude()
+     */
+    public void resetAffectedProductsForCurrentInclude() {
+        currentIncludeInfo.resetAffectedProducts();
+    }
 
 }// EditorSessionStatusImpl

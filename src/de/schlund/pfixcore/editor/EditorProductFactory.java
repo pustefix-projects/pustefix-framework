@@ -89,6 +89,7 @@ public class EditorProductFactory implements FactoryInit {
     public synchronized EditorProduct[] getAllEditorProducts() throws Exception {
         if (! already_read) {
             readFile(productfile);
+            already_read = true;
         }
         return (EditorProduct[]) knownproducts.values().toArray(new EditorProduct[]{});
     }

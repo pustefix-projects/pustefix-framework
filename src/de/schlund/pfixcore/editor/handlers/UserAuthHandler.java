@@ -47,8 +47,15 @@ import de.schlund.util.statuscodes.StatusCodeFactory;
 
 public class UserAuthHandler implements IHandler {
     private static Category CAT = Category.getInstance(UserAuthHandler.class.getName());
+    private static String EDITOR_PERF = "EDITOR_PERF";
+    private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();
+        }
+        
         ContextResourceManager crm     = context.getContextResourceManager();
         EditorSessionStatus    esess   = EditorRes.getEditorSessionStatus(crm);
         UserAuth               auth    = (UserAuth) wrapper;
@@ -88,6 +95,10 @@ public class UserAuthHandler implements IHandler {
             if(CAT.isDebugEnabled())
                 CAT.debug("Login for user '"+user+"' denied: Login currently not allowed.");
         
+        }
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(this.getClass().getName()+"#handleSubmittedData: "+length);
         }
     }
         
