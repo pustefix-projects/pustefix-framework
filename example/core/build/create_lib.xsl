@@ -11,7 +11,7 @@
   <xsl:param name="machine"/>
   <xsl:param name="fqdn"/>
   <xsl:param name="mode"/>
-  <xsl:param name="container"/>
+  <xsl:param name="container">tomcat</xsl:param>
 
   <xsl:template match="*">
     <xsl:element name="{name()}" namespace="{namespace-uri()}">
