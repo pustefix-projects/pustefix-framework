@@ -217,6 +217,17 @@
             <code>adminmode</code> node is used at all.
           </div>
         </xmlcodeOFF>
+        <defaultstate class="a.state.Class"/>
+        <defaultihandlerstate class="another.state.Class"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <b>&lt;defaultstate&gt;</b> and <b>&lt;defaultihandlerstate&gt;</b>
+            are both optional. The <code>class</code> attribute must be given. <code>a.state.Class</code>
+            should de a descendant of <code>de.schlund.pfixcore.workflow.app.StaticState</code> and <code>another.state.Class</code>
+            should be a descendant of <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code> (unless you really know what you are doing).
+            They are used to set defaults for values used when processing the <b>&lt;pagerequest&gt;</b> tag (see there for more info).
+          </div>
+        </xmlcodeOFF>
       </servletinfo>
       <xmlcodeOFF/>
       <context defaultflow="AFlowName" class="AContextClass" authpage="APageName">
@@ -352,8 +363,14 @@
               <li>If the <code>pagerequest</code> has a <code>authhandler</code> child,
                 use <code>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</code>. Else:</li>
               <li>If the pagerequest has a <code>ihandler</code> child, use
+                the value of the class attribute of the
+                <b>&lt;defaultihandlerstate&gt;</b> tag explained above <b>if
+                it is given</b>.  If this is not given, just use
                 <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code>. Else:</li>
-              <li>use "de.schlund.pfixcore.workflow.app.StaticState".</li>
+              <li>use the value of the class attribute of the
+                <b>&lt;defaultstate&gt;</b> tag explained above <b>if
+                it is given</b>.  If this is not given, just use
+                <code>de.schlund.pfixcore.workflow.app.StaticState</code>.</li>
             </ol>
           </div>
         </xmlcodeOFF>
