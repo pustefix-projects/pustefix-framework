@@ -5,7 +5,7 @@
   
   <active>true</active>
   <comment>webservice Application For Pfixcore</comment>
-  <depend><cus:docroot/>webservice/conf/depend.xml</depend>
+  <depend>webservice/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>webservice.<cus:fqdn/></servername>
   <serveralias>webservice.<cus:machine/></serveralias>
