@@ -658,8 +658,10 @@ public class EditorHelper {
                 olddir = dir;
             }
             if (!path.equals(oldpath) || olddir.equals("")) {
-                pathelem = resdoc.createSubNode(direlem, "path");
-                pathelem.setAttribute("name", path.getRelative());
+                if (doshow  || (currinc != null && currinc.getPath().equals(path))) {
+                    pathelem = resdoc.createSubNode(direlem, "path");
+                    pathelem.setAttribute("name", path.getRelative());
+                }
                 oldpath = path;
             }
             if (doshow  || (currinc != null && currinc.getPath().equals(path))) {
@@ -668,7 +670,6 @@ public class EditorHelper {
                 inc.setAttribute("part", part); 
                 inc.setAttribute("product", product);
             }
-
         }
     }
 

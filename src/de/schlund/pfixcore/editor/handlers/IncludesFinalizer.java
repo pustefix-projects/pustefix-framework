@@ -60,7 +60,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         AuxDependency       currinclude  = esess.getCurrentInclude();
         PfixcoreNamespace[] nspaces      = esess.getProduct().getPfixcoreNamespace();
         boolean             doshow       = esess.getShowAdditionalIncfiles();
-        esess.showAdditionalIncfiles(false);
+        // esess.showAdditionalIncfiles(false);
         
         for (int i = 0; i < nspaces.length; i++) {
             PfixcoreNamespace nsp = nspaces[i];
@@ -73,6 +73,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         // Render all includes
         TreeSet includes = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
         Element root     = resdoc.createNode("allincludes"); 
+        root.setAttribute("allshown", "" + doshow);
         EditorHelper.renderAllIncludesForNavigation(includes, resdoc, root, currinclude, doshow);
 
         TreeSet searchinc = esearch.getResultSet();
