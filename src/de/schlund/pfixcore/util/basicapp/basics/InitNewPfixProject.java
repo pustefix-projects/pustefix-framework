@@ -44,7 +44,7 @@ public final class InitNewPfixProject {
         handleFiles.runHandleXMLFiles(); 
         
         System.out.println("\nYour project has been successfully created.");
-        System.out.println("To see how it works type in \"ant realclean\" and \"ant\".");
+        System.out.println("To see how it works type in \"ant\".");
         System.out.println("Afterwards restart Tomcat.");
         System.out.println("Then type in \"http://projectname.HOSTNAME.DOMAIN\"");
     }
