@@ -21,6 +21,7 @@
     <page name="testcaseselect"    handler="/xml/edit"/>
     <page name="testcasestart"     handler="/xml/edit"/>
     <page name="testcaseoverview"  handler="/xml/edit"/>
+    <page name="AppletInfo"        handler="/xml/edit"/>
   </navigation>
 
   <!-- ========= master =============== -->
@@ -59,6 +60,7 @@
   <standardpage name="images"            xml="core/editor/xml/three_frames.xml"/>
   <standardpage name="includes"          xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="commons"           xml="core/editor/xml/three_frames_applet.xml"/>
+  <standardpage name="AppletInfo"        xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="documentation"     xml="core/editor/xml/three_frames_doku.xml"/>
   <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
@@ -66,5 +68,6 @@
   <standardpage name="testcaseoverview"     xml="core/editor/xml/two_frames.xml"/>
   <!-- These pages should never be visible -->
   <standardpage name="logout"            xml="core/editor/xml/empty.xml"/>
+  
 
 </make>
