@@ -8,6 +8,8 @@
   <context defaultflow="OrderFlow">
     <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
       <implements class="de.schlund.pfixcore.example.ContextCounter"/>
+      <param name="foo">bar</param>
+      <param name="baz">snafu</param>
     </resource>
     <resource class="de.schlund.pfixcore.example.ContextTShirtImpl">
       <implements class="de.schlund.pfixcore.example.ContextTShirt"/>

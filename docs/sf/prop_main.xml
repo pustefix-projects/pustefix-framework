@@ -277,6 +277,19 @@
               </div>
             </xmlcodeOFF>
           </implements>
+          <param name="AName">AValue</param>
+          <xmlcodeOFF>
+            <div class="comment">
+              <code>param</code> is <b>optional</b>, can be used
+              multiple times.  It's similar to the use as a child of
+              <code>pagerequest</code>, but used here to create
+              properties that are related to a context resource
+              implementation. The resulting property looks like this:
+              <p>
+                <code>context.param.AContextResource.AName=AValue</code>
+              </p>
+            </div>
+          </xmlcodeOFF>
         </resource>                               
       </context>
       <xmlcodeOFF/>
