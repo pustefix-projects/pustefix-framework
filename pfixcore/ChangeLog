@@ -1,3 +1,27 @@
+2003-09-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: added attribute "stopnext" to pageflow tag. This triggers 
+	the stuff described below.
+
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java (PageRequestStatus): new status WORKFLOW_STOP.
+
+	* src/de/schlund/pfixcore/workflow/PageFlow.java (getStopAtFirstAfterCurrent): return true
+	if the property "context.pageflowproperty.CURRENTFLOWNAME.stopatfirstaftercurrent" is set to "true".
+	(PageFlow): check for the mentioned property.
+
+	* src/de/schlund/pfixcore/workflow/Context.java: (flowIsStopped): new method.
+	returns true if the currently active page's PageRequestStatus == WORKFLOW_STOP.
+	(documentFromFlow): if the current flow returns true for getStopAtFirstAfterCurrent() and
+	the workflow iterator is past the current page, set the PageRequestStatus of the currently 
+	iterated page to WORKFLOW_STOP instead of WORKFLOW.
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java (isDirectTrigger): change to return true whenever
+	context.flowIsStopped() is true.
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java (isSubmitTriggerAny): changed.
+	context.flowIsStopped() must return false, too (besides all the other prerequesites) for this 
+	method to return true.
+
 2003-08-27  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (recursePages):

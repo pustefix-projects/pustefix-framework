@@ -33,6 +33,7 @@ package de.schlund.pfixcore.workflow;
 
 public class PageRequestStatus {
     public static final PageRequestStatus WORKFLOW      = new PageRequestStatus("WORKFLOW");
+    public static final PageRequestStatus WORKFLOW_STOP = new PageRequestStatus("WORKFLOW_STOP");
     public static final PageRequestStatus REUSE         = new PageRequestStatus("REUSE");
     public static final PageRequestStatus DIRECT        = new PageRequestStatus("DIRECT");
     public static final PageRequestStatus FINAL         = new PageRequestStatus("FINAL");

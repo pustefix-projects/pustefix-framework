@@ -32,11 +32,13 @@ import de.schlund.pfixcore.util.*;
 public class PageFlow {
     private              ArrayList   allsteps = new ArrayList(); 
     private              String      flowname;
-    private final static String      PROPERTY_PREFIX = PageFlowManager.PROP_PREFIX;
-    private final static String      FLAG_FINAL      = "FINAL";
+    private final static String      PROPERTY_PREFIX    = PageFlowManager.PROP_PREFIX;
+    private final static String      FLAG_FINAL         = "FINAL";
+    private final static String      PROPERTY_PAGEFLOW  = "context.pageflowproperty";
     private static       Category    LOG = Category.getInstance(PageFlow.class.getName());
     private              PageRequest finalpage = null;
-    
+    private              boolean     flow_stop_after_current = false;
+
     public PageFlow(Properties props, String name) {
         flowname = name;
         Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + name);
@@ -59,6 +61,14 @@ public class PageFlow {
                 }
             }
         }
+
+        Map     propmap          = PropertiesUtils.selectProperties(props, PROPERTY_PAGEFLOW + "." + name);
+        String  stopaftercurrent = (String) propmap.get("stopatfirstaftercurrent");
+        if (stopaftercurrent != null && stopaftercurrent.equals("true")) {
+            flow_stop_after_current = true;
+        } else {
+            flow_stop_after_current = false;
+        }
         
         for (Iterator i = sorted.values().iterator(); i.hasNext(); ) {
             String      pagename = (String) i.next();
@@ -74,7 +84,10 @@ public class PageFlow {
         }
     }
 
-
+    public boolean getStopAtFirstAfterCurrent() {
+        return flow_stop_after_current;
+    }
+    
     public boolean containsPageRequest(PageRequest page) {
         return allsteps.contains(page);
     }
