@@ -1,3 +1,8 @@
+2004-01-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: Eeek. bugfix. stupid emacs align destroyed my strings.
+	And I forgot to flush the stream.
+
 2004-01-20  Niels Schelbach    <niels@schlund.de>
 
 	* example/core/build/create_serverxml.xsl: inactive projects do not get an entry in the 
