@@ -243,8 +243,7 @@ public final class IncludeDocumentExtension {
 			String sb = MessageFormat.format("path={0}|part={1}|product={2}|"+
 											"docroot={3}|targetgen={4}|targetkey={5}|"+
 											"parent_path={6}|parent_part={7}|parent_product={8}", args);
-			CAT.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
-			CAT.error(e);
+			CAT.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.",e);
 			throw e;
 		}
 	}
