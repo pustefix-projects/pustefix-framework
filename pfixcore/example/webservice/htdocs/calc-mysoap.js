@@ -9,7 +9,9 @@ ws.str2int = function( s, radix ) {
 function mysoapCall() {
 	var d1=new Date();
 	var req=new XMLHttpRequest();
-	req.open("POST","http://webservice.zap.ue.schlund.de/xml/webservice/Calculator",true);
+	
+	var ws = window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator";
+	req.open("POST", ws, true);
 	req.onreadystatechange=function() {
 		if(req.readyState==4) {
 			var d2=new Date();
@@ -41,7 +43,8 @@ Calculator.prototype.send=function(meth) {
 	} else {
 		alert("XMLHttpRequest not supported");
 	}
-	req.open("POST","http://webservice.zap.ue.schlund.de/xml/webservice/Calculator",false);
+	var ws = window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator";
+	req.open("POST", ws, false);
 	req.setRequestHeader("SOAPAction",'""');
 	var msg=start+meth+end;
 	req.send(msg);
@@ -58,7 +61,7 @@ Calculator.prototype.add=function(val1,val2) {
   var val=res.getElementsByTagName('addReturn')[0].firstChild.nodeValue;
   var d2=new Date();
   document.getElementById('stub_time').innerHTML=(d2.getTime()-d1.getTime());
-  return ws.str2int(val, 16);
+  return ws.str2int(val);
 }
 
 var calculator=new Calculator();
