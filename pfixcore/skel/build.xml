@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
+<!DOCTYPE project PUBLIC "-//ANT//DTD project//EN" "ant.dtd">
+
 <project name="pfixcore_skel" default="all" basedir=".">
     
     <!-- set global properties for this build -->
@@ -168,6 +170,28 @@
         <exec dir="${dir.jni}" executable="make" failonerror="true"><arg line="clean"/></exec>
     </target>
 
+    <target name="installjars" >
+        <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
+             as ${dir.build} is specified as location it always resolves to an absolute path;
+             does not work for filenames containing spaces -->
+	    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
+        <exec executable="sh">
+          <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
+        </exec>
+        <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
+        <delete>
+            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+        </delete>
+        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
+            <fileset dir="${basedir}" includes="META-INF/**"/>
+            <fileset dir="${dir.res}"/>
+        </jar>
+        <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
+        <exec executable="sh">
+          <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+        </exec>
+    </target>
+    
     <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
         <taskdef
             name="pfx-xslt"
@@ -193,54 +217,7 @@
             classpathref="cp.classpath"
             description="Creates dependencies in ${dir.projects}/.cache"
         />
-    </target>
-    
-    <target name="core-data">
-        <!-- extract if pfixcore-data is newer than dir ${dir.projects}/core -->
-        <uptodate property="core-data.uptodate">
-            <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
-            <mapper type="merge" to="${dir.projects}/core"></mapper>
-        </uptodate>
-        <delete>
-            <fileset dir="${dir.projects}">
-                <include name="core/**/*" unless="core-data.uptodate"/>
-            </fileset>
-        </delete>
-        <untar dest="${dir.projects}/core" compression="gzip" overwrite="true">
-            <fileset refid="id.fs.pfixcore_data_tgz"/>
-            <patternset>
-                <exclude name="**/*" if="core-data.uptodate"/>
-            </patternset>
-        </untar>
-    </target>
-    
-    <target name="check-permissions">
-    	<apply executable="chmod" os="Linux">
-    		<arg line="a+x"/>
-    		<fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh"/>
-    	</apply>
-    </target>
-    
-    <target name="installjars" >
-        <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
-             as ${dir.build} is specified as location it always resolves to an absolute path;
-             does not work for filenames containing spaces -->
-	    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
-        <exec executable="sh">
-          <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
-        </exec>
-        <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
-        <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
-        </delete>
-        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
-            <fileset dir="${basedir}" includes="META-INF/**"/>
-            <fileset dir="${dir.res}"/>
-        </jar>
-        <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
-        <exec executable="sh">
-          <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
-        </exec>
+	    <antstructure output="ant.dtd"/>
     </target>
     
     <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
@@ -287,6 +264,32 @@
         <delete dir="${dir.projects}/.cache"/>
     </target>
 
+    <target name="core-data">
+        <!-- extract if pfixcore-data is newer than dir ${dir.projects}/core -->
+        <uptodate property="core-data.uptodate">
+            <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
+            <mapper type="merge" to="${dir.projects}/core"></mapper>
+        </uptodate>
+        <delete>
+            <fileset dir="${dir.projects}">
+                <include name="core/**/*" unless="core-data.uptodate"/>
+            </fileset>
+        </delete>
+        <untar dest="${dir.projects}/core" compression="gzip" overwrite="true">
+            <fileset refid="id.fs.pfixcore_data_tgz"/>
+            <patternset>
+                <exclude name="**/*" if="core-data.uptodate"/>
+            </patternset>
+        </untar>
+    </target>
+    
+    <target name="check-permissions">
+    	<apply executable="chmod" os="Linux">
+    		<arg line="a+x"/>
+    		<fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh"/>
+    	</apply>
+    </target>
+    
     <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
         <pfx-xslt 
             style="${dir.projects}/core/build/create_propfiles.xsl"
