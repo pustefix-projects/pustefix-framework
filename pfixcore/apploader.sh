@@ -1,3 +1,2 @@
 #!/bin/sh
-
-java -classpath build de.schlund.pfixxml.loader.CommandClient $@ 
+java -Dapploader.script="$0" -classpath build de.schlund.pfixxml.loader.CommandClient $@ 

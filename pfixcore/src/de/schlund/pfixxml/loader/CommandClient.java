@@ -73,7 +73,9 @@ public class CommandClient {
     }
 
     public static void main(String[] args) throws IOException {
-        String usage="Usage: CommandClient [host:port] command [argument]";
+        String script=System.getProperty("apploader.script");
+        if(script==null || script.trim().equals("")) script="CommandClient";
+        String usage="Usage: "+script+" [host:port] command [argument]";
 	    if(args.length>0) {
             if(args[0].indexOf(':')>0) {
                 if(args.length<2 || args.length>3) {
