@@ -25,12 +25,6 @@ import java.util.TreeMap;
 import javax.xml.transform.TransformerException;
 
 /**
- * @author jh
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-/**
  * XSLVirtualTarget.java
  *
  * Created: Mon Jul 23 21:53:06 2001
@@ -50,6 +44,9 @@ public class XSLVirtualTarget extends VirtualTarget {
         auxdepmanager.tryInitAuxdepend();
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
+     */
     protected Object getValueFromDiscCache() throws TransformerException {
         PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());

@@ -44,32 +44,50 @@ public abstract class VirtualTarget extends TargetImpl {
     protected long modtime = 0l;
     protected TreeSet pageinfos = new TreeSet();
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
+     */
     public void addPageInfo(PageInfo info) {
         synchronized (pageinfos) {
             pageinfos.add(info);
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getPageInfos()
+     */
     public TreeSet getPageInfos() {
         synchronized (pageinfos) {
             return (TreeSet) pageinfos.clone();
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#setXMLSource(de.schlund.pfixxml.targets.Target)
+     */
     public void setXMLSource(Target source) {
         xmlsource = source;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#setXSLSource(de.schlund.pfixxml.targets.Target)
+     */
     public void setXSLSource(Target source) {
         xslsource = source;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
+     */
     public void addParam(String key, String val) {
         synchronized (params) {
             params.put(key, val);
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getModTime()
+     */
     public long getModTime() {
         if (modtime == 0l) {
             synchronized (this) {
@@ -84,6 +102,9 @@ public abstract class VirtualTarget extends TargetImpl {
         return modtime;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#needsUpdate()
+     */
     public boolean needsUpdate() throws Exception {
         long mymodtime = getModTime();
         long xmlmod;
@@ -104,36 +125,42 @@ public abstract class VirtualTarget extends TargetImpl {
         return false;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#storeValue(java.lang.Object)
+     */
     public void storeValue(Object obj) {
         SPCache cache = SPCacheFactory.getInstance().getCache();
         cache.setValue(this, obj);
     }
 
+  
     public String toString() {
-        return "[TARGET: "
-            + getType()
-            + " "
-            + getTargetKey()
-            + "@"
-            + getTargetGenerator().getConfigname()
-            + " <"
-            + getXMLSource().getTargetKey()
-            + "> <"
-            + getXSLSource().getTargetKey()
-            + ">]";
+        return "[TARGET: " + getType() + " " + getTargetKey()
+            + "@" + getTargetGenerator().getConfigname()
+            + " <" + getXMLSource().getTargetKey() + "> <"
+            + getXSLSource().getTargetKey() + ">]";
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#setModTime(long)
+     */
     // still to implement from TargetImpl:
     //protected abstract Object  getValueFromDiscCache() throws Exception;
     protected void setModTime(long mtime) {
         modtime = mtime;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromSPCache()
+     */
     protected Object getValueFromSPCache() {
         SPCache cache = SPCacheFactory.getInstance().getCache();
         return cache.getValue(this);
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
+     */
     protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
         long maxmodtime = 0l;
         long tmpmodtime;
@@ -174,14 +201,9 @@ public abstract class VirtualTarget extends TargetImpl {
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
                             targetex =
-                                new TargetGenerationException(
-                                    "Caught transformer exception when doing getModtimeMaybeUpdate",
-                                    storedException);
+                                new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
                         } else {
-                            targetex =
-                                new TargetGenerationException(
-                                    "Caught transformer exception when doing getModtimeMaybeUpdate",
-                                    tex);
+                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
                         }
                         targetex.setTargetkey(targetkey);
                         throw targetex;
@@ -203,15 +225,7 @@ public abstract class VirtualTarget extends TargetImpl {
         File cachefile = new File(getTargetGenerator().getDisccachedir() + key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(
-                key
-                    + ": Getting "
-                    + getType()
-                    + " by XSLTrafo ("
-                    + xmlsource.getTargetKey()
-                    + " / "
-                    + xslsource.getTargetKey()
-                    + ")");
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey() + " / " + xslsource.getTargetKey() + ")");
         }
 
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
@@ -226,11 +240,9 @@ public abstract class VirtualTarget extends TargetImpl {
         Object xmlobj = ((TargetRW) xmlsource).getCurrValue();
         Object xslobj = ((TargetRW) xslsource).getCurrValue();
         if (xmlobj == null)
-            throw new XMLException(
-                "**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
         if (xslobj == null)
-            throw new XMLException(
-                "**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
 
         //FIXME!!! Do we want to do this right HERE????
         xsltproc.applyTrafoForOutput(xmlobj, xslobj, getParams(), new FileOutputStream(cachefile));

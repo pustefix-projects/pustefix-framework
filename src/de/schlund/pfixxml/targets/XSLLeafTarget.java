@@ -43,6 +43,9 @@ public class XSLLeafTarget extends LeafTarget {
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + key);
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
+     */
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {

@@ -121,7 +121,7 @@ public abstract class ServletManager extends HttpServlet {
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-        res.setStatus(res.SC_MOVED_TEMPORARILY);
+        res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         res.setHeader("Location", reloc_url);
     }
 

@@ -46,6 +46,9 @@ public class XMLVirtualTarget extends VirtualTarget {
         auxdepmanager.tryInitAuxdepend();
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
+     */
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {

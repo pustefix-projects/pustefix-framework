@@ -1,3 +1,25 @@
+2003-05-08  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleXXXProps):
+	moved debugging output from INFO to DEBUG.
+
+	* src/de/schlund/pfixxml/ServletManager.java(relocate):
+	SC_MOVED_TEMPORARILY is now accessed in a static way.
+
+	* src/de/schlund/pfixxml/targets/FileDependency.java,
+	src/de/schlund/pfixxml/targets/StaticFileDependency.java:
+	removed dummy and dummy2 parameter from constructor.
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java,
+	src/de/schlund/pfixxml/SessionCleaner.java,
+	src/de/schlund/pfixxml/targets/TargetGenerationException.java:
+	organized imports.
+	
+	* src/de/schlund/pfixxml/targets/TargetImpl.java,
+	src/de/schlund/pfixxml/targets/VirtualTarget.java,
+	src/de/schlund/pfixxml/targets/X[M|S][Leaf|Virtual]Target.java: javadoc
+
+
 2003-05-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java: cosmetics 

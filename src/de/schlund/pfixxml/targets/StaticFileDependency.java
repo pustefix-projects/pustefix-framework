@@ -38,7 +38,7 @@ public class StaticFileDependency extends FileDependency {
         return false; 
     }
 
-    public StaticFileDependency (DependencyType type, String path, String dummy, String dummy2) {
+    public StaticFileDependency (DependencyType type, String path) {
         this.type    = type;
         this.path    = path;
         this.part    = null;
