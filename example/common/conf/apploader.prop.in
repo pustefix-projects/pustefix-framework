@@ -4,13 +4,18 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 	
   <cus:choose>
+  	
     <!--don't use AppLoader in production environment-->
     <cus:test mode="prod">
+
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">off</prop>
+
     </cus:test>
+
     <!--use AppLoader in development environment--> 
     <cus:test>
+
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">on</prop>
       
@@ -39,7 +44,17 @@
       <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
+      
+      <!--add packages which don't have to be traversed for state transfer-->
+      <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
+      <prop name="apploader.traverse.excludepackage.2">org.apache.log4j</prop>
+      
+      <!--add classes which have to be traversed even though their packages have not-->
+      <prop name="apploader.traverse.includeclass.1">java.lang.Object</prop>
+      <prop name="apploader.traverse.includeclass.2">java.lang.Thread</prop>
+      
     </cus:test>
+
   </cus:choose>
   
 </properties>
