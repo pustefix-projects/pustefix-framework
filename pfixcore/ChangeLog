@@ -1,3 +1,13 @@
+2003-06-17  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java(callProcess):
+	we do not catch an Exception any more but a Throwable now. So
+	we will get a mail for errors like StackOverflowError.
+
+	* src/de/schlund/pfixxml/exceptionhandler:
+	Handle a Throwable instead of exception. Added number of
+	collected exception in mail subject for report.
+
 2003-06-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/navigation.xsl.in: (button_impl) Changed the

@@ -20,7 +20,6 @@ package de.schlund.pfixxml.exceptionhandler;
 
 import org.apache.log4j.Category;
 
-
 /**
  * Class to decouple the exception-throwing tomcat-threads from the thread which 
  * handles the exception. It is a simple producer/consumer-problem where the
@@ -32,11 +31,11 @@ class Cubbyhole {
 
     //~ Instance/static variables ..............................................
 
-    private Object[]        array_     = null; // the elements
-    private int             putPtr_    = 0; // circular indices
-    private int             takePtr_   = 0;
-    private int             usedSlots_ = 0; // length
-    private static Category CAT        = Category.getInstance(Cubbyhole.class.getName());
+    private Object[] array_ = null; // the elements
+    private int putPtr_ = 0; // circular indices
+    private int takePtr_ = 0;
+    private int usedSlots_ = 0; // length
+    private static Category CAT = Category.getInstance(Cubbyhole.class.getName());
 
     //~ Constructors ...........................................................
 
@@ -68,8 +67,9 @@ class Cubbyhole {
         array_[putPtr_] = x;
         if (CAT.isDebugEnabled()) {
             StringBuffer msg = new StringBuffer(100);
-            msg.append("PUT(").append(usedSlots_).append(",").append(putPtr_).append("):").append(Thread.currentThread().getName())
-               .append("--> ").append(((ExceptionContext) x).getException().toString());
+            msg.append("PUT(").append(usedSlots_).append(",").append(putPtr_)
+                .append("):").append(Thread.currentThread().getName()).append("--> ")
+                .append(((ExceptionContext) x).getThrowable().toString());
             CAT.debug(msg.toString());
         }
         putPtr_ = (putPtr_ + 1) % array_.length;
@@ -95,12 +95,13 @@ class Cubbyhole {
         Object x = array_[takePtr_];
         if (CAT.isDebugEnabled()) {
             StringBuffer msg = new StringBuffer(100);
-            msg.append("TAKE(").append(usedSlots_).append(",").append(takePtr_).append("):").append(Thread.currentThread().getName())
-               .append("-->").append(((ExceptionContext) x).getException().toString());
+            msg.append("TAKE(").append(usedSlots_).append(",").append(takePtr_)
+                .append("):").append(Thread.currentThread().getName()).append("-->")
+                .append(((ExceptionContext) x).getThrowable().toString());
             CAT.debug(msg.toString());
         }
         array_[takePtr_] = null;
-        takePtr_         = (takePtr_ + 1) % array_.length;
+        takePtr_ = (takePtr_ + 1) % array_.length;
         if (usedSlots_-- == array_.length) {
 
             //cubbyhole was full, wakeup all puters
