@@ -1,5 +1,7 @@
 2004-01-27  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/common/conf/pfixlog.xml.in: some changes personalized for uid=jtl
+
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java: small cosmetic changes
 
