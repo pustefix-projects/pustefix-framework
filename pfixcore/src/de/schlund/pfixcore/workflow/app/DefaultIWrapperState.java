@@ -46,7 +46,6 @@ public class DefaultIWrapperState extends StaticState {
     
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
-        container.initIHandlers(context);
         return (container.isPageAccessible() && container.areHandlerActive());
     }
     

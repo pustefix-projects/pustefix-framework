@@ -459,8 +459,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             currtime = System.currentTimeMillis();
-            spdoc.setXmlObject(xsltproc.xmlObjectFromDocument(spdoc.getDocument()));
-            spdoc.setDocument(null);
+            spdoc.setDocument(xsltproc.xmlObjectFromDocument(spdoc.getDocument()));
             if (CAT.isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
@@ -560,7 +559,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (! render_external && ! plain_xml) {
             PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             try {
-                xsltproc.applyTrafoForOutput(spdoc.getXmlObject(), 
+                xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
                                              generator.getTarget(stylesheet).getValue(), paramhash, 
                                              res.getOutputStream());
             } catch (TransformerException e) {
@@ -571,7 +570,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         } else if (plain_xml) {
             res.setContentType(XML_CONTENT_TYPE);
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(spdoc.getXmlObject()), 
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(spdoc.getDocument()), 
                                                                         new StreamResult(res.getOutputStream()));
         } else {
             Document ext_doc = dbfac.newDocumentBuilder().newDocument();
@@ -588,7 +587,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 param.setAttribute("value", val);
                 root.appendChild(param);
             }
-            Node imported = ext_doc.importNode(spdoc.getXmlObject().getDocumentElement(), true);
+            Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
             root.appendChild(imported);
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc), 
                                                                         new StreamResult(res.getOutputStream()));

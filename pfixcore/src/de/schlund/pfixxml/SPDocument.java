@@ -37,10 +37,10 @@ public class SPDocument {
     //~ Instance/static variables ..................................................................
 
     private Document   document;
-    private Document   xmlobject;
     private Properties properties;
     private String     pagename    = null;
     private String     xslkey      = null;
+    private String     resdata     = null;
     private long       timestamp   = -1;
     private int        error       = 0;
     private String     errortext   = null;
@@ -160,6 +160,14 @@ public class SPDocument {
         return xslkey;
     }
 
+    public void setResponseData(String data) {
+        resdata = data;
+    }
+
+    public String getResponseDate() {
+        return resdata;
+    }
+    
     /**
      * Insert the method's description here.
      * Creation date: (05/10/00 19:46:18)
@@ -212,9 +220,6 @@ public class SPDocument {
      */
     public String toString() {
         Document tmp = document;
-        if (tmp == null) {
-            tmp = xmlobject;
-        }
         StringWriter sw = new StringWriter();
         sw.write("\n");
         if (tmp == null) {
@@ -231,21 +236,5 @@ public class SPDocument {
             }
         }
         return sw.toString();
-    }
-
-    /**
-     * Returns the xmlobject.
-     * @return Object
-     */
-    public Document getXmlObject() {
-        return xmlobject;
-    }
-
-    /**
-     * Sets the xmlobject.
-     * @param xmlobject The xmlobject to set
-     */
-    public void setXmlObject(Document xmlobject) {
-        this.xmlobject = xmlobject;
     }
 }
