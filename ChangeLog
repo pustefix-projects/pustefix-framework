@@ -1,3 +1,14 @@
+2003-03-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SessionCleaner.java (storeSPDocument): remove the boolean stattask parameter, 
+	add the int timeout. We unconditionally create TimerTask, but can specify different timeout values.
+
+	* example/common/conf/pustefix.prop.in: set the property sessioncleaner.timeout to 20 for mode=prod and
+	600 for mode=test.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (initValues): read another property 
+	sessioncleaner.timeout to specify how long the timeout for removing the SPDocument should be.
+
 2003-03-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/serverutil/NoCopySessionData.java: new

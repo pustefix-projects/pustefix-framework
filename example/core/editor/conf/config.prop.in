@@ -1,7 +1,8 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
-
+  <prop name="sessioncleaner.timeout">10</prop>
+  
   <servletinfo depend="core/editor/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
     <editmode allow="false"/>
   </servletinfo>
