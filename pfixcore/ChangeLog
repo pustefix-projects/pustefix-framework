@@ -1,3 +1,17 @@
+2004-10-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java:
+	constructParameters now needs to get the session, too. This is
+	used to contruct another parameter called __external_session_ref
+	which holds the normal session id when not running under SSL and
+	the invalid insecure "parent" session when running under SSL. This
+	id can be used to give to the outside for jumping back into the
+	application.
+
+	* example/core/xsl/master.xsl.in: add the ixsl:param __external_session_ref.
+
+	* src/de/schlund/pfixxml/ServletManager.java: debug output fixed
+
 2004-10-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:

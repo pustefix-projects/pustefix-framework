@@ -20,6 +20,7 @@
         Remote IP: <ixsl:value-of select="$__remote_addr"/><br/>
         Server name: <ixsl:value-of select="$__server_name"/><br/>
         PageFlow: <ixsl:value-of select="$pageflow"/><br/>
+        Session for ext. reference: <ixsl:value-of select="$__external_session_ref"/>
       </div>
       <table width="400">
         <tr>
