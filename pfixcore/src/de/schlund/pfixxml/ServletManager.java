@@ -26,6 +26,7 @@ import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -312,8 +313,15 @@ public abstract class ServletManager extends HttpServlet {
         HashMap map = new HashMap();
         SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
-        LinkedList traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
-        String     old_id   = session.getId();
+        SessionInfoStruct infostruct = SessionAdmin.getInstance().getInfo(session);
+        LinkedList        traillog   = new LinkedList();
+        String            old_id     = session.getId();
+        if (infostruct != null) {
+            traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
+        } else {
+            CAT.warn("Infostruct is NULL? trying to handle gracefully...");
+        }
+        
         CAT.debug("*** Invalidation old session (Id: " + old_id + ")");
         session.invalidate();
         session = req.getSession(true);

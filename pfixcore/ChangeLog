@@ -1,3 +1,9 @@
+2003-10-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java (redirectToSecureSSLSession): fixed a
+	Nullpointer Excpetion that could happen if the secure ssl cookie was removed while browsing.
+	Not really sure if this is the right thing to do, but it's a corner case anyway. 
+
 2003-10-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/script/baselib.js (__js_Layer): Rewrote cookie
