@@ -488,7 +488,8 @@ public class Context implements AppContext {
             if (skip_on_inaccessible) {
                 return null;
             } else {
-                LOG.warn("State for page " + getCurrentPageRequest().getName() + " is not accessible! Trying first page of default flow.");
+                LOG.warn("State for page " + getCurrentPageRequest().getName() +
+                         " is not accessible! Trying first page of default flow.");
                 setCurrentPageFlow(pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP)));
                 setCurrentPageRequest(currentpageflow.getFirstStep());
                 state = getPageMap().getState(getCurrentPageRequest());
