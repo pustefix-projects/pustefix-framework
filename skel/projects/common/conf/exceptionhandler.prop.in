@@ -3,7 +3,7 @@
   <cus:choose>
     <cus:test mode="prod">
       <prop name="rule.mail.send">true</prop>
-      <prop name="rule.mail.to"><cus:uid>@<cus:fqdn/></prop>
+      <prop name="rule.mail.to"><cus:uid/>@<cus:fqdn/></prop>
     </cus:test>
     <cus:test>
       <prop name="rule.mail.send">false</prop>
