@@ -38,7 +38,7 @@
                     </tr>
                     <tr>
                       <td align="right" nowrap="nowrap">
-                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                        <pfx:label name="auth.Pass">Password:</pfx:label>
                       </td>
                       <td>
                         <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
