@@ -40,6 +40,9 @@
 	class. Example FLowStepAction that simply prints some text to the
 	log file
 
+	* example/core/build/create_propfiles.xsl: make all the config
+	stuff for the FlowStepActions work
+
 2004-04-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/navigation.xsl.in (button, jsbutton): Now
