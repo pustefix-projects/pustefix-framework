@@ -62,7 +62,7 @@ public class Navigation {
     }
     
     public NavigationElement[] getNavigationElements() {
-	return pageroot.getChildren();
+        return pageroot.getChildren();
     }
 
     public class NavigationElement {
