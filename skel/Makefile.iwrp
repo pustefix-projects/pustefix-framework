@@ -1,17 +1,15 @@
+#################################################################
+# Settings...
+#################################################################
+
 include defines.inc
 
 BUILD_LIB   = projects/core/build/iwrapper.xsl 
-DOCDIR      = javadoc
-JAVAVM      = java
-JAVAC       = jikes
-SRCROOT     = src
+TRFBUILD    = de.schlund.pfixcore.util.MultiTransform
+
 ALLWRAPPERS = $(shell find $(ALLDIRS) -maxdepth 1 -name "*.iwrp")
 WRAPPERS    = $(ALLWRAPPERS:.iwrp=.java);
 
-TRFBUILD    = de.schlund.pfixcore.util.MultiTransform
-
-export CLASSPATH  = $(shell ./bin/setClassPath.sh `pwd`)
-export JIKESPATH = ${CLASSPATH}:${JDK_HOME}/jre/lib/rt.jar:
 
 #################################################################
 

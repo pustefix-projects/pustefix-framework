@@ -1,13 +1,17 @@
 #################################################################
 # Rules...
 #################################################################
-LANG=C
-PROJECT=pfixcore_skel
-BUILDDIR=build
-JAR=jar
-PFIXCORE_DATA=$(shell ls -1 lib/pfixcore-data-*.tar.gz)
+LANG = C
 
-all:  projects/core check_permissions compile installjars_tc compile_xml 
+include defines.inc
+
+PFIXCORE_DATA = $(shell ls -1 lib/pfixcore-data-*.tar.gz)
+
+all: projects/core check_permissions compile installjars_tc
+	cd projects && make -f Makefile all
+
+generate: projects/core check_permissions compile installjars_tc 
+	cd projects && make -f Makefile generate
 
 projects/core: $(PFIXCORE_DATA)
 	@echo "*** Erasing the whole core subdirectory!"
@@ -35,17 +39,10 @@ compile: generate_src
 	@echo compiling classes...
 	make -f Makefile.classes compile
 
-compile_xml:
-	cd projects && make -f Makefile all 
-
 generate_src:
 	@echo 
 	@echo ROOT: generating src. 
 	make -f Makefile.iwrp generate_src
-
-generate: all
-	@echo Making Targets:
-	cd projects && make -f Makefile generate
 
 clean:
 	@echo 
@@ -66,12 +63,5 @@ installjars_tc: compile
 	@(cd projects/servletconf/tomcat/lib/; ln -s ../../../../lib/*.jar .)
 	@echo Done!
 
-
-doc:	all
-	make -f Makefile.javadoc doc
-
-#################################################################
-
 echo-classpath:
-	@make -f Makefile.classes echo-classpath
-#################################################################
+	@echo ${CLASSPATH}
