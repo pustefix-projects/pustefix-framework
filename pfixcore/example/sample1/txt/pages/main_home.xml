@@ -5,27 +5,31 @@
   <part name="theme-test">
     <product name="default">
       <lang name="default">
-        ~~~~~ Theme: default ~~~~~
+        Include used product branch 'default' + lang 'default'
       </lang>
     </product>
     <product name="sample1">
       <lang name="default">
-        ~~~~~ Theme: sample1 ~~~~~
+        Include used product branch 'sample1' + lang 'default'
       </lang>
-    </product>
-    <product name="foo">
-      <lang name="default">
-        ~~~~~ Theme: foo ~~~~~
+      <lang name="en_*">
+        Include used product branch 'sample1' + lang 'en_*'
+      </lang>
+      <lang name="en_US">
+        Include used product branch 'sample1' + lang 'en_US'
+      </lang>
+      <lang name="de_DE">
+        Include used product branch 'sample1' + lang 'de_DE'
       </lang>
     </product>
     <product name="bar">
       <lang name="default">
-        ~~~~~ Theme: bar ~~~~~
+        Include used product branch 'bar' + lang 'default'
       </lang>
     </product>
     <product name="baz">
       <lang name="default">
-        ~~~~~ Theme: baz ~~~~~
+        Include used product branch 'baz' + lang 'default'
       </lang>
     </product>
   </part>
@@ -49,6 +53,9 @@
           <pfx:themeselect>
             <pfx:theme name="foo">
               FOO
+            </pfx:theme>
+            <pfx:theme name="default">
+              DEFAULT
             </pfx:theme>
           </pfx:themeselect>
           <pfx:forminput target="_top">
