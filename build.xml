@@ -10,7 +10,8 @@
     <property name="project.version"        value="0.4.1-pre" description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
     <property name="uid"                    value="${env.USER}"/>
     <property name="javahome"               value="${env.JAVA_HOME}"/>
-    <property name="build.compiler"         value="jikes"/>
+    <property name="build.compiler"         value="modern"/>
+    <property name="build.compiler.emacs"   value="true"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
     <property name="dir.src"                location="src"/>
