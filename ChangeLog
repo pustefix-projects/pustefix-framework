@@ -1,3 +1,15 @@
+2003-03-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed set/getXmlObject(). We
+	store the tinytree just inplace of the original Document.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): remove all traces of get/setXmlObject
+	as noted above, just use get/setDocument() instead.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(isAccessible): removed call to IHandlerContainer.initIHandlers(...). 
+	The IHandlerContainerManager already takes care of that one time when creating the IHandlerContainer.
+
 2003-03-04  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/editor/conf/config.prop.in: changed editmode allow to
