@@ -17,7 +17,7 @@ public interface CRTestcase extends ContextResource {
      * Set the selected testcases.
      * @param cases the names of the selected testcases
      */
-    public void setSelectedTestcases(String[] cases);
+    public void setSelectedTestcases(String[] cases) throws TestClientException;
     
     /**
      * Retrieve all selected testcases.

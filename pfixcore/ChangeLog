@@ -1,3 +1,11 @@
+2004-02-18  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/testenv/*: Added support for retrieving timing information.
+        * src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
+        src/de/schlund/pfixcore/editor/resources/CRTestcase.java,
+        example/core/editor/txt/pages/main_testcaseoverview.xml: Editor update
+        for new features.
+
 2004-02-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.5.3-pre

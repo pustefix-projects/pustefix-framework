@@ -21,7 +21,6 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * The purpose of this class is to log

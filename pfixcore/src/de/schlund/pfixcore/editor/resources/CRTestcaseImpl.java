@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.editor.resources;
 
+import java.awt.List;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.testenv.RecordManager;
 import de.schlund.pfixxml.testenv.RecordManagerFactory;
-import de.schlund.pfixxml.testenv.TestClient;
+import de.schlund.pfixxml.testenv.Testcase;
 import de.schlund.pfixxml.testenv.TestClientException;
 import de.schlund.pfixxml.testenv.TestcasePlaybackResult;
 import de.schlund.pfixxml.testenv.TestcaseStepResult;
@@ -33,10 +34,8 @@ import de.schlund.pfixxml.testenv.TestcaseStepResult;
  */
 public class CRTestcaseImpl implements CRTestcase {
 
-    /** store the selected testcases here */
+    /** list containing Objects of type Testcase */
     private ArrayList selectedTestcases = null;
-    private String availableTestcasesDirectory = null;
-    private String availableTestcases = null;
     private boolean hasStartedTestcases = false;
     private HashMap testOutput = null;
     private ContextResourceManager cRM = null;
@@ -72,10 +71,10 @@ public class CRTestcaseImpl implements CRTestcase {
             Element ele2 = resdoc.createNode("selected");
             Iterator iter = scases.iterator();
             while(iter.hasNext()) {
-                String name = (String) iter.next();
-                Element e = ResultDocument.addTextChild(ele2, "testcase", name);
-                e.setAttribute("tmp_directory", getTemporaryDirectoryForTestcase(name));
-                e.setAttribute("number_of_steps", ""+TestClient.getNumberOfStepsForTestcase(dir + "/" + name));
+                Testcase testcase = (Testcase) iter.next();
+                Element e = ResultDocument.addTextChild(ele2, "testcase", testcase.getName());
+                e.setAttribute("tmp_directory", getTemporaryDirectoryForTestcase(testcase.getName()));
+                e.setAttribute("number_of_steps", ""+testcase.getNumberOfStepsForTestcase());
                 ele2.appendChild(e);
             }
             elem.appendChild(ele2);
@@ -94,7 +93,11 @@ public class CRTestcaseImpl implements CRTestcase {
                     TestClientException ex = playresult.getException();
                     el3.appendChild(el3.getOwnerDocument().importNode(ex.toXMLRepresentation().getFirstChild(), true));
                 } else {   
-                 
+                      Element timing_ele = resdoc.createSubNode(el3, "timing");
+                      timing_ele.setAttribute("total", ""+playresult.getTotalDuration());
+                      timing_ele.setAttribute("getdom", ""+playresult.getTotalGetDomDuration());
+                      timing_ele.setAttribute("hdldoc", ""+playresult.getTotalHandleDocumentDuartion());
+                      timing_ele.setAttribute("prepro", ""+playresult.getTotalPreProcessingDuration());
                     for(int j=0; j<playresult.getNumStepResult(); j++) {
                         TestcaseStepResult stepres = playresult.getStepResult(j);
                         String str = stepres.getDiffString();
@@ -137,10 +140,18 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#setTestcasesForProcessing(String[])
      */
-    public void setSelectedTestcases(String[] cases) {
+    public void setSelectedTestcases(String[] cases) throws TestClientException {
         selectedTestcases = new ArrayList(cases.length);
-        for(int i=0; i<cases.length; i++) {
-            selectedTestcases.add(cases[i]);
+        for(int i=0; i < cases.length; i++) {
+            String tcasename = cases[i];
+            String dir = getAvailableTestcaseDir() + "/" + tcasename;
+            Testcase testcase  = new Testcase();
+            testcase.setOptions(dir, 
+                    getTemporaryDirectoryForTestcase(tcasename),
+                    getAvailableTestcaseDir() + "/" + tcasename,
+                    tcasename);
+            selectedTestcases.add(i, testcase);
+            
         }
     }
 
@@ -182,9 +193,7 @@ public class CRTestcaseImpl implements CRTestcase {
         return getAvailableTestcaseDir();
     }
 
-    public void setAvailableTestcasesDirectory(String dir) {
-        availableTestcasesDirectory = dir;
-    }
+    
 
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#executeTest()
@@ -193,20 +202,16 @@ public class CRTestcaseImpl implements CRTestcase {
         hasStartedTestcases = true;
         testOutput = new HashMap();
         for(int i=0; i<selectedTestcases.size(); i++) {
-            TestClient tc = new TestClient();
-            String tcase = (String) selectedTestcases.get(i);
+            Testcase testcase = (Testcase) selectedTestcases.get(i);
+            
             try {
-                String dir = getAvailableTestcaseDir() + "/" + tcase;
-                tc.setOptions(dir, 
-                    getTemporaryDirectoryForTestcase(tcase),
-                    getAvailableTestcaseDir() + "/" + tcase);
-                TestcasePlaybackResult result = tc.makeTest(); 
-                testOutput.put(tcase, result);
+                TestcasePlaybackResult result = testcase.execute(); 
+                testOutput.put(testcase.getName(), result);
             } catch(TestClientException e) {
                 CAT.error("TestClientException: "+e.getMessage()+" -> "+e.getExceptionCause().getMessage());
                 TestcasePlaybackResult res = new TestcasePlaybackResult();
                 res.setException(e);
-                testOutput.put(tcase, res);
+                testOutput.put(testcase.getName(), res);
             }
         }   
         isTestExecuted = true;
@@ -241,8 +246,6 @@ public class CRTestcaseImpl implements CRTestcase {
             CAT.debug("Resetting CRTestcase!");
         }
         selectedTestcases = null;
-        availableTestcasesDirectory = null;
-        availableTestcases = null;
         testOutput = null;
         hasStartedTestcases = false;
         isTestExecuted = false;

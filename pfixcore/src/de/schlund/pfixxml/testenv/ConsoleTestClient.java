@@ -2,9 +2,7 @@ package de.schlund.pfixxml.testenv;
 
 import gnu.getopt.Getopt;
 
-import java.util.ArrayList;
 
-import javax.xml.parsers.FactoryConfigurationError;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.ConsoleAppender;
@@ -28,7 +26,6 @@ public class ConsoleTestClient {
     private String          tmp_dir          = null;
     private String          style_dir        = null;
     private static int      LOOP_COUNT       = 1;
-    private static Category CAT              = Category.getInstance(ConsoleTestClient.class.getName());
     private static int      LOGLEVEL_QUIET   = 0;
     private static int      LOGLEVEL_VERBOSE = 1;
     private static int      LOGLEVEL_STD     = 2;
@@ -43,9 +40,9 @@ public class ConsoleTestClient {
         ctc.doIt(args);
     }
 
-    public void doIt(String[] args) throws FactoryConfigurationError {
+    public void doIt(String[] args)  {
         try {
-            TestClient tc = new TestClient();
+            Testcase tc = new Testcase();
             if (! scanOptions(args)) {
                 printUsage();
                 //return;
@@ -54,7 +51,7 @@ public class ConsoleTestClient {
                 DOMConfigurator.configure(log4j);
             } // hack 
             else {
-                Category        CAT     = Category.getInstance(TestClient.class.getName());
+                Category        CAT     = Category.getInstance(Testcase.class.getName());
                 PatternLayout   layout  = new PatternLayout("%m\n");
                 ConsoleAppender console = new ConsoleAppender(layout, ConsoleAppender.SYSTEM_OUT);
                 console.setName("CONSOLE");
@@ -76,14 +73,14 @@ public class ConsoleTestClient {
                 style_dir = src_dir;
             }
             System.out.println("Setting options to TestClient: src_dir="+src_dir+" tmp_dir="+tmp_dir+" styledir="+style_dir);
-            tc.setOptions(src_dir, tmp_dir, style_dir);
+            tc.setOptions(src_dir, tmp_dir, style_dir, "currenttescase");
             if (loglevel != LOGLEVEL_QUIET) {
                 System.out.println("|====================================================|");
                 System.out.println("|               Pustefix Test ConsoleClient          |");
                 System.out.println("|====================================================|");
             }
             for (int i = 0; i < LOOP_COUNT; i++) {
-                TestcasePlaybackResult result = tc.makeTest();
+                TestcasePlaybackResult result = tc.execute();
                 printResult(result);
             }
         } catch (Exception e) {
@@ -144,12 +141,17 @@ public class ConsoleTestClient {
         
         for (int i = 0; i < result.getNumStepResult(); i++) {
             TestcaseStepResult stepresult = result.getStepResult(i);
+            
             if ((stepresult.getDiffString() == null || stepresult.getDiffString().equals(""))
                 && loglevel == LOGLEVEL_QUIET) {
                 // print nothing in quiet mode
             } else {
                 System.out.println("Step number " + i);
                 System.out.println("  Statuscode : " + stepresult.getStatuscode());
+                System.out.println("  TotalTime        : " + stepresult.getDuration());
+                System.out.println("    PreProcessing  : " + stepresult.getPreProcessingDuration());
+                System.out.println("    GetDocument    : " + stepresult.getGetDocumentDuration());
+                System.out.println("    HandleDocument : " + stepresult.getHandleDocumentDuration());
                 String diff = stepresult.getDiffString();
                 if (diff == null) {
                     diff = "NONE";
@@ -160,5 +162,9 @@ public class ConsoleTestClient {
                 System.out.println("");
             }
         }
+        System.out.println("-->Total time for testcase         : "+result.getTotalDuration()+"ms.");
+        System.out.println("---->Total time for PreProcessing  : "+result.getTotalPreProcessingDuration()+"ms.");
+        System.out.println("---->Total time for GetDocument    : "+result.getTotalGetDomDuration()+"ms.");
+        System.out.println("---->Total time for HandleDocument : "+result.getTotalHandleDocumentDuartion()+"ms.");
     }
 }
