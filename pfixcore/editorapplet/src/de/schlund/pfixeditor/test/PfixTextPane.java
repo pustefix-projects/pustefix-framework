@@ -4,7 +4,7 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.plaf.*;
 import java.util.*;
-import java.util.regex.*;
+// import java.util.regex.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;

@@ -23,11 +23,13 @@ public class PfixHighlight extends DefaultStyledDocument {
     private boolean inBlank = false;
     private int     preFixMode = 0;
     private boolean inUp = false;
+    
 
     private boolean paramUnsetter = false;
     private boolean elemUnsetter = false;
     private boolean elemStartUnsetter = false;
     private boolean commentUnsetter = false;
+    private boolean prefixUnsetter = false;
 
     private String status = "none";
 
@@ -264,11 +266,7 @@ public class PfixHighlight extends DefaultStyledDocument {
             
             
         }
-        
-
-        System.out.println("Nö status 01" + newStatus);
-        
-        
+                        
         if (!this.getInComment()) {
             int elPos = preText.lastIndexOf("<");
             int endPos = preText.lastIndexOf(">");
@@ -277,11 +275,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                 if (preText.lastIndexOf(">") < elPos) {
                     newStatus = "element";
                     this.setInElement(true);
-                    System.out.println("setElemStartUnsetter " + this.elemStartUnsetter);
-                    // this.setElementCol();
                     if (!this.elemStartUnsetter) {
-                        System.out.println("BIni ch wirklich drin");
-                        // this.setElementCol(elPos, 1, true);
                         colorizeAll("element", elPos, 1);
                         this.elemStartUnsetter = true;
                         // unsetStyle();
@@ -289,55 +283,39 @@ public class PfixHighlight extends DefaultStyledDocument {
                     }
                     
 
-                    /*
-                    if (preText.lastIndexOf(":") > elPos) {
-                        System.out.println("Jetzt bin ich im Prefix Checker");
-                        // if (!(preFixSet)) {
-                           int preStart = preText.lastIndexOf(":");
-                           String fix = preText.substring(elPos+1, preStart);
-                           System.out.println("Doppelpunkt-Found" + fix);
-                           preFixSet = true;
-                           for (int j=0; j<prefixes.length; j++) {
-                               if (prefixes[j].equals(fix)) {
-                                   
-                                   System.out.println("elPos + " + elPos);
-                                   System.out.println("pre Start + " + preStart);
-                                   setPrefixCol(elPos+1, preStart-elPos, j);
-                                   this.preFixMode = j;
-                                   break;
-                               }
-                               else {
-                                   l_error.setText("No valid prefix found");
-                                   setElementCol(elPos+1, preStart-elPos, true);
-                                   newStatus = "element";
-                               }
-                               
-                                      
-                           }
-                           
-                       
-                           // }  
-                    }
-                    */
-
-                    /*
-                    System.out.println("Bin im Prefix");
-                    int preStart = afterText.lastIndexOf(":");
-                    int closeTag = afterText.lastIndexOf(">");
-
-                        if (preStart > -1) {
-                             System.out.println("Pe Start: " + preStart);
-                             System.out.println("el Pos " + elPos);
-                             if (preStart < closeTag) {
-                                System.out.println("Hier sollte ich doch sein");
-                                setPrefixCol(this.preFixMode);
-                             }
-
-                        }
-
-                    */
-
+                    int prePos = preText.lastIndexOf(":");
                     
+                    if (prePos > elPos) {
+                        String fix = preText.substring(elPos + 1, prePos);
+
+                        if (!prefixUnsetter) {
+                            for (int j = 0; j < prefixes.length; j++) {
+                                if (prefixes[j].equals(fix)) {                
+                                    setPrefixCol(elPos+1, prePos, j);
+                                    prefixUnsetter = true;
+                                    this.elemStartUnsetter = false;
+                                
+                                }
+                                String endfix = "/" + prefixes[j];
+                                
+                                if (fix.equals(endfix)) {                                    
+                                    setPrefixCol(elPos+1, prePos, j);
+                                    prefixUnsetter = true;
+                                    this.elemStartUnsetter = false; 
+                                }
+
+                            }
+                            
+                                
+                        }
+                        
+                            
+
+                        
+                                                 
+                    }
+                    
+                                        
 
 
                         
@@ -357,14 +335,9 @@ public class PfixHighlight extends DefaultStyledDocument {
                     else {
                       colorizeAll("element", preText.lastIndexOf(">"), 1);   
                     }
-                    
-                    // this.setElementCol(preText.lastIndexOf(">"), 1, true);
-                    
-                    
-                    // This is very ugly ! It fixes the Style-Bug after closing a Tag
-                    // System.out.println("Current Pos " + currentPos);
-                    int neu = endPos + 1;
-                    // System.out.println("endPos " + neu);
+                                                            
+                    // This is very ugly ! It fixes the Style-Bug after closing a Tag       
+                    int neu = endPos + 1;                
                     if (currentPos == endPos + 1) {
                         unsetStyle();
                     }
@@ -390,8 +363,6 @@ public class PfixHighlight extends DefaultStyledDocument {
                 }                                                 
             }
        
-
-           System.out.println("Nö status 02" + newStatus); 
             
             if (this.getInAttribute()) {
                 int paramStart = preText.lastIndexOf("=\"");
@@ -399,7 +370,6 @@ public class PfixHighlight extends DefaultStyledDocument {
                 if ((paramStart > -1) && (paramStart > elPos)) {
                     this.setInParam(true);
                     if (!paramUnsetter) {
-                        // this.setParamCol(paramStart+1, 1, true);
                         colorizeAll("param", paramStart + 1, 1);
                         paramUnsetter = true;
                     }                          
@@ -415,19 +385,15 @@ public class PfixHighlight extends DefaultStyledDocument {
                 }
            }
 
-           System.out.println("Nö status 03" + newStatus);  
         }
 
-
-
-        System.out.println("String: " + newStatus);
-        System.out.println("Standard: " + this.status);
         
         if (!(this.status.equals(newStatus))) {
 
             if (newStatus.equals("none")) {
                 if (this.getInElement()) {
-                  this.setInElement(false);   
+                  this.setInElement(false);
+                  this.prefixUnsetter = false;
                 }
                 
                 if (this.getInAttribute()) {
@@ -448,18 +414,18 @@ public class PfixHighlight extends DefaultStyledDocument {
                 unsetStyle();
                 if (this.elemStartUnsetter) {
                     this.elemStartUnsetter = false;
+                    this.prefixUnsetter = false;
                 }
                 
                 this.status = newStatus;
             }
             
             else {
-                System.out.println("Nix None, also");
                 if (!newStatus.equals("comment")) {
-                    this.colorizeAll(newStatus);    
+                    this.colorizeAll(newStatus);
+                    this.prefixUnsetter = false;
                 }
                 else {
-                    System.out.println("Jetzt mach ich den Komet");
                     setCommentStyle();
                 }
                 
@@ -480,7 +446,6 @@ public class PfixHighlight extends DefaultStyledDocument {
         String text = "";
         
         try {
-            // String hallo = "Hallo";
             text = docNeed.getText(0, docNeed.getLength()); 
         }
         catch (Exception ex) {
@@ -496,14 +461,10 @@ public class PfixHighlight extends DefaultStyledDocument {
         this.inBlank = false;
         
         for (int i=0; i<text.length(); i++) {
-            // System.out.println(" --------------------------------- Neue Schleife ------------------------------");
-            // System.out.println("ZEICHEN:  " + text.charAt(i));
             Character car = new Character(text.charAt(i));
 
 
             if (car.toString().equals("<")) {
-                // System.out.println("MayBe Comment: " + i);
-                // System.out.println("TextLength " + text.length());
 
                 if (((i+1 < text.length()) && (i+2 < text.length()) && (i+3 < text.length()))) {                                     
                     Character car1 = new Character(text.charAt(i+1));
@@ -575,14 +536,12 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 int posGleich = attrString.indexOf("=");
                                 int neuPos = tagValue.indexOf(attrString);
                                 if (posGleich > 0) {
-                                    // setAttributeCol(i, posGleich+1, true);
                                     colorizeAll("attribute", i, posGleich + 1);
                                     unsetStyle();
                                     i = i + posGleich + 1;
                                     
                                 }
                                 else {                                    
-                                    // setParamCol(i, attrString.length()+2, true);
                                     colorizeAll("param", i, attrString.length()+2);
                                     unsetStyle();
                                     i = i + attrString.length() + 3;
@@ -595,7 +554,6 @@ public class PfixHighlight extends DefaultStyledDocument {
                          } else {
 
                              // Colorizing tag
-                             // setElementCol(i, elString.length()+1, true);
                              colorizeAll("element", i, elString.length() + 1);
                              unsetStyle();
                              
@@ -610,15 +568,18 @@ public class PfixHighlight extends DefaultStyledDocument {
                                      if (prefixes[j].equals(strPrefix)) {
                                          setPrefixCol(i+1, posPreStart, j);
                                      }
-                                      
+                                     String closeFix = "/" + prefixes[j];
+                                     if (closeFix.equals(strPrefix)) {
+                                         setPrefixCol(i+1, posPreStart, j);
+                                          
+                                     }
+                                     
                                  }
                                  
-                                 // setPrefixCol(i+1, posPreStart);
                              }
                              i = i + elString.length() + 1;                               
                          }
                     }
-                    // this.setElementCol(i-1, 1, true);
                     colorizeAll("element", i-1, 1);
                     i=i-1;
                     unsetStyle();

@@ -28,6 +28,9 @@ import netscape.javascript.*;
 
 public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener {
 
+    // JSObject jsWin, jsDocu, jsForm, jsField;
+     JSObject window;
+
     //JFrame
     JFrame frame;
 
@@ -78,63 +81,59 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     JMenuBar mbar;
 
 
+    String uploadField;
+
     //Actions
     Hashtable actions;
-    
+
+    // Boolean Pack
+    boolean pack = false;
 
 
     public void init() {
-    //     public static void main(String[] args) { 
         
         frame = new JFrame("Pfix-XML-Editor");
         // frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
-       
+        String uploadField = "";
 
         panel = new JPanel();
         frame.setContentPane( panel );
-        panel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
+        panel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         panel.setLayout(new BorderLayout());
 
         // building JTextPanes
         textPane = new JTextArea();
         resultArea = new JTextPane();
-        // syntaxPane = new SyntaxPane();
         syntaxPane = new PfixTextPane();
-
 
         xmlChecker = new PfixCheckXml(syntaxPane);
         
-
         // TextArea - Properties Setting
         syntaxPane.setEditorKit(new StyledEditorKit());
         syntaxPane.getDocument().addUndoableEditListener(new MyUndoableEditListener());
-        // syntaxPane.addKeyListener(this);
+        
         keyListening();
         
-        
-
         // Document setting
-        // doc = resultArea.getDocument();
         doc = syntaxPane.getDocument();
         doc.addDocumentListener(this);
         
-        // ScrollPane aufbauen
-        // scrollPane = new JScrollPane(resultArea);
+        // Creating Scroll-Panel
         scrollPane = new JScrollPane(syntaxPane);
         panel.add(scrollPane);
-        scrollPane.setPreferredSize(new Dimension(300, 250));        
-        // LineNumber lineNumber = new LineNumber( resultArea );
+        scrollPane.setPreferredSize(new Dimension(800, 250));        
         LineNumber lineNumber = new LineNumber(syntaxPane);
         lineNumber.setPreferredSize(99999);
         scrollPane.setRowHeaderView( lineNumber );
 
+        // Creating Button - Panel
         buttonPanel = new JPanel();
         button = new JButton("Submit");
         button.addActionListener(this);
         buttonPanel.add(button);
-
-
+        
+        
         //Setting Action
         actions = createActionTable(resultArea);
 
@@ -142,13 +141,30 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         this.createMenu();       
         this.createEditMenu();
         
-        panel.add(scrollPane);
+        // Layouting Applet
+        panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(mbar, BorderLayout.NORTH);
         panel.add(buttonPanel, BorderLayout.SOUTH);
-        
+
+        // Setting the Frames position
+        frame.setLocation(300,100);
         frame.pack();
-        frame.setVisible(true);
-        frame.show();
+
+
+        // Checking visibility of the applet
+        boolean checkVisibile = this.checkJSVisibility();
+        if (checkVisibile) {
+            checkJSUploadField();
+             if (this.uploadField != null) {
+                 getJSText();
+             }
+             frame.show();
+        }
+        else {
+            frame.hide();
+            
+        }
+        
     }
 
 
@@ -211,6 +227,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
 
+
     
 
     private Hashtable createActionTable(JTextComponent textComponent) {
@@ -227,22 +244,16 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         return (Action)(actions.get(name));
     } 
 
-
-
-
     
-
-
     
     public void doJSAction() {
-
         try {
-            // String[] args = {"Wir sind die Wauzies", "Wir haben keine Kinder"};
            JSObject window = (JSObject) JSObject.getWindow(this);
            JSObject  parent = (JSObject) window.getMember("parent");
+           
        
            if (xmlChecker.checkXML()) {
-                  window.eval("test()");
+                   window.call("doSub",null);
            }
            else {
                JOptionPane.showMessageDialog (null,"Code is full of Errors" ,"Pustefix Message",JOptionPane.ERROR_MESSAGE);
@@ -256,11 +267,125 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
 
+    public void destroyApplet() {
+        frame.hide();
+        stop();
+        destroy();
+    }
     
 
+    public void showApplet() {
+        if (!pack) {
+            frame.pack();
+            pack = true;
+        }
+
+        if (this.checkJSVisibility()) {
+            checkJSUploadField();
+             if (this.uploadField != null) {
+                 getJSText();
+                 frame.show();
+             }
+
+        }
+        
+    }
+
+    public void hideApplet() {
+        frame.hide();
+    }
 
 
+    public void getJSText() {
+        try {
+            JSObject win, doc, form, field, frame, parent, parent_parent, frame2, win_doc;
+            win = JSObject.getWindow(this);
+            doc = (JSObject)win.getMember("document");
+            parent = (JSObject)win.getMember("parent");
+            frame = (JSObject)parent.getMember("bottom");
+            frame2 = (JSObject)frame.getMember("main");
+            win_doc = (JSObject)frame2.getMember("document");
+            form = (JSObject)win_doc.getMember("my_form");
 
+            String text = "";
+         
+         if (uploadField.equals("uplinc.Content")) {
+             field = (JSObject)form.getMember("uplinc.Content");
+             text = (String)field.getMember("value");
+         }
+         else {
+             field = (JSObject)form.getMember("uplcom.Content");        
+             text = (String)field.getMember("value");
+         }
+         
+         setText(text);
+             
+        } catch (Exception e) {
+            System.out.println("Error");
+            
+        }
+        
+       
+         
+         
+    }
+
+    public void checkJSUploadField() {
+        try {
+            JSObject win, doc, form, field, frame, parent, parent_parent, frame2, win_doc;
+         win = JSObject.getWindow(this);
+         doc = (JSObject)win.getMember("document");
+         // frame = (JSObject)doc.getMember("frame");
+         parent = (JSObject)win.getMember("parent");
+         frame = (JSObject)parent.getMember("bottom");
+         frame2 = (JSObject)frame.getMember("main");
+         win_doc = (JSObject)frame2.getMember("document");                 
+         form = (JSObject)win_doc.getMember("my_form");
+         field = (JSObject)form.getMember("upload");
+         uploadField  = (String)field.getMember("value");
+         
+            
+        } catch (Exception exc) {
+            System.out.println("Error");
+        }                 
+    }
+
+    public boolean checkJSVisibility() {
+        boolean bol = true;
+        try {
+            JSObject win, doc, form, field, frame, parent, parent_parent, frame2, win_doc;
+            win = JSObject.getWindow(this);
+            doc = (JSObject)win.getMember("document");
+            parent = (JSObject)win.getMember("parent");
+            frame = (JSObject)parent.getMember("bottom");
+            frame2 = (JSObject)frame.getMember("main");
+            win_doc = (JSObject)frame2.getMember("document");                 
+            form = (JSObject)win_doc.getMember("my_form");
+            field = (JSObject)form.getMember("visible");
+            String vis = (String)field.getMember("value");
+            
+            if (vis.equals("false")) {
+                bol = false;
+              
+            }
+
+            if (vis.equals("true")) {
+                bol = true;
+              
+            }
+         
+         
+            
+        } catch (Exception exc) {
+            System.out.println("---- NotFound");
+             bol = false;
+            
+        }
+                         
+        return bol;
+         
+    }
+          
 
     // KeyHandling
     public void keyListening() {
@@ -271,8 +396,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
         Action act = new TextAction("Ctrl-Z") {
                 public void actionPerformed(ActionEvent e) {
-                    // pane.replaceSelection("ZZZ");                    
-                    // this.closeFinalTag();
                     syntaxPane.closeFinalTag();
                     syntaxPane.hilightAll();
                 }
@@ -282,6 +405,10 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
 
+    public void colorize() {
+        syntaxPane.hilightAll(); 
+    }
+    
 
     // Action Handler
     public void actionPerformed(ActionEvent e) {
@@ -303,7 +430,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
        }
 
         if (e.getSource() == button) {
-            doJSAction();
+            doJSAction();    
         }
         
         
@@ -326,7 +453,11 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
   
         
     public void setText(String text) {
-        syntaxPane.setText(text);
+        if (text != null) {
+            syntaxPane.setText(text);
+        }
+        colorize();
+        frame.show();        
     }
 
     public String getText() {
@@ -348,9 +479,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     public void insertUpdate(DocumentEvent e) {
         int curPos = textPane.getCaretPosition();
         StyledDocument sDoc = (StyledDocument) e.getDocument();
-        // syntaxPane.setMarks(sDoc, 0, sDoc.getLength());
-        // syntaxPane.setMarks(sDoc, 0, sDoc.getLength());
-        // syntaxPane.realtimeHilight();
     }
 
     public void removeUpdate(DocumentEvent e) {
