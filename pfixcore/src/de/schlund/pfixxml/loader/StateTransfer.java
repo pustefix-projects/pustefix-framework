@@ -114,9 +114,13 @@ public class StateTransfer {
                                 CAT.debug("Transfer field '"+name+"' of class '"+oldClass.getName()+"'.");
                             } 
                             //check if field value defined
-                            if(value!=null) {value=transfer(value);} 
-                            if(!field.isAccessible()) field.setAccessible(true);     
-                            field.set(newObj,value);
+                            if(value!=null) {
+                                if(loader.needToTraverse(value.getClass())) {
+                                    value=transfer(value);
+                                }
+                                if(!field.isAccessible()) field.setAccessible(true);     
+                                field.set(newObj,value);
+                            }
                         } catch(NoSuchFieldException x) {
                             addException(new StateTransferException(StateTransferException.MEMBER_REMOVED,
                                 oldClass.getName(),"Member '"+fields[i].getName()+"' was removed or renamed."));
@@ -346,12 +350,12 @@ public class StateTransfer {
         try {
             if(decClazz!=null) {
                 con=clazz.getDeclaredConstructor(new Class[] {decClazz});
-                con.setAccessible(true);
+                if(!con.isAccessible()) con.setAccessible(true);
                 //hack or not? is instance of outer class needed?
                 obj=con.newInstance(new Object[] {null});
             } else {
                 con=clazz.getDeclaredConstructor(null);
-                con.setAccessible(true);
+                if(!con.isAccessible()) con.setAccessible(true);
                 obj=con.newInstance(null);
             }
         } catch(NoSuchMethodException x) {
@@ -434,6 +438,7 @@ public class StateTransfer {
             Method meth=refFac.getClass().getDeclaredMethod("newConstructorForSerialization",params);
             Object args[]=new Object[] {c,con};
             con=(Constructor)meth.invoke(refFac,args);
+            if(!con.isAccessible()) con.setAccessible(true);
             Object obj=con.newInstance(new Class[0]);
             return obj;
         } catch(Exception x) {
