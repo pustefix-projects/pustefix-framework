@@ -46,8 +46,8 @@ import de.schlund.pfixxml.XMLException;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
- * IWrapperSimpleContainer.java
- *
+ * Default implementation of the <code>IWrapperContainer</code> interface.
+ * <br/>
  *
  * Created: Fri Aug 17 14:58:49 2001
  *
@@ -92,23 +92,22 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private static final String  SELECT_WRAPPER     = "SELWRP";  
     
     /**
-     * This method must be called right after an instance of this class is created..
-     * The parameter resdoc may be null, but then you can not call any methods that
-     * try to output anything into the result tree.
+     * This method must be called right after an instance of this class is created.
      *
      * @param context a <code>Context</code> value
      * @param preq a <code>PfixServletRequest</code> value
      * @param resdoc a <code>ResultDocument</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#initIWrappers(Context, PfixServletRequest, ResultDocument) 
      */
     public synchronized void initIWrappers(Context context, PfixServletRequest preq,
-                                           ResultDocument resdoc) throws Exception {
+                                           ResultDocument resdoc) throws Exception  {
         if (context == null)
-            throw new RuntimeException("A 'null' value for the Context argument is not acceptable here.");
+            throw new IllegalArgumentException("A 'null' value for the Context argument is not acceptable here.");
         if (preq == null)
-            throw new RuntimeException("A 'null' value for the PfixServletRequest argument is not acceptable here.");
+            throw new IllegalArgumentException("A 'null' value for the PfixServletRequest argument is not acceptable here.");
         if (resdoc == null)
-            throw new RuntimeException("A 'null' value for the ResultDocument argument is not acceptable here.");
+            throw new IllegalArgumentException("A 'null' value for the ResultDocument argument is not acceptable here.");
         
         this.context = context;
         this.preq    = preq;
@@ -129,6 +128,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      *
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#errorHappened() 
      */
     public boolean errorHappened() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
@@ -151,6 +151,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * This method needs the instance to be initialized with a non-null resdoc param (see
      * {@link initIWrappers initIWrappers}).
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#addErrorCodes()
      */
     public void addErrorCodes() throws Exception {
         if (!is_loaded) throw new XMLException("You first need to have called handleSubmittedData() here!");
@@ -178,6 +179,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         }
     }
     
+    
     /**
      * This method puts all the string representation of all submitted
      * form values back into the result tree.
@@ -185,6 +187,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * {@link initIWrappers initIWrappers}).
      *
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#addStringValues()
      */
     public void addStringValues() throws Exception {
         if (!is_splitted) splitIWrappers();
@@ -207,12 +210,14 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         }
     }
 
+  
     /**
      * Use this method to query if the IWrapperContainer wants to continue with submitting data,
      * or if it assumes this whole page to be completed.
      *
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#continueSubmit() 
      */
     public boolean continueSubmit() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
@@ -236,7 +241,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                     if (iface == null) {
                         CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
                     } else {
-                        CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
+                        if(CAT.isDebugEnabled()) {
+                            CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
+                        }
                         IWrapper wrapper = (IWrapper) wrappers.get(iface);
                         contwrappers.addIWrapper(wrapper);
                     }
@@ -244,7 +251,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
             }
 
             if (contwrappers != null && contwrappers.containsAll(selectedwrappers)) {
-                CAT.debug("*** No more submit because all selected wrappers are members of the restriced_continue group!");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("*** No more submit because all selected wrappers are members of the restriced_continue group!");
+                }
                 return false;
             }
             return true;
@@ -265,15 +274,18 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * Do not call this method if you initialized the instance with a null ResultDocument!
      * The method will fail with a RuntimeException if you try to do nevertheless.
      * @return a <code>ResultDocument</code> value
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#getAssociatedResultDocument()
      */
     public ResultDocument getAssociatedResultDocument() {
         return resdoc;
     }
 
+   
     /**
-     * Returns the {@link HttpServletRequest} that's associated with this IWrapperContainer.
+     * Returns the {@link PfixServletRequest} that's associated with this IWrapperContainer.
      *
      * @return a <code>HttpServletRequest</code> value
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#getAssociatedPfixServletRequest()
      */
     public PfixServletRequest getAssociatedPfixServletRequest() {
         return preq;
@@ -283,11 +295,13 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * Returns the {@link Context} that's associated with this IWrapperContainer.
      *
      * @return a <code>Context</code> value
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#getAssociatedContext() 
      */
     public Context getAssociatedContext() {
         return context;
     }
 
+ 
     /**
      * <code>addIWrapperStatus</code> inserts the status of all IWrappers into the result tree.
      * You can only call this method if this instance was initialized with a non null ResultDocument.
@@ -295,6 +309,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * one big anonymous group will be created that contains all the defined IWrappers
      *
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#addIWrapperStatus()
      */
     public void addIWrapperStatus() throws Exception {
         if (!is_splitted) splitIWrappers();
@@ -333,6 +348,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      *
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#needsData()
      */
     public boolean needsData() throws Exception{
         if (wrappers.isEmpty()) return true; // border case
@@ -349,6 +365,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         return false;
     }
     
+  
     /**
      * <code>handleSubmittedData</code> will call all or a part of the defined IWrappers
      * (depending of grouping and/or restricting the IWrappers) to get
@@ -358,6 +375,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * You can only call this method if you initialized the instance with a non null ResultDocument.
      *
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#handleSubmittedData() 
      */
     public void handleSubmittedData() throws Exception {
         if (!is_splitted) splitIWrappers();
@@ -382,6 +400,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
      * are called in turn via ihandler.retrieveCurrentStatus(Context context, IWrapper wrapper).
      *
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#retrieveCurrentStatus() 
      */
     public void retrieveCurrentStatus() throws Exception {
         if (!is_splitted)
@@ -462,30 +481,40 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         HttpSession  session = preq.getSession(false);
         RequestParam status  = preq.getRequestParam(GROUP_STATUS_PARAM);
         if (status != null && (status.getValue().equals(GROUP_ON_PARAM))) {
-            CAT.debug("*** Request says: Groupdisplay ON");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Request says: Groupdisplay ON");
+            }
             session.putValue(GROUP_STATUS, GROUP_ON);
             return true;
         } else if (status != null && status.getValue().equals(GROUP_OFF_PARAM)) {
-            CAT.debug("*** Request says: Groupdisplay OFF");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Request says: Groupdisplay OFF");
+            }
             session.putValue(GROUP_STATUS, GROUP_OFF);
             return false;
         } else if (session.getValue(GROUP_STATUS) == null) {
-            CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
+            }
             session.putValue(GROUP_STATUS, GROUP_ON);
             return true;
         } else {
-            CAT.debug("*** Session says: Groupddisplay is " + session.getValue(GROUP_STATUS));
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Session says: Groupddisplay is " + session.getValue(GROUP_STATUS));
+            }
             return ((Boolean) session.getValue(GROUP_STATUS)).booleanValue();
         }
     }
 
-    private void readIWrappersConfigFromProperties() throws Exception {
+    private void readIWrappersConfigFromProperties() throws Exception  {
         Properties props      = context.getPropertiesForCurrentPageRequest();
         HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
 
         if (interfaces.isEmpty()) {
-	    CAT.debug("*** Found no interfaces for this page (page=" +
-                      context.getCurrentPageRequest().getName() + ")!!!");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Found no interfaces for this page (page=" +
+                    context.getCurrentPageRequest().getName() + ")!!!");
+            }
         } else {
             // Initialize all wrappers
             for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
@@ -505,8 +534,21 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                     throw new XMLException("No interface for prefix " + realprefix);
                 }
                 
-                Class    thewrapper = Class.forName(iface);
-                IWrapper wrapper    = (IWrapper) thewrapper.newInstance();
+                Class thewrapper = null;
+                IWrapper wrapper = null;
+                try {
+                    thewrapper = Class.forName(iface);
+                    wrapper    = (IWrapper) thewrapper.newInstance();
+                } catch (ClassNotFoundException e) {
+                    throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
+                } catch (InstantiationException e) {
+                    throw new XMLException("unable to instantiate class ["+iface + "] :" + e.getMessage());
+                } catch (IllegalAccessException e) {
+                    throw new XMLException("unable to acces class [" + iface +"] :" + e.getMessage());
+                } catch (ClassCastException e) {
+                    throw new XMLException("class [" + iface + "] does not implement the interface IWrapper :" + e.getMessage());
+                }
+                
 
                 if (order > -1) {
                     wrapper.defineOrder(order);
@@ -562,23 +604,33 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
         Properties props = context.getPropertiesForCurrentPageRequest();
         HashMap    pmap  = PropertiesUtils.selectProperties(props, GROUP_PROP);
         if (pmap.isEmpty()) {
-            CAT.debug("*** Properties say: Have NO group definition");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Properties say: Have NO group definition");
+            }
             return false;
         } else {
-            CAT.debug("*** Properties say: Have group definition");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("*** Properties say: Have group definition");
+            }
             return true;
         }
     }
 
     private IWrapperGroup getCurrentGroupFromRequest() throws Exception {
-        CAT.debug("* looking for group index: " +  GROUP_CURR);
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("* looking for group index: " +  GROUP_CURR);
+        }
         RequestParam page = preq.getRequestParam(GROUP_CURR); 
         synchronized (activegroups) { 
             if (page == null || page.getValue().equals("")) {
-                CAT.debug("*** Request specifies NO group index: Using index 0");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("*** Request specifies NO group index: Using index 0");
+                }
                 return (IWrapperGroup) activegroups.get(0);
             } else {
-                CAT.debug("*** Request specifies group index: Using index " + page);
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("*** Request specifies group index: Using index " + page);
+                }
                 Integer index = new Integer(page.getValue());
                 return (IWrapperGroup) activegroups.get(index.intValue());
             }
@@ -588,8 +640,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     private Integer checkForNextIndexInRequest() {
         int current_idx = getCurrentIWrapperGroupIndex();
         int last_idx    = activegroups.size() - 1;
-        CAT.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
-
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
+        }
         String[] grpcmdvals = reqdata.getCommands(SELECT_GROUP); 
 
         if (grpcmdvals != null && grpcmdvals.length > 0) {
@@ -599,25 +652,39 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
             String val = grpcmdvals[0];
 
             if (val.equals(GROUP_NEXT)) {
-                CAT.debug("* CMD VAL is NEXT");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("* CMD VAL is NEXT");
+                }
                 if (current_idx < last_idx) {
-                    CAT.debug("* Setting idx to: " + (current_idx + 1));
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("* Setting idx to: " + (current_idx + 1));
+                    }
                     return new Integer(current_idx + 1);
                 } else {
-                    CAT.debug("* Next idx out of bounds; setting to: " + last_idx);
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("* Next idx out of bounds; setting to: " + last_idx);
+                    }
                     return new Integer(last_idx);
                 }
             } else if (val.equals(GROUP_PREV)) {
-                CAT.debug("* CMD VAL is PREV");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("* CMD VAL is PREV");
+                }
                 if (current_idx > 0) {
-                    CAT.debug("* Setting idx to: " + (current_idx - 1));
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("* Setting idx to: " + (current_idx - 1));
+                    }
                     return new Integer(current_idx - 1);
                 } else {
-                    CAT.debug("* Prev idx out of bounds; setting to: 0");
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("* Prev idx out of bounds; setting to: 0");
+                    }
                     return new Integer(0);
                 }
             } else {
-                CAT.debug("* CMD VAL is: " + val);
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("* CMD VAL is: " + val);
+                }
                 Integer index;
                 try {
                     index = new Integer(val);
@@ -628,7 +695,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                 if (index.intValue() >= 0 && index.intValue() <= last_idx) {
                     return index;
                 } else {
-                    CAT.debug("* Idx out of bounds; resetting to current value: " + current_idx);
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("* Idx out of bounds; resetting to current value: " + current_idx);
+                    }
                     return new Integer(current_idx);
                 }
             }

@@ -32,8 +32,8 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 
 /**
- * RequestDataImpl.java
- *
+ * Implementation of the RequestData interface.
+ * <br/>
  *
  * Created: Thu Nov 22 15:04:30 2001
  *
@@ -57,14 +57,23 @@ public class RequestDataImpl implements RequestData {
         initData(preq);
     }
 
+    /**
+     * @see de.schlund.pfixcore.generator.RequestData#getParameterNames()
+     */
     public Iterator getParameterNames() {
         return data.keySet().iterator();
     }
 
+    /**
+     * @see de.schlund.pfixcore.generator.RequestData#getCommandNames()
+     */
     public Iterator getCommandNames() {
         return cmds.keySet().iterator();
     }
 
+    /**
+     * @see de.schlund.pfixcore.generator.RequestData#getParameters(String)
+     */
     public RequestParam[] getParameters(String key) {
         ArrayList list = (ArrayList) data.get(key);
         if (list == null) return null;
@@ -72,6 +81,9 @@ public class RequestDataImpl implements RequestData {
         return (RequestParam[]) list.toArray(new RequestParam[] {});
     }
 
+    /**
+     * @see de.schlund.pfixcore.generator.RequestData#getCommands(String)
+     */
     public String[] getCommands(String key) {
         ArrayList list = (ArrayList) cmds.get(key);
         if (list == null) return null;
@@ -87,7 +99,9 @@ public class RequestDataImpl implements RequestData {
         // String         data_prefix = DATA_PREFIX + ":";
         String         cmds_prefix = CMDS_PREFIX + "[" + page + "]:";
         // CAT.debug(">>>> Checking for data starting with '" + data_prefix + "'");
-        CAT.debug(">>>> Checking for cmds starting with '" + cmds_prefix + "'");
+        if(CAT.isDebugEnabled()) {
+            CAT.debug(">>>> Checking for cmds starting with '" + cmds_prefix + "'");
+        }
 
         String[] paramnames = preq.getRequestParamNames();
         for (int i = 0; i < paramnames.length; i++) {
@@ -106,8 +120,9 @@ public class RequestDataImpl implements RequestData {
             //if (map != null) {
             //    addData(map);
             //}
-
-            CAT.debug("   > Looking for cmds encoded in paramname (prefix '" + cmds_prefix + "')");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("   > Looking for cmds encoded in paramname (prefix '" + cmds_prefix + "')");
+            }
             map = parseNameForPrefix(cmds_prefix, name);
             if (map != null) {
                 addCmds(map);
@@ -126,8 +141,9 @@ public class RequestDataImpl implements RequestData {
                 break;
             }
             String key = name.substring(keystart, keyend);
-            CAT.debug("  >> Key is " + key);
-
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("  >> Key is " + key);
+            }
             int valuestart = keyend +1 ;
             int valueend   = name.indexOf(":", valuestart);
             if (valueend < 0) {
@@ -135,8 +151,9 @@ public class RequestDataImpl implements RequestData {
                 break;
             }
             String value = name.substring(valuestart, valueend);
-            CAT.debug("  >> Value is " + value);
-            
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("  >> Value is " + value);
+            }
             ArrayList list = (ArrayList) retval.get(key);
             if (list == null) {
                 list = new ArrayList();

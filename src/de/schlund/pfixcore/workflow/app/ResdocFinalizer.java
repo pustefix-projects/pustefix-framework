@@ -21,9 +21,9 @@ package de.schlund.pfixcore.workflow.app;
 
 
 /**
- * ResdocFinalizer.java
- *
- *
+ * A ResdocFinalizer's job  is to inserts data of a handler into the {@link ResultDocument}. 
+ * All classes which want to do this job have to implement thsi interface.
+ * <br/>
  * Created: Fri Oct 12 21:55:52 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>

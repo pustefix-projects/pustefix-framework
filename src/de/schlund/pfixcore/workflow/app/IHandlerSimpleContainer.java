@@ -63,7 +63,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     /**
      * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
      * and store them.
-     * @param props the properties
+     * @param props the properties containing the interface names
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
     public void initIHandlers(Properties props) {

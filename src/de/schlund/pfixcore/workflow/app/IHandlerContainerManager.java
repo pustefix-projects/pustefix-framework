@@ -30,6 +30,7 @@ import de.schlund.pfixxml.XMLException;
 
 /**
  * This class is responsible for managing all {@link IHandlerContainer}.
+ * For every servlet in the Pustefix system one IHandlerContainerManager exists.
  * <br/>
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  */
