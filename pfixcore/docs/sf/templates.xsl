@@ -34,7 +34,7 @@
             .navibody       { width: 126px; background-color:#aaccff; border-right: solid black 1px; }
             
             h1 { background-color: #6688bb; color: white; font-family: arial, helvetica;
-                 font-weight: bold; font-size: 16px; padding-top: 10px; }
+                 font-weight: bold; font-size: 16px; margin-top: 10px; }
             h1:before { content: url("img/triangle.gif") }
 
             h2 { color: #6688bb; font-family: arial, helvetica; font-weight: bold; font-size: 14px; }
