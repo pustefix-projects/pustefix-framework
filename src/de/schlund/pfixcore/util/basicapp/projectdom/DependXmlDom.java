@@ -30,7 +30,7 @@ import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 
 
 /**
- * A class just for initializing a new project
+ * Represents the dom of depend.xml.in
  * 
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude</a>
  * @version $Id$

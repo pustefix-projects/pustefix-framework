@@ -26,8 +26,9 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * Like the StringUtils class there also exists a XmlUtils Object
- * with static methods (it's this one ;o) to convert the current dom 
+ * Like @see de.schlund.pfixcore.util.basicapp.helper.StringUtils 
+ * there also exists a XmlUtils Object with static methods 
+ * (it's this one ;o) to convert the current dom 
  * 
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude</a>
  * @version $Id$
