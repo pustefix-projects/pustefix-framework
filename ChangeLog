@@ -1,3 +1,11 @@
+2005-01-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Issue warning of level ERROR if
+	pageflow is given, but not defined.
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java: add gimmeOrder to the interface
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: cat to IWrapper, not IWrapperImpl.
+
 2005-01-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/schema/properties200401.xsd: addedd boolean

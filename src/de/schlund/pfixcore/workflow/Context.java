@@ -778,6 +778,8 @@ public class Context implements AppContext {
                                   page.getName() + "'! Make sure this is what you want...");
                     }
                 } else {
+                    LOG.error("\n\n!!!! CAUTION !!!! Flow '" + flowname +
+                              "' is not defined! I'll continue as if no flow was given\n\n");
                     flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                     pageflow_requested_by_user = false;
                 }
