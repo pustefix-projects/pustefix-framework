@@ -132,74 +132,34 @@ public class SPDocument implements NoCopySessionData {
         return timestamp;
     }
 
-    /**
-     * Describe <code>addCookie</code> method here.
-     *
-     * @param cookie a <code>Cookie</code> value
-     */
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
     }
 
-    /**
-     * Describe <code>getCookies</code> method here.
-     *
-     * @return an <code>ArrayList</code> value
-     */
     public ArrayList getCookies() {
         return cookies;
     }
 
-    /**
-     * Describe <code>setCookies</code> method here.
-     *
-     * @param newcookies an <code>ArrayList</code> value
-     */
     public void setCookies(ArrayList newcookies) {
         cookies = newcookies;
     }
 
-    /**
-     * Describe <code>getXSLKey</code> method here.
-     *
-     * @return a <code>String</code> value
-     */
     public String getXSLKey() {
         return xslkey;
     }
     
-    /**
-     * Insert the method's description here.
-     * Creation date: (05/10/00 19:46:18)
-     * @return org.w3c.dom.Document
-     */
     public Document getDocument() {
         return document;
     }
 
-    /**
-     * Insert the method's description here.
-     * Creation date: (05/10/00 19:46:18)
-     * @return java.util.Properties
-     */
     public Properties getProperties() {
         return properties;
     }
 
-    /**
-     * Insert the method's description here.
-     * Creation date: (05/10/00 19:46:18)
-     * @param newDocument org.w3c.dom.Document
-     */
     public void setDocument(Document newDocument) {
         document = newDocument;
     }
 
-    /**
-     * Insert the method's description here.
-     * Creation date: (05/10/00 19:46:18)
-     * @param newProperties java.util.Properties
-     */
     public void setProperties(Properties newProperties) {
         properties = newProperties;
     }
