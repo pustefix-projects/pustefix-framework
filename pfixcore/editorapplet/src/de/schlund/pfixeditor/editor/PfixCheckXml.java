@@ -41,7 +41,9 @@ public class PfixCheckXml {
         XmlError xErr=null;
         XmlTextProcessor xmlProc=new XmlTextProcessor();
         result=xmlProc.parse("<foo>"+this.textpane.getText()+"</foo>");
-        xmlErrors=xmlProc.getXmlErrors(); 
+        xmlErrors=xmlProc.getXmlErrors();
+        // System.out.println("---");
+        // System.out.println(xErr.getLine());
         if (result) {
             wellformed = true;
         }
