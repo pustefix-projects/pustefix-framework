@@ -1,5 +1,8 @@
 2004-12-07  Jens Lautenbacher  <jtl@schlund.de>
 
+	* started 0.8.4-pre
+	* released 0.8.3
+
 	* example/core/build/create_depend.xsl: use global and local
 	parameters now in all transformations for standardpage (not only
 	the last one). Also no longer accept local definitions of product/lang in 
