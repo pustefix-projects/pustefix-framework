@@ -1,7 +1,0 @@
-.cache
-tmp
-local
-.ALLIMAGES
-.ALLINCFILES
-.ALLPROJECTS
-CHECKOUTPUT.xml
