@@ -22,6 +22,7 @@ package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixcore.util.*;
 import de.schlund.pfixxml.*;
+import java.lang.*;
 import java.util.*;
 import org.apache.log4j.*;
 
@@ -39,7 +40,6 @@ import org.apache.log4j.*;
 
 public class PageRequestProperties implements PropertyObject {
     public static final String PREFIX = "pagerequest";
-
     private Properties properties;
     private HashSet    preqs     = new HashSet();
     private HashMap    preqprops = new HashMap();
@@ -75,6 +75,18 @@ public class PageRequestProperties implements PropertyObject {
                 preqprops.put(preq.getName(), props);
             }
         }
+
+        // CAT.info("**** PageRequestProperties ****\n" + this.toString());
+    }
+
+    public String toString() {
+        StringBuffer buff = new StringBuffer();
+        for (Iterator i = preqprops.keySet().iterator(); i.hasNext();) {
+            String     key   = (String) i.next();
+            Properties props = (Properties) preqprops.get(key);
+            buff.append(key + " ==> " + props.toString() + "\n");
+        }
+        return buff.toString();
     }
 
     public Properties getPropertiesForPageRequest(PageRequest preq) {

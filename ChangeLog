@@ -1,3 +1,36 @@
+2003-03-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.8, started 0.2.9-pre
+
+	* src/de/schlund/pfixcore/workflow/Context.java: just add some
+	(commented-out) logging lines
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (toString): new method.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java: 
+	(initIHandlers): use the page's properties as a parameter, not the context
+	(isPageAccessible):
+	(areHandlerActive):
+	(needsData): hand over the context as a method parameter.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (getIHandlerContainer): 
+	throw Exceptions if something goes wrong.
+	call initIHandlers(Properties props) on the created IHandlerContainer.
+	
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java (IHandlerSimpleContainer): 
+	Fixed a big big race where we stored the Context (!!!!) inside the
+	IHandlerContainer despite the fact that these guys are supposed to
+	be valid for every Context using the same set of properties
+	(IHandlerContainerManager is nowadays handled by the
+	PropertyObjectManager). This was really really bad. We now do all
+	the initialization once with the help of the given properties, and
+	don't store anything related to the session any more. The Context
+	is handed to the relevant methods from the outside (see above for the interface change).
+	(initIHandlers): 
+	(isPageAccessible):
+	(areHandlerActive):
+	(needsData): changed accordingly
+
 2003-03-04  Joerg Haecker <haecker@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.2.7(0.2.6 skipped);

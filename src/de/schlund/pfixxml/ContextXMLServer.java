@@ -37,7 +37,7 @@ import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 public class ContextXMLServer extends AbstractXMLServer {
     private              Category CAT            = Category.getInstance(ContextXMLServer.class.getName());
-    private final static String   CONTEXT_SUFFIX = "__CONTEXT__";
+    public  final static String   CONTEXT_SUFFIX = "__CONTEXT__";
     private final static String   CONTEXT_CLASS  = "context.class";
     
     private WeakHashMap contextMap = new WeakHashMap();

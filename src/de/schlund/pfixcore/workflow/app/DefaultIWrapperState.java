@@ -46,7 +46,13 @@ public class DefaultIWrapperState extends StaticState {
     
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
-        return (container.isPageAccessible() && container.areHandlerActive());
+        String  name = context.getCurrentPageRequest().getName();
+        boolean test = container.isPageAccessible(context) && container.areHandlerActive(context);
+        // CAT.warn("\n============================> " + name + ": Test 1: " + test);
+        // container.initIHandlers(context);
+        // test = container.isPageAccessible() && container.areHandlerActive();
+        CAT.warn("\n============================> " + name + ": Test 2: " + test);
+        return (test);
     }
     
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
