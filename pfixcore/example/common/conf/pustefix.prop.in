@@ -23,6 +23,10 @@
       <prop name="xmlserver.recordmode_allowed">false</prop>
       <!-- Set this true if you want to skip getModTimeMaybeUpdate -->
       <prop name="targetgenerator.skip_getmodtimemaybeupdate">true</prop>
+      <!-- Set this true if you want to prohibit editing. -->
+      <prop name="xmlserver.noeditmodeallowed">true</prop>
+      <!-- Set the timeout for removing old SPDocuments. -->
+      <prop name="sessioncleaner.timeout">20</prop>
     </cus:test>
     <cus:test>
       <!--  Set this to false if you want to be able to just retrieve the xml tree -->
@@ -33,6 +37,10 @@
       <prop name="xmlserver.recordmode_logdir"><cus:docroot/>recorded</prop>
       <!-- Set this true if you want to skip getModTimeMaybeUpdate -->
       <prop name="targetgenerator.skip_getmodtimemaybeupdate">false</prop>
+      <!-- Set this false if you want to be able to do editing -->
+      <prop name="xmlserver.noeditmodeallowed">false</prop>
+      <!-- Set the timeout for removing old SPDocuments. -->
+      <prop name="sessioncleaner.timeout">600</prop>
     </cus:test>
   </cus:choose>
 

@@ -10,11 +10,11 @@ import org.apache.log4j.*;
 
 /**
  * The <code>SessionCleaner</code> class is used to remove stored SPDocuments from the session
- * after a timout (currently 30sec). This helps in reducing the memory usage as those documents
- * are only stored for possible reuse by following subrequests (for frames). After 30secs one can
+ * after a timout. This helps in reducing the memory usage as those documents
+ * are only stored for possible reuse by following subrequests (for frames). After the timeout one should
  * be reasonable sure that no subrequests will follow (During development, the AbstractXMLServer
- * makes sure not to call storeSPDocument() with the <code>starttask</code> parameter set to <b>false</b>,
- * because one may need the stored SPDocument for debugging purposes).
+ * should make sure to call storeSPDocument() with the <code>timeoutsec</code> parameter set to
+ * <b>a very high value</b>, to be able to get the stored SPDocument for debugging purposes).
  *
  * Created: Thu Mar 20 16:45:31 2003
  *
@@ -24,7 +24,6 @@ import org.apache.log4j.*;
 public class SessionCleaner {
     private static SessionCleaner instance     = new SessionCleaner();
     private        Timer          timer        = new Timer(true);
-    private        long           OFFSET       = 20000;
     private        String         TASK_POSTFIX = "__TIMER_TASK";
     private        Category       CAT          = Category.getInstance(this.getClass());
     
@@ -38,35 +37,35 @@ public class SessionCleaner {
     }
 
     /**
-     * Called from the AbstractXMLServer to store a SPDocument into the supplied HttpSession. This will also start a TimerTask that
-     * removes the stored SPDocument after a timeout.
+     * Called from the AbstractXMLServer to store a SPDocument into the supplied HttpSession.
+     * This will also start a TimerTask that removes the stored SPDocument after the given timeout.
      *
      * @param spdoc a <code>SPDocument</code> value
      * @param session a <code>HttpSession</code> value
      * @param conutil a <code>ContainerUtil</code> value
      * @param key a <code>String</code> value. The key under which the SPDocument will be stored in the session.
-     * @param starttask a <code>boolean</code> value. True if the TimerTask should be startet, false if not.
+     * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, HttpSession session, ContainerUtil conutil, String key, boolean starttask) {
+    public void storeSPDocument(SPDocument spdoc, HttpSession session,
+                                ContainerUtil conutil, String key, int timeoutsecs) {
         long   stamp   = System.currentTimeMillis();
         String taskkey = key + TASK_POSTFIX; 
 
         synchronized (session) {
-            if (starttask) {
-                SessionCleanerTask task   = (SessionCleanerTask) conutil.getSessionValue(session, taskkey);
-                if (task != null) {
-                    CAT.info("*** Found old TimerTask, trying to cancel... ");
-                    try {
-                        task.cancel();
-                        CAT.info("*** DONE. ***");
-                    } catch (IllegalStateException e) {
-                        CAT.info("*** Could not cancel: " + e.getMessage() + " ***");
-                    }
+            SessionCleanerTask task   = (SessionCleanerTask) conutil.getSessionValue(session, taskkey);
+            if (task != null) {
+                CAT.info("*** Found old TimerTask, trying to cancel... ");
+                try {
+                    task.cancel();
+                    CAT.info("*** DONE. ***");
+                } catch (IllegalStateException e) {
+                    CAT.info("*** Could not cancel: " + e.getMessage() + " ***");
                 }
-                task = new SessionCleanerTask(session, conutil, key);
-                timer.schedule(task, OFFSET);
-                conutil.setSessionValue(session, taskkey, task);
             }
+            CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
+            task = new SessionCleanerTask(session, conutil, key);
+            timer.schedule(task, timeoutsecs * 1000);
+            conutil.setSessionValue(session, taskkey, task);
             
             spdoc.setTimestamp(stamp);
             conutil.setSessionValue(session, key, spdoc);

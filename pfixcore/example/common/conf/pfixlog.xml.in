@@ -94,6 +94,11 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
+  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
+    <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
   <category name="de.schlund.pfixxml.PfixServletRequest" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>

@@ -101,6 +101,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     public static final String            PROP_NAME        = "xmlserver.servlet.name";
     public static final String            PROP_NOEDIT      = "xmlserver.noeditmodeallowed";
     public static final String            PROP_RENDER_EXT  = "xmlserver.output.externalrenderer";
+    public static final String            PROP_CLEANER_TO  = "sessioncleaner.timeout";
     // xml output only, no transformation
     private static final String PROP_NOXML_KEY                    = "xmlserver.noxmlonlyallowed";
     private static final String PROP_XMLONLY_NOT_ENABLED_VALUE    = "true";
@@ -143,7 +144,8 @@ public abstract class AbstractXMLServer extends ServletManager {
     private String          recordmodeLogDir  = null;
     private int             isXMLOnlyAllowed  = XML_ONLY_PROHIBITED;
     private String[]        xmlOnlyValidHosts = null;
-
+    private int             scleanertimeout   = 300;
+    
     //~ Initializers ...............................................................................
 
     static {
@@ -183,7 +185,14 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             editmodeAllowed = false;
         }
-
+        String timeout;
+        if ((timeout = getProperties().getProperty(PROP_CLEANER_TO)) != null) {
+            try {
+                scleanertimeout = new Integer(timeout).intValue();
+            } catch (NumberFormatException e) {
+                throw new ServletException(e.getMessage());
+            }
+        }
         handleRecordModeProps();
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
         handleXMLOnlyProps();
@@ -199,6 +208,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
             render_external = true;
         }
+        
     }
 
     /**
@@ -471,7 +481,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
             if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil, servletname + SUFFIX_SAVEDDOM, !editmodeAllowed);
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil,
+                                                             servletname + SUFFIX_SAVEDDOM, scleanertimeout);
             }
         }
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
