@@ -60,34 +60,35 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int RENDER_FONTIFY  = 2;
     private static final int RENDER_XMLONLY  = 3;
 
-    private static final String FONTIFY_SSHEET   = "core/xsl/xmlfontify.xsl";
-    private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
-    private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
-    public  static final String PARAM_XMLONLY            = "__xmlonly";
-    public  static final String PARAM_XMLONLY_FONTIFY    = "1"; // -> RENDER_FONFIFY
-    public  static final String PARAM_XMLONLY_XMLONLY    = "2"; // -> RENDER_XMLONLY
-    
-    public  static final String PARAM_ANCHOR             = "__anchor";
-    private static final String PARAM_EDITMODE           = "__editmode";
-    private static final String PARAM_LANG               = "__language";
-    private static final String PARAM_FRAME              = "__frame";
-    private static final String PARAM_NOSTORE            = "__nostore";
-    private static final String PARAM_REUSE              = "__reuse"; // internally used
-    private static final String XSLPARAM_LANG            = "lang";
-    private static final String XSLPARAM_SESSID          = "__sessid";
-    private static final String XSLPARAM_URI             = "__uri";
-    private static final String XSLPARAM_SERVP           = "__servletpath";
-    private static final String XSLPARAM_REMOTE_ADDR     = "__remote_addr";
-    private static final String XSLPARAM_SERVER_NAME     = "__server_name";
-    private static final String XSLPARAM_FRAME           = "__frame";
-    private static final String XSLPARAM_REUSE           = "__reusestamp";
-    private static final String VALUE_NONE               = "__NONE__";
-    private static final String SUFFIX_SAVEDDOM          = "_SAVED_DOM";
-    protected static final String PROP_DEPEND              = "xmlserver.depend.xml";
-    protected static final String PROP_NAME                = "xmlserver.servlet.name";
-    protected static final String PROP_NOEDIT              = "xmlserver.noeditmodeallowed";
-    protected static final String PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
-    protected static final String PROP_CLEANER_TO          = "sessioncleaner.timeout";
+    private static final String   FONTIFY_SSHEET          = "core/xsl/xmlfontify.xsl";
+    private static final String   SESS_LANG               = "__SELECTED_LANGUAGE__";
+    private static final String   XML_CONTENT_TYPE        = "text/xml; charset=iso-8859-1";
+    public  static final String   PARAM_XMLONLY           = "__xmlonly";
+    public  static final String   PARAM_XMLONLY_FONTIFY   = "1"; // -> RENDER_FONFIFY
+    public  static final String   PARAM_XMLONLY_XMLONLY   = "2"; // -> RENDER_XMLONLY
+    public  static final String   PARAM_ANCHOR            = "__anchor";
+    private static final String   PARAM_EDITMODE          = "__editmode";
+    private static final String   PARAM_LANG              = "__language";
+    private static final String   PARAM_FRAME             = "__frame";
+    private static final String   PARAM_NOSTORE           = "__nostore";
+    private static final String   PARAM_REUSE             = "__reuse"; // internally used
+    private static final String   XSLPARAM_LANG           = "lang";
+    private static final String   XSLPARAM_SESSID         = "__sessid";
+    private static final String   XSLPARAM_URI            = "__uri";
+    private static final String   XSLPARAM_SERVP          = "__servletpath";
+    private static final String   XSLPARAM_REMOTE_ADDR    = "__remote_addr";
+    private static final String   XSLPARAM_SERVER_NAME    = "__server_name";
+    private static final String   XSLPARAM_REQUEST_SCHEME = "__request_scheme";
+    private static final String   XSLPARAM_QUERYSTRING    = "__querystring";
+    private static final String   XSLPARAM_FRAME          = "__frame";
+    private static final String   XSLPARAM_REUSE          = "__reusestamp";
+    private static final String   VALUE_NONE              = "__NONE__";
+    private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
+    protected static final String PROP_DEPEND             = "xmlserver.depend.xml";
+    protected static final String PROP_NAME               = "xmlserver.servlet.name";
+    protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
+    protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
+    protected static final String PROP_CLEANER_TO         = "sessioncleaner.timeout";
                                  
     // skip stat on all targets
     private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = "targetgenerator.skip_getmodtimemaybeupdate";
@@ -300,7 +301,12 @@ public abstract class AbstractXMLServer extends ServletManager {
             params.put(XSLPARAM_REMOTE_ADDR, preq.getRemoteAddr());
         if (preq.getServerName() != null)
             params.put(XSLPARAM_SERVER_NAME, preq.getServerName());
-        
+        if (preq.getScheme() != null)
+            params.put(XSLPARAM_REQUEST_SCHEME, preq.getScheme());
+        if (preq.getQueryString() != null) {
+            params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
+        }
+
         if (session != null) {
             params.put(XSLPARAM_SESSID,
                        session.getAttribute(SessionHelper.SESSION_ID_URL));

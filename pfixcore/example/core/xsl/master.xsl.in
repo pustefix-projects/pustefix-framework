@@ -123,9 +123,11 @@
       <!-- e.g. /xml/static -->
       <ixsl:param name="__servletpath"/>
 
+      <ixsl:param name="__querystring"/>
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
-
+      <ixsl:param name="__request_scheme"/>
+      
       <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
       <ixsl:param name="pageflow"/>
       <!-- This will be routed through by the servlet
