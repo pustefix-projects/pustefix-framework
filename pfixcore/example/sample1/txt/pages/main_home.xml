@@ -28,6 +28,14 @@
                 </td>
               </tr>
             </table>
+
+
+            <ixsl:for-each select="/formresult//page">
+              <pfx:xinp type="submit" value="Go">
+                <pfx:argument name="FOO"><ixsl:value-of select="@name"/></pfx:argument>
+              </pfx:xinp><br/>
+            </ixsl:for-each>
+            
             <table bgcolor="#bbccff" class="boxed" width="400">
               <tr valign="top">
                 <td>
