@@ -1,5 +1,7 @@
 2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
 
+	* starting 0.5.1-pre
+
 	* never released 0.4.3 :-) ... released 0.5.0. May use 0.4.3 for a bugfixing release 
 	of the branch cut just before the change to the state interface et.al.
 
