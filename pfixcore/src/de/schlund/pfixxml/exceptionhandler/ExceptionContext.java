@@ -34,6 +34,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -324,8 +325,10 @@ class ExceptionContext {
         } else if(servletname.charAt(0) == '/') {
             servletname = servletname.substring(1, servletname.length());
         }
-        Object[] args = { servername, servletname, exceptname, message };
-        buf = MessageFormat.format("{0}|{1}|{2}:{3}", args);
+     
+        String page = new PageRequest(pfrequest_).getName();
+        Object[] args = { servername, servletname, exceptname, message, page };
+        buf = MessageFormat.format("{0}|{1}|{4}|{2}:{3}", args);
         if(CAT.isDebugEnabled())
             CAT.debug("Create mail subject end.");
         return buf;
