@@ -1,3 +1,7 @@
+2004-03-09  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: added logging of pageflow to TRAIL log (if set)
+
 2004-03-08  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
 	* src/de/schlund/pfixcore/generator/IWrapper{Impl}.java: Add logging to the IWrapper. 

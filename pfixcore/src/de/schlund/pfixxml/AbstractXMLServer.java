@@ -659,6 +659,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (preq.getQueryString() != null) {
                 logbuff.append("?" + preq.getQueryString());
             }
+            String flow = (String) paramhash.get("pageflow");
+            if (flow != null) {
+                logbuff.append("|" + flow);
+            }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
         preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
