@@ -400,9 +400,12 @@
         <copy todir="${dir.testskel}/skel/src">
             <fileset dir="${dir.src}" includes="de/schlund/pfixcore/example/**"/>
         </copy>
+        <!-- Copying over sample application for testing purposes -->
         <copy todir="${dir.testskel}/skel/projects">
             <fileset dir="${dir.projects}" includes="sample1/**"/>
         </copy>
+        <!-- DocumentRoot for sample application, apache fails to start without -->
+        <mkdir dir="${dir.testskel}/skel/projects/htdocs"/>
         <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
         </exec>
     </target>

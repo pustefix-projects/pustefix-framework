@@ -25,7 +25,6 @@
     <property name="dir.metainf"              location="META-INF"/>
     <property name="dir.projects"             location="projects"/>
     <property name="dir.docroot"              location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
-    <property name="dir.htdocs"               location="${dir.projects}/htdocs"                                 description="DocumentRoot for apache, defaults to dir.projects/htdocs"/>
     <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
     <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
@@ -89,8 +88,6 @@
     <target name="init" depends="properties, core-data">
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.src}"/>
-        <!-- apache fails to start if its serverroot does not exist -->
-        <mkdir dir="${dir.htdocs}"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
         <!-- pathconvert dumps classpath on ant -verbose -->
         <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
