@@ -1,3 +1,8 @@
+2003-07-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java (realInit): new method, delay the initialization
+	of the EditorCommonsFactory to the point where we need it.
+
 2003-07-07 Volker Zaich <zaich@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/EditorHelper.java
