@@ -36,46 +36,64 @@ import org.w3c.dom.Document;
 /** not synchronize! **/
 
 public class PartIndex {
-    private final static Category LOG = Category.getInstance(PartIndex.class.getName());
+    private final static Category  LOG      = Category.getInstance(PartIndex.class.getName());
     private final static PartIndex instance = new PartIndex();
-
+    private final static String    MESSAGES = "common/dyntxt/statusmessages.xml";
+    private final static String    DO_CHECK = "partindex.reloadchanges";
+    
+    private Map       codes;
+    private File      src;
+    private long      mtime = -1;
+    private boolean   docheck = false;
+    
     public static PartIndex getInstance() {
         return instance;
     }
     
-    public void init(Properties notUsed) throws Exception {
-        File src = PathFactory.getInstance().createPath("common/dyntxt/statusmessages.xml").resolve(); 
-        LOG.debug("loading " + src);
-        addAll(Xml.parse(src));
+    private PartIndex() {}
+
+    public void init(Properties props) throws Exception {
+        String check = props.getProperty(DO_CHECK);
+        if (check != null && check.equals("true")) {
+            docheck = true;
+        } else {
+            docheck = false;
+        }
+        src = PathFactory.getInstance().createPath(MESSAGES).resolve();
+        addAll(src);
     }
 
     //--
-    
-    private final Map codes;
-    
-    public PartIndex() {
-        this.codes = new HashMap();
-    }
+    public StatusCode lookup(String name) throws TransformerException {
+        if (src.lastModified() > mtime) {
+            addAll(src);
+        }
 
-    public StatusCode lookup(String name) {
         return (StatusCode) codes.get(name);
     }
     
-    public void addAll(Document doc) throws TransformerException {
-        List lst;
-        Iterator iter;
-        Attr attr;
-        String key;
-
-        lst = XPath.select(doc, "/include_parts/part[product/@name='default']/@name");
-        iter = lst.iterator();
-        while (iter.hasNext()) {
-            attr = (Attr) iter.next();
-            key = attr.getValue();
-            if (!codes.containsKey(key)) {
-                codes.put(key, new StatusCode(key));
+    synchronized private void addAll(File src) throws TransformerException {
+        if (src.lastModified() > mtime) {
+            Document doc = Xml.parse(src);
+            HashMap  tmp = new HashMap();
+            List     lst;
+            Iterator iter;
+            Attr     attr;
+            String   key;
+            
+            LOG.debug("\n\n**** Loading StatusCode file " + src + " ****\n");
+            lst = XPath.select(doc, "/include_parts/part[product/@name='default']/@name");
+            iter = lst.iterator();
+            while (iter.hasNext()) {
+                attr = (Attr) iter.next();
+                key = attr.getValue();
+                if (!tmp.containsKey(key)) {
+                    tmp.put(key, new StatusCode(key));
+                }
             }
+            codes = tmp;
+            mtime = src.lastModified();
+            LOG.info(codes.size() + " StatusCodes loaded");
         }
-        LOG.info(codes.size() + " codes loaded");
     }
 }
