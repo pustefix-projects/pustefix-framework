@@ -1,3 +1,8 @@
+2003-07-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java (reload): 
+	new method. Implemented Reloader interfacce and use AppLoader to load the DirectOutputStates.
+
 2003-07-10  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/servletconf/projects.xml: REMOVED. see below.
