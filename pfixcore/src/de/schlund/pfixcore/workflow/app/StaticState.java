@@ -88,7 +88,7 @@ public class StaticState extends StateImpl {
      * @param resdoc
      * @throws Exception
      */
-    public void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
+    protected void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
         Properties props  = context.getPropertiesForCurrentPageRequest();
         if (props != null) {
             ContextResourceManager crm = context.getContextResourceManager();
