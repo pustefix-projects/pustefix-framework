@@ -63,10 +63,9 @@ public class StringUtils {
     public static String giveCorrectString(String input) {
         input.toLowerCase();
         
-        input = input.replaceAll("ä", "a");
-        input = input.replaceAll("ä", "a");
-        input = input.replaceAll("ü", "u");
-        input = input.replaceAll("ö", "o");
+        input = input.replaceAll("ä", "ae");
+        input = input.replaceAll("ü", "ue");
+        input = input.replaceAll("ö", "oe");
         input = input.replaceAll(" ","_");
         input = input.trim();
         
