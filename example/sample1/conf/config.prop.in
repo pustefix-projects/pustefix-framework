@@ -1,61 +1,75 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="xmlserver.depend.xml"><cus:docroot/>sample1/conf/depend.xml</prop>
-  <prop name="xmlserver.servlet.name">pfixcore_project:sample1::servlet:config</prop>
-  <prop name="xmlserver.noeditmodeallowed">false</prop>
+  <servletinfo>
+    <depend><cus:docroot/>sample1/conf/depend.xml</depend>
+    <servletname>pfixcore_project:sample1::servlet:config</servletname>
+    <prohibitedit>false</prohibitedit>
+    <adminmode watch="default" page="admin"/>
+  </servletinfo>
 
-  <prop name="context.class">de.schlund.pfixcore.workflow.Context</prop>
+  <context defaultflow="OrderFlow">
+    <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
+      <implements class="de.schlund.pfixcore.example.ContextCounter"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.example.ContextTShirtImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.example.ContextTrouserImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTrouser"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.example.ContextAdultInfoImpl">
+      <implements class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.example.ContextTogglePicImpl">
+      <implements class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </resource>
+  </context>
+    
+  <pageflow name="OrderFlow">
+    <flowstep name="home"/>
+    <flowstep name="order"/>
+    <flowstep name="overview"/>
+  </pageflow>
 
-  <prop name="context.resource.1.de.schlund.pfixcore.example.ContextCounterImpl">de.schlund.pfixcore.example.ContextCounter</prop>
-  <prop name="context.resource.2.de.schlund.pfixcore.example.ContextTShirtImpl">de.schlund.pfixcore.example.ContextTShirt</prop>
-  <prop name="context.resource.3.de.schlund.pfixcore.example.ContextTrouserImpl">de.schlund.pfixcore.example.ContextTrouser</prop>
-  <prop name="context.resource.4.de.schlund.pfixcore.example.ContextAdultInfoImpl">de.schlund.pfixcore.example.ContextAdultInfo</prop>
-  <prop name="context.resource.5.de.schlund.pfixcore.example.ContextTogglePicImpl">de.schlund.pfixcore.example.ContextTogglePic</prop>
+  <!-- *** PageRequests and associated properties *** -->
 
-  <prop name="context.adminmode.watch">default</prop>
-  <prop name="context.adminmode.page">admin</prop>
+  <pagerequest name="admin"/>
   
-  <prop name="pagerequest.admin.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <pagerequest name="home">
+    <ihandler>
+      <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+    </ihandler>
+  </pagerequest>
   
-  <!-- *** PageFlows *** -->
-
-  <prop name="context.defaultpageflow">OrderFlow</prop>
-
-  <prop name="context.pageflow.OrderFlow.0">home</prop>
-  <prop name="context.pageflow.OrderFlow.1">order</prop>
-  <prop name="context.pageflow.OrderFlow.2">overview</prop>
-
-  <!-- *** PageRequest and associated properties *** -->
-
-  <prop name="pagerequest.home.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.home.interface.1.info">de.schlund.pfixcore.example.iwrapper.AdultInfo</prop>
-  
-  <prop name="pagerequest.order.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <!-- all the following properties can only be used with DefaultIWrapperState !!! -->
-  <prop name="pagerequest.order.interface.1.shirt">de.schlund.pfixcore.example.iwrapper.TShirt</prop>
-  <prop name="pagerequest.order.interface.2.counter">de.schlund.pfixcore.example.iwrapper.Counter</prop>
-  <prop name="pagerequest.order.interface.3.trouser">de.schlund.pfixcore.example.iwrapper.Trouser</prop>
-  <prop name="pagerequest.order.interface.4.pic">de.schlund.pfixcore.example.iwrapper.TogglePic</prop>
-  <prop name="pagerequest.order.group.01-Shirt">shirt counter pic</prop> 
-  <prop name="pagerequest.order.group.02-Trouser">trouser</prop>
-  <!-- These properties can be used with StaticState and descendants -->
-  <prop name="pagerequest.order.insertcr.counter">de.schlund.pfixcore.example.ContextCounter</prop>
-  <prop name="pagerequest.order.insertcr.togglepic">de.schlund.pfixcore.example.ContextTogglePic</prop>
-  <!-- The next property can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
-  <!-- <prop name="pagerequest.order.resdocfinalizer>de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer</prop> -->
-  <!-- <prop name="pagerequest.order.iwrappercontainer">de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer</prop> -->
-  <!-- <prop name="pagerequest.order.ihandlercontainer">de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer</prop> -->
-  <!-- <prop name="pagerequest.order.ihandlercontainer.policy">ANY</prop> -->
-  <!-- <prop name="pagerequest.order.forcegroupdisplay">false</prop> -->
-  <!-- <prop name="pagerequest.order.restrictedcontinue"></prop> -->
+  <pagerequest name="order">
+    <ihandler>
+      <interface prefix="shirt"   class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
+      <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
+      <interface prefix="trouser" class="de.schlund.pfixcore.example.iwrapper.Trouser"/>
+      <interface prefix="pic"     class="de.schlund.pfixcore.example.iwrapper.TogglePic"/>
+    </ihandler>
+    <param name="group.01-Shirt">shirt counter pic</param>
+    <param name="group.02-Trouser">trouser</param>
+    <output>
+      <resource node="counter"   class="de.schlund.pfixcore.example.ContextCounter"/>
+      <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </output>
+    <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
+    <!-- <finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/> -->
+    <!-- <param name="forcegroupdisplay">false</param> -->
+  </pagerequest>
   
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
   <!-- It does the isAccessible() part on it's own. -->
-  <prop name="pagerequest.overview.classname">de.schlund.pfixcore.example.OverviewState</prop>
-  <prop name="pagerequest.overview.insertcr.adultinfo">de.schlund.pfixcore.example.ContextAdultInfo</prop>
-  <prop name="pagerequest.overview.insertcr.tshirt">de.schlund.pfixcore.example.ContextTShirt</prop>
-  <prop name="pagerequest.overview.insertcr.trouser">de.schlund.pfixcore.example.ContextTrouser</prop>
-
+  <pagerequest name="overview">
+    <state class="de.schlund.pfixcore.example.OverviewState"/>
+    <output>
+      <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+      <resource node="tshirt"    class="de.schlund.pfixcore.example.ContextTShirt"/>
+      <resource node="trouser"   class="de.schlund.pfixcore.example.ContextTrouser"/>
+    </output>
+  </pagerequest>
+  
   <!-- *** some additional properties needed for this application *** -->
 
   <prop name="contexttshirt.feature.0">Waterproof</prop>
