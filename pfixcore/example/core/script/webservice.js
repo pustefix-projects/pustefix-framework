@@ -58,6 +58,7 @@ function Parameter() {
 	this.jsType=null;
 	this.parameterMode=null;
 	this.init(arguments);
+	this.value=null;
 }
 
 Parameter.prototype.init=function(args) {
@@ -71,6 +72,10 @@ Parameter.prototype.init=function(args) {
 		this.jsType=args[2];
 		this.parameterMode=args[3];
 	}
+}
+
+Parameter.prototype.setValue=function(value) {
+	this.value=value;
 }
 
 
@@ -117,43 +122,81 @@ XMLWriter.prototype.init=function() {
 //startElement(String name)
 //startElement(QName name)
 XMLWriter.prototype.startElement=function(name) {
-	var context=new XMLContext(this.currentCtx);
+	this.currentCtx=new XMLContext(this.currentCtx);
 	if(this.inStart) {
 		this.xml+=">";
 	}
-	var tagName="";
+	var tagName=null;
+	var prefix=null;
+	var nsuri=null;
+	var newNS=false;
 	if(name instanceof QName) {
-		var nsuri=name.namespaceUri;
-		if(nsuri==null) {
-			tagName=name.localpart;
-		} else {
-			var prefix=context.getPrefix(nsuri);
+		tagName=name.localpart;
+		nsuri=name.namespaceUri;
+		if(nsuri!=null) {
+			prefix=this.currentCtx.getPrefix(nsuri);
 			if(prefix==null) {
 				prefix=this.getPrefix(nsuri);
-				context.setPrefix(nsuri,prefix);
-				this.writeNamespaceDeclaration(name.namespaceUri,prefix);
+				newNS=true;
 			}
-			tagName=prefix+":"+name.localpart;
 		}
 	} else {
 		tagName=name;
 	}
+	if(prefix!=null) tagName=prefix+":"+tagName;
 	this.xml+="<"+tagName;
+	if(newNS) this.writeNamespaceDeclaration(nsuri,prefix);
 	this.inStart=true;
 }
 
+//endElement(String name)
+//endElement(QName name)
 XMLWriter.prototype.endElement=function(name) {
 	if(this.inStart) {
 		this.xml+="/>";
-		this.inStart=false;
 	} else {
-		this.xml+="</"+name+">";
+		var tagName=null;
+		var prefix=null;
+		var nsuri=null;
+		if(name instanceof QName) {
+			tagName=name.localpart;
+			nsuri=name.namespaceUri;
+			if(nsuri!=null) {
+				prefix=this.currentCtx.getPrefix(nsuri);
+			}
+		} else {
+			tagName=name;
+		}
+		if(prefix!=null) tagName=prefix+":"+tagName;
+		this.xml+="</"+tagName+">";
 	}
+	this.inStart=false;
+	this.currentCtx=this.currentCtx.parent;
 }
 
+//writeAttribute(String name,String value)
 //writeAttribute(QName name,String value)
 XMLWriter.prototype.writeAttribute=function(name,value) {
-	this.xml+=" "+this.getPrefixedName(name)+"=\""+value+"\"";
+	var attrName=null;
+	var prefix=null;
+	var nsuri=null;
+	var newNS=false;
+	if(name instanceof QName) {
+		attrName=name.localpart;
+		nsuri=name.namespaceUri;
+		if(nsuri!=null) {
+			prefix=this.currentCtx.getPrefix(nsuri);
+			if(prefix==null) {
+				prefix=this.getPrefix(nsuri);
+				newNS=true;
+			}
+		}
+	} else {
+		attrName=name;
+	}
+	if(prefix!=null) attrName=prefix+":"+attrName;
+	if(newNS) this.writeNamespaceDeclaration(nsuri,prefix);
+	this.xml+=" "+attrName+"=\""+value+"\"";
 }
 
 //writeChars(String chars)
@@ -165,9 +208,16 @@ XMLWriter.prototype.writeChars=function(chars) {
 	this.xml+=chars;
 }
 
+//writeNamespaceDeclaration(String nsuri)
 //writeNamespaceDeclaration(String nsuri,String prefix)
-XMLWriter.prototype.writeNamespaceDeclaration=function(nsuri,prefix) {
-	alert("xmlns:"+prefix+"="+nsuri);
+XMLWriter.prototype.writeNamespaceDeclaration=function() {
+	if(arguments.length==1) {
+		var prefix=this.getPrefix(arguments[0]);
+		this.writeNamespaceDeclaration(arguments[0],prefix);
+	} else if(arguments.length==2) {
+		this.xml+=" xmlns:"+arguments[1]+"=\""+arguments[0]+"\"";
+		this.currentCtx.setPrefix(arguments[0],arguments[1]);
+	}
 }
 
 //String getPrefix(String nsuri)
@@ -202,10 +252,28 @@ SimpleTypeSerializer.prototype.init=function(args) {
 //serialize(value,name,writer)
 SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 	writer.startElement(name);
-	writer.writeAttribute(QNAME_XSI_TYPE,writer.getPrefixedName(this.type));
+	var prefix=writer.getPrefix(this.type.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.type.localpart);
 	writer.writeChars(value);
 	writer.endElement(name);
 }
+
+
+//*********************************
+// RPCSerializer(QName opName,ArrayOfParameter params,values,...)
+//*********************************
+function RPCSerializer(opName,params) {
+	this.opName=opName;
+	this.params=params;
+}
+
+RPCSerializer.prototype.serialize=function(writer) {
+	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
+	for(var i=0;i<this.params.length;i++) {
+		ser.serialize(this.params[i].value,this.params[i].name,writer);
+	}
+}
+
 
 //*********************************
 // Call()
@@ -255,28 +323,33 @@ Call.prototype.setReturnType=function() {
 	}
 }
 
-//invoke(param*)
-//inovke(operationName,param*])
+//invoke()
+//invoke(values,...)
+//invoke(QName operationName,values,...)
 Call.prototype.invoke=function() {
 	var writer=new XMLWriter();
 	var soapMsg=new SOAPMessage();
-	alert(soapMsg);
-	soapMsg.write(writer);
-	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
+	
 	var ind=0;
-	if(arguments.length>=0) {
+	if(arguments.length>0) {
 		if(arguments[0] instanceof QName) {
 			this.setOperationName(arguments[0]);
 			ind++;
 		}
-		if(arguments.length-ind!=this.params.length) throw "Wrong number of arguments"
-		for(var i=0;i<this.params.length;i++) {
-			//alert(this.params[i].name+" "+arguments[i+ind]);
-			ser.serialize(arguments[i+ind],this.params[i].name,writer);
-		}
 	}
-	alert(writer.xml);
+	if(this.params.length!=arguments.length-ind) throw "Wrong number of arguments";
+	for(var i=0;i<this.params.length;i++) {
+		this.params[i].setValue(arguments[i+ind]);
+	}
+	var rpc=new RPCSerializer(this.opName,this.params);
+	
+	var bodyElem=new SOAPBodyElement(rpc);
+	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
+	soapMsg.write(writer);
+	document.getElementById('request').value=writer.xml;
 }
+
+
 
 
 //*********************************
@@ -293,10 +366,7 @@ SOAPMessage.prototype.getSOAPPart=function() {
 
 //write(XMLWriter writer) {
 SOAPMessage.prototype.write=function(writer) {
-	var envName=new QName(XMLNS_SOAPENV,"Envelope");
-	writer.startElement(envName);
-	
-	writer.endElement(envName);
+	this.soapPart.write(writer);
 }
 
 //*********************************
@@ -312,13 +382,28 @@ SOAPPart.prototype.getEnvelope=function() {
 	return this.envelope;
 }
 
+//write(XMLWriter writer) {
+SOAPPart.prototype.write=function(writer) {
+	this.envelope.write(writer);
+}
+
+
 //*********************************
 // SOAPEnvelope()
 //*********************************
 function SOAPEnvelope() {
 	this.header=new SOAPHeader();
 	this.body=new SOAPBody();
-	
+}
+
+//write(XMLWriter writer) {
+SOAPEnvelope.prototype.write=function(writer) {
+	var envName=new QName(XMLNS_SOAPENV,"Envelope");
+	writer.startElement(envName);
+	writer.writeNamespaceDeclaration(XMLNS_XSI);
+	writer.writeNamespaceDeclaration(XMLNS_XSD);
+	this.body.write(writer);
+	writer.endElement(envName);
 }
 
 //SOAPHeader getHeader()
@@ -327,7 +412,7 @@ SOAPEnvelope.prototype.getHeader=function() {
 }
 
 //SOAPBody getBody()
-SOAPBody.prototype.getBody=function() {
+SOAPEnvelope.prototype.getBody=function() {
 	return this.body;
 }
 
@@ -335,8 +420,35 @@ SOAPBody.prototype.getBody=function() {
 // SOAPBody()
 //*********************************
 function SOAPBody() {
-	
+	this.fault=null;
+	this.bodyElems=new Array();
 }
+
+//addBodyElement(SOAPBodyElement bodyElem)
+SOAPBody.prototype.addBodyElement=function(bodyElem) {
+	this.bodyElems.push(bodyElem);	
+}
+
+//setFault(SOAPFault fault) 
+SOAPBody.prototype.setFault=function(fault) {
+	this.fault=fault;
+}
+
+//write(XMLWriter writer) {
+SOAPBody.prototype.write=function(writer) {
+	var bodyName=new QName(XMLNS_SOAPENV,"Body");
+	writer.startElement(bodyName);
+	if(this.fault!=null) {
+		return;
+	}
+	if(this.bodyElems!=null) {
+		for(var i=0;i<this.bodyElems.length;i++) {
+			this.bodyElems[i].write(writer);
+		}
+	}
+	writer.endElement(bodyName);
+}
+
 
 //*********************************
 // SOAPHeader()
@@ -345,6 +457,24 @@ function SOAPHeader() {
 	
 }
 
+//*********************************
+// SOAPBodyElement(serializer)
+//*********************************
+function SOAPBodyElement(serializer) {
+	this.serializer=serializer;
+}
+
+SOAPBodyElement.prototype.write=function(writer) {
+	this.serializer.serialize(writer);
+}
+
+//*********************************
+// SOAPFault(String faultCode,String faultString)
+//*********************************
+function SOAPFault(faultCode,faultString) {
+	this.faultCode=faultCode;
+	this.faultString=faultString;
+}
 
 
 function test() {
@@ -355,11 +485,10 @@ function test() {
 	call.addParameter("value1",xmltype.XSD_INT,"IN");
 	call.addParameter("value2",xmltype.XSD_INT,"IN");
 	call.setReturnType(xmltype.XSD_INT);
-	try {
+	//try {
 		call.invoke(3,4);
-	} catch(exception) {
-		alert(exception);
-	}
-	alert("test");
+	//} catch(exception) {
+	//	alert(exception);
+	//}
 	
 }
