@@ -36,21 +36,18 @@
   </xsl:template>
 
   <xsl:template match="productselection">
-    <table width="100%" class="editor_box">
+    <ul class="jobs">
       <ixsl:for-each select="/formresult/cr_editorsession/allproducts/product">
-        <tr>
-          <td>
+        <li>
+          <pfx:button normalclass="editor_submit" page="prodselect" mode="force">
+            <pfx:command  name="SELWRP">prodsel</pfx:command>
+            <pfx:argument name="__pageflow">Editor</pfx:argument>
+            <pfx:argument name="prodsel.Name"><ixsl:value-of select="./@name"/></pfx:argument>
             <ixsl:value-of select="./@comment"/>
-          </td>
-          <td align="right">
-            <pfx:button normalclass="editor_submit" page="prodselect" mode="force">
-              <pfx:command  name="SELWRP">prodsel</pfx:command>
-              <pfx:argument name="__pageflow">Editor</pfx:argument>
-              <pfx:argument name="prodsel.Name"><ixsl:value-of select="./@name"/></pfx:argument>Go</pfx:button>
-          </td>
-        </tr>
+          </pfx:button>
+        </li>
       </ixsl:for-each>
-    </table>
+    </ul>
   </xsl:template>
 
 
@@ -1468,41 +1465,73 @@
   <xsl:template match="gendokumenu">
       <ixsl:choose>       
         <ixsl:when test="/formresult/all_documentation/stylesheet">
-         <div class="editor_sidebar_head"><center>D o c u m e n t a t i o n</center></div><br/>
       <table width="100%" class="editor_sidebar_content">
         <ixsl:for-each select="/formresult/all_documentation/stylesheet">
           <tr><td nowrap="nowrap" class="editor_sidebar_box">
-            <b> <ixsl:value-of select="@file"/></b>
-              <a>
-                <ixsl:attribute name="name"><ixsl:value-of select="@file"/></ixsl:attribute>
-              </a>
+              <b><ixsl:value-of select="@file"/></b>
+              <a><ixsl:attribute name="name"><ixsl:value-of select="@file"/></ixsl:attribute></a>
               </td></tr>
             <ixsl:variable name="file"><ixsl:value-of select="@file"/></ixsl:variable>
-            
+
+            <tr><td>
+            <ul class="list">
           <ixsl:for-each select="template_doc">
           <ixsl:sort select="@id"/>
+          <li>
+
             <ixsl:choose>
                <ixsl:when test="@doku='notfound'">
-                    <tr><td> <span class="editor_missing_img">!&#160;</span> <ixsl:value-of select="./@value"/></td></tr>
-              
+                    <span class="editor_missing_img">!&#160;</span>
+                    <!--<ixsl:value-of select="./@value"/>-->
+        <ixsl:choose>
+        <ixsl:when test="@match != '' and @name != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+          <small> &#38; </small><br/>
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        <ixsl:when test="@match != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+        </ixsl:when>
+        <ixsl:when test="@name != ''">
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        </ixsl:choose>
                </ixsl:when>
             <ixsl:otherwise>
-              <tr><td>
                  <ixsl:if test="@active='true'">
                     <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
                  </ixsl:if>
                       <pfx:button page="documentation" mode="force">
                       <pfx:argument name="select.Id"><ixsl:value-of select="./@id"/></pfx:argument>
                       <pfx:anchor   frame="left_navi"><ixsl:value-of select="$file"/></pfx:anchor>
+                      <!--
                       <ixsl:value-of select="./@value"/>
+                      -->
+                      
+        <ixsl:choose>
+        <ixsl:when test="@match != '' and @name != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+          <small> &#38; </small><br/>
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        <ixsl:when test="@match != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+        </ixsl:when>
+        <ixsl:when test="@name != ''">
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        </ixsl:choose>
+
                    </pfx:button>
-              </td></tr>
             </ixsl:otherwise>
           </ixsl:choose>
+          </li>
         </ixsl:for-each>
-      </ixsl:for-each>          
+        </ul>
+        </td></tr>
+      </ixsl:for-each>
     </table>
-    <br/>        
+    <br/>
       </ixsl:when>
       <ixsl:otherwise>
          <div class="editor_main_emph"><center>No Documentation found for this project</center></div>
@@ -1512,8 +1541,478 @@
   </xsl:template>
 
 
+  <xsl:template match="docuShow">
+    <div class="docframe">
+    <ixsl:for-each select="/formresult/all_documentation/stylesheet/template_doc[@active='true']">
+
+      <h1><ixsl:value-of select="stylesheet"/> | <span title="This user is responsible for this stylesheet. Please ask him/her if you have questions."><ixsl:value-of select="responsible"/></span></h1>
+
+      <br clear="all"/>
+
+      <div class="main">
+        <h2>
+        <!--
+        <ixsl:value-of select="@value"/>
+        -->
+
+        <ixsl:choose>
+        <ixsl:when test="@match != '' and @name != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+          <small> &#38; </small>
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        <ixsl:when test="@match != ''">
+          <small>Match: </small><ixsl:value-of select="@match"/>
+        </ixsl:when>
+        <ixsl:when test="@name != ''">
+          <small>Name: </small><ixsl:value-of select="@name"/>
+        </ixsl:when>
+        </ixsl:choose>
+        </h2>
+
+        <p>
+          <ixsl:value-of select="description"/>
+        </p>
+        
+        <ixsl:if test="parent">
+          <h3>Parent</h3>
+          <p style="color:#990000">Must be a child of: <b><ixsl:value-of select="parent/name"/></b></p>
+        </ixsl:if>
+
+        <ixsl:if test="param">
+          <h3>Parameter</h3>
+
+          <ul>
+            <ixsl:for-each select="param">
+              <ixsl:sort select="@required" data-type="number" order="descending"/>
+              <ixsl:sort select="name"/>
+              
+              <li>
+                <ixsl:attribute name="class">
+                  <ixsl:choose>
+                    <ixsl:when test="(position() mod 2) = 0">low</ixsl:when>
+                    <ixsl:otherwise>high</ixsl:otherwise>
+                  </ixsl:choose>
+                  <ixsl:if test="position()=last()"> last</ixsl:if>
+                </ixsl:attribute>
+
+                <h4>
+                  <ixsl:attribute name="class">
+                    <ixsl:if test="@required = '1'">required</ixsl:if>
+                  </ixsl:attribute>
+
+                  <ixsl:value-of select="name"/>
+                </h4>
+
+                <ixsl:if test="description">
+                  <p><ixsl:apply-templates select="description/node()"/></p>
+                </ixsl:if>
+                
+
+                <ixsl:if test="values">
+                  <h5>Allowed Values</h5>
+
+                  <ul>
+                  <ixsl:for-each select="values/*">
+                    <li>
+                    <ixsl:choose>
+                      <ixsl:when test="name() = 'int'">
+                        <p>
+                        <xsl:text>Numeric</xsl:text>
+                        <ixsl:if test="@min|@max">
+                          <xsl:text> [</xsl:text>
+                            <ixsl:choose>
+                              <ixsl:when test="@min"><xsl:value-of select="@min"/></ixsl:when>
+                              <ixsl:otherwise>0</ixsl:otherwise>
+                            </ixsl:choose>
+                            <xsl:text> - </xsl:text>
+                            <ixsl:choose>
+                              <ixsl:when test="@max"><xsl:value-of select="@max"/></ixsl:when>
+                              <ixsl:otherwise>32768</ixsl:otherwise>
+                            </ixsl:choose>
+                          <xsl:text>] </xsl:text>
+                        </ixsl:if>
+                        
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+
+                      <ixsl:when test="name() = 'string'">
+                        <p>
+                        <xsl:text>String</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      <ixsl:when test="name() = 'css'">
+                        <p>
+                        <xsl:text>CSS-Size</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      <ixsl:when test="name() = 'html'">
+                        <p>
+                        <xsl:text>HTML-Size</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      
+                      <ixsl:when test="name() = 'path'">
+                        <p>
+                        <xsl:text>URI-Path</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      
+                      <ixsl:when test="name() = 'xpath'">
+                        <p>
+                        <xsl:text>XPath</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+
+
+                      <ixsl:when test="name() = 'oneof'">
+                        <p>Choose from:</p>
+                        <ul>
+                        <ixsl:for-each select="option">
+                          <li>
+                            <ixsl:if test="@default='true'">
+                              <ixsl:attribute name="class">default</ixsl:attribute>
+                            </ixsl:if>
+                            "<ixsl:apply-templates select="node()"/>"
+                          </li>
+                        </ixsl:for-each>
+                        </ul>
+                      </ixsl:when>
+
+                    </ixsl:choose>
+                    </li>
+                  </ixsl:for-each>
+                  </ul>
+                </ixsl:if>
+
+
+
+                <!-- ALT -->
+
+                <ixsl:if test="possible_values/node()">
+                  <h5>Allowed Values (Deprecated)</h5>
+                  <p>
+                    <ixsl:apply-templates select="possible_values/node()"/>
+                  </p>
+                </ixsl:if>
+
+                <ixsl:if test="standard/node()">
+                  <h5>Default (Deprecated)</h5>
+                  <p>
+                    <ixsl:apply-templates select="standard/node()"/>
+                  </p>
+                </ixsl:if>
+              </li>
+
+            </ixsl:for-each>
+          </ul>
+        </ixsl:if>
+        
+        <ixsl:if test="children">
+          <h3>Children</h3>
+
+          <ul>
+            <ixsl:for-each select="children">
+              <ixsl:sort select="@required" data-type="number" order="descending"/>
+              <ixsl:sort select="name"/>
+
+              <li>
+                <ixsl:if test="position()=last()">
+                  <ixsl:attribute name="class">last</ixsl:attribute>
+                </ixsl:if>
+
+                <h4>
+                  <ixsl:attribute name="class">
+                    <ixsl:if test="@required = '1'">required</ixsl:if>
+                  </ixsl:attribute>
+
+                  <ixsl:value-of select="name"/>
+                </h4>
+
+                <ixsl:if test="description">
+                  <p><ixsl:apply-templates select="description/node()"/></p>
+                </ixsl:if>
+                
+                
+                
+<!-- Das gleiche wie oben, Start -->
+
+        <ixsl:if test="param">
+          <h3>Parameter</h3>
+
+          <ul>
+            <ixsl:for-each select="param">
+              <ixsl:sort select="@required" data-type="number" order="descending"/>
+              <ixsl:sort select="name"/>
+              
+              <li>
+                <ixsl:attribute name="class">
+                  <ixsl:choose>
+                    <ixsl:when test="(position() mod 2) = 0">low</ixsl:when>
+                    <ixsl:otherwise>high</ixsl:otherwise>
+                  </ixsl:choose>
+                  <ixsl:if test="position()=last()"> last</ixsl:if>
+                </ixsl:attribute>
+
+                <h4>
+                  <ixsl:attribute name="class">
+                    <ixsl:if test="@required = '1'">required</ixsl:if>
+                  </ixsl:attribute>
+
+                  <ixsl:value-of select="name"/>
+                </h4>
+
+                <ixsl:if test="description">
+                  <p><ixsl:apply-templates select="description/node()"/></p>
+                </ixsl:if>
+                
+
+                <ixsl:if test="values">
+                  <h5>Allowed Values</h5>
+
+                  <ul>
+                  <ixsl:for-each select="values/*">
+                    <li>
+                    <ixsl:choose>
+                      <ixsl:when test="name() = 'int'">
+                        <p>
+                        <xsl:text>Numeric</xsl:text>
+                        <ixsl:if test="@min|@max">
+                          <xsl:text> [</xsl:text>
+                            <ixsl:choose>
+                              <ixsl:when test="@min"><xsl:value-of select="@min"/></ixsl:when>
+                              <ixsl:otherwise>0</ixsl:otherwise>
+                            </ixsl:choose>
+                            <xsl:text> - </xsl:text>
+                            <ixsl:choose>
+                              <ixsl:when test="@max"><xsl:value-of select="@max"/></ixsl:when>
+                              <ixsl:otherwise>32768</ixsl:otherwise>
+                            </ixsl:choose>
+                          <xsl:text>] </xsl:text>
+                        </ixsl:if>
+                        
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+
+                      <ixsl:when test="name() = 'string'">
+                        <p>
+                        <xsl:text>String</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      <ixsl:when test="name() = 'css'">
+                        <p>
+                        <xsl:text>CSS-Size</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      <ixsl:when test="name() = 'html'">
+                        <p>
+                        <xsl:text>HTML-Size</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      
+                      <ixsl:when test="name() = 'path'">
+                        <p>
+                        <xsl:text>URI-Path</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+                      
+                      
+                      <ixsl:when test="name() = 'xpath'">
+                        <p>
+                        <xsl:text>XPath</xsl:text>
+
+                        <ixsl:if test="@default">
+                          <xsl:text> ["</xsl:text>
+                          <span class="default">
+                            <ixsl:value-of select="@default"/>
+                          </span>
+                          <xsl:text>"] </xsl:text>
+                        </ixsl:if>
+                        </p>
+                      </ixsl:when>
+
+
+                      <ixsl:when test="name() = 'oneof'">
+                        <p>Choose from:</p>
+                        <ul>
+                        <ixsl:for-each select="option">
+                          <li>
+                            <ixsl:if test="@default='true'">
+                              <ixsl:attribute name="class">default</ixsl:attribute>
+                            </ixsl:if>
+                            "<ixsl:apply-templates select="node()"/>"
+                          </li>
+                        </ixsl:for-each>
+                        </ul>
+                      </ixsl:when>
+
+                    </ixsl:choose>
+                    </li>
+                  </ixsl:for-each>
+                  </ul>
+                </ixsl:if>
+
+
+
+                <!-- ALT -->
+
+                <ixsl:if test="possible_values/node()">
+                  <h5>Allowed Values (Deprecated)</h5>
+                  <p>
+                    <ixsl:apply-templates select="possible_values/node()"/>
+                  </p>
+                </ixsl:if>
+
+                <ixsl:if test="standard/node()">
+                  <h5>Default (Deprecated)</h5>
+                  <p>
+                    <ixsl:apply-templates select="standard/node()"/>
+                  </p>
+                </ixsl:if>
+              </li>
+
+            </ixsl:for-each>
+          </ul>
+        </ixsl:if>
+
+
+
+<!-- Ende der Kopie -->
+
+
+
+
+              </li>
+            </ixsl:for-each>
+          </ul>
+        
+        
+        </ixsl:if>
+
+        <ixsl:if test="/formresult/all_documentation/stylesheet/template_doc/example">
+          <h3>Example</h3>
+          
+          <ul>
+            <ixsl:for-each select="example">
+              <li>
+
+               <h4>Input</h4>
+               <ixsl:apply-templates select="input/node()"/>
+
+               <ixsl:if test="output/text()">
+                  <h4>Output</h4>
+                  <ixsl:apply-templates select="output/node()"/>
+               </ixsl:if>
+
+              </li>
+            </ixsl:for-each>
+          </ul>
+
+        </ixsl:if>
+
+
+      </div>
+    </ixsl:for-each>
+          </div>
+  </xsl:template>
   
-    
+
+
+
+  <!--
   <xsl:template match="docuShow">
        <div class="editor_main_emph" align="right">
         [TEMPLATE: <ixsl:value-of select="/formresult/all_documentation/stylesheet/template_doc[@active='true']/@value"/>]
@@ -1681,6 +2180,8 @@
         </table>
     </ixsl:if>
   </xsl:template>
+  
+  -->
 
 
   <xsl:template match="displayerrortree">

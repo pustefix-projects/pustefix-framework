@@ -48,7 +48,6 @@
   <part name="sidebar">
     <product name="default">
       <lang name="default">
-        <div class="editor_sidebar_head"><center>I&#160;m&#160;a&#160;g&#160;e&#160;s</center></div><br/>
         <displayallimages/>
       </lang>
     </product>

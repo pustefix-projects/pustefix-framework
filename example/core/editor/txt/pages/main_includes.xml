@@ -42,11 +42,9 @@
     <product name="default">
       <lang name="default">
         <ixsl:if test="/formresult/currentsearchincludes">
-          <div class="editor_sidebar_head"><center>I&#160;n&#160;c&#160;l&#160;u&#160;d&#160;e&#160;s<br/>
-              <span style="font-size: 10px;">(matching last Search)</span></center></div><br/>
-          <displayallincludes path="/formresult/currentsearchincludes"/><br/>
+          <span style="font-size: 10px;">(matching last Search)</span>
+          <displayallincludes path="/formresult/currentsearchincludes"/>
         </ixsl:if>
-        <div class="editor_sidebar_head"><center>I&#160;n&#160;c&#160;l&#160;u&#160;d&#160;e&#160;s</center></div><br/>
         <displayallincludes/>
       </lang>
     </product>

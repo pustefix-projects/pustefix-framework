@@ -4,7 +4,7 @@
   <part name="logoutbutton">
     <product name="default">
       <lang name="default">
-        [<b>6100 - More Power</b>]
+        <span style="color:#ffffff"><b>6100 - More Power</b></span>
       </lang>
     </product>
   </part>
@@ -12,22 +12,15 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <br/><br/>
         <center>
-          <table><tr><td class="welcome" nowrap="nowrap">
-             W e l c o m e   
-             to   t h e   
-             P u s t e f i x   C M S</td></tr></table><br/><br/>
+          <div class="box" style="width:400px">
+             <h1>Welcome to the Pustefix CMS</h1>
+
           <pfx:forminput target="_top" type="auth">
-            <table width="400">
-              <tr>
-                <td>
+
                   <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
-                </td>
-              </tr>
-              <tr>
-                <td align="center">
-                  <table class="editor_box" width="100%">
+
+                  <table width="350">
                     <ixsl:if test="/formresult/formerrors/error">
                       <tr>
                         <td colspan="2">
@@ -57,10 +50,9 @@
                       </td>
                     </tr>
                   </table>
-                </td>
-              </tr>
-            </table>
+
           </pfx:forminput>
+          </div>
         </center>
       </lang>
     </product>

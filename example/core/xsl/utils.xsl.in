@@ -19,12 +19,12 @@
 
   
   <xsl:template match="pfx:maincontent">
-   <cus:documentation> 
+   <cus:documentation>
+     <responsible>JTL</responsible>
      <description></description>
       <param required="0">
         <name>path</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><path/></values>
         <description>Path, where the pages are (e.g. productname/txt/pages)
           <xmlcode><table><tr><td>Hallo</td></tr></table>
           </xmlcode>
@@ -33,25 +33,22 @@
 
       <param required="0">
         <name>prefix</name>
-        <standard>main_</standard>
-        <possible_values></possible_values>
-        <description>Value of the Prefix, usually main_</description>          
+        <values><string default="main_"/></values>
+        <description>Value of the Prefix.</description>
       </param>
 
       <param required="0">
         <name>postfix</name>
-        <standard>.xml</standard>
-        <possible_values></possible_values>
-        <description>Value of the Postfix, usually .xml</description>
+        <values><string default=".xml"/></values>
+        <description>Value of the Postfix.</description>
       </param>
 
       <param required="0">
         <name>part</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description></description>
+        <values><string/></values>
+        <description>The name of the part to include.</description>
       </param>      
-        
+
       <example>
         <input>
           <xmlcode><pfx:maincontent path="sample1/txt/pages" prefix="main_" part="content"/></xmlcode>
@@ -99,6 +96,7 @@
 
   <xsl:template match="pfx:progressbar">
   <cus:documentation>
+    <responsible>JTL</responsible>
      <description>Should open a Progressbar, but doesn't work at the moment on different browsers</description>
       
       <example>
@@ -122,28 +120,27 @@
     </div>
   </xsl:template>
   
-  <xsl:template match="pfx:blank"> 
-   <cus:documentation> 
+  <xsl:template match="pfx:blank">
+   <cus:documentation>
      <description>Inserts a transparent .gif of the specified width and height (default  width=1 height=1)</description>
       <param required="0">
         <name>src</name>
-        <required>optional</required>
-        <standard>/core/img/blank.gif</standard>
+        <values><path default="/core/img/blank.gif"/></values>
         <description>The Path to the Image. You can also use another Image <xmlcode width="120"><pfx:blank/></xmlcode></description>
       </param>
       <param required="0">
         <name>width</name>
-        <standard>1</standard>
+        <values><html default="1"/></values>
         <description>Width of the Image</description>
       </param>
       <param required="0">
         <name>height</name>
-        <standard>1</standard>
+        <values><html default="1"/></values>
         <description>Height of the image</description>
       </param>
       <param required="0">
         <name>border</name>
-        <standard>0</standard>
+        <values><html default="0"/></values>
         <description>Border</description>
       </param>
 
@@ -173,60 +170,53 @@
 
   <xsl:template match="pfx:layer">
     <cus:documentation>
+     <responsible>JTL</responsible>
      <description>Creates a layer object which can be shown/hidden and moved on demand.</description>
       <param required="1">
         <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><string/></values>
         <description>id of this layer object</description>
       </param>
 
       <param required="0">
         <name>element</name>
-        <standard>div</standard>
-        <possible_values></possible_values>
+        <values><oneof><option default="true">div</option><option>span</option><option>tr</option><option>table</option></oneof></values>
         <description>The html element that is used as the container for the layer content</description>
       </param>
 
       <param required="0">
         <name>pos-left</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html/></values>
         <description>left position</description>
       </param>
 
       <param required="0">
         <name>pos-right</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html/></values>
         <description>right position</description>
       </param>
 
       <param required="0">
         <name>pos-top</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html/></values>
         <description>top position</description>
       </param>
 
       <param required="0">
         <name>pos-bottom</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html/></values>
         <description>bottom  position</description>
       </param>
 
       <param required="0">
         <name>visible</name>
-        <standard></standard>
-        <possible_values>true|false</possible_values>
+        <values><oneof><option>true</option><option>false</option></oneof></values>
         <description>Visibility</description>
       </param>
-      
+
       <param required="0">
         <name>store</name>
-        <standard>true</standard>
-        <possible_values>true|false</possible_values>
+        <values><oneof><option default="true">true</option><option>false</option></oneof></values>
         <description>If the status of the layer should be stored over different invocations of the page</description>
       </param>
 
@@ -266,11 +256,11 @@
   
   <xsl:template match="pfx:switch">
     <cus:documentation>
+    <responsible>JTL</responsible>
      <description>Creates a "switch" (a link) to show/hide layers (see &lt;pfx:layer&gt;)</description>
       <param required="0">
         <name>class</name>
-        <standard>core_button_normal</standard>
-        <possible_values></possible_values>
+        <values><string default="core_button_normal"/></values>
         <description>link stylesheet</description>
       </param>
 
@@ -325,13 +315,17 @@
 
   <xsl:template match="pfx:layer_check">
     <cus:documentation>
-      <description>Always a child of &lt;pfx:switch&gt;. Checks the visibility of a sub-layer. </description>
+    <responsible>JTL</responsible>
+      <description>Checks the visibility of a sub-layer. </description>
       <param required="0">
         <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><string/></values>
         <description>Name of the sub-layer</description>
       </param>
+      
+      <parent>
+        <name>pfx:switch</name>
+      </parent>
 
       <children>
         <name>pfx:on</name>
@@ -390,19 +384,18 @@
   
   <xsl:template match="pfx:layer_ref">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>Always a child of &lt;pfx:switch&gt;. This selects which layer
         should be toggled by the switch. Multiple
         &lt;pfx:layer_ref&gt; are possible.</description>
       <param required="1">
         <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><string/></values>
         <description>This must be a layer defined via &lt;pfx:layer&gt;. </description>
       </param>
       <param required="0">
         <name>method</name>
-        <standard>toggle</standard>
-        <possible_values>on|off|toggle</possible_values>
+        <values><oneof><option>on</option><option>off</option><option default="true">toggle</option></oneof></values>
         <description>The method called on the associated layer. "On"
         shows the layer, "off" hides it. Don't specifying the
         attribute or giving it the value "toggle" toggles the layer's state.</description>

@@ -155,6 +155,7 @@
   <!-- this is needed... it allows to "comment out" blocks without loosing them during the trafo steps -->
   <xsl:template match="pfx:rem">
    <cus:documentation>
+    <responsible>JTL</responsible>
     <description>
       Allows to comment out blocks without loosing them during the trafo steps
     </description>
@@ -163,6 +164,7 @@
 
   <xsl:template match="pfx:head">
   <cus:documentation>
+    <responsible>JTL</responsible>
       <description>Makes the HTML-Head. The Baselib.js will be included automatically</description>
       <pfx:head>
         <title>PFIXCORE Sample</title>
@@ -192,6 +194,7 @@
   
   <xsl:template match="pfx:script">
   <cus:documentation>
+    <responsible>JTL</responsible>
       <description>A script block will be inserted. Script-Type is always Java-Script ! When using
       complex Java-Script, you'll better put a  &lt;[CDATA[-Block around your Script, so that the
       XML-Document could not be destroyed.
@@ -231,6 +234,7 @@
   
   <xsl:template match="pfx:frameset">
   <cus:documentation>
+    <responsible>JTL</responsible>
       <description>Inserts a frameset. Standard Value for Frameborder=0, Framespacing=0, border=0. If you want to change
         the default settings add the parameters. All parameters will be copied.
       </description>
@@ -238,24 +242,21 @@
 
       <param required="0">
         <name>framborder</name>
-        <standard>0</standard>
-        <possible_values></possible_values>
+        <values><html default="0"/></values>
         <description></description>
       </param>
 
 
       <param required="0">
         <name>framespacing</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html/></values>
         <description></description>
       </param>
 
 
       <param required="0">
-        <name>border 0</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <name>border</name>
+        <values><html default="0"/></values>
         <description></description>
       </param>
 
@@ -305,10 +306,6 @@
           </xmlcode>
         </output>
       </example>
-      
-
-      
-
   </cus:documentation>
 
     <frameset frameborder="0" framespacing="0" border="0">
@@ -319,6 +316,7 @@
   
   <xsl:template match="pfx:frame">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>Always a child of pfx:frameset.
         Inserts a html-frame. Standard-Value for Scrolling=auto,
         Marginwidth=1, marginheight=1. If you want to change the default-settings,
@@ -328,23 +326,17 @@
 
       <param required="0">
         <name>scrolling</name>
-        <standard>auto</standard>
-        <possible_values></possible_values>
-        <description></description>
+        <values><html default="auto"/></values>
       </param>
 
       <param required="0">
         <name>marginwidth</name>
-        <standard>1</standard>
-        <possible_values></possible_values>
-        <description></description>
+        <values><html default="1"/></values>
       </param>
 
       <param required="0">
         <name>marginheight</name>
-        <standard>1</standard>
-        <possible_values></possible_values>
-        <description></description>
+        <values><html default="1"/></values>
       </param>
 
       <example>

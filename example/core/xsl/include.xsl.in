@@ -24,6 +24,7 @@
   
   <xsl:template match="pfx:editconsole">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>Generates a toolbar when in development mode</description>
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
@@ -125,6 +126,7 @@
  
   <xsl:template name="pfx:missinc">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>Called by &lt;pfx:include&gt;. This template will be executed
         if an Include-Document/Part cannot be found, instead of this a warning-icon
         and a warning-message will be displayed
@@ -145,6 +147,7 @@
 
   <xsl:template match="pfx:include" name="pfx:include">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>test</description>
     </cus:documentation>
     <xsl:param name="__env"/>
@@ -343,6 +346,7 @@
   
   <xsl:template match="pfx:image" name="pfx:image">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>You can add images by using this tag. Standard Value for Border is 0. If
         you want to change this, add the border attribute. All other attributes will be
         copied. (Better use Cascading Style Sheets). A list of all built-in images could be found
@@ -352,26 +356,22 @@
      </description>
      <param required="1">
         <name>src</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><path/></values>
         <description>path to the image</description>
      </param>
      <param required="0">
         <name>border</name>
-        <standard>0</standard>
-        <possible_values></possible_values>
+        <values><html default="0"/></values>
         <description>border</description>
       </param>
       <param required="0">
         <name>width</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html default="auto"/></values>
         <description>Width (different from the original width)</description>
       </param>
       <param required="0">
         <name>height</name>
-        <standard></standard>
-        <possible_values></possible_values>
+        <values><html default="auto"/></values>
         <description>Height (different from the orgignal height)</description>
       </param>
       <example>
@@ -396,8 +396,8 @@
 
   <xsl:template name="pfx:image_geom_impl">
     <cus:documentation>
+      <responsible>JTL</responsible>
       <description>Called by pfx:image</description>
-      
     </cus:documentation>
     <xsl:param name="src"><xsl:value-of select="./@src"/></xsl:param>
     <xsl:param name="path" select="concat($docroot, $src)"/>
