@@ -62,7 +62,7 @@ public class SPCacheStatistic implements FactoryInit {
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
-    private Timer tickTimer = new Timer();
+    private Timer tickTimer = new Timer(true);
 
      /**
      * Retrieve information which maps the config file
