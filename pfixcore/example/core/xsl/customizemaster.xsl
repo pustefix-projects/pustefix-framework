@@ -13,47 +13,12 @@
   <xsl:param name="lang"/>
   <xsl:param name="__target_gen"/>
   
-  <xsl:param name="skinning_stylesheets"/>
-  <xsl:param name="runtime_stylesheets"/>
+  <xsl:param name="stylesheets_to_include"/>
 
-  <xsl:param name="outputmethod">html</xsl:param>
-  <xsl:param name="outputencoding">iso-8859-1</xsl:param>
-  <xsl:param name="outputdoctype-public"/>
-  <xsl:param name="outputdoctype-system"/>
-
-  <xsl:template match="cus:final-output-method">
-    <ixsl:output indent="no">
-      <xsl:attribute name="method">
-        <xsl:value-of select="$outputmethod"/>
-      </xsl:attribute>
-      <xsl:attribute name="encoding">
-        <xsl:value-of select="$outputencoding"/>
-      </xsl:attribute>
-      <xsl:if test="not($outputdoctype-system = '')">
-        <xsl:attribute name="doctype-system">
-          <xsl:value-of select="$outputdoctype-system"/>
-        </xsl:attribute>
-      </xsl:if>
-      <xsl:if test="not($outputdoctype-public = '')">
-        <xsl:attribute name="doctype-public">
-          <xsl:value-of select="$outputdoctype-public"/>
-        </xsl:attribute>
-      </xsl:if>
-      <xsl:copy-of select="./node()"/>
-    </ixsl:output>
-  </xsl:template>
-  
   <xsl:template match="cus:custom_xsl">
     <xsl:call-template name="gen_xsl_include">
       <xsl:with-param name="ns">xsl</xsl:with-param>
-      <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($skinning_stylesheets)"/></xsl:with-param>
-    </xsl:call-template>
-  </xsl:template>
-
-  <xsl:template match="cus:custom_ixsl">
-    <xsl:call-template name="gen_xsl_include">
-      <xsl:with-param name="ns">ixsl</xsl:with-param>
-      <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($runtime_stylesheets)"/></xsl:with-param>
+      <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
     </xsl:call-template>
   </xsl:template>
 
@@ -110,7 +75,7 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="xsl:include | ixsl:include">
+  <xsl:template match="xsl:include | ixsl:include | xsl:import | ixsl:import">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',@href)"/></xsl:attribute>

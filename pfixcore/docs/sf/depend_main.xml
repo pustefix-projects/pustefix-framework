@@ -26,7 +26,7 @@
   <a name="record_dir"/>
   
   <xmlcode>
-    <make cachedir="..." recorddir="...">
+    <make cachedir="..." recorddir="..." project="MyProject" lang="en">
       <xmlcodeOFF>
         <table class="stdtable">
           <tr>
@@ -50,6 +50,21 @@
               attribute is <b>optional</b>, if given, it must be
               either an absolute path name or a relative path which is
               interpreted as being relative to the <b>docroot</b></p>
+            </td>
+          </tr>
+          <tr>
+            <td>project</td>
+            <td>
+              <p>The name of the project. This is the same as the value of the <code>product</code>
+                node's <code>name</code> attribute used in include parts, and the same as the
+                corresponding entry in the <code>project.xml.in file</code>. This attribute is <b>mandatory</b>.</p>
+            </td>
+          </tr>
+          <tr>
+            <td>lang</td>
+            <td>
+              <p>The default language of the project. This is the same as the value of the <code>lang</code>
+                node's <code>name</code> attribute used in include parts. This attribute is <b>mandatory</b>.</p>
             </td>
           </tr>
         </table>
@@ -122,20 +137,35 @@
         </xmlcodeOFF>
       </navigation>
       <xmlcodeOFF/>
+      <global>
+        <param name="AName" value="AValue"/>
+        <include stylesheet="path/to/AStyleSheet"/>
+      </global>
+      <xmlcodeOFF>
+        <div class="comment">
+          The <code>global</code> section allows to set default values for ALL pages defined via
+          the <code>standardpage</code> tag (see below). It's possible to set
+          default <code>param</code>s, and runtime stylesheets (see <a href="xml.html">here</a>).
+          It's also possible to add more runtime stylesheets or overwrite params in
+          the <code>standardpage</code> tag for a single page.
+        </div>
+      </xmlcodeOFF>
       <target name="a_target_name.xsl"       type="[xsl|xml]">...</target>
       <target name="another_target_name.xml" type="[xsl|xml]">...</target>
       ...
-      <standardpage name="a_page_name"       xml="a_base_xml_file.xml">...</standardpage>
-      <standardpage name="another_page_name" xml="a_base_xml_file.xml" outputmethod="text">...</standardpage>
+      <standardmaster/>
+      <standardmetatags/>
+      <standardpage name="a_page_name" xml="a_base_xml_file.xml">...</standardpage>
       ...
       <xmlcodeOFF>
         <div class="comment">
           <p>The only other tags allowed besides the
-            <code>navigation</code> tag are <code>target</code>
-            and <code>standardpage</code>. <b>The latter is only a
-              convenience tag that can be expressed fully in terms
+            <code>navigation</code> tag are <code>target</code>, 
+            <code>global</code>, <code>standardmaster</code>, <code>standardmetatags</code>
+            and <code>standardpage</code>. <b>The latter three are only
+              convenience tags that can be expressed fully in terms
               of <code>target</code> tags</b> (Expanding the
-            <code>standardpage</code> tag is one of the duties
+            those tags is one of the duties
             of the transformation <code>depend.xml.in</code>
             => <code>depend.xml</code> mentioned above).</p>
           <p> See below for a detailed explanation of targets and their configuration</p>
@@ -147,7 +177,7 @@
   <h2>Targets</h2>
 
   <xmlcode>
-    <target name="master.xsl" type="xsl">
+    <target name="foo.xsl" type="xsl">
       <xmlcodeOFF>
         <table class="stdtable">
           <tr>
@@ -177,8 +207,8 @@
           </tr>
         </table>
       </xmlcodeOFF>
-      <depxml name="core/xsl/master.xsl"/>
-      <depxsl name="core/xsl/customizemaster.xsl"/>
+      <depxml name="foo/xsl/bar.xsl"/>
+      <depxsl name="foo/xsl/baz.xsl"/>
       <xmlcodeOFF>
         <div class="comment">
           <p><code>depxml</code> and <code>depxsl</code> reference other
@@ -188,20 +218,9 @@
           <code>depxml</code> or <code>depxsl</code> no other target definition is found,
           the transformation parent is supposed to be a leaf target and the <code>name</code> attribute
           is interpreted as a path relative to the docroot.</p>
-          <p>
-            <b>Note:</b> For the definition of the master.xsl target,
-            you will <b>always</b> use
-            <code>core/xsl/master.xsl</code> and <code>core/xsl/customizemaster</code>.<br/>
-            The definition of the metatags.xsl target will <b>always</b> use
-            <code>MyProject/xsl/metatags.xsl</code> and <code>core/xsl/customizestylesheets</code>
-          </p>
         </div>
       </xmlcodeOFF>
-      <depaux name="core/xsl/default_copy.xsl"/>
-      <depaux name="core/xsl/include.xsl"/>
-      <depaux name="core/xsl/navigation.xsl"/>
-      <depaux name="core/xsl/utils.xsl"/>
-      <depaux name="core/xsl/forminput.xsl"/>
+      <depaux name="foo/xsl/snarf.xsl"/>
       <xmlcodeOFF>
         <div class="comment">
           <p>
@@ -223,106 +242,67 @@
             is rebuild.
           </p>
           <p>
-            <code>depaux</code> just adds more dependencies "by hand"
-            that are not automatically detected. In the example
-            above, the files referenced are XSLT stylesheets that are included via <code>xsl:include</code> into
-            the <code>master.xsl</code> stylesheet. Such external dependencies are not currently recognized automatically.</p>
-            <p>E.g. if you use a <code>foo.xsl</code> stylesheet that
+            <code>depaux</code> just adds more dependencies "by hand" that are not automatically
+            detected. In the example above, the file referenced is a XSLT stylesheets that's
+            included via <code>xsl:include</code> into the <code>foo.xsl</code> stylesheet. Such
+            external dependencies are not currently recognized automatically.</p>
+            <p>E.g. if you use a <code>foo/xsl/fubar.xsl</code> stylesheet that
             serves as a library of templates you want to include
-            into <code>metatags.xsl</code>, you need to add the
+            into <code>foo.xsl</code>, you need to add the
             following line to the target definition of
-            <code>metatags.xsl</code> to make the system recognize changes to <code>foo.xsl</code></p>
+            <code>foo.xsl</code> to make the system recognize changes to <code>foo/xsl/fubar.xsl</code></p>
             <xmlcode>
-              <depaux name="MyProject/xsl/skin.xsl"/>
+              <depaux name="foo/xsl/fubar.xsl"/>
             </xmlcode>
-        </div><br/>
-        <div class="comment" style="border: 1px red solid; background: #eeaaaa;">
-          <b>This section applies only for the definition of <code>master.xsl</code></b>
-          <div>
-            <xmlcode>
-              <xmlcodeINV>
-                <skinning_stylesheets>sample1/xsl/skin.xsl</skinning_stylesheets>
-                <xmlcodeOFF>
-                  <div class="comment">
-                  Space separated list of stylesheets to use as a template library for <code>master.xsl</code>
-                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
-                  </div>
-                </xmlcodeOFF>
-                <runtime_stylesheets>sample1/xsl/runtime.xsl</runtime_stylesheets>
-                <xmlcodeOFF>
-                  <div class="comment">
-                  Space separated list of stylesheets to use as a template library for the generated stylesheet
-                  on runtime.
-                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
-                  </div>
-                </xmlcodeOFF>
-                <param name="outputmethod" value="html"/>
-                <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
-                <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
-                <xmlcodeOFF>
-                  <div class="comment">
-                  These pre-defined <code>param</code>s are used to specify the output parameters for the runtime
-                  transformation.
-                </div>
-                <br/>
-                </xmlcodeOFF>
-              </xmlcodeINV>
-            </xmlcode>
-          </div>
         </div>
       </xmlcodeOFF>
-      <param name="product" value="MyProject"/>
-      <param name="lang"    value="en"/>
+      <param name="AName" value="AValue"/>
       <xmlcodeOFF>
         <div class="comment">
           <code>param</code> tags supply XSL transformation parameters that are used when the target is generated.
-          You can supply any parameter you want, but there are two parameters
-          that <b>need to be supplied</b> in the target definition of <code>master.xsl</code> and <code>metatags.xsl</code>:
-          <ul>
-            <li><b>product</b>: This parameter is needed so the system
-            knows which product branch of include parts should be
-            used.</li>
-            <li><b>lang</b>: This is the language that
-            should be used for include parts if it isn't changed
-            explicitly at runtime.</li>
-          </ul>
-          You <b>must never supply</b> a <code>param</code> named <code>docroot</code>. This parameter is inserted automatically
-          during the transformation <code>depend.xml.in</code> => <code>depend.xml</code>.
+          You <b>must never supply</b> a <code>param</code> named <code>docroot</code>. This
+          parameter is inserted automatically into all targets during the transformation <code>depend.xml.in</code>
+          =&gt; <code>depend.xml</code>.
         </div>
       </xmlcodeOFF>
     </target>
   </xmlcode>
-
+  
   <h2>Standard page definition</h2>
   The <code>standardpage</code> tag is a convenience tag that encapsulates the typical definition of
   a complete page in the <pustefix/> system.
   <xmlcode>
-    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml" outputmethod="text"/>
-    <xmlcodeOFF>
-      <table class="stdtable">
-        <tr>
-          <th>Attribute</th>
-          <th>Notes</th>
-        </tr>
-        <tr>
-          <td>name</td>
-          <td>The name of the page. This must be a name already defined in a <code>page</code> tag in the navigation tree.</td>
-        </tr>
-        <tr>
-          <td>xml</td>
-          <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and
-            one of the projects <i>structural xml files</i> (see <a href="xml.html">here</a>).</td>
-        </tr>
-        <tr>
-          <td>outputmethod</td>
-          <td>This attribute is optional. You can use it to change the output method for the runtime transformation
-            from the default <b>html</b> to other supported output methods (<b>text</b>, <b>xml</b>). This is useful if the
-            page is used to e.g. generate JavaScript. Setting the output method to <i>text</i> will prevent <b>&lt;</b> to
-            be encoded as <b>&amp;lt;</b> in the output.</td>
-        </tr>
-      </table>
-      <br/>
-    </xmlcodeOFF>
+    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml">
+      <xmlcodeOFF>
+        <table class="stdtable">
+          <tr>
+            <th>Attribute</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>The name of the page. This must be a name already defined in a <code>page</code> tag in the navigation tree.</td>
+          </tr>
+          <tr>
+            <td>xml</td>
+            <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and
+              one of the projects <i>structural xml files</i> (see <a href="xml.html">here</a>).</td>
+          </tr>
+        </table>
+        <br/>
+      </xmlcodeOFF>
+      <include stylesheet="foo/xsl/ssheet.xsl"/>
+      <include stylesheet="foo/xsl/ssheet2.xsl"/>
+      <param name="outputmethod"         value="html"/>
+      <param name="outputencoding"       value="iso-8859-1"/>
+      <param name="outputdoctype-public" value="PubID"/>
+      <param name="outputdoctype-system" value="SysID"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          Note: All the child nodes are optional (an in fact, most often not needed)
+        </div>
+      </xmlcodeOFF>
+    </standardpage>
   </xmlcode>
   <p>after performing the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
     (automatically done by the build system in the skeleton package and the CVS checkout) this becomes</p>
@@ -347,10 +327,23 @@
           inserts a <code>param</code> called <code>docroot</code>.
         </div>
       </xmlcodeOFF>
-      <param name="outputmethod" value="text"/>
+      <param name="outputmethod" value="html"/>
+      <param name="outputmethod" value="iso-8859-1"/>
+      <param name="outputdoctype-public" value="PubID"/>
+      <param name="outputdoctype-system" value="SysID"/>
       <xmlcodeOFF>
         <div class="comment">
-          Only if the outputmethod attribute is given, this parameter will be supplied to the master transformation.
+          parameters given to the standardpage tag are suuplied to the first of the two transformations. 
+        </div>
+      </xmlcodeOFF>
+      <param name="stylesheets_to_include" value="foo/xsl/ssheet.xsl foo/xsl/ssheet.xsl2"/>
+      <depaux name="/absolute/path/to/foo/xsl/ssheet.xsl"/>
+      <depaux name="/absolute/path/to/foo/xsl/ssheet2.xsl"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          All include tags given are runtime stylesheets, given to the transformation via the
+          parameter <code>stylesheets_to_include</code>. Note that automatically the
+          needed <code>depaux</code> nodes are inserted.
         </div>
       </xmlcodeOFF>
     </target><xmlcodeOFF/>

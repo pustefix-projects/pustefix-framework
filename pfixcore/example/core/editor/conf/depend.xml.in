@@ -1,6 +1,7 @@
 <!-- -*- mode: xml -*- -->
-<make cachedir=".cache/editor" record_allowed="false" record_dir="editor/recorded"
-      xmlns:cus="http://www.schlund.de/pustefix/customize">
+<make cachedir=".cache/editor" 
+      project="editor"
+      lang="en">
   
   <navigation>
     <page name="editoruserauth"    handler="/xml/edit"/>
@@ -24,33 +25,23 @@
     <page name="AppletInfo"        handler="/xml/edit"/>
   </navigation>
 
-  <!-- ========= master =============== -->
-  <target name="master.xsl" type="xsl">
-    <depxml name="core/xsl/master.xsl"/>
-    <depxsl name="core/xsl/customizemaster.xsl"/>
-    <depaux name="core/xsl/default_copy.xsl"/>
-    <depaux name="core/xsl/include.xsl"/>
-    <depaux name="core/xsl/utils.xsl"/>
-    <depaux name="core/xsl/navigation.xsl"/>
-    <depaux name="core/xsl/forminput.xsl"/>
-    <runtime_stylesheets>core/editor/xsl/runtime.xsl</runtime_stylesheets>
+  <global>
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
-    <param name="product" value="editor"/>
-    <param name="lang"    value="en"/>
-  </target>
+  </global>
 
-  <!-- ========= metatags =============== -->
-  <target name="metatags.xsl" type="xsl">
-    <depxml name="core/editor/xsl/metatags.xsl"/>
-    <depxsl name="core/xsl/customizestylesheet.xsl"/>
-    <depaux name="core/xsl/default_copy.xsl"/>
-    <depaux name="core/xsl/include.xsl"/>
-    <depaux name="core/xsl/utils.xsl"/>
-    <param name="product" value="editor"/>
-    <param name="lang"    value="en"/>
-  </target>
+  <standardmaster/>
+  
+  <standardmetatags>
+    <include stylesheet="core/editor/xsl/metatags.xsl"/>
+  </standardmetatags>
 
+  <standardpage name="images"            xml="core/editor/xml/three_frames.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="includes"          xml="core/editor/xml/three_frames_applet.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
   <standardpage name="editoruserauth"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="prodselect"        xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="lockmanager"       xml="core/editor/xml/two_frames_deaktiv.xml"/>
@@ -60,8 +51,6 @@
   <standardpage name="home"              xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="pages"             xml="core/editor/xml/three_frames_wide.xml"/>
   <standardpage name="targets"           xml="core/editor/xml/three_frames_wide.xml"/>
-  <standardpage name="images"            xml="core/editor/xml/three_frames.xml"/>
-  <standardpage name="includes"          xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="commons"           xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="AppletInfo"        xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
@@ -69,8 +58,6 @@
   <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="testcasestart"     xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="testcaseoverview"     xml="core/editor/xml/two_frames.xml"/>
-  <!-- These pages should never be visible -->
   <standardpage name="logout"            xml="core/editor/xml/empty.xml"/>
-  
 
 </make>

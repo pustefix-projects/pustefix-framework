@@ -54,43 +54,40 @@
   <!-- the copy rule -->
   <xsl:include href="core/xsl/default_copy.xsl"/>
   
-  <xsl:param name="outputmethod"/>
-  <xsl:param name="outputencoding"/>
+  <xsl:param name="outputmethod">html</xsl:param>
+  <xsl:param name="outputencoding">iso-8859-1</xsl:param>
   <xsl:param name="outputdoctype-public"/>
   <xsl:param name="outputdoctype-system"/>
 
-  <xsl:param name="runtime_stylesheets"/>
+  <xsl:param name="stylesheets_to_include"/>
   
-  <!-- Needed for includes to work
-  Remember to include this in the resulting stylesheet, too!
-  The variables are just defaults.-->
+  <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
   <xsl:param name="docroot"><cus:docroot/></xsl:param>
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
+
   <xsl:include href="core/xsl/include.xsl"/>
   
-  <!-- Needed for navibuttons to work.
-  Normally not needed in the resulting stylesheet -->
+  <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
   <xsl:param name="page"/>
   <xsl:param name="navitree" select="document(concat('file://',$navigation))/make/navigation"/>
 
   <xsl:include href="core/xsl/navigation.xsl"/>
 
-  <!-- general utility tags  -->
+  <!-- general utility tags -->
   <xsl:include href="core/xsl/utils.xsl"/>
 
   <!-- Needed for input fields, radio/checkbuttons etc. -->
   <xsl:include href="core/xsl/forminput.xsl"/>
-
-  <cus:custom_xsl/>
 
   <xsl:key name="frameset_key" match="pfx:frameset" use="'fset'"/>
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
     <ixsl:stylesheet version="1.0" exclude-result-prefixes="pfx cus xsl ixsl">
-      <cus:final-output-method>
+
+      <ixsl:output indent="no" >
         <xsl:if test="not($outputmethod = '')">
           <xsl:attribute name="method"><xsl:value-of select="$outputmethod"/></xsl:attribute>
         </xsl:if>
@@ -103,7 +100,7 @@
         <xsl:if test="not($outputdoctype-public = '')">
           <xsl:attribute name="doctype-public"><xsl:value-of select="$outputdoctype-public"/></xsl:attribute>
         </xsl:if>
-      </cus:final-output-method>
+      </ixsl:output>
       
       <!-- these parameters will always be passed in by the servlet -->
       <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
@@ -133,11 +130,12 @@
       <!-- the copy rule -->
       <ixsl:include href="core/xsl/default_copy.xsl"/>
 
-      <cus:custom_ixsl/>
       <xsl:call-template name="gen_ixsl_include">
-        <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($runtime_stylesheets)"/></xsl:with-param>
+        <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
       </xsl:call-template>
 
+      <cus:custom_ixsl/>
+  
       <ixsl:template match="/">
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->
