@@ -85,34 +85,6 @@ public class ResultForm {
         return param;
     }
 
-    /**
-     * class to add all ErrorIncludes for all StatusCodes found in the
-     * StatusCodeEnumeration the identifiers of the status code groups
-     * are translated by the idstofields hashmap into field names
-     */
-    // public void addStatusCodeEnum(Properties props, StatusCodeEnum scenum, HashMap idstofields ) {
-    //     if (scenum == null ) return;
-    //     for (Enumeration e = scenum.getIdentifierList(); e.hasMoreElements(); ) {
-    //         String id = (String) e.nextElement();
-    //         if (!id.equals(scenum.SCIDALL)) {
-    //             String field = null;
-    //             if (idstofields.get(id) != null) {
-    //                 field = (String) idstofields.get(id);
-    //             } else {
-    //                 field = "default";
-    //                 if (!id.equals(scenum.SCIDGEN))
-    //                     LOG.warn( "no translation for category [" + id +"] found use \"default\" instead ...");
-    //             }
-    //             if (field != null) {
-    //                 while (scenum.hasMoreElements(id)) {
-    //                     StatusCode aSC = scenum.nextElement(id);
-    //                     addStatusCode(props, aSC, field);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
     public void addStatusCode(Properties props, StatusCode code, String field) {
         addStatusCode(props, code, null, field);
     }
@@ -121,18 +93,5 @@ public class ResultForm {
         Element elem = resdoc.createIncludeFromStatusCode(props, code, args);
         addErrorNode(field, elem);
     }
-
-    // public void addParams(String[] names, HttpServletRequest req) {
-    //     for (int i=0; i < names.length; i++) {
-    //         addValue(names[i], req.getParameter(names[i]));
-    //     }
-    // }
-
-
-    // public void addHiddenParams(String[] names, HttpServletRequest req) {
-    //     for (int i=0; i < names.length; i++) {
-    //         addHiddenValue(names[i], req.getParameter(names[i]));
-    //     }
-    // }
 }
 
