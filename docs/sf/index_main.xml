@@ -1,5 +1,5 @@
 <div>
-  <h2>What is Pustefix</h2>
+  <h1>What is Pustefix</h1>
   <pustefix/> is a framework that helps you to develop web based applications. A high level view of the system is given on
   <a href="overview.html">this</a> page. The framework consists of two more or less independend parts:
 
@@ -13,9 +13,9 @@
       to the UI. This part is explained in much more detail <a href="java.html">here</a></li>
   </ul>
 
-  Together, the framework acts similar to the <i>Model-View-Container</i> pattern.
+  Together, the framework acts similar to the <i>Model-View-Controller</i> pattern.
   
-  <h2>Development news</h2>
+  <h1>Development news</h1>
   
   
   <br/><b><a href="http://sourceforge.net/projects/pustefix/">Coming soon....</a></b>
