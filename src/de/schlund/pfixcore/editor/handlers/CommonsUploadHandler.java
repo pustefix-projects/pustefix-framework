@@ -33,6 +33,7 @@ import org.apache.oro.text.regex.*;
 /**
  * CommonsUploadHandler.java
  *
+ *  Handler responsible for uploading commons.
  *
  * Created: Wed Dec 19 12:34:24 2001
  *

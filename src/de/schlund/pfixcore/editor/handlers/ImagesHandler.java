@@ -30,9 +30,12 @@ import de.schlund.pfixxml.targets.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
 
+import org.apache.log4j.Category;
+
 /**
  * ImagesHandler.java
  *
+ *  Handler responsible for selecting images.
  *
  * Created: Mon Dec 03 23:34:24 2001
  *
@@ -42,6 +45,8 @@ import java.util.*;
  */
 
 public class ImagesHandler extends EditorStdHandler {
+    
+    private static Category CAT = Category.getInstance(ImagesHandler.class.getName());
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm    = context.getContextResourceManager();
@@ -67,8 +72,16 @@ public class ImagesHandler extends EditorStdHandler {
         ContextResourceManager crm     = context.getContextResourceManager();
         EditorSessionStatus    esess   = EditorRes.getEditorSessionStatus(crm);
         AuxDependency          currimg = esess.getCurrentImage();
+        
+        
         if (currimg != null) {
-            esess.getLock(currimg);
+            boolean allowed = esess.getUser().getUserInfo().isImageEditAllowed(currimg.getPath());
+            if(allowed)
+                esess.getLock(currimg);
+            else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("User is not allowed to edit this image. No lock required.");
+            }
         }
     }
     

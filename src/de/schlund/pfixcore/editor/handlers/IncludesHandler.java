@@ -36,6 +36,7 @@ import org.w3c.dom.*;
 /**
  * IncludesHandler.java
  *
+ *  Handler responsible for selecting includes.
  *
  * Created: Wed Dec 13 12:34:24 2001
  *
@@ -77,9 +78,10 @@ public class IncludesHandler extends EditorStdHandler {
             boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
             if(allowed)
                 esess.getLock(incprod);
-            else 
-                CAT.warn("User is not allowed to edit this include. No lock required.");
-            
+            else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("User is not allowed to edit this include. No lock required.");
+            }
         } else if (allinc.contains(incdef) && allinc.contains(incprod)) {
             // This can be the case when a prod.spec. branch has just been created/deleted but not
             // all targets have been updated yet. We need to look into the part to make sure.
@@ -91,15 +93,18 @@ public class IncludesHandler extends EditorStdHandler {
                 if (partnode == null) {
                     if(allowed)
                         esess.getLock(incdef);
-                    else
-                        CAT.warn("User is not allowed to edit this include. No lock required."); 
+                    else {
+                        if(CAT.isDebugEnabled())
+                            CAT.debug("User is not allowed to edit this include. No lock required.");
+                    } 
                     esess.setCurrentInclude(incdef);
                 } else {
                     if(allowed)
                         esess.getLock(incprod);
-                    else
-                        CAT.warn("User is not allowed to edit this include. No lock required."); 
-                    
+                    else {
+                        if(CAT.isDebugEnabled()) 
+                            CAT.debug("User is not allowed to edit this include. No lock required.");
+                    }
                 }
             }
         } else {
@@ -113,8 +118,15 @@ public class IncludesHandler extends EditorStdHandler {
         ContextResourceManager crm      = context.getContextResourceManager();
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         AuxDependency          currinc  = esess.getCurrentInclude();
+
         if (currinc != null) {
-            esess.getLock(currinc);
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            if(allowed)
+                esess.getLock(currinc);
+            else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("User is not allowed to edit this include. No lock required.");
+            }
         }
     }
 
