@@ -1,5 +1,11 @@
 2004-10-06  Martin Leidig  <mleidig@schlund.de>
 
+	* example/core/xsl/include.xsl.in: Added template for generating
+	webservice console, which creates links to some webservice specific
+	tools (Web service monitor, Web service admin) when inserted into
+	the xml via the pfx:webserviceconsole tag (automatically disabled 
+	in production mode)
+
 	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java:
 	Now only checks for server skeleton if there's something to do
 
