@@ -30,7 +30,7 @@ import java.util.*;
  *
  * Created: Thu Aug 16 15:34:25 2001
  *
- * @author <a href="mailto: "Jens Lautenbacher</a>
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  *
  */
