@@ -91,7 +91,7 @@ public class Cleanup{
             Document doc  = (Document) changed.get(path);
             System.out.println("Saving " + path);
 
-            Xml.serialize(doc, path, true, true);
+            Xml.serialize(doc, path, false, true);
         }
     }
 

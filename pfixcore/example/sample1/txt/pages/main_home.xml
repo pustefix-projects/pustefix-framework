@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="adult">
     <product name="default">
@@ -198,14 +197,16 @@
 </lang>
     </product>
   </part>
+
+  
   
   <part name="buttons">
     <product name="default">
       <lang name="default">
   <pfx:elink href="http://www.gimp.org" target="_popup">
     <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
-    Goto Gimp!</pfx:elink>  
-  <pfx:button page="ssltest">SSL TEST</pfx:button>  
+Goto Gimp!</pfx:elink>  
+              <pfx:button page="ssltest">SSL TEST</pfx:button>  
   <pfx:button page="install">Download README.1st (text/plain)</pfx:button>
 </lang>
     </product>
