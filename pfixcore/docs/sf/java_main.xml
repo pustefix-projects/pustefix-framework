@@ -17,7 +17,7 @@
   </p>
   <p>
     Even SSL is handled transparently. A descending servlet must
-    implement the method <code>+needsSession(): boolean</code> to
+    implement the method <code>+ needsSession(): boolean</code> to
     decide if the the current request should result into the session
     to be "secure". You don't have to make sure that the webpages use
     "https://" in all needed links, the target itself tells the system
