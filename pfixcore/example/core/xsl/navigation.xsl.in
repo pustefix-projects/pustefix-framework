@@ -540,7 +540,8 @@
           <xsl:value-of select="$target"/>
         </xsl:when>
         <xsl:when test="$target = '_popup'">_blank</xsl:when>
-        <xsl:otherwise>_parent</xsl:otherwise>
+        <xsl:when test="ancestor-or-self::pfx:frame[position()=2]/@name">_parent</xsl:when>
+        <xsl:when test="ancestor-or-self::pfx:frame">_top</xsl:when>
       </xsl:choose>
     </xsl:param>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $buttpage_impl]"/>
@@ -614,7 +615,10 @@
                 </span>
               </xsl:when>
               <xsl:otherwise>
-                <a target="{$target_impl}">
+                <a>
+                  <xsl:if test="not($target_impl = '')">
+                    <xsl:attribute name="target"><xsl:value-of select="$target_impl"/></xsl:attribute>
+                  </xsl:if>
                   <xsl:if test="not($accesskeyimpl = '')">
                     <xsl:attribute name="accesskey"><xsl:value-of select="$accesskeyimpl"/></xsl:attribute>
                   </xsl:if>
