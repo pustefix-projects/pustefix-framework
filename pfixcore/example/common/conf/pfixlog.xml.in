@@ -3,6 +3,14 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
+  <appender name="PFXPERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-pfxperf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>servletconf/log/pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -78,6 +86,11 @@
   <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
+  <category name="PFXPERF" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="PFXPERF"/>
+  </category>
+
   <category name="EDITOR_PERF" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_EDITOR_PERF"/>

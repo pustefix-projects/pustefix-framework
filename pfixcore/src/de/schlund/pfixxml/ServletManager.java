@@ -265,7 +265,13 @@ public abstract class ServletManager extends HttpServlet {
         }
         
         CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
+
+
+        preq.initPerfLog();
+        preq.startLogEntry();
         callProcess(preq, req, res);
+        preq.endLogEntry("CALLPROCESS", 0);
+        preq.printLog();
     }
 
 

@@ -458,7 +458,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         
         if (spdoc == null) {
             currtime = System.currentTimeMillis();
-            spdoc    = getDom(preq);
+
+            preq.startLogEntry();
+            spdoc = getDom(preq);
+            preq.endLogEntry("GETDOM", 0);
             
             // start recording if allowed and enabled
             if(recordmodeAllowed) {
@@ -527,6 +530,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
         }
+
+        preq.startLogEntry();
         if (! doreuse) {
             if (isInfoEnabled()) {
                 CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
@@ -641,6 +646,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
+        preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
     }
 
    

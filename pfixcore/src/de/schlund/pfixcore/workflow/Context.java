@@ -64,6 +64,7 @@ public class Context implements AppContext {
     private PageRequest            admin_pagereq;
 
     // the request state
+    private PfixServletRequest     preq;
     private PageRequest            currentpagerequest;
     private PageRequest            initialpagerequest;
     private PageFlow               currentpageflow;
@@ -191,6 +192,8 @@ public class Context implements AppContext {
         SPDocument  spdoc;
         PageRequest prevpage = getCurrentPageRequest();
         PageFlow    prevflow = getCurrentPageFlow();
+        
+        this.preq = preq;
         
         if (visit_id == null) 
             visit_id = (String) preq.getSession(false).getValue(ServletManager.VISIT_ID);
@@ -454,27 +457,11 @@ public class Context implements AppContext {
                     setCurrentPageRequest(preq);
                     preq.setStatus(PageRequestStatus.NAVI_GEN);
                     
-                    // Get some timing infos about the state's isAccesible method
-                    long    isaccessible_start = System.currentTimeMillis();
-                    boolean visible            = state.isAccessible(this, pfixreq);
-                    long    duration           = System.currentTimeMillis() - isaccessible_start;  
+                    pfixreq.startLogEntry();
+                    boolean visible  = state.isAccessible(this, pfixreq);
+                    pfixreq.endLogEntry("NAVIGEN (" + preq.getName() + ")", MAXTIME_ISACCESSIBLE_DEBUG);
 
                     setCurrentPageRequest(saved);
-                    
-                    if (duration > MAXTIME_ISACCESSIBLE_WARN) {
-                        warn_buffer.append("IsAccessible() for state at page '" +
-                                           preq.getName() + "' took longer than " +
-                                           MAXTIME_ISACCESSIBLE_WARN + " ms! Duration=" + duration + "\n");
-                    }
-                    
-                    if (LOG.isDebugEnabled()) {
-                        if(duration > MAXTIME_ISACCESSIBLE_DEBUG) {
-                            debug_buffer.append("IsAccessible() for state at page '" +
-                                                preq.getName() + "' took longer than " +
-                                                MAXTIME_ISACCESSIBLE_DEBUG + " ms! Duration=" + duration +"\n");
-                        }
-                    }
-                    // LOG.info("    * state accessible? " + visible);
 
                     if (visible) {
                         pageelem.setAttribute("visible", "1");
@@ -673,6 +660,14 @@ public class Context implements AppContext {
                 throw new RuntimeException("Don't have a current page to use as output target");
             }
         }
+    }
+
+    public void startLogEntry() {
+        preq.startLogEntry();
+    }
+    
+    public void endLogEntry(String info, long min) {
+        preq.endLogEntry(info, min);
     }
 
     /**

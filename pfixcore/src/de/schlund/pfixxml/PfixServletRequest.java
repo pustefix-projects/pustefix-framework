@@ -18,13 +18,14 @@
 */
 package de.schlund.pfixxml;
 
+
+
+
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.serverutil.SessionHelper;
-
+import java.text.DecimalFormat;
 import java.util.*;
-
 import javax.servlet.http.*;
-
 import org.apache.log4j.*;
 
 
@@ -50,22 +51,107 @@ public class PfixServletRequest {
 
     //~ Instance/static variables ..................................................................
 
-    private static final String DATA_PREFIX      = "__DATA:";
-    public static final String  PROP_TMPDIR      = "pfixservletrequest.tmpdir";
-    public static final String  PROP_MAXPARTSIZE = "pfixservletrequest.maxpartsize";
-    public static String        DEF_TMPDIR       = "/tmp";
-    public static String        DEF_MAXPARTSIZE  = "" + (10 * 1024 * 1024); // 10 MB
-    private ArrayList           exceptions       = new ArrayList();
-    private HashMap             parameters       = new HashMap();
-    private Category            CAT              = Category.getInstance(this.getClass());
-    private String              servername;
-    private String              querystring;
-    private String              scheme;
-    private String              uri;
-    private HttpSession         session          = null;
-    private int                 serverport;
-    private HttpServletRequest  request;
+    private static final Category PFXPERF          = Category.getInstance("PFXPERF");
+    private static final String   INDENT           = "   ";
+    private static final String   DATA_PREFIX      = "__DATA:";
+    private static final String   PROP_TMPDIR      = "pfixservletrequest.tmpdir";
+    private static final String   PROP_MAXPARTSIZE = "pfixservletrequest.maxpartsize";
+    private static DecimalFormat  FORMAT           = new DecimalFormat("0000");
+    private static String         DEF_TMPDIR       = "/tmp";
+    private static String         DEF_MAXPARTSIZE  = "" + (10 * 1024 * 1024); // 10 MB
+    private ArrayList             exceptions       = new ArrayList();
+    private HashMap               parameters       = new HashMap();
+    private Category              CAT              = Category.getInstance(this.getClass());
+    private String                servername;
+    private String                querystring;
+    private String                scheme;
+    private String                uri;
+    private HttpSession           session          = null;
+    private int                   serverport;
+    private HttpServletRequest    request;
+    private LinkedList            perflog          = null;
+    private LinkedList            perfstack        = null;
+    private long                  starttime        = 0;
 
+    
+    public void initPerfLog() {
+        perflog   = new LinkedList();
+        perfstack = new LinkedList();
+        starttime = System.currentTimeMillis();
+    }
+
+    public void startLogEntry() {
+        if (perflog != null) {
+            long now   = System.currentTimeMillis();
+            int  index = perflog.size(); // this is the index the new entry will get
+            
+            PerfEvent evn = new PerfEvent(now, ">>>", PerfEvent.START);
+            perflog.add(evn);
+            perfstack.add(evn); // this will be decreased by stop events
+        }
+    }
+
+    public void endLogEntry(String info, long delay) {
+        if (perflog != null) {
+            long       now   = System.currentTimeMillis();
+            PerfEvent start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
+            if (start != null) {
+                long stime = start.getTime();
+                if (now - stime >= delay) {
+                    String    msg = "<<<" + " " + info + " [" + (now - stime) + "ms]";
+                    PerfEvent evn = new PerfEvent(now, msg, PerfEvent.END);
+                    perflog.add(evn);
+                } else {
+                    perflog.remove(start);
+                }
+            } else {
+                CAT.error("got end log event without a start log on the perfstack");
+            }
+        }
+    }
+
+    public synchronized void printLog() {
+        if (session != null && perflog != null) {
+            int depth  = 0;
+            for (int i = 0; i < perflog.size(); i++) {
+                StringBuffer indent = new StringBuffer("");
+                PerfEvent    entry  = (PerfEvent) perflog.get(i);
+                if (entry.getType() == PerfEvent.START) {
+                    for (int j = 0; j < depth; j++) {
+                        indent.append(INDENT);
+                    }
+                    depth++;
+                } else {
+                    depth--;
+                    for (int j = 0; j < depth; j++) {
+                        indent.append(INDENT);
+                    }
+                }
+                PFXPERF.debug(session.getId() + "|" + FORMAT.format(entry.getTime() - starttime) + "|" +
+                              indent.toString() + entry.getMessage());
+            }
+            PFXPERF.debug("--------------------------------------");
+        }
+    }
+
+    private class PerfEvent {
+        static final int START = 1;
+        static final int END   = -1;
+        long             time;
+        int              type;
+        String           msg;
+        
+        public PerfEvent (long time, String msg, int type) {
+            this.time = time;
+            this.msg  = msg;
+            this.type = type;
+        }
+
+        public int getType() { return type; }
+        public long getTime() { return time; }
+        public String getMessage() { return msg; }
+    }
+    
     //~ Constructors ...............................................................................
 
     /**
