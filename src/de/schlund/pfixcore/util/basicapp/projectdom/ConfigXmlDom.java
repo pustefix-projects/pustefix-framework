@@ -75,7 +75,7 @@ public final class ConfigXmlDom {
         
         // change attribute depend -> tag=servletinfo
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                 AppValues.CONFIGATT_DEPEND, buffy.toString());
+                 AppValues.CONFIGATT_DEPEND, buffy.toString(), false);
         buffy.setLength(0);
         
         // change attribute name
@@ -84,16 +84,16 @@ public final class ConfigXmlDom {
         buffy.append(AppValues.CONFIGATT_NAMEPOSTFIX);
         buffy.append(((ServletObject)project.getServletList().get(homeCounter -1)).getServletName());
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                 AppValues.CONFIGATT_NAME, buffy.toString());
+                 AppValues.CONFIGATT_NAME, buffy.toString(), false);
         buffy.setLength(0);
         
         // change attribute name -> tag is flowstep
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_FLOWSTEP,
-                 AppValues.CONFIGATT_NAME, curPageName);
+                 AppValues.CONFIGATT_NAME, curPageName, false);
         
         // change attribute name -> tag is pagerequest
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_PAGEREQUEST,
-                 AppValues.CONFIGATT_NAME, curPageName);
+                 AppValues.CONFIGATT_NAME, curPageName, false);
     }
     
     

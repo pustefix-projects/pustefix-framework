@@ -77,7 +77,7 @@ public final class ProjectXmlDom {
         
         // change attribute name for the project tag
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.PROJECTTAG_PROJECT,
-                AppValues.PROJECTATT_NAME, projectName);
+                AppValues.PROJECTATT_NAME, projectName, false);
         
         // change the tag comment
         buffy.append(project.getComment());
