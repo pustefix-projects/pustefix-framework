@@ -69,6 +69,8 @@ wfxEditor.Config = function () {
 
   this.maxLines = 3333;   // max lines for Moz.
 
+  this.maxUndo = 10;
+
   this.doctype = '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
   this.html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">';
   this.head = '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>';
@@ -1129,56 +1131,56 @@ wfxEditor.prototype._editorEvent = function(ev) {
   }
   //---------------------------------------------------------------------------
   
-  //-----------
-  // scrolling
-  //-----------
-  
-  setTimeout( function() {
-    var scrollTop;
-    if(wfx.is_ie) {
-      scrollTop = editor._doc.documentElement.scrollTop;
-    } else {
-      scrollTop = editor._editor.pageYOffset;
-    }
-
-    if( scrollTop != editor._scrollTop ) {
-      // scroll offset has changed
-
-      if( wfx.is_ie ) {
-
-
-	var lineStart = parseInt( scrollTop / editor._linepx );
-	if( lineStart != editor._lineStart ) {
-	// start line has changed
-	
-	  //	editor._dbg.value += "scrollTop:" + scrollTop + ", ";
-	  //	editor._dbg.value += "lineStart:" + lineStart + ", ";
-
-	var content = "<pre>";
-	for( var i=0; i<editor._linebarheight; i++ ) {
-	  content += (i+lineStart+1) + "&nbsp;\n";
-	}
-	content += "</pre>";
-	editor._linebar.document.getElementById("bodynode").innerHTML = content;
-
-	editor._lineStart = lineStart;
-	}
-
-	editor._scrollTop = scrollTop;
-
-	scrollTop = scrollTop - editor._lineStart*editor._linepx;
-	//	editor._dbg.value += "scrollTop:" + scrollTop + "\n";
-      }
-
-      // update linebar
-      if(wfx.is_ie) {
-	editor._linebar.document.documentElement.scrollTop = scrollTop;
-      } else {
-	editor._scrollTop = scrollTop;
-	editor._linebar.scroll( 0, scrollTop );
-      }
-    }
-  }, 0);   // Moz needs some delay to detect current scrolling
+//S  //-----------
+//S  // scrolling
+//S  //-----------
+//S  
+//S  setTimeout( function() {
+//S    var scrollTop;
+//S    if(wfx.is_ie) {
+//S      scrollTop = editor._doc.documentElement.scrollTop;
+//S    } else {
+//S      scrollTop = editor._editor.pageYOffset;
+//S    }
+//S
+//S    if( scrollTop != editor._scrollTop ) {
+//S      // scroll offset has changed
+//S
+//S      if( wfx.is_ie ) {
+//S
+//S
+//S	var lineStart = parseInt( scrollTop / editor._linepx );
+//S	if( lineStart != editor._lineStart ) {
+//S	// start line has changed
+//S	
+//S	  //	editor._dbg.value += "scrollTop:" + scrollTop + ", ";
+//S	  //	editor._dbg.value += "lineStart:" + lineStart + ", ";
+//S
+//S	var content = "<pre>";
+//S	for( var i=0; i<editor._linebarheight; i++ ) {
+//S	  content += (i+lineStart+1) + "&nbsp;\n";
+//S	}
+//S	content += "</pre>";
+//S	editor._linebar.document.getElementById("bodynode").innerHTML = content;
+//S
+//S	editor._lineStart = lineStart;
+//S	}
+//S
+//S	editor._scrollTop = scrollTop;
+//S
+//S	scrollTop = scrollTop - editor._lineStart*editor._linepx;
+//S	//	editor._dbg.value += "scrollTop:" + scrollTop + "\n";
+//S      }
+//S
+//S      // update linebar
+//S      if(wfx.is_ie) {
+//S	editor._linebar.document.documentElement.scrollTop = scrollTop;
+//S      } else {
+//S	editor._scrollTop = scrollTop;
+//S	editor._linebar.scroll( 0, scrollTop );
+//S      }
+//S    }
+//S  }, 0);   // Moz needs some delay to detect current scrolling
   //---------------------------------------------------------------------------
 
   //#  // update the toolbar state after some time
@@ -2463,8 +2465,10 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 	    offsetNewlinesEnd   = ret[3];
 	    posEnd              = ret[4];
 
+	    //	    if( editor.currentUndo < editor.config.maxUndo ) {
 	    editor.currentUndo++;
 	    editor.undo[editor.currentUndo] = [ ret ];
+	    //	    }
 
 	    //	    alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
 	    //-----------------------------------------------------------------
@@ -2661,6 +2665,58 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     }, 0);
 
   }, wfxEditor.timeInterval );
+
+
+  //---------------------------------------------------------------------------
+  
+  //-----------
+  // scrolling
+  //-----------
+  
+  setInterval( function() {
+    var scrollTop, scrollTopLines;
+    if(wfx.is_ie) {
+      scrollTop      = editor._doc.documentElement.scrollTop;
+      scrollTopLines = editor._linebar.document.documentElement.scrollTop;
+    } else {
+      scrollTop      = editor._editor.pageYOffset;
+      scrollTopLines = editor._linebar.pageYOffset;
+    }
+
+    if( scrollTop != editor._scrollTop || scrollTop != scrollTopLines ) {
+      // scroll offset has changed
+
+      if( wfx.is_ie ) {
+
+	var lineStart = parseInt( scrollTop / editor._linepx );
+	if( lineStart != editor._lineStart ) {
+	// start line has changed
+
+	var content = "<pre>";
+	for( var i=0; i<editor._linebarheight; i++ ) {
+	  content += (i+lineStart+1) + "&nbsp;\n";
+	}
+	content += "</pre>";
+	editor._linebar.document.getElementById("bodynode").innerHTML = content;
+
+	editor._lineStart = lineStart;
+	}
+
+	editor._scrollTop = scrollTop;
+
+	scrollTop = scrollTop - editor._lineStart*editor._linepx;
+      }
+
+      // update linebar
+      if(wfx.is_ie) {
+	editor._linebar.document.documentElement.scrollTop = scrollTop;
+      } else {
+	editor._scrollTop = scrollTop;
+	editor._linebar.scroll( 0, scrollTop );
+      }
+    }
+  }, 100);
+  //---------------------------------------------------------------------------
 
 };
 
