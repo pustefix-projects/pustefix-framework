@@ -1,3 +1,16 @@
+2003-08-12  Martin Leidig  <mleidig@schlund.de>
+
+	Added support for building native part of AppLoader to skeleton.
+
+	Added:
+	* skel/Makefile.jni:
+	
+	Changed:
+	* jni/Makefile
+	* skel/Makefile
+	* skel/apploader.sh
+	* skel/startTomcat.sh
+
 2003-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: added pfx:attribute to define dynamic attributes for tags

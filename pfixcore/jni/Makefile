@@ -56,7 +56,7 @@ endif
 pkg:  
 	@echo "*** Creating distribution"
 	@mkdir ${JNI_PKGDIR}
-	@cp -a ${JNI_BLDDIR} ${JNI_SRCDIR} ${JNI_INCDIR} ${JNI_PKGDIR}
+	@cp -a ${JNI_SRCDIR} ${JNI_PKGDIR}
 	@cp Makefile.pkg ${JNI_PKGDIR}/Makefile
 	@tar cfz ${JNI_PKG} ${JNI_PKGDIR}
 
