@@ -1,3 +1,12 @@
+2004-05-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	(main): do remove(generatorfile) again.
+
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	(remove): use the depend file object and genKey() to get the map key.
+	(genKey): new method.
+
 2004-05-18 	Ralf Rapude <rapude@schlund.de>
 	* There are three new directories in the example dir called simplepage,
 	simplelink and simpleform. 

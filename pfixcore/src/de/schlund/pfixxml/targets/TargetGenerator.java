@@ -435,7 +435,7 @@ public class TargetGenerator {
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
-                        TargetGeneratorFactory.getInstance().clearMap();
+                        TargetGeneratorFactory.getInstance().remove(file);
                     } else {
                         CAT.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));
