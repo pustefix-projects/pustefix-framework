@@ -21,7 +21,11 @@ JNI_LIB=$(JNI_BLDDIR)/libapploader.so
 
 .PHONY : headers lib clean
 
-jni: headers lib
+jni: init headers lib
+
+init:
+	@if [ ! -d ${JNI_BLDDIR} ]; then mkdir ${JNI_BLDDIR}; fi
+	@if [ ! -d ${JNI_INCDIR} ]; then mkdir ${JNI_INCDIR}; fi
 
 headers:
 	@echo "*** Creating JNI header files"
@@ -33,6 +37,5 @@ lib:
 
 clean:
 	@echo "*** Cleaning up"
-	rm -f ${JNI_INCDIR}/*
+	rm -f ${JNI_INCDIR}/*.h
 	rm -f ${JNI_LIB}
-	rm -rf ${JNI_PKGDIR}
