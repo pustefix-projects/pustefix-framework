@@ -14,8 +14,9 @@ function wsdlPrintError(msg) {
 var _proxy = new Array();
 var _calls = new Array();
 
-var wsdl_uri="http://webservice.zap.ue.schlund.de/Data.wsdl";
-
+var url_start = window.location.protocol + "//" + window.location.host;
+var wsdl_uri=  url_start + "/Data.wsdl";
+alert(wsdl_uri);
 var t1=0;
 
 function DataBean(id) {
@@ -45,7 +46,7 @@ function wsdlCall(method,val,sid) {
 
   var d1=new Date();
   t1=d1.getTime();
-  wsdl_uri="http://webservice.zap.ue.schlund.de/xml/webservice/Data;jsessionid="+sid+"?WSDL&sid="+sid;
+  wsdl_uri= url_start + "/xml/webservice/Data;jsessionid="+sid+"?WSDL&sid="+sid;
 
   //  if(!proxy) {
 
@@ -144,7 +145,7 @@ function sleep( msec ) {
 function mysoapCall() {
   var d1=new Date();
   var req=new XMLHttpRequest();
-  req.open("POST","http://webservice.zap.ue.schlund.de/xml/webservice/Data;jsessionid="+sid,true);
+  req.open("POST", url_start + "/xml/webservice/Data;jsessionid="+sid,true);
   req.onreadystatechange=function() {
     if(req.readyState==4) {
       var d2=new Date();
@@ -176,7 +177,7 @@ Data.prototype.send=function(meth) {
   } else {
     alert("XMLHttpRequest not supported");
   }
-  req.open("POST","http://webservice.zap.ue.schlund.de/xml/webservice/Data;jsessionid="+sid,false);
+  req.open("POST", url_start + "/xml/webservice/Data;jsessionid="+sid,false);
   req.setRequestHeader("SOAPAction",'""');
   var msg= this.start+meth+this.end;
   req.send(msg);
