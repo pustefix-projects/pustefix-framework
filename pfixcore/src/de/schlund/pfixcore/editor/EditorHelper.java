@@ -341,26 +341,6 @@ public class EditorHelper {
         CAT.debug("**************** getIncludeDocument: " + path.getRelative());
         Object LOCK = FileLockFactory.getInstance().getLockObj(path);
         synchronized (LOCK) {
-            /* Target target = tgen.createXMLLeafTarget(name);
-             if (target != null) {
-                 CAT.debug("==========> Modtime for Target: " + target.getModTime());
-                 CAT.debug("==========> Modtime for file:   " + file.lastModified());
-                 Document incdoc = (Document) ((Document) target.getValue()).cloneNode(true);*/
-
-            // run xerces here only !!!     
-
-            /*IncludeDocument includeDocument = IncludeDocumentFactory.getInstance().getIncludeDocument(path);
-            if(includeDocument != null) {
-                CAT.debug("==========> Modtime for IncludeDocument: " + includeDocument.getModTime());
-                CAT.debug("==========> Modtime for file:   " + file.lastModified());
-                Document doc = (Document)includeDocument.getDocument();
-                Document iDocument = (Document)doc.cloneNode(true);
-                Element  root   = iDocument.getDocumentElement();
-                root.removeAttribute("incpath");
-                return iDocument;
-            } else {
-                return null;
-            }*/
             Document doc = null;
             if (!mutable) {
                 IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);

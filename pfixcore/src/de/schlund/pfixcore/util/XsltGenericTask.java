@@ -417,26 +417,4 @@ public class XsltGenericTask extends MatchingTask {
         }
         return transformerFactory;
     }
-
-    /**
-     * @param  project needed for logging, if null logging to System.out
-     * @throws BuildException
-     */
-    public static DocumentBuilderFactory loadDocumentBuilderFactory(Project project) {
-        DocumentBuilderFactory documentBuilderFactory = null;
-        // using dynamic class loading to keep the ant task compilation
-        // independent of additional jars
-        Class factoryClass = null;
-        Exception ex = null;
-        try {
-            factoryClass = Class.forName("org.apache.xerces.jaxp.SAXParserFactoryImpl");
-            documentBuilderFactory = (DocumentBuilderFactory) factoryClass.newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new BuildException("Could not load Xerces via Class.forName(), check classpath", e);
-        } catch (Exception e) {
-            throw new BuildException("Could not instantiate Xerces", e);
-        }
-        return documentBuilderFactory;
-    }
-
 }

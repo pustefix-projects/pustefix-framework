@@ -1,4 +1,10 @@
 2004-06-03  Michael Hartmier  <mhm@schlund.de>
+    * remove unnecessary xerces dependencies:
+      src/de/schlund/pfixcore/editor/EditorHelper.java,
+      src/de/schlund/pfixcore/util/XsltGenericTask.java,
+      src/de/schlund/pfixxml/testenv/RecordManager.java
+
+2004-06-03  Michael Hartmier  <mhm@schlund.de>
     * src/de/schlund/pfixxml/targets/TargetGenerator.java, 
     src/de/schlund/pfixcore/util/TargetGeneratorTask.java: extract common code
     * src/de/schlund/pfixcore/editor/EditorCommonsFactory.java,
