@@ -74,21 +74,18 @@ public class PageFlowManager implements PropertyObject {
     }
 
     protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page) {
-        LOG.debug("===> Current pageflow: " + currentflow.getName() + " / current page: " + page);
+        LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
         if (!currentflow.containsPageRequest(page)) {
-            
-                for (Iterator i = flowmap.keySet().iterator(); i.hasNext(); ) {
-                    PageFlow pf = (PageFlow) flowmap.get(i.next());
-                    if (pf.containsPageRequest(page)) {
-                        LOG.debug("===> Switching to workflow: " + pf.getName());
-                        return pf;
-                    }
+            for (Iterator i = flowmap.keySet().iterator(); i.hasNext(); ) {
+                PageFlow pf = (PageFlow) flowmap.get(i.next());
+                if (pf.containsPageRequest(page)) {
+                    LOG.debug("===> Switching to pageflow: " + pf.getName());
+                    return pf;
                 }
-            
-            LOG.debug("===> Found no other workflow containing page " +
-                      page + ". Reusing flow " + currentflow.getName());
+            }
+            LOG.debug("===> Page " + page + " isn't a member of any pageflow: Reusing flow " + currentflow.getName());
         } else {
-            LOG.debug("===> Page " + page + " is member of current workflow: Reusing flow " + currentflow.getName());
+            LOG.debug("===> Page " + page + " is member of current pageflow: Reusing flow " + currentflow.getName());
         }
         return currentflow;
     }

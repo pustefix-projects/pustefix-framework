@@ -48,11 +48,9 @@ public abstract class IWrapperImpl implements IWrapper {
                                           // constructor of a derived class
     
     public final void init(String prefix) throws Exception {
-        // Make sure the StatusCodeFactory has all the needed scodes
         params  = new HashMap();
         errors  = new HashMap();
         idxprms = new HashMap();
-        // StatusCodeFactory.addSCResource(scodes);
         this.prefix = prefix;
         registerParamInfos();
     }
