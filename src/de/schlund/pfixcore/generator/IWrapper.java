@@ -45,7 +45,8 @@ import java.io.IOException;
 public interface IWrapper extends Comparable {
     void init(String prefix) throws Exception;
     void initLogging(String logdir, String pagename, String visitid);
-    void tryLogging() throws IOException;
+    void tryParamLogging() throws IOException;
+    void tryErrorLogging() throws IOException;
     void load(RequestData req) throws Exception;
     // The reason for these to not being called get* is to avoid nameclashes with
     // descendents who may want to use a Parameter called e.g. "Prefix" (which would

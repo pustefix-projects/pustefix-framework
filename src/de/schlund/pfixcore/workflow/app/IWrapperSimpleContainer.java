@@ -157,6 +157,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             String              prefix  = wrapper.gimmePrefix();
             IWrapperParamInfo[] errors = wrapper.gimmeAllParamInfosWithErrors();
             if (errors != null) {
+                wrapper.tryErrorLogging();
                 for (int j = 0; j < errors.length; j++) {
                     IWrapperParamInfo param  = errors[j];
                     StatusCode[]      scodes = param.getStatusCodes();
@@ -354,7 +355,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             if (handler.isActive(context)) {
                 wrapper.load(reqdata);
                 if (selectedwrappers.contains(wrapper)) {
-                    wrapper.tryLogging();
+                    wrapper.tryParamLogging();
                     if (!wrapper.errorHappened()) {
                         handler.handleSubmittedData(context, wrapper);
                     }

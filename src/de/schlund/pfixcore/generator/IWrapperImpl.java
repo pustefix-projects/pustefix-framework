@@ -60,14 +60,31 @@ public abstract class IWrapperImpl implements IWrapper {
         this.visitid  = visitid;
     }
 
-    public void tryLogging() throws IOException {
+    public void tryErrorLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
-            File log = new File(logdir + "/" + pagename + "#" + prefix);
+            File                log    = new File(logdir + "/" + pagename + "#" + prefix);
+            Writer              out    = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
+            IWrapperParamInfo[] errors = gimmeAllParamInfosWithErrors();
+            if (errors != null && errors.length > 0) {
+                StringBuffer buff = getLogBuffer("ERRORS");
+                for (int j = 0; j < errors.length; j++) {
+                    IWrapperParamInfo param  = errors[j];
+                    StatusCode[]      scodes = param.getStatusCodes();
+                    if (scodes != null) {
+                        appendErrorInfoLog(param, buff);
+                    }
+                }
+                out.write(buff.toString() + "\n");
+                out.flush();
+            }
+        }
+    }
+
+    public void tryParamLogging() throws IOException {
+        if (logdir != null && pagename != null && visitid != null) {
+            File         log  = new File(logdir + "/" + pagename + "#" + prefix);
             Writer       out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
-            StringBuffer buff = new StringBuffer(256);
-            long         now  = System.currentTimeMillis();
-            DateFormat   fmt  = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-            buff.append(fmt.format(new Date(now)) + "|" + visitid);
+            StringBuffer buff = getLogBuffer("VALUES");
             for (Iterator iter = params.values().iterator(); iter.hasNext(); ) {
                 appendParamInfoLog((IWrapperParamInfo) iter.next(), buff);
             }
@@ -228,6 +245,15 @@ public abstract class IWrapperImpl implements IWrapper {
         return (gimmeOrder().compareTo(in.gimmeOrder()));
     }
 
+    private StringBuffer getLogBuffer(String init) {
+        StringBuffer buff = new StringBuffer(256);
+        long         now  = System.currentTimeMillis();
+        DateFormat   fmt  = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        buff.append(fmt.format(new Date(now)) + "|" + visitid + "|" + init);
+        return buff;
+    }
+
+    
     private void appendParamInfoLog(IWrapperParamInfo pinfo, StringBuffer buff) {
         String   name  = pinfo.getName();
         String[] value = pinfo.getStringValue();
@@ -244,4 +270,19 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
     
+    private void appendErrorInfoLog(IWrapperParamInfo pinfo, StringBuffer buff) {
+        String       name   = pinfo.getName(); 
+        StatusCode[] scodes = pinfo.getStatusCodes();
+        if (scodes != null) {
+            buff.append("|" + name + ":");
+            for (int i = 0; i < scodes.length; i++) {
+                StatusCode code = scodes[i];
+                buff.append(code.getStatusCodeWithDomain());
+                if (i < (scodes.length - 1)) {
+                    buff.append(";");
+                }
+            }
+        }
+    }
+
 } // IWrapperImpl
