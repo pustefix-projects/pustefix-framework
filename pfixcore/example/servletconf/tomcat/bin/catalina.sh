@@ -32,13 +32,18 @@
 #                   (JSSE) installation, whose JAR files will be added to the
 #                   system class path used to start Tomcat.
 #
+#   CATALINA_PID    (Optional) Path of the file which should contains the pid
+#                   of catalina startup java process, when start (fork) is used
+#
 # $Id$
 # -----------------------------------------------------------------------------
 
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false
+os400=false
 case "`uname`" in
 CYGWIN*) cygwin=true;;
+OS400*) os400=true;;
 esac
 
 # resolve links - $0 may be a softlink
@@ -65,8 +70,21 @@ fi
 if $cygwin; then
   [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
   [ -n "$CATALINA_HOME" ] && CATALINA_HOME=`cygpath --unix "$CATALINA_HOME"`
+  [ -n "$CATALINA_BASE" ] && CATALINA_BASE=`cygpath --unix "$CATALINA_BASE"`
   [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
   [ -n "$JSSE_HOME" ] && JSSE_HOME=`cygpath --path --unix "$JSSE_HOME"`
+fi
+
+# For OS400
+if $os400; then
+  # Set job priority to standard for interactive (interactive - 6) by using
+  # the interactive priority - 6, the helper threads that respond to requests
+  # will be running at the same priority as interactive jobs.
+  COMMAND='chgjob job('$JOBNAME') runpty(6)'
+  system $COMMAND
+
+  # Enable multi threading
+  export QIBM_MULTI_THREADED=Y
 fi
 
 # Get standard Java environment variables
@@ -98,6 +116,8 @@ fi
 if $cygwin; then
   JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
   CATALINA_HOME=`cygpath --path --windows "$CATALINA_HOME"`
+  CATALINA_BASE=`cygpath --path --windows "$CATALINA_BASE"`
+  CATALINA_TMPDIR=`cygpath --path --windows "$CATALINA_TMPDIR"`
   CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
   JSSE_HOME=`cygpath --path --windows "$JSSE_HOME"`
 fi
@@ -125,27 +145,32 @@ fi
 
 if [ "$1" = "debug" ] ; then
 
-  shift
-  if [ "$1" = "-security" ] ; then
-    echo "Using Security Manager"
-    shift
-    exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-4.0/catalina/src/share \
-      -Djava.security.manager \
-      -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
+  if $os400; then
+    echo "Debug command not available on OS400"
+    exit 1
   else
-    exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
-      -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
-      -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-4.0/catalina/src/share \
-      -Dcatalina.base="$CATALINA_BASE" \
-      -Dcatalina.home="$CATALINA_HOME" \
-      -Djava.io.tmpdir="$CATALINA_TMPDIR" \
-      org.apache.catalina.startup.Bootstrap "$@" start
+    shift
+    if [ "$1" = "-security" ] ; then
+      echo "Using Security Manager"
+      shift
+      exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
+        -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+        -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-4.0/catalina/src/share \
+        -Djava.security.manager \
+        -Djava.security.policy=="$CATALINA_BASE"/conf/catalina.policy \
+        -Dcatalina.base="$CATALINA_BASE" \
+        -Dcatalina.home="$CATALINA_HOME" \
+        -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+        org.apache.catalina.startup.Bootstrap "$@" start
+    else
+      exec "$_RUNJDB" $JAVA_OPTS $CATALINA_OPTS \
+        -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
+        -sourcepath "$CATALINA_HOME"/../../jakarta-tomcat-4.0/catalina/src/share \
+        -Dcatalina.base="$CATALINA_BASE" \
+        -Dcatalina.home="$CATALINA_HOME" \
+        -Djava.io.tmpdir="$CATALINA_TMPDIR" \
+        org.apache.catalina.startup.Bootstrap "$@" start
+    fi
   fi
 
 elif [ "$1" = "embedded" ] ; then
@@ -198,6 +223,10 @@ elif [ "$1" = "start" ] ; then
       -Djava.io.tmpdir="$CATALINA_TMPDIR" \
       org.apache.catalina.startup.Bootstrap "$@" start \
       >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+
+      if [ ! -z "$CATALINA_PID" ]; then
+        echo $! > $CATALINA_PID
+      fi      
   else
     "$_RUNJAVA" $JAVA_OPTS $CATALINA_OPTS \
       -Djava.endorsed.dirs="$JAVA_ENDORSED_DIRS" -classpath "$CLASSPATH" \
@@ -206,6 +235,10 @@ elif [ "$1" = "start" ] ; then
       -Djava.io.tmpdir="$CATALINA_TMPDIR" \
       org.apache.catalina.startup.Bootstrap "$@" start \
       >> "$CATALINA_BASE"/logs/catalina.out 2>&1 &
+
+      if [ ! -z "$CATALINA_PID" ]; then
+        echo $! > $CATALINA_PID
+      fi      
   fi
 
 elif [ "$1" = "stop" ] ; then
@@ -222,8 +255,13 @@ else
 
   echo "Usage: catalina.sh ( commands ... )"
   echo "commands:"
-  echo "  debug             Start Catalina in a debugger"
-  echo "  debug -security   Debug Catalina with a security manager"
+  if $os400; then
+    echo "  debug             Start Catalina in a debugger (not available on OS400)"
+    echo "  debug -security   Debug Catalina with a security manager (not available on OS400)"
+  else
+    echo "  debug             Start Catalina in a debugger"
+    echo "  debug -security   Debug Catalina with a security manager"
+  fi
   echo "  embedded          Start Catalina in embedded mode"
   echo "  jpda start        Start Catalina under JPDA debugger"
   echo "  run               Start Catalina in the current window"
