@@ -11,18 +11,17 @@ Prerequisites:
           with the Makefile. And belive me, you really want to use
           jikes, it's just lightning fast compared to javac.
 
-        * A working apache installation with either a working
-          mod_jserv (the apache connection module for JServ) or mod_jk
-          (the apache connection module for tomcat) or both. You need
+        * A working apache installation with a working mod_jk
+          (the apache connection module for tomcat). You need
           to have these modules loaded, but you need no further
           configuration, the build process will take care of providing
           you with sample config files that sould at least get you
           started.
 
           Note that there have been problems with the order of
-          inclusion of mod_rewrite and mod_jserv/mod_jk in the
-          httpd.conf. It seems that mod_jserv/mod_jk need to be loaded
-          BEFORE mod_rewrite. If you experience problems, try changing
+          inclusion of mod_rewrite and mod_jk in the httpd.conf.
+          It seems that mod_jk needs to be loaded BEFORE
+          mod_rewrite. If you experience problems, try changing
           the order of these two modules.  Other problems that have
           been experienced are related to changing regexp syntax
           between different versions of mod_rewrite. You may have to
@@ -36,9 +35,9 @@ Prerequisites:
           created apache.conf or by tweaking the producing stylesheet
           core/build/create_apacheconf.xsl.
 
-        * NOTE: you don't need a installation of JServ or tomcat,
+        * NOTE: you don't need a installation of Tomcat,
           everything you need is contained in this package.  I suggest
-          that even if you have your own JServ/Tomcat set up already,
+          that even if you have your own Tomcat set up already,
           start with using the supplied versions, and, if all goes
           well, you can try to move the configuration into your own
           installation.
@@ -61,28 +60,20 @@ Prerequisites:
 
 3)  Put something  like the following
 
-        # config for mod_jserv
-        include <your path to this directory>/servletconf/jserv/jserv.conf
         # config for mod_jk
         include <your path to this directory>/servletconf/tomcat/jk.conf
 
-        # virtual hosts for jserv:
-        include <your path to this directory>/servletconf/jserv/apache.conf
         # virtual hosts for tomcat:
         include <your path to this directory>/servletconf/tomcat/apache.conf
 
     into your httpd.conf. Don't forget to restart your apache.
 
-5)  start JServ with the following command from the parent directory:  
-
-        ./startJServ.sh
-
-    OR start Tomcat with the following command from the
+5)  start Tomcat with the following command from the
     parent directory:
 
         ./startTomcat.sh 
 
-    Note: For stopping JServ or Tomcat, just press Control-C to interrupt the script.
+    Note: For stopping Tomcat, just press Control-C to interrupt the script.
 
     Note: There have been problems with restarting or
     stopping/starting tomcat. Somtimes a restart of Apache is needed,
@@ -90,7 +81,6 @@ Prerequisites:
 
 6)  To see the sample1 application, point your browser to
         
-        http://sample1.<your.fully.qualified.hostname.here>        [For Tomcat]
-        http://js-sample1.<your.fully.qualified.hostname.here>     [For JServ]
+        http://sample1.<your.fully.qualified.hostname.here>
 
 7)  Have Fun.

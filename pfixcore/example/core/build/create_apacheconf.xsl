@@ -30,16 +30,6 @@ RewriteEngine on
   <xsl:apply-templates select="sslkey"/>
 </xsl:if>
 
-<xsl:if test="$container = 'jserv'">
-  RewriteCond %{QUERY_STRING} ^.+$
-  RewriteRule ^(.*);(JServSessionId[a-zA-Z0-9.=_-]+)$ $1?$2&amp;%{QUERY_STRING} [PT,L]
-  
-  RewriteCond %{QUERY_STRING} ^$
-  RewriteRule ^(.*);(JServSessionId[a-zA-Z0-9.=_-]+)$ $1?$2 [PT,L]
-  
-  ApJServMount /xml <xsl:apply-templates select="/projects/common/jserv/jservmountprefix/node()"/>/<xsl:apply-templates select="$currentprj/@name"/>
-</xsl:if>
-
 <xsl:if test="$container = 'tomcat'">
   JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
 </xsl:if>

@@ -109,4 +109,13 @@ class GeneralConfig {
     boolean isUseme() {
         return useme_;
     }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(128);
+        sb.append("Use me         ="+useme_).append("\n");
+        sb.append("Cleanup        = all "+cleanupschedule_+" "+cleanupscheduledim_).append("\n");
+        sb.append("Strace obsolete="+straceobsolete_+" "+straceobsoletedim_).append("\n");
+        sb.append("Report         = all "+reportschedule_+" "+reportscheduledim_).append("\n");
+        return sb.toString();
+    }
 }

@@ -18,14 +18,20 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import java.util.*;
-import org.apache.log4j.*;
-import de.schlund.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
- * ResdocFinalizerFactory.java
- *
+ * This factory is responsible for creating objects of type ResdocFinalizer.
+ * It implements the singleton pattern.
+ * <br/>
  *
  * Created: Fri Oct 12 22:02:19 2001
  *
@@ -34,30 +40,53 @@ import de.schlund.util.*;
  *
  */
 
-public class ResdocFinalizerFactory {
-    private static Category               LOG      = Category.getInstance(ResdocFinalizerFactory.class.getName());
-    private static HashMap                known    = new HashMap();
+public class ResdocFinalizerFactory implements Reloader {
+    private static Category LOG = Category.getInstance(ResdocFinalizerFactory.class.getName());
+    /** Store the already created ResdocFinalizer here, use classname as key*/
+    private static HashMap known = new HashMap();
     private static ResdocFinalizerFactory instance = new ResdocFinalizerFactory();
 
+    private ResdocFinalizerFactory() {
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) appLoader.addReloader(this); 
+    }
+
+    /**
+     * Return the only instance of this singleton.
+     * @return the instance
+     */
     public static ResdocFinalizerFactory getInstance() {
         return instance;
     }
 
-    public ResdocFinalizer getResdocFinalizer(String classname) {
+    /**
+     * Get the ResdocFinalizer according to the passed classname. If the ResdocFinalizer
+     * is already known it will be returned, else it will be created.
+     * @param classname the classname of the ResdocFinalizer
+     * @throws XMLException on errors when creating the ResdocFinalizer.
+     */
+    public ResdocFinalizer getResdocFinalizer(String classname) throws XMLException {
         synchronized (known) {
-            ResdocFinalizer retval = (ResdocFinalizer) known.get(classname); 
+            ResdocFinalizer retval = (ResdocFinalizer) known.get(classname);
             if (retval == null) {
                 try {
-                    Class theclass = Class.forName(classname);
+                    AppLoader appLoader = AppLoader.getInstance();
+                    Class theclass = null;
+                    if (appLoader.isEnabled()) {
+                        theclass = appLoader.loadClass(classname);
+                    } else {
+                        theclass = Class.forName(classname);
+                    }
+
                     retval = (ResdocFinalizer) theclass.newInstance();
                 } catch (InstantiationException e) {
-                    LOG.error("unable to instantiate class [" + classname + "]", e);
+                    throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    LOG.error("unable access class [" + classname + "]", e);
+                    throw new XMLException("unable access class [" + classname + "]" + e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                    throw new XMLException("unable to find class [" + classname + "]" + e.getMessage());
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface ResdocFinalizer", e);
+                    throw new XMLException("class [" + classname + "] does not implement the interface ResdocFinalizer :" + e.getMessage());
                 }
                 known.put(classname, retval);
             }
@@ -65,4 +94,19 @@ public class ResdocFinalizerFactory {
         }
     }
 
-}// ResdocFinalizerFactory
+    /**
+     * @see de.schlund.pfixxml.loader.Reloader#reload()
+     */
+    public void reload() {
+        HashMap knownNew = new HashMap();
+        Iterator it = known.keySet().iterator();
+        while (it.hasNext()) {
+            String str = (String) it.next();
+            ResdocFinalizer rfOld = (ResdocFinalizer) known.get(str);
+            ResdocFinalizer rfNew = (ResdocFinalizer) StateTransfer.getInstance().transfer(rfOld);
+            knownNew.put(str, rfNew);
+        }
+        known= knownNew;
+    }
+
+} // ResdocFinalizerFactory

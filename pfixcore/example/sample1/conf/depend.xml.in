@@ -1,25 +1,26 @@
 <!-- -*- mode: xml -*- -->
-<make cachedir=".cache/sample1"
+<make cachedir=".cache/sample1"  record_dir="sample1/recorded"
       xmlns:cus="http://www.schlund.de/pustefix/customize">
-  
+
   <navigation>
     <page name="home"     handler="/xml/config"/>
     <page name="order"    handler="/xml/config"/>
     <page name="overview" handler="/xml/config"/>
     <page name="admin"    handler="/xml/config"/>
     <page name="ssltest"  handler="/xml/secure"/>
+    <page name="install"  handler="/xml/download"/>
   </navigation>
 
   <!-- ========= master =============== -->
 
   <target name="master.xsl" type="xsl">
     <depxml name="core/xsl/master.xsl"/>
+    <depxsl name="sample1/xsl/custommaster.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/navigation.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
     <depaux name="core/xsl/forminput.xsl"/>
-    <depxsl name="sample1/xsl/custommaster.xsl"/>
     <param name="product" value="sample1"/>
     <param name="lang" value="en"/>
   </target>
@@ -27,11 +28,11 @@
   <!-- ========= metatags =============== -->
 
   <target name="metatags.xsl" type="xsl">
+    <depxml name="sample1/xsl/metatags.xsl"/>
+    <depxsl name="core/xsl/customizestylesheet.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
-    <depxml name="sample1/xsl/metatags.xsl"/>
-    <depxsl name="sample1/xsl/custommetatags.xsl"/>
     <param name="product" value="sample1"/>
     <param name="lang" value="en"/>
   </target>

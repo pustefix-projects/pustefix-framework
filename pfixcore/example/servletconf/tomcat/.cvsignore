@@ -3,4 +3,5 @@ work
 apache.conf
 workers.prop
 jk.conf
-
+temp
+classes

@@ -26,7 +26,6 @@ import org.w3c.dom.*;
 import org.apache.xml.serialize.*;
 import javax.xml.parsers.*;
 
-
 /**
  * AuxDependencyManager.java
  *
@@ -104,7 +103,7 @@ public class AuxDependencyManager implements DependencyParent {
         }
     }
 
-    public synchronized void saveAuxdepend() throws Exception {
+    public synchronized void saveAuxdepend() throws ParserConfigurationException, IOException  {
         CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
         String path = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
         
@@ -114,8 +113,8 @@ public class AuxDependencyManager implements DependencyParent {
             
         saveIt(DEPAUX, auxdoc, root, auxset, null);
         
-        FileWriter    output = new FileWriter(path);
-        OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
+        FileOutputStream output = new FileOutputStream(path);
+        OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
         outfor.setLineWidth(0);
         XMLSerializer ser    =  new XMLSerializer(output, outfor);
         ser.serialize(auxdoc);

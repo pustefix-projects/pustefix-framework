@@ -7,10 +7,11 @@
   <xsl:include href="create_lib.xsl"/>
 
   <xsl:param name="prohibitEdit"/>
-<!--  <xsl:param name="docroot"/>-->
 
   <xsl:template match="make">
     <xsl:param name="cache" select="./@cachedir"/> 
+    <xsl:param name="recallow" select="./@record_allowed"/>
+    <xsl:param name="recdir" select="./@record_dir"/>
     <xsl:if test="not($cache)">
       <xsl:message terminate="yes">
         *** Error *** You must specify a cachedir attribute to the make node
@@ -26,6 +27,16 @@
           <xsl:attribute name="cachedir"><xsl:value-of select="$cache"/></xsl:attribute>
         </xsl:otherwise>
       </xsl:choose>            
+      <xsl:if test="$recdir">
+        <xsl:choose>
+        <xsl:when test="not(starts-with($recdir, '/'))"> <!-- The path isn't absolute -->
+          <xsl:attribute name="record_dir"><xsl:value-of select="concat($docroot, '/', $recdir)"/></xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="record_dir"><xsl:value-of select="$recdir"/></xsl:attribute>
+        </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
       <xsl:attribute name="docroot"><xsl:value-of select="$docroot"/></xsl:attribute>
       <xsl:apply-templates/>
     </xsl:copy>
@@ -46,6 +57,7 @@
     <target name="{@name}.xsl" type="xsl">
       <depxml name="{@name}.xml"/>
       <depxsl name="master.xsl"/>
+      <xsl:apply-templates/>
       <param name="page" value="{@name}"/>
       <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
@@ -56,6 +68,7 @@
     <target name="{@name}.xml" type="xml">
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
+      <xsl:apply-templates/>
       <param name="page" value="{@name}"/>
       <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">

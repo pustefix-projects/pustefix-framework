@@ -19,9 +19,9 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.*;
-import java.util.*;
-import java.io.*;
+import java.io.File;
+
+import javax.xml.transform.TransformerException;
 
 /**
  * XSLLeafTarget.java
@@ -43,7 +43,10 @@ public class XSLLeafTarget extends LeafTarget {
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + key);
     }
 
-    protected Object getValueFromDiscCache() throws Exception {
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
+     */
+    protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();

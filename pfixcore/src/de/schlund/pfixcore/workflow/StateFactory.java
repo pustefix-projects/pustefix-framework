@@ -22,6 +22,7 @@ package de.schlund.pfixcore.workflow;
 import java.util.*;
 import org.apache.log4j.*;
 import de.schlund.pfixcore.util.*;
+import de.schlund.pfixxml.loader.*;
 
 /**
  * StateFactory.java
@@ -35,7 +36,7 @@ import de.schlund.pfixcore.util.*;
  *
  */
 
-public class StateFactory {
+public class StateFactory implements Reloader {
     private static HashMap      knownstates = new HashMap();
     private static Category     LOG         = Category.getInstance(StateFactory.class.getName());
     private static StateFactory instance    = new StateFactory();
@@ -44,6 +45,10 @@ public class StateFactory {
         return instance;
     }
     
+    StateFactory() {
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) appLoader.addReloader(this);
+    }
     /**
      * <code>getState</code> returns the matching State for classname.
      *
@@ -55,8 +60,13 @@ public class StateFactory {
             State retval = (State) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
-                    retval = (State) stateclass.newInstance();
+                    AppLoader appLoader=AppLoader.getInstance();
+                    if(appLoader.isEnabled()) {
+                        retval=(State)appLoader.loadClass(classname).newInstance();
+                    } else {
+                        Class stateclass = Class.forName(classname);
+                        retval = (State) stateclass.newInstance();
+                    }
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
@@ -71,4 +81,16 @@ public class StateFactory {
             return retval;
         }
     }
+    
+    public void reload() {
+           HashMap knownNew=new HashMap();
+           Iterator it=knownstates.keySet().iterator();
+           while(it.hasNext()) {
+               String str=(String)it.next();
+               State sOld=(State)knownstates.get(str);
+               State sNew=(State)StateTransfer.getInstance().transfer(sOld);
+               knownNew.put(str,sNew);
+           }
+           knownstates=knownNew;
+     }
 }

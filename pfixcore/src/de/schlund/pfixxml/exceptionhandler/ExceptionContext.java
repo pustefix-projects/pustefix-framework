@@ -17,7 +17,6 @@
 *
 */
 
-
 package de.schlund.pfixxml.exceptionhandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
@@ -40,9 +39,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.spi.ThrowableInformation;
 
-
 /**
- * Class to to encapsulate the data needed to handle an exception. It holds
+ * Class to to encapsulate the data needed to handle a throwable. It holds
  * various information needed in different parts of the exceptionhandler.
  * 
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
@@ -51,29 +49,28 @@ class ExceptionContext {
 
     //~ Instance/static variables ..............................................
 
-    private final String COUNTRY_         ="DE";
-    private final String LANGUAGE_        ="de";
-    private final String TIMEZONE_        ="Europe/Berlin";
-    private String date_                 =null; // timestamp
-    private Exception exception_         =null; // exception
-    private String header_               =null; // header for message
-    private String message_              =null; // textual message
-    private PfixServletRequest pfrequest_=null; // request
-    private Properties props_            =null; // properties
-    private HttpServletResponse response_=null; // response
+    private final String COUNTRY_ = "DE";
+    private final String LANGUAGE_ = "de";
+    private final String TIMEZONE_ = "Europe/Berlin";
+    private String date_ = null; // timestamp
+    private Throwable throwable_ = null; //
+    private String header_ = null; // header for message
+    private String message_ = null; // textual message
+    private PfixServletRequest pfrequest_ = null; // request
+    private Properties props_ = null; // properties
+    private HttpServletResponse response_ = null; // response
 
     //~ Constructors ...........................................................
 
     /**
-     * Create a new exception context object with the given excection, request, response
+     * Create a new exception context object with the given throwable, request, response
      * and properties objects.
      */
-    ExceptionContext(Exception e, PfixServletRequest pfreq, 
-                     HttpServletResponse res, Properties props) {
-        this.exception_=e;
-        this.pfrequest_=pfreq;
-        this.props_    =props;
-        this.response_ =res;
+    ExceptionContext(Throwable th, PfixServletRequest pfreq, HttpServletResponse res, Properties props) {
+        this.throwable_ = th;
+        this.pfrequest_ = pfreq;
+        this.props_ = props;
+        this.response_ = res;
     }
 
     //~ Methods ................................................................
@@ -87,19 +84,19 @@ class ExceptionContext {
     }
 
     /**
-     * Sets the exception of this exceptioncontext.
+     * Sets the throwable of this exceptioncontext.
      * @param exception the exception to set.
      */
-    void setException(Exception exception) {
-        this.exception_=exception;
+    void setThrowable(Throwable th) {
+        this.throwable_ = th;
     }
 
     /**
-     * Returns the exception of this exceptioncontext.
+     * Returns the throwable of this exceptioncontext.
      * @return Exception the exception.
      */
-    Exception getException() {
-        return exception_;
+    Throwable getThrowable() {
+        return throwable_;
     }
 
     /**
@@ -123,7 +120,7 @@ class ExceptionContext {
      * @param pfrequest the request to set.
      */
     void setPfrequest(PfixServletRequest pfrequest) {
-        this.pfrequest_=pfrequest;
+        this.pfrequest_ = pfrequest;
     }
 
     /**
@@ -147,7 +144,7 @@ class ExceptionContext {
      * @param props_ the properties to set.
      */
     void setProps(Properties props) {
-        this.props_=props;
+        this.props_ = props;
     }
 
     /**
@@ -155,7 +152,7 @@ class ExceptionContext {
      * @param response The response to set.
      */
     void setResponse(HttpServletResponse response) {
-        this.response_=response;
+        this.response_ = response;
     }
 
     /**
@@ -171,18 +168,18 @@ class ExceptionContext {
      * @param comment the comment.
      */
     void addComment(String comment) {
-        message_=comment + "\n" + message_;
+        message_ = comment + "\n" + message_;
     }
 
     /**
      *  Initialise the exceptioncontext. A timestamp, the message and its header are created. 
      */
     void init() {
-        TimeZone tz        =TimeZone.getTimeZone(TIMEZONE_);
-        Locale loc         =new Locale(LANGUAGE_, COUNTRY_);
-        Calendar cal       =Calendar.getInstance(tz, loc);
-        SimpleDateFormat df=new SimpleDateFormat("H:mm:ss");
-        date_              =df.format(cal.getTime());
+        TimeZone tz = TimeZone.getTimeZone(TIMEZONE_);
+        Locale loc = new Locale(LANGUAGE_, COUNTRY_);
+        Calendar cal = Calendar.getInstance(tz, loc);
+        SimpleDateFormat df = new SimpleDateFormat("H:mm:ss");
+        date_ = df.format(cal.getTime());
         createHeader();
         createMessage();
     }
@@ -192,13 +189,12 @@ class ExceptionContext {
      * @return a String containing text.
      */
     private String createErrorText() {
-        StringBuffer err   =new StringBuffer();
-        HttpSession session=pfrequest_.getSession(false);
+        StringBuffer err = new StringBuffer();
+        HttpSession session = pfrequest_.getSession(false);
         err.append(createInfoText());
-        if(session!=null) {
+        if (session != null) {
             err.append(createLastSteps());
-            if(props_.getProperty("servlet.sessiondumponerror", "").equals(
-                       "true")) {
+            if (props_.getProperty("servlet.sessiondumponerror", "").equals("true")) {
                 err.append(createSessionDump());
             }
             err.append("======================================================\n");
@@ -212,7 +208,7 @@ class ExceptionContext {
      * mail-subject.
      */
     private void createHeader() {
-        header_=createMailSubject();
+        header_ = createMailSubject();
     }
 
     /**
@@ -221,43 +217,43 @@ class ExceptionContext {
      * @return a StringBuffer containing text. 
      */
     private String createInfoText() {
-        StringBuffer err   =new StringBuffer();
-        HttpSession session=pfrequest_.getSession(false);
-        String server      =null;
-        String que         =null;
-        String uri         =null;
-        String scheme      =null;
-        int port           =-1;
-        server             =pfrequest_.getServerName();
-        if(server==null) {
+        StringBuffer err = new StringBuffer();
+        HttpSession session = pfrequest_.getSession(false);
+        String server = null;
+        String que = null;
+        String uri = null;
+        String scheme = null;
+        int port = -1;
+        server = pfrequest_.getServerName();
+        if (server == null) {
             /* a relocate? let us use the pfixservletrequest.getOrginalXXX methods */
-            server=pfrequest_.getOriginalServerName();
-            que   =pfrequest_.getOriginalQueryString();
-            uri   =pfrequest_.getOriginalRequestURI();
-            scheme=pfrequest_.getOriginalScheme();
-            port  =pfrequest_.getOriginalServerPort();
+            server = pfrequest_.getOriginalServerName();
+            que = pfrequest_.getOriginalQueryString();
+            uri = pfrequest_.getOriginalRequestURI();
+            scheme = pfrequest_.getOriginalScheme();
+            port = pfrequest_.getOriginalServerPort();
         } else {
             /* no relocate? let us use the pfixservletrequest.getCurrentXXX methods */
-            que   =pfrequest_.getQueryString();
-            uri   =pfrequest_.getRequestURI(getResponse());
-            scheme=pfrequest_.getScheme();
-            port  =pfrequest_.getServerPort();
+            que = pfrequest_.getQueryString();
+            uri = pfrequest_.getRequestURI(getResponse());
+            scheme = pfrequest_.getScheme();
+            port = pfrequest_.getServerPort();
         }
-        String[] pnames=pfrequest_.getRequestParamNames();
-        if(session!=null) {
+        String[] pnames = pfrequest_.getRequestParamNames();
+        if (session != null) {
             err.append("[SessionId: " + session.getId() + "]\n");
         }
         err.append(scheme + "://" + server + ":" + port + uri);
-        if((que!=null)&&(que!="")) {
+        if ((que != null) && (que != "")) {
             err.append("?" + que);
         }
         err.append("\n");
         err.append("\n\nParameter: \n");
-        if(pnames.length==0) {
+        if (pnames.length == 0) {
             err.append(" " + "None" + "\n");
         }
-        for(int ii=0; ii<pnames.length; ii++) {
-            RequestParam param=pfrequest_.getRequestParam(pnames[ii]);
+        for (int ii = 0; ii < pnames.length; ii++) {
+            RequestParam param = pfrequest_.getRequestParam(pnames[ii]);
             err.append(" " + pnames[ii] + " = " + param.toString() + "\n");
         }
         err.append("\n");
@@ -270,18 +266,17 @@ class ExceptionContext {
      * @return a StringBuffer containing text. 
      */
     private StringBuffer createLastSteps() {
-        HttpSession session   =pfrequest_.getSession(false);
-        StringBuffer err      =new StringBuffer();
-        SessionAdmin sessadmin=SessionAdmin.getInstance();
-        SessionInfoStruct info=sessadmin.getInfo(session.getId());
-        LinkedList trail      =info.getTraillog();
-        if(trail!=null&&trail.size()>0) {
+        HttpSession session = pfrequest_.getSession(false);
+        StringBuffer err = new StringBuffer();
+        SessionAdmin sessadmin = SessionAdmin.getInstance();
+        SessionInfoStruct info = sessadmin.getInfo(session.getId());
+        LinkedList trail = info.getTraillog();
+        if (trail != null && trail.size() > 0) {
             err.append("\n==== Last steps before error occured: ================\n");
-            for(Iterator j=trail.listIterator(); j.hasNext();) {
-                SessionInfoStruct.TrailElement step=(SessionInfoStruct.TrailElement) j.next();
-                err.append("[" + step.getCounter() + "] " + 
-                           step.getStylesheetname() + " [" + 
-                           step.getServletname() + "]\n");
+            for (Iterator j = trail.listIterator(); j.hasNext();) {
+                SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) j.next();
+                err.append(
+                    "[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]\n");
             }
         }
         return err;
@@ -293,21 +288,21 @@ class ExceptionContext {
      * @return a String containg text.
      */
     private String createMailSubject() {
-        String buf       =null;
-        String servername=pfrequest_.getServerName();
-        if(servername==null) {
+        String buf = null;
+        String servername = pfrequest_.getServerName();
+        if (servername == null) {
             /* a relocate? let us use the pfixservletrequest.getOrginalXXX methods */
-            servername=pfrequest_.getOriginalServerName();
+            servername = pfrequest_.getOriginalServerName();
         }
-        String exceptname=exception_.getClass().getName();
-        String message   =exception_.getMessage();
-        if(message==null) {
-            ThrowableInformation info=new ThrowableInformation(exception_);
-            String[] strace          =info.getThrowableStrRep();
-            message                  =strace[1].trim();
+        String exceptname = throwable_.getClass().getName();
+        String message = throwable_.getMessage();
+        if (message == null) {
+            ThrowableInformation info = new ThrowableInformation(throwable_);
+            String[] strace = info.getThrowableStrRep();
+            message = strace[1].trim();
         }
-        Object[] args={date_, servername, exceptname, message};
-        buf=MessageFormat.format("{0}:[{1}|{2}]:{3}", args);
+        Object[] args = { date_, servername, exceptname, message };
+        buf = MessageFormat.format("{0}:[{1}|{2}]:{3}", args);
         return buf;
     }
 
@@ -317,7 +312,7 @@ class ExceptionContext {
      * DOCUMENT ME!
      */
     private void createMessage() {
-        message_=createErrorText();
+        message_ = createErrorText();
     }
 
     /**
@@ -326,10 +321,10 @@ class ExceptionContext {
      * @return a Stringbuffer containing text. 
      */
     private StringBuffer createSTraceText() {
-        StringBuffer err         =new StringBuffer();
-        ThrowableInformation info=new ThrowableInformation(exception_);
-        String[] strace          =info.getThrowableStrRep();
-        for(int i=0; i<strace.length; i++) {
+        StringBuffer err = new StringBuffer();
+        ThrowableInformation info = new ThrowableInformation(throwable_);
+        String[] strace = info.getThrowableStrRep();
+        for (int i = 0; i < strace.length; i++) {
             err.append(strace[i].trim() + "\n");
         }
         return err;
@@ -341,17 +336,17 @@ class ExceptionContext {
      * @return a StringBuffer containing text.
      */
     private StringBuffer createSessionDump() {
-        HttpSession session=pfrequest_.getSession(false);
-        StringBuffer err   =new StringBuffer();
+        HttpSession session = pfrequest_.getSession(false);
+        StringBuffer err = new StringBuffer();
         err.append("\n==== Session keys and values: ========================\n");
-        String[] snames=session.getValueNames();
-        for(int i=0; i<snames.length; i++) {
+        String[] snames = session.getValueNames();
+        for (int i = 0; i < snames.length; i++) {
             err.append("Sessionkey: " + snames[i]);
-            Object o=session.getValue(snames[i]);
+            Object o = session.getValue(snames[i]);
             err.append(" [" + o.getClass().getName() + "]\n");
             err.append("Value:      " + o.toString());
             err.append("\n");
-            if(i<(snames.length - 1))
+            if (i < (snames.length - 1))
                 err.append("------------------------------------------------------\n");
         }
         return err;

@@ -45,47 +45,40 @@ import org.w3c.dom.*;
  */
 
 public class Context implements AppContext {
-
-    private ContainerUtil          conutil;
+    // from constructor
+    private String                 name;
     private Properties             properties;
-    private ContextResourceManager rmanager;
+    
+    // shared between all instances that have the same properties
     private PageFlowManager        pageflowmanager;
     private PageRequestProperties  preqprops;
     private PageMap                pagemap;
     
+    // new instance for every Context
+    private ContextResourceManager rmanager;
+    private Navigation             navigation = null;
+    
+    // values read from properties
+    private boolean                autoinvalidate_navi = true;
+    private boolean                in_adminmode        = false;
+    private PageRequest            admin_pagereq;
+
+    // the request state
     private PageRequest            currentpagerequest;
     private PageFlow               currentpageflow;
 
-    private Navigation             navigation          = null;
-    private boolean                autoinvalidate_navi = true;
-    private Element                navigation_element  = null;
-
-    private boolean                in_adminmode        = false;
-    private String                 visit_id            = null;
-    private PageRequest            admin_pagereq;
-    private long                   loadindex = 0;
+    private HashMap                navigation_visible = null;
+    private String                 visit_id           = null;
+    private boolean                needs_update;
     
     private static Category LOG = Category.getInstance(Context.class.getName());
 
-    /**
-     * <code>DEFPROP</code> references the property to set the default Pageflow.
-     * The properties name is "context.defaultpageflow"
-     */
-    protected final static String   DEFPROP = "context.defaultpageflow";
-
-    /**
-     * <code>NAVPROP</code> references the property to set the navigation xml file.
-     * The properties name is "context.navigation". This property is named
-     * "xmlserver.depend.xml", that means it's the same file as the one containing
-     * the target definitions 
-     */
-    protected final static String   NAVPROP   = "xmlserver.depend.xml";
-
-    private   static final String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate"; 
-    
-    protected final static String   WATCHMODE = "context.adminmode.watch";
-    protected final static String   ADMINPAGE = "context.adminmode.page";
-    protected final static String   ADMINMODE = "context.adminmode";
+    private final static String DEFPROP           = "context.defaultpageflow";
+    private final static String NAVPROP           = "xmlserver.depend.xml";
+    private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate"; 
+    private final static String WATCHMODE         = "context.adminmode.watch";
+    private final static String ADMINPAGE         = "context.adminmode.page";
+    private final static String ADMINMODE         = "context.adminmode";
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -93,42 +86,37 @@ public class Context implements AppContext {
      * @param properties a <code>Properties</code> value
      * @exception Exception if an error occurs
      */
-    public void init(Properties properties, ContainerUtil conutil) throws Exception {
-        this.conutil    = conutil;
+    public void init(Properties properties, String name) throws Exception {
 	this.properties = properties;
-
-	rmanager        = new ContextResourceManager();
-	rmanager.init(this);
-
-        reset_internal(false);
-    }
-
-    /**
-     * <code>reset</code> resets the Context with the originally supplied Properties.
-     *
-     * @exception Exception if an error occurs
-     */
-
-    public void reset() throws Exception {
-        reset_internal(true);
-    }
-    
-    public long getPropertyLoadIndex() {
-        return loadindex;
-    }
-
-    public void invalidateNavigation() {
-        navigation_element = null;
-    }
-    
-    private void reset_internal(boolean reload_navi) throws Exception {
-        pageflowmanager = new PageFlowManager(properties); 
-        preqprops       = new PageRequestProperties(properties);
-        pagemap         = new PageMap(preqprops);
-        loadindex       = new Long(properties.getProperty(ServletManager.PROP_LOADINDEX)).longValue();
+        this.name       = name;
         
+	rmanager = new ContextResourceManager();
+	rmanager.init(this);
+        
+        reset();
+    }
+
+    public void reset() {
+        needs_update       = true;
+        invalidateNavigation();
+    }
+    
+    public void invalidateNavigation() {
+        navigation_visible = new HashMap();
+    }
+    
+    private void do_update() throws Exception {
+    	// get PropertyObjects from PropertyObjectManager
+    	PropertyObjectManager pom = PropertyObjectManager.getInstance();
+        
+        pageflowmanager = (PageFlowManager) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
+        preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+        pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
+        
+        // The navigation is possibly shared across more than one context, i.e. more than one properties object.
+        // So we can't let it be handled by the PropertyObjectManager.
         if (properties.getProperty(NAVPROP) != null) {
-            navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP), reload_navi);
+            navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP));
         }
 
         currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
@@ -136,6 +124,8 @@ public class Context implements AppContext {
         
         checkForAdminMode();
         checkForNavigationReuse();
+
+        needs_update = false;
     }
 
     private void checkForNavigationReuse() {
@@ -143,7 +133,7 @@ public class Context implements AppContext {
         if (navi_autoinv != null && navi_autoinv.equals("false")) {
             autoinvalidate_navi = false;
             LOG.warn("\n**** CAUTION **** Setting autoinvalidate of navigation to FALSE!!!! \n" +
-                    "**** You need to call context.invalidateNavigation() to update the navigation.");
+                     "**** You need to call context.invalidateNavigation() to update the navigation.");
         } else {
             autoinvalidate_navi = true;
         }
@@ -174,12 +164,15 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        SPDocument  spdoc;
-        PageRequest adminpr = null;
-    	if (visit_id == null) {
-            visit_id = (String) preq.getSession(false).getValue(ServletManager.VISIT_ID);
+        if (needs_update) {
+            do_update();
         }
-	
+        
+        SPDocument  spdoc;
+
+        if (visit_id == null) 
+            visit_id = (String) preq.getSession(false).getValue(ServletManager.VISIT_ID);
+
         if (in_adminmode) {
             PageRequest tmp = getCurrentPageRequest();
             setCurrentPageRequest(admin_pagereq);
@@ -321,49 +314,69 @@ public class Context implements AppContext {
     }
 
     private void addNavigation(Navigation navi, SPDocument spdoc, PfixServletRequest preq) throws Exception {
-        Document            doc   = spdoc.getDocument();
-        if (navigation_element == null || autoinvalidate_navi) {
-            long start = System.currentTimeMillis();
-            NavigationElement[] pages = navi.getNavigationElements();
-            navigation_element = doc.createElement("navigation");
-            doc.getDocumentElement().appendChild(navigation_element);
-            recursePages(pages, navigation_element, doc, preq);
+        LOG.info(" **** MAKE NAVIGATION !!! ****");
+        long     start   = System.currentTimeMillis();
+        Document doc     = spdoc.getDocument();
+        Element  element = doc.createElement("navigation");
+        doc.getDocumentElement().appendChild(element);
+        if (autoinvalidate_navi) {
+            recursePages(navi.getNavigationElements(), element, doc, preq, null);
             LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
         } else {
-            long start = System.currentTimeMillis();
-            Node reusednavi = doc.importNode(navigation_element, true);
-            doc.getDocumentElement().appendChild(reusednavi);
+            recursePages(navi.getNavigationElements(), element, doc, preq, navigation_visible);
             LOG.info(" **** REUSING NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
         }
+        
     }
 
     private void recursePages(NavigationElement[] pages, Element parent,
-                              Document doc, PfixServletRequest pfixreq) throws Exception {
+                              Document doc, PfixServletRequest pfixreq, HashMap vis_map) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page = pages[i];
-            String      name     = page.getName();
+            String            name = page.getName();
+            // LOG.info("====> looking at page " + name);
             PageRequest preq     = new PageRequest(name);
             Element     pageelem = doc.createElement("page");
             parent.appendChild(pageelem);
             pageelem.setAttribute("name", name);
             pageelem.setAttribute("handler", page.getHandler());
-            if (preqprops.pageRequestIsDefined(preq)) {
-                State       state   = pagemap.getState(preq);
-                PageRequest saved   = getCurrentPageRequest();
-                setCurrentPageRequest(preq);
-                boolean     visible = state.isAccessible(this, pfixreq);
-                setCurrentPageRequest(saved);
-                if (visible) {
-                    pageelem.setAttribute("visible", "1");
-                } else {
-                    pageelem.setAttribute("visible", "0");
-                }
-            } else {
-                pageelem.setAttribute("visible", "-1");
+
+            Integer page_vis = null;
+            if (vis_map != null) {
+                page_vis = (Integer) vis_map.get(page);
             }
 
-            if (page.hasChildren()) {
-                recursePages(page.getChildren(), pageelem, doc, pfixreq);
+            if (page_vis != null) {
+                pageelem.setAttribute("visible", "" + page_vis.intValue());
+            } else {
+                if (preqprops.pageRequestIsDefined(preq)) {
+                    // LOG.info("    * found props for page " + name);
+                    State       state   = pagemap.getState(preq);
+                    // LOG.info("    * found state " + state.getClass() + " for page " + name);
+                    PageRequest saved   = getCurrentPageRequest();
+                    setCurrentPageRequest(preq);
+                    boolean     visible = state.isAccessible(this, pfixreq);
+                    // LOG.info("    * state accessible? " + visible);
+                    setCurrentPageRequest(saved);
+                    if (visible) {
+                        pageelem.setAttribute("visible", "1");
+                    } else {
+                        pageelem.setAttribute("visible", "0");
+                    }
+                    if (vis_map != null) {
+                        vis_map.put(page, new Integer(visible ? 1 : 0));
+                    }
+                } else {
+                    // LOG.info("    * found NO PROPS for page " + name);
+                    pageelem.setAttribute("visible", "-1");
+                    if (vis_map != null) {
+                        vis_map.put(page, new Integer(-1));
+                    }
+                }
+                
+                if (page.hasChildren()) {
+                    recursePages(page.getChildren(), pageelem, doc, pfixreq, vis_map);
+                }
             }
         }
     }
@@ -488,12 +501,13 @@ public class Context implements AppContext {
             if (skip_on_inaccessible) {
                 return null;
             } else {
-                LOG.warn("State for page " + getCurrentPageRequest().getName() + " is not accessible! Trying first page of default flow.");
+                LOG.warn("State for page " + getCurrentPageRequest().getName() +
+                         " is not accessible! Trying first page of default flow.");
                 setCurrentPageFlow(pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP)));
                 setCurrentPageRequest(currentpageflow.getFirstStep());
                 state = getPageMap().getState(getCurrentPageRequest());
                 if (state == null || !state.isAccessible(this, preq)) {
-                    throw new XMLException("Even first state of default flow was not accessible! Bailing out.");
+                    throw new XMLException("Even first state " + state + " of default flow was not accessible! Bailing out.");
                 }
             }
         }
@@ -554,6 +568,6 @@ public class Context implements AppContext {
     }
 
     public String getName() {
-        return properties.getProperty(AbstractXMLServer.PROP_NAME) + ContextXMLServer.CONTEXT_SUFFIX;
+        return name;
     }
 }

@@ -19,16 +19,31 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.exceptionhandler.*;
-import de.schlund.pfixxml.multipart.*;
-import de.schlund.pfixxml.serverutil.*;
-import java.io.*;
-import java.security.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
  /*
  *
@@ -45,10 +60,7 @@ import org.apache.log4j.*;
  */
 
 public abstract class ServletManager extends HttpServlet {
-    public  static final String JSERV_IDENTITY     = "org.apache.jserv";
-    public  static final String TC4_IDENTITY       = "org.apache.catalina";
-    public  static final String JSERV_CLASS        = "de.schlund.pfixxml.serverutil.jserv.ModernJServUtil";
-    public  static final String TC4_CLASS          = "de.schlund.pfixxml.serverutil.tomcat4.TomcatUtil";
+   
     public  static final String STORED_REQUEST     = "__STORED_PFIXSERVLETREQUEST__";
     public  static final String SESSION_IS_SECURE  = "__SESSION_IS_SECURE__";
     public  static final String VISIT_ID           = "__VISIT_ID__";
@@ -70,16 +82,11 @@ public abstract class ServletManager extends HttpServlet {
     private long             servlet_mtime = 0;
     private long             loadindex     = 0;
     private Properties       properties;
-    private ContainerUtil    conutil;
     private File             commonpropfile;
     private File             servletpropfile;
     
     protected Properties getProperties() {
         return properties;
-    }
-
-    protected ContainerUtil getContainerUtil() {
-        return conutil;
     }
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
@@ -107,7 +114,7 @@ public abstract class ServletManager extends HttpServlet {
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-        res.setStatus(res.SC_MOVED_TEMPORARILY);
+        res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         res.setHeader("Location", reloc_url);
     }
 
@@ -122,6 +129,7 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("====> URI:   " + req.getRequestURI());
             CAT.debug("====> Query: " + req.getQueryString());
             CAT.debug("----> needsSession=" + needsSession() + " needsSSL=" + needsSSL() + " allowSessionCreate=" + allowSessionCreate());
+			CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
             Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
@@ -143,7 +151,7 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("*** Found valid session with ID " + session.getId());
             if (runningUnderSSL(req)) {
                 CAT.debug("*** Found running under SSL");
-                Boolean secure = (Boolean) conutil.getSessionValue(session, SESSION_IS_SECURE);
+                Boolean secure = (Boolean)session.getAttribute(SESSION_IS_SECURE);
                 if (secure != null && secure.booleanValue()) {
                     CAT.debug("    ... and session is secure.");
                     has_ssl_session_secure = true;
@@ -194,16 +202,16 @@ public abstract class ServletManager extends HttpServlet {
         
         PfixServletRequest preq = null;
         if (has_session) {
-            preq = (PfixServletRequest) conutil.getSessionValue(session, STORED_REQUEST);
+            preq = (PfixServletRequest)session.getAttribute(STORED_REQUEST);
             if (preq != null) {
                 CAT.debug("*** Found old PfixServletRequest object in session");
-                conutil.removeSessionValue(session, STORED_REQUEST);
+                session.removeAttribute(STORED_REQUEST);
                 preq.updateRequest(req);
             }
         }
         if (preq == null) {
             CAT.debug("*** Creating PfixServletRequest object.");
-            preq = new PfixServletRequest(req, properties, conutil);
+            preq = new PfixServletRequest(req, properties);
         }
 
         tryReloadProperties(preq);
@@ -248,19 +256,19 @@ public abstract class ServletManager extends HttpServlet {
     
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = conutil.getClearedURL(req.getScheme(), req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = conutil.getClearedURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session  = req.getSession(false);
-        String      parentid = (String) conutil.getSessionValue(session, CHECK_FOR_RUNNING_SSL_SESSION);
+        String      parentid = (String)session.getAttribute(CHECK_FOR_RUNNING_SSL_SESSION);
         if (parentid != null && !parentid.equals("")) {
             CAT.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
@@ -276,7 +284,7 @@ public abstract class ServletManager extends HttpServlet {
                     if (cookie.getValue().equals(secure_id)) {
                         CAT.debug("   ... and the value is correct!");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = conutil.encodeURL("https", req.getServerName(), req, res, secure_id);
+                        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res, secure_id);
                         relocate(res, redirect_uri);
                         return;
                     } else {
@@ -289,7 +297,7 @@ public abstract class ServletManager extends HttpServlet {
         
         CAT.debug("*** Saving session data...");
         HashMap map = new HashMap();
-        conutil.saveSessionData(map, session);
+        SessionHelper.saveSessionData(map, session);
         // Before we invalidate the current session we save the traillog
         LinkedList traillog = SessionAdmin.getInstance().getInfo(session).getTraillog();
         String     old_id   = session.getId();
@@ -297,19 +305,19 @@ public abstract class ServletManager extends HttpServlet {
         session.invalidate();
         session = req.getSession(true);
         // First of all we put the old session id into the new session (__PARENT_SESSION_ID__)
-        conutil.setSessionValue(session, SessionAdmin.PARENT_SESS_ID, old_id);
+        session.setAttribute(SessionAdmin.PARENT_SESS_ID, old_id);
         // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
         // Now we register the new session with saved traillog
-        SessionAdmin.getInstance().registerSession(session, traillog, conutil);
+        SessionAdmin.getInstance().registerSession(session, traillog);
         CAT.debug("*** Got new Session (Id: " + session.getId() + ")");
         CAT.debug("*** Copying data back to new session");
-        conutil.copySessionData(map, session);
-        CAT.debug("*** Setting ContainerUtil.SESSION_ID_URL to " +  conutil.getSessionValue(session, ContainerUtil.SESSION_ID_URL));
-        conutil.setSessionValue(session, ContainerUtil.SESSION_ID_URL, conutil.getURLSessionId(req, res));
+        SessionHelper.copySessionData(map, session);
+        CAT.debug("*** Setting ContainerUtil.SESSION_ID_URL to " +  session.getAttribute(SessionHelper.SESSION_ID_URL));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
         CAT.debug("*** Setting SECURE flag");
-        conutil.setSessionValue(session, SESSION_IS_SECURE, Boolean.TRUE);
+        session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        conutil.setSessionValue(session, STORED_REQUEST, preq);
+        session.setAttribute(STORED_REQUEST, preq);
         
         Cookie cookie = getSecureSessionCookie(req);
         if (cookie != null) {
@@ -322,7 +330,7 @@ public abstract class ServletManager extends HttpServlet {
         cookie.setSecure(true);
         res.addCookie(cookie);
         
-        String redirect_uri = conutil.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
@@ -336,12 +344,12 @@ public abstract class ServletManager extends HttpServlet {
         if (!reuse_session) {
             registerSession(req, res, session);
         }
-        conutil.setSessionValue(session, ContainerUtil.SESSION_ID_URL, conutil.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req, res));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
-        conutil.setSessionValue(session, SESSION_IS_SECURE, Boolean.FALSE);
-        conutil.setSessionValue(session, STORED_REQUEST, preq);
+        session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
+        session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = conutil.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
@@ -351,13 +359,13 @@ public abstract class ServletManager extends HttpServlet {
         // Because of this we don't bother copying the VISIT_ID or register the session with the SessionAdmin.
         String      parentid      = req.getRequestedSessionId();
         HttpSession session       = req.getSession(true);
-        conutil.setSessionValue(session, ContainerUtil.SESSION_ID_URL, conutil.getURLSessionId(req, res));
-        conutil.setSessionValue(session, CHECK_FOR_RUNNING_SSL_SESSION, parentid);
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
-        conutil.setSessionValue(session, SESSION_IS_SECURE, Boolean.FALSE);
-        conutil.setSessionValue(session, STORED_REQUEST, preq);
+        session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
+        session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = conutil.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
     
@@ -368,25 +376,25 @@ public abstract class ServletManager extends HttpServlet {
         // statistic clean :-)
         String      parentid      = req.getRequestedSessionId();
         HttpSession child         = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
-        String      curr_visit_id = (String) conutil.getSessionValue(child, VISIT_ID);
+        String      curr_visit_id = (String)child.getAttribute(VISIT_ID);
         HttpSession session       = req.getSession(true);
         LinkedList  traillog      = SessionAdmin.getInstance().getInfo(child).getTraillog();
-        conutil.setSessionValue(session, ContainerUtil.SESSION_ID_URL, conutil.getURLSessionId(req, res));
-        conutil.setSessionValue(session, VISIT_ID, curr_visit_id);
-        SessionAdmin.getInstance().registerSession(session, traillog, conutil);
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(VISIT_ID, curr_visit_id);
+        SessionAdmin.getInstance().registerSession(session, traillog);
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
-        conutil.setSessionValue(session, STORED_REQUEST, preq);
-        String redirect_uri = conutil.encodeURL(req.getScheme(), req.getServerName(), req, res);
+        session.setAttribute(STORED_REQUEST, preq);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        conutil.setSessionValue(session, ContainerUtil.SESSION_ID_URL, conutil.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
         registerSession(req, res, session);
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
-        conutil.setSessionValue(session, STORED_REQUEST, preq);
-        String redirect_uri = conutil.encodeURL(req.getScheme(), req.getServerName(), req, res);
+        session.setAttribute(STORED_REQUEST, preq);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }
 
@@ -432,11 +440,15 @@ public abstract class ServletManager extends HttpServlet {
                 if (INC_ID >= 1000) {
                     CAT.warn("*** More than 999 connects/sec! ***");
                 }
-                conutil.setSessionValue(session, VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + "-" +
-                                        session.getId().substring(session.getId().length() - 2));
+                String sessid = session.getId();
+                String mach   = "";
+                if (sessid.lastIndexOf(".") > 0) {
+                    mach = sessid.substring(sessid.lastIndexOf("."));
+                }
+                session.setAttribute(VISIT_ID, TIMESTAMP_ID + "-" + nf.format(INC_ID) + mach);
             }
             StringBuffer logbuff = new StringBuffer();
-            logbuff.append(conutil.getSessionValue(session, VISIT_ID) + "|" + session.getId() + "|");
+            logbuff.append(session.getAttribute(VISIT_ID) + "|" + session.getId() + "|");
             logbuff.append(req.getServerName() + "|" + req.getRemoteAddr() + "|" + req.getHeader("user-agent") + "|");
             if (req.getHeader("referer") != null) {
                 logbuff.append(req.getHeader("referer"));
@@ -446,7 +458,7 @@ public abstract class ServletManager extends HttpServlet {
                 logbuff.append(req.getHeader("accept-language"));
             }
             LOGGER_VISIT.warn(logbuff.toString());
-            SessionAdmin.getInstance().registerSession(session, conutil);
+            SessionAdmin.getInstance().registerSession(session);
         }
     }
 
@@ -454,24 +466,14 @@ public abstract class ServletManager extends HttpServlet {
         super.init(config);
         properties = new Properties(System.getProperties());
 
-        String configclassname = config.getClass().getName();
-        CAT.debug("*** ServletConfig class '" + configclassname + "'");
-        if (configclassname.startsWith(JSERV_IDENTITY)) {
-            CAT.warn("*** JServ detected");
-            try {
-                conutil = (ContainerUtil) Class.forName(JSERV_CLASS).newInstance();
-            } catch (Exception e) {
-                throw new ServletException("*** Couldn't initialize JServ ContainerUtil '" + JSERV_CLASS + "'" + e);
-            }
-        } else if (configclassname.startsWith(TC4_IDENTITY)) {
-            CAT.warn("*** Tomcat-4 detected");
-            try {
-                conutil = (ContainerUtil) Class.forName(TC4_CLASS).newInstance();
-            } catch (Exception e) {
-                throw new ServletException("*** Couldn't initialize Tomcat-4 ContainerUtil '" + TC4_CLASS + "'" + e);
-            }
+        ServletContext ctx=config.getServletContext();
+        CAT.debug("*** Servlet container is '"+ctx.getServerInfo()+"'");
+        int major=ctx.getMajorVersion();
+        int minor=ctx.getMinorVersion();
+        if((major==2 && minor>=3)||(major>2)) {
+            CAT.warn("*** Servlet container with support for Servlet API "+major+"."+minor+" detected");
         } else {
-            throw new ServletException("*** Can't detect servlet container for config class '" + configclassname + "'");
+            throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
 
         String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
@@ -529,7 +531,7 @@ public abstract class ServletManager extends HttpServlet {
         try {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             xhandler.handle(e, preq, properties, res);
             throw(new ServletException(e.toString()));
         }

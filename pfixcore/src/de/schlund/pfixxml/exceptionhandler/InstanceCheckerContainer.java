@@ -22,12 +22,11 @@
  */
 package de.schlund.pfixxml.exceptionhandler;
 
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
-
 
 /**
  *
@@ -40,23 +39,23 @@ class InstanceCheckerContainer {
 
     //~ Instance/static variables ..............................................
 
-    private int burst_                    =0;
-    private Calendar cal_                 =null;
-    private Class clazz_                  =null;
-    private Integer code_                 =null;
-    private int currentburst_             =0;
-    private int fullcount_                =0;
-    private int limit_                    =0;
-    private String limitdim_              =null;
-    private String match_                 =null;
-    private int obsolete_                 =0;
-    private String obsoletedim_           =null;
-    private int oldcurrentburst_          =0;
-    private PFUtil pfutil_                =null;
-    private long startmilli_              =0;
-    private Hashtable stracecontainerhash_=null;
-    private String type_                  =null;
+    private int burst_ = 0;
+    private Class clazz_ = null;
+    private Integer code_ = null;
+    private int currentburst_ = 0;
+    private int fullcount_ = 0;
+    private int limit_ = 0;
+    private String limitdim_ = null;
+    private String match_ = null;
+    private int obsolete_ = 0;
+    private String obsoletedim_ = null;
+    private int oldcurrentburst_ = 0;
+    private PFUtil pfutil_ = null;
+    private long startmilli_ = 0;
+    private Hashtable stracecontainerhash_ = null;
+    private String type_ = null;
 
+    private static Category CAT = Category.getInstance(InstanceCheckerContainer.class.getName());
     //~ Constructors ...........................................................
 
     /**
@@ -71,17 +70,16 @@ class InstanceCheckerContainer {
      * @param limit_dim a String specifing the time rate <see>limit</see>.
      * @param burst a number indicating the maximum burst before the above limit kicks in.
      */
-    InstanceCheckerContainer(String type, String match, int limit, 
-                             String limitdim, int burst, int ob, String obdim) {
-        this.type_          =type;
-        this.match_         =match;
-        this.limit_         =limit;
-        this.burst_         =burst;
-        this.limitdim_      =limitdim;
-        this.obsolete_      =ob;
-        this.obsoletedim_   =obdim;
-        pfutil_             =PFUtil.getInstance();
-        stracecontainerhash_=new Hashtable();
+    InstanceCheckerContainer(String type, String match, int limit, String limitdim, int burst, int ob, String obdim) {
+        this.type_ = type;
+        this.match_ = match;
+        this.limit_ = limit;
+        this.burst_ = burst;
+        this.limitdim_ = limitdim;
+        this.obsolete_ = ob;
+        this.obsoletedim_ = obdim;
+        pfutil_ = PFUtil.getInstance();
+        stracecontainerhash_ = new Hashtable();
         init();
     }
 
@@ -92,10 +90,10 @@ class InstanceCheckerContainer {
      * @return the current burst.
      */
     int getCurrentburst() {
-        if(match_.equals("strace")) {
-            STraceCheckerContainer ch=null;
-            if(stracecontainerhash_.containsKey(code_)) {
-                ch=(STraceCheckerContainer) stracecontainerhash_.get(code_);
+        if (match_.equals("strace")) {
+            STraceCheckerContainer ch = null;
+            if (stracecontainerhash_.containsKey(code_)) {
+                ch = (STraceCheckerContainer) stracecontainerhash_.get(code_);
                 return ch.getCurrentburst();
             }
         } else {
@@ -109,9 +107,9 @@ class InstanceCheckerContainer {
      * @return the fullcount.
      */
     int getFullcountnReset() {
-        int tmp=0;
-        tmp       =fullcount_;
-        fullcount_=0;
+        int tmp = 0;
+        tmp = fullcount_;
+        fullcount_ = 0;
         return tmp;
     }
 
@@ -120,40 +118,39 @@ class InstanceCheckerContainer {
     * be synchronized because the main thread could modify the fullcount variable in the 
     * <see>InstanceCheckerContainer#doesMatch(Exception)</see> method. 
     */
-    synchronized String getReport() {
-        Hashtable hash  =stracecontainerhash_;
-        int full        =0;
-        StringBuffer buf=new StringBuffer();
-        boolean doit    =false;
-        if(hash.isEmpty()) {
-            if((full=getFullcountnReset())>0) {
-                buf.append(getType() + " repeated " + full + 
-                           " times (Stacktrace not available).\n");
-                doit=true;
+    synchronized Report getReport() {
+        Hashtable hash = stracecontainerhash_;
+        int full = 0;
+        int count = 0;
+        StringBuffer buf = new StringBuffer();
+        boolean doit = false;
+        if (hash.isEmpty()) { // NO stracecheckers exist
+            if ((full = getFullcountnReset()) > 0) {
+                buf.append(getType() + " repeated " + full + " times (Stacktrace not available).\n");
+                doit = true;
+                count = full;
             }
         } else {
-            for(Enumeration enu=hash.keys(); enu.hasMoreElements();) {
-                Integer key               =(Integer) enu.nextElement();
-                STraceCheckerContainer sch=(STraceCheckerContainer) hash.get(
-                                                   key);
-                if((full=sch.getFullcountnReset())<=0) {
+            for (Enumeration enu = hash.keys(); enu.hasMoreElements();) {
+                Integer key = (Integer) enu.nextElement();
+                STraceCheckerContainer sch = (STraceCheckerContainer) hash.get(key);
+                if ((full = sch.getFullcountnReset()) <= 0) {
                     continue;
                 }
-                doit=true;
-                buf.append(getType() + " repeated " + full + 
-                           " times (Stacktrace as follows).\n");
-                String[] st=sch.getStrace();
-                for(int i=0; i<st.length; i++) {
+                doit = true;
+                count += full;
+                buf.append(getType() + " repeated " + full + " times (Stacktrace as follows).\n");
+                String[] st = sch.getStrace();
+                for (int i = 0; i < st.length; i++) {
                     buf.append(" -> " + st[i] + "\n");
                 }
                 buf.append("\n");
             }
         }
-        pfutil_.debug(
-                "InstanceChecker.getReport: found " + full + 
-                " collected exceptions");
-        if(doit)
-            return buf.toString();
+        pfutil_.debug("InstanceChecker("+type_+")#getReport: found " + full + " collected exceptions");
+        if (doit) {
+            return new Report(buf.toString(), count);
+        }
         return null;
     }
 
@@ -182,84 +179,90 @@ class InstanceCheckerContainer {
      * will be checked too o.c.). If no <see>STraceCheckerContainer</see> matches a new
      * one will be created with the stracktrace of the current exception. 
      * 
-     * @param ex the incomimg exception.
+     * @param th the incomimg throwable.
      * @return an int a result. Returns NO_MATCH if the exception type is unkown.
      * Returns FULL if the own limit or the limit of a <see>STraceCheckerContainer</see>
      * is exeeded. Returns MATCH if itself or an <see>STraceCheckerContainer</see> is not exceeded. 
      * Returns TRIGGER_MATCH if limit is not exceeded but the generation of a report should be triggered.
      */
-    synchronized int doesMatch(Exception ex) {
-        long nowmilli=0;
-        int diff     =0;
-        int rate     =0;
-        float sdiff  =0;
-        int ds       =0;
-        int status   =PFUtil.FULL;
-        PFUtil pfutil=PFUtil.getInstance();
-        if(! clazz_.isInstance(ex)) {
-            status=PFUtil.NO_MATCH;
+    synchronized int doesMatch(Throwable th) {
+        long nowmilli = 0;
+        int diff = 0;
+        int rate = 0;
+        float sdiff = 0;
+        int ds = 0;
+        int status = PFUtil.FULL;
+        PFUtil pfutil = PFUtil.getInstance();
+        if (!clazz_.isInstance(th)) {
+            status = PFUtil.NO_MATCH;
             return status;
         }
-        if(match_.equals("strace")) {
-            ThrowableInformation thinfo=new ThrowableInformation(ex);
-            String[] strace            =thinfo.getThrowableStrRep();
-            code_                      =new Integer(pfutil.getSTraceHashCode(
-                                                            strace));
-            int tmpstat                =PFUtil.NO_MATCH;
+        if (match_.equals("strace")) {
+            ThrowableInformation thinfo = new ThrowableInformation(th);
+            String[] strace = thinfo.getThrowableStrRep();
+            code_ = new Integer(pfutil.getSTraceHashCode(strace));
+            int tmpstat = PFUtil.NO_MATCH;
             // key found - call stracecheckercontainer.doesMatch()
-            if(stracecontainerhash_.containsKey(code_)) {
+            if (stracecontainerhash_.containsKey(code_)) {
                 pfutil.debug(
-                        "InstanceChecker: STraceChecker with strace.hashcode found! Calling STraceChecker.doesMatch().");
-                STraceCheckerContainer checker=(STraceCheckerContainer) stracecontainerhash_.get(
-                                                       code_);
-                tmpstat=checker.doesMatch();
-                if(tmpstat==PFUtil.MATCH) {
+                    "InstanceChecker: STraceChecker with strace.hashcode found! Calling STraceChecker.doesMatch().");
+                STraceCheckerContainer checker = (STraceCheckerContainer) stracecontainerhash_.get(code_);
+                tmpstat = checker.doesMatch();
+                if (tmpstat == PFUtil.MATCH) {
                     return tmpstat;
                 }
-                if(tmpstat==PFUtil.TRIGGER_MATCH) {
+                if (tmpstat == PFUtil.TRIGGER_MATCH) {
                     return tmpstat;
                 }
-                if(tmpstat==PFUtil.FULL) {
+                if (tmpstat == PFUtil.FULL) {
                     return tmpstat;
                 }
             } // key not found - create a new stracechecker 
             else {
-                pfutil.debug(
-                        "InstaceChecker: STraceChecker with strace.hashcode not found! Creating a new one.");
-                STraceCheckerContainer ch=new STraceCheckerContainer(limit_, 
-                                                                     limitdim_, 
-                                                                     burst_);
+                pfutil.debug("InstaceChecker: STraceChecker with strace.hashcode not found! Creating a new one.");
+                STraceCheckerContainer ch = new STraceCheckerContainer(limit_, limitdim_, burst_);
                 ch.setStrace(strace);
                 stracecontainerhash_.put(code_, ch);
-                tmpstat=PFUtil.MATCH;
+                tmpstat = PFUtil.MATCH;
                 return tmpstat;
             }
         }
-        cal_    =Calendar.getInstance();
-        nowmilli=cal_.getTime().getTime();
-        diff    =new Long(nowmilli - startmilli_).intValue();
-        rate    =pfutil.getRate(limitdim_);
-        sdiff   =limit_ * diff / rate;
-        ds      =new Double(Math.ceil(sdiff)).intValue();
-        currentburst_+=ds;
+        /*cal_ = Calendar.getInstance();
+        nowmilli = cal_.getTime().getTime();*/
+        nowmilli = System.currentTimeMillis();
+        diff = new Long(nowmilli - startmilli_).intValue();
+        rate = pfutil.getRate(limitdim_);
+        sdiff = limit_ * diff / rate;
+        ds = new Double(Math.ceil(sdiff)).intValue();
+        currentburst_ += ds;
         PFUtil.getInstance().debug(
-                "STraceChecker: -->\nlastmatch=" + startmilli_ + "\n now=" + 
-                nowmilli + "\n diff=" + diff + "\n sdiff=" + sdiff + 
-                "\n ds=" + ds + " currentburst=" + currentburst_);
-        if(currentburst_>burst_)
-            currentburst_=burst_;
-        if(currentburst_>0) {
+            "STraceChecker: -->\nlastmatch="
+                + startmilli_
+                + "\n now="
+                + nowmilli
+                + "\n diff="
+                + diff
+                + "\n sdiff="
+                + sdiff
+                + "\n ds="
+                + ds
+                + " currentburst="
+                + currentburst_);
+        if (currentburst_ > burst_)
+            currentburst_ = burst_;
+        if (currentburst_ > 0) {
             currentburst_--;
-            cal_            =Calendar.getInstance();
-            startmilli_     =cal_.getTime().getTime();
-            status          =PFUtil.MATCH;
-            if(oldcurrentburst_==0) {
-                status=PFUtil.TRIGGER_MATCH;
+           /* cal_ = Calendar.getInstance();
+            startmilli_ = cal_.getTime().getTime();*/
+            startmilli_ = System.currentTimeMillis();
+            status = PFUtil.MATCH;
+            if (oldcurrentburst_ == 0) {
+                status = PFUtil.TRIGGER_MATCH;
             }
-            oldcurrentburst_=currentburst_;
+            oldcurrentburst_ = currentburst_;
         } else {
             fullcount_++;
-            status=PFUtil.FULL;
+            status = PFUtil.FULL;
         }
         pfutil.debug("InstanceChecker: currentburst: " + currentburst_);
         return status;
@@ -274,19 +277,17 @@ class InstanceCheckerContainer {
         // NOTE: This method is called from the <see>STraceCleanupTask</see>-thread, so it must be
         //synchronized because another thread might want to use the <see>InstanceCheckerContainer</see>
         // objects a the same time.
-        Hashtable scheckers            =stracecontainerhash_;
-        Integer i                      =null;
-        STraceCheckerContainer schecker=null;
-        int removed                    =0;
-        for(Enumeration enu=scheckers.keys(); enu.hasMoreElements();) {
-            i       =(Integer) enu.nextElement();
-            schecker=(STraceCheckerContainer) scheckers.get(i);
-            int last=new Double(schecker.getLastMatch() / pfutil_.getRate(
-                                                                  obsoletedim_)).intValue();
-            if(last>=obsolete_ * pfutil_.getRate(obsoletedim_)) {
+        Hashtable scheckers = stracecontainerhash_;
+        Integer i = null;
+        STraceCheckerContainer schecker = null;
+        int removed = 0;
+        for (Enumeration enu = scheckers.keys(); enu.hasMoreElements();) {
+            i = (Integer) enu.nextElement();
+            schecker = (STraceCheckerContainer) scheckers.get(i);
+            int last = new Double(schecker.getLastMatch() / pfutil_.getRate(obsoletedim_)).intValue();
+            if (last >= obsolete_ * pfutil_.getRate(obsoletedim_)) {
                 pfutil_.debug(
-                        "RemoveSTrace Checker: lastmatch=" + last + " >= " + 
-                        obsolete_ * pfutil_.getRate(obsoletedim_));
+                    "RemoveSTrace Checker: lastmatch=" + last + " >= " + obsolete_ * pfutil_.getRate(obsoletedim_));
                 scheckers.remove(i);
                 removed++;
             }
@@ -298,13 +299,16 @@ class InstanceCheckerContainer {
      * Initialises internal objects
      */
     private void init() {
-        currentburst_   =burst_;
-        oldcurrentburst_=currentburst_;
-        cal_            =Calendar.getInstance();
-        startmilli_     =cal_.getTime().getTime();
+        currentburst_ = burst_;
+        oldcurrentburst_ = currentburst_;
+        /*cal_ = Calendar.getInstance();
+        startmilli_ = cal_.getTime().getTime();*/
+        startmilli_ = System.currentTimeMillis();
         try {
-            clazz_=Class.forName(type_);
-        } catch(ClassNotFoundException e) {
+            clazz_ = Class.forName(type_);
+        } catch (ClassNotFoundException e) {
+            CAT.error("ERROR IN EXCEPTIONHANDLER!!!!!");
+            CAT.error("--->"+type_+"-->"+e.getClass().getName()+":"+e.getMessage());
             //This should never happen
         }
     }

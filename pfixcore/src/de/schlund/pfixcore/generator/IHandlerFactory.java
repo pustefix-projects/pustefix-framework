@@ -21,7 +21,7 @@ package de.schlund.pfixcore.generator;
 import java.util.*;
 import org.apache.log4j.*;
 import de.schlund.util.*;
-
+import de.schlund.pfixxml.loader.*;
 
 /**
  * IHandlerFactory.java
@@ -34,7 +34,7 @@ import de.schlund.util.*;
  *
  */
 
-public class IHandlerFactory {
+public class IHandlerFactory implements Reloader {
     private static HashMap         knownhandlers    = new HashMap();
     private static HashMap         wrapper2handlers = new HashMap();
     private static Category        LOG              = Category.getInstance(IHandlerFactory.class.getName());
@@ -42,6 +42,10 @@ public class IHandlerFactory {
 
     private IHandlerFactory() {
         // do nothing.
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            appLoader.addReloader(this);
+        }
     }
     
     /**
@@ -65,8 +69,13 @@ public class IHandlerFactory {
             IHandler retval = (IHandler) knownhandlers.get(classname); 
             if (retval == null) {
                 try {
-                    Class stateclass = Class.forName(classname);
-                    retval = (IHandler) stateclass.newInstance();
+                    AppLoader appLoader=AppLoader.getInstance();
+                    if(appLoader.isEnabled()) {
+                        retval=(IHandler)appLoader.loadClass(classname).newInstance();
+                    } else {
+                        Class stateclass = Class.forName(classname);
+                        retval = (IHandler) stateclass.newInstance();
+                    }
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
@@ -88,9 +97,15 @@ public class IHandlerFactory {
             IHandler retval = (IHandler) wrapper2handlers.get(classname); 
             if (retval == null) {
                 try {
-                    Class    stateclass = Class.forName(classname);
-                    IWrapper wrapper    = (IWrapper) stateclass.newInstance();
-                    retval              = wrapper.gimmeIHandler();
+                    AppLoader appLoader=AppLoader.getInstance();
+                    if(appLoader.isEnabled()) {
+                        IWrapper wrapper=(IWrapper)appLoader.loadClass(classname).newInstance();
+                        retval=wrapper.gimmeIHandler();
+                    } else {
+                        Class    stateclass = Class.forName(classname);
+                        IWrapper wrapper    = (IWrapper) stateclass.newInstance();
+                        retval              = wrapper.gimmeIHandler();
+                    }
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
@@ -104,7 +119,29 @@ public class IHandlerFactory {
             }
             return retval;
         }
-
-
     }
+    
+    
+    public void reload() {
+        HashMap knownNew=new HashMap();
+        Iterator it=knownhandlers.keySet().iterator();
+        while(it.hasNext()) {
+            String str=(String)it.next();
+            IHandler ihOld=(IHandler)knownhandlers.get(str);
+            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
+            knownNew.put(str,ihNew);
+        }
+        knownhandlers=knownNew;
+        HashMap wrapperNew=new HashMap();
+        it=wrapper2handlers.keySet().iterator();
+        while(it.hasNext()) {
+            String str=(String)it.next();
+            IHandler ihOld=(IHandler)wrapper2handlers.get(str);
+            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
+            wrapperNew.put(str,ihNew);   
+        }
+        wrapper2handlers=wrapperNew;
+    }
+    
+    
 }// IHandlerFactory

@@ -161,27 +161,16 @@ public class MultiTransform {
     }
 
     private void doServletZone() throws Exception {
-        String outdir_jserv   = (String) params.get("outdir-jserv");
         String outdir_tomcat  = (String) params.get("outdir-tomcat");
-        String xslfile_jserv  = (String) params.get("xslfile-jserv");
         String xslfile_tomcat = (String) params.get("xslfile-tomcat");
-        if (outdir_jserv == null) {
-            System.out.println("*** Need to have a parameter 'outdir-jserv'");
-            System.exit(-1);
-        }
         if (outdir_tomcat == null) {
             System.out.println("*** Need to have a parameter 'outdir-tomcat'");
-            System.exit(-1);
-        }
-        if (xslfile_jserv == null) {
-            System.out.println("*** Need to have a parameter 'xslfile-jserv'");
             System.exit(-1);
         }
         if (xslfile_tomcat == null) {
             System.out.println("*** Need to have a parameter 'xslfile-tomcat'");
             System.exit(-1);
         }
-        Templates       xsljserv  = trfac.newTemplates(new StreamSource(xslfile_jserv));
         Templates       xsltomcat = trfac.newTemplates(new StreamSource(xslfile_tomcat));
         DocumentBuilder domp      = dbfac.newDocumentBuilder();
         Document        doc       = domp.parse((String) infiles.get(0));
@@ -195,8 +184,6 @@ public class MultiTransform {
             String outfile_tomcat = dir_tomcat.getAbsolutePath() + "/web.xml";
             doTransformMaybe(doc, xsltomcat, (String) infiles.get(0), outfile_tomcat, 
                              xslfile_tomcat);
-            String outfile_jserv = outdir_jserv + "/" + name + ".prop";
-            doTransformMaybe(doc, xsljserv, (String) infiles.get(0), outfile_jserv, xslfile_jserv);
         }
     }
 
@@ -227,7 +214,14 @@ public class MultiTransform {
                 System.out.print(".");
             }
         } else {
-            throw new RuntimeException("File error: " + infile + " ==> " + outfile);
+        	StringBuffer buf = new StringBuffer();
+        	buf.append("File error: ").append(infile).append(" ==> ").append(outfile).append("\n");
+        	buf.append(infile+" isFile: ").append(in.isFile()).append("\n");
+        	buf.append(infile+" canRead: ").append(in.canRead()).append("\n");
+        	buf.append(outfile+" exists: ").append(in.exists()).append("\n");
+        	buf.append(outfile+" canWrite: ").append(in.exists()).append("\n");
+        	
+            throw new RuntimeException(buf.toString());
         }
     }
 

@@ -18,15 +18,14 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
+
 import de.schlund.pfixcore.generator.*;
+import de.schlund.pfixcore.util.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
-import de.schlund.pfixcore.util.*;
+import de.schlund.pfixxml.loader.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
 
 /**
  * DefaultAuthIWrapperState.java
@@ -52,6 +51,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @param req a <code>HttpServletRequest</code> value
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.State#isAccessible(Context, PfixServletRequest) 
      */
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         return true;
@@ -66,6 +66,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @param req a <code>HttpServletRequest</code> value
      * @return a <code>SPDocument</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest) 
      */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
 
@@ -84,11 +85,19 @@ public class DefaultAuthIWrapperState extends StateImpl {
         String authprefix  = (String) authwrp.keySet().iterator().next();
         String authwrapper = (String) authwrp.get(authprefix);
         if (authwrapper == null || authwrapper.equals("")) {
-                throw new XMLException("No interface for prefix " + authprefix);
+            throw new XMLException("No interface for prefix " + authprefix);
         }
 
-        CAT.debug("======> Interface for authentication: " + authprefix + " => " + authwrapper);
-        Class    thewrapper  = Class.forName(authwrapper);
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("======> Interface for authentication: " + authprefix + " => " + authwrapper);
+        }
+        Class thewrapper=null;
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            thewrapper=appLoader.loadClass(authwrapper);
+        } else {
+            thewrapper=Class.forName(authwrapper);
+        }
         IWrapper user        = (IWrapper) thewrapper.newInstance();
         user.init(authprefix);
         IHandler userhandler = user.gimmeIHandler();
@@ -101,7 +110,12 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 if (iface == null || iface.equals("")) {
                     throw new XMLException("No interface for prefix " + prefix);
                 }
-                Class    auxwrapper = Class.forName(iface);
+                Class auxwrapper=null;
+                if(appLoader.isEnabled()) {
+                    auxwrapper=appLoader.loadClass(iface);
+                } else {
+                    auxwrapper=Class.forName(iface);
+                }
                 IWrapper wrapper    = (IWrapper) auxwrapper.newInstance();
                 wrapper.init(prefix);
                 aux.add(wrapper);
@@ -112,25 +126,30 @@ public class DefaultAuthIWrapperState extends StateImpl {
         // Two cases: we are actively submitting data, or not.
         // If we are, we always try to authenticate against supplied user data.
         if (isSubmitAuthTrigger(context, preq)) {
-        CAT.debug("================> Handling AUTHDATA SUBMIT");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("================> Handling AUTHDATA SUBMIT");
+            }
             user.load(rdata);
-            boolean error = false;
             if (user.errorHappened()) { // during loading of the wrapper...
                 userhandler.retrieveCurrentStatus(context, user);
-                CAT.debug("================> Error during loading of wrapper data");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("================> Error during loading of wrapper data");
+                }
                 // Try loading the aux interfaces, just to echo the stringvals.
                 // so no error handling needs to take place.
-                auxEchoData(aux, context, rdata, resform);
+                auxEchoData(aux, rdata, resform);
                 userInsertErrors(context.getProperties(), user, resform);
                 return resdoc;
             } else {
-                CAT.debug("================> Calling handleSubmittedData on " + userhandler.getClass().getName());
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("================> Calling handleSubmittedData on " + userhandler.getClass().getName());
+                }
                 userhandler.handleSubmittedData(context, user);
                 if (user.errorHappened()) { // during trying to authenticate
                     userhandler.retrieveCurrentStatus(context, user);
                     // Try loading the aux interfaces, just to echo the stringvals.
                     // so no error handling needs to take place.
-                    auxEchoData(aux, context, rdata, resform);
+                    auxEchoData(aux, rdata, resform);
                     userInsertErrors(context.getProperties(), user, resform);
                     return resdoc;
                 } else {
@@ -142,13 +161,15 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 }
             }
         } else { // No data is actually submitted
-            CAT.debug("================> Checking AUTHDATA");
-            CAT.debug("================> Userhandler: " + userhandler.getClass().getName());
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("================> Checking AUTHDATA\n" +
+                    "================> Userhandler: " + userhandler.getClass().getName());
+            }
             if (userhandler.needsData(context)) { // Not authenticated
                 userhandler.retrieveCurrentStatus(context, user);
                 // Try loading the aux interfaces, just to echo the stringvals.
                 // so no error handling needs to take place.
-                auxEchoData(aux, context, rdata, resform);
+                auxEchoData(aux, rdata, resform);
                 userInsertErrors(context.getProperties(), user, resform);
                 return resdoc;
             } else { // OK, we are already authenticated. So we still want to try to handle the aux data.
@@ -183,7 +204,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     
-    private void auxEchoData(ArrayList aux, Context context, RequestData rdata, ResultForm resform) throws Exception {
+    private void auxEchoData(ArrayList aux, RequestData rdata, ResultForm resform) throws Exception {
         for (Iterator i = aux.iterator(); i.hasNext(); ) {
             IWrapper tmp = (IWrapper) i.next();
             tmp.load(rdata);
@@ -199,6 +220,15 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 // put the stringvals into hidden variables,
                 // so the next submit will supply them again.
                 resform.addHiddenValue(prefix + "." + par.getName(), val);
+            }
+        }
+        for (Iterator i = rdata.getParameterNames(); i.hasNext(); ) {
+            String name = (String) i.next();
+            if (name.equals(AbstractXMLServer.PARAM_ANCHOR)) {
+                RequestParam[] vals = rdata.getParameters(name);
+                for (int j = 0; j < vals.length; j++) {
+                    resform.addHiddenValue(name, vals[j].getValue());
+                }
             }
         }
     }

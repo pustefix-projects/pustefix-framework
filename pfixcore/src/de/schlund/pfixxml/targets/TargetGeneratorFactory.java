@@ -18,11 +18,12 @@
 */
 
 package de.schlund.pfixxml.targets;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixcore.util.*;
-import java.util.*;
-import org.apache.log4j.*;
-import java.io.*;
+import java.io.File;
+import java.util.HashMap;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.XMLException;
 
 /**
  *
