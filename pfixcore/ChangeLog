@@ -1,3 +1,11 @@
+2003-02-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: implemented new xml
+	format for the prop.in files (documentation follows tomorrow).
+	* example/sample1/conf/secure.prop.in: 
+	* example/sample1/conf/config.prop.in: 
+	* example/core/editor/conf/config.prop.in: use it.
+
 2003-02-13  Joerg Haecker <haecker@schlund.de>
 	
 	* src/de/schlund/pfixcore/util/email/EmailSender[Exception].java:
