@@ -1,3 +1,12 @@
+2004-02-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetRW.java:  (resetParams) new method.
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: implement it
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: reset
+	params in targets when loading config (because it may be a reload
+	of already exsting targets)
+
 2004-02-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Quite some hefty
