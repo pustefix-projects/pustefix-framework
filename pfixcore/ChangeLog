@@ -1,3 +1,50 @@
+2003-08-07  Sebastian Werner   <sw@schlund.de>
+	* core/xsl/forminput.xsl.in
+	* core/xsl/include.xsl.in
+	* core/xsl/master.xsl.in
+	* core/xsl/navigation.xsl.in
+	* core/xsl/utils.xsl.in:
+	Convert to new documentation format with new extendet attributes.
+
+	* core/editor/xsl/custommaster.xsl
+	* core/editor/xsl/metatags.xsl:
+	Changed and extended documentation template/format and redesign of editor for Pustefix.
+	Introduces a new parent child to define what parents are ok for the template.
+	Introduces a new values tag indead of the now deprecated ones "possible_values" and
+	"standard". Look in the core to understand the new format. The xsl.in's defined above
+	use already the new format.
+	
+	* core/editor/xml/three_frames.xml
+	* core/editor/xml/three_frames_applet.xml
+	* core/editor/xml/three_frames_doku.xml
+	* core/editor/xml/three_frames_wide.xml
+	* core/editor/xml/two_frames.xml
+	* core/editor/xml/two_frames_deaktiv.xml:
+	Modified frame layout to look good with new editor design. Add class to navigation body and
+	changed navigation frame height.
+
+	* core/editor/txt/pages/main_commons.xml
+	* core/editor/txt/pages/main_editoruserauth.xml
+	* core/editor/txt/pages/main_editoruserdata.xml
+	* core/editor/txt/pages/main_editorusermanager.xml
+	* core/editor/txt/pages/main_home.xml
+	* core/editor/txt/pages/main_images.xml
+	* core/editor/txt/pages/main_includes.xml
+	* core/editor/txt/pages/main_lockmanager.xml
+	* core/editor/txt/pages/main_pages.xml
+	* core/editor/txt/pages/main_prodselect.xml
+	* core/editor/txt/pages/main_sessionmanager.xml
+	* core/editor/txt/pages/main_targets.xml:
+	These are the pages I have modified and optimizied in html-code and style usage to
+	display optiomal with the new css.
+
+	* core/editor/txt/navigation.xml:
+	New navigation style and html code. Know uses and list with floats. Really nice I think.
+	
+	* core/editor/txt/styles.xml:
+	The most changes here. Most styles rewritten from the scratch. Much more usage
+	of real html structuren tags instead of groups of span e.g.
+
 2003-08-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: added a "default" attribute to most of the pfx:xinp tags. 
