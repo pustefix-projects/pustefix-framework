@@ -201,7 +201,7 @@
       <xsl:text>&#xa;</xsl:text>
       <xsl:for-each select="./param">
         <xsl:apply-templates select=".">
-          <xsl:with-param name="prefix">context.param.<xsl:value-of select="../@class"/></xsl:with-param>
+          <xsl:with-param name="prefix">context.resource.param.<xsl:value-of select="../@class"/></xsl:with-param>
         </xsl:apply-templates>
       </xsl:for-each>
     </xsl:for-each>
