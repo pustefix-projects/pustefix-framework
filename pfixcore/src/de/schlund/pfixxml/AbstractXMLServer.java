@@ -534,7 +534,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         Templates stylevalue;
         stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
         if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
-            CAT.warn("stylevalue must not be null; stylevalue="+stylevalue+"; stylesheet="+stylesheet+"; spdoc.getPagename()="+((spdoc!=null)?spdoc.getPagename():"spdoc==null")+" spdoc.getXSLKey()="+((spdoc!=null)?spdoc.getXSLKey():"spdoc==null"));
+            CAT.warn("stylevalue must not be null; stylevalue=" +
+                     stylevalue + "; stylesheet=" + stylesheet + "; spdoc.getPagename()=" +
+                     ((spdoc != null) ? spdoc.getPagename() : "spdoc==null") + " spdoc.getXSLKey()=" +
+                     ((spdoc != null) ? spdoc.getXSLKey() : "spdoc==null"));
         }
         try {
             Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
