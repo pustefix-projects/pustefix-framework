@@ -1,6 +1,24 @@
-2004-04-28  Jörg Häcker <häcker@schlund.de>
+2004-05-01  Jens Lautenbacher  <jtl@schlund.de>
 
-        * src/de/schlund/pfixcore/util/email/EmailSender.java: throw
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	implement another case where we want to set the continue flag:
+	when the currentpagerequest is NOT a member of the current
+	pageflow, but the pageflow has been explicitely set (see below).
+
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: remove
+	the variant of pageFlowToPageRequest, that was responsible for
+	setting the pageflow from a submitted __pageflow parameter. This
+	now done in the context's trySettingPageRequestAndFlow method. 
+
+	* src/de/schlund/pfixcore/workflow/Context.java (isCurrentPageFlowRequestedByUser)
+	new method: check to see if the current pagerequest was set 
+	explicitely set from a submitted __pageflow parameter.
+	(trySettingPageRequestAndFlow) now do the ckecking for the
+	__pageflow parameter directly here, no onger in PageFlowManager.
+
+2004-04-28  Joerg Haecker <haecker@schlund.de>
+        
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: throw
         IllegalArgumentException if to[] contains NULL or "" values.
 
 2004-04-28  Jens Lautenbacher  <jtl@schlund.de>

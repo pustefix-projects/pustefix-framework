@@ -12,7 +12,7 @@
   </part>
   <part name="pfixcore.editor.auth.WRONG_USER_OR_PASS">
     <product name="default">
-      <lang name="default" warning="NEVER CHANGE THIS NODE!">User and Password don&apos;t match.</lang>
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">User and Password don't match.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.images.IMAGE_UNDEF">
@@ -52,7 +52,7 @@
   </part>
   <part name="pfixcore.editor.includes.COMMONPATH_UNDEF">
     <product name="default">
-      <lang name="default" warning="NEVER CHANGE THIS NODE!">The path of this dynamic include doesn&apos;t point to any file marked as holding dynamic includes.</lang>
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
@@ -107,7 +107,7 @@
   </part>
   <part name="pfixcore.editor.userdata.PWD_NO_MATCH">
     <product name="default">
-      <lang name="default" warning="NEVER CHANGE THIS NODE!">The passwords don&apos;t match.</lang>
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">The passwords don't match.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.userforedit.USER_UNDEF">
@@ -117,7 +117,7 @@
   </part>
   <part name="pfixcore.example.home.AGE_MISSING">
     <product name="default">
-      <lang name="default" warning="NEVER CHANGE THIS NODE!">Please tell me if you&apos;re old enough.</lang>
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">Please tell me if you're old enough.</lang>
     </product>
   </part>
   <part name="pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK">

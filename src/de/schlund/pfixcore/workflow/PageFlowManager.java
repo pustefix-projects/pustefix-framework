@@ -35,7 +35,6 @@ public class PageFlowManager implements PropertyObject {
     private              HashMap  flowmap      = new HashMap();
     private       static Category LOG          = Category.getInstance(PageFlowManager.class.getName());
     public  final static String   PROP_PREFIX  = "context.pageflow";
-    public  final static String   PARAM_FLOW   = "__pageflow";
 
     public void init(Properties props) throws Exception {
         HashSet names = new HashSet();
@@ -52,28 +51,6 @@ public class PageFlowManager implements PropertyObject {
             PageFlow  pf   = new PageFlow(props, name);
             flowmap.put(name, pf);
         }
-    }
-
-    public PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page, PfixServletRequest req) {
-        RequestParam flowname = req.getRequestParam(PARAM_FLOW);
-        if (flowname != null && !flowname.getValue().equals("")) {
-            LOG.debug("===> User requesting to switch to flow '" + flowname.getValue() + "'");
-            PageFlow flow = getPageFlowByName(flowname.getValue());
-            if (flow != null) {
-                LOG.debug("===> Flow '" + flowname.getValue() + "' exists...");
-                if (flow.containsPageRequest(page)) {
-                    LOG.debug("===> and it contains page '" + page.getName() + "'");
-                } else if (page.getName().equals(Context.STARTWITHFLOW_PAGE)) {
-                    LOG.debug("===> CAUTION: page to use will be determined from flow.");
-                } else {
-                    LOG.debug("===> CAUTION: it doesn't contain page '" +
-                              page.getName() + "'! Make sure this is what you want...");
-                }
-                LOG.debug("===> Switching to workflow: " + flow.getName());
-                return flow;
-            }
-        }
-        return pageFlowToPageRequest(currentflow, page);
     }
 
     protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page) {
