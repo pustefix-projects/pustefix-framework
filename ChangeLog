@@ -1,3 +1,13 @@
+2003-06-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java: made a sane menubar with acellerators.
+	Removed some unused code (no need to handle the accelerators in a keymap)
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixTextPane.java: cosmetics
+
+	* Makefile: 
+	* Makefile.local: cosmetics
+
 2003-06-05  Martin Leidig <mleidig@schlund.de>
 
 	All jserv specific stuff was removed: startscript, stylesheets for propertyfile creation, 
