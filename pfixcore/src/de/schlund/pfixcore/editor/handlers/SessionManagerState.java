@@ -104,6 +104,7 @@ public class SessionManagerState extends StateImpl {
                 i.remove();
             }
         }
+        context.prohibitContinue();
         return resdoc;
     }
 }

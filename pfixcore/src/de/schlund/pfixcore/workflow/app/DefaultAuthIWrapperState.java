@@ -137,9 +137,8 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
     
     /**
-     * In this method, we decide if the Session is authenticated or not. If the authentication
-     * is OK, we return <b>null</b>. If the session is not authenticated, we want to return a
-     * page to the user to query for authentication information.
+     * In this method, we decide if the Session is authenticated or not. If the session is not
+     * authenticated, we want to return a page to the user to query for authentication information.
      *
      * @param context a <code>Context</code> value
      * @param req a <code>HttpServletRequest</code> value
@@ -168,6 +167,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 // so no error handling needs to take place.
                 auxEchoData(aux, rdata, resform);
                 userInsertErrors(properties, user, resform);
+                context.prohibitContinue();
             } else {
                 CAT.debug("====> Calling handleSubmittedData on " + userhandler.getClass().getName());
                 userhandler.handleSubmittedData(context, user);
@@ -178,11 +178,11 @@ public class DefaultAuthIWrapperState extends StateImpl {
                     // so no error handling needs to take place.
                     auxEchoData(aux, rdata, resform);
                     userInsertErrors(properties, user, resform);
+                    context.prohibitContinue();
                 } else {
                     // Try loading the aux interfaces, and call
                     // their handlers if no error happened.
                     auxLoadData(aux, context, rdata);
-                    resdoc.setContinue(true);
                 }
             }
         } else { // No data is actually submitted
@@ -191,6 +191,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
             // so no error handling needs to take place.
             auxEchoData(aux, rdata, resform);
             userInsertErrors(properties, user, resform);
+            context.prohibitContinue();
         }
         return resdoc;
     }

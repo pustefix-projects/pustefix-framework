@@ -1,3 +1,31 @@
+2004-12-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Changed the way a pageflow continuation is started. Now the default
+	ist to always start a flow, unless context.prohibitContinue() has been called (from the State or a ContextRessource).
+	removed some methods that are shouldn't be accessible from the outside anyway (getJumpToPage, getJumpToPageFlow).
+	The PageMessage methods no longer have the error argument, such a situation can now be signalled via prohibitContinue().
+	
+	* src/de/schlund/pfixxml/ResultDocument.java: setContinue(), wantsContinue() REMOVED. ResultDocument is 
+	no longer used to signal the continuation of a pageflow, it's the default now that has to be explicitely prohibited 
+	by calling context.prohibitContinue() anywhere during a request cycle.
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java (renderContextResources): new protected method.
+	Descendants can call this to get the default handling (aka: inserting) of ContextResources.
+	(addResponseHeadersAndType): new protected method. Can be used to get default handling of headers and mime type. 
+	(createDefaultResultDocument): uses both renderContextResources and addResponseHeadersAndType.
+	This is the prime candidate for descendants to get a new ResultDocument.
+	
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/editor/handlers/SessionManagerState.java: Changed to use context.prohibitContinue()
+	at the right places.
+
+	* example/core/xsl/navigation.xsl.in: 
+	* example/core/xsl/forminput.xsl.in: <pfx:button>, <pfx:xinp
+	  type="submit|image"> new attributes: @pageflow, @jumptopage,
+	  @jumptopageflow, @forcestop. Also new pfx:commands: DESELWRP, SUGGESTCONT
+
 2004-12-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.4-pre

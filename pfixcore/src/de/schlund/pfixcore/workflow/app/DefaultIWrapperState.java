@@ -33,7 +33,7 @@ import java.util.Properties;
  * @version $Id$
  */
 
-public class DefaultIWrapperState extends StaticState {
+public class DefaultIWrapperState extends StateImpl {
     private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
 
@@ -88,19 +88,20 @@ public class DefaultIWrapperState extends StaticState {
             PerfEventType et = PerfEventType.PAGE_HANDLESUBMITTEDDATA;
             et.setPage(context.getCurrentPageRequest().toString());
             preq.endLogEntry(et);
-            //preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 300);
             if (container.errorHappened()) {
                 CAT.debug("    => Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
                 rfinal.onWorkError(container);
+                context.prohibitContinue();
             } else {
                 CAT.debug("    => No error happened during work ...");
-                if (context.getJumpToPageRequest() != null) {
-                    CAT.debug("... Context has a jumppage set: [" + context.getJumpToPageRequest() + "]");
-                    CAT.debug("    => continue there...");
-                    container.getAssociatedResultDocument().setContinue(true);
-                } else if (container.stayAfterSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page:");
+//                 if (context.getJumpToPageRequest() != null) {
+//                     CAT.debug("... Context has a jumppage set: [" + context.getJumpToPageRequest() + "]");
+//                     CAT.debug("    => continue there...");
+//                     // container.getAssociatedResultDocument().setContinue(true);
+//                 } else 
+                if (container.stayAfterSubmit()) {
+                    CAT.debug("... Container says he wants to stay on this page and context.requestWantsContinue() doesn't object:");
                     CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
                     container.retrieveCurrentStatus();
@@ -108,18 +109,16 @@ public class DefaultIWrapperState extends StaticState {
                     pet.setPage(context.getCurrentPageRequest().toString());
                     pet.setAdditionalInfo("SUCCESS_STAY");
                     preq.endLogEntry(pet);
-                    //preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
+                    context.prohibitContinue();
                 } else {
-                    CAT.debug("... Container says he is ready:");
+                    CAT.debug("... Container says he is ready");
                     CAT.debug("    => end of submit reached successfully.");
                     if (context.isCurrentPageRequestInCurrentFlow()) {
                         CAT.debug(">>> Page is part of current pageflow:");
-                        CAT.debug("    => signal to continue with pagflow by setting success flag to true...");
-                        container.getAssociatedResultDocument().setContinue(true);
+                        CAT.debug("    => continue with pagflow...");
                     } else if (context.isCurrentPageFlowRequestedByUser()) {
                         CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
-                        CAT.debug("    => signal to continue with pagflow by setting success flag to true...");
-                        container.getAssociatedResultDocument().setContinue(true);
+                        CAT.debug("    => continue with pagflow...");
                     } else {
                         CAT.debug(">>> NO continuable pageflow set:");
                         CAT.debug("    => retrieving current status and stay here...");
@@ -129,7 +128,7 @@ public class DefaultIWrapperState extends StaticState {
                         pet.setPage(context.getCurrentPageRequest().toString());
                         pet.setAdditionalInfo("SUCESS_STAY_NOWF");
                         preq.endLogEntry(pet);
-                       // preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
+                        context.prohibitContinue();
                     }
                 }
                 rfinal.onSuccess(container);
@@ -144,38 +143,34 @@ public class DefaultIWrapperState extends StaticState {
                 pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("DIRECT");
                 preq.endLogEntry(pet);
-                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
             } else if (context.finalPageIsRunning()) {
                 CAT.debug("    => REASON: FinalPage");
                 PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
                 pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("FINAL");
                 preq.endLogEntry(pet);
-                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FINAL", 5);
             } else {
                 CAT.debug("    => REASON: WorkFlow");
                 PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
                 pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("FLOW");
                 preq.endLogEntry(pet);
-                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
             }
             rfinal.onRetrieveStatus(container);
+            context.prohibitContinue();
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
         // We need to check because in the success case, there's no need to add anything to the
-        // SPDocument, as we will advance in the pageflow anyway  
-        if (!resdoc.wantsContinue() || context.pageMessageIsError()) {
+        // SPDocument, as we will advance in the pageflow anyway; so only add it when we stop OR
+        // when we need the Status of the Context Resources for the "FlowStepWantsPostProcess" case,
+        // to decide where to jump to.
+        if (context.getProhibitContinue() || context.currentFlowStepWantsPostProcess()) {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
-        } else if (context.currentFlowStepWantsPostProcess()) {
-            // but we need the Status of the Context Resources in this case to base out decision on
-            // where to jump to.
-            renderContextResources(context, resdoc);
+            addResponseHeadersAndType(context, resdoc);
         }
-        
         return resdoc;
     }
     

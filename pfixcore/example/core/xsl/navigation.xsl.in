@@ -152,6 +152,9 @@
       <xsl:with-param name="frame" select="@frame"/>
       <xsl:with-param name="target" select="@target"/>
       <xsl:with-param name="mode" select="@mode"/>
+      <xsl:with-param name="jumptopage" select="@jumptopage"/>
+      <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
+      <xsl:with-param name="forcestop" select="@forcestop"/>
       <xsl:with-param name="popupwidth" select="@popupwidth"/>
       <xsl:with-param name="popupheight" select="@popupheight"/>
       <xsl:with-param name="popupid" select="@popupid"/>
@@ -197,6 +200,20 @@
         </description>
       </param>
       <param required="0">
+        <name>jumptopage</name>
+        <values><string/></values>
+        <description>The page to jump to after the state returns control to context. This is a way to select the next page instead of
+        having the context decide it by running a pageflow.
+        </description>
+      </param>
+      <param required="0">
+        <name>jumptopageflow</name>
+        <values><string/></values>
+        <description>
+          The pageflow to use when for the next page as selected by the jumptopage attribute. If jumptopage is not given, this attribute has no effect. 
+        </description>
+      </param>
+      <param required="0">
         <name>mode</name>
         <values><oneof><option>desc</option><option>force</option></oneof></values>
         <description>
@@ -204,6 +221,17 @@
             <li>mode="force": The button is always displayed as a link, and the normalclass css is used.</li>
             <li>mode="desc" : The button is considered to be in active mode (aka: NOT clickable) not only when the page attribute points to the
             current page, but also when a subpage of the target page is the current page. The activeclass css is used in this case.</li>
+          </ul>
+        </description>
+      </param>
+      <param required="0">
+        <name>forcestop</name>
+        <values><oneof><option>true</option><option>false</option></oneof></values>
+        <description>
+          <ul>
+            <li>"true": No pageflow will be started, the application will stay on the target page unconditionally.</li>
+            <li>"false" or attribute not given: The application will decide if a pageflow process is to be started or not.
+            This depends on the State or ContextRessource or other classes that may prohibit the pageflow run. Normally you will leave it that way.</li>
           </ul>
         </description>
       </param>
@@ -382,8 +410,11 @@
       <xsl:with-param name="frame" select="@frame"/>
       <xsl:with-param name="target" select="@target"/>
       <xsl:with-param name="pageflow" select="@pageflow"/>
+      <xsl:with-param name="jumptopage" select="@jumptopage"/>
+      <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
       <xsl:with-param name="startwithflow" select="@startwithflow"/>
       <xsl:with-param name="mode" select="@mode"/>
+      <xsl:with-param name="forcestop" select="@forcestop"/>
       <xsl:with-param name="popupwidth" select="@popupwidth"/>
       <xsl:with-param name="popupheight" select="@popupheight"/>
       <xsl:with-param name="popupid" select="@popupid"/>
@@ -436,7 +467,10 @@
       <xsl:with-param name="cmds" select="./pfx:command"/>
       <xsl:with-param name="anchors" select="./pfx:anchor"/>
       <xsl:with-param name="pageflow" select="@pageflow"/>
+      <xsl:with-param name="jumptopage" select="@jumptopage"/>
+      <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
       <xsl:with-param name="startwithflow" select="@startwithflow"/>
+      <xsl:with-param name="forcestop" select="@forcestop"/>
       <xsl:with-param name="nodata" select="@nodata"/>
       <xsl:with-param name="buttpage" select="@page"/>
       <xsl:with-param name="frame" select="@frame"/>
@@ -466,10 +500,13 @@
     <xsl:param name="activeclass"/>
     <xsl:param name="invisibleclass"/>
     <xsl:param name="pageflow"/>
+    <xsl:param name="jumptopage"/>
+    <xsl:param name="jumptopageflow"/>
     <xsl:param name="startwithflow"/>
     <xsl:param name="frame"/>
     <xsl:param name="target"/>
     <xsl:param name="mode"/>
+    <xsl:param name="forcestop"/>
     <xsl:param name="popupwidth"/>
     <xsl:param name="popupheight"/>
     <xsl:param name="popupid"/>
@@ -534,8 +571,11 @@
       <xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
       <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
+      <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
+      <xsl:if test="$jumptopageflow">&amp;__jumptopageflow=<xsl:value-of select="$jumptopageflow"/></xsl:if>
       <xsl:if test="$pageflow">&amp;__pageflow=<xsl:value-of select="$pageflow"/></xsl:if>
       <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
+      <xsl:if test="$forcestop">&amp;__forcestop=<xsl:value-of select="$forcestop"/></xsl:if>
       <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$buttpage_impl"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
     </xsl:variable>

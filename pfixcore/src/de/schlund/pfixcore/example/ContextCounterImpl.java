@@ -75,11 +75,12 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
     private void checkValue() {
         // demo of pageMessage feature
         if (counter > 9 ) {
-            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_9"), "error", new String[] {""+counter}, true);
+            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_9"), "error", new String[] {""+counter});
+            context.prohibitContinue();
         } else if (counter > 5 ) {
-            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), "warn", new String[] {""+counter}, false);
+            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), "warn", new String[] {""+counter});
         } else if (counter > 3 ) {
-            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), "info", new String[] {""+counter}, false);
+            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), "info", new String[] {""+counter});
         }
     }
 

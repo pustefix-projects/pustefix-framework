@@ -22,14 +22,8 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.pfixxml.*;
 import org.w3c.dom.*;
 
-/**
- *
- *
- */
-
 public interface ContextResource {
     void    init(Context context) throws Exception;
     void    insertStatus(ResultDocument resdoc, Element elem) throws Exception;
     void    reset() throws Exception;
-    // boolean needsData() throws Exception;
 }
