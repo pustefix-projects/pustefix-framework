@@ -1,3 +1,8 @@
+2003-04-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): Now also print out the
+	value of all alt and title tags (as they may contain visible content, too that may need translation)
+
 2003-04-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 

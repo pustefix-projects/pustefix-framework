@@ -68,7 +68,7 @@
         
         <pfx:layer class="layer" name="B" pos-right="10" pos-top="10" visible="false">
           <b>This is Layer B</b><br/>
-          <pfx:image src="/sample1/img/test.gif"/><br/>
+          <pfx:image alt="Good morning" title="Good evening" src="/sample1/img/test.gif"/><br/>
           <pfx:switch>
             <pfx:layer_ref name="C"/>
             Toggle Layer C

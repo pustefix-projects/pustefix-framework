@@ -280,6 +280,33 @@ public class CheckIncludes {
                                         textelm.appendChild(textval);
                                         res_lang.appendChild(textelm);
                                     }
+
+                                    NodeList altnodes   = XPathAPI.selectNodeList(langelem, ".//*[@alt or @title]");
+                                    
+                                    for (int x = 0; x < altnodes.getLength(); x++) {
+                                        if (altnodes.item(x) instanceof Element) {
+                                            Element alt = (Element) altnodes.item(x);
+                                            String  alttxt   = alt.getAttribute("alt");
+                                            String  titletxt = alt.getAttribute("title");
+
+                                            if (alttxt != null && !alttxt.equals("")) {
+                                                Element altelem = result.createElement("attribute");
+                                                altelem.setAttribute("type", "alt");
+                                                altelem.setAttribute("nodename", alt.getNodeName());
+                                                Text txtval = result.createTextNode(alttxt);
+                                                altelem.appendChild(txtval);
+                                                res_lang.appendChild(altelem);
+                                            }
+                                            if (titletxt != null && !titletxt.equals("")) {
+                                                Element titleelem = result.createElement("attribute");
+                                                titleelem.setAttribute("type", "title");
+                                                titleelem.setAttribute("nodename", alt.getNodeName());
+                                                Text txtval = result.createTextNode(titletxt);
+                                                titleelem.appendChild(txtval);
+                                                res_lang.appendChild(titleelem);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
