@@ -483,7 +483,7 @@ public class Context implements AppContext {
                     after_current = true;
                 } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                     LOG.debug("* Skipping step [" + page + "] in workflow (state is not accessible...)");
-                    break;
+                    // break;
                 } else {
                     LOG.debug("* Workflow is at step " + i + ": [" + page + "]");
                     boolean needsdata;

@@ -1,5 +1,8 @@
 2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: Eeeek. don't "break" the for loop when a state
+	is inaccessible..
+
 	* started 0.5.2-pre
 
 	* released 0.5.1 
