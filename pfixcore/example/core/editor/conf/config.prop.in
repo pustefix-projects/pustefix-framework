@@ -132,30 +132,33 @@
   </pagerequest>
 
   <pagerequest name="testcaseselect">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
     <ihandler>
       <interface prefix="tcselect" class="de.schlund.pfixcore.editor.interfaces.TestcaseSelect"/>
       <interface prefix="tcreset" class="de.schlund.pfixcore.editor.interfaces.TestcaseReset"/>
     </ihandler>
     <output>
-    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
     </output>
   </pagerequest>
   
   <pagerequest name="testcasestart">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
     <ihandler>
       <interface prefix="tcstart" class="de.schlund.pfixcore.editor.interfaces.TestcaseStart"/>
     </ihandler>
     <output>
-    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
     </output>
   </pagerequest>
   
   <pagerequest name="testcaseoverview">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
     <ihandler>
       <interface prefix="tcoverview" class="de.schlund.pfixcore.editor.interfaces.TestcaseOverview"/>
     </ihandler>
     <output>
-    	<resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
+      <resource node="testcases" class="de.schlund.pfixcore.editor.resources.CRTestcase"/>
     </output>
   </pagerequest>
   
@@ -178,7 +181,7 @@
   <pagerequest name="sessionmanager">
     <state class="de.schlund.pfixcore.editor.handlers.SessionManagerState"/>
   </pagerequest>
-
+  
   <pagerequest name="logout">
     <ihandler>
       <interface prefix="exit" class="de.schlund.pfixcore.editor.interfaces.Logout"/>

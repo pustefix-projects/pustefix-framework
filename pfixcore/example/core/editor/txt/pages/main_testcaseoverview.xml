@@ -10,120 +10,120 @@
        <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
       
 
-      <p align="center"><b>All results of play-backed testcases:</b></p><br/><br/>
-      <table align="center" class="editor_box">
-        <tr>
-          <td>Note:</td> 
-        </tr>
-        <tr>
-          <td>
-            :-) means no diff between recorded and current result
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <font>
-              <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
-              Green(+)
-            </font>
-              nodes are added in the current result
-          </td>
-        </tr>
-          
-        <tr>
-          <td>
-            <font>
-              <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
-                Red(-)
-            </font>
-              nodes are leaved out in the current result 
-          </td>
-        </tr>
-      </table>
-
-      
-       <ixsl:for-each select="/formresult/testcases/test_results/child::*">
-       <br/><hr/><br/>
-       <p align="center"><b>Results for test <ixsl:value-of select="@id"/></b></p><br/>
-       <table align="center" border="1" cellspacing="0" cellpadding="0" class="editor_box">
-        <ixsl:for-each select="./child::*">
+        <p align="center"><b>All results of play-backed testcases:</b></p><br/><br/>
+        <table align="center" class="editor_box">
           <tr>
-            <th>Step</th>
-            <th>Statuscode</th>
-            <th>Diff</th>
+            <td>Note:</td> 
           </tr>
           <tr>
-            <td align="center">
-              <ixsl:value-of select="name()"/>
-              <ixsl:value-of select="@id"/>
-            </td>
-            <td align="center">
-              <ixsl:value-of select="@statuscode"/>
-            </td>
             <td>
-              <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0" class="editor_box">
-                <ixsl:choose>
-                  <ixsl:when test="./child::*">
-                    <ixsl:for-each select="./child::*">
-                      <tr>
-                        <ixsl:variable name="line" select="."/>
-                        <ixsl:choose>
-                          <ixsl:when test="substring($line, 1, 1)='-'">
-                            <td>
-                              <font>
-                                <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
-                                <ixsl:value-of select="$line"/>
-                              </font>
-                            </td>
-                          </ixsl:when>
-                          <ixsl:when test="substring($line, 1, 1)='+'">
-                            <td>
-                              <font>
-                                <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
-                                <ixsl:value-of select="$line"/>
-                              </font>
-                            </td>
-                          </ixsl:when>
-                          <ixsl:otherwise>
-                            <td>
-                              <ixsl:value-of select="$line"/>
-                            </td>
-                          </ixsl:otherwise>
-                        </ixsl:choose>
-                      </tr>
-                    </ixsl:for-each>
-                  </ixsl:when>
-                  <ixsl:otherwise>
-                    <tr>
-                      <td>
-                        :-)
-                      </td>
-                    </tr>
-                  </ixsl:otherwise>
-                </ixsl:choose>
-              </table>
+              :-) means no diff between recorded and current result
             </td>
           </tr>
+          <tr>
+            <td>
+              <font>
+                <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
+                Green(+)
+              </font>
+              nodes are added in the current result
+            </td>
+          </tr>
+          
+          <tr>
+            <td>
+              <font>
+                <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
+                Red(-)
+              </font>
+              nodes are leaved out in the current result 
+            </td>
+          </tr>
+        </table>
+        
+        
+        <ixsl:for-each select="/formresult/testcases/test_results/child::*">
+          <br/><hr/><br/>
+          <p align="center"><b>Results for test <ixsl:value-of select="@id"/></b></p><br/>
+          <table align="center" border="1" cellspacing="0" cellpadding="0" class="editor_box">
+            <ixsl:for-each select="./child::*">
+              <tr>
+                <th>Step</th>
+                <th>Statuscode</th>
+                <th>Diff</th>
+              </tr>
+              <tr>
+                <td align="center">
+                  <ixsl:value-of select="name()"/>
+                  <ixsl:value-of select="@id"/>
+                </td>
+                <td align="center">
+                  <ixsl:value-of select="@statuscode"/>
+                </td>
+                <td>
+                  <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0" class="editor_box">
+                    <ixsl:choose>
+                      <ixsl:when test="./child::*">
+                        <ixsl:for-each select="./child::*">
+                          <tr>
+                            <ixsl:variable name="line" select="."/>
+                            <ixsl:choose>
+                              <ixsl:when test="substring($line, 1, 1)='-'">
+                                <td>
+                                  <font>
+                                    <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
+                                    <ixsl:value-of select="$line"/>
+                                  </font>
+                                </td>
+                              </ixsl:when>
+                              <ixsl:when test="substring($line, 1, 1)='+'">
+                                <td>
+                                  <font>
+                                    <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
+                                    <ixsl:value-of select="$line"/>
+                                  </font>
+                                </td>
+                              </ixsl:when>
+                              <ixsl:otherwise>
+                                <td>
+                                  <ixsl:value-of select="$line"/>
+                                </td>
+                              </ixsl:otherwise>
+                            </ixsl:choose>
+                          </tr>
+                        </ixsl:for-each>
+                      </ixsl:when>
+                      <ixsl:otherwise>
+                        <tr>
+                          <td>
+                            :-)
+                          </td>
+                        </tr>
+                      </ixsl:otherwise>
+                    </ixsl:choose>
+                  </table>
+                </td>
+              </tr>
+            </ixsl:for-each>
+          </table>
         </ixsl:for-each>
-       </table>
-       </ixsl:for-each>
-       <br/>
-       <hr/>
-       <br/>
-       <table>
-        <tr>
-          <td>
-            <pfx:button normalclass="editor_submit" page="testcaseselect">New test
-              <pfx:argument name="tcreset.Reset">true</pfx:argument>
-              <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
-            </pfx:button>
-          </td>
-        </tr>
-       </table>
+        <br/>
+        <hr/>
+        <br/>
+        <table>
+          <tr>
+            <td>
+              <pfx:button normalclass="editor_submit" page="testcaseselect">New test
+                <pfx:argument name="tcreset.Reset">true</pfx:argument>
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
+              </pfx:button>
+            </td>
+          </tr>
+        </table>
       </lang>
-      </product>
+    </product>
   </part>
-
+  
 
   
 </include_parts><!--
