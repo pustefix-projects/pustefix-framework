@@ -1,20 +1,18 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <servletinfo>
-    <sslneeded>true</sslneeded>
-    <depend><cus:docroot/>sample1/conf/depend.xml</depend>
-    <servletname>pfixcore_project:sample1::servlet:secure</servletname>
-    <prohibitedit>false</prohibitedit>
+  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:secure">
+    <ssl      force="true"/>
+    <editmode allow="true"/>
   </servletinfo>
-
+  
   <context defaultflow="Def"/>
   
   <pageflow name="Def">
     <flowstep name="ssltest"/>
   </pageflow>
-
+  
   <pagerequest name="ssltest"/>
-
+  
 </properties>
 
 <!--

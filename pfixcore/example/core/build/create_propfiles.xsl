@@ -141,28 +141,40 @@
   </xsl:template>
 
   <xsl:template match="servletinfo">
-    <xsl:if test="./sslneeded/node()">
+    <xsl:if test="./ssl">
       <xsl:text>servlet.needsSSL=</xsl:text>
-      <xsl:apply-templates select="./sslneeded/node()">
-        <xsl:with-param name="doit" select="'yes'"/>
-      </xsl:apply-templates>
+      <!--       <xsl:apply-templates select="./sslneeded/node()"> -->
+      <!--         <xsl:with-param name="doit" select="'yes'"/> -->
+      <!--       </xsl:apply-templates> -->
+      <xsl:value-of select="@force"/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:if>
     <xsl:text>xmlserver.depend.xml=</xsl:text>
-    <xsl:apply-templates select="./depend/node()">
-      <xsl:with-param name="doit" select="'yes'"/>
-    </xsl:apply-templates>
+    <!--     <xsl:apply-templates select="./depend/node()"> -->
+    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
+    <!--     </xsl:apply-templates> -->
+    <xsl:choose>
+      <xsl:when test="starts-with(@depend, '/')"><xsl:value-of select="@depend"/></xsl:when>
+      <xsl:otherwise><xsl:value-of select="$docroot"/>/<xsl:value-of select="@depend"/></xsl:otherwise>
+    </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
     <xsl:text>xmlserver.servlet.name=</xsl:text>
-    <xsl:apply-templates select="./servletname/node()">
-      <xsl:with-param name="doit" select="'yes'"/>
-    </xsl:apply-templates>
+    <!--     <xsl:apply-templates select="./servletname/node()"> -->
+    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
+    <!--     </xsl:apply-templates> -->
+    <xsl:value-of select="@name"/>
     <xsl:text>&#xa;</xsl:text>
-    <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
-    <xsl:apply-templates select="./prohibitedit/node()">
-      <xsl:with-param name="doit" select="'yes'"/>
-    </xsl:apply-templates>
-    <xsl:text>&#xa;</xsl:text>
+    <xsl:if test="./editmode">
+      <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
+      <!--     <xsl:apply-templates select="./prohibitedit/node()"> -->
+      <!--       <xsl:with-param name="doit" select="'yes'"/> -->
+      <!--     </xsl:apply-templates> -->
+      <xsl:choose>
+        <xsl:when test="./editmode[@allow = 'true']">false</xsl:when>
+        <xsl:otherwise>true</xsl:otherwise>
+      </xsl:choose>
+      <xsl:text>&#xa;</xsl:text>
+    </xsl:if>
     <xsl:if test="./adminmode">
       <xsl:text>context.adminmode.watch=</xsl:text>
       <xsl:value-of select="./adminmode/@watch"/><xsl:text>&#xa;</xsl:text>
