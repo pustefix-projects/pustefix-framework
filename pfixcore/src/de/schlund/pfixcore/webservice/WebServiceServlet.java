@@ -13,6 +13,12 @@ import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.apache.axis.AxisFault;
+import org.apache.axis.Message;
+import org.apache.axis.utils.Messages;
+import org.apache.axis.AxisEngine;
+import org.apache.axis.MessageContext;
+
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
 
@@ -45,10 +51,10 @@ public class WebServiceServlet extends AxisServlet {
             File[] propFiles=new File[al.size()];
             for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
             ConfigProperties cfgProps=new ConfigProperties(propFiles);
-            ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
+            Configuration srvConf=new Configuration(cfgProps);
             wsc=new WebServiceContext(srvConf);
             getServletContext().setAttribute(wsc.getClass().getName(),wsc);
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getMonitoringEnabled()) {
+            if(wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
                 MonitoringCache cache=new MonitoringCache();
                 wsc.setAttribute(cache.getClass().getName(),cache);
             }
@@ -122,10 +128,20 @@ public class WebServiceServlet extends AxisServlet {
         return css;
     }
     
+    
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-       
+        System.out.println("POSTSOAP");
+        System.out.println(req.getClass().getName());
+        System.out.println(req.getHeader(Constants.HEADER_SOAP_ACTION));
+        System.out.println(req.getParameter(Constants.PARAM_SOAP_MESSAGE));
+        java.util.Enumeration enum=req.getParameterNames();
+        while(enum.hasMoreElements()) System.out.println(enum.nextElement());
+        if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
+            System.out.println("FORMSOAP");
+            super.doPost(new SOAPActionRequestWrapper(req),res);
+        } else {
             super.doPost(req,res);
-        
+        }
     }
     
     
@@ -136,7 +152,7 @@ public class WebServiceServlet extends AxisServlet {
         if(qs==null) {
             sendBadRequest(req,res,writer);
         } else if(qs.equalsIgnoreCase("WSDL")) {
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getWSDLSupportEnabled()) {
+            if(wsc.getConfiguration().getGlobalServiceConfig().getWSDLSupportEnabled()) {
                 String pathInfo=req.getPathInfo();
                 String serviceName;
                 if (pathInfo.startsWith("/")) {
@@ -144,14 +160,14 @@ public class WebServiceServlet extends AxisServlet {
                 } else {
                     serviceName=pathInfo;
                 }
-                ServiceConfig conf=wsc.getServiceConfiguration().getServiceConfig(serviceName);
-                int type=conf.getSessionType();
-                if(type==Constants.SESSION_TYPE_SERVLET && session==null) {
+                ServiceConfig conf=wsc.getConfiguration().getServiceConfig(serviceName);
+                String type=conf.getSessionType();
+                if(type.equals(Constants.SESSION_TYPE_SERVLET) && session==null) {
                     sendForbidden(req,res,writer);
                     return;
                 }
                 res.setContentType("text/xml");
-                String repoPath=wsc.getServiceConfiguration().getServiceGlobalConfig().getWSDLRepository();
+                String repoPath=wsc.getConfiguration().getGlobalServiceConfig().getWSDLRepository();
                 InputStream in=getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
                 if(in!=null) {
                     if(type==Constants.SESSION_TYPE_SERVLET) {
@@ -183,7 +199,7 @@ public class WebServiceServlet extends AxisServlet {
                 } else sendError(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getMonitoringEnabled()) {
+            if(wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
                 if(session!=null) sendMonitor(req,res,writer);
                 else sendForbidden(req,res,writer);
             }
@@ -191,5 +207,7 @@ public class WebServiceServlet extends AxisServlet {
             
         } else sendBadRequest(req,res,writer);
     }
+    
+  
     
 }

@@ -53,6 +53,10 @@ public class ConfigProperties {
         }
     }
     
+    public Iterator getPropertyKeys() {
+        return getPropertyKeys(".*");
+    }
+    
     public Iterator getPropertyKeys(String regex) {
         Pattern pat=Pattern.compile(regex);
         ArrayList al=new ArrayList();
@@ -69,6 +73,51 @@ public class ConfigProperties {
         return properties.getProperty(key);
     }
     
+    public boolean getBooleanProperty(String propName,boolean mandatory) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null) {
+            if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+            else return false;
+        }
+        if(val.equalsIgnoreCase("true")) return true;
+        if(val.equalsIgnoreCase("false")) return false;
+        throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+    }
+    
+    public String getStringProperty(String propName,boolean mandatory) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null && mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+        return val;
+    }
+    
+    public String getStringProperty(String propName,String[] allowedValues,boolean mandatory) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null) {
+            if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+            else return null;
+        }
+        for(int i=0;i<allowedValues.length;i++) {
+            if(val.equals(allowedValues[i])) return val;
+        }
+        throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+    }
+    
+    public String getStringProperty(String propName,String regex,boolean mandatory) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null) {
+            if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+            else return null;
+        }
+        Pattern pat=Pattern.compile(regex);
+        Matcher mat=pat.matcher(val);
+        if(mat.matches()) return val; 
+        throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+    }
+    
+    public Properties getProperties() {
+        return getProperties(".*");
+    }
+    
     public Properties getProperties(String regex) {
         Properties props=new Properties();
         Iterator it=getPropertyKeys(regex);
@@ -80,11 +129,40 @@ public class ConfigProperties {
         return props;
     }
     
+    public boolean diffProperties(ConfigProperties diffProps) {
+        return diffProperties(diffProps,".*");
+    }
+    
+    public boolean diffProperties(ConfigProperties diffProps,String regex) {
+        HashSet keys=new HashSet();
+        Iterator it=getPropertyKeys(regex);
+        while(it.hasNext()) {
+            String key=(String)it.next();
+            keys.add(key);
+            String diffVal=diffProps.getProperty(key);
+            if(diffVal==null) return true;
+            String val=getProperty(key);
+            if(!val.equals(diffVal)) return true;
+        }
+        it=diffProps.getPropertyKeys(regex);
+        while(it.hasNext()) {
+            String key=(String)it.next();
+            if(!keys.contains(key)) return true;
+        }
+        return false;
+    }
+    
     public String toString() {
+        return toString(".*");
+    }
+    
+    public String toString(String regex) {
         StringBuffer sb=new StringBuffer();
-        ArrayList al=new ArrayList(properties.keySet());
+        ArrayList al=new ArrayList();
+        Iterator it=getPropertyKeys(regex);
+        while(it.hasNext()) al.add(it.next());
         Collections.sort(al);
-        Iterator it=al.iterator();
+        it=al.iterator();
         while(it.hasNext()) {
             String key=(String)it.next();
             String val=properties.getProperty(key);

@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.webservice.monitor;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,6 +21,6 @@ public abstract class MonitorRequestWrapper extends HttpServletRequestWrapper {
         super(req);
     }
     
-   public abstract byte[] getBytes();
+   public abstract byte[] getBytes() throws IOException;
    
 }

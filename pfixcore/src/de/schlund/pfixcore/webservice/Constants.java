@@ -11,9 +11,10 @@ public class Constants {
 	final public static String CONFIGURATION_CONTEXT="org.jboss.net.axis.CONFIGURATION_CONTEXT";
 	final static String FLASH_ENABLED_CLIENT ="org.jboss.net.axis.FLASH_ENABLED_CLIENT";
 
-    public final static int SESSION_TYPE_NONE=0;
-    public final static int SESSION_TYPE_SERVLET=1;
-    public final static int SESSION_TYPE_SOAPHEADER=1;
+    public final static String SESSION_TYPE_NONE="none";
+    public final static String SESSION_TYPE_SERVLET="servlet";
+    public final static String SESSION_TYPE_SOAPHEADER="soapheader";
+    public final static String[] SESSION_TYPES={SESSION_TYPE_NONE,SESSION_TYPE_SERVLET,SESSION_TYPE_SOAPHEADER};
     
     public static final String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
     public static final String MSGCTX_PROP_MONITORSTART="PFX_MONITORSTART";
@@ -29,5 +30,8 @@ public class Constants {
     public final static String ENCODING_USE_ENCODED="encoded";
     public final static String ENCODING_USE_LITERAL="literal";
     public final static String[] ENCODING_USES={ENCODING_USE_ENCODED,ENCODING_USE_LITERAL};
+ 
+    public static final String HEADER_SOAP_ACTION="SOAPAction";
+    public static final String PARAM_SOAP_MESSAGE="soapmessage";
     
 }

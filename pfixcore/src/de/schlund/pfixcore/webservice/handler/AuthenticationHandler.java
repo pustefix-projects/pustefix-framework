@@ -41,8 +41,9 @@ public class AuthenticationHandler extends AbstractHandler {
         //handle request
         WebServiceContext context=getWebServiceContext(messageContext);
        
-        ServiceConfiguration config=context.getServiceConfiguration();
+        Configuration config=context.getConfiguration();
         ServiceConfig srvConf=config.getServiceConfig(target);
+        if(srvConf==null) throw AxisFault.makeFault(new Exception("Target service doesn't exist"));
         if(srvConf.getContextName()!=null) {
             if(srvConf.getSessionType()==Constants.SESSION_TYPE_SERVLET) {
                 HttpSession session=getSession(messageContext);

@@ -34,7 +34,9 @@ function soapCall(method,val1,val2) {
 
 	var d2=new Date();
    var t2=d2.getTime();
-   var t=t2-t1;;
+   var t=t2-t1;
+   
+   
 
 	if(response.fault) {
 		soapPrintError(response.fault.faultString,t);

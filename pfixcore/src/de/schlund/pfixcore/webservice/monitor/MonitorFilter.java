@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URLDecoder;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -70,6 +71,9 @@ public class MonitorFilter implements Filter {
         if(!(request instanceof HttpServletRequest && response instanceof HttpServletResponse)) return;
         HttpServletRequest req=(HttpServletRequest)request;
         HttpServletResponse res=(HttpServletResponse)response;
+          
+        MonitorRequestWrapper reqWrapper=new StreamingRequestWrapper((HttpServletRequest)request);
+        MonitorResponseWrapper resWrapper=new StreamingResponseWrapper((HttpServletResponse)response);
         
         HttpSession session=req.getSession(false);
         String ip=req.getRemoteAddr();
@@ -91,15 +95,18 @@ public class MonitorFilter implements Filter {
         HttpHeader[] reqHdrs=new HttpHeader[reqHeaders.size()];
         for(int i=0;i<reqHeaders.size();i++) reqHdrs[i]=(HttpHeader)reqHeaders.get(i);
         
-        MonitorRequestWrapper reqWrapper=new StreamingRequestWrapper((HttpServletRequest)request);
-        MonitorResponseWrapper resWrapper=new StreamingResponseWrapper((HttpServletResponse)response);
+      
         
+        
+       
         long t1=System.currentTimeMillis();
         chain.doFilter(reqWrapper,resWrapper);
         long t2=System.currentTimeMillis();
         
         HttpRequest httpReq=new HttpRequest(method,uri,date,(t2-t1),reqHdrs,reqWrapper.getBytes());
         HttpResponse httpRes=new HttpResponse(resWrapper.getHeaders(),resWrapper.getBytes());
+       
+      
         httpReq.setResponse(httpRes);
         
         if(session!=null) {

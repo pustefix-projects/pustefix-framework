@@ -21,18 +21,26 @@ public class StreamingRequestWrapper extends MonitorRequestWrapper {
     
     public StreamingRequestWrapper(HttpServletRequest req) throws IOException {
         super(req);
-        myIn=new MyServletInputStream(req.getInputStream());
+        myIn=new MyServletInputStream(req);
     }
         
     public ServletInputStream getInputStream() throws IOException {
+        System.out.println("getsis");
         return myIn;
+    }
+    
+    public java.lang.String getParameter(java.lang.String name) {
+        System.out.println("get "+name);
+        return super.getParameter(name);
+        
     }
      
     public BufferedReader getReader() throws IOException {
+        System.out.println("getbr");
         return new BufferedReader(new InputStreamReader(myIn));
     }
     
-    public byte[] getBytes() {
+    public byte[] getBytes() throws IOException {
         return myIn.getBytes();
     }
     
@@ -40,20 +48,29 @@ public class StreamingRequestWrapper extends MonitorRequestWrapper {
         
         InputStream reqIn;
         ByteArrayOutputStream out;
+        boolean wasRead;
+        HttpServletRequest req;
         
-        public MyServletInputStream(InputStream reqIn) {
-            this.reqIn=reqIn;
+        public MyServletInputStream(HttpServletRequest req) {
+            this.req=req;
             out=new ByteArrayOutputStream();
         }
         
         public int read() throws IOException {
+            if(reqIn==null) {
+                System.out.println("read");
+                reqIn=req.getInputStream();
+            }
             int b=reqIn.read();
             out.write(b);
             return b;
         }
         
-        public byte[] getBytes() {
-        	return out.toByteArray();
+        public byte[] getBytes() throws IOException {
+            //Read input if not already done
+            int ch=-1;
+            while((ch=read())!=-1) {};
+            return out.toByteArray();
         }
         
     }

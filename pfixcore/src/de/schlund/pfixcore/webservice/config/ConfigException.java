@@ -1,16 +1,16 @@
 /*
- * de.schlund.pfixcore.webservice.config.ServiceConfigurationException
+ * de.schlund.pfixcore.webservice.config.ConfigException
  */
 package de.schlund.pfixcore.webservice.config;
 
 /**
- * ServiceConfigurationException.java 
+ * ConfigException.java 
  * 
  * Created: 03.08.2004
  * 
  * @author mleidig
  */
-public class ServiceConfigurationException extends Exception {
+public class ConfigException extends Exception {
     
     public final static int MISSING_PROPERTY=0;
     public final static int ILLEGAL_PROPERTY_VALUE=1;
@@ -19,13 +19,13 @@ public class ServiceConfigurationException extends Exception {
     private String propName;
     private String propVal;
     
-    public ServiceConfigurationException(int type,String propName) {
+    public ConfigException(int type,String propName) {
         super();
         this.type=type;
         this.propName=propName;
     }
     
-    public ServiceConfigurationException(int type,String propName,String propVal) {
+    public ConfigException(int type,String propName,String propVal) {
         super();
         this.type=type;
         this.propName=propName;

@@ -3,7 +3,7 @@
 	<webservice-global>
 		<requestpath>/xml/webservice</requestpath>
 		<wsdlsupport enabled="true" repository="/wsdl"/>
-		<encoding style="rpc" use="literal"/>
+		<encoding style="rpc" use="encoded"/>
 		<monitoring enabled="true" scope="session"/>
 		<logging enabled="false"/>
 	</webservice-global>

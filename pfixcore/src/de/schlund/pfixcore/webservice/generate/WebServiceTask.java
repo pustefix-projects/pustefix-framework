@@ -54,8 +54,10 @@ public class WebServiceTask extends Task {
     private Transformer trfSerializer;
     
     private boolean shortNamespaces=true;
-    //SOAP RPC encoding style: encoded|literal
-    private String rpcStyle="literal";
+    //SOAP encoding style: rpc|document
+    private String encStyle="rpc";
+    //SOAP encoding use: encoded|literal
+    private String encUse="encoded";
     
     public void execute() throws BuildException {
         
@@ -85,10 +87,10 @@ public class WebServiceTask extends Task {
                     if(!globPropsFile.exists() || globPropsFile.lastModified()<wsConfFile.lastModified()) propsChanged=true;
                     
                     ConfigProperties cfgProps=new ConfigProperties(new File[] {wsConfFile});
-                    ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
-                    ServiceGlobalConfig globConf=srvConf.getServiceGlobalConfig();
+                    Configuration srvConf=new Configuration(cfgProps);
+                    GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
                     
-                    System.out.println(globConf.changed(new ServiceGlobalConfig(new ConfigProperties(new File[] {globPropsFile}))));
+                    //System.out.println(globConf.doesDiff(new GlobalServiceConfig(new ConfigProperties(new File[] {globPropsFile}))));
                     
                     File appDir=new File(webappsdir,prjName);
                     if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
@@ -166,7 +168,7 @@ public class WebServiceTask extends Task {
                         File wsdlFile=new File(wsdlDir,wsName+".wsdl");
                         
                         if(!wsdlFile.exists() || wsdlFile.lastModified()<wsItfFile.lastModified() || !confPropsFile.exists() || 
-                                propsChanged || conf.changed(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
+                                propsChanged || conf.doesDiff(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
                             
                                 checkInterface(wsItf);
                             
@@ -180,7 +182,7 @@ public class WebServiceTask extends Task {
                                 task.setNamespace(wsNS);
                                 task.setLocation(wsUrl+"/"+wsName);
                                 task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
-                                task.setUse(rpcStyle);
+                                task.setUse(encUse);
                                 task.generate();
                                 log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
                                 conf.saveProperties(new File(tmpDir,wsName+".props"));

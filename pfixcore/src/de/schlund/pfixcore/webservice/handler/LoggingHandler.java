@@ -18,7 +18,7 @@ public class LoggingHandler extends AbstractHandler {
     }
 
     public void invoke(MessageContext messageContext) throws AxisFault {
-        if(getWebServiceContext(messageContext).getServiceConfiguration().getServiceGlobalConfig().getLoggingEnabled()) {
+        if(getWebServiceContext(messageContext).getConfiguration().getGlobalServiceConfig().getLoggingEnabled()) {
             String target=messageContext.getTargetService();
             if(!messageContext.getPastPivot()) {
                 messageContext.setProperty(Constants.MSGCTX_PROP_MONITORSTART,new Long(System.currentTimeMillis()));

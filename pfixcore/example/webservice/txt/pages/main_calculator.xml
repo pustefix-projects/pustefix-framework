@@ -103,6 +103,14 @@
 				</tr>
 			</table>	
 		</form>
+		
+		
+		<form action="/xml/webservice/Calculator" method="post" target="_top">
+			<textarea name="soapmessage">gwfgsffffffffffffffffffffffffffffffffffdfsdffffffdfgsdfg</textarea>
+			<input type="submit" value="submit"/>
+		</form>
+		
+		
       </lang>
     </product>
   </part>

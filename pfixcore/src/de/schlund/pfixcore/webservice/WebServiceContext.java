@@ -16,15 +16,15 @@ import java.util.HashMap;
  */
 public class WebServiceContext {
 
-    private ServiceConfiguration config;
+    private Configuration config;
     private HashMap attributes;
     
-    public WebServiceContext(ServiceConfiguration config) {
+    public WebServiceContext(Configuration config) {
         this.config=config;
         attributes=new HashMap();
     }
     
-    public ServiceConfiguration getServiceConfiguration() {
+    public Configuration getConfiguration() {
         return config;
     }
     

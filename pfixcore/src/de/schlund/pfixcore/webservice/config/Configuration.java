@@ -1,30 +1,30 @@
 /*
- * de.schlund.pfixcore.webservice.config.ServiceConfiguration
+ * de.schlund.pfixcore.webservice.config.Configuration
  */
 package de.schlund.pfixcore.webservice.config;
 
 import java.util.*;
 
 /**
- * ServiceConfiguration.java 
+ * Configuration.java 
  * 
  * Created: 22.07.2004
  * 
  * @author mleidig
  */
-public class ServiceConfiguration {
+public class Configuration {
 
     private ConfigProperties props;
-    private ServiceGlobalConfig globConf;
+    private GlobalServiceConfig globConf;
     private HashMap srvsConf;
     
-    public ServiceConfiguration(ConfigProperties props) throws ServiceConfigurationException {
+    public Configuration(ConfigProperties props) throws ConfigException {
         this.props=props;
         init();
     }
     
-    private void init() throws ServiceConfigurationException {
-        globConf=new ServiceGlobalConfig(props);
+    private void init() throws ConfigException {
+        globConf=new GlobalServiceConfig(props);
         srvsConf=new HashMap();
         Iterator it=props.getPropertyKeys("webservice\\.[^\\.]*\\.name");
         while(it.hasNext()) {
@@ -35,7 +35,7 @@ public class ServiceConfiguration {
         }
     }
     
-    public void reload() throws ServiceConfigurationException {
+    public void reload() throws ConfigException {
         globConf.reload();
         HashSet names=new HashSet();
         Iterator it=props.getPropertyKeys("webservice\\.[^\\.]*\\.name");
@@ -57,7 +57,7 @@ public class ServiceConfiguration {
         }
     }
     
-    public ServiceGlobalConfig getServiceGlobalConfig() {
+    public GlobalServiceConfig getGlobalServiceConfig() {
         return globConf;
     }
     
@@ -69,15 +69,15 @@ public class ServiceConfiguration {
         return srvsConf.values().iterator();
     }
     
-    public boolean changed(ServiceConfiguration sc) {
-        if(sc.getServiceGlobalConfig().changed(getServiceGlobalConfig())) return true;
+    public boolean doesDiff(Configuration sc) {
+        if(sc.getGlobalServiceConfig().doesDiff(getGlobalServiceConfig())) return true;
         Iterator it=getServiceConfig();
         int cnt=0;
         while(it.hasNext()) {
             cnt++;
             ServiceConfig conf=(ServiceConfig)it.next();
             ServiceConfig scConf=sc.getServiceConfig(conf.getName());
-            if(scConf==null || scConf.changed(conf)) return true;
+            if(scConf==null || scConf.doesDiff(conf)) return true;
         }
         it=sc.getServiceConfig();
         int scCnt=0;
