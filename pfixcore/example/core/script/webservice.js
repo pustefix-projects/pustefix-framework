@@ -66,6 +66,11 @@ xmlException.extend(coreException);
 //xmlUtilities
 //*********************************
 function xmlUtilities() {
+	this.scopeSupport=false;
+	try {
+		document.scopeName;
+		this.scopeSupport=true;
+	} catch(ex) {}
 }
 
 xmlUtilities.prototype.getChildrenByName=function(node,name) {
@@ -85,7 +90,11 @@ xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
     //    alert( xml.firstChild.scopeName + "::" + xml.firstChild.nodeName );
-		if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+    if(this.scopeSupport) {
+    	if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+	 } else {
+	 	if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+	 }
 	}
 	return nodes;
 }
