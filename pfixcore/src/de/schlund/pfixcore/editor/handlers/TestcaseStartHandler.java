@@ -32,7 +32,7 @@ public class TestcaseStartHandler implements IHandler {
             CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
             try {
                 crtc.executeTest();
-            } catch (TestClientException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
                 CAT.error(e);
             } 

@@ -87,7 +87,7 @@ class PFXHandler {
             for (Enumeration enum = instancecontainerlist_.elements(); enum.hasMoreElements();) {
                 InstanceCheckerContainer checker = (InstanceCheckerContainer) enum.nextElement();
                 result = checker.doesMatch(th);
-                pfutil_.debug("The InstanceCheckerContainers returned: " + pfutil_.strByResult(result));
+                pfutil_.debug("The InstanceCheckerContainer("+checker.getType() +") returned: " + pfutil_.strByResult(result));
                 if (result == PFUtil.MATCH) {
                     ruleMatch(excontext);
                     break;

@@ -75,6 +75,7 @@ public class ConsoleTestClient {
             if (style_dir == null) {
                 style_dir = src_dir;
             }
+            System.out.println("Setting options to TestClient: src_dir="+src_dir+" tmp_dir="+tmp_dir+" styledir="+style_dir);
             tc.setOptions(src_dir, tmp_dir, style_dir);
             if (loglevel != LOGLEVEL_QUIET) {
                 System.out.println("|====================================================|");
@@ -85,15 +86,15 @@ public class ConsoleTestClient {
                 TestcasePlaybackResult result = tc.makeTest();
                 printResult(result);
             }
-        } catch (TestClientException e) {
+        } catch (Exception e) {
             System.out.println("\n**********************************************");
             System.out.println("ERROR in TestClient");
             System.out.println("Exception:");
             System.out.println(e.getMessage());
             e.printStackTrace();
             System.out.println("Nested Exception:");
-            System.out.println(e.getExceptionCause().getMessage());
-            e.getExceptionCause().printStackTrace();
+            System.out.println(e.getCause().getMessage());
+            e.getCause().printStackTrace();
             System.out.println("\n**********************************************");
         }
     }
@@ -110,6 +111,7 @@ public class ConsoleTestClient {
             switch (c) {
                 case 'l':
                     log4j = getopt.getOptarg();
+                    break;
                 case 'd':
                     src_dir = getopt.getOptarg();
                     break;
@@ -139,16 +141,16 @@ public class ConsoleTestClient {
         if (loglevel != LOGLEVEL_QUIET) {
             System.out.println("*** Result for testcase: ***");
         }
-        ArrayList steps = result.getStepResults();
-        for (int i = 0; i < steps.size(); i++) {
-            TestcaseStepResult step = (TestcaseStepResult) steps.get(i);
-            if ((step.getDiffString() == null || step.getDiffString().equals(""))
+        
+        for (int i = 0; i < result.getNumStepResult(); i++) {
+            TestcaseStepResult stepresult = result.getStepResult(i);
+            if ((stepresult.getDiffString() == null || stepresult.getDiffString().equals(""))
                 && loglevel == LOGLEVEL_QUIET) {
                 // print nothing in quiet mode
             } else {
                 System.out.println("Step number " + i);
-                System.out.println("  Statuscode : " + step.getStatusCode());
-                String diff = step.getDiffString();
+                System.out.println("  Statuscode : " + stepresult.getStatuscode());
+                String diff = stepresult.getDiffString();
                 if (diff == null) {
                     diff = "NONE";
                 } else if (diff.equals("")) {
