@@ -48,7 +48,7 @@
 	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java
 	* tests/junit/de/schlund/pfixcore/editor/EditorProductFactoryTest.java
 	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
-	The big docroot cleanup. Not completely done, need to rething what to do with config files
+	The big docroot cleanup. Not completely done, need to rethink what to do with config files
 	for apache that really needs absolute file names.  Other than that, the editor seems to work,
 	but the editor APPLET is borked. Which is no big problem, as we want to kill it anyway soon.
 
