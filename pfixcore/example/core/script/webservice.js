@@ -417,6 +417,17 @@ SOAPEnvelope.prototype.getBody=function() {
 }
 
 //*********************************
+// SOAPBodyElement(serializer)
+//*********************************
+function SOAPBodyElement(serializer) {
+	this.serializer=serializer;
+}
+
+SOAPBodyElement.prototype.write=function(writer) {
+	this.serializer.serialize(writer);
+}
+
+//*********************************
 // SOAPBody()
 //*********************************
 function SOAPBody() {
@@ -449,23 +460,36 @@ SOAPBody.prototype.write=function(writer) {
 	writer.endElement(bodyName);
 }
 
+//*********************************
+// SOAPHeaderElement(serializer)
+//*********************************
+function SOAPHeaderElement(serializer) {
+	this.serializer=serializer;
+}
+
+SOAPHeaderElement.prototype.write=function(writer) {
+	this.serializer.serialize(writer);
+}
 
 //*********************************
 // SOAPHeader()
 //*********************************
 function SOAPHeader() {
-	
+	this.headerElems=new Array();
 }
 
-//*********************************
-// SOAPBodyElement(serializer)
-//*********************************
-function SOAPBodyElement(serializer) {
-	this.serializer=serializer;
+SOAPHeader.prototype.addHeaderElement=function(headerElem) {
+	this.headerElems.push(headerElem);
 }
 
-SOAPBodyElement.prototype.write=function(writer) {
-	this.serializer.serialize(writer);
+//write(XMLWriter writer) {
+SOAPHeader.prototype.write=function(writer) {
+	var headerName=new QName(XMLNS_SOAPENV,"Header");
+	writer.startElement(headerName);
+	for(var i=0;i<this.headerElems.length;i++) {
+		this.headerElems[i].write(writer);
+	}
+	writer.endElement(headerName);
 }
 
 //*********************************
