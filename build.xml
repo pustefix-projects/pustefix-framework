@@ -9,7 +9,6 @@
     <property name="project.name"           value="pfixcore"/>
     <property name="project.version"        value="0.4.2-pre" description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
     <property name="uid"                    value="${env.USER}"/>
-    <property name="javahome"               value="${env.JAVA_HOME}"/>
     <property name="build.compiler"         value="jikes"/>
     <property name="build.compiler.emacs"   value="true"/>
     <property name="build.compiler.fulldepend" value="true"/>
@@ -53,8 +52,22 @@
         <condition property="makemode"     value="test">
             <equals arg1="${env.MAKE_MODE}" arg2="test"/>
         </condition>
+        <condition  property="makemode"     value="stage">
+            <equals arg1="${env.MAKE_MODE}" arg2="stage"/>
+        </condition>
         <property  name="makemode"         value="prod"/>
         
+        <condition property="javahome" value="${env.PFX_JAVA_HOME}">
+        	<isset property="${env.JAVA_HOME}"/>
+        </condition>
+        <condition property="javahome" value="${env.JAVA_HOME}">
+        	<isset property="${env.JAVA_HOME}"/>
+        </condition>
+        <condition property="javahome" value="${java.home}">
+        	<isset property="${java.home}"/>
+        </condition>
+		<fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
+		
         <condition property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
