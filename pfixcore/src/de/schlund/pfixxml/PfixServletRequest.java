@@ -109,7 +109,7 @@ public class PfixServletRequest {
         }
     }
 
-    public synchronized void printLog() {
+    public void printLog() {
         if (session != null && perflog != null) {
             int depth  = 0;
             for (int i = 0; i < perflog.size(); i++) {

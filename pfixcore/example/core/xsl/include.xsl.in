@@ -29,7 +29,7 @@
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
       <form target="_top">
-        <table cellpadding="0" cellspacing="0" border="0">
+        <table width="10px" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="1%">
               <ixsl:choose>
@@ -82,7 +82,7 @@
             </ixsl:choose>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8x; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               P: <ixsl:value-of select="$page"/>
             </td>
           </tr>

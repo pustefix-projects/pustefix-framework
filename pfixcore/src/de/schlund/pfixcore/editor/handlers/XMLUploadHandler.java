@@ -66,8 +66,8 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static Category EDITOR = Category.getInstance("LOGGER_EDITOR");
     private static Category SERIALIZER = Category.getInstance("LOGGER_SERIALIZER");
-    //private static Category CAT = Category.getInstance(IncludesUploadHandler.class.getName());
-    private static Category CAT = null;
+    private static Category CAT = Category.getInstance(XMLUploadHandler.class.getName());
+    // private static Category CAT = null;
     private static PatternCompiler pc = new Perl5Compiler();
     private static Substitution nbspsubst = new StringSubstitution("&#160;");
     private static Pattern nbspsign;
