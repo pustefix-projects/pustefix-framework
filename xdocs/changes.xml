@@ -4,6 +4,11 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.7.1-pre" date="in cvs">
+      <action dev="mlhartme" type="add">
+        <p>Use Maven SourceForge Plugin for automatic deployment.</p>
+      </action>
+    </release>
     <release version="0.7.0" date="2004-08-19">
       <action dev="jenstl" type="update">
         <p>

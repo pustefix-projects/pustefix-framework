@@ -5,7 +5,7 @@
   <id>pfixcore</id>
   <name>Pustefix Core</name>
   <groupId>pustefix</groupId>
-  <currentVersion>0.7.0</currentVersion>
+  <currentVersion>0.7.1-pre</currentVersion>
   <organization>
     <name>The Pustefix Group</name>
     <url>http://sourceforge.net</url>
@@ -108,6 +108,13 @@
         <endorsed>true</endorsed>
       </properties>
     </dependency>
+    <dependency>
+      <groupId>mhm</groupId>
+      <artifactId>maven-sourceforge-plugin</artifactId>
+      <version>1.2.mhm</version>
+      <type>plugin</type>
+    </dependency>
+    
   </dependencies>
 
   <developers>
