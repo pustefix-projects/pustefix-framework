@@ -3,6 +3,7 @@
 //*****************************************************************************
 
 var _xml = [];
+var _xmlThis = [];
 var _xmlTimer = [];
 var _xmlTimerCount = [];
 var _xmlTimerCountMax = 2;
@@ -48,9 +49,6 @@ xmlRequest.prototype.start = function( content ) {
       _xml[i] = new XMLHttpRequest();
 
       if( this.callback ) {
-        //alert(""+_xml['+i+'].readyState + (_xml['+i+'].readyState==4 ? _xml['+i+'].status : "XXX"));
-        //        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { if( _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); } else { throw "Asynchronous call failed"; }}' );
-
         var self = this;
         _xml[i].onreadystatechange = function() {
           if( _xml[i].readyState == 4 ) { 
@@ -73,7 +71,7 @@ xmlRequest.prototype.start = function( content ) {
       }
     } catch(e) {
       _xml[i] = null;
-      alert("Exception:" + e);
+      throw "Exception:" + e;
     }    
 	}
 
@@ -127,8 +125,6 @@ xmlRequest.prototype.start = function( content ) {
 
     var i = _xml.length;
 
-    //    document.getElementById("dbg").value += "\n>" + i;
-
     var iframe = document.createElement("iframe");
 		iframe.style.visibility = "visible";
     //     iframe.style.position   = "absolute";
@@ -140,7 +136,6 @@ xmlRequest.prototype.start = function( content ) {
     iframe.name             = "pfxxmliframe"+i;
 
     iframe.src              = this.url;
-
     if( this.method.toUpperCase() == "POST" ) {
       // load dummy page to prevent cross-domain security error
       iframe.src = iframe.src.replace(/(https?:\/\/[^\/]+)(.*)/, "$1/xml.html");
@@ -149,13 +144,24 @@ xmlRequest.prototype.start = function( content ) {
     document.body.appendChild(iframe);
 
     _xml[i] = this.callback;
+    _xmlThis[i] = this;
     _xmlTimer[i] = true;
     _xmlTimerCount[i] = 0;
 
     var self = this;
     if( this.method.toUpperCase() == "POST" ) {
       setTimeout( function() {
-        var iDoc = iframe.contentDocument || contentWindow.document;
+
+        var iDoc;
+        try {
+          iDoc = contentWindow.document;
+        } catch(e) {
+          try {
+            iDoc =  iframe.contentDocument;
+          } catch(e) {
+            throw "could not use iframe";
+          }
+        }
 
         alert(iDoc);
         var attr;
@@ -205,7 +211,7 @@ function customOnReadyStateChange() {
             _xmlTimerCount[i]++;
           } else {
 
-            _xml[i](document.getElementById("pfxxmliframe"+i).contentDocument);
+            _xml[i].call( _xmlThis[i], window.frames['pfxxmliframe'+i].contentDocument );
             _xml[i] = null;
             cancelOnReadyStateChange(i);
           }
