@@ -17,7 +17,8 @@
     </cus:documentation>
   </xsl:template>
 
-  <xsl:template match="pfx:maincontent">          
+  <xsl:template match="pfx:maincontent">
+    <xsl:param name="noerror" select="@noerror"/>  
     <xsl:variable name="path">
       <xsl:choose>
         <xsl:when test="@path">
@@ -55,6 +56,7 @@
       <xsl:with-param name="part" select="$part"/>
       <!-- this is tricky to understand --> 
       <xsl:with-param name="computed_inc">true</xsl:with-param>
+      <xsl:with-param name="noerr" select="$noerror"/>      
     </xsl:call-template>
    <cus:documentation>
      <responsible>JTL</responsible>
@@ -446,9 +448,3 @@
   </xsl:template>
     
 </xsl:stylesheet>
-
-<!--
-Local Variables:
-mode: xsl
-End:
--->
