@@ -855,14 +855,13 @@ SOAP_Call.prototype.invoke=function() {
   var resDoc;
   if( !this.userCallback ) {
     // sync
-    this.request=new xmlRequest('POST',this.endpoint);
+    this.request=new XML_Request('POST',this.endpoint);
     resDoc=this.request.start(writer.xml); 
    
-    //resDoc = new xmlRequest( 'ePOST', this.endpoint ).start( writer.xml );
     return this.callback(resDoc);
   } else {
     // async
-    this.request=new xmlRequest( 'POST', this.endpoint, this.callback, this );
+    this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
     return this.request.start(writer.xml);
   }
 }
