@@ -14,6 +14,7 @@ import java.util.LinkedList;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
@@ -27,7 +28,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValueHelper {
-    
+    private static Category CAT = Category.getInstance(ExceptionDataValueHelper.class);
 	/**
 	 * @param exception
 	 * @param pfixReq
@@ -81,6 +82,7 @@ public class ExceptionDataValueHelper {
             } catch(Exception e) {
                 // Catch all exceptions here. If an exception occurs in context.toString
                 // we definitly want the exception-info to be generated.
+                CAT.error(e);
                 strvalue = e.getMessage();
             }
             sessdata.put(key, strvalue);
