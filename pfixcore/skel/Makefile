@@ -55,6 +55,7 @@ clean:
 
 installjars_tc: compile
 	@echo "Setting link to $(BUILDDIR)/* in projects/servletconf/tomcat/classes."
+	@(rm -f projects/servletconf/tomcat/classes)
 	@(cd projects/servletconf/tomcat/; ln -s ../../../$(BUILDDIR) classes)
 	@(rm -f projects/servletconf/tomcat/lib/*.jar)
 	@echo "create resource jar in tomcat directory"

@@ -97,7 +97,14 @@
   </category>
 
   <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
-    <priority value="INFO"/>
+    <cus:choose>
+      <cus:test mode="prod">
+        <priority value="WARN"/>
+      </cus:test>
+      <cus:test>
+        <priority value="DEBUG"/>
+      </cus:test>
+    </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -181,7 +188,7 @@
         <priority value="WARN"/>
       </cus:test>
       <cus:test>
-        <priority value="WARN"/>
+        <priority value="DEBUG"/>
       </cus:test>
     </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>

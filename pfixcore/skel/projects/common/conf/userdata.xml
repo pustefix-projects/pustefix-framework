@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <userinfo>
-    <user group="wheel" id="admin" name="CMS Administrator" phone="570" pwd="g3IlJR0qEHivY" sect="Entwicklung"/>
-    <user group="user" id="user" name="CMS User" phone="570" pwd="lFZssX2PwJKHI" sect="Entwicklung"/>
+    <user id="admin" name="CMS Administrator" phone="570" pwd="g3IlJR0qEHivY" sect="Entwicklung Unix">
+        <permissions>
+            <global admin="true" editDefaults="true"/>
+        </permissions>
+    </user>
+    <user id="user" name="CMS User" phone="570" pwd="lFZssX2PwJKHI" sect="Entwicklung">
+        <permissions>
+            <global admin="false" editDefaults="false"/>
+            <project editDefaults="false" editImages="false" editIncludes="false" name="cmscore"/>
+            <project editDefaults="true" editImages="true" editIncludes="true" name="sample1"/>
+        </permissions>
+    </user>
 </userinfo>
