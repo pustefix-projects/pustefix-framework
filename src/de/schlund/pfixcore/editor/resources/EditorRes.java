@@ -36,7 +36,6 @@ import de.schlund.pfixcore.workflow.*;
 public abstract class EditorRes {
     public final static String ESESSION  = "de.schlund.pfixcore.editor.resources.EditorSessionStatus";
     public final static String ESEARCH   = "de.schlund.pfixcore.editor.resources.EditorSearch";
-    public static final String ETESTCASE = "de.schlund.pfixcore.editor.resources.CRTestcase";
     
     public static EditorSearch getEditorSearch(ContextResourceManager crm) {
         return (EditorSearch) crm.getResource(ESEARCH);
@@ -44,10 +43,6 @@ public abstract class EditorRes {
     
     public static EditorSessionStatus getEditorSessionStatus(ContextResourceManager crm) {
         return (EditorSessionStatus) crm.getResource(ESESSION);
-    }
-    
-    public static CRTestcase getCRTestcase(ContextResourceManager crm) {
-        return (CRTestcase) crm.getResource(ETESTCASE);
     }
     
 }// EditorRes
