@@ -127,7 +127,7 @@
 	<xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
 	  <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
-	  <xsl:with-param name="docBase"><xsl:value-of select="$docroot"/>/servletconf/tomcat/webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
+	  <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
 	</xsl:call-template>
     <xsl:apply-templates select="passthrough"/>
     <xsl:apply-templates select="/projects/common/apache/passthrough"/>
@@ -144,7 +144,7 @@
       <xsl:when test="ext:exists($abs_path)">
         <xsl:call-template name="create_context">
           <xsl:with-param name="path">/<xsl:value-of select="$rel_path"/></xsl:with-param>
-	      <xsl:with-param name="docBase"><xsl:value-of select="$abs_path"/></xsl:with-param>
+	      <xsl:with-param name="docBase">../../<xsl:value-of select="$rel_path"/></xsl:with-param>
 	      <xsl:with-param name="cookies">false</xsl:with-param>
         </xsl:call-template>
       </xsl:when>
