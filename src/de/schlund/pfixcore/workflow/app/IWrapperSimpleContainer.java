@@ -57,46 +57,46 @@ import de.schlund.pfixxml.loader.*;
  *
  */
 
-public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
-    private   HashMap            wrappers           = new HashMap();
-    private   HashMap            prefixmap          = new HashMap();
-
-    // depends on request
-    private   ArrayList          activegroups       = new ArrayList();
-    private   IWrapperGroup      currentgroup       = null;
-    private   IWrapperGroup      selectedwrappers   = null;
-
-    private   IWrapperGroup      contwrappers       = null;
-    private   IWrapperGroup      always_retrieve    = null;
-
-    private   Context            context            = null;
-    private   ResultDocument     resdoc             = null;
-    private   PfixServletRequest preq               = null;
-    private   RequestData        reqdata            = null;
-    private   boolean            is_splitted        = false;
-    private   boolean            is_loaded          = false;
-    protected Category           CAT                = Category.getInstance(this.getClass().getName());
-    
-    public  static final String  PROP_CONTAINER     = "iwrappercontainer";
-    private static final String  PROP_INTERFACE     = "interface";
-    public  static final String  PROP_RESTRICED     = "restrictedcontinue";
+public class IWrapperSimpleContainer implements IWrapperContainer {
+    private   HashMap            wrappers             = new HashMap();
+    private   HashMap            prefixmap            = new HashMap();
+                                                      
+    // depends on request                             
+    private   ArrayList          activegroups         = new ArrayList();
+    private   IWrapperGroup      currentgroup         = null;
+    private   IWrapperGroup      selectedwrappers     = null;
+                                                      
+    private   IWrapperGroup      contwrappers         = null;
+    private   IWrapperGroup      always_retrieve      = null;
+                                                      
+    private   Context            context              = null;
+    private   ResultDocument     resdoc               = null;
+    private   PfixServletRequest preq                 = null;
+    private   RequestData        reqdata              = null;
+    private   boolean            is_splitted          = false;
+    private   boolean            is_loaded            = false;
+    protected Category           CAT                  = Category.getInstance(this.getClass().getName());
+                                                      
+    public  static final String  PROP_CONTAINER       = "iwrappercontainer";
+    private static final String  PROP_INTERFACE       = "interface";
+    public  static final String  PROP_RESTRICED       = "restrictedcontinue";
     public  static final String  PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
     
-    private static final String  GROUP_STATUS_PARAM = "__groupdisplay";
-    private static final String  GROUP_STATUS       = "__GROUPDISPLAY__STATUS__";
-    private static final Boolean GROUP_ON           = new Boolean(true);
-    private static final Boolean GROUP_OFF          = new Boolean(false);
-    private static final String  GROUP_ON_PARAM     = "on";
-    private static final String  GROUP_OFF_PARAM    = "off";
-    private static final String  GROUP_FORCE_PROP   = "forcegroupdisplay";
-    private static final String  GROUP_PROP         = "group";
-    private static final String  GROUP_ANONYMOUS    = "__AnonymousGroup__";
-
-    private              String  GROUP_CURR;
-    private static final String  GROUP_NEXT         = "NEXT";  
-    private static final String  GROUP_PREV         = "PREV";  
-    private static final String  SELECT_GROUP       = "SELGRP";  
-    private static final String  SELECT_WRAPPER     = "SELWRP";  
+    private static final String  GROUP_STATUS_PARAM   = "__groupdisplay";
+    private static final String  GROUP_STATUS         = "__GROUPDISPLAY__STATUS__";
+    private static final Boolean GROUP_ON             = new Boolean(true);
+    private static final Boolean GROUP_OFF            = new Boolean(false);
+    private static final String  GROUP_ON_PARAM       = "on";
+    private static final String  GROUP_OFF_PARAM      = "off";
+    private static final String  GROUP_FORCE_PROP     = "forcegroupdisplay";
+    private static final String  GROUP_PROP           = "group";
+    private static final String  GROUP_ANONYMOUS      = "__AnonymousGroup__";
+                                                      
+    private              String  GROUP_CURR;          
+    private static final String  GROUP_NEXT           = "NEXT";  
+    private static final String  GROUP_PREV           = "PREV";  
+    private static final String  SELECT_GROUP         = "SELGRP";  
+    private static final String  SELECT_WRAPPER       = "SELWRP";  
     
     /**
      * This method must be called right after an instance of this class is created.
@@ -107,8 +107,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#initIWrappers(Context, PfixServletRequest, ResultDocument) 
      */
-    public synchronized void initIWrappers(Context context, PfixServletRequest preq,
-                                           ResultDocument resdoc) throws Exception  {
+    public synchronized void initIWrappers(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception  {
         if (context == null)
             throw new IllegalArgumentException("A 'null' value for the Context argument is not acceptable here.");
         if (preq == null)
@@ -119,9 +118,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         this.context = context;
         this.preq    = preq;
         this.resdoc  = resdoc;
-
+        
         GROUP_CURR  = "__currentindex[" + context.getCurrentPageRequest().getName() + "]";
- 
+        
         readIWrappersConfigFromProperties(); 
     }
     
@@ -524,13 +523,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 Class thewrapper = null;
                 IWrapper wrapper = null;
                 try {
-                    AppLoader appLoader = AppLoader.getInstance();
-                    if (appLoader.isEnabled()) {
-                        wrapper = (IWrapper) appLoader.loadClass(iface).newInstance();
-                    } else {
-                        thewrapper = Class.forName(iface);
-                        wrapper    = (IWrapper) thewrapper.newInstance();
-                    }
+                    thewrapper = Class.forName(iface);
+                    wrapper    = (IWrapper) thewrapper.newInstance();
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {
@@ -548,8 +542,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 wrappers.put(iface, wrapper);
                 wrapper.init(realprefix);
                 
-                AppLoader appLoader = AppLoader.getInstance();
-                if (appLoader.isEnabled()) appLoader.addReloader(this);
             }
         }
     }
@@ -761,20 +753,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
             }
         }
     }// IWrapperGroup
-
-    public void reload() {
-          HashMap  wrappersNew = new HashMap();
-          Iterator it = wrappers.keySet().iterator();
-          while(it.hasNext()) {
-              String   str       = (String)it.next();
-              IWrapper iwOld     = (IWrapper) wrappers.get(str);
-              IWrapper iwNew     = (IWrapper)  StateTransfer.getInstance().transfer(iwOld);
-              String   className = iwOld.getClass().getName();
-              wrappersNew.put(str,iwNew);
-          }
-          wrappers = wrappersNew;
-          
-    }
 
     
 }// IWrapperSimpleContainer
