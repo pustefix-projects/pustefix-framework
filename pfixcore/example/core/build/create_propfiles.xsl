@@ -63,9 +63,27 @@
     <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
     <xsl:choose>
       <xsl:when test="./state"><xsl:value-of select="./state/@class"/></xsl:when>
-      <xsl:when test="./ihandler"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text></xsl:when>
+      <xsl:when test="./ihandler">
+        <xsl:choose>
+          <xsl:when test="/properties/servletinfo/defaultihandlerstate">
+            <xsl:value-of select="/properties/servletinfo/defaultihandlerstate/@class"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
       <xsl:when test="./authhandler"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</xsl:text></xsl:when>
-      <xsl:otherwise><xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text></xsl:otherwise>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="/properties/servletinfo/defaultstate">
+            <xsl:value-of select="/properties/servletinfo/defaultstate/@class"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
     </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
     <xsl:apply-templates>
@@ -73,6 +91,9 @@
     </xsl:apply-templates>
   </xsl:template>
 
+  <xsl:template match="/properties/servletinfo/defaultstate"/>
+  <xsl:template match="/properties/servletinfo/defaultihandlerstate"/>
+  
   <xsl:template match="finalizer">
     <xsl:param name="prefix"/>
     <xsl:value-of select="$prefix"/><xsl:text>.resdocfinalizer=</xsl:text>
