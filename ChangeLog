@@ -1,3 +1,8 @@
+2004-06-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: fixed generated property __PROPERTIES_LOAD_INDEX to really
+	get incremented every time the properties are reloaded.
+
 2004-06-19  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/editor/xsl/metatags.xsl: fixed again differently (using "/" instead of ../../ to match the

@@ -553,18 +553,20 @@ public abstract class ServletManager extends HttpServlet {
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if ((commonpropfile  != null && commonpropfile.lastModified()  > common_mtime) ||
             (servletpropfile != null && servletpropfile.lastModified() > servlet_mtime)) {
+            loadindex++;
 
             CAT.warn("\n\n##############################\n" +
-                         "#### Reloading properties ####\n" +
-                         "##############################\n");
+                     "#### Reloading properties ####\n" +
+                     "##############################\n");
             properties.clear();
+            
             if (commonpropfile != null) {
                 common_mtime = loadPropertyfile(properties, commonpropfile);
             }
             if (servletpropfile != null) {
                 servlet_mtime = loadPropertyfile(properties, servletpropfile);
             }
-            properties.setProperty(PROP_LOADINDEX, "" + (loadindex + 1));
+            properties.setProperty(PROP_LOADINDEX, "" + loadindex);
             return true;
         } else {
             return false;
