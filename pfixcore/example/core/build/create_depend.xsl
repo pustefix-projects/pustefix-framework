@@ -60,7 +60,6 @@
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
-      <param  name="docroot" value="{$docroot}"/>
       <param  name="product" value="{$project}"/>
       <param  name="lang" value="{$lang}"/>
     </target>
@@ -79,7 +78,6 @@
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
-      <param  name="docroot" value="{$docroot}"/>
       <param  name="product" value="{$project}"/>
       <param  name="lang" value="{$lang}"/>
     </target>
@@ -116,7 +114,6 @@
       </xsl:for-each>
       <xsl:apply-templates select="param"/>
       <param name="page" value="{@name}"/>
-      <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
@@ -126,7 +123,6 @@
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
       <param name="page" value="{@name}"/>
-      <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
@@ -152,7 +148,6 @@
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
       <xsl:apply-templates/>
-      <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
@@ -180,40 +175,6 @@
       </xsl:if>
     </depaux>
   </xsl:template>
-
-
-<!--   <xsl:template match="skinning_stylesheets|runtime_stylesheets"> -->
-<!--     <param name="{name()}"> -->
-<!--       <xsl:attribute name="value"><xsl:value-of select="./text()"/></xsl:attribute> -->
-<!--     </param> -->
-<!--     <xsl:call-template name="do_depaux_list"> -->
-<!--       <xsl:with-param name="ssheets"> -->
-<!--         <xsl:value-of select="normalize-space(./text())"/> -->
-<!--       </xsl:with-param> -->
-<!--     </xsl:call-template> -->
-<!--   </xsl:template> -->
-
-<!--   <xsl:template name="do_depaux_list"> -->
-<!--     <xsl:param name="ssheets"/> -->
-<!--     <xsl:variable name="first"> -->
-<!--       <xsl:value-of select="normalize-space(substring-before(concat($ssheets, ' '), ' '))"/> -->
-<!--     </xsl:variable> -->
-<!--     <xsl:variable name="rest"> -->
-<!--       <xsl:value-of select="normalize-space(substring-after($ssheets, ' '))"/> -->
-<!--     </xsl:variable> -->
-<!--     <xsl:if test="$first != ''"> -->
-<!--       <depaux> -->
-<!--         <xsl:attribute name="name"><xsl:value-of select="concat($docroot,'/',$first)"/></xsl:attribute> -->
-<!--       </depaux> -->
-<!--     </xsl:if> -->
-<!--     <xsl:if test="$rest != ''"> -->
-<!--       <xsl:call-template name="do_depaux_list"> -->
-<!--         <xsl:with-param name="ssheets"> -->
-<!--           <xsl:value-of select="$rest"/> -->
-<!--         </xsl:with-param> -->
-<!--       </xsl:call-template> -->
-<!--     </xsl:if> -->
-<!--   </xsl:template> -->
 
 </xsl:stylesheet>
 

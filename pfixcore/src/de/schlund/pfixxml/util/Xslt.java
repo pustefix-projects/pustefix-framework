@@ -45,7 +45,6 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import de.schlund.pfixxml.targets.Path;
-import java.io.FileReader;
 
 public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class.getName());
@@ -80,17 +79,21 @@ public class Xslt {
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
      * @throws Exception on all errors 
      */
-    public static Document xmlObjectFromDocument(Document doc) throws TransformerException {
+    public static Document xmlObjectFromDocument(Document doc) {
         return xmlObjectFromDocument(doc, null);
     }
 
-    public static Document xmlObjectFromDocument(Document doc, String systemid) throws TransformerException {
+    public static Document xmlObjectFromDocument(Document doc, String systemid) {
         if (doc instanceof TinyDocumentImpl) {
             return doc;
         } else {
             DOMSource domsrc = new DOMSource(doc);
             domsrc.setSystemId(systemid);
-            return xmlObjectFromSource(domsrc);
+            try {
+                return xmlObjectFromSource(domsrc);
+            } catch (TransformerException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -100,21 +103,12 @@ public class Xslt {
      * @return the created document(currenly saxons TinyDocumentImpl)
      * @throws TransformerException on errors
      */
-    public static Document xmlObjectFromDisc(String path) throws TransformerException {
-        if (!path.startsWith(File.separator)) {
-            throw new IllegalArgumentException("absolute path expected: " + path);
-            // otherwise, I'd construct an wrong uri
-        }
+    public static Document xmlObjectFromDisc(File file) throws TransformerException {
+        String path = file.getAbsolutePath();
         SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path));
         return xmlObjectFromSource(src);
     }
 
-    public static Document xmlObjectFromDisc(Path path)  throws TransformerException {
-        System.out.println("=====>" + path.getBase() + path.getRelative());
-        SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path.getBase() + path.getRelative()));
-        return xmlObjectFromSource(src);
-    }
-    
     public static Document xmlObjectFromString(String str) throws TransformerException {
         SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
         return xmlObjectFromSource(src);

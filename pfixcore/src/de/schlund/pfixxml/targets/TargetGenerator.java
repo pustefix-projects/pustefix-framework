@@ -30,6 +30,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -63,6 +64,7 @@ public class TargetGenerator {
     private final String                  configname;
     private final File                    confile;
     private String                        disccachedir;
+    private File                          recorddir;
     private String                        docroot;
     
     /* All registered TargetGenerationListener */
@@ -88,13 +90,16 @@ public class TargetGenerator {
         return pagetree;
     }
     public String getConfigname() {
-        return (configname);
+        return configname;
     }
-    public String getDisccachedir() {
-        return (disccachedir);
+    public String getDisccachedir() {  // TODO: return File
+        return disccachedir;
     }
-    public String getDocroot() {
-        return (docroot);
+    public File getRecorddir() {
+        return recorddir;
+    }
+    public String getDocroot() { // TODO: return file
+        return docroot;
     }
 
     public TreeMap getAllTargets() {
@@ -129,7 +134,7 @@ public class TargetGenerator {
         this.configname = confile.getCanonicalPath();
 
         Meminfo.print("TG: Before loading " + confile);
-        loadConfig();  // TODO: don't read docroot from confile!
+        loadConfig();
         Meminfo.print("TG: after loading targets for " + confile.getPath());
     }
 
@@ -171,18 +176,17 @@ public class TargetGenerator {
         Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
-        disccachedir = makenode.getAttribute("cachedir") + "/";
+        recorddir = getFileAttribute(makenode, "record_dir");
+        File cache = getFileAttribute(makenode, "cachedir");
+        disccachedir = cache.getPath() + "/";
         CAT.debug("* Set CacheDir to " + disccachedir);
-        File cache = new File(disccachedir);
         if (!cache.exists()) {
             cache.mkdirs();
         } else if (!cache.isDirectory() || !cache.canWrite() || !cache.canRead()) {
-            XMLException e =
-                new XMLException("Directory " + disccachedir + " is not writeable,readeable or is no directory");
-            throw (e);
+            throw new XMLException("Directory " + disccachedir + " is not writeable,readeable or is no directory");
         }
 
-        docroot = makenode.getAttribute("docroot") + "/";
+        docroot = getFileAttribute(makenode, "docroot").getPath() + "/";
         CAT.debug("* Set docroot to " + docroot);
 
         HashSet depxmls = new HashSet();
@@ -232,9 +236,13 @@ public class TargetGenerator {
             for (int j = 0; j < allpar.getLength(); j++) {
                 Element par     = (Element) allpar.item(j);
                 String  parname = par.getAttribute("name");
+                if ("docroot".equals(parname)) {
+                    throw new XMLException("docroot is no longer needed");
+                }
                 String  value   = par.getAttribute("value");
                 params.put(parname, value);
             }
+            params.put("docroot", docroot);
             struct.setParams(params);
             allstructs.put(name, struct);
         }
@@ -587,6 +595,23 @@ public class TargetGenerator {
         PageInfoFactory.getInstance().reset();
         SharedLeafFactory.getInstance().reset();
         AuxDependencyFactory.getInstance().reset();
+    }
+
+    //--
+    
+    private static File getFileAttribute(Element node, String name) throws XMLException {
+        return new File(getAttribute(node, name));
+    }
+
+    private static String getAttribute(Element node, String name) throws XMLException {
+        Attr attr;
+        
+        attr = node.getAttributeNode(name);
+        if (attr == null) {
+            return ""; // TODO
+            //throw new XMLException("missing attribute: " + name);
+        }
+        return attr.getValue();
     }
 }
 

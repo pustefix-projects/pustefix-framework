@@ -1,3 +1,26 @@
+2004-06-24  Michael Hartmier  <mhm@schlund.de>
+    * depend.xml changes:
+      o docroot no longer needed in target elements
+      o raise exception if mandatory attribute is missing
+    * improved error messages
+    * unit tests for TargetGenerator
+    * some API cleanup
+    * affected files 
+    	M ChangeLog
+		M example/core/build/create_depend.xsl
+		M src/de/schlund/pfixcore/editor/EditorHelper.java
+		M src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+		M src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+		M src/de/schlund/pfixxml/DependencyTracker.java
+		M src/de/schlund/pfixxml/IncludeDocument.java
+		M src/de/schlund/pfixxml/targets/TargetGenerator.java
+		M src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+		M src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+		M src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+		M src/de/schlund/pfixxml/util/Xslt.java
+		A tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+		M tests/junit/de/schlund/pfixxml/util/XsltTest.java
+
 2004-06-18  Michael Hartmier  <mhm@schlund.de>
     * upgrade to saxon 8.0 (with manual fixes for #962737);
     * upgrade to xerces 2.6.2

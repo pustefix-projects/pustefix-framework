@@ -30,9 +30,6 @@ import net.sf.saxon.expr.XPathContext;
 
 import net.sf.saxon.om.NodeInfo;
 
-import org.w3c.dom.Document;
-
-
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     

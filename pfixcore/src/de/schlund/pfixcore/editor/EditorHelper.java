@@ -302,7 +302,6 @@ public class EditorHelper {
         if (include.getType() != DependencyType.TEXT) {
             throw new XMLException("Dependency is not of Type TEXT");
         }
-        String docroot = tgen.getDocroot();
         Path path = include.getPath();
 
         //String name = path.substring(docroot.length());
@@ -318,7 +317,6 @@ public class EditorHelper {
         if (include.getType() != DependencyType.TEXT) {
             throw new XMLException("Dependency is not of Type TEXT");
         }
-        String docroot = tgen.getDocroot();
         Path path = include.getPath();
         File file = path.resolve();
         if (!file.exists()) {
@@ -595,7 +593,6 @@ public class EditorHelper {
     public static void renderIncludesForAppletInfo(TargetGenerator tgen, TreeSet includes, ResultDocument resdoc, Element root) {
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
-            String docroot = tgen.getDocroot();
             Path path = curr.getPath();
             String dir = path.getDir();
             String part = curr.getPart();

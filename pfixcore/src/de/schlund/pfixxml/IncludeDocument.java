@@ -65,7 +65,7 @@ public class IncludeDocument {
                 throw ex;
             }
         } else {
-            doc = Xslt.xmlObjectFromDisc(path);
+            doc = Xslt.xmlObjectFromDisc(tmp);
         }
     }
 

@@ -46,7 +46,7 @@ public class XsltTest extends TestCase {
         Transformer trafo;
         DOMResult result;
         
-        doc = Xslt.xmlObjectFromDisc(new File(PREFIX + xml).getAbsolutePath());
+        doc = Xslt.xmlObjectFromDisc(new File(PREFIX + xml));
         trafo = Xslt.loadTransformer(new File(PREFIX + xsl));
         result = new DOMResult();
         return Xslt.transform(doc, trafo);

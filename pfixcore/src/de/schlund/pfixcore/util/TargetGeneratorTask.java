@@ -59,7 +59,7 @@ public class TargetGeneratorTask extends MatchingTask {
 
                             TargetGenerator.resetFactories();
                         } catch (Exception e) {
-                            throw new BuildException("Oops! TargetGenerator exit!", e);
+                            throw new BuildException(confile + ": " + e.getMessage(), e);
                         }
                     } else {
                         throw new BuildException("Couldn't read configfile '" + confignames[i] + "'");
@@ -75,13 +75,11 @@ public class TargetGeneratorTask extends MatchingTask {
     }
     
     protected TargetGenerator createTargetGenerator(File confile) {
-        TargetGenerator ret;        
         try {
-            ret = new TargetGenerator(confile);
+            return new TargetGenerator(confile);
         } catch (Exception e) {
-            throw new BuildException("Can not initialize TargetGenerator",e);
+            throw new BuildException(e.getMessage(), e);
         }
-        return ret;
     }
 
     public File getDir() {

@@ -52,8 +52,8 @@ public class TargetGeneratorFactory {
             }
             return generator;
         } else {
-            throw (new XMLException("\nConfigfile '" + cfile.getPath() +
-                                    "' isn't a file, can't be read or doesn't exist"));
+            throw new XMLException("\nConfigfile '" + cfile.getPath() +
+                                    "' isn't a file, can't be read or doesn't exist");
         }
     }
 
