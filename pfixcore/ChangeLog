@@ -1,3 +1,13 @@
+2003-09-11  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixTextPane.java
+	
+	New Version of Synstax-Highlighting. Many Bugs could be fixed. The Method
+	HighlightAll is replaced by HighlightRegion. 
+
+	
 2003-09-11  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/DependencyTracker.java(log):
