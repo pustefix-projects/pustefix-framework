@@ -34,6 +34,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
+import org.apache.tools.ant.AntClassLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -163,7 +164,12 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @throws TransformerConfigurationException on errors
      */
     public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException {
-        TransformerFactory transFac      = TransformerFactory.newInstance();
+        // TransformerFactory.newInstance() does not work with ant, since the Factory
+        // does not seem to pick the correct classloader with saxon in its classpath.
+        // Simple instantiation or classloading works, since the current classloader is defined
+        // by ant and therefore has saxon in its classpath.
+        TransformerFactory transFac      = new com.icl.saxon.TransformerFactoryImpl();
+        
         transFac.setErrorListener(new PFErrorListener());
         StreamSource       stream_source = new StreamSource("file://" + path);
         Object             val           = null;
