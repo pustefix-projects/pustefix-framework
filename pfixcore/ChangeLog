@@ -1,3 +1,14 @@
+2003-07-16  Joerg Haecker <haecker@schlund.de>
+
+	BUGFIX for editor crash when creating new includes
+	* de/schlund/pfixcore/editor/auth/EditorUserInfo.java(isIncludeEditAllowed):
+	check if part exists first. If not, return if includedit for this
+	product is allowed. 
+
+	* de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java(renderDefault):
+	check if part exists. If not, most of rendering in resdoc is skipped.
+	
+
 2003-07-15  Martin Leidig <mleidig@schlund.de>
 
 	* src/de/schlund/pifxxml/loader/AppClassLoader:

@@ -24,11 +24,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.apache.log4j.Category;
+import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor.EditorHelper;
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.targets.DependencyType;
 /**
  * Class encapsulating user-information of the Pustefix CMS.
  * <br/>
@@ -307,6 +310,32 @@ final public class EditorUserInfo {
         boolean ret = true;
       
         HashSet affected_products = null;
+        // <comment>
+        // Here we must handle the case that an editoruser references a
+        // new include. When he selects it from the list, it is
+        // not written yet. So we must NOT call EditorHelper.getAffectedProductsForInclude!!!
+        String part = esess.getCurrentInclude().getPart();
+        String path = esess.getCurrentInclude().getPath();
+        Element ele = null;
+        
+        // Test if part already exists
+        try {
+            ele = EditorHelper.getIncludePart(esess.getProduct().getTargetGenerator(), 
+                                            AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+                                                    path, part,esess.getProduct().getName()));
+        } catch (Exception e) {
+            throw new XMLException("Error when getting include part" + e.getMessage());
+        }
+        
+        // if ele==null a new include has been referenced, but was not written yet
+        if(ele == null) {
+            // Part does not exist
+            ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(esess.getProduct().getName());
+            boolean allowed = p.isEditIncludes();
+            return allowed;
+        }
+        //</comment>
+        
         try {
             affected_products =
                 EditorHelper.getAffectedProductsForInclude(
