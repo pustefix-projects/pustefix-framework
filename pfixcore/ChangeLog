@@ -1,3 +1,12 @@
+2004-11-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: added __forceauth
+	parameter to force a re-authentification.
+
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	change calls to checkAuthorization to supply "false" as forceauth argument.
+
 2004-11-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.3-pre

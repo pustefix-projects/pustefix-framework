@@ -49,7 +49,7 @@ public class AuthenticationHandler extends AbstractHandler {
                 }
                 Context pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
                 try {
-                    if(pfxContext.checkAuthorization()!=null) throw AxisFault.makeFault(new Exception("Authorization failed"));
+                    if(pfxContext.checkAuthorization(false)!=null) throw AxisFault.makeFault(new Exception("Authorization failed"));
                 } catch(Exception x) {
                     throw AxisFault.makeFault(new Exception("Authorization failed"));
                 }

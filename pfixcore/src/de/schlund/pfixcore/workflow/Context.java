@@ -52,6 +52,7 @@ public class Context implements AppContext {
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
     private final static String   PARAM_FLOW          = "__pageflow";
     private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
+    private final static String   PARAM_FORCEAUTH     = "__forceauth";
     private final static String   DEF_MESSAGE_LEVEL   = "info";
 
     // from constructor
@@ -378,14 +379,17 @@ public class Context implements AppContext {
         return false;
     }
 
-    public synchronized SPDocument checkAuthorization() throws Exception {
+    public synchronized SPDocument checkAuthorization(boolean forceauth) throws Exception {
         if (authpage != null) {
             ResultDocument resdoc = null;
             LOG.debug("===> [" + authpage + "]: Checking authorisation");
             if (!checkIsAccessible(authpage, PageRequestStatus.AUTH)) {
                 throw new XMLException("*** Authorisation page [" + authpage + "] is not accessible! ***");
             }
-            if (checkNeedsData(authpage, PageRequestStatus.AUTH)) {
+            if (forceauth) {
+                LOG.debug("* [" + currentpagerequest + "] forceauth is TRUE ***");
+            }
+            if (checkNeedsData(authpage, PageRequestStatus.AUTH) || forceauth) {
                 LOG.debug("===> [" + authpage + "]: Need authorisation data");
                 PageRequest saved  = currentpagerequest;
                 currentpagerequest = authpage;
@@ -545,7 +549,12 @@ public class Context implements AppContext {
             }
 
             // Now, check for possibly needed authorization
-            document = checkAuthorization();
+            RequestParam forceparam = currentpreq.getRequestParam(PARAM_FORCEAUTH);
+            boolean      forceauth  = false;
+            if (forceparam != null && forceparam.getValue() != null && forceparam.getValue().equals("true")) {
+                forceauth = true;
+            }
+            document = checkAuthorization(forceauth);
             if (document != null) {
                 return document;
             }
@@ -602,7 +611,7 @@ public class Context implements AppContext {
     private SPDocument runPageFlow() throws Exception {
         ResultDocument resdoc   = null;
         // We need to re-check the authorisation because the just handled submit could have changed the authorisation status.
-        SPDocument     document = checkAuthorization();
+        SPDocument     document = checkAuthorization(false);
         if (document != null) {
             return document;
         }
