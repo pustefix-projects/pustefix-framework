@@ -1,3 +1,8 @@
+2005-03-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: allow another	value "step" 
+	for parameter __forcestop, with the effect as if the current flow would have stopnext=true set.
+
 2005-03-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (canContinue): new
