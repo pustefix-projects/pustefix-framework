@@ -39,6 +39,7 @@ public class PageRequestStatus {
     public static final PageRequestStatus FINAL         = new PageRequestStatus("FINAL");
     public static final PageRequestStatus AUTH          = new PageRequestStatus("AUTH");
     public static final PageRequestStatus AUTH_WORKFLOW = new PageRequestStatus("AUTH_WORKFLOW");
+    public static final PageRequestStatus NAVI_GEN      = new PageRequestStatus("NAVI_GEN");
     public static final PageRequestStatus UNDEF         = new PageRequestStatus("UNDEF");
     
     private String tag;

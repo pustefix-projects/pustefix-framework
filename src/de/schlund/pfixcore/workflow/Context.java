@@ -433,27 +433,34 @@ public class Context implements AppContext {
                 if (preqprops.pageRequestIsDefined(preq)) {
                     // LOG.info("    * found props for page " + name);
                     State       state   = pagemap.getState(preq);
-                    LOG.debug("    * found state " + state.getClass() + " for page " + name);
+                    // LOG.info("    * found state " + state.getClass() + " for page " + name);
                     PageRequest saved   = getCurrentPageRequest();
+
                     setCurrentPageRequest(preq);
+                    preq.setStatus(PageRequestStatus.NAVI_GEN);
                     
                     // Get some timing infos about the state's isAccesible method
-                    long isaccessible_start =  System.currentTimeMillis();
-                    boolean     visible = state.isAccessible(this, pfixreq);
-                    long duration = System.currentTimeMillis() - isaccessible_start;  
+                    long    isaccessible_start = System.currentTimeMillis();
+                    boolean visible            = state.isAccessible(this, pfixreq);
+                    long    duration           = System.currentTimeMillis() - isaccessible_start;  
+
+                    setCurrentPageRequest(saved);
                     
-                    if(duration > MAXTIME_ISACCESSIBLE_WARN) {
-                        warn_buffer.append("IsAccessible() for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms! Duration="+duration+"\n");
+                    if (duration > MAXTIME_ISACCESSIBLE_WARN) {
+                        warn_buffer.append("IsAccessible() for state at page '" +
+                                           preq.getName() + "' took longer than " +
+                                           MAXTIME_ISACCESSIBLE_WARN + " ms! Duration=" + duration + "\n");
                     }
                     
-                    if(LOG.isDebugEnabled()) {
+                    if (LOG.isDebugEnabled()) {
                         if(duration > MAXTIME_ISACCESSIBLE_DEBUG) {
-                            debug_buffer.append("IsAccessible() for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms! Duration="+duration+"\n");
+                            debug_buffer.append("IsAccessible() for state at page '" +
+                                                preq.getName() + "' took longer than " +
+                                                MAXTIME_ISACCESSIBLE_DEBUG + " ms! Duration=" + duration +"\n");
                         }
                     }
-                    
                     // LOG.info("    * state accessible? " + visible);
-                    setCurrentPageRequest(saved);
+
                     if (visible) {
                         pageelem.setAttribute("visible", "1");
                     } else {
@@ -492,6 +499,13 @@ public class Context implements AppContext {
 
 
     public boolean flowBeforeNeedsData(PfixServletRequest preq) throws Exception {
+
+        // This is needed when the navigation is built! we don't want to step through the pages of a
+        // different workflow every time.
+        if (!getCurrentPageFlow().containsPageRequest(getCurrentPageRequest())) {
+            return true;
+        }
+        
         PageRequest[] workflow = getCurrentPageFlow().getAllSteps();
         boolean       retval   = false;
         
