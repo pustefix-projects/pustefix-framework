@@ -52,7 +52,8 @@ function wfxEditor( config ) {
   this._content_src;
   this._content_col;
 
-  //U  this.undo = [];
+  this.undo = [];
+  this.currentUndo = -1;
 
   if( wfx.is_ie ) {
     this.newline = '\r\n';
@@ -804,16 +805,28 @@ wfxEditor.prototype.execCommand = function(cmdID, UI, param) {
   this.focusEditor();
 
   switch (cmdID.toLowerCase()) {
-//U  case "undo":
-//U    if( this.undo.length-2 >= 0 ) {
-//U      alert("undo ==> " + (this.undo.length-2) );
-//U      try {
-//U	this._doc.body.innerHTML = '<pre>' + this.undo[this.undo.length-2] + '</pre>';
-//U      } catch(e) {
-//U	alert("Exception:\n" + e);
-//U      }
-//U    }
-//U    break;
+  case "undo":
+    if( this.currentUndo-1 >= 0 ) {
+      try {
+	this._doc.body.innerHTML = '<pre>' + this.undo[this.currentUndo-1][0] + '</pre>';
+	this.setOffsets( this.undo[this.currentUndo-1][1] );
+	this.currentUndo--;
+      } catch(e) {
+	alert("Exception:\n" + e);
+      }
+    }
+    break;
+  case "redo":
+    if( this.currentUndo+1 <= this.undo.length-1 ) {
+      try {
+	this._doc.body.innerHTML = '<pre>' + this.undo[this.currentUndo+1][0] + '</pre>';
+	this.setOffsets( this.undo[this.currentUndo+1][1] );
+	this.currentUndo++;
+      } catch(e) {
+	alert("Exception:\n" + e);
+      }
+    }
+    break;
   default: 
     try { 
       //      alert("execCommand: " + cmdID + ", " + UI + ", " + param);
@@ -2233,6 +2246,10 @@ wfxEditor.prototype.generate = function( target, content ) {
   // Moz: \n after body tag is required to prevent exception in rng.setStart
 
   content = this.prepareContent( content );
+
+  this.currentUndo++; 
+  this.undo[this.currentUndo] = [ content, [0, false, -1, false, -1]];
+
   content = '<pre>' + content + '</pre>';    
   
   //  content = doctype + html_header1 + style_source + html_header2 + content + html_footer;
@@ -2446,6 +2463,9 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 	    offsetNewlinesEnd   = ret[3];
 	    posEnd              = ret[4];
 
+	    editor.currentUndo++;
+	    editor.undo[editor.currentUndo] = [ ret ];
+
 	    //	    alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
 	    //-----------------------------------------------------------------
 	    
@@ -2492,6 +2512,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		dbgcancel && ( editor._dbg.value += "c3 ");
 		editor.insideRehighlighting = false;
 		editor.cancelRehighlighting = false;
+		editor.undo.length = editor.currentUndo;
+		editor.currentUndo--;
 		return;
 	      }
 
@@ -2513,6 +2535,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		  dbgcancel && ( editor._dbg.value += "c4 ");
 		  editor.insideRehighlighting = false;
 		  editor.cancelRehighlighting = false;
+		  editor.undo.length = editor.currentUndo;
+		  editor.currentUndo--;
 		  return;
 		}
 
@@ -2536,6 +2560,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		    dbgcancel && ( editor._dbg.value += "c5 ");
 		    editor.insideRehighlighting = false;
 		    editor.cancelRehighlighting = false;
+		    editor.undo.length = editor.currentUndo;
+		    editor.currentUndo--;
 		    return;
 		  }
 
@@ -2557,6 +2583,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		      dbgcancel && ( editor._dbg.value += "c6 ");
 		      editor.insideRehighlighting = false;
 		      editor.cancelRehighlighting = false;
+		      editor.undo.length = editor.currentUndo;
+		      editor.currentUndo--;
 		      return;
 		    }
 
@@ -2566,7 +2594,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
   
 		    content = editor.prepareContent( content );
 
-		    //U		    editor.undo[editor.undo.length] = content;
+		    editor.undo[editor.currentUndo].unshift(content);
+		    editor.undo.length = editor.currentUndo+1;
 
 		    try {
 
