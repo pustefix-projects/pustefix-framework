@@ -9,6 +9,15 @@
     </product>
   </part>
 
+  <part name="foo">
+    <product name="default">
+      <lang name="default">deutsch</lang>
+      <lang name="en">english</lang>
+      <lang name="fr">french</lang>
+    </product>
+  </part>
+  
+  
   <part name="content">
     <product name="default">
       <lang name="default">
@@ -16,6 +25,17 @@
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>
+
+            <span>
+              <pfx:attribute name="title"><pfx:include part="foo"/></pfx:attribute>
+              AAAAAAAAAAAAAAAAAAAAAAA
+            </span>
+            
+            <span>
+              <pfx:attribute name="title">Baschtl</pfx:attribute>
+              BBBBBBBBBBBBBBBBBBBBBBB
+            </span>
+
             <table width="400">
               <tr>
                 <td align="left">

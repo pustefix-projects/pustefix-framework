@@ -103,7 +103,9 @@
       </example>
     </cus:documentation>
     <ixsl:attribute name="{@name}">
-      <xsl:apply-templates/>
+      <!-- this stupid construct makes sure that only text is copied into the attribute -->
+      <ixsl:variable name="tmp"><xsl:apply-templates/></ixsl:variable>
+      <ixsl:value-of select="$tmp"/>
     </ixsl:attribute>
   </xsl:template>
 
