@@ -49,6 +49,8 @@
         <tr>
           <td align="right" nowrap="nowrap">
             <pfx:xinp type="submit" value="Go!"/>
+            <pfx:xinp type="submit" value="Don't go" forcestop="true"/>
+            <pfx:xinp type="submit" value="Go Step by Step!" forcestop="step"/>
           </td>
         </tr>
       </table>

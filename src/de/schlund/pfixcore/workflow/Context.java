@@ -88,6 +88,7 @@ public class Context implements AppContext {
     private boolean            startwithflow;
     private ArrayList          cookielist;
     private boolean            prohibitcontinue;
+    private boolean            stopnextforcurrentrequest;
     private boolean            needs_update;
     
     private HashMap messageSCodes      = new HashMap();
@@ -125,6 +126,7 @@ public class Context implements AppContext {
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         currentpreq                = preq;
         prohibitcontinue           = false;
+        stopnextforcurrentrequest  = false;
         jumptopagerequest          = null;
         jumptopageflow             = null;
         on_jumptopage              = false;
@@ -140,6 +142,10 @@ public class Context implements AppContext {
         if (fstop != null && fstop.getValue().equals("true")) {
             // We already decide here to stay on the page, what ever the state wants...
             prohibitContinue();
+        }
+        if (fstop != null && fstop.getValue().equals("step")) {
+            // We want to behave the current pageflow as if it would have the stopnext attribute set to true
+            stopnextforcurrentrequest = true;
         }
 
         RequestParam swflow = currentpreq.getRequestParam(PARAM_STARTWITHFLOW);
@@ -714,7 +720,8 @@ public class Context implements AppContext {
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
                 boolean needsdata;
-                if (after_current && step.wantsToStopHere()) {
+                if (after_current && (step.wantsToStopHere() || stopnextforcurrentrequest)) {
+                    if (stopnextforcurrentrequest) LOG.debug("=> Request specifies to act like stophere='true'");
                     LOG.debug("=> [" + page + "]: Page flow wants to stop, getting document now.");
                     currentpagerequest = page;
                     currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
