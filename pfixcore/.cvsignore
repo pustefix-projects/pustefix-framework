@@ -6,3 +6,4 @@ build
 semantic.cache
 testskel
 .externalToolBuilders
+ant.dtd
