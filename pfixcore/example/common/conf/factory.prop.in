@@ -12,6 +12,7 @@
   <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
   <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
+  <prop name="factory.initialize.08">de.schlund.pfixxml.targets.SPCacheStatistic</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
