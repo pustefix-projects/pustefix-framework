@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.WeakHashMap;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -15,10 +16,13 @@ import javax.servlet.http.*;
 import javax.xml.transform.*;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.ConfigurationException;
 import org.apache.axis.Message;
 import org.apache.axis.utils.Messages;
 import org.apache.axis.AxisEngine;
 import org.apache.axis.MessageContext;
+import org.apache.axis.description.OperationDesc;
+import org.apache.axis.description.ServiceDesc;
 
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
@@ -179,13 +183,56 @@ public class WebServiceServlet extends AxisServlet {
             	sendMonitor(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("admin")) {
-            sendForbidden(req,res,writer);
+            if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+                sendAdmin(req,res,writer);
+            } else sendForbidden(req,res,writer);
         } else sendBadRequest(req,res,writer);
     }
     
     public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
         //TODO: source out html
-        
+        HttpSession session=req.getSession(false);
+        if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
+            res.setStatus(HttpURLConnection.HTTP_OK);
+            res.setContentType("text/html");
+            writer.println("<html><head><title>Web service admin</title>"+getJS()+getCSS()+"</head><body>");
+            writer.println("<div class=\"title\">Web service admin</div><div class=\"content\">");
+            try {
+                AxisEngine engine=getEngine();
+                writer.println("<table>");
+                writer.println("<tr><td>");
+                Iterator it=engine.getConfig().getDeployedServices();
+                while(it.hasNext()) {
+                    ServiceDesc desc=(ServiceDesc)it.next();
+                    String name=desc.getName();
+                    writer.println("<p>");
+                    writer.println("<b>"+name+"</b>");
+                    String wsdlUri=req.getRequestURI()+"/"+name+";jsessionid="+session.getId()+"?WSDL";
+                    writer.println("&nbsp;&nbsp;<a style=\"color:#666666\" target=\"_blank\" href=\""+wsdlUri+"\">WSDL</a>");
+                    writer.println("<br/>");
+                    ArrayList operations=desc.getOperations();
+                    if(!operations.isEmpty()) {
+                        writer.println("<ul>");
+                        for (Iterator oit = operations.iterator(); oit.hasNext();) {
+                            OperationDesc opDesc = (OperationDesc) oit.next();
+                            writer.println("<li>" + opDesc.getName());
+                        }
+                        writer.println("</ul>");
+                    }
+                     writer.println("</p>");
+                    
+                }
+                writer.println("</td></tr>");
+                writer.println("</table");
+            } catch(AxisFault fault) {
+            
+            } catch(ConfigurationException x) {
+            
+            }
+            //TODO: show available services, wsdl, ...
+            writer.println("</div></body></html>");
+            writer.close();
+        } else sendForbidden(req,res,writer);
     }
     
     public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {

@@ -105,6 +105,30 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template match="pfx:webserviceconsole">
+    <cus:documentation>
+      <responsible>mleidig</responsible>
+      <description>Generates a toolbar for web service tools when in development mode</description>
+    </cus:documentation>
+    <xsl:if test="$prohibitEdit = 'no'">
+		<span>
+			Web service tools:
+			<a target="__WEB_SERVICE_MONITOR__">
+				<ixsl:attribute name="href">
+					<ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?monitor')"/>
+				</ixsl:attribute>
+				Monitor
+			</a>
+			<a target="__WEB_SERVICE_ADMIN__">
+				<ixsl:attribute name="href">
+					<ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?admin')"/>
+				</ixsl:attribute>
+				Admin
+			</a>
+		</span>
+	</xsl:if>
+  </xsl:template>
+
   <xsl:template match="pfx:attribute">
     <cus:documentation>
       <description>This template allows you to create dynamic attributes  

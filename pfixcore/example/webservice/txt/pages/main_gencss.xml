@@ -6,7 +6,7 @@
       <lang name="default">
   <pfx:include href="core/txt/styles.xml" part="standard"/>
   <pfx:include href="common/txt/styles.xml" part="standard"/> 
-  <pfx:include href="sample1/txt/styles.xml" part="standard"/>
+  <pfx:include href="webservice/txt/styles.xml" part="standard"/>
 </lang>
     </product>
   </part>

@@ -6,10 +6,12 @@
 		<encoding style="rpc" use="encoded"/>
         <cus:choose>
             <cus:test mode="prod">
+				<admin enabled="false"/>
 				<monitoring enabled="false"/>
 				<logging enabled="false"/>
         	</cus:test>
             <cus:test>
+				<admin enabled="true"/>
                 <monitoring enabled="true" scope="session" historysize="10"/>
 				<logging enabled="true"/>
             </cus:test>

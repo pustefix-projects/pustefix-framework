@@ -22,6 +22,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     private final static String PROP_WSDLREPOSITORY=PROP_PREFIX+"wsdlsupport.repository";
     private final static String PROP_ENCODINGSTYLE=PROP_PREFIX+"encoding.style";
     private final static String PROP_ENCODINGUSE=PROP_PREFIX+"encoding.use";
+    private final static String PROP_ADMIN=PROP_PREFIX+"admin.enabled";
     private final static String PROP_MONITORING=PROP_PREFIX+"monitoring.enabled";
     private final static String PROP_MONITORSCOPE=PROP_PREFIX+"monitoring.scope";
     private final static String PROP_MONITORSIZE=PROP_PREFIX+"monitoring.historysize";
@@ -32,6 +33,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     String wsdlRepo;
     String encStyle;
     String encUse;
+    boolean admin;
     boolean monitoring;
     String monitorScope;
     int monitorSize;
@@ -50,6 +52,7 @@ public class GlobalServiceConfig extends AbstractConfig {
         if(wsdlRepo==null) throw new ConfigException(ConfigException.MISSING_PROPERTY,PROP_WSDLREPOSITORY);
         encStyle=props.getStringProperty(PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,true);
         encUse=props.getStringProperty(PROP_ENCODINGUSE,Constants.ENCODING_USES,true);
+        admin=props.getBooleanProperty(PROP_ADMIN,true,false);
         monitoring=props.getBooleanProperty(PROP_MONITORING,true,false);
         if(monitoring) {
         	monitorScope=props.getStringProperty(PROP_MONITORSCOPE,Constants.MONITOR_SCOPES,true);
@@ -80,6 +83,10 @@ public class GlobalServiceConfig extends AbstractConfig {
     
     public String getEncodingUse() {
         return encUse;
+    }
+    
+    public boolean getAdminEnabled() {
+        return admin;
     }
     
     public boolean getMonitoringEnabled() {

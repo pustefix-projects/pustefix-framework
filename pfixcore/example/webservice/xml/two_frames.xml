@@ -56,8 +56,11 @@
           <div name="no_disp" style="display:none">
 			<h2 style="color:red">Browser has no native webservice support!</h2>
         	</div>
-	   	<a href="/xml/webservice;{$__sessid}?monitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
+			
+			
           <pfx:editconsole/>
+			<pfx:webserviceconsole/>
+			
         </body>
       </html>
     </pfx:frame>
