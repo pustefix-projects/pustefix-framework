@@ -241,11 +241,12 @@ public class Context implements AppContext {
     public void setJumpToPageFlow(String flowname) {
         if (jumptopagerequest != null) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(flowname);
-            if (tmp.containsPageRequest(jumptopagerequest)) {
+            if (tmp != null) {
                 jumptopageflow = tmp;
             } else {
                 jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest);
             }
+            
         } else {
             jumptopageflow = null;
         }
@@ -663,6 +664,7 @@ public class Context implements AppContext {
         RequestParam jump = currentpreq.getRequestParam(JUMPPAGE);
         if (jump != null && !jump.getValue().equals("")) {
             setJumpToPageRequest(jump.getValue());
+            // We only search for a special jumpflow when also a jumppage is set
             RequestParam jumpflow = currentpreq.getRequestParam(JUMPPAGEFLOW);
             if (jumpflow != null && !jumpflow.getValue().equals("")) {
                 setJumpToPageFlow(jumpflow.getValue());
@@ -797,80 +799,5 @@ public class Context implements AppContext {
     public void endLogEntry(String info, long min) {
         currentpreq.endLogEntry(info, min);
     }
-
-    ///**
-    // * <code>flowIsStopped</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
-    // * It returned true if the Context is forced to stop at a page of the running workflow
-    // * (this happens when the pageflow returns true on calling flow.getStopAtFirstAfterCurrent().
-    // * The pageflow should not advance past the first accessible page AFTER the current page, in other words:
-    // * the first accessible page after the current page should work exactly the same as if directly
-    // * calling it).
-    // *
-    // * @return a <code>boolean</code> value
-    // */
-    // public boolean flowIsStopped() {
-    //     if (getCurrentPageRequest().getStatus() == PageRequestStatus.WORKFLOW_STOP) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-    ///**
-    // * <code>getPageFlowManager</code> returns the PageFlowManager defined in init(Properties properties)
-    // *
-    // * @return a <code>PageFlowManager</code> value
-    // */
-    //protected PageFlowManager getPageFlowManager() {
-    //    return pageflowmanager;
-    //}
-
-    ///**
-    // * <code>getPageMap</code> returns the PageMap defined in init(Properties properties)
-    // *
-    // * @return a <code>PageMap</code> value
-    // */
-    //protected PageMap getPageMap() {
-    //    return pagemap;
-    //}
-    
-    ///**
-    // * <code>setCurrentPageFlow</code> sets the currently active PageFlow.
-    // *
-    // * @param flow a <code>PageFlow</code> value
-    // */
-    //protected void setCurrentPageFlow(PageFlow flow) {
-    //    currentpageflow = flow;
-    //}
-
-    ///**
-    // * <code>setCurrentPageRequest</code> sets the currently active PageRequest.
-    // *
-    // * @param page a <code>PageRequest</code> value
-    // */
-    //protected void setCurrentPageRequest(PageRequest page) {
-    //    currentpagerequest = page;
-    //}
-
-    ///**
-    // * <code>getInitialPageRequest</code> returns the PageRequest that was called requested initially
-    // * for this request cycle. The current pagerequest as returned by getCurrentPageRequest() may be differnt for example
-    // * while querying all pages for the navigation or during a pageflow run when one page of the flow after the other is
-    // * queried if it want's to show itself.
-    // *
-    // * @return a <code>PageRequest</code> value
-    // */
-    //public PageRequest getInitialPageRequest() {
-    //    return initialpagerequest;
-    //}
-
-    ///**
-    // * <code>getCurrentPageFlow</code> returnes the currently active PageFlow.
-    // *
-    // * @return a <code>PageFlow</code> value
-    // */
-    //public PageFlow getCurrentPageFlow() {
-    //    return currentpageflow;
-    //}
 
 }

@@ -1,3 +1,8 @@
+2004-03-04  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: you can specify a
+	jumptopageflow without the jumptopage necessarily being a member of it.
+
 2004-03-04  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
 	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: Now you
