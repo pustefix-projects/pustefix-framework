@@ -123,7 +123,7 @@ public class ResultDocument {
     }
     
     public Element createNode(String name) {
-	return createSubNode(formresult, name);
+        return createSubNode(formresult, name);
     }
 
     public Element createSubNode(Element el, String name) {
@@ -138,10 +138,10 @@ public class ResultDocument {
             return null;
         }
 	
-	Element tmp = doc.createElement(name);
-	tmp.appendChild(doc.createTextNode(text));
-	element.appendChild(tmp);
-	return tmp;
+        Element tmp = doc.createElement(name);
+        tmp.appendChild(doc.createTextNode(text));
+        element.appendChild(tmp);
+        return tmp;
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
@@ -172,9 +172,9 @@ public class ResultDocument {
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
 	
-	Element tmp = doc.createElement(name);
-	tmp.appendChild(include);
-	element.appendChild(tmp);
-	return tmp;
+        Element tmp = doc.createElement(name);
+        tmp.appendChild(include);
+        element.appendChild(tmp);
+        return tmp;
     }
 }
