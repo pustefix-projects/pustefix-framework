@@ -7,9 +7,6 @@ import java.util.Calendar;
 
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.example.DataBean;
-
-
 /**
  * TypeTest.java 
  * 
@@ -41,9 +38,13 @@ public interface TypeTest {
     
     public String[] echoStringArray(String[] strs);
     
+    public Object echoObject(Object obj);
+    
     public Object[] echoObjectArray(Object[] objs);
     
-    public Element echoElement(Element elem) throws Exception;
+    public Element echoElement(Element elem);
+    
+    public Element[] echoElementArray(Element[] elems);
     
     public DataBean echoDataBean(DataBean data);
     

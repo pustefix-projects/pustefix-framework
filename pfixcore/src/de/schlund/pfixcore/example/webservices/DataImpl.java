@@ -11,8 +11,7 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.webservice.*;
 import de.schlund.pfixcore.example.ContextData;
-import de.schlund.pfixcore.example.DataBean;
-//import de.schlund.pfixcore.example.ComplexData;
+
 
 /**
  * DataImpl.java 
@@ -43,12 +42,12 @@ public class DataImpl extends AbstractService implements Data {
     }
     
     /**
-    public ComplexData getComplexData() throws Exception {
+    public DataBean getComplexData() throws Exception {
         ContextData data=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
         return data.getComplexData();
     }
     
-    public ComplexData echoComplexData(ComplexData data) throws Exception {
+    public DataBean echoComplexData(DataBean data) throws Exception {
         return data;
     }
     */

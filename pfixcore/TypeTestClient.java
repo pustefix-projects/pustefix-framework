@@ -9,9 +9,8 @@ import org.apache.axis.utils.Options;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
 
-import TypeTest_pkg.*;
+import de.schlund.pfixcore.example.webservices.*;
 
-import de.schlund.pfixcore.example.DataBean;
 
 public class TypeTestClient {
 
@@ -28,7 +27,20 @@ public class TypeTestClient {
 		tt.echoStringArray(new String[] {"a","b","c"});
 		tt.echoDate(Calendar.getInstance());
 		tt.echoDateArray(new Calendar[] {Calendar.getInstance(),Calendar.getInstance(),Calendar.getInstance()});
+		tt.echoObject("testtext");
 		tt.echoObjectArray(new Object[] {new Integer(34),"testtext",new Object[] {"a","b"}});	
+		DataBean bean=new DataBean("bean",Calendar.getInstance(),1,1f);
+		//bean.setName("bean");
+		//bean.setDate(Calendar.getInstance());
+		//bean.setIntVal(4);
+		//bean.setFloatVal(4f);
+		tt.echoDataBean(bean);
+                DataBean bean2=new DataBean("bean2",Calendar.getInstance(),2,2f);
+                //bean2.setName("bean2");
+                //bean2.setDate(Calendar.getInstance());
+                //bean2.setIntVal(3);
+                //bean2.setFloatVal(3f);
+		tt.echoDataBeanArray(new DataBean[] {bean,bean,bean2});
 		//new TypeTestClient();
 	}
 

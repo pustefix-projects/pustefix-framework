@@ -6,8 +6,6 @@ package de.schlund.pfixcore.example.webservices;
 import java.util.Calendar;
 import org.w3c.dom.*;
 
-import de.schlund.pfixcore.example.DataBean;
-
 /**
  * TypeTestImpl.java 
  * 
@@ -61,12 +59,20 @@ public class TypeTestImpl implements TypeTest {
         return strs;
     }
     
+    public Object echoObject(Object obj) {
+        return obj;
+    }
+    
     public Object[] echoObjectArray(Object[] objs) {
         return objs;
     }
     
-    public Element echoElement(Element elem) throws Exception {
+    public Element echoElement(Element elem) {
         return elem;
+    }
+    
+    public Element[] echoElementArray(Element[] elems) {
+        return elems;
     }
     
     public DataBean echoDataBean(DataBean data) {

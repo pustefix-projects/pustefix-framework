@@ -53,7 +53,7 @@ public class WebServiceTask extends Task {
     private DocumentBuilder docBuilder;
     private Transformer trfSerializer;
     
-    private boolean shortNamespaces=true;
+    private boolean shortNamespaces=false;
     //SOAP encoding style: rpc|document
     private String encStyle="rpc";
     //SOAP encoding use: encoded|literal

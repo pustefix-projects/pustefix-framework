@@ -6,7 +6,7 @@
   <parameter name="attachments.Directory" value="/home/mleidig/workspace/pfixcore/example/servletconf/tomcat/./webapps/webservice/WEB-INF/attachments"/>
   <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
   <parameter name="sendXsiTypes" value="true"/>
-  <parameter name="sendMultiRefs" value="false"/>
+  <parameter name="sendMultiRefs" value="true"/>
   <parameter name="sendXMLDeclaration" value="true"/>
   <parameter name="axis.sendMinimizedElements" value="true"/>
   

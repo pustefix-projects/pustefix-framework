@@ -1,6 +1,6 @@
 package de.schlund.pfixcore.example;
 
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
@@ -9,6 +9,8 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
+
+import de.schlund.pfixcore.example.webservices.*;
 
 public class ContextDataImpl implements ContextResource, ContextData {
     
@@ -63,19 +65,19 @@ public class ContextDataImpl implements ContextResource, ContextData {
     }
     
     public DataBean getDataBean() {
-        return new DataBean("test");
+        return new DataBean("test",Calendar.getInstance(),123,123f);
     }
     
-    public ComplexData getComplexData() {
+    public ComplexDataBean getComplexDataBean() {
         Vector v=new Vector();
         v.add("abc");
         v.add(new Integer("123"));
-        ComplexData leaf1=new ComplexData("leaf1",new Date(),1,(float)1);
-        ComplexData leaf2=new ComplexData("leaf2",new Date(),2,(float)2);
-        ComplexData root=new ComplexData("root",new Date(),0,(float)0);
-        root.setChildren(new ComplexData[] {leaf1,leaf2});
-        //leaf1.setParent(root);
-        //leaf2.setParent(root);
+        ComplexDataBean leaf1=new ComplexDataBean("leaf1",Calendar.getInstance(),1,1f);
+        ComplexDataBean leaf2=new ComplexDataBean("leaf2",Calendar.getInstance(),2,2f);
+        ComplexDataBean root=new ComplexDataBean("root",Calendar.getInstance(),0,0f);
+        root.setChildren(new ComplexDataBean[] {leaf1,leaf2});
+        leaf1.setParent(root);
+        leaf2.setParent(root);
         return root;
     }
     

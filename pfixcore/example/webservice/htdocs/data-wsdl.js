@@ -19,12 +19,12 @@ var wsdl_uri=  url_start + "/Data.wsdl";
 alert(wsdl_uri);
 var t1=0;
 
-function DataBean(id) {
-  this.id=id;
+function DataBean(name) {
+  this.name=name;
 }
 
-DataBean.prototype.getId= function() {
-  return this.id;
+DataBean.prototype.getName= function() {
+  return this.name;
 }
 
 var dataBean=new DataBean("jstest");
