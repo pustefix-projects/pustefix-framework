@@ -830,7 +830,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         Map map = new HashMap();
         for (int i = 0; i < anchors.length; i++) {
             String value = anchors[i].getValue();
-            int    pos = value.indexOf(":");
+            int    pos = value.indexOf("|");
+            if (pos < 0) pos = value.indexOf(":"); // This is for backwards compatibility, but should not be used anymore!
             if (pos < (value.length() - 1) && pos > 0) {
                 String frame  = value.substring(0, pos);
                 String anchor = value.substring(pos + 1);

@@ -73,7 +73,7 @@
             <ixsl:copy-of select="$ind"/>
             <pfx:button page="pages" mode="force">
               <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-              <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="@name"/></pfx:argument>
+              <pfx:anchor   frame="leftnavi"><ixsl:value-of select="@name"/></pfx:anchor>
               <ixsl:value-of select="@name"/>
             </pfx:button>
           </td>
@@ -329,7 +329,7 @@
                 <pfx:command  name="SELWRP">imgsel</pfx:command>
                 <pfx:command  name="SELWRP">upload</pfx:command>
                 <pfx:argument name="imgsel.Path"><ixsl:value-of select="./@path"/></pfx:argument>
-                <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="./@path"/></pfx:argument>
+                <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                 <ixsl:value-of select="@name"/>
               </pfx:button>
             </td>
@@ -382,7 +382,7 @@
                     <pfx:command  name="SELWRP">uplcom</pfx:command>
                     <pfx:argument name="comsel.Path"><ixsl:value-of select="./@path"/></pfx:argument>
                     <pfx:argument name="comsel.Part"><ixsl:value-of select="./@part"/></pfx:argument>
-                    <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="./@path"/></pfx:argument>
+                    <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                     <ixsl:value-of select="@part"/>
                   </pfx:button>
                 </td>
@@ -441,7 +441,7 @@
                   <pfx:command  name="SELWRP" page="{$target_page}">uplinc</pfx:command>
                   <pfx:argument name="incsel.Path"><ixsl:value-of select="./@path"/></pfx:argument>
                   <pfx:argument name="incsel.Part"><ixsl:value-of select="./@part"/></pfx:argument>
-                  <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="./@path"/></pfx:argument>
+                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                   <ixsl:value-of select="@part"/>
                 </pfx:button>
               </td>
@@ -542,15 +542,14 @@
             <ixsl:copy-of select="$ind"/>
             <pfx:button page="targets" mode="force">
               <pfx:argument name="tsel.Target"><ixsl:value-of select="@name"/></pfx:argument>
-              <pfx:argument name="__anchor">
-                <ixsl:text>left_navi:</ixsl:text>
+              <pfx:anchor   frame="left_navi">
                 <ixsl:choose>
                   <ixsl:when test="$counter = 0"><ixsl:value-of select="@name"/></ixsl:when>
                   <ixsl:otherwise>
                     <ixsl:value-of select="ancestor::target[position() = $counter]/@name"/>
                   </ixsl:otherwise>
                 </ixsl:choose>
-              </pfx:argument>
+              </pfx:anchor>
               <span>
                 <ixsl:choose>
                   <ixsl:when test="$counter = 0">
@@ -658,7 +657,7 @@
                           <ixsl:when test="/formresult/cr_editorsession/product/@name = $theproduct">
                             <pfx:button page="pages" target="_top" frame="_top">
                               <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-                              <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="@name"/></pfx:argument>
+                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                               <span>
                                 <ixsl:if test="@uptodate = 'false'">
                                   <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
@@ -670,7 +669,7 @@
                             <pfx:button page="pages" target="_top" frame="_top">
                               <pfx:argument name="extprod.Name"><ixsl:value-of select="$theproduct"/></pfx:argument>
                               <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-                              <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="@name"/></pfx:argument>
+                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                               <span>
                                 <ixsl:if test="@uptodate = 'false'">
                                   <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
@@ -706,12 +705,12 @@
             <ixsl:copy-of select="$ind"/>
             <pfx:button page="targets" target="_top" frame="_top">
               <pfx:argument name="tsel.Target"><ixsl:value-of select="@name"/></pfx:argument>
-              <pfx:argument name="__anchor">
+              <pfx:anchor   frame="left_navi">
                 <ixsl:choose>
-                  <ixsl:when test="$count = 0">left_navi:<ixsl:value-of select="@name"/></ixsl:when>
-                  <ixsl:otherwise>left_navi:<ixsl:value-of select="ancestor::target[position() = $count]/@name"/></ixsl:otherwise>
+                  <ixsl:when test="$count = 0"><ixsl:value-of select="@name"/></ixsl:when>
+                  <ixsl:otherwise><ixsl:value-of select="ancestor::target[position() = $count]/@name"/></ixsl:otherwise>
                 </ixsl:choose>
-              </pfx:argument>
+              </pfx:anchor>
               <ixsl:value-of select="@name"/>
             </pfx:button>
           </td> 
@@ -825,7 +824,7 @@
                 <pfx:command  name="SELWRP" page="includes">uplinc</pfx:command>
                 <pfx:argument name="incsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
                 <pfx:argument name="incsel.Part"><ixsl:value-of select="@part"/></pfx:argument>
-                <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="@path"/></pfx:argument>
+                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                 <ixsl:value-of select="@part"/>
               </pfx:button>
             </td>
@@ -860,7 +859,7 @@
                 <pfx:command  name="SELWRP" page="images">upload</pfx:command>
                 <pfx:argument name="imgsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
                 <pfx:argument name="imgsel.Modtime"><ixsl:value-of select="@modtime"/></pfx:argument>
-                <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="@path"/></pfx:argument>
+                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                 <ixsl:value-of select="substring-after(@path, '{$docroot}/' )"/>
               </pfx:button>
             </td>
@@ -907,7 +906,7 @@
     <xsl:param name="upload"/>
     <pfx:forminput target="bottom">
       <pfx:xinp type="hidden" name="__anchor">
-        <ixsl:attribute name="value">left_navi:<ixsl:value-of select="/formresult/current{$type}info/@path"/></ixsl:attribute>
+        <ixsl:attribute name="value">left_navi|<ixsl:value-of select="/formresult/current{$type}info/@path"/></ixsl:attribute>
       </pfx:xinp>
       <ixsl:if test="/formresult/formerrors/error">
         <table width="100%">
@@ -1104,7 +1103,7 @@
     <ixsl:if test="/formresult/currentimageinfo">
       <pfx:forminput enctype="multipart/form-data">
         <pfx:xinp type="hidden" name="__anchor">
-          <ixsl:attribute name="value">left_navi:<ixsl:value-of select="/formresult/currentimageinfo/@path"/></ixsl:attribute>
+          <ixsl:attribute name="value">left_navi|<ixsl:value-of select="/formresult/currentimageinfo/@path"/></ixsl:attribute>
         </pfx:xinp>
         <table width="100%">
           <tr>
@@ -1199,7 +1198,7 @@
                  </ixsl:if>
                       <pfx:button page="documentation" mode="force">
                       <pfx:argument name="select.Id"><ixsl:value-of select="./@id"/></pfx:argument>
-                      <pfx:argument name="__anchor">left_navi:<ixsl:value-of select="$file"/></pfx:argument>
+                      <pfx:anchor   frame="left_navi"><ixsl:value-of select="$file"/></pfx:anchor>
                       <ixsl:value-of select="./@value"/>
                    </pfx:button>
               </td></tr>

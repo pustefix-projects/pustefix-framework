@@ -324,7 +324,7 @@
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
-                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="concat($docroot,'/',$href)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi:<xsl:value-of select="concat($docroot,'/',$href)"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="concat($docroot,'/',$href)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="concat($docroot,'/',$href)"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                 <img border="0" src="/core/img/edit.gif"
                      alt="Edit include: '{$part}' in file '{$href}'"
                      title="Edit include: '{$part}' in file '{$href}'"/>
@@ -332,7 +332,7 @@
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
-            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={concat($docroot,'/',$href)}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi:{concat($docroot,'/',$href)}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
+            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={concat($docroot,'/',$href)}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi|{concat($docroot,'/',$href)}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
               <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$href}'" title="Edit include: '{$part}' in file '{$href}'"/>
             </a>
           </xsl:when>

@@ -1,3 +1,17 @@
+2003-05-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in: 
+	* example/core/xsl/forminput.xsl.in: 
+	* example/core/xsl/navigation.xsl.in: added <pfx:anchor frame="...">ANCHOR NAME</pfx:anchor>
+	as a new child of <pfx:button> und <pfx:xinp type="submit|image">. You can
+	still use the old <pfx:argument name="__anchor">FRAMENAME|ANCHORNAME</pfx:argument> but
+	this is deprecated (FRAMENAME:ANCHORNAME is deprecated anyway, see below).
+
+	* example/core/editor/xsl/metatags.xsl: changed to use <pfx:anchor>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (createAnchorMap):
+	chenged to prefer "|" as a separator between frame name and anchor
+	name (the ":" is still valid for now but deprecated).
 
 2003-05-02  Joerg Haecker <haecker@schlund.de>
 
