@@ -12,7 +12,7 @@
   <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
   <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
-  <prop name="factory.initialize.08">de.schlund.pfixxml.targets.SPCacheStatistic</prop>
+  <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
@@ -24,6 +24,11 @@
   <prop name="targetcache.cachecapacity">50</prop>
   <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="includecache.cachecapacity">50</prop>
+
+
+  <!--SPCacheStatistic-->
+  <prop name="cachestatistic.queuesize">60</prop>
+  <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
 
   <!-- EditorUserFactory -->
   <prop name="editoruserfactory.userdata"><cus:docroot/>common/conf/userdata.xml</prop>

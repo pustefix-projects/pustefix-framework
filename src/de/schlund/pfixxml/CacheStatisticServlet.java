@@ -4,6 +4,7 @@
  */
 package de.schlund.pfixxml;
 
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -15,7 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
-import de.schlund.pfixxml.targets.SPCacheStatistic;
+import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.testenv.XMLSerializeUtil;
 
 /**
@@ -26,6 +27,8 @@ public class CacheStatisticServlet extends HttpServlet {
 
     private static int OUTPUTXML=0;
     private static int OUTPUTTEXT=1;
+    
+    
     /**
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
@@ -40,17 +43,7 @@ public class CacheStatisticServlet extends HttpServlet {
                 outmode = OUTPUTTEXT;
             }
         }
-        boolean reset = false;
-        
-        String reset_param = req.getParameter("doreset");
-        if(reset_param != null) {
-            if(reset_param.equals("true")) {
-                reset = true;
-            }
-        }
-        
-      
-        
+       
         String output;
         
         if(outmode == OUTPUTXML) {
@@ -69,13 +62,13 @@ public class CacheStatisticServlet extends HttpServlet {
             throw new ServletException("No outputmode set.");
         }
         ServletOutputStream ostream = res.getOutputStream();
-        ostream.println(output);
-        
-        if(reset) {
-            SPCacheStatistic.getInstance().reset();
-        }
+        ostream.println(output);  
+     
     }
 
+    
+    
+    
     /**
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
@@ -83,5 +76,6 @@ public class CacheStatisticServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doGet(req, res);
     }
+
 
 }

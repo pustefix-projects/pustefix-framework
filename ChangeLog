@@ -1,3 +1,18 @@
+2003-12-12  Joerg Haecker <haecker@schlund.de>
+
+        * example/core/build/create_tomcatweb.xsl: if sessiontimeout-node
+        in project.xml.in exists use it, else use default with 60.
+
+        * Almost complete rewrite of SPCacheStatistic:
+        * src/de/schlund/pfixxml/targets/SPCacheStatistic.java moved to
+        src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+        * src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java: added
+        * src/de/schlund/pfixxml/targets/cachestat/CacheHitMissPair.java: added
+        * example/common/conf/factory.prop.in: adjusted, added property
+        cachestatistic.queuesize and cachestatistic.queueticks.
+        * src/de/schlund/pfixxml/CacheStatisticServlet.java: minor
+        * src/de/schlund/pfixxml/targets/TargetImpl.java: minor
+
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:

@@ -64,10 +64,22 @@
 	  </servlet-mapping>
 	</xsl:if>
       </xsl:for-each>
-      
+
+
+  <!-- if a 'sessiontimeout'-node exists use it, else use default -->
+  <xsl:choose>
+    <xsl:when test="./sessiontimeout">
       <session-config>
-	<session-timeout>60</session-timeout>
+        <session-timeout><xsl:value-of select="./sessiontimeout"/></session-timeout>
+      </session-config> 
+    </xsl:when>
+    <xsl:otherwise>
+      <session-config>
+        <session-timeout>60</session-timeout>
       </session-config>
+    </xsl:otherwise>
+  </xsl:choose>
+
 
       <xsl:for-each select="tomcat/error-page">
 	<error-page>

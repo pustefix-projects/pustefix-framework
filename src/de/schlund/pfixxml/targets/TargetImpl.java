@@ -29,6 +29,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 
 /**
  * TargetImpl.java
