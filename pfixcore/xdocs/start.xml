@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-TODO:
-o example apps
-  o target, um sie auszupacken
-  o readme nach hier mergen
-  o getting started + example apps mergen
-  o wo liegt das tgz genau?
-o jikes
-  o default auf build.compiler=modern
-  o download/prerequisites --> optimization chapter
-o reread:
-  o download
-  o start
-o project --> application
-
 <document>
   <properties>
     <title>Getting started</title>
@@ -34,13 +20,11 @@ o project --> application
           </p></li>
         <li><p>Press Control-C to stop Tomcat.</p></li>
       </ol>
-        
-      </ol>
     </section>
     <section name="Example projects">
-      <p>The pustefix environment contains example applications in <code>example.tar.gz</code>.
-        Just unpack the file with <code>tar xvzf example.tar.gz</code> into projects
-        directory and take a short look at the resulting <code>README_EXAMPLES.txt</code> file.</p>
+      <p>You install the pustefix examples, just unpack the respective download with 
+        <code>tar xvzf example.tar.gz</code> into the projects directory and take a 
+        short look at the resulting <code>README_EXAMPLES.txt</code> file.</p>
       <p>To get started with the examples, please study the
       <code>de.schlund.pfixcore.util.basicapp.</code> package. If you start with
       InitNewPfixProject.java (in the package basics) it should
@@ -51,10 +35,10 @@ o project --> application
       <p>Make sure your machine is configured as follows:</p>
       <ul>
         <li><p>Your host ip must not be <code>127.0.0.1</code>. (TODO: why, what happens if not.)
-         Verify this by running <source>ping HOSTNAME</source></p></li>.
-        <li><p>Pustefix uses virtual hosts, i.e. a lookup to NAME.HOSTNAME.DOMAIN should resolves
-        to HOSTNAME.DOMAIN no matter what NAME is). Test this by running
-          <source>ping foo.hostname</source>.
+         Verify this by running <source>ping HOSTNAME</source></p></li>
+        <li><p>Pustefix uses virtual hosts, i.e. a lookup to FOO.HOSTNAME.DOMAIN should resolves
+        to HOSTNAME.DOMAIN no matter what FOO is. Test this by running
+          <source>ping FOO.HORSTNAME</source>
         To configure this you can add an <code>* entry</code> to your DNS configuration.
         Alternatively, you can add individual entries for every project
         (e.g. <code>sample1.HOSTNAME.DOMAIN</code>) to your <code>/etc/hosts</code>.</p></li>
@@ -62,17 +46,21 @@ o project --> application
     </section>
         
     <section name="Apache configuration">
+      <p>TODO: don't belong to getting started - it's an advanced subject.</p>
       <p>To run pustefix applications in productions environments, you might want to embed tomcat
       in an apache web server. This section describes how to do this on Linux machines.</p>
 
       <ol>
-        <li><p>Install Apache 2: <a href="http://httpd.apache.org/">Apache</a>. rpm packages
+        <li><p>Install <a href="http://httpd.apache.org/">Apache</a> 2: Rpm packages
           are supplied for most Linux distributions.</p></li>
         <li><p>Install mod_jk: mod_jk is the apache connection module for tomcat.
-          rpm packages can be found at <a href="http://jpackage.org">jpackage.org</a>.
+          Rpm packages can be found at <a href="http://jpackage.org">jpackage.org</a>.
           General configuration can be found <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">here</a>.
           </p></li>
-        <li><p>Load mod_jk: Add the following lines to your apache.conf, right before the <code>rewrite</code>
+        <li><p>Make sure that mod_ssl is installed. Otherwise, apache will complain that about the above
+          <code>httpd.conf</code> include.</p></li>
+        <li><p>Make sure the rewrite module is installed.</p></li>
+        <li><p>Load mod_jk: Add the following line to your httpd.conf, right before the <code>rewrite</code>
           module configuration: <source>
   LoadModule jk_module modules/mod_jk.so
 </source> Caution: There have been problems with the order of inclusion of mod_rewrite and mod_jk.
@@ -80,7 +68,7 @@ o project --> application
         been experienced are related to a changed regexp syntax between different versions of
         mod_rewrite. You may have to customize the relevant regexps in the file
         <code>core/build/create_apacheconf.xsl</code>.</p></li>
-        <li><p>Configure pustefix: Append the following lines to your apache.conf. Substitute the
+        <li><p>Configure pustefix: Append the following lines to your httpd.conf. Substitute the
           capitalized fragments to reflect your configuration.<source>
   # at the end
   NameVirtualHost HOSTNAME.DOMAIN:80
@@ -90,10 +78,7 @@ o project --> application
   # virtual hosts for tomcat:
   Include /YOUR_ENVIRONMENT/projects/servletconf/tomcat/apache.conf
 </source></p>
-        </li>
-        <li><p>Make sure that mod_ssl is installed. Otherwise, apache will complain that about the above
-          <code>apache.conf</code> include.</p></li>
-        <li><p>Modern apache installations often have an <code>httpd.conf.d</code> directory where to
+         <p>Modern apache installations often have an <code>httpd.conf.d</code> directory where to
           put links to config files that should be included automatically. In this case you can link the
           two files there instead of including them via your http.conf</p></li>
         <li><p>Restart apache</p></li>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <properties>
+    <title>Structural xml format</title>
+  </properties>
+  <body>
+
+  <section name="Structural xml format">
+    <p>This document describes the format for those documents serving as
+    the structure defining xml source of the finally transformed documents
+    These can be found in the directory <code>xml</code> directory of your 
+    project.</p>
+
+    <p>The explanation keeps an eye on the expected usage patterns of these
+    docs.</p>
+
+    <p>There are basically two kind of "pages" you deliver with Pustefix.</p>
+    <ol>
+      <li><p>Pages that have no frames and may deliver html or any other text 
+        based format.</p></li>
+      <li><p>Pages that contain an arbitrary amount of frames and framesets. 
+        Those always deliver html.</p></li>
+    </ol>
+
+    <subsection name="Structure of a Type 1 document">
+      <p>For a html delivering page without frames:</p>
+    
+      <xmlcode>
+        <pfx:document>
+          <xmlcodeNS ns="pfx">http://www.schlund.de/pustefix/core</xmlcodeNS>
+          <html>
+            <pfx:head>                                                                     
+              <xmlnote>
+                 Here comes everything that you normally put into the html &lt;head> tag        
+                 The &lt;pfx:head> is only special in that it automatically inserts code to     
+                 load the needed Pustefix JavaScript Baselibrary.
+              </xmlnote>
+            </pfx:head>
+            <body>                                                                        
+              <xmlnote>The body content</xmlnote>
+            </body>
+          </html>
+        </pfx:document>
+      </xmlcode>
+   
+      <p>If you don't want to deliver html, just ommit the &lt;html> tag. The
+      following could be used to implement a CSS stylesheet.</p>
+  
+      <xmlcode>
+        <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+          .foo { color: #ffff00; font-family: Helvetica; }   
+        </pfx:document>
+      </xmlcode>
+
+      <p>The rule of thumb is: Whatever you put between &lt;pfx:document> is up to
+      you and will be delivered just as you write it there. Just remember that
+      th e &lt;html> is not automatically inserted for you, you have to write it
+      yourself.</p>
+
+    </subsection>
+    <subsection name="Structure of a Type 2 document">
+    
+      <p>There are only subtle differences. A document is a Type 2 doc by
+      definition whenever there is a &lt;pfx:frameset> (and possibly a
+      &lt;pfx:head> node) node as the only direct children of &lt;pfx:document>.</p>
+
+      <xmlcode>
+        <pfx:document>
+          <xmlcodeNS ns="pfx">http://www.schlund.de/pustefix/core</xmlcodeNS>
+          <pfx:head>
+            <xmlnote>
+               Again, put anything you want to appear in the head of the _top
+               frame! This means page title, script stuff or stylesheets. And
+               again this is only called &lt;pfx:head> instead of just &lt;head> because 
+               of the magic it does with respect to the basic script library.
+            </xmlnote>
+          </pfx:head>
+          <pfx:frameset rows="20,*">
+            <pfx:frame name="navi">
+              <html>
+                <head>
+                  <xmlnote>
+                    We don't need a special &lt;pfx:head here> as this is just
+                    a subframe. But maybe we want CSS.
+                  </xmlnote>
+                </head>
+                <body>
+                  <xmlnote>Go on as you like... </xmlnote>
+               </body>
+             </html>
+           </pfx:frame>
+           <pfx:frame name="main">
+             <html>
+              <head>
+                <xmlnote>
+                  We don't need a special &lt;pfx:head here> as this is just
+                  a subframe. But maybe we want CSS.
+                </xmlnote>
+              </head>
+  	          <body>
+  	            <xmlnote>Go on as you like...</xmlnote>
+  	          </body>
+              </html>
+            </pfx:frame>
+          </pfx:frameset>
+        </pfx:document>
+      </xmlcode>
+
+      <p>As you can see there is NO &lt;html> tag just below &lt;pfx:document>. This
+      is the one important difference between Type 1) and Type 2). As a rule
+      you could say that you only have to insert the &lt;html> yourself
+      whereever the "real" content is. In a Type 1) doc this is the whole
+      content of the &lt;pfx:document> tag, so we need to set it there. But for
+      a Type 2) doc, the "real" content is contained as the content of the
+      &lt;pfx:frame> tags, so you need to set it there.</p>
+      
+    </subsection>
+  </section>
+</body>
+</document>
