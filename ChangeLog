@@ -11,6 +11,9 @@
 	* example/simple[link|page|form]/conf/project.xml.in:
 	* example/sample1/conf/project.xml.in: Made property files relative.
 	
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/ProjectXmlDom.java: change accordingly
+	to only create relative propfile names
+
 	* example/common/conf/factory.prop.in: remove the docroot property (and add the 
 	missing partindex.reloadchanges property for StatusCode reload)
 
