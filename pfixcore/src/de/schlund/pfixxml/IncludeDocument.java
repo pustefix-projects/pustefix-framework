@@ -74,10 +74,10 @@ public class IncludeDocument {
             throw ex;
         }
         
-        Element rootElement = doc.getDocumentElement();
-        rootElement.setAttribute(INCPATH, path.getRelative());
+        // Element rootElement = doc.getDocumentElement();
+        // rootElement.setAttribute(INCPATH, path.getRelative());
         if (! mutable) {
-            doc = Xslt.xmlObjectFromDocument(doc);
+            doc = Xslt.xmlObjectFromDocument(doc, path.getRelative());
         }
     }
 

@@ -84,6 +84,10 @@ public class Xslt {
      * @throws Exception on all errors 
      */
     public static Document xmlObjectFromDocument(Document doc) throws TransformerException {
+        return xmlObjectFromDocument(doc, null);
+    }
+
+    public static Document xmlObjectFromDocument(Document doc, String systemid) throws TransformerException {
         if (doc == null) { // TODO: check doesn't belong here!
             // thats a request to an unkown page!
             // return null, cause we  want a 404 and no NPExpection
@@ -95,7 +99,9 @@ public class Xslt {
         if (doc instanceof TinyDocumentImpl) {
             return doc;
         } else {
-            return xmlObjectFromSource(new DOMSource(doc));
+            DOMSource domsrc = new DOMSource(doc);
+            domsrc.setSystemId(systemid);
+            return xmlObjectFromSource(domsrc);
         }
     }
 
@@ -130,24 +136,11 @@ public class Xslt {
         return xmlObjectFromSource(src);
     }
 
-    public static synchronized Document xmlObjectFromSource(Source input) throws XPathException {
-        // TODO: use empty transformation
-        
-        // I can't use TinyBuilder.build because it returns wrappers for DOMSources ...
-        TinyBuilder builder;
-        NamePool pool;
-        Configuration conf;
-        
-        builder = new TinyBuilder();
-        pool = NamePool.getDefaultNamePool();
-        conf = new Configuration();
-        conf.setSourceParserClass("noSuchClass");
-        try {
-            new Sender(conf).send(input, builder);
-        } catch (TransformerException err) {
-            throw new XPathException.Dynamic(err);
-        }
-    	return ((TinyDocumentImpl) builder.getCurrentDocument());
+    public static Document xmlObjectFromSource(Source input) throws XPathException, TransformerException, TransformerConfigurationException {
+        Transformer trans  = factory.newTransformer();
+        DOMResult   result = new DOMResult();
+        trans.transform(input, result);
+        return (TinyDocumentImpl) result.getNode();
     }
     
     //-- load transformer

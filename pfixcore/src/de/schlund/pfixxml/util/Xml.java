@@ -115,7 +115,7 @@ public final class Xml {
         }
     }
     public static synchronized Document parse(File file) throws IOException, SAXException {
-        return parse(new InputSource(file.getPath()));
+        return parse(file.getPath());
     }
     public static synchronized Document parse(String filename) throws IOException, SAXException {
         return parse(new InputSource(filename));
