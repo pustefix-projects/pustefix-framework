@@ -30,6 +30,7 @@
             <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
           </link>
 		  <link rel="stylesheet" type="text/css" href="/webservice.css"/>
+          <script type="text/javascript" src="/application.js"></script>
 		   <ixsl:choose>
 			<ixsl:when test="$page='calculator'">
 				<script type="text/javascript" src="/calc-soap.js"></script>
@@ -50,8 +51,12 @@
                  <!-- <script type="text/javascript" src="/webservice_helper.js"></script>
                   <script type="text/javascript" src="/webservice.js"></script>-->
         </head>
-        <body style="padding-left:10pt;">
+        <body style="padding-left:10pt;" onload="setupDisplay()">
           <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/>
+          <div name="no_disp" style="display:none">
+			<h2 style="color:red">Browser has no native webservice support!</h2>
+        	</div>
+	   	<a href="/xml/webservice;{$__sessid}?monitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
           <pfx:editconsole/>
         </body>
       </html>

@@ -15,12 +15,11 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author mleidig
  */
-public class PrefetchingResponseWrapper extends MonitorResponseWrapper {
+public class PrefetchingResponseWrapper {
     
     MyServletOutputStream myOut;
     
     public PrefetchingResponseWrapper(HttpServletResponse res) {
-        super(res);
         myOut=new MyServletOutputStream();
     }
     

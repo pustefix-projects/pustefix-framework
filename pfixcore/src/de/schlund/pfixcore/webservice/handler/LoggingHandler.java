@@ -22,6 +22,7 @@ public class LoggingHandler extends AbstractHandler {
             String target=messageContext.getTargetService();
             if(!messageContext.getPastPivot()) {
                 messageContext.setProperty(Constants.MSGCTX_PROP_MONITORSTART,new Long(System.currentTimeMillis()));
+                System.out.println("LOG REQ");
                 LOG.info("Target: "+target);
                 LOG.info("Request:");
                 Message msg=messageContext.getRequestMessage();

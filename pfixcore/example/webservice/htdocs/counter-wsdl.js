@@ -18,8 +18,7 @@ var wsdl_uri="http://webservice.zap.ue.schlund.de/Counter.wsdl";
 var t1=0;
 
 function wsdlCall(method,val,sid) {
-	wsdl_uri="http://webservice.zap.ue.schlund.de/xml/webservice/Counter;jsessionid="+sid+"?WSDL";
-	//alert(wsdl_uri);
+	wsdl_uri="http://"+window.location.host+"/xml/webservice/Counter;"+sid+"?WSDL";
 	var d1=new Date();
 	t1=d1.getTime();
 	if(!proxy) {

@@ -73,15 +73,29 @@ public class ConfigProperties {
         return properties.getProperty(key);
     }
     
-    public boolean getBooleanProperty(String propName,boolean mandatory) throws ConfigException {
+    public boolean getBooleanProperty(String propName,boolean mandatory,boolean defaultVal) throws ConfigException {
         String val=properties.getProperty(propName);
         if(val==null) {
             if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
-            else return false;
+            else return defaultVal;
         }
         if(val.equalsIgnoreCase("true")) return true;
         if(val.equalsIgnoreCase("false")) return false;
         throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+    }
+
+    public int getIntegerProperty(String propName,boolean mandatory,int defaultVal) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null) {
+            if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+            else return defaultVal;
+        }
+        try {
+        	int intVal=Integer.parseInt(val);
+            return intVal;
+        } catch(NumberFormatException x) {
+        	throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+        }
     }
     
     public String getStringProperty(String propName,boolean mandatory) throws ConfigException {
@@ -89,7 +103,7 @@ public class ConfigProperties {
         if(val==null && mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
         return val;
     }
-    
+
     public String getStringProperty(String propName,String[] allowedValues,boolean mandatory) throws ConfigException {
         String val=properties.getProperty(propName);
         if(val==null) {

@@ -14,18 +14,15 @@ public class SetClassLoaderHandler extends ResetClassLoaderHandler {
           ClassLoader newLoader=loader.getAppClassLoader();
           if(newLoader!=null) {
               ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
-              System.out.println("######### Current: "+currentLoader);
+             
               if(!newLoader.equals(currentLoader)) {
                   msgContext.setProperty(Constants.OLD_CLASSLOADER_PROPERTY,currentLoader);
                   Thread.currentThread().setContextClassLoader(newLoader);
-                  //msgContext.setClassLoader(newLoader);
-                  System.out.println("set cl: "+newLoader.getClass().getName());
+                  msgContext.setClassLoader(newLoader);
+               
               }
           }	
-          //System.out.println("Service: "+msgContext.getService());
-          //RPCProvider rpc=(RPCProvider)msgContext.getService().getPivotHandler();
-          //System.out.println("Provider: "+rpc);
-    
+        
 	  }
    }	  
 		   

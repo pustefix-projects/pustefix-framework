@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.xml.transform.*;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
@@ -23,6 +24,9 @@ import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
+import de.schlund.pfixcore.webservice.monitor.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 
 /**
  * WebServiceServlet.java 
@@ -36,6 +40,7 @@ public class WebServiceServlet extends AxisServlet {
     private Category CAT=Category.getInstance(getClass().getName());
     private boolean DEBUG=CAT.isDebugEnabled();
     
+    private static final String MONITOR_XSL="core/xsl/wsmonitor.xsl";
     
     private WebServiceContext wsc;
     
@@ -54,9 +59,10 @@ public class WebServiceServlet extends AxisServlet {
             Configuration srvConf=new Configuration(cfgProps);
             wsc=new WebServiceContext(srvConf);
             getServletContext().setAttribute(wsc.getClass().getName(),wsc);
-            if(wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-                MonitoringCache cache=new MonitoringCache();
-                wsc.setAttribute(cache.getClass().getName(),cache);
+            GlobalServiceConfig globConf=wsc.getConfiguration().getGlobalServiceConfig();
+            if(globConf.getMonitoringEnabled()) {
+                Monitor monitor=new Monitor(globConf.getMonitoringHistorySize(),globConf.getMonitoringScope());
+                wsc.setAttribute(Monitor.class.getName(),monitor);
             }
         } catch(Exception x) {
             throw new ServletException("Can't get web service configuration",x);
@@ -84,39 +90,77 @@ public class WebServiceServlet extends AxisServlet {
         writer.close();
     }
     
-    protected void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        res.setStatus(HttpURLConnection.HTTP_OK);
-        res.setContentType("text/html");
-        writer.println("<html><head><title>Web service monitor</title>"+getCSS()+"</head><body>");
-        writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
-        HttpSession session=req.getSession(false);
-        if(session!=null) {
-            MonitoringCache cache=(MonitoringCache)wsc.getAttribute(MonitoringCache.class.getName());
-            MonitoringCacheEntry entry=cache.getLastEntry(session);
-            if(entry==null) writer.println("<h2>No data available</h2");
-            else {
-                SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-                writer.println("<table border=\"2\">");
-                writer.println("<tr><td align=\"left\">Start:</td><td>"+format.format(new Date(entry.getStart()))+"</td></tr>");
-                writer.println("<tr><td align=\"left\">Time:</td><td>"+entry.getTime()+" ms</td></tr>");
-                writer.println("<tr><td align=\"left\">Service:</td><td>"+entry.getTarget()+"</td></tr>");
-                writer.println("</table>");
-                writer.println("<div name=\"detail_entry\">");
-                writer.println("<table width=\"100%\">");
+    
+    public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        Monitor monitor=(Monitor)wsc.getAttribute(Monitor.class.getName());
+        if(monitor!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            res.setStatus(HttpURLConnection.HTTP_OK);
+            res.setContentType("text/html");
+            String ip=req.getRemoteAddr();
+            MonitorHistory history=monitor.getMonitorHistory(ip);
+            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+            writer.println("<html><head><title>Web service monitor</title>"+getJS()+getCSS()+"</head><body>");
+            writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
+            writer.println("<table class=\"overview\">");
+            writer.println("<tr>");
+            writer.println("<th align=\"left\">Start</th>");
+            writer.println("<th align=\"left\">Time (in ms)</th>");
+            writer.println("<th align=\"left\">Service</th>");
+            writer.println("</tr>");
+            MonitorRecord[] records=history.getRecords();
+            for(int i=0;i<records.length;i++) {
+            	MonitorRecord record=records[i];
+                String id="entry"+i;
+                writer.println("<tr name=\"row_entry\" onclick=\"toggleDetails(this,'"+id+"')\">");
+                writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
+                writer.println("<td align=\"right\">"+record.getTime()+"</td>");
+                writer.println("<td align=\"left\">"+record.getTarget()+"</td>");
+                writer.println("</tr>");
+            }
+            writer.println("</table");
+            for(int i=0;i<records.length;i++) {
+                MonitorRecord record=records[i];
+                String id="entry"+i;
+                writer.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:none\">");
+                writer.println("<table>");
                 writer.println("<tr>");
-                writer.println("<td width=\"50%\"><b>Request:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
-                writer.println(entry.getRequest());
+                writer.println("<td><b>Request:</b><br/><textarea cols=\"70\" rows=\"25\">");
+                writer.println(record.getRequest());
                 writer.println("</textarea></td>");
-                writer.println("<td width=\"50%\"><b>Response:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
-                writer.println(entry.getResponse());
+                writer.println("<td><b>Response:</b><br/><textarea cols=\"70\" rows=\"25\">");
+                writer.println(record.getResponse());
                 writer.println("</textarea></td>");
                 writer.println("</tr>");
                 writer.println("</table>");
                 writer.println("</div");
             }
-        }
-        writer.println("</div></body></html>");
-        writer.close();
+            writer.println("</div></body></html>");
+            writer.close();
+        } else sendForbidden(req,res,writer);
+    }
+    
+    private String getJS() {
+        String js=
+            "<script type=\"text/javascript\">" +
+            "function toggleDetails(src,id) {" +
+            "   var elems=document.getElementsByName('row_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].style.color='black';" +
+            "   }" +
+            "   src.style.color='#666666';" +
+            "   elems=document.getElementsByName('detail_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].style.display='none';" +
+            "   }" +
+            "   var elem=document.getElementById(id);" +
+            "   if(elem.style.display=='none') {" +
+            "       elem.style.display='block';" +
+            "   } else {" +
+            "       elem.style.display='none';" +
+            "   }" +
+            "}" +
+            "</script>";
+        return js;
     }
     
     private String getCSS() {
@@ -133,14 +177,25 @@ public class WebServiceServlet extends AxisServlet {
     
     
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        System.out.println("POSTSOAP");
-        System.out.println(req.getClass().getName());
-        System.out.println(req.getHeader(Constants.HEADER_SOAP_ACTION));
-        System.out.println(req.getParameter(Constants.PARAM_SOAP_MESSAGE));
-        java.util.Enumeration enum=req.getParameterNames();
-        while(enum.hasMoreElements()) System.out.println(enum.nextElement());
+        
+        AppLoader loader=AppLoader.getInstance();
+        if(loader.isEnabled()) {
+            ClassLoader newLoader=loader.getAppClassLoader();
+            if(newLoader!=null) {
+                ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
+               
+                if(!newLoader.equals(currentLoader)) {
+                   
+                    Thread.currentThread().setContextClassLoader(newLoader);
+                    org.apache.axis.utils.ClassUtils.removeClassLoader(de.schlund.pfixcore.example.webservices.CounterImpl.class.getName());
+                    axisServer=null;
+                    getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
+                    
+                }
+            }
+        }
+      
         if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
-            System.out.println("FORMSOAP");
             super.doPost(new SOAPActionRequestWrapper(req),res);
         } else {
             super.doPost(req,res);
@@ -202,12 +257,11 @@ public class WebServiceServlet extends AxisServlet {
                 } else sendError(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-                if(session!=null) sendMonitor(req,res,writer);
-                else sendForbidden(req,res,writer);
-            }
+            if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            	sendMonitor(req,res,writer);
+            } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("admin")) {
-            
+            sendForbidden(req,res,writer);
         } else sendBadRequest(req,res,writer);
     }
     

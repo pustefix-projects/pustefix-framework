@@ -17,25 +17,25 @@ import java.util.ArrayList;
 public class MonitorHistory {
     
     private int max;
-    private ArrayList entries;
+    private ArrayList records;
     private long lastMod;
     
     public MonitorHistory(int max) {
         this.max=max;
-        entries=new ArrayList();
+        records=new ArrayList();
         lastMod=System.currentTimeMillis();
     }
     
-    public synchronized void addEntry(HttpRequest req) {
-    	if(entries.size()>=max) entries.remove(0);
-        entries.add(req);
+    public synchronized void addRecord(MonitorRecord record) {
+    	if(records.size()>=max) records.remove(0);
+        records.add(record);
         lastMod=System.currentTimeMillis();
     }
     
-    public synchronized HttpRequest[] getEntries() {
-    	HttpRequest[] hr=new HttpRequest[entries.size()];
-        for(int i=0;i<entries.size();i++) hr[i]=(HttpRequest)entries.get(i);
-        return hr;
+    public synchronized MonitorRecord[] getRecords() {
+    	MonitorRecord[] mr=new MonitorRecord[records.size()];
+        for(int i=0;i<records.size();i++) mr[i]=(MonitorRecord)records.get(i);
+        return mr;
     }
     
     public synchronized long lastModified() {

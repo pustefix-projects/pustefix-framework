@@ -4,16 +4,22 @@
 		<requestpath>/xml/webservice</requestpath>
 		<wsdlsupport enabled="true" repository="/wsdl"/>
 		<encoding style="rpc" use="encoded"/>
-		<monitoring enabled="true" scope="session"/>
-		<logging enabled="false"/>
+        <cus:choose>
+            <cus:test mode="prod">
+				<monitoring enabled="false"/>
+				<logging enabled="false"/>
+        	</cus:test>
+            <cus:test>
+                <monitoring enabled="true" scope="session" historysize="10"/>
+				<logging enabled="true"/>
+            </cus:test>
+        </cus:choose>
 	</webservice-global>
 	
 	<webservice name="Calculator">
 		<interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
 		<implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
-		<param name="p1" value="7"/>
-		<param name="p2" value="3"/>
-		<session type="none"/>
+        <session type="none"/>
 	</webservice>
 	
 	<webservice name="Counter">
@@ -37,7 +43,6 @@
 		<session type="none"/>
 	</webservice>
 	
-  
 </properties>
 
 <!--

@@ -7,13 +7,15 @@ function wsdlPrint(result) {
 }
 
 function wsdlPrintError(msg) {
+	var d2=new Date();
+	var t2=d2.getTime();
 	document.getElementById('wsdl_error').innerHTML=msg;
 	document.getElementById('wsdl_result').value="";
-	document.getElementById('wsdl_time').innerHTML=time;
+	document.getElementById('wsdl_time').innerHTML=(t2-t1);
 }
 
 var proxy    = null;
-var wsdl_uri = "http://webservice.zap.ue.schlund.de/xml/webservice/Calculator?WSDL";
+var wsdl_uri = "http://"+window.location.host+"/xml/webservice/Calculator?WSDL";
 
 var t1=0;
 

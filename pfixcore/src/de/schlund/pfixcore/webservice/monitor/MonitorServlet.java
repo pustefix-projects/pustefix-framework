@@ -29,7 +29,7 @@ public class MonitorServlet extends HttpServlet {
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException {
         doGet(req,res);
     }
-
+/**
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException, IOException {
         res.setContentType("text/html");
         ServletOutputStream out=res.getOutputStream();
@@ -37,6 +37,7 @@ public class MonitorServlet extends HttpServlet {
         if(monitor!=null) {
             String ip=req.getRemoteAddr();
             MonitorHistory hist=monitor.getMonitorHistory(ip);
+            
             HttpRequest[] requests=hist.getEntries();
             SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
             out.println("<html><head><title>HTTP Monitor</title>"+getJS()+getCSS()+"</head><body>");
@@ -140,5 +141,5 @@ public class MonitorServlet extends HttpServlet {
         }
         return sb.toString();
     }
-
+*/
 }

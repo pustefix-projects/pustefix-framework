@@ -10,35 +10,36 @@ import org.apache.axis.SOAPPart;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.webservice.*;
+import de.schlund.pfixcore.webservice.monitor.*;
 
 public class MonitoringHandler extends AbstractHandler {
         
-    private static Logger LOG=Logger.getLogger(LoggingHandler.class);
+    private static Logger LOG=Logger.getLogger(MonitoringHandler.class.getName());
 
     public MonitoringHandler() {
-        super();
     }
     
     public void invoke(MessageContext messageContext) throws AxisFault {
-        if(getWebServiceContext(messageContext).getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-            HttpSession session=getSession(messageContext);
-            if(session!=null) {
-                MonitoringCache cache=(MonitoringCache)getWebServiceContext(messageContext).getAttribute(MonitoringCache.class.getName());
+        WebServiceContext wsContext=getWebServiceContext(messageContext);
+        if(wsContext.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            Monitor monitor=(Monitor)getWebServiceContext(messageContext).getAttribute(Monitor.class.getName());
+            if(!messageContext.getPastPivot()) {
+            	MonitorRecord record=new MonitorRecord();
+                messageContext.setProperty(MonitorRecord.class.getName(),record);
+                record.setStartTime(System.currentTimeMillis());
                 String target=messageContext.getTargetService();
-                if(!messageContext.getPastPivot()) {
-                    MonitoringCacheEntry entry=new MonitoringCacheEntry();
-                    messageContext.setProperty(Constants.MSGCTX_PROP_MONITORENTRY,entry);
-                    entry.setTarget(target);
-                    Message msg=messageContext.getRequestMessage();
-                    entry.setRequest(((SOAPPart)msg.getSOAPPart()).getAsString());
-                    entry.setStart(System.currentTimeMillis());
-                } else {
-                    MonitoringCacheEntry entry=(MonitoringCacheEntry)messageContext.getProperty(Constants.MSGCTX_PROP_MONITORENTRY);
-                    entry.setEnd(System.currentTimeMillis());
-                    Message msg=messageContext.getResponseMessage();
-                    entry.setResponse(((SOAPPart)msg.getSOAPPart()).getAsString());
-                    cache.setLastEntry(session,entry);
-                }
+                record.setTarget(target);
+                Message msg=messageContext.getRequestMessage();
+                record.setRequest(((SOAPPart)msg.getSOAPPart()).getAsString());
+            } else {
+            	MonitorRecord record=(MonitorRecord)messageContext.getProperty(MonitorRecord.class.getName());
+                Message msg=messageContext.getResponseMessage();
+                record.setEndTime(System.currentTimeMillis());
+                record.setResponse(((SOAPPart)msg.getSOAPPart()).getAsString());
+                HttpSession session=getSession(messageContext);
+                if(session!=null) monitor.getMonitorHistory(session).addRecord(record);
+                String ip=getServletRequest(messageContext).getRemoteAddr();
+                monitor.getMonitorHistory(ip).addRecord(record);
             }
         }
     }

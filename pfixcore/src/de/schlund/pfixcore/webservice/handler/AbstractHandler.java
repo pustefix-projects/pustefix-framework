@@ -24,18 +24,28 @@ import de.schlund.pfixcore.webservice.WebServiceContext;
 public abstract class AbstractHandler extends BasicHandler {
 
     protected ServletContext getServletContext(MessageContext msgContext) {
-        HttpServlet srv=(HttpServlet)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLET);
-        ServletContext context=srv.getServletContext();
+        ServletContext context=null;
+        HttpServlet servlet=(HttpServlet)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLET);
+        if(servlet!=null) context=servlet.getServletContext();
         return context;
     }
 
     protected WebServiceContext getWebServiceContext(MessageContext msgContext) {
-        return (WebServiceContext)getServletContext(msgContext).getAttribute(WebServiceContext.class.getName());
+        WebServiceContext wsContext=null;
+        ServletContext context=getServletContext(msgContext);
+        if(context!=null) wsContext=(WebServiceContext)context.getAttribute(WebServiceContext.class.getName());
+        return wsContext;
+    }
+    
+    protected HttpServletRequest getServletRequest(MessageContext msgContext) {
+    	 HttpServletRequest req=(HttpServletRequest)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
+         return req;
     }
     
     protected HttpSession getSession(MessageContext msgContext) {
-        HttpServletRequest req=(HttpServletRequest)msgContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
-        HttpSession session=req.getSession(false);
+        HttpSession session=null;
+        HttpServletRequest req=getServletRequest(msgContext);
+        if(req!=null) session=req.getSession(false);
         return session;
     }
     

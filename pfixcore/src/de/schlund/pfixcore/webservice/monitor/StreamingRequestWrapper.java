@@ -15,28 +15,19 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @author mleidig
  */
-public class StreamingRequestWrapper extends MonitorRequestWrapper {
+public class StreamingRequestWrapper {
 
     MyServletInputStream myIn;
     
     public StreamingRequestWrapper(HttpServletRequest req) throws IOException {
-        super(req);
         myIn=new MyServletInputStream(req);
     }
         
     public ServletInputStream getInputStream() throws IOException {
-        System.out.println("getsis");
         return myIn;
-    }
-    
-    public java.lang.String getParameter(java.lang.String name) {
-        System.out.println("get "+name);
-        return super.getParameter(name);
-        
     }
      
     public BufferedReader getReader() throws IOException {
-        System.out.println("getbr");
         return new BufferedReader(new InputStreamReader(myIn));
     }
     

@@ -15,13 +15,12 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @author mleidig
  */
-public class PrefetchingRequestWrapper extends MonitorRequestWrapper {
+public class PrefetchingRequestWrapper {
 
     byte[] bytes;
     MyServletInputStream myIn;
     
     public PrefetchingRequestWrapper(HttpServletRequest req) throws IOException {
-        super(req);
         bytes=new byte[req.getContentLength()];
         InputStream in=req.getInputStream();
         int len=in.read(bytes);

@@ -24,6 +24,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     private final static String PROP_ENCODINGUSE=PROP_PREFIX+"encoding.use";
     private final static String PROP_MONITORING=PROP_PREFIX+"monitoring.enabled";
     private final static String PROP_MONITORSCOPE=PROP_PREFIX+"monitoring.scope";
+    private final static String PROP_MONITORSIZE=PROP_PREFIX+"monitoring.historysize";
     private final static String PROP_LOGGING=PROP_PREFIX+"logging.enabled";
     
     String reqPath;
@@ -33,6 +34,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     String encUse;
     boolean monitoring;
     String monitorScope;
+    int monitorSize;
     boolean logging;
     
     public GlobalServiceConfig(ConfigProperties props) throws ConfigException {
@@ -43,14 +45,17 @@ public class GlobalServiceConfig extends AbstractConfig {
     private void init() throws ConfigException {
         reqPath=props.getProperty(PROP_REQUESTPATH);
         if(reqPath==null) throw new ConfigException(ConfigException.MISSING_PROPERTY,PROP_REQUESTPATH);
-        wsdlSupport=props.getBooleanProperty(PROP_WSDLSUPPORT,true);
+        wsdlSupport=props.getBooleanProperty(PROP_WSDLSUPPORT,true,false);
         wsdlRepo=props.getProperty(PROP_WSDLREPOSITORY);
         if(wsdlRepo==null) throw new ConfigException(ConfigException.MISSING_PROPERTY,PROP_WSDLREPOSITORY);
         encStyle=props.getStringProperty(PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,true);
         encUse=props.getStringProperty(PROP_ENCODINGUSE,Constants.ENCODING_USES,true);
-        monitoring=props.getBooleanProperty(PROP_MONITORING,true);
-        monitorScope=props.getStringProperty(PROP_MONITORSCOPE,Constants.MONITOR_SCOPES,true);
-        logging=props.getBooleanProperty(PROP_LOGGING,true);
+        monitoring=props.getBooleanProperty(PROP_MONITORING,true,false);
+        if(monitoring) {
+        	monitorScope=props.getStringProperty(PROP_MONITORSCOPE,Constants.MONITOR_SCOPES,true);
+        	monitorSize=props.getIntegerProperty(PROP_MONITORSIZE,true,0);
+        }
+        logging=props.getBooleanProperty(PROP_LOGGING,true,false);
     }
     
     public void reload() throws ConfigException {
@@ -83,6 +88,10 @@ public class GlobalServiceConfig extends AbstractConfig {
     
     public String getMonitoringScope() {
         return monitorScope;
+    }
+    
+    public int getMonitoringHistorySize() {
+    	return monitorSize;
     }
     
     public boolean getLoggingEnabled() {

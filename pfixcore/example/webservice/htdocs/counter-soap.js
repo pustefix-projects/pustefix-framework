@@ -16,7 +16,7 @@ function soapCall(method,val,sid) {
 	var t1=d1.getTime();
 
 	var call=new SOAPCall();;
-	call.transportURI="http://webservice.zap.ue.schlund.de/xml/webservice/Counter;jsessionid="+sid;
+	call.transportURI="http://"+window.location.host+"/xml/webservice/Counter;"+sid;
 
 	var params=[];
 

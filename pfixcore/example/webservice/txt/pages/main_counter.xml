@@ -7,12 +7,14 @@
 
         <div id="service" style="behavior:url(/webservice.htc)"></div>
 
-<h1>Counter service</h1>
+		<h1>Counter service</h1>
+		
+        <div name="gecko_disp" style="display:none">
 		<h2>Mozilla low-level SOAP</h2>
 		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
 		<p><span class="error" id="soap_error"></span></p>
 		<form action="">
-			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<input type="hidden" name="sid" value="{$__sessid}"/>
 			<table cellpadding="5" bgcolor="#b6cfe4">
 				<tr>
 					<td>Counter:</td>
@@ -35,15 +37,18 @@
 				<tr>
 					<td>Counter:</td>
 					<td><input type="text" id="wsdl_result" readonly="readonly" size="8"/></td>
-					<td><input type="button" onclick="__webservices__['Counter'].call( 'getValue')" value="Refresh"/></td>
+					<td><input type="button" onclick="wsdlCall( 'getValue',null,'{$__sessid}')" value="Refresh"/></td>
 				</tr>
 				<tr>
 					<td></td>
 					<td><input type="text" name="val" value="3" size="8"/></td>
-					<td><input type="button"  onclick="__webservices__['Counter'].call( 'addValue', document.forms[1].val.value)" value="Add"/></td>
+					<td><input type="button"  onclick="wsdlCall( 'addValue', document.forms[1].val.value,'{$__sessid}')" value="Add"/></td>
 				</tr>
 			</table>	
-		</form>     
+		</form>
+        </div>
+        
+        <div name="ie_disp" style="display:none">
 		<h2>IE WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdlie_time">0</span> ms.</p>
 		<p><span class="error" id="wsdl_error"></span></p>
@@ -62,12 +67,10 @@
 				</tr>
 			</table>	
 		</form>     
-       
-	   <a href="/xml/wsmonitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
-	   
+        </div>
+          
       </lang>
     </product>
   </part>
   
-
 </include_parts>

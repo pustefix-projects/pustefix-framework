@@ -15,12 +15,11 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author mleidig
  */
-public class StreamingResponseWrapper extends MonitorResponseWrapper {
+public class StreamingResponseWrapper {
     
     MyServletOutputStream myOut;
     
     public StreamingResponseWrapper(HttpServletResponse res) throws IOException {
-        super(res);
         myOut=new MyServletOutputStream(res.getOutputStream());
     }
     

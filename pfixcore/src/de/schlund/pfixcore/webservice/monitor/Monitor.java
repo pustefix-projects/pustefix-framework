@@ -7,7 +7,6 @@
 package de.schlund.pfixcore.webservice.monitor;
 
 import java.util.*;
-
 import javax.servlet.http.HttpSession;
 
 /**
@@ -19,14 +18,16 @@ import javax.servlet.http.HttpSession;
 public class Monitor {
     
     int histSize;
+    String scope;
     WeakHashMap sessionToHistory;
     HashMap ipToHistory;
     long timeout=3600;
     long cleanupInterval=10;
     Thread cleanupThread;
     
-    public Monitor(int histSize) {
+    public Monitor(int histSize,String scope) {
         this.histSize=histSize;
+        this.scope=scope;
     	sessionToHistory=new WeakHashMap();
         ipToHistory=new HashMap();
         cleanupThread=new Thread() {
@@ -40,6 +41,14 @@ public class Monitor {
             }
         };
         cleanupThread.start();
+    }
+    
+    public int getHistorySize() {
+    	return histSize;
+    }
+    
+    public String getScope() {
+    	return scope;
     }
     
     public synchronized MonitorHistory getMonitorHistory(HttpSession session) {

@@ -38,42 +38,6 @@
     <xsl:text>foreigncontextservlet.foreignservletname=</xsl:text>
     <xsl:value-of select="@externalservletname"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
-  
-  <xsl:template match="webservice-global">
-	<xsl:variable name="wspref">
-		<xsl:text>webservice-global.</xsl:text>
-	</xsl:variable>
-	<xsl:value-of select="$wspref"/><xsl:text>requestpath=</xsl:text><xsl:value-of select="requestpath/text()"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.enabled=</xsl:text><xsl:value-of select="wsdlsupport/@enabled"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.repository=</xsl:text><xsl:value-of select="wsdlsupport/@repository"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>encoding.style=</xsl:text><xsl:value-of select="encoding/@style"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>encoding.use=</xsl:text><xsl:value-of select="encoding/@use"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>monitoring.enabled=</xsl:text><xsl:value-of select="monitoring/@enabled"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>monitoring.scope=</xsl:text><xsl:value-of select="monitoring/@scope"/><xsl:text>&#xa;</xsl:text>
-	<xsl:value-of select="$wspref"/><xsl:text>logging.enabled=</xsl:text><xsl:value-of select="logging/@enabled"/><xsl:text>&#xa;</xsl:text>
-  </xsl:template>
-  
-  <xsl:template match="webservice">
-	<xsl:variable name="wspref">
-		<xsl:text>webservice.</xsl:text><xsl:value-of select="@name"/><xsl:text>.</xsl:text>
-	</xsl:variable>
-	<xsl:value-of select="$wspref"/><xsl:text>name=</xsl:text><xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
- 	<xsl:if test="interface">
-		<xsl:value-of select="$wspref"/><xsl:text>interface.name=</xsl:text><xsl:value-of select="interface/@name"/><xsl:text>&#xa;</xsl:text>
- 	</xsl:if>
-	<xsl:if test="interface">
-		<xsl:value-of select="$wspref"/><xsl:text>implementation.name=</xsl:text><xsl:value-of select="implementation/@name"/><xsl:text>&#xa;</xsl:text>
- 	</xsl:if>
-	<xsl:if test="context">
-		<xsl:value-of select="$wspref"/><xsl:text>context.name=</xsl:text><xsl:value-of select="context/@name"/><xsl:text>&#xa;</xsl:text>
-	</xsl:if>
-	<xsl:if test="session">
-		<xsl:value-of select="$wspref"/><xsl:text>session.type=</xsl:text><xsl:value-of select="session/@type"/><xsl:text>&#xa;</xsl:text>
-	</xsl:if>
-	<xsl:for-each select="param">
-               <xsl:value-of select="$wspref"/>param.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#xa;</xsl:text>
-	</xsl:for-each>
-  </xsl:template>
 
   <xsl:template match="directoutputpagerequest">
     <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
@@ -351,7 +315,33 @@
     </xsl:for-each>
   </xsl:template>
 
-
+  <xsl:template match="webservice-global//*[not(namespace-uri()='http://www.schlund.de/pustefix/customize')]">
+    <xsl:call-template name="webservice">
+      <xsl:with-param name="wspref" select="concat('webservice-global.',name())"/>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template match="webservice">
+  	<xsl:value-of select="concat('webservice.',@name,'.name=',@name)"/><xsl:text>&#xa;</xsl:text>
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <xsl:template match="webservice//*[not(namespace-uri()='http://www.schlund.de/pustefix/customize')]">
+    <xsl:call-template name="webservice">
+      <xsl:with-param name="wspref" select="concat('webservice.',ancestor::webservice/@name,'.',name())"/>
+    </xsl:call-template>
+  </xsl:template>
+  
+  <xsl:template name="webservice">
+    <xsl:param name="wspref"/>
+    <xsl:if test="text()">
+      	<xsl:value-of select="concat($wspref,'=',normalize-space(text()))"/><xsl:text>&#xa;</xsl:text>
+    </xsl:if>
+	<xsl:for-each select="@*">
+        <xsl:value-of select="concat($wspref,'.',name(),'=',normalize-space(.))"/><xsl:text>&#xa;</xsl:text>
+    </xsl:for-each>
+  </xsl:template>
+  
 </xsl:stylesheet>
 
 <!--
