@@ -32,6 +32,20 @@ function pfxsoapPrintError(msg,time) {
 	document.getElementById('pfxsoap_time').innerHTML=time;
 }
 
+function arrayEquals(a1,a2) {
+	if(a1.length!=a2.length) return false;
+	for(var i=0;i<a1.length;a1++) {
+		if((a1[i] instanceof Array) && (a2[i] instanceof Array)) {
+			var equal=arrayEquals(a1[i],a2[i]);
+			if(!equal) return false;
+		} else {
+			alert((typeof a1[i])+" "+(typeof a2[i]));
+			if(a1[i]!=a2[i]) return false; 
+		}
+	}
+	return true;
+}
+
 var wsType=new wsTypeTest();
 
 function pfxsoapCallback(result,exception) {
@@ -66,7 +80,7 @@ function pfxsoapCall() {
 			var intVals=new Array(1,2);
 			var resVals=wsType.echoIntArray(intVals);
 			var t2=(new Date()).getTime();
-			if(resVals!=intVals) throw "Wrong result";
+			if(!arrayEquals(intVals,resVals)) throw "Wrong result";
 			pfxsoapPrint("echoIntArray",(t2-t1));
 		} catch(ex) {
 			var t2=(new Date()).getTime();
@@ -98,6 +112,19 @@ function pfxsoapCall() {
 			var t2=(new Date()).getTime();
    		pfxsoapPrint("echoString",(t2-t1),ex);
    	}
+   	
+   	//echoStringArray
+		t1=(new Date()).getTime();
+		try {
+			var strVals=new Array("aaa","bbb");
+			var resVals=wsType.echoStringArray(strVals);
+			var t2=(new Date()).getTime();
+			if(!arrayEquals(strVals,resVals)) throw "Wrong result";
+			pfxsoapPrint("echoStringArray",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+			pfxsoapPrint("echoStringArray",(t2-t1),ex);
+		}
    	
    	//echoBoolean
 		t1=(new Date()).getTime();

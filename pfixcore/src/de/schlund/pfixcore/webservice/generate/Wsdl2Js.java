@@ -5,6 +5,7 @@ package de.schlund.pfixcore.webservice.generate;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -28,9 +29,13 @@ import de.schlund.pfixcore.webservice.Constants;
 
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
-import org.exolab.castor.xml.schema.Schema;
-import org.exolab.castor.xml.schema.ComplexType;
-import org.exolab.castor.xml.schema.reader.SchemaReader;
+
+import org.apache.wsif.schema.Parser;
+import org.apache.wsif.schema.SchemaType;
+import org.apache.wsif.schema.ComplexType;
+
+
+
 
 /**
  * Wsdl2Js.java 
@@ -45,6 +50,8 @@ public class Wsdl2Js {
     
     private File outputFile;
     private File inputFile;
+    
+    private HashMap schemaTypes;
     
     private SOAPAddress getSOAPAddress(Port port) {
         Iterator it=port.getExtensibilityElements().iterator();
@@ -70,23 +77,8 @@ public class Wsdl2Js {
         return null;
     }
     
-    private Schema buildSchemaModel(Document doc) throws Exception {
-        try {
-            TransformerFactory tf=TransformerFactory.newInstance();
-            Transformer t=tf.newTransformer();
-            ByteArrayOutputStream baos=new ByteArrayOutputStream();
-            t.transform(new DOMSource(doc),new StreamResult(baos));
-            baos.close();
-            ByteArrayInputStream bais=new ByteArrayInputStream(baos.toByteArray());
-            SchemaReader sr=new SchemaReader(new InputSource(bais));       
-            Schema s=sr.read();
-            bais.close();
-            return s;
-        } catch(Exception x) {
-            x.printStackTrace();
-            throw new Exception("Error while building schema model",x);
-        }
-    }
+    
+    
     
     private Document extractSchemaDoc(Element elem) throws Exception {
         try {
@@ -94,9 +86,12 @@ public class Wsdl2Js {
             DocumentBuilder db=dbf.newDocumentBuilder();
             Document doc=db.newDocument();
             Element docElem=(Element)doc.importNode(elem,true);
+            docElem.setAttribute("xmlns:xsd",Constants.XMLNS_XSD);
+            docElem.setAttribute("xmlns:wsdl",Constants.XMLNS_WSDL);
             docElem.setAttribute("xmlns:soapenc",Constants.XMLNS_SOAPENC);
+            docElem.setAttribute("xmlns:apachesoap",Constants.XMLNS_APACHESOAP);
             NodeList nl=docElem.getElementsByTagName("import");
-            for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation","file:///tmp/encoding.xml");
+            for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation","file:///tmp/encoding.xsd");
             //for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation",Constants.XMLNS_SOAPENC);
             //ignore soapenc import
             //for(int i=0;i<nl.getLength();i++) docElem.removeChild(nl.item(i));
@@ -120,18 +115,14 @@ public class Wsdl2Js {
             InputSource inSrc=new InputSource(new FileInputStream(inputFile));
             Definition def=wr.readWSDL(null,inSrc);
             
-            //get schema types from wsdl definitions
-            HashMap schemas=new HashMap();
-            if(def.getTypes()!=null) {
-                Iterator xsdIt=def.getTypes().getExtensibilityElements().iterator();
-                while(xsdIt.hasNext()) {
-                    ExtensibilityElement exElem=(ExtensibilityElement)xsdIt.next();
-                    if(exElem instanceof UnknownExtensibilityElement) {
-                        Element elem=((UnknownExtensibilityElement)exElem).getElement();
-                        Schema schema=buildSchemaModel(extractSchemaDoc(elem));
-                        schemas.put(schema.getTargetNamespace(),schema);
-                    }
-                }
+            //get schema types from wsdl definition
+            ArrayList list=new ArrayList();
+            schemaTypes=new HashMap();
+            Parser.getAllSchemaTypes(def,list,null);
+            Iterator listIt=list.iterator();
+            while(listIt.hasNext()) {
+                SchemaType st=(SchemaType)listIt.next();
+                schemaTypes.put(st.getTypeName(),st);
             }
             
             Iterator srvIt=def.getServices().values().iterator();
@@ -184,24 +175,7 @@ public class Wsdl2Js {
                         for(int i=0;i<jsParams.length;i++) {
                             Part part=inputMsg.getPart(jsParams[i].getName());
                             QName type=part.getTypeName();
-                            String info="\"\"";
-                            if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
-                                info="new TypeInfo(new QName("+"XMLNS_XSD"+",\""+type.getLocalPart()+"\"))";
-                            } else if(type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
-                                info="new TypeInfo(new QName("+"XMLNS_SOAPENC"+",\""+type.getLocalPart()+"\"))";
-                            } else {
-                                Schema schema=(Schema)schemas.get(type.getNamespaceURI());
-                                ComplexType ct=schema.getComplexType(type.getLocalPart());
-                                
-                                if(ct!=null) {
-                                    System.out.println(type.getLocalPart()+" "+ct.isComplexContent());
-                                    System.out.println(ct.getBaseType());
-                                    java.util.Enumeration enum=ct.enumerate();
-                                    while(enum.hasMoreElements()) {
-                                        System.out.println(enum.nextElement());
-                                    }
-                                }
-                            }
+                            String info=createJsTypeInfo(type);
                             jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\","+info+")"));
                         }
                         
@@ -212,12 +186,7 @@ public class Wsdl2Js {
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
                             QName type=part.getTypeName();
-                            String info="\"\"";
-                            if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
-                                info="new TypeInfo(new QName("+"XMLNS_XSD"+",\""+type.getLocalPart()+"\"))";
-                            } else if(type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
-                                info="new TypeInfo(new QName("+"XMLNS_SOAPENC"+",\""+type.getLocalPart()+"\"))";
-                            }
+                            String info=createJsTypeInfo(type);
                             jsBlock.addStatement(new JsStatement("call.setReturnType("+info+")"));
                         }
                         
@@ -233,6 +202,42 @@ public class Wsdl2Js {
                 
             }
         
+    }
+    
+    
+    private String createJsTypeInfo(QName type) {
+        String info="\"\"";
+        if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)||type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
+            info="new soapTypeInfo("+createJsQName(type)+")";
+        } else {
+            SchemaType stype=(SchemaType)schemaTypes.get(type);
+            if(stype!=null) {
+                if(stype.isComplex()) {
+                    ComplexType ctype=(ComplexType)stype;
+                    if(ctype.isArray()) {
+                        System.out.println(ctype.getTypeName()+" "+ctype.getArrayDimension()+" "+ctype.getArrayType());
+                        String qn1=createJsQName(ctype.getTypeName());
+                        String qn2=createJsQName(ctype.getArrayType());
+                        info="new soapArrayInfo("+qn1+","+qn2+","+ctype.getArrayDimension()+")";
+                    } else {
+                        info="new soapTypeInfo("+createJsQName(type)+")";
+                    }
+                } else {
+                    info="new soapTypeInfo("+createJsQName(type)+")";
+                }
+            }
+        }
+        return info;
+    }
+    
+    private String createJsQName(QName name) {
+        String nsuri="";
+        if(name.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
+            nsuri="XMLNS_XSD";
+        } else if(name.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
+            nsuri="XMLNS_SOAPENC";
+        } else nsuri="\""+name.getNamespaceURI()+"\"";
+        return "new QName("+nsuri+",\""+name.getLocalPart()+"\")";
     }
     
     public void setInputFile(File inputFile) {

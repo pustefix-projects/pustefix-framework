@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="lib/jnet.jar"/>
 	<classpathentry kind="lib" path="lib/mail-1.3.jar"/>
 	<classpathentry sourcepath="/sources/saxon-6.5.3/src" kind="lib" path="lib/saxon6_5_3.jar"/>
-	<classpathentry sourcepath="/sources/xerces-2_6_1/src" kind="lib" path="lib/xercesImpl-2.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
@@ -23,5 +22,7 @@
 	<classpathentry kind="lib" path="lib/saaj.jar"/>
 	<classpathentry kind="lib" path="lib/wsdl4j.jar"/>
 	<classpathentry kind="lib" path="lib/castor-0.9.3.9.jar"/>
+	<classpathentry kind="lib" path="lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/wsif.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
