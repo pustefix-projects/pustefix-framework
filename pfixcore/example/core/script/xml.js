@@ -6,8 +6,8 @@ var _xml = [];
 var _xmlThis = [];
 var _xmlTimer = [];
 var _xmlTimerCount = [];
-var _xmlTimerCountMax = 2;
-var _xmlTimerInterval = 1000;
+var _xmlTimerCountMax = 100;
+var _xmlTimerInterval = 100;
 var _msXmlHttp;
 
 //*****************************************************************************
@@ -182,7 +182,7 @@ xmlRequest.prototype.start = function( content ) {
         iDoc.forms[iDoc.forms.length-1].submit();
 
         _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
-      }, 100 );
+      }, 50 );
     } else {
       _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
     }
@@ -207,7 +207,10 @@ function customOnReadyStateChange() {
       try {
         if( _xmlTimerCount[i]<_xmlTimerCountMax ) {
 
-          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.body.innerHTML ) {
+          //          alert("XXX:" + window.frames['pfxxmliframe'+i].location);
+
+          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.body.innerHTML && 
+              (/blank\.hmtl$/.test(window.frames['pfxxmliframe'+i].location) || /about\:blank$/.test(window.frames['pfxxmliframe'+i].location)) ) {
             _xmlTimerCount[i]++;
           } else {
 
