@@ -40,7 +40,10 @@
        <ant:touch file="${cvspass}"/>
     </j:if>
   </preGoal>
-
+  <postGoal name="site">
+    <ant:copy file="${basedir}/example/core/schema/interfacewrapper200401.xsd" todir="${basedir}/target/docs"/>
+  </postGoal>
+  
   <preGoal name="site:sshdeploy">
     <maven:user-check user="${maven.username}"/>
     <ant:echo>deleting tmp site: ${pom.siteDirectory}</ant:echo>
