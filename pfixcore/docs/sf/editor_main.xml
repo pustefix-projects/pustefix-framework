@@ -58,7 +58,7 @@
               '<i>Edit include: ...</i>'. Pressing this box opens the Editor in a new
               window starting with the <a href="editor_login.html">login</a> page.
               After successful login the include is automatically opened in 
-              the <a href="editor_includes.html">includes</a> page.
+              the <a href="editor_includes.html">Includes</a> page.
             </td>
           </tr>
         </table>
