@@ -1,3 +1,8 @@
+2003-12-04 Niels Schelbach <niels.schelbach@schlund.de>
+        * src/de/schlund/pfixcore/workflow/ContextResourceManager
+        fixed bug in checkInterface(), to allow also extended ContextResources to be recognized as implementing 
+        the requested interface
+
 2003-12-01  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
