@@ -9,13 +9,13 @@
   <!-- This is the Content Management System. You will be able to edit all projects -->
   <!-- which have at least one servlet with the "useineditor" attribute set to "true" -->
   
-  <project name="cmscore">
+  <project name="cmsskel">
     <active>true</active>
     <comment>CMS for Pfixcore</comment>
     <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
     <virtualhost><cus:fqdn/></virtualhost>
-    <servername>cmscore.<cus:fqdn/></servername>
-    <serveralias>cmscore.<cus:machine/></serveralias>
+    <servername>cmsskel.<cus:fqdn/></servername>
+    <serveralias>cmsskel.<cus:machine/></serveralias>
     <defpath>/xml/edit</defpath>
     <passthrough>core/editor/img</passthrough>
     <ports>
@@ -35,12 +35,12 @@
   <!-- You should not change this pseudo project below unless you know what you are doing.
        It is needed for administrative stuff like initializing all the needed factories. -->
 
-  <project name="admcore">
+  <project name="admskel">
     <active>true</active>
     <comment>Adminzone For Pfixcore</comment>
     <virtualhost><cus:fqdn/></virtualhost>
-    <servername>admcore.<cus:fqdn/></servername>
-    <serveralias>admcore.<cus:machine/></serveralias>
+    <servername>admskel.<cus:fqdn/></servername>
+    <serveralias>admskel.<cus:machine/></serveralias>
     <ports>
       <port number="80"/>
     </ports>
