@@ -71,14 +71,8 @@ public class StateTransfer {
     }
 
     public Object transfer(Object oldObj) {
-        try {
-            if(refs.contains(oldObj)) {return oldObj;} 
-        } catch(NullPointerException x) {
-            addException(new StateTransferException(StateTransferException.NULLHASH_EXCEPTION,oldObj.getClass().getName(),
-                "Can't locate object in hash due to NullPointerException. Possible reason: invalid 'hashcode()' implementation."));
-            return oldObj;
-        } 
-        Class oldClass=oldObj.getClass();
+        if(oldObj==null) return null;
+	Class oldClass=oldObj.getClass();
         ClassLoader oldCL=oldClass.getClassLoader();
         if(oldCL instanceof AppClassLoader) {
             Object newObj=getTransferred(oldObj);
@@ -107,7 +101,7 @@ public class StateTransfer {
                             Object value=fields[i].get(oldObj);
                             CAT.debug("Transfer field '"+name+"'.");
                             //check if field value defined
-                            if(value!=null) value=transfer(value);
+                            if(value!=null) {value=transfer(value);} 
                             if(!field.isAccessible()) field.setAccessible(true);     
                             field.set(newObj,value);
                         } catch(NoSuchFieldException x) {
@@ -148,10 +142,27 @@ public class StateTransfer {
             }
             return newObj;
         } else {
+            try {
+                if(refs.contains(oldObj)) {return oldObj;} 
+            } catch(NullPointerException x) {
+                addException(new StateTransferException(StateTransferException.NULLHASH_EXCEPTION,oldObj.getClass().getName(),
+                    "Can't locate object in hash due to NullPointerException. Possible reason: invalid 'hashcode()' implementation."));
+                return oldObj;
+            } 
+            
             //check if object is a container and transfer its content
           
             refs.add(oldObj);
-            CAT.debug("Handle not included object of class: "+oldObj.getClass().getName());
+            CAT.debug("Transfer content from instance of class: "+oldObj.getClass().getName());
+          
+            //HashMaps and Hashtables hold special hash data, which has to be updated, when contained objects are reloaded,
+            //therefore these objects have to be removed and added once again.
+            //HashSets don't have do be handled this way, because they internally use HashMaps, which will get updated by the 
+            //normal recursive transfer mechanism.
+            if(oldObj instanceof Map)  {
+                if(oldObj instanceof HashMap || oldObj instanceof Hashtable) return transferHashedMap((Map)oldObj);
+            }
+            
             /**
             Class[] interfaces=oldClass.getInterfaces();
             for(int j=0;j<interfaces.length;j++) {
@@ -180,9 +191,7 @@ public class StateTransfer {
                         if(value!=null && (!value.getClass().getName().startsWith("java.lang") || value.getClass().getName().equals("java.lang.Object"))) {
                         //if(value!=null) {
                             Object newValue=transfer(value);
-                            if(!newValue.equals(value)) {
-                            //if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
-                                CAT.debug("Set field '"+name+"' at container.");
+                            if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
                                 fields[i].set(oldObj,newValue);
                             }
                         }
@@ -235,8 +244,9 @@ public class StateTransfer {
         }
         return oldCol;
     }
+    */
                     
-    public Map transferMap(Map oldMap) {
+    public Map transferHashedMap(Map oldMap) {
         CAT.debug("Transfer map of type '"+oldMap.getClass().getName()+"'.");
         HashMap tmpMap=new HashMap();
         Iterator it=oldMap.keySet().iterator();
@@ -245,10 +255,10 @@ public class StateTransfer {
             Object val=oldMap.get(key);
             Object newKey=transfer(key);
             Object newVal=transfer(val);
-            if(!newKey.equals(key)) {
+            if(newKey!=null && newKey.getClass().getClassLoader() instanceof AppClassLoader) {
                 it.remove();
                 tmpMap.put(newKey,newVal);    
-            } else if(!newVal.equals(val)) {
+            } else if(newVal!=null && newVal.getClass().getClassLoader() instanceof AppClassLoader) {
                 tmpMap.put(key,newVal);
             }
         }
@@ -260,9 +270,8 @@ public class StateTransfer {
                 oldMap.put(key,val);
             }
         }
-        return oldMap;
+	return oldMap;
     }
-    */
 
     public Object transferArray(Object oldArray) {
         String className=oldArray.getClass().getName();
@@ -270,13 +279,14 @@ public class StateTransfer {
         Class comp=oldArray.getClass().getComponentType();
         String compName=comp.getName();
         
-        if(comp.getClassLoader() instanceof AppClassLoader) {
+        if(oldArray.getClass().getClassLoader() instanceof AppClassLoader) {
             Class newClass=null;
             try {
                 AppLoader loader=AppLoader.getInstance();
                 newClass=loader.loadClass(compName);
                 int len=Array.getLength(oldArray);        
                 Object newArray=Array.newInstance(newClass,len);
+                addTransferred(oldArray,newArray);
                 for(int k=0;k<len;k++) {
                     Object val=Array.get(oldArray,k);
                     if(val!=null) {
@@ -284,7 +294,6 @@ public class StateTransfer {
                         Array.set(newArray,k,newVal);
                     }
                 }
-                addTransferred(oldArray,newArray);
                 return newArray;
             } catch(ClassNotFoundException x) {
                 addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
@@ -298,10 +307,11 @@ public class StateTransfer {
                 Object val=Array.get(oldArray,k);
                 if(val!=null) {
                     Object newVal=transfer(val);
-                    if(val.hashCode()!=newVal.hashCode()) Array.set(oldArray,k,val);
+                    //if(val.hashCode()!=newVal.hashCode()) Array.set(oldArray,k,val);
+                    if(newVal.getClass().getClassLoader() instanceof AppClassLoader) Array.set(oldArray,k,newVal);
                 }
             }
-            refs.add(oldArray);
+            //refs.add(oldArray);
             return oldArray;
         }
         return oldArray;
