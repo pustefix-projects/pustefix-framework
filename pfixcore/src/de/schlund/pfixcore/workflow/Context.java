@@ -315,7 +315,7 @@ public class Context implements AppContext {
             if (page.equals(current)) {
                 return false;
             }
-            if (checkNeedsData(page, current.getStatus())) {
+            if (checkIsAccessible(current, current.getStatus()) && checkNeedsData(page, current.getStatus())) {
                 return true;
             }
         }
