@@ -40,7 +40,6 @@ public class SPDocument {
     private Properties properties;
     private String     pagename    = null;
     private String     xslkey      = null;
-    private String     resdata     = null;
     private long       timestamp   = -1;
     private int        error       = 0;
     private String     errortext   = null;
@@ -158,14 +157,6 @@ public class SPDocument {
      */
     public String getXSLKey() {
         return xslkey;
-    }
-
-    public void setLiteralResonseContent(String data) {
-        resdata = data;
-    }
-
-    public String getLiteralResponseContent() {
-        return resdata;
     }
     
     /**

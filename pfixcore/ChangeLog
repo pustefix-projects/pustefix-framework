@@ -1,3 +1,46 @@
+2003-03-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/INSTALL.ps: new file. Is made downloadable via a
+	DirectOutputState.
+
+	* example/servletconf/projects.xml: add the /xml/download servlet
+	to the sample1 project (it's a  DirectOutputServlet).
+
+	* example/sample1/conf/depend.xml.in: 
+	* example/sample1/txt/pages/main_home.xml: made relevant changes
+	for the new "install" page.
+
+	* src/de/schlund/pfixcore/workflow/AuthContext.java
+	(checkAuthorization): new mthod, refactored to be accessible from
+	the outside.
+
+	* example/sample1/conf/direct.prop.in: new file, example
+	DirectOutputServlet property file. 
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: new
+	servlet. This servlet requests the Context from a already running
+	(in the same session) ContextXMLServer and supplies the
+	ContextResourceManager to DirectOutputStates, which stream the
+	output for the PageRequests handled by this servlet directly to
+	the outputstream of the HttpServletResponse.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: new
+	class, maps PageRequests to DirectOutputStates.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputState.java: new
+	interface. Implementors stream their own output directly to the outputstream.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java:
+	new class. Manages DirectOutputStates
+
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java:
+	new class. Example DirectOutputState to download static files.
+
+2003-03-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed get/setLiteralResponseContent(...)
+	This was stupid idea to begin with.
+
 2003-03-06  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/*: organized imports,
