@@ -59,7 +59,8 @@
 
   <p>
     There are a few things you need to have installed prior to using Pustefix. See the 
-    table below for references. Note that you don't need Tomcat, it's part of the pustefix environment.
+    table below for references. <i>Note that we changed our skeleton distribution to no longer include Tomcat,
+    you now have to dowload it from <a href="http://jakarta.apache.org/tomcat/index.html">jakarta.apache.org</a>.</i>i>
   </p>
   
   <table>
@@ -91,10 +92,25 @@
     </tr>
     <tr>
       <td>
-        <a href="http://ant.apache.org/">ant</a> &gt; 1.6
+        <a href="http://jakarta.apache.org/tomcat/index.html">tomcat</a> &gt; 1.6.2
       </td>
       <td>
-          Apache Ant, the Java-based build tool in version 1.6 or higher.
+        The tomcat servlet container. You need to get this together
+        with the skeleton package to have a complete pustefix
+        environment. We currently develop against
+        tomcat-5.0.27. Please note that you need to download the
+        binary package in the form of a gzipped tar file
+        (.tar.gz). Don't unpack it, just put the downloaded package in the directory ./lib/tomcat
+        of the unpacked skeleton distribution.
+      </td>
+    </tr>
+    <tr>
+    <tr>
+      <td>
+        <a href="http://ant.apache.org/">ant</a> &gt; 1.6.2
+      </td>
+      <td>
+          Apache Ant, the Java-based build tool in version 1.6.2 or higher.
           If you have really large projects consider increasing the memory
           for the java vm ant runs in: Set the ANT_OPTS environment variable 
           to something like "-mx200m". This variable is evaluated within 
