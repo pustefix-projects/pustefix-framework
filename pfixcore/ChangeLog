@@ -1,5 +1,7 @@
 2004-11-25  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/util/Cleanup.java: killed stupid Path bug (used without PathFactory!)
+
 	* src/de/schlund/pfixxml/SPDocument.java: removed setCookies method
 	* src/de/schlund/pfixcore/workflow/Context.java: added getRequestCookies method
 
