@@ -18,31 +18,43 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.Properties;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.PageRequest;
+import de.schlund.pfixxml.PropertyObject;
+import de.schlund.pfixxml.XMLException;
 
 /**
- * IHandlerContainerManager.java
- *
- *
+ * This class is responsible for managing all {@link IHandlerContainer}.
+ * <br/>
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
- *
- *
  */
 
 public class IHandlerContainerManager implements PropertyObject {
     private static Category LOG               = Category.getInstance(IHandlerContainerManager.class.getName());
     private static String   DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
+    /** Store the already created IHandlerContainer here, use the page as key*/
     private        HashMap  known             = new HashMap();
 
+    /**
+     * @see de.schlund.pfixxml.PropertyObject#init(Properties)
+     */
     public void init(Properties properties) {
         // nothing :-)
     }
     
+    /**
+     * Get the IHandler according to the passed context. If the IHandler is already
+     * known it will be returned, else it will be created.
+     * @param context the context containing the {@link PageRequest} where
+     * the desired IHandlerContainer is responsible for.
+     * @return the desired IHandlerContainer
+     * @throws XMLException on errors when creating the IHandlerContainer.
+     */
     public IHandlerContainer getIHandlerContainer(Context context) throws XMLException {
         String     classname = null;
         Properties props     = context.getPropertiesForCurrentPageRequest();

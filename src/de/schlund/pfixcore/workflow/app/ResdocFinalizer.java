@@ -18,9 +18,7 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import javax.servlet.http.*;
-import de.schlund.pfixxml.*;
+
 
 /**
  * ResdocFinalizer.java

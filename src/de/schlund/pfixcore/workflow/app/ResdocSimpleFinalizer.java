@@ -18,13 +18,11 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixcore.util.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.util.Properties;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.workflow.Context;
 
 /**
  * ResdocSimpleFinalizer.java

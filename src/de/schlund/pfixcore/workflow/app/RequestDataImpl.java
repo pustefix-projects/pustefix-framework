@@ -19,12 +19,17 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
 
 /**
  * RequestDataImpl.java
