@@ -130,21 +130,21 @@ public class TestClient {
             tmp.mkdirs();
         }
         checkOptions();
-        ArrayList    files  = readFiles();
+        ArrayList    files  = getAllFilesFromTestcase();
         StepConfig[] config = doPrepare(files);
         return doTest(config);
     }
 
     /**
      * Configure the TestClient
-     * @param src_dir the path to the testcase to playback
-     * @param tmp_dir directory where temporay data is written
-     * @param style_dir directory containing stylesheets
+     * @param src_dir the path to the testcase to playback. Not null.
+     * @param tmp_dir directory where temporay data is written. If null, defaults are used.
+     * @param style_dir directory containing stylesheets. If null, defaults are used.
      */
     public void setOptions(String src_dir, String tmp_dir, String style_dir)
                     throws TestClientException {
-        if (src_dir == null || tmp_dir == null || style_dir == null) {
-            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+        if (src_dir == null) {
+            throw new IllegalArgumentException("The value 'null' is not allowed here for src_dir! "
                                                + "Arguments: Directories for testcases: " + src_dir
                                                + ", temporary: " + tmp_dir + ", stylesheets: "
                                                + style_dir);
@@ -158,8 +158,16 @@ public class TestClient {
             CAT.debug(sb.toString());
         }
         srcDir   = src_dir;
-        tmpDir   = tmp_dir;
-        styleDir = style_dir;
+        if(tmp_dir == null) {
+            tmpDir = System.getProperties().getProperty("java.io.tmpdir");
+        } else {
+            tmpDir   = tmp_dir;
+        }
+        if(style_dir == null) {
+            styleDir = srcDir;
+        } else {
+            styleDir = style_dir;
+        }
     }
 
     /** execute test */
@@ -207,6 +215,9 @@ public class TestClient {
                     CAT.info("  Diffing...");
                 }
                 String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
+                if(CAT.isInfoEnabled()) {
+                    CAT.info("  Diff "+(msg == null || msg.equals("") ? "not exists" : "exists"));
+                }
                 stepresult.setDiffString(msg);
                 stepresult.setStatusCode(scode);
                 if (msg == null || msg.equals("")) {
@@ -461,12 +472,13 @@ public class TestClient {
     }
 
     /** read testcase files */
-    private ArrayList readFiles() throws TestClientException {
+    private ArrayList getAllFilesFromTestcase() throws TestClientException {
         File      dir       = new File(srcDir);
         File[]    all_files = dir.listFiles();
         ArrayList files     = new ArrayList();
         for (int i = 0; i < all_files.length; i++) {
-            if (all_files[i].canRead() && all_files[i].isFile()) {
+            if (all_files[i].canRead() && all_files[i].isFile() &&
+                !all_files[i].getName().startsWith(".")) {
                 files.add(all_files[i]);
             }
         }
@@ -836,7 +848,9 @@ class MySSLSocketfactory implements SecureProtocolSocketFactory {
     }
 }
 
-/**Helper class for internal usage. Encapsulates the result of a single step */
+/**Helper class for internal usage. Encapsulates the result of a single step. This is
+ * the response of the server stored in a document and  the status code.
+ * (A ugly glue class)*/
 class TestcaseSimpleStepResult {
 
     //~ Instance/static variables ..................................................................

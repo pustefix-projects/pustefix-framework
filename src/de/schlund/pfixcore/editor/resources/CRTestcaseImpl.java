@@ -190,7 +190,7 @@ public class CRTestcaseImpl implements CRTestcase {
                 TestcasePlaybackResult result = tc.makeTest(); 
                 testOutput.put(tcase, result);
             } catch(TestClientException e) {
-                CAT.error("TestClientException: "+e.getMessage()+" "+e.getExceptionCause().getMessage());
+                CAT.error("TestClientException: "+e.getMessage()+" -> "+e.getExceptionCause().getMessage());
                 throw e;
             }
         }
@@ -252,10 +252,12 @@ public class CRTestcaseImpl implements CRTestcase {
             }
             File file = new File(abs_path);
             File[] files = file.listFiles();
-            for(int j=0; j<files.length; j++) {
-                boolean ok = files[j].delete();
-                if(!ok) {
-                    CAT.error("Unable to remove file: "+files[j]);
+            if (files != null) {
+                for(int j=0; j<files.length; j++) {
+                    boolean ok = files[j].delete();
+                    if(!ok) {
+                        CAT.error("Unable to remove file: "+files[j]);
+                    }
                 }
             }
             boolean ok = file.delete();
