@@ -450,17 +450,25 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         // Now we will store the time needed from the creation of the request up to now
         currtime    = System.currentTimeMillis();
-        preproctime = currtime - preq.getCreationTimestamp();
+        PerfEventType pet = PerfEventType.XMLSERVER_PREPROCESS;
+        pet.setMessage(preq);
+        preq.endLogEntry(pet);
+        preproctime = pet.getDuration();
+        // preproctime = currtime - preq.getCreationTimestamp();
        
         if (spdoc == null) {
             preq.startLogEntry();
             spdoc           = getDom(preq);
             String pagename = spdoc.getPagename();
+            PerfEventType et = PerfEventType.XMLSERVER_GETDOM;
             if (pagename == null) {
-                preq.endLogEntry("GETDOM", 0);
+                et.setMessage("NULL");
+                //preq.endLogEntry("GETDOM", 0);
             } else {
-                preq.endLogEntry("GETDOM (" + pagename + ")", 0);
+                et.setMessage(pagename);
+                //preq.endLogEntry("GETDOM (" + pagename + ")", 0);
             }
+            preq.endLogEntry(et);
             
             // start recording if allowed and enabled
             if (recordmodeAllowed) {
@@ -664,7 +672,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
-        preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
+        PerfEventType et = PerfEventType.XMLSERVER_HANDLEDOCUMENT;
+        et.setMessage(stylesheet);
+        preq.endLogEntry(et);
+        //preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
     }
 
 

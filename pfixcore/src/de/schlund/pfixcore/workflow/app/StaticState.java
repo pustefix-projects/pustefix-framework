@@ -24,6 +24,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.StateImpl;
+import de.schlund.pfixxml.PerfEventType;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.SPDocument;
@@ -108,7 +109,10 @@ public class StaticState extends StateImpl {
                     }
                     context.startLogEntry();
                     cr.insertStatus(resdoc, resdoc.createNode(nodename));
-                    context.endLogEntry("INSERT_CR (" + classname + ")", 5);
+                    PerfEventType et = PerfEventType.CONTEXTRESOURCE_INSERTSTATUS;
+                    et.setMessage(classname);
+                    context.endLogEntry(et);
+                   // context.endLogEntry("INSERT_CR (" + classname + ")", 5);
                 }
             }
         }
