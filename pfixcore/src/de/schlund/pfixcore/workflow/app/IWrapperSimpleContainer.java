@@ -403,18 +403,12 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#retrieveCurrentStatus() 
      */
-    public void retrieveCurrentStatus(boolean error_free_only) throws Exception {
+    public void retrieveCurrentStatus() throws Exception {
         if (!is_splitted)
             splitIWrappers();
         IWrapper[] allwrappers = selectedwrappers.getIWrappers();
         for (int i = 0; i < allwrappers.length; i++) {
             IWrapper wrapper = allwrappers[i];
-
-            if (error_free_only && wrapper.errorHappened()) {
-                continue;
-            }
-            
-            
             IHandler handler = wrapper.gimmeIHandler();
             if (handler.isActive(context)) {
                 handler.retrieveCurrentStatus(context, wrapper);

@@ -1,3 +1,7 @@
+2003-06-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: removed the whole stuff of the last change again :-) 
+
 2003-06-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java (retrieveCurrentStatus): add a boolean var
