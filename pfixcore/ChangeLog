@@ -1,5 +1,7 @@
 2003-04-16  Jens Lautenbacher  <jtl@schlund.de>
 
+	* released 0.2.9
+	
 	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): Now also print out the
 	value of all alt and title tags (as they may contain visible content, too that may need translation)
 
