@@ -97,7 +97,8 @@ public class CRTestcaseImpl implements CRTestcase {
                         String str = ((TestcaseStepResult)steps.get(j)).getDiffString();
                         Perl5Util perl = new Perl5Util();
                         ArrayList lines = new ArrayList();
-                        perl.split(lines, "/\n/", str);
+                        if(str != null)
+                            perl.split(lines, "/\n/", str);
                         Element elem3 = resdoc.createNode("step");
                         elem3.setAttribute("id", ""+j);
                         elem3.setAttribute("statuscode", ""+((TestcaseStepResult)steps.get(j)).getStatusCode());

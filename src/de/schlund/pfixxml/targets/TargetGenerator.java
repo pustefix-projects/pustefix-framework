@@ -450,7 +450,8 @@ public class TargetGenerator {
                         throw (new XMLException("Oops!"));
                     }
                 } catch (Exception e) {
-                    CAT.error("Oops!", e);
+                    CAT.error("Oops! TargetGenerator exit!", e);
+                    System.exit(-1);
                 }
             }
             
@@ -555,38 +556,5 @@ class TargetGenerationReport {
         return buf.toString();
     }
 
-    private void printEx(Throwable e, StringBuffer buf, String indent) {
-        String br = "\n"; 
-        if(e == null) {
-            return;
-        }
-        if(e instanceof SAXParseException) { 
-            SAXParseException sex = (SAXParseException) e;
-            buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(sex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(sex.getMessage()).append("\n");
-            buf.append("|").append(indent).append("Id: ").append(sex.getSystemId()).append("\n");
-            buf.append("|").append(indent).append("Line: ").append(sex.getLineNumber()).append("\n");
-            buf.append("|").append(indent).append("Column: ").append(sex.getColumnNumber()).append("\n");
-        } else if( e instanceof TargetGenerationException) {
-            TargetGenerationException tgex = (TargetGenerationException)e;
-            buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(tgex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(tgex.getMessage()).append("\n");
-            buf.append("|").append(indent).append("Target: ").append(tgex.getTargetkey()).append("\n");
-            printEx(tgex.getNestedException(), buf, indent + " ");
-        } else if(e instanceof TransformerException ) {
-            TransformerException trex = (TransformerException) e;
-            buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(trex.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(trex.getMessage()).append("\n");
-            printEx(trex.getCause(), buf, indent + " ");   
-        }
-        else {
-            buf.append("|").append(br);
-            buf.append("|").append(indent).append("Type: ").append(e.getClass().getName()).append("\n");
-            buf.append("|").append(indent).append("Message: ").append(e.getMessage()).append("\n");
-        }
-        //printEx(e, buf, indent + " ");
-    }
+ 
 }
