@@ -81,7 +81,7 @@
       <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
     </layout>
   </appender>
- 
+
   <appender name="LOGGER_EDITOR_PERF" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>servletconf/log/pustefix-editor-perf.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -187,6 +187,11 @@
     <priority value="INFO"/>
     <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
+
+  <category name="org.apache.axis" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
   
   <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
     <priority value="WARN"/>
@@ -241,7 +246,7 @@
         <priority value="WARN"/>
       </cus:test>
       <cus:test>
-        <priority value="DEBUG"/>
+        <priority value="WARN"/>
       </cus:test>
     </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>

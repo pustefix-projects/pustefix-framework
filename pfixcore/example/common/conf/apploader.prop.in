@@ -17,7 +17,7 @@
     <cus:test>
 
       <!--use/don't use AppLoader (on|off)-->
-      <prop name="apploader.mode">on</prop>
+      <prop name="apploader.mode">off</prop>
       
       <!--use/don't use CommandListener (on|off)-->
       <prop name="apploader.cmdlistener.mode">on</prop>

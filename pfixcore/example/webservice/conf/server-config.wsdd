@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <globalConfiguration>
+  <parameter name="adminPassword" value="admin"/>
+  <parameter name="attachments.Directory" value="/home/mleidig/workspace/pfixcore/example/servletconf/tomcat/./webapps/webservice/WEB-INF/attachments"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <parameter name="sendXsiTypes" value="true"/>
+  <parameter name="sendMultiRefs" value="false"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <parameter name="axis.sendMinimizedElements" value="true"/>
+  <requestFlow>
+   <handler type="logging"/>
+   <handler type="AuthHandler"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="logging"/>
+  </responseFlow>
+ </globalConfiguration>
+ <handler name="soapmonitor" type="java:org.apache.axis.handlers.SOAPMonitorHandler">
+  <parameter name="wsdlURL" value="/axis/SOAPMonitorService-impl.wsdl"/>
+  <parameter name="namespace" value="http://tempuri.org/wsdl/2001/12/SOAPMonitorService-impl.wsdl"/>
+  <parameter name="serviceName" value="SOAPMonitorService"/>
+  <parameter name="portName" value="Demo"/>
+ </handler>
+ <handler name="AuthHandler" type="java:de.schlund.pfixcore.webservice.AuthenticationHandler"/>
+ <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <handler name="logging" type="java:de.schlund.pfixcore.webservice.LoggingHandler"/>
+
+<service name="Calculator" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:webservices.example.pfixcore.schlund.de"/>
+      <parameter name="wsdlServiceElement" value="CalculatorService"/>
+      <parameter name="wsdlServicePort" value="Calculator"/>
+      <parameter name="className" value="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
+      <parameter name="wsdlPortType" value="Calculator"/>
+      <operation name="add" qname="operNS:add" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="addReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter name="in1" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="subtract" qname="operNS:subtract" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="subtractReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter name="in1" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="multiply" qname="operNS:multiply" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="multiplyReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter name="in1" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="divide" qname="operNS:divide" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="divideReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter name="in1" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="divide add multiply subtract"/>
+      <parameter name="scope" value="Application"/>
+  </service>
+
+  <service name="Counter" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:webservices.example.pfixcore.schlund.de"/>
+      <parameter name="wsdlServiceElement" value="CounterService"/>
+      <parameter name="wsdlServicePort" value="Counter"/>
+      <parameter name="className" value="de.schlund.pfixcore.example.webservices.CounterImpl"/>
+      <parameter name="wsdlPortType" value="Counter"/>
+      <operation name="getValue" qname="operNS:getValue" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getValueReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+      </operation>
+      <operation name="reset" qname="operNS:reset" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="resetReturn" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+      </operation>
+      <operation name="setValue" qname="operNS:setValue" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="setValueReturn" returnType="rtns:boolean" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="addValue" qname="operNS:addValue" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="addValueReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="subtractValue" qname="operNS:subtractValue" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="subtractValueReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="subtractValue getValue addValue reset setValue"/>
+      <parameter name="scope" value="Application"/>
+  </service>
+
+<service name="Data" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:webservices.example.pfixcore.schlund.de"/>
+      <parameter name="wsdlServiceElement" value="DataService"/>
+      <parameter name="wsdlServicePort" value="Data"/>
+      <parameter name="className" value="de.schlund.pfixcore.example.webservices.DataImpl"/>
+      <parameter name="wsdlPortType" value="Data"/>
+      <operation name="getData" qname="operNS:getData" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataReturn" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+      </operation>
+      <operation name="getDataArray" qname="operNS:getDataArray" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataArrayReturn" returnType="rtns:ArrayOf_xsd_string" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+      </operation>
+      <operation name="getDataBean" qname="operNS:getDataBean" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataBeanReturn" returnType="rtns:DataBean" xmlns:rtns="http://example.pfixcore.schlund.de" >
+      </operation>
+      <operation name="echoDataBean" qname="operNS:echoDataBean" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoDataBeanReturn" returnType="rtns:DataBean" xmlns:rtns="http://example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:DataBean" xmlns:tns="http://example.pfixcore.schlund.de"/>
+      </operation>
+      <operation name="getDataSid" qname="operNS:getDataSid" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataSidReturn" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getDataArraySid" qname="operNS:getDataArraySid" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataArraySidReturn" returnType="rtns:ArrayOf_xsd_string" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getDataBeanSid" qname="operNS:getDataBeanSid" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="getDataBeanSidReturn" returnType="rtns:DataBean" xmlns:rtns="http://example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echoDataBeanSid" qname="operNS:echoDataBeanSid" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoDataBeanSidReturn" returnType="rtns:DataBean" xmlns:rtns="http://example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter name="in1" type="tns:DataBean" xmlns:tns="http://example.pfixcore.schlund.de"/>
+      </operation>
+      <parameter name="allowedMethods" value="echoDataBean getDataSid echoDataBeanSid getDataArraySid getDataBean getDataArray getData getDataBeanSid"/>
+      <parameter name="scope" value="Application"/>
+
+      <typeMapping
+        xmlns:ns="http://example.pfixcore.schlund.de"
+        qname="ns:DataBean"
+        type="java:de.schlund.pfixcore.example.DataBean"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_string"
+        type="java:java.lang.String[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+ 
+ <service name="TypeTest" provider="java:RPC" style="rpc" use="encoded">
+      <parameter name="wsdlTargetNamespace" value="urn:webservices.example.pfixcore.schlund.de"/>
+      <parameter name="wsdlServiceElement" value="TypeTestService"/>
+      <parameter name="wsdlServicePort" value="TypeTest"/>
+      <parameter name="className" value="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
+      <parameter name="wsdlPortType" value="TypeTest"/>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:int" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:ArrayOf_xsd_int" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:ArrayOf_xsd_int" xmlns:tns="urn:webservices.example.pfixcore.schlund.de"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:float" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:float" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:ArrayOf_xsd_float" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:ArrayOf_xsd_float" xmlns:tns="urn:webservices.example.pfixcore.schlund.de"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:double" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:double" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:ArrayOf_xsd_double" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:ArrayOf_xsd_double" xmlns:tns="urn:webservices.example.pfixcore.schlund.de"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:dateTime" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:dateTime" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:ArrayOf_xsd_dateTime" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:ArrayOf_xsd_dateTime" xmlns:tns="urn:webservices.example.pfixcore.schlund.de"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter name="in0" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="echo" qname="operNS:echo" xmlns:operNS="urn:webservices.example.pfixcore.schlund.de" returnQName="echoReturn" returnType="rtns:ArrayOf_xsd_string" xmlns:rtns="urn:webservices.example.pfixcore.schlund.de" >
+        <parameter name="in0" type="tns:ArrayOf_xsd_string" xmlns:tns="urn:webservices.example.pfixcore.schlund.de"/>
+      </operation>
+      <parameter name="allowedMethods" value="echo"/>
+      <parameter name="scope" value="Application"/>
+
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_float"
+        type="java:float[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_double"
+        type="java:double[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_int"
+        type="java:int[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_string"
+        type="java:java.lang.String[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+      <typeMapping
+        xmlns:ns="urn:webservices.example.pfixcore.schlund.de"
+        qname="ns:ArrayOf_xsd_dateTime"
+        type="java:java.util.Calendar[]"
+        serializer="org.apache.axis.encoding.ser.ArraySerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.ArrayDeserializerFactory"
+        encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+      />
+  </service>
+
+ <service name="AdminService" provider="java:MSG">
+  <parameter name="allowedMethods" value="AdminService"/>
+  <parameter name="enableRemoteAdmin" value="false"/>
+  <parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <namespace>http://xml.apache.org/axis/wsdd/</namespace>
+ </service>
+ 
+ <service name="Version" provider="java:RPC">
+  <parameter name="allowedMethods" value="getVersion"/>
+  <parameter name="className" value="org.apache.axis.Version"/>
+ </service>
+ <service name="SOAPMonitorService" provider="java:RPC">
+  <parameter name="allowedMethods" value="publishMessage"/>
+  <parameter name="className" value="org.apache.axis.monitor.SOAPMonitorService"/>
+  <parameter name="scope" value="Application"/>
+ </service>
+ <transport name="http">
+  <requestFlow>
+   <handler type="URLMapper"/>
+   <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </requestFlow>
+ </transport>
+ <transport name="local">
+  <responseFlow>
+   <handler type="LocalResponder"/>
+  </responseFlow>
+ </transport>
+</deployment>

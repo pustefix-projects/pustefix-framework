@@ -16,5 +16,11 @@
 	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/axis.jar"/>
+	<classpathentry kind="lib" path="lib/axis-ant.jar"/>
+	<classpathentry kind="lib" path="lib/commons-discovery.jar"/>
+	<classpathentry kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry kind="lib" path="lib/saaj.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+		<h1>Calculator service</h1>
+		<h2>Mozilla low-level SOAP</h2>
+		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
+		<p><span class="error" id="soap_error"></span></p>
+		<form action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="button"  onclick="soapCall('add',document.forms[0].i1.value,document.forms[0].i2.value);" value=" + "/>
+						<input type="button"  onclick="soapCall('subtract',document.forms[0].i1.value,document.forms[0].i2.value);" value=" - "/>
+						<input type="button"  onclick="soapCall('multiply',document.forms[0].i1.value,document.forms[0].i2.value);" value=" * "/>
+						<input type="button"  onclick="soapCall('divide',document.forms[0].i1.value,document.forms[0].i2.value);" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input type="text" id="soap_result" readonly="readonly" size="8"/></td>
+				</tr>
+			</table>	
+		</form>
+		<h2>Mozilla WSDL proxying</h2>
+		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
+		<p><span class="error" id="wsdl_error"></span></p>
+		<form action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="button"  onclick="wsdlCall('add',document.forms[1].i1.value,document.forms[1].i2.value);" value=" + "/>
+						<input type="button"  onclick="wsdlCall('subtract',document.forms[1].i1.value,document.forms[1].i2.value);" value=" - "/>
+						<input type="button"  onclick="wsdlCall('multiply',document.forms[1].i1.value,document.forms[1].i2.value);" value=" * "/>
+						<input type="button"  onclick="wsdlCall('divide',document.forms[1].i1.value,document.forms[1].i2.value);" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input type="text" id="wsdl_result" readonly="readonly" size="8"/></td>
+				</tr>
+			</table>	
+		</form>
+		<h2>Raw mySOAP over XMLHttpReqeuest</h2>
+		<p>Soap call took <span id="mysoap_time">0</span> ms.</p>
+		<textarea style="font-style:monospace;font-size:8pt" id="mysoap_request" cols="80" rows="10">
+<![CDATA[
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"
+              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+              xmlns:xs="http://www.w3.org/1999/XMLSchema"
+              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">
+   <env:Header/>
+   <env:Body>
+      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">
+         <a0:in0 xsi:type="xs:int">3</a0:in0>
+         <a0:in1 xsi:type="xs:int">7</a0:in1>
+      </a0:multiply>
+   </env:Body>
+</env:Envelope>
+]]>
+		</textarea>
+		<textarea style="font-style:monospace;font-size:8pt" id="mysoap_response" cols="80" rows="10">
+			
+		</textarea>
+		<p>
+			<a href="javascript:mysoapCall()">Send SOAP request</a>
+		</p>
+		
+		<h2>mySOAP stub</h2>
+		<p>mySOAP stub call took <span id="stub_time">0</span> ms.</p>
+		<p><span class="error" id="stub_error"></span></p>
+		<form action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="button"  onclick="document.getElementById('stub_result').value=calculator.add(document.forms[2].i1.value,document.forms[2].i2.value);" value=" + "/>
+						<input type="button"  onclick="soapCall('subtract',document.forms[0].i1.value,document.forms[0].i2.value);" value=" - "/>
+						<input type="button"  onclick="soapCall('multiply',document.forms[0].i1.value,document.forms[0].i2.value);" value=" * "/>
+						<input type="button"  onclick="soapCall('divide',document.forms[0].i1.value,document.forms[0].i2.value);" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input type="text" id="stub_result" readonly="readonly" size="8"/></td>
+				</tr>
+			</table>	
+		</form>
+      </lang>
+    </product>
+  </part>
+  
+  
+ 
+</include_parts>

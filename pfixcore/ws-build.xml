@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="webservices" default="all" basedir=".">
+	
+	<property name="dir.build" location="build"/>
+	<property name="dir.lib" location="lib"/>
+	<property name="dir.ws" location="webservice"/>
+	<property name="dir.wsgen" location="${dir.ws}/gen"/>
+	<property name="dir.wstest" location="${dir.ws}/test"/>
+	<property name="dir.pubwsdl" location="example/servletconf/tomcat/webapps/webservice"/>
+	<property name="dir.conf" location="example/webservice/conf"/>
+	
+	<path id="axis.classpath">
+	 	<fileset dir="${dir.lib}">
+	    	<include name="**/*.jar" />
+	  	</fileset>
+		<pathelement location="${dir.build}"/>
+	</path>
+	
+	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
+	
+	<target name="all" depends="deploy">
+		
+		
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${dir.ws}"/>
+		<mkdir dir="${dir.wsgen}"/>
+	</target>
+	
+	<target name="java2wsdl" depends="init">
+		<axis-java2wsdl
+	        output="${dir.wsgen}/Counter.wsdl"
+	        location="http://webservice.zap.ue.schlund.de/xml/webservice/Counter"
+			namespace="urn:webservices.example.pfixcore.schlund.de"
+	        classname="de.schlund.pfixcore.example.webservices.Counter">
+	   		<mapping namespace="urn:webservices.example.pfixcore.schlund.de" package="de.schlund.pfixcore.example.webservices"/>
+		</axis-java2wsdl>
+		<axis-java2wsdl
+	        output="${dir.wsgen}/Calculator.wsdl"
+	        location="http://webservice.zap.ue.schlund.de/xml/webservice/Calculator"
+			namespace="urn:webservices.example.pfixcore.schlund.de"
+	        classname="de.schlund.pfixcore.example.webservices.Calculator">
+	   		<mapping namespace="urn:webservices.example.pfixcore.schlund.de" package="de.schlund.pfixcore.example.webservices"/>
+		</axis-java2wsdl>
+		<axis-java2wsdl
+	        output="${dir.wsgen}/Data.wsdl"
+	        location="http://webservice.zap.ue.schlund.de/xml/webservice/Data"
+			namespace="urn:webservices.example.pfixcore.schlund.de"
+	        classname="de.schlund.pfixcore.example.webservices.Data">
+	   		<mapping namespace="urn:webservices.example.pfixcore.schlund.de" package="de.schlund.pfixcore.example.webservices"/>
+		</axis-java2wsdl>
+		<axis-java2wsdl
+	        output="${dir.wsgen}/TypeTest.wsdl"
+	        location="http://webservice.zap.ue.schlund.de/xml/webservice/TypeTest"
+			namespace="urn:webservices.example.pfixcore.schlund.de"
+	        classname="de.schlund.pfixcore.example.webservices.TypeTest">
+	   		<mapping namespace="urn:webservices.example.pfixcore.schlund.de" package="de.schlund.pfixcore.example.webservices"/>
+		</axis-java2wsdl>
+	</target>
+	
+	<target name="wsdl2java" depends="init,java2wsdl">
+		<axis-wsdl2java
+			output="${dir.wsgen}"
+		    deployscope="Application"
+		    serverside="true"
+		    url="${dir.wsgen}/Counter.wsdl">
+		</axis-wsdl2java>
+		<replace 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd" 
+			token="de.schlund.pfixcore.example.webservices.CounterSoapBindingImpl"
+			value="de.schlund.pfixcore.example.webservices.CounterImpl"
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Counter-deploy.wsdd" 
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/undeploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Counter-undeploy.wsdd" 
+		/>
+		<axis-wsdl2java
+			output="${dir.wsgen}"
+		    deployscope="Application"
+		    serverside="true"
+		    url="${dir.wsgen}/Calculator.wsdl">
+		</axis-wsdl2java>
+		<replace 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd" 
+			token="de.schlund.pfixcore.example.webservices.CalculatorSoapBindingImpl"
+			value="de.schlund.pfixcore.example.webservices.CalculatorImpl"
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Calculator-deploy.wsdd" 
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/undeploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Calculator-undeploy.wsdd" 
+		/>
+		<axis-wsdl2java
+			output="${dir.wsgen}"
+		    deployscope="Application"
+		    serverside="true"
+		    url="${dir.wsgen}/Data.wsdl">
+		</axis-wsdl2java>
+		<replace 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd" 
+			token="de.schlund.pfixcore.example.webservices.DataSoapBindingImpl"
+			value="de.schlund.pfixcore.example.webservices.DataImpl"
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Data-deploy.wsdd" 
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/undeploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Data-undeploy.wsdd" 
+		/>
+		<axis-wsdl2java
+			output="${dir.wsgen}"
+		    deployscope="Application"
+		    serverside="true"
+		    url="${dir.wsgen}/TypeTest.wsdl">
+		</axis-wsdl2java>
+		<replace 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd" 
+			token="de.schlund.pfixcore.example.webservices.TypeTestSoapBindingImpl"
+			value="de.schlund.pfixcore.example.webservices.TypeTestImpl"
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/deploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/TypeTest-deploy.wsdd" 
+		/>
+		<move 
+			file="${dir.wsgen}/de/schlund/pfixcore/example/webservices/undeploy.wsdd"
+			tofile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/TypeTest-undeploy.wsdd" 
+		/>
+	</target>
+	
+	<target name="deploy" depends="init,wsdl2java">
+		<!--<axis-admin
+	    	port="80"
+	    	hostname="webservice.zap.ue.schlund.de"
+	    	failonerror="true"
+	    	servletpath="xml/webservice/AdminService"
+	    	debug="true"
+	    	xmlfile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Counter-deploy.wsdd"
+	    />-->
+		<copy file="${dir.wsgen}/Counter.wsdl" todir="${dir.pubwsdl}"/>
+		<!--<axis-admin
+	    	port="80"
+	    	hostname="webservice.zap.ue.schlund.de"
+	    	failonerror="true"
+	    	servletpath="xml/webservice/AdminService"
+	    	debug="true"
+	    	xmlfile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Calculator-deploy.wsdd"
+	    />-->
+		<copy file="${dir.wsgen}/Calculator.wsdl" todir="${dir.pubwsdl}"/>
+		<!--<axis-admin
+	    	port="80"
+	    	hostname="webservice.zap.ue.schlund.de"
+	    	failonerror="true"
+	    	servletpath="xml/webservice/AdminService"
+	    	debug="true"
+	    	xmlfile="${dir.wsgen}/de/schlund/pfixcore/example/webservices/Data-deploy.wsdd"
+	    />-->
+		<copy file="${dir.wsgen}/Data.wsdl" todir="${dir.pubwsdl}"/>
+		<copy file="${dir.wsgen}/TypeTest.wsdl" todir="${dir.pubwsdl}"/>
+		<copy file="${dir.conf}/server-config.wsdd" todir="${dir.pubwsdl}/WEB-INF"/>
+	</target>
+	
+	<target name="deploy-monitor">
+		<axis-admin
+	    	port="80"
+	    	hostname="webservice.zap.ue.schlund.de"
+	    	failonerror="true"
+	    	servletpath="xml/webservice/AdminService"
+	    	debug="true"
+	    	xmlfile="${dir.ws}/monitor-deploy.wsdd"
+	    />	
+	</target>
+	
+</project>

@@ -1,0 +1,26 @@
+<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+	<webservice name="Calculator" interface="de.schlund.pfixcore.example.webservices.Calculator">
+		<param name="p1" value="7"/>
+		<param name="p2" value="3"/>
+	</webservice>
+	
+	<webservice name="Counter" interface="de.schlund.pfixcore.example.webservices.Counter">
+		<context name="pfixcore_project:webservice::servlet:config"/>
+		<session type="servlet"/>
+	</webservice>
+	
+	<webservice name="Data" interface="de.schlund.pfixcore.example.webservices.Data">
+		<context name="pfixcore_project:webservice::servlet:config"/>
+		<session type="servlet"/>
+	</webservice>
+	
+  
+</properties>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
+

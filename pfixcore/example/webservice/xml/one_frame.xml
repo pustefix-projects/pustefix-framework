@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <html>
+    <pfx:head>
+      <title>SAMPLE1 ADMINMODE</title>
+      <link rel="stylesheet" type="text/css">
+        <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
+      </link>
+    </pfx:head>
+    <body onload="__js_switchFrame()">
+      <pfx:maincontent path="sample1/txt/pages" prefix="main_" part="content"/>
+      <pfx:editconsole/>
+    </body>
+  </html>
+</pfx:document>

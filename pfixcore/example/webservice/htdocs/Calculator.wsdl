@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:webservices.example.pfixcore.schlund.de" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:webservices.example.pfixcore.schlund.de" xmlns:intf="urn:webservices.example.pfixcore.schlund.de" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+   <wsdl:message name="addRequest">
+
+      <wsdl:part name="in0" type="xsd:int"/>
+
+      <wsdl:part name="in1" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="divideResponse">
+
+      <wsdl:part name="divideReturn" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addResponse">
+
+      <wsdl:part name="addReturn" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="multiplyRequest">
+
+      <wsdl:part name="in0" type="xsd:int"/>
+
+      <wsdl:part name="in1" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="subtractResponse">
+
+      <wsdl:part name="subtractReturn" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="divideRequest">
+
+      <wsdl:part name="in0" type="xsd:int"/>
+
+      <wsdl:part name="in1" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="subtractRequest">
+
+      <wsdl:part name="in0" type="xsd:int"/>
+
+      <wsdl:part name="in1" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="multiplyResponse">
+
+      <wsdl:part name="multiplyReturn" type="xsd:int"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="Calculator">
+
+      <wsdl:operation name="add" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:addRequest" name="addRequest"/>
+
+         <wsdl:output message="impl:addResponse" name="addResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="subtract" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:subtractRequest" name="subtractRequest"/>
+
+         <wsdl:output message="impl:subtractResponse" name="subtractResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="multiply" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:multiplyRequest" name="multiplyRequest"/>
+
+         <wsdl:output message="impl:multiplyResponse" name="multiplyResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="divide" parameterOrder="in0 in1">
+
+         <wsdl:input message="impl:divideRequest" name="divideRequest"/>
+
+         <wsdl:output message="impl:divideResponse" name="divideResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="CalculatorSoapBinding" type="impl:Calculator">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="add">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="subtract">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="subtractRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="subtractResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="multiply">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="multiplyRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="multiplyResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="divide">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="divideRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="divideResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="CalculatorService">
+
+      <wsdl:port binding="impl:CalculatorSoapBinding" name="Calculator">
+
+         <wsdlsoap:address location="http://webservice.zap.ue.schlund.de/xml/webservice/Calculator"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+		<h1>Data service</h1>
+		<h2>Mozilla low-level SOAP</h2>
+		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
+		<p><span class="error" id="soap_error"></span></p>
+		<form action="">
+			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="soap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
+					<td><input type="button" onclick="soapCall('getData',null,document.forms[0].sid.value);" value="get data"/></td>
+					<td><input type="button" onclick="soapCall('getDataArray',null,document.forms[0].sid.value);" value="get data array"/></td>
+					<td><input type="button" onclick="soapCall('getDataBean',null,document.forms[0].sid.value);" value="get data bean"/></td>
+					<td><input type="button" onclick="soapCall('echoDataBean',0,document.forms[0].sid.value);" value="echo data bean"/></td>
+				</tr>
+			</table>	
+		</form>
+		<h2>Mozilla WSDL proxying</h2>
+		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
+		<p><span class="error" id="wsdl_error"></span></p>
+		<form action="">
+			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<table cellpadding="5" bgcolor="#b6cfe4"> 
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="wsdl_result" readonly="readonly" rows="5" cols="40"></textarea></td>
+					<td><input type="button" onclick="wsdlCall('getData',null,document.forms[1].sid.value);" value="get data"/></td>
+					<td><input type="button" onclick="wsdlCall('getDataArray',null,document.forms[1].sid.value);" value="get data array"/></td>
+					<td><input type="button" onclick="wsdlCall('getDataBean',null,document.forms[1].sid.value);" value="get data bean"/></td>
+					<td><input type="button" onclick="wsdlCall('echoDataBean',null,document.forms[1].sid.value);" value="echo data bean"/></td>
+				</tr>
+			</table>	
+		</form>
+
+                <a href="/xml/webservice;{$__sessid}?monitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
+                
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>

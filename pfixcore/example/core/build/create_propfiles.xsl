@@ -38,6 +38,23 @@
     <xsl:text>foreigncontextservlet.foreignservletname=</xsl:text>
     <xsl:value-of select="@externalservletname"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
+  
+  <xsl:template match="webservice">
+	<xsl:variable name="wspref">
+		<xsl:text>webservice.</xsl:text><xsl:value-of select="@name"/><xsl:text>.</xsl:text>
+	</xsl:variable>
+	<xsl:value-of select="$wspref"/><xsl:text>name=</xsl:text><xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
+ 	<xsl:value-of select="$wspref"/><xsl:text>interface=</xsl:text><xsl:value-of select="@interface"/><xsl:text>&#xa;</xsl:text>
+	<xsl:if test="context">
+		<xsl:value-of select="$wspref"/><xsl:text>context.name=</xsl:text><xsl:value-of select="context/@name"/><xsl:text>&#xa;</xsl:text>
+	</xsl:if>
+	<xsl:if test="session">
+		<xsl:value-of select="$wspref"/><xsl:text>session.type=</xsl:text><xsl:value-of select="session/@type"/><xsl:text>&#xa;</xsl:text>
+	</xsl:if>
+	<xsl:for-each select="param">
+               <xsl:value-of select="$wspref"/>param.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#xa;</xsl:text>
+	</xsl:for-each>
+  </xsl:template>
 
   <xsl:template match="directoutputpagerequest">
     <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>

@@ -1,0 +1,7 @@
+a.navi:link { color:#b6cfe4; text-decoration:none }
+a.navi:visited { color:#b6cfe4; text-decoration:none }
+a.navi:hover { color:#b6cfe4; text-decoration:none }
+a.navi:active { color:#b6cfe4; text-decoration:underline }
+a.navi:focus { color:#b6cfe4; text-decoration:underline }
+span.navi {color:#b6cfe4; font-weight:bold;}
+span.error {color:red;}

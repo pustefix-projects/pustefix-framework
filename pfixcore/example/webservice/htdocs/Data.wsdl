@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:webservices.example.pfixcore.schlund.de" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:webservices.example.pfixcore.schlund.de" xmlns:intf="urn:webservices.example.pfixcore.schlund.de" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <wsdl:types>
+  <schema targetNamespace="urn:webservices.example.pfixcore.schlund.de" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="ArrayOf_xsd_string">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:string[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getDataResponse">
+
+      <wsdl:part name="getDataReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataArrayResponse">
+
+      <wsdl:part name="getDataArrayReturn" type="impl:ArrayOf_xsd_string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataArraySidResponse">
+
+      <wsdl:part name="getDataArraySidReturn" type="impl:ArrayOf_xsd_string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataArraySidRequest">
+
+      <wsdl:part name="in0" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataArrayRequest">
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSidRequest">
+
+      <wsdl:part name="in0" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataSidResponse">
+
+      <wsdl:part name="getDataSidReturn" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getDataRequest">
+
+   </wsdl:message>
+
+   <wsdl:portType name="Data">
+
+      <wsdl:operation name="getData">
+
+         <wsdl:input message="impl:getDataRequest" name="getDataRequest"/>
+
+         <wsdl:output message="impl:getDataResponse" name="getDataResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataArray">
+
+         <wsdl:input message="impl:getDataArrayRequest" name="getDataArrayRequest"/>
+
+         <wsdl:output message="impl:getDataArrayResponse" name="getDataArrayResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataSid" parameterOrder="in0">
+
+         <wsdl:input message="impl:getDataSidRequest" name="getDataSidRequest"/>
+
+         <wsdl:output message="impl:getDataSidResponse" name="getDataSidResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataArraySid" parameterOrder="in0">
+
+         <wsdl:input message="impl:getDataArraySidRequest" name="getDataArraySidRequest"/>
+
+         <wsdl:output message="impl:getDataArraySidResponse" name="getDataArraySidResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="DataSoapBinding" type="impl:Data">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getData">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDataRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDataResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataArray">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDataArrayRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDataArrayResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataSid">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDataSidRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDataSidResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getDataArraySid">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getDataArraySidRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getDataArraySidResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:webservices.example.pfixcore.schlund.de" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="DataService">
+
+      <wsdl:port binding="impl:DataSoapBinding" name="Data">
+
+         <wsdlsoap:address location="http://webservice.zap.ue.schlund.de/xml/webservice/Data"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
