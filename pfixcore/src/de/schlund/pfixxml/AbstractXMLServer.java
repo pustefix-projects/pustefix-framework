@@ -423,7 +423,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         // So no error happened, let's go on with normal processing.
         HttpSession   session    = preq.getSession(false);
-        TreeMap       paramhash  = constructParameters(spdoc, params);
+        TreeMap       paramhash  = constructParameters(spdoc, params, session);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
             throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
@@ -434,8 +434,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (isInfoEnabled()) {
                 CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
+            // we only want to update the Session hit when we are not handling a "reuse" request
             if (session != null) {
-                // we only want to update the Session hit when we are not handling a "reuse" request
                 SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
             }
             // Only process cookies if we don't reuse
@@ -579,7 +579,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params) {
+    private TreeMap constructParameters(SPDocument spdoc, Properties gen_params, HttpSession session) {
         TreeMap    paramhash = new TreeMap();
         Properties params = spdoc.getProperties();
         // These are properties which have been set in the process method
@@ -606,6 +606,18 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
+
+        String session_to_link_from_external = "NOSUCHSESSION";
+        if (session != null) {
+            Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);
+            String  parentid = (String) session.getAttribute(SessionAdmin.PARENT_SESS_ID); 
+            if (secure != null && secure.booleanValue() && parentid != null) {
+                session_to_link_from_external = parentid;
+            } else if (secure == null || !secure.booleanValue()) {
+                session_to_link_from_external = session.getId();
+            }
+        }
+        paramhash.put("__external_session_ref",session_to_link_from_external);
         return paramhash;
     }
 
