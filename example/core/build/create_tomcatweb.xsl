@@ -2,11 +2,6 @@
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   
-<!--  <xsl:param name="docroot"/>
-  <xsl:param name="uid"/>
-  <xsl:param name="machine"/>
-  <xsl:param name="fqdn"/>
-  <xsl:param name="mode"/>-->
   <xsl:param name="prjname"/>
 
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"
@@ -20,10 +15,6 @@
   </xsl:template>
 
   <xsl:template match="project">
-    <!--  <!DOCTYPE web-app
-    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-    "http://java.sun.com/dtd/web-app_2_3.dtd">-->
-
     <web-app>
       <xsl:for-each select="./servlet">
 	<xsl:variable name="active_node">
