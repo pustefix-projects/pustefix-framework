@@ -1,16 +1,16 @@
 2004-06-03  Michael Hartmier  <mhm@schlund.de>
-    * remove unnecessary xerces dependencies:
-      src/de/schlund/pfixcore/editor/EditorHelper.java,
-      src/de/schlund/pfixcore/util/XsltGenericTask.java,
-      src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java,
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java,
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	remove unnecessary xerces dependencies
 
 2004-06-03  Michael Hartmier  <mhm@schlund.de>
-    * src/de/schlund/pfixxml/targets/TargetGenerator.java, 
-    src/de/schlund/pfixcore/util/TargetGeneratorTask.java: extract common code
-    * src/de/schlund/pfixcore/editor/EditorCommonsFactory.java,
-    src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java: fix 
-    ClassCastException when clicking on DynIncludes
-    
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: extract common code
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java: fix
+	ClassCastException when clicking on DynIncludes
+
 2004-06-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in (pfx:include): added attribute
@@ -18,7 +18,7 @@
 	editmode=admin. Those includes can only be edited by selecting
 	them in the editor application.
 
-	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: added the resetting of internal 
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: added the resetting of internal
 	factories here, too.
 
 2004-06-02  Michael Hartmeier <mhm@schlund.de>
@@ -29,17 +29,17 @@
 	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java:
 	removed commented-out lines
 	* src/de/schlund/pfixxml/IncludeDocument.java
-        minor optimization, more final fields
+	minor optimization, more final fields
 	* src/de/schlund/pfixxml/targets/TargetImpl.java
-    	improved exception message 
-    	
+	improved exception message
+
 2004-06-01  Niels Schelbach    <niels@schlund.de>
 	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
 	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
 	- Adding reset methods to these factories, for better memory performance during ant generate
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java:
-	- Calling above described reset methods, after generation of each project 
+	- Calling above described reset methods, after generation of each project
 
 2004-05-28  Niels Schelbach    <niels@schlund.de>
 	* src/de/schlund/pfixxml/IncludeDocumentFactory.java
@@ -60,7 +60,7 @@
 
 2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/PfixServletRequest.java (generateSynthetics): 
+	* src/de/schlund/pfixxml/PfixServletRequest.java (generateSynthetics):
 	- one more instance to check for null values
 	- Eeek, first fix didn't work out. we need to check the parameters
 	hashmap not the request as multi parameters are not accessible
@@ -73,7 +73,7 @@
 	should work that you can iterate at runtime over the DOM with
 	changing values to xinp parameters.
 
-	* example/core/xsl/navigation.xsl.in: eeek. bug fix for implementation of mode attribute in 
+	* example/core/xsl/navigation.xsl.in: eeek. bug fix for implementation of mode attribute in
 	pfx:button...
 
 2004-05-25  Benjamin Reitzammer <benjamin@schlund.de>
@@ -109,7 +109,7 @@
 	- simplified dependencies: removed FileDependency, StaticFileDependency and
 	  ProductIncludePart since they don't have specific functionality - everything
 	  is defined in one of the base classes or DependencyType.
-        - removed AbstractDependency, all functionality is in AuxDependency now
+	- removed AbstractDependency, all functionality is in AuxDependency now
 	- more final fields
 	- moved AuxDependencyManager from TargetImpl down to VirtualTarget.
 	- removed AuxDependency.getDir(), use AuxDependency.getPath().getDir() instead
@@ -124,7 +124,7 @@
 	(remove): use the depend file object and genKey() to get the map key.
 	(genKey): new method.
 
-2004-05-18 	Ralf Rapude <rapude@schlund.de>
+2004-05-18 Ralf Rapude <rapude@schlund.de>
 	- There are three new directories in the example dir called simplepage,
 	simplelink and simpleform.
 	Each consists of a simple application for pustefix in order to deliver basic
@@ -427,7 +427,7 @@
 2004-04-28  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java: throw
-        IllegalArgumentException if to[] contains NULL or "" values.
+	IllegalArgumentException if to[] contains NULL or "" values.
 
 2004-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -624,7 +624,7 @@
 2004-04-07 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/InstanceCheckerContainer.java(getReports):
-        now we use the first line of the stacktrace for mail subject.
+	now we use the first line of the stacktrace for mail subject.
 
 2004-04-06  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
@@ -674,16 +674,16 @@
 2004-03-26  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get):
-        catch all exceptions, print a message and rethrow.
+	catch all exceptions, print a message and rethrow.
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
-        now we use the first line of the stacktrace for mail subject.
+	now we use the first line of the stacktrace for mail subject.
 
 2004-03-25  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
-        make sure no to rethrow TransformerExceptions which wrap a
-        'org.apache.catalina.connector.ClientAbortException'(quick fix)
+	make sure no to rethrow TransformerExceptions which wrap a
+	'org.apache.catalina.connector.ClientAbortException'(quick fix)
 
 2004-03-24  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -742,13 +742,13 @@
 2004-03-12  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext(createLastSteps):
-        fix for possible NPEx.
+	fix for possible NPEx.
 
 2004-03-09  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createSTraceText):
-        throwable.getStackTrace seems not to work with nested exceptions. So
-        printStackTrace(PrintWriter) is used.
+	throwable.getStackTrace seems not to work with nested exceptions. So
+	printStackTrace(PrintWriter) is used.
 
 2004-03-09  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -877,7 +877,7 @@
 	src/de/schlund/pfixxml/exceptionhandler/PFXThreadedHandler.java,
 	src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java,
 	src/de/schlund/pfixxml/exceptionhandler/PFUtil.java:
-        minor changes
+	minor changes
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle),
 	src/de/schlund/pfixxml/ServletManager.java(callProcess):
@@ -894,7 +894,7 @@
 
 	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
 	(saveSessionData, copySessionData, stripUriSessionId): added
-        a CAT.warn when catching NullPointerException(!)
+	a CAT.warn when catching NullPointerException(!)
 	* src/de/schlund/pfixxml/serverutil/SessionHelper.java:
 	(getClearedURI, getClearedURL, getURLSessionId, encodeURI,
 	encodeURL): removed useless param HttpServletResponse.
@@ -909,7 +909,7 @@
 	* src/de/schlund/pfixxml/testenv/RecordManager.java: adjusted calls
 	to PfixServletRequest
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
-        adjusted calls to PfixServletRequest.
+	adjusted calls to PfixServletRequest.
 
 2004-02-18  Joerg Haecker <haecker@schlund.de>
 
@@ -1123,9 +1123,9 @@
 
 2004-01-26  Joerg Haecker <haecker@schlund.de>
 
-        * example/core/build/create_propfiles.xsl(xsl:template
-        match="pagerequest//ssl): Handle the pagerequest-name correctly, also
-        when ssl is enclosed by cus-tags.
+	* example/core/build/create_propfiles.xsl(xsl:template
+	match="pagerequest//ssl): Handle the pagerequest-name correctly, also
+	when ssl is enclosed by cus-tags.
 
 2004-01-20  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -1253,28 +1253,28 @@
 
 2003-12-15  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java
-        (AdvanceCacheStatistic): bugfix. If queuesize and queueticks are not
-        given, use sensible default values to make 'make generate' work.
+	* src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java
+	(AdvanceCacheStatistic): bugfix. If queuesize and queueticks are not
+	given, use sensible default values to make 'make generate' work.
 
 2003-12-12  Sebastian Werner  <sw@schlund.de>
 	* example/core/script/baselib.js: fixed small typo in js
 
 2003-12-12  Joerg Haecker <haecker@schlund.de>
 
-        * example/core/build/create_tomcatweb.xsl: if sessiontimeout-node
-        in project.xml.in exists use it, else use default with 60.
+	* example/core/build/create_tomcatweb.xsl: if sessiontimeout-node
+	in project.xml.in exists use it, else use default with 60.
 
-        * Almost complete rewrite of SPCacheStatistic:
-        * src/de/schlund/pfixxml/targets/SPCacheStatistic.java moved to
-        src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
-        * src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java: added
-        * src/de/schlund/pfixxml/targets/cachestat/CacheHitMissPair.java: added
-        * example/common/conf/factory.prop.in: adjusted, added property
-        cachestatistic.queuesize and cachestatistic.queueticks.
-        * src/de/schlund/pfixxml/CacheStatisticServlet.java: minor
-        * src/de/schlund/pfixxml/targets/TargetImpl.java: minor
-        * See javadoc for more info.
+	* Almost complete rewrite of SPCacheStatistic:
+	* src/de/schlund/pfixxml/targets/SPCacheStatistic.java moved to
+	src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+	* src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java: added
+	* src/de/schlund/pfixxml/targets/cachestat/CacheHitMissPair.java: added
+	* example/common/conf/factory.prop.in: adjusted, added property
+	cachestatistic.queuesize and cachestatistic.queueticks.
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java: minor
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: minor
+	* See javadoc for more info.
 
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
@@ -1293,9 +1293,9 @@
 	dir htdocs has been moved from skel/build.xml target init to build.xml target test-skeleton.
 
 2003-12-04 Niels Schelbach <niels.schelbach@schlund.de>
-        * src/de/schlund/pfixcore/workflow/ContextResourceManager
-        fixed bug in checkInterface(), to allow also extended ContextResources to be recognized as implementing
-        the requested interface
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager
+	fixed bug in checkInterface(), to allow also extended ContextResources to be recognized as implementing
+	the requested interface
 
 2003-12-01  Adam Habermann  <adam.habermann@schlund.de>
 
@@ -1764,7 +1764,7 @@
 	important bugfix: do not read the file always!
 	* src/de/schlund/pfixcore/editor/EditorHelper.java (getAffectedProductsForInclude):
 	completely rewritten.
- 	* src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java (isIncludeEditAllowed):
+	* src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java (isIncludeEditAllowed):
 	pass the affected products, do not retrieve it here.
 	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java (renderDefault):
 	src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java(handleSubmittedData,
@@ -1864,48 +1864,48 @@
 2003-08-08  Martin Leidig  <mleidig@schlund.de>
 
 	Made major AppLoader changes. Now native code is used to set final
-        fields and create uninitialized objects. It comes as part of pfixcore,
-        but has to be extracted and compiled on its target platform.
+	fields and create uninitialized objects. It comes as part of pfixcore,
+	but has to be extracted and compiled on its target platform.
 
-        Added:
+	Added:
 
 	* src/de/schlund/pfixxml/loader/ObjectBuilder.java:
-        Responsible for setting final fields and allocating objects. This is
-        done by native methods. The necessary shared library is loaded on
-        demand.
+	Responsible for setting final fields and allocating objects. This is
+	done by native methods. The necessary shared library is loaded on
+	demand.
 	* src/de/schlund/pfixxml/loader/ObjectBuilderException.java:
-        Exception type for ObjectBuilder exceptions.
-        * jni/Makefile:
-        Makefile for building native part of AppLoader.
-        * jni/src/de_schlund_pfixxml_loader_ObjectBuilder.c:
-        Implementation of C header generated from ObjectBuilder.java via javah.
-        It has functions for static field access and object allocation, which
-        use the according functions provided by JNI.
-        * jni/Makefile.pkg:
-        Makefile for building native part of AppLoader within other projects.
+	Exception type for ObjectBuilder exceptions.
+	* jni/Makefile:
+	Makefile for building native part of AppLoader.
+	* jni/src/de_schlund_pfixxml_loader_ObjectBuilder.c:
+	Implementation of C header generated from ObjectBuilder.java via javah.
+	It has functions for static field access and object allocation, which
+	use the according functions provided by JNI.
+	* jni/Makefile.pkg:
+	Makefile for building native part of AppLoader within other projects.
 
-        Changed:
+	Changed:
 
-        * Makefile:
-        Added support for JNI part of AppLoader (jni target calls jni/Makefile
-        for building, jar target adds jni package to jar file)
-        * startTomcat.sh:
-        LD_LIBRARY_PATH environment variable is set, so that shared library can
-        be found, when it's loaded on demand.
-        * src/de/schlund/pfixxml/loader/AppClassLoader.java:
-        A list of all loaded application classes is provided at call.
-        * src/de/schlund/pfixxml/loader/AppLoader.java:
-        After reloading the referenced objects all classes, which were loaded
-        by the AppClassLoader, but had no transferred instance, are identified
-        and also transferred (newly created and set values of static fields).
-        * src/de/schlund/pfixxml/loader/AppLoaderConfig.java:
-        * src/de/schlund/pfixxml/loader/Profiler.java:
-        Pure cosmetics.
-        * src/de/schlund/pfixxml/loader/StateTransfer.java:
-        Removed java version dependent, reflection abusing, object allocation
-        stuff. Creation of uninitialized objects and setting of final member
-        fields now are done with the ObjectBuilder's native methods. The
-        classes of all transferred objects are provided at call.
+	* Makefile:
+	Added support for JNI part of AppLoader (jni target calls jni/Makefile
+	for building, jar target adds jni package to jar file)
+	* startTomcat.sh:
+	LD_LIBRARY_PATH environment variable is set, so that shared library can
+	be found, when it's loaded on demand.
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java:
+	A list of all loaded application classes is provided at call.
+	* src/de/schlund/pfixxml/loader/AppLoader.java:
+	After reloading the referenced objects all classes, which were loaded
+	by the AppClassLoader, but had no transferred instance, are identified
+	and also transferred (newly created and set values of static fields).
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java:
+	* src/de/schlund/pfixxml/loader/Profiler.java:
+	Pure cosmetics.
+	* src/de/schlund/pfixxml/loader/StateTransfer.java:
+	Removed java version dependent, reflection abusing, object allocation
+	stuff. Creation of uninitialized objects and setting of final member
+	fields now are done with the ObjectBuilder's native methods. The
+	classes of all transferred objects are provided at call.
 
 2003-08-07  Sebastian Werner   <sw@schlund.de>
 	* core/xsl/forminput.xsl.in
@@ -2141,7 +2141,7 @@
 
 	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java:
 	Now implements Reloader interface (necessary because it holds reloadable DirectOutputStates,
- 	but isn't referenced by other classes in the AppLoader's scope).
+	but isn't referenced by other classes in the AppLoader's scope).
 
 2003-07-17  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -2404,10 +2404,10 @@
 
 2003-06-18  Martin Leidig  <mleidig@schlund.de>
 
-        * src/de/schlund/pfixxml/PfixServletRequest.java (getRequestParams):
-        Added again bugfix for embedded param data processing. Now it is ensured
-        that from a set of param names, which differ in their .x or .y
-        extensions, only the first occurring param is processed.
+	* src/de/schlund/pfixxml/PfixServletRequest.java (getRequestParams):
+	Added again bugfix for embedded param data processing. Now it is ensured
+	that from a set of param names, which differ in their .x or .y
+	extensions, only the first occurring param is processed.
 
 2003-06-18  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -2614,8 +2614,8 @@
 
 	* example/core/build/create_serverxml.xsl:
 	added connector attribute minProcessors, set default values for minProcessors and maxProcessors
-        * example/servletconf/projects.xml:
-        added connector attribute minProcessors
+	* example/servletconf/projects.xml:
+	added connector attribute minProcessors
 
 2003-05-28  Volker Zaich <zaich@schlund.de>
 
@@ -2648,7 +2648,7 @@
 
 	* src/de/schlund/pfixxml/loader/AppClassLoader.java:
 	Improved logging performance by doing conditional logging, avoiding time-consuming string manipulation
-        and logging api calls.
+	and logging api calls.
 
 2003-05-23  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -2656,9 +2656,9 @@
 
 	* example/core/xsl/utils.xsl.in: new features + cleanup for pfX:layer and related:
 		- You can specify what method a switch should call on the layer: on, off, and the default toggle.
-	        - You can specify a class attribute for pfx:on and pfx:off
-	        - You can specify the html container a pfx:laer should by setting the "element" attribute; "div" is
-	          the default, but now you can also use tr, td, table, span or stuff like that.
+		- You can specify a class attribute for pfx:on and pfx:off
+		- You can specify the html container a pfx:laer should by setting the "element" attribute; "div" is
+		  the default, but now you can also use tr, td, table, span or stuff like that.
 
 	* example/core/script/baselib.js: heavy cleanup + bug fixes for pfx:layer handling.
 
@@ -2746,7 +2746,7 @@
 
 2003-05-14  Martin Leidig  <mleidig@schlund.de>
 
-        * src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java:
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java:
 	Important bugfix, now uses AppLoader for creation of IWrapper instances
 
 2003-05-14  Jens Lautenbacher  <jtl@schlund.de>
@@ -2761,8 +2761,8 @@
 2003-05-13 Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/loader/StateTransfer.java:
-        Added support for handling different java versions and the different ways instances of classes
-        with no no-arg constructors are created. Now supports Sun and IBM JDK versions 1.3.x and 1.4.x.
+	Added support for handling different java versions and the different ways instances of classes
+	with no no-arg constructors are created. Now supports Sun and IBM JDK versions 1.3.x and 1.4.x.
 
 2003-05-12  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -3313,10 +3313,10 @@
 	This should be ported to the real 1.4 api as soon as we have completed the switch.
 
 2003-03-31  Martin Leidig  <mleidig@schlund.de>
-        * example/core/build/create_propfiles.xsl: fixed some bugs concerning transformation
-        of new property file format, i.e. getting prefix for pagerequest parameters within
-        custom choose/test elements, adding support for choose/test elements within
-        servletinfo tag.
+	* example/core/build/create_propfiles.xsl: fixed some bugs concerning transformation
+	of new property file format, i.e. getting prefix for pagerequest parameters within
+	custom choose/test elements, adding support for choose/test elements within
+	servletinfo tag.
 
 2003-03-27  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -3829,7 +3829,7 @@
 	then iterate over Contexts and reset them resp. remove Contexts from
 	contextMap
 	(getContext): removed reset parameter, now creates new context and adds
- 	it to contextMap, if context value is null or if contextclass has
+	it to contextMap, if context value is null or if contextclass has
 	changed (getContext)
 
 	* src/de/schlund/pfixcore/workflow/Context.java: made reset method
@@ -4031,7 +4031,7 @@
 
 2002-12-16  Volker Zaich <zaich@schlund.de>
 
-        * example/core/xsl/forminput.xsl.in
+	* example/core/xsl/forminput.xsl.in
 	* example/core/xsl/include.xsl.in
 	* example/core/xsl/navigation.xsl.in
 	* example/core/xsl/utils.xsl.in
@@ -4043,7 +4043,7 @@
 	* example/servletconf/projects.xml
 	* src/de/schlund/pfixcore/editor/CoreDocumentation.java
 	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
-        * src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
 	* src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
 
 	all xsl:temlates tags will be displayed. If they don't have a
@@ -4499,9 +4499,9 @@
 	* src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java (onSuccess):
 	CAUTION ICOMPATIBLE CHANGE: rewrote logic for deciding what to do in the onSuccess case:
 	Default: If the current pagerequest is member of the
-   	         current pageflow (aka: if it is a member of any pageflow),
-	         set the SPDocument to null (signalling that the pageflow should continue).
-	         If it is not a memeber of a flow, return a SPDocument (and continue on the current page).
+		 current pageflow (aka: if it is a member of any pageflow),
+		 set the SPDocument to null (signalling that the pageflow should continue).
+		 If it is not a memeber of a flow, return a SPDocument (and continue on the current page).
 	You can overwrite this behaviour with the property "pagerequest.<PAGENAME>.resdocfinalizer.onsuccess".
 	The values "continue", "stop" and "auto"(default) are allowed.
 
@@ -4703,7 +4703,7 @@
 	   generating of the documentation-stylesheets (see 2002-08-23)
 
 	* example/Makefile:
-             calls the new Java-Function for generating
+	     calls the new Java-Function for generating
 	     the documentation-stylesheets
 
 2002-09-12  Rouven Sch?ller <rouven@schlund.de>
@@ -4714,7 +4714,7 @@
 
 2002-09-11  Jens Lautenbacher  <jtl@schlund.de>
 
-        * example/core/xsl/master.xsl.in: copy attributes for pfx:script
+	* example/core/xsl/master.xsl.in: copy attributes for pfx:script
 
 2002-09-10  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -4808,21 +4808,20 @@
 	<pfx:frame>. This did never work with Pfix II anyway, and the code becomes easier to understand.
 
 	* example/core/xsl/include.xsl:
-          <xsl:template match="pfx:include" name="pfx:include">
+	  <xsl:template match="pfx:include" name="pfx:include">
 	  CHANGED to encode the page in the pathinfo.
 
 	* example/core/xsl/navigation.xsl:
-	  <xsl:template name="pfx:button_impl">: REMOVED the possibility
-   	    to define (in the navigation) handlers that contain a query
-	    string. A handler now MUST be simple like /xml/static.
+	 <xsl:template name="pfx:button_impl">: REMOVED the possibility
+	 to define (in the navigation) handlers that contain a query
+	 string. A handler now MUST be simple like /xml/static.
 
-	    REMOVED the possibility to give an onclick attribute to the <page> in the
-	    navigation and have it handled here. This is simply never the right thing to do.
+	 REMOVED the possibility to give an onclick attribute to the <page> in the
+	 navigation and have it handled here. This is simply never the right thing to do.
 
-            CHANGED to encode the page in the pathinfo.
+	 CHANGED to encode the page in the pathinfo.
 
-          <xsl:template match="pfx:wizardprevious">: CHANGED to encode the page in the pathinfo.
-
+	 <xsl:template match="pfx:wizardprevious">: CHANGED to encode the page in the pathinfo.
 
 	* example/core/xsl/forminput.xsl:
 	  <xsl:teplate match="pfx:forminput">: CHANGED to encode the page in the pathinfo.
@@ -5126,10 +5125,10 @@
 	* src/de/schlund/pfixxml/ExceptionHandler.java: bugfix. Some information in
 	mail was 'null' caused by relocation.
 	* src/de/schlund/pfixxml/PfixServletRequest.java: added
-	        -getOriginalServerName
-	        -getOriginalRequestURI
-	        -getCurrentServerName
-	        -getCurrentRequestURI
+		-getOriginalServerName
+		-getOriginalRequestURI
+		-getCurrentServerName
+		-getCurrentRequestURI
 	to fix bug above.
 
 2002-07-25  Jens Lautenbacher  <jtl@schlund.de>
@@ -5178,7 +5177,7 @@
 	should be called for insertStatus(). Use something like
 	pagerequest.<PAGENAME>.resdocfinalizer.insert.<NODENAME_A>=<ContextResourceClassName_A> ...
 	to have ContextResource A be called as
-	        A.insertStatus(ResultDocument, ResultDocument.createNode(NODENAME_A));
+		A.insertStatus(ResultDocument, ResultDocument.createNode(NODENAME_A));
 	and so on.
 
 	Basically this means you don't have to write a ResdocFinalizer for most cases anymore!
@@ -6120,7 +6119,7 @@
 	IMPORTANT:
 
 	changed <defaultproduct> -> <product name="default">
-	        <defaultlang>    -> <lang name="default">
+		<defaultlang>    -> <lang name="default">
 
 2001-12-14  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -6248,9 +6247,9 @@
 	* de/schlund/pfixcore/editor/handlers/LoginStatusHandler.java:
 	* de/schlund/pfixcore/editor/handlers/EditorUserDataFinalizer.java:
 	* de/schlund/pfixcore/editor/handlers/CancelEditUserHandler.java: Added
-	        - Now we can prohibit further logins (when admin).
-	        - We can change the userdata of the EditorUser stored/retrieved
-	          via EditorSessionStatus.get/setUserForEdit(...)
+		- Now we can prohibit further logins (when admin).
+		- We can change the userdata of the EditorUser stored/retrieved
+		  via EditorSessionStatus.get/setUserForEdit(...)
 
 	* de/schlund/pfixcore/editor/StatusCodes.prop: added div. scodes
 
@@ -6285,9 +6284,9 @@
 2001-12-10  Thomas Stieler  <stieler@schlund.de>
 
 	* de/schlund/pfixcore/workflow/ContextResource.java (init):
-	                                                    (insertStatus):
-	                                                    (reset):
-	                                                    (needsData):
+							    (insertStatus):
+							    (reset):
+							    (needsData):
 	throws Exception added.
 
 	* de/schlund/pfixcore/editor/handlers/HomeFinalizer.java
@@ -6965,4 +6964,3 @@
 
 	* de/schlund/pfixcore/editor/*.java
 	imported Editor files. This does not compile at all currently.
-
