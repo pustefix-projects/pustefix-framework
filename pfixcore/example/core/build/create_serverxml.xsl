@@ -36,10 +36,6 @@
 	
 	 <Connector port="8009" enableLookups="false" acceptCount="100" minProcessors="5"
 	      maxProcessors="20" protocol="AJP/1.3">
-	   <!-- 
-	    <Connector className="org.apache.ajp.tomcat4.Ajp13Connector"
-                   enableLookups="false" port="8009" acceptCount="100" minProcessors="5" maxProcessors="20">
-       -->
         <xsl:if test="not(string($port) = '')"><xsl:attribute name="port"><xsl:value-of select="$port"/></xsl:attribute></xsl:if>
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
