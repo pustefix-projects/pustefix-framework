@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
+  <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
+  <prop name="pustefix.docroot"><cus:docroot/></prop>
 
   <!-- List of all factories to init -->
   <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
@@ -31,7 +32,7 @@
   <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
 
   <!-- EditorUserFactory -->
-  <prop name="editoruserfactory.userdata"><cus:docroot/>common/conf/userdata.xml</prop>
+  <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
 
   <!-- EditorProductFactory -->
   <cus:choose>
@@ -39,17 +40,17 @@
       <prop name="editorproductfactory.delayinit">false</prop>
     </cus:test>
   </cus:choose>
-  <prop name="editorproductfactory.productdata"><cus:docroot/>servletconf/projects.xml</prop>
+  <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
 
   <!-- EditorCommonsFactory -->
-  <prop name="editorcommonsfactory.includefile.1"><cus:docroot/>common/dyntxt/statusmessages.xml</prop>
-  
+  <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
+
   <!--ExceptionHandler-->
-  <prop name="exceptionhandler.propertyfile"><cus:docroot/>common/conf/exceptionhandler.prop</prop>
-  
+  <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
+
   <!--AppLoader-->
-  <prop name="apploader.propertyfile"><cus:docroot/>common/conf/apploader.prop</prop>
-  
+  <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
+
   <!--PerfStat-->
   <prop name="perfstat.IHANDLER_IS_ACTIVE">3</prop>
   <prop name="perfstat.IHANDLER_NEEDS_DATA">3</prop>
