@@ -56,8 +56,8 @@
             <ixsl:choose>
               <ixsl:when test="$__recordmode and $__recordmode!='0'">
                 <form target="_top">
-                  <input style="margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
-                         readonly="readonly" align="center" name="__recordmode" type="text" size="5">
+                  <input style="font-family: Arial,Helvetica,Sans; margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
+                         readonly="readonly" align="center" name="__recordmode" type="text" size="4">
                     <ixsl:attribute name="value"><ixsl:value-of select="$__recordmode"/></ixsl:attribute>
                   </input>
                   <pfx:xinp type="image" align="center" src="/core/img/player_pause.png" title="Switch record mode OFF">
@@ -67,8 +67,8 @@
               </ixsl:when>
               <ixsl:otherwise>
                 <form target="_top">
-                  <pfx:xinp type="text" style="margin-left:3px; margin-right:1px; border: black solid 1px; color: #c00000;"
-                                  name="__recordmode" size="5" maxlength="20"/>
+                  <pfx:xinp type="text" style="font-family: Arial,Helvetica,Sans; margin-left:3px; margin-right:1px; border: black solid 1px; color: #c00000;"
+                                  name="__recordmode" size="4" maxlength="20"/>
                   <pfx:xinp type="image" align="center" src="/core/img/player_play.png" title="Switch record mode ON"/>
                 </form>
               </ixsl:otherwise>
