@@ -31,7 +31,7 @@ import java.util.HashMap;
 
 
 
-public class PfixTextPane extends JTextPane {
+public class PfixTextPane extends JTextPane implements UndoableEditListener {
 
 
 
@@ -186,6 +186,18 @@ public class PfixTextPane extends JTextPane {
         
 
     }
+
+          public void undoableEditHappened(UndoableEditEvent e) {
+          /*    if (!getOperation())
+              {
+                  if (compoundEdit == null)
+                      {
+        currentEdit.addEdit(e.getEdit());
+        //undo.addEdit(e.getEdit());
+      } else
+        compoundEdit.addEdit(e.getEdit());
+        }*/
+  }
 
    
 
