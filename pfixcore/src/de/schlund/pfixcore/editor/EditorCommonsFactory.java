@@ -31,6 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -74,30 +75,13 @@ public class EditorCommonsFactory implements FactoryInit {
         String str;
         
         if (!inited) {
+            ;
             for (Iterator iter = commonfiles.iterator(); iter.hasNext();) {
                 str = (String) iter.next();
-                readFile(toPath(str));
+                readFile(PathFactory.getInstance().createPath(str));
             }
             inited = true;
         }
-    }
-
-    private static Path toPath(String str) { // TODO: dump if the factories knows docroot
-        File docroot;
-        String relative;
-        String name;
-        
-        docroot = new File(str);
-        relative = "";
-        do {
-            name = docroot.getName();
-            if (name.equals("example") || name.equals("projects")) {
-                return Path.create(docroot, relative);
-            }
-            relative = File.separator + name + relative; 
-            docroot = docroot.getParentFile();
-        } while (docroot != null);
-        return Path.create(str);
     }
 
     private void readFile(Path path) throws Exception {
