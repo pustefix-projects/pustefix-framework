@@ -178,16 +178,23 @@
         </table>
       </xmlcodeOFF>
       <depxml name="core/xsl/master.xsl"/>
-      <depxsl name="MyProject/xsl/custommaster.xsl"/>
+      <depxsl name="core/xsl/customizemaster.xsl"/>
       <xmlcodeOFF>
         <div class="comment">
-          <code>depxml</code> and <code>depxsl</code> reference other
+          <p><code>depxml</code> and <code>depxsl</code> reference other
           targets by their <code>name</code> attribute that serve as
           the XML resp. XSL input used to create this target via a XSL
           transformation. If for a given <code>name</code> attribute of either
           <code>depxml</code> or <code>depxsl</code> no other target definition is found,
           the transformation parent is supposed to be a leaf target and the <code>name</code> attribute
-          is interpreted as a path relative to the docroot.
+          is interpreted as a path relative to the docroot.</p>
+          <p>
+            <b>Note:</b> For the definition of the master.xsl target,
+            you will <b>always</b> use
+            <code>core/xsl/master.xsl</code> and <code>core/xsl/customizemaster</code>.<br/>
+            The definition of the metatags.xsl target will <b>always</b> use
+            <code>MyProject/xsl/metatags.xsl</code> and <code>core/xsl/customizestylesheets</code>
+          </p>
         </div>
       </xmlcodeOFF>
       <depaux name="core/xsl/default_copy.xsl"/>
@@ -220,12 +227,48 @@
             that are not automatically detected. In the example
             above, the files referenced are XSLT stylesheets that are included via <code>xsl:include</code> into
             the <code>master.xsl</code> stylesheet. Such external dependencies are not currently recognized automatically.</p>
-          <p>E.g. if you use a <code>skin.xsl</code> stylesheet, you
-            need to add the following line to the target
-            definition of <code>master.xsl</code> and <code>metatags.xsl</code></p>
-          <xmlcode>
-            <depaux name="MyProject/xsl/skin.xsl"/>
-          </xmlcode>
+            <p>E.g. if you use a <code>foo.xsl</code> stylesheet that
+            serves as a library of templates you want to include
+            into <code>metatags.xsl</code>, you need to add the
+            following line to the target definition of
+            <code>metatags.xsl</code> to make the system recognize changes to <code>foo.xsl</code></p>
+            <xmlcode>
+              <depaux name="MyProject/xsl/skin.xsl"/>
+            </xmlcode>
+        </div><br/>
+        <div class="comment" style="border: 1px red solid; background: #ee9999;">
+          <b>The section below applies only for the definition of <code>master.xsl</code></b>
+          <div>
+            <xmlcode>
+              <xmlcodeINV>
+                <skinning_stylesheets>sample1/xsl/skin.xsl</skinning_stylesheets>
+                <xmlcodeOFF>
+                  <div class="comment">
+                  Space separated list of stylesheets to use as a template library for <code>master.xsl</code>
+                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
+                  </div>
+                </xmlcodeOFF>
+                <runtime_stylesheets>sample1/xsl/runtime.xsl</runtime_stylesheets>
+                <xmlcodeOFF>
+                  <div class="comment">
+                  Space separated list of stylesheets to use as a template library for the generated stylesheet
+                  on runtime.
+                  </div>
+                </xmlcodeOFF>
+                <param name="outputmethod" value="html"/>
+                <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+                <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+                <xmlcodeOFF>
+                  <div class="comment">
+                  These pre-defined <code>param</code>s are used to specify the output parameters for the runtime
+                  transformation.
+                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
+                </div>
+                <br/>
+                </xmlcodeOFF>
+              </xmlcodeINV>
+            </xmlcode>
+          </div>
         </div>
       </xmlcodeOFF>
       <param name="product" value="MyProject"/>

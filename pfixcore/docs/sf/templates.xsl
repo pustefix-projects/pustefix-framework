@@ -73,6 +73,12 @@
 
   <xsl:template match="xmlcodeNS" mode="static_disp"/>
   
+  <xsl:template match="xmlcodeINV" mode="static_disp">
+    <xsl:apply-templates mode="static_disp">
+      <xsl:with-param name="break">false</xsl:with-param>
+    </xsl:apply-templates>
+  </xsl:template>
+
   <xsl:template match="*" mode="static_disp">
     <xsl:param name="ind">&#160;&#160;</xsl:param>
     <xsl:param name="break">true</xsl:param>
