@@ -54,7 +54,7 @@ public class StatusCodeFactory {
     }
 
     public boolean statusCodeExists(String code) {
-        return (testStatusCode(String code) == null) ? false : true;
+        return (testStatusCode(code) == null ? false : true);
     }
     
     public StatusCode getStatusCode(String code) throws StatusCodeException {
