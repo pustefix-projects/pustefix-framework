@@ -20,8 +20,9 @@
 package de.schlund.pfixcore.workflow;
 
 import java.util.*;
-import org.apache.log4j.*;
+
 import de.schlund.pfixcore.util.*;
+import org.apache.log4j.*;
 
 /**
  * @author: jtl
@@ -30,24 +31,25 @@ import de.schlund.pfixcore.util.*;
  */
 
 public class PageFlow {
-    private              ArrayList   allsteps = new ArrayList(); 
-    private              String      flowname;
-    private final static String      PROPERTY_PREFIX    = PageFlowManager.PROP_PREFIX;
-    private final static String      FLAG_FINAL         = "FINAL";
-    private final static String      PROPERTY_PAGEFLOW  = "context.pageflowproperty";
-    private static       Category    LOG = Category.getInstance(PageFlow.class.getName());
-    private              PageRequest finalpage = null;
-    private              boolean     flow_stop_after_current = false;
-
+    private String              flowname;
+    private ArrayList           allsteps                = new ArrayList();
+    private final static String PROPERTY_PREFIX         = PageFlowManager.PROP_PREFIX;
+    private final static String FLAG_FINAL              = "FINAL";
+    private final static String PROPERTY_PAGEFLOW       = "context.pageflowproperty";
+    private static Category     LOG                     = Category.getInstance(PageFlow.class.getName());
+    private PageRequest         finalpage               = null;
+    private boolean             flow_stop_after_current = false;
+    
     public PageFlow(Properties props, String name) {
         flowname = name;
         Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + name);
         TreeMap sorted = new TreeMap();
         
         for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
-            Integer index;
             String  key      = (String) i.next();
             String  pagename = (String) map.get(key);
+            Integer index;
+            
             if (key.equals(FLAG_FINAL)) {
                 finalpage = new PageRequest(pagename);
             } else {
@@ -62,8 +64,9 @@ public class PageFlow {
             }
         }
 
-        Map     propmap          = PropertiesUtils.selectProperties(props, PROPERTY_PAGEFLOW + "." + name);
-        String  stopaftercurrent = (String) propmap.get("stopatfirstaftercurrent");
+        Map    propmap          = PropertiesUtils.selectProperties(props, PROPERTY_PAGEFLOW + "." + name);
+        String stopaftercurrent = (String) propmap.get("stopatfirstaftercurrent");
+
         if (stopaftercurrent != null && stopaftercurrent.equals("true")) {
             flow_stop_after_current = true;
         } else {
@@ -92,6 +95,17 @@ public class PageFlow {
         return allsteps.contains(page);
     }
 
+    /**
+     * Return position of page in the PageFlow, starting with 0. Return -1 if
+     * page isn't a member of the PageFlow.
+     *
+     * @param page a <code>PageRequest</code> value
+     * @return an <code>int</code> value
+     */
+    public int getIndexOfPageRequest(PageRequest page) {
+        return allsteps.indexOf(page);
+    }
+    
     public String getName() {
         return flowname;
     }
@@ -101,7 +115,7 @@ public class PageFlow {
     }
     
     public PageRequest getFirstStep() {
-	return (PageRequest) allsteps.get(0);
+        return (PageRequest) allsteps.get(0);
     }
     
     public PageRequest getFinalPage() {
@@ -109,15 +123,16 @@ public class PageFlow {
     }
 
     public String toString() {
-	String ret = "";
-	for (int i = 0; i < allsteps.size(); i++) {
-	    if (ret.length() > 0) {
-		ret += ", ";
-	    } else {
-                ret = flowname + " = ";
+        String ret = "";
+
+        for (int i = 0; i < allsteps.size(); i++) {
+            if (ret.length() > 0) {
+                ret += ", ";
+            } else {
+                ret  = flowname + " = ";
             }
-	    ret += "[" + i + ": " + ((PageRequest) allsteps.get(i)).getName() + "]";
-	}
-	return ret;
+            ret += "[" + i + ": " + ((PageRequest) allsteps.get(i)).getName() + "]";
+        }
+        return ret;
     }
 }
