@@ -1,3 +1,12 @@
+2005-04-05  Adam Habermann  <adam.habermann@schlund.de>
+
+	* example/core/schema/properties200401.xsd:
+	Introduced variants within <pageflow> and <pagerequest>.
+
+	* stuff/propconv200401/propconv.sh:
+	Declared lists explicitly as arrays. Maybe this helps to run more
+	cross-shell.
+
 2005-04-04  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Use PathFactory to get File
@@ -11,7 +20,7 @@
 
 	* example/core/build/create_depend.xsl: bug fix: the themes list that has been constructed from a variant was wrong
 
-	* src/de/schlund/pfixxml/targets/Target.java (getThemesString): need to get the themes String 
+	* src/de/schlund/pfixxml/targets/Target.java (getThemesString): need to get the themes String
 	also for the runtime transformation
 	* src/de/schlund/pfixxml/targets/TargetImpl.java: implement it.
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: use it.
@@ -20,10 +29,10 @@
 2005-04-04  Martin Leidig  <mleidig@schlund.de>
 
 	* example/core/build/create_depend.xsl: If no global or target specific outputencoding is specified,
-	a node for the outputencoding stylesheet parameter with the project's encoding is inserted. 
+	a node for the outputencoding stylesheet parameter with the project's encoding is inserted.
 	* example/core/build/create_propfiles.xsl: Create 'servlet.encoding' from 'servletinfo/encoding'-node,
 	which can be used to overwrite the servlet encoding's default (the project's encoding).
-	* example/core/build/create_serverxml.xsl: Add URIEncoding attribute to the Connector elements. The value 
+	* example/core/build/create_serverxml.xsl: Add URIEncoding attribute to the Connector elements. The value
 	can be set in projects.xml.in. (/projects/common/tomcat/uriencoding).
 	* example/core/build/create_webxml.xsl: Sets the project encoding as default servlet encoding by addding
 	it as 'servlet.encoding' init parameter.
@@ -37,7 +46,7 @@
 	an encoding element UTF-8 is taken as default).
 	* skel/build.xml: Added projects_xml target to dependcy list of targetdefs target.
 	* src/de/schlund/pfixxml/ServletManager.java: Added method initServletEncoding() which gets the encoding
-	from the servlet.encoding init parameter resp. the according property (overriding the init parameter). 
+	from the servlet.encoding init parameter resp. the according property (overriding the init parameter).
 	At the beginning of the doGet() method setCharacterEncoding() is called on the request and response
 	objects to set the appropriate encoding.
 	* example/sample1/txt/pages/main_encoding.xml: Added encoding test page.
@@ -47,18 +56,18 @@
 	* src/de/schlund/pfixcore/example/EncodingTestHandler.java
 	* src/de/schlund/pfixcore/example/EncodingTestState.java
 	* src/de/schlund/pfixcore/example/iwrapper/EncodingTest.iwrp
-	* src/de/schlund/pfixxml/util/URIParameters.java: Added helper class to get parameters from an URI 
+	* src/de/schlund/pfixxml/util/URIParameters.java: Added helper class to get parameters from an URI
 	urlencoded by an arbitrary encoding.
 
 
 2005-04-01  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/core/xsl/include.xsl.in: Implemented a fall back for lang nodes: If a lang node's @name ends with a '*', 
+	* example/core/xsl/include.xsl.in: Implemented a fall back for lang nodes: If a lang node's @name ends with a '*',
 	this node will work as a fallback for all languages starting with the @name (without the star). Example: you have
-	<lang name="en_US">, <lang name="en_*">, <lang name="default">. If language is set to en_GB, the en_* node will be used, if it is 
-	set to en_US, the en_US lang node is used. In any other case the "default" lang node will be used (with other words, 
+	<lang name="en_US">, <lang name="en_*">, <lang name="default">. If language is set to en_GB, the en_* node will be used, if it is
+	set to en_US, the en_US lang node is used. In any other case the "default" lang node will be used (with other words,
 	"default" still has its special meaning)
-	
+
 	add <pfx:langselect> template to have language switching also as an inline template (see also pfx:themeselect below)
 
 2005-03-31  Jens Lautenbacher  <jtl@schlund.de>
@@ -66,7 +75,7 @@
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): always supply a "themes" XSLT parameter containing
 	all the valid themes for the target as a space separated list.
 
-	* example/core/xsl/include.xsl.in: add <pfx:themeselect> to have the possibility to switch "inline", that means without 
+	* example/core/xsl/include.xsl.in: add <pfx:themeselect> to have the possibility to switch "inline", that means without
 	having to create another include part, between different content based on the theme fallback queue.
 
 2005-03-29  Jens Lautenbacher  <jtl@schlund.de>
@@ -78,10 +87,10 @@
 	* src/de/schlund/pfixxml/targets/AuxDependency.java (getModTime): getModTime again has no arguments.
 	Now we call the new method setForceUpdate() on all the affected VirtualTargets
 	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java:
-	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/EditorHelper.java: 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java:
+	* src/de/schlund/pfixcore/editor/EditorHelper.java:
 	remove the changes to calls to getModTime() as explained below again... This was a stupid idea to begin with.
 
 2005-03-28  Jens Lautenbacher  <jtl@schlund.de>
@@ -91,11 +100,11 @@
 	* src/de/schlund/pfixxml/targets/PageInfoFactory.java: changed accordingly.
 
 	* src/de/schlund/pfixxml/targets/Target.java (getThemes): new method in interface
-	* src/de/schlund/pfixxml/targets/TargetRW.java (setThemes): new method in interface 
-	* src/de/schlund/pfixxml/targets/TargetImpl.java (getThemes): implemented 
+	* src/de/schlund/pfixxml/targets/TargetRW.java (setThemes): new method in interface
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (getThemes): implemented
 	(setThemes) abstract implemented
-	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setThemes): implemented 
-	* src/de/schlund/pfixxml/targets/LeafTarget.java (setThemes): implement it as a RuntimeException. 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setThemes): implemented
+	* src/de/schlund/pfixxml/targets/LeafTarget.java (setThemes): implement it as a RuntimeException.
 
 	* src/de/schlund/pfixxml/targets/AuxDependency.java (getModTime()): add boolean parameter "willrebuild"	where the
 	caller can signal if the response may trigger a rebuild of the target using the auxdependency. This should help
@@ -103,36 +112,36 @@
 	FIXME FIXME: this needs more thinking how to make it really work in every case.
 	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java loop the willrebuild param through.
 
-	* src/de/schlund/pfixxml/IncludeDocumentExtension.java (get): Rewrote extension function to 
-	allow to check for a whole queue of themes (== product branches), not only for a product 
-	branch called like the project name or for a branch called "default". We get the array of allowed themes 
-	from the Target itself, or if we are not called in the context of a target, get the global defeined themes from the 
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java (get): Rewrote extension function to
+	allow to check for a whole queue of themes (== product branches), not only for a product
+	branch called like the project name or for a branch called "default". We get the array of allowed themes
+	from the Target itself, or if we are not called in the context of a target, get the global defeined themes from the
 	TargetGenerator.
 
-	* src/de/schlund/pfixxml/ImageThemedSrc.java: New extension function to register the selected image file. 
-	This can be called with a single src parameter, which will register exactly this file, or a themed-img and themed-path 
-	parameter. In this case, all themes will be tried starting with the most specific to see if a file exists 
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: New extension function to register the selected image file.
+	This can be called with a single src parameter, which will register exactly this file, or a themed-img and themed-path
+	parameter. In this case, all themes will be tried starting with the most specific to see if a file exists
 	<themed-path>/<theme>/themed-src>, and the one that's found is returned.
 
-	* src/de/schlund/pfixxml/AbstractXMLServer.java (extractStylesheetFromSPDoc): handle variants set 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (extractStylesheetFromSPDoc): handle variants set
 	in the SPDocument, and implement the fallback line in case of a compound variant.
 
 	* src/de/schlund/pfixxml/SPDocument.java: handle variants (set/get)
-	* src/de/schlund/pfixcore/workflow/Context.java: handle variants (set|getVariant(...)), also set them in the SPDocument 
+	* src/de/schlund/pfixcore/workflow/Context.java: handle variants (set|getVariant(...)), also set them in the SPDocument
 	befor returning it.
 
-	* src/de/schlund/pfixcore/example/RandomVariantState.java: New state that randomly changes the requested variant. 
+	* src/de/schlund/pfixcore/example/RandomVariantState.java: New state that randomly changes the requested variant.
 
 	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java: Quick fix to make it compile against the variant enabled PageTargetTree.
 	I think this needs more work so the editor can work with variants.
 
-	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java: 
-	* src/de/schlund/pfixcore/editor/EditorHelper.java: change calls to getModTime() to getModTime(false) 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java:
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: change calls to getModTime() to getModTime(false)
 
-	* example/sample1/conf/config.prop.in: use RandomVariantState for the home page as an example how to use Variants 
+	* example/sample1/conf/config.prop.in: use RandomVariantState for the home page as an example how to use Variants
 	* example/sample1/conf/depend.xml.in: create some sample variants for the homepage
 
 	* example/core/xsl/master.xsl.in: added $variant variable,
@@ -142,16 +151,16 @@
 	something else from the outside)
 
 	* example/core/xsl/include.xsl.in: cosmetic changes to pfx:editconsole.
-	- pfx:include changed call to IncludeDocumentExtension.get(...): product (aka project name) is no longer given, 
+	- pfx:include changed call to IncludeDocumentExtension.get(...): product (aka project name) is no longer given,
 	as themeing queue is retrieved from TargetGenerator or Target itself.
-	- pfx:image_register_src: new template that implements (together with the extension funktion ImageSrc.getSrc) 
+	- pfx:image_register_src: new template that implements (together with the extension funktion ImageSrc.getSrc)
 	theming for images. You MUST call this template to register an image, pfx:image_geom_impl does NO LONGER do so.
 	- pfx:image: call it to get the src to use.
 	- pfx:image_geom_impl: no longer register the image
-	
-	* example/core/xsl/forminput.xsl.in: support in <pfx:xinp type="image"> for themed images. 
 
-	* example/core/build/create_depend.xsl: added support for the new themeing and variant stuff.  
+	* example/core/xsl/forminput.xsl.in: support in <pfx:xinp type="image"> for themed images.
+
+	* example/core/build/create_depend.xsl: added support for the new themeing and variant stuff.
 
 2005-03-23  Tanjev Stuhr  <tanjev.stuhr@schlund.de>
 
@@ -166,21 +175,21 @@
 
 2005-03-15  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): get docroot from system parameter 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): get docroot from system parameter
 
 	* src/de/schlund/pfixxml/ServletManager.java (init): if servlet property filenames are relative,
 	get the real file from the PathFactory
 
-	* example/servletconf/projects.xml.in: add the pustefix.docroot as init-param. 
+	* example/servletconf/projects.xml.in: add the pustefix.docroot as init-param.
 	Made property files relative.
 
 	* example/simple[link|page|form]/conf/project.xml.in:
 	* example/sample1/conf/project.xml.in: Made property files relative.
-	
+
 	* src/de/schlund/pfixcore/util/basicapp/projectdom/ProjectXmlDom.java: change accordingly
 	to only create relative propfile names
 
-	* example/common/conf/factory.prop.in: remove the docroot property (and add the 
+	* example/common/conf/factory.prop.in: remove the docroot property (and add the
 	missing partindex.reloadchanges property for StatusCode reload)
 
 	* example/core/build/create_webxml.xsl: allow in the common
@@ -195,30 +204,30 @@
 
 2005-03-08  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/multipart/FileData.java: 
+	* src/de/schlund/pfixxml/multipart/FileData.java:
 	* src/de/schlund/pfixxml/multipart/PartData.java: implemented missing isTrue() (this
-	method will always return false for the FileData object)  
+	method will always return false for the FileData object)
 
 2005-03-05  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/util/statuscodes/StatusCodeFactory.java: 
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java:
 	* src/de/schlund/util/statuscodes/PartIndex.java: make StatusCodes file reloadable.
 
 2005-03-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/RequestParam.java: added convenience method isTrue().
-	* src/de/schlund/pfixxml/SimpleRequestParam.java (isTrue): implemented to check for "true", "1", "yes". 
+	* src/de/schlund/pfixxml/SimpleRequestParam.java (isTrue): implemented to check for "true", "1", "yes".
 	* src/de/schlund/pfixcore/workflow/Context.java: use it.
 	* src/de/schlund/pfixcore/workflow/StateImpl.java: use it.
 
 	* src/de/schlund/pfixcore/workflow/Context.java (isJumptToPageSet): new method.
 
-	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: ask context if jumptopage is set, 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: ask context if jumptopage is set,
 	if yes, don't stop regardless of what the IWrapperContainer says.
 
 2005-03-03  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/Context.java: allow another	value "step" 
+	* src/de/schlund/pfixcore/workflow/Context.java: allow another	value "step"
 	for parameter __forcestop, with the effect as if the current flow would have stopnext=true set.
 
 2005-03-02  Jens Lautenbacher  <jtl@schlund.de>
@@ -238,7 +247,7 @@
 
 	* src/de/schlund/pfixcore/workflow/Context.java (canContinue): new
 	method, returns true whenever the Context thinks it can continue
-	somehow (via a valid pageflow, or a jumptopage). 
+	somehow (via a valid pageflow, or a jumptopage).
 	(isCurrentPageFlowRequestedByUser): made private, only used by canContinue() now
 
 2005-02-25  Jens Lautenbacher  <jtl@schlund.de>
@@ -259,14 +268,14 @@
 
 	* src/de/schlund/pfixxml/util/PfxProperties.java: new class,
 	overwrite hashCode() to return only object.hashCode(). This is to
-	go away from the slow synchronized hashCode() of Hashtable.  
+	go away from the slow synchronized hashCode() of Hashtable.
 	* src/de/schlund/pfixxml/ServletManager.java (init): use
 	PfxProperties here.
 
 2005-02-18  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
-	code beautification 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java:
+	code beautification
 	made some parameters really be changable by reloading
 	changed output of render_external to be of the form as mode_xslt2 expects it.
 
@@ -279,7 +288,7 @@
 	* example/core/xsl/forminput.xsl.in: don't copy unneeded attributes from <pfx:xinp type="submit"> into the
 	result <input type="submit"> tag
 
-	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
 	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java:
 	remove unneeded synchronized blocks (I hope so)
 
@@ -321,7 +330,7 @@
 2004-12-27  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* Minor changes to the templates pfx:image and pfx:xinp[@type='image'] in
-	~/pfixcore/example/core/xsl/include.xsl.in and 
+	~/pfixcore/example/core/xsl/include.xsl.in and
 	~/pfixcore/example/core/xsl/forminput.xsl.in:
 	The 'alt'-attribute was added as xsl:param as well as an optional
 	parameter called 'exclude-attributes', which contains a string of
@@ -337,17 +346,17 @@
 
 2004-12-21  Martin Leidig  <mleidig@schlund.de>
 
-	* src/de/schlund/pfixxml/multipart/TempFile.java: (Added) Temporary file implementation, 
+	* src/de/schlund/pfixxml/multipart/TempFile.java: (Added) Temporary file implementation,
 	which ensures that the associated physical file is deleted, when the object is no longer
-	in use, i.e. when it gets finalized by the garbage collector. 
-	* src/de/schlund/pfixxml/multipart/FileData.java: Removed deletion, which now is done 
+	in use, i.e. when it gets finalized by the garbage collector.
+	* src/de/schlund/pfixxml/multipart/FileData.java: Removed deletion, which now is done
 	via the assigned TempFile instance.
 	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: Instead of java.io.File now
 	the new TempFile class is used for representing file parts.
 
 2004-12-20  Martin Leidig  <mleidig@schlund.de>
-	
-	* src/de/schlund/pfixxml/multipart/FileData.java: Associated temporary files now are 
+
+	* src/de/schlund/pfixxml/multipart/FileData.java: Associated temporary files now are
 	deleted when object gets finalized.
 	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: Temporary files exceeding the
 	size limit now are deleted immediately.
@@ -360,26 +369,26 @@
 	SUGGESTCONT. This will stop the IWrapperContainer from ever
 	suggesting to advance in the pageflow. This is somewhat similar to
 	the forcestop=true attribute, but it only works for
-	DefaultIWrapperStates, while forcestop works regardless of the State. The difference 
-	bvetween the two is, that using SUGGESTCONT=false will still call retrieveCurrentStatus() on 
-	all Handlers in the group of Handlers selected by SELWRP (or all if there's no SELWRP used) 
+	DefaultIWrapperStates, while forcestop works regardless of the State. The difference
+	bvetween the two is, that using SUGGESTCONT=false will still call retrieveCurrentStatus() on
+	all Handlers in the group of Handlers selected by SELWRP (or all if there's no SELWRP used)
 	and all Handlers that have alwaysretrieve set to "true" in the property file.
-	
+
 	* src/de/schlund/pfixcore/workflow/Context.java: starwithflow will
 	now use the pageattribute to stop at that page in any case. That
 	means, if the page is part of the pageflow that's checked, it will
 	not be checked for needsData() past this page, but instead stopped
 	there in any case. If the page is not part of the pageflow, it
 	will be used instead of a possibly given final page.
-	
+
 2004-12-16  Niels Schelbach <niels@schlund.de>
         * example/core/build/iwrapper.xsl:
         * src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java: Changed generation of
         iwrapper, so that paramnames are first letter uppercased for get set methods. Following
         common java bean convention.
-         
+
 2004-12-14  Adam Habermann  <adam.habermann@schlund.de>
-	
+
 	* skel/build.xml:
 	"clean-project": do not fail if there is no dir.webapps
 	"clean-jni": do not fail if there is no dir.jni
@@ -390,30 +399,30 @@
 	ist to always start a flow, unless context.prohibitContinue() has been called (from the State or a ContextRessource).
 	removed some methods that are shouldn't be accessible from the outside anyway (getJumpToPage, getJumpToPageFlow).
 	The PageMessage methods no longer have the error argument, such a situation can now be signalled via prohibitContinue().
-	
-	* src/de/schlund/pfixxml/ResultDocument.java: setContinue(), wantsContinue() REMOVED. ResultDocument is 
-	no longer used to signal the continuation of a pageflow, it's the default now that has to be explicitely prohibited 
+
+	* src/de/schlund/pfixxml/ResultDocument.java: setContinue(), wantsContinue() REMOVED. ResultDocument is
+	no longer used to signal the continuation of a pageflow, it's the default now that has to be explicitely prohibited
 	by calling context.prohibitContinue() anywhere during a request cycle.
 
 	* src/de/schlund/pfixcore/workflow/StateImpl.java (renderContextResources): new protected method.
 	Descendants can call this to get the default handling (aka: inserting) of ContextResources.
-	(addResponseHeadersAndType): new protected method. Can be used to get default handling of headers and mime type. 
+	(addResponseHeadersAndType): new protected method. Can be used to get default handling of headers and mime type.
 	(createDefaultResultDocument): uses both renderContextResources and addResponseHeadersAndType.
 	This is the prime candidate for descendants to get a new ResultDocument.
-	
-	* src/de/schlund/pfixcore/workflow/app/StaticState.java: 
-	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
-	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java:
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java:
 	* src/de/schlund/pfixcore/editor/handlers/SessionManagerState.java: Changed to use context.prohibitContinue()
 	at the right places.
 
-	* example/core/xsl/navigation.xsl.in: 
+	* example/core/xsl/navigation.xsl.in:
 	* example/core/xsl/forminput.xsl.in: <pfx:button>, <pfx:xinp
 	  type="submit|image"> new attributes: @pageflow, @jumptopage,
 	  @jumptopageflow, @forcestop. Also new pfx:commands: DESELWRP, SUGGESTCONT
 
 2004-12-07  Adam Habermann  <adam.habermann@schlund.de>
-	
+
 	* xdocs/**: updated documentation
 	* skel/build.xml:
 	"check-permissions":
@@ -424,7 +433,7 @@
 	projects
 	"clean-project":
 	deletion of **/WEB-INF/web.xml
-	
+
 2004-12-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.4-pre
@@ -432,7 +441,7 @@
 
 	* example/core/build/create_depend.xsl: use global and local
 	parameters now in all transformations for standardpage (not only
-	the last one). Also no longer accept local definitions of product/lang in 
+	the last one). Also no longer accept local definitions of product/lang in
 	targets, always use the global from the make root node.
 
 2004-12-06  Adam Habermann  <adam.habermann@schlund.de>
@@ -449,7 +458,7 @@
 
 2004-12-06  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/Context.java: added public addCookies method. 
+	* src/de/schlund/pfixcore/workflow/Context.java: added public addCookies method.
 	added private storeCookies() to move the cookies into the SPDocument prior to returning.
 
 2004-12-03  Adam Habermann  <adam.habermann@schlund.de>
@@ -484,7 +493,7 @@
 	"exception" '.' JAVATYPE '.' ("forward"|"page"|"processor")
 	This is to get rid of the <exception> tag within pustefix.prop.in,
 	which did not comply to new format of <standardprops>.
-	
+
 2004-12-01  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl: added match for literalauth-tag
@@ -511,7 +520,7 @@
 
 	* example/core/script/webservice.js: Encoding style and use now
 	can be set at SOAP_Call objects via the setEncoding() method. The
-	serialize() method of the serializer base class SOAP_SimpleSerializer 
+	serialize() method of the serializer base class SOAP_SimpleSerializer
 	and all derived classes now has an additional argument for passing
 	a SOAP_SerializeCtx object, which represents the current serialization
 	context and gives access to data needed during the serialization
@@ -541,7 +550,7 @@
 
 	* src/de/schlund/pfixcore/workflow/Context.java: fix javadoc
 
-	* src/de/schlund/pfixxml/ServletManager.java: added the ability to specify with a property to NOT enforce a cookie check 
+	* src/de/schlund/pfixxml/ServletManager.java: added the ability to specify with a property to NOT enforce a cookie check
 	despite the session being marked already as using cookies. This is ONLY to cope with broken clients.
 
 2004-11-11  Jens Lautenbacher  <jtl@schlund.de>
@@ -556,7 +565,7 @@
 	pageflow but will stay on the current page (much like it does in
 	the case of an error).
 
-	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java:
 	* example/core/xsl/include.xsl.in:
 	* example/core/txt/styles.xml: cosmetics, implement example
 
@@ -566,7 +575,7 @@
 	try to re-auth just everytime we get a direct submit with __sendingauthdata set to 'true'.
 
 	* src/de/schlund/pfixxml/ServletManager.java: more security stuff. Now we allow more than one secure
-	session again by not only using one cookie, but instead naming the cookie according to the associated session 
+	session again by not only using one cookie, but instead naming the cookie according to the associated session
 	(until now, the cookie was called __PFIX_SECURE_SESS__, now it's called __PFIX_SEC_<Session-Id>)
 
 2004-11-08  Jens Lautenbacher  <jtl@schlund.de>
@@ -574,8 +583,8 @@
 	* src/de/schlund/pfixcore/workflow/Context.java: added __forceauth
 	parameter to force a re-authentication.
 
-	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: 
-	* src/de/schlund/pfixxml/DirectOutputServlet.java: 
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java:
+	* src/de/schlund/pfixxml/DirectOutputServlet.java:
 	change calls to checkAuthorization to supply "false" as forceauth argument.
 
 2004-11-05  Jens Lautenbacher  <jtl@schlund.de>
@@ -603,10 +612,10 @@
 	supply cookies at all.
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: removed the pagemessage stuff...
-	* src/de/schlund/pfixcore/workflow/Context.java: ...and moved it here completely. 
+	* src/de/schlund/pfixcore/workflow/Context.java: ...and moved it here completely.
 	implemented the handling of args for pagemessages
 
-	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): made static as I need it 
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): made static as I need it
 	from Context where I have no ResultDocument instance... a bit hackish. fixed all instances where it's used.
 
 	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: moved pagemessage setting to the CR, as it handles more
@@ -614,15 +623,15 @@
 
 	* example/common/dyntxt/statusmessages.xml: removed the "warning" attribute. It no longer makes sense.
 
-	* example/core/txt/styles.xml: 
-	* example/core/script/baselib.js: 
-	* example/sample1/txt/pages/main_order.xml: 
-	* example/core/xsl/utils.xsl.in: remove progressbar stuff. 
+	* example/core/txt/styles.xml:
+	* example/core/script/baselib.js:
+	* example/sample1/txt/pages/main_order.xml:
+	* example/core/xsl/utils.xsl.in: remove progressbar stuff.
 
 2004-10-28  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/sample1/txt/pages/main_order.xml: 
-	* example/sample1/txt/pages/main_overview.xml: both pages can display warnings now 
+	* example/sample1/txt/pages/main_order.xml:
+	* example/sample1/txt/pages/main_overview.xml: both pages can display warnings now
 
 	* src/de/schlund/pfixcore/workflow/Context.java: consolidated the addPageMessage to
 	have addPageMessage(Scode), addPageMessage(Scode, Level), addPageMessage(Scode, Level, Args[]).
@@ -633,10 +642,10 @@
 
 	* src/de/schlund/pfixcore/example/CounterHandler.java: changed accordingly
 
-	* src/de/schlund/pfixxml/ServletManager.java: More security related work. 
+	* src/de/schlund/pfixxml/ServletManager.java: More security related work.
 	The ServletManager will now prohibit the following cases:
 	- A valid secure session is used but the request was not made under SSL
-	- A valid secure session is used and the browser handles cookies but 
+	- A valid secure session is used and the browser handles cookies but
 	the __PFIX_SECURE_SSL_SESS__ cookie isn't found or it doesn't match the session id.
 
 	Both cases will result in the secure session being invalidated.
