@@ -758,7 +758,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = (SPDocument)session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+                SPDocument saved = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 if (saved == null)
                     return false;
                 String stamp = saved.getTimestamp() + "";
