@@ -1,10 +1,16 @@
-2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
+2004-10-31  Jens Lautenbacher  <jtl@schlund.de>
 
 	* released 0.8.2
 
+	* src/de/schlund/pfixxml/ServletManager.java: final pieces in the security work: now we mark a session when it's used with a cookie
+	enabled client and invalidate it whenever a later request doesn't supply cookies anymore.  This defeats clients who were
+	able to get a foreign secure session id and try to work around the cookie based security features outlined below.
+
+2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
+
 	* src/de/schlund/pfixxml/ServletManager.java: bug fix: make it
 	work without cookies again: we actually have to believe that the
-	session is secure (if it is marked as such) when request doesn't
+	session is secure (if it is marked as such) a when request doesn't
 	supply cookies at all.
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: removed the pagemessage stuff...
