@@ -1,3 +1,5 @@
+var url_start = window.location.protocol + "//" + window.location.host;
+
 function soapPrint(result,time) {
 	document.getElementById('soap_result').value=result;
   	document.getElementById('soap_time').innerHTML=time;
@@ -16,7 +18,7 @@ function soapCall(method,val1,val2) {
 	var t1=d1.getTime();
 
 	var call=new SOAPCall();;
-	call.transportURI="http://webservice.zap.ue.schlund.de/xml/webservice/Calculator";
+	call.transportURI= url_start + "/xml/webservice/Calculator";
 
 	var param1=new SOAPParameter();
 	param1.name="value1";
