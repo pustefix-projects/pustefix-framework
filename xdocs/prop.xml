@@ -558,16 +558,6 @@
                   <th>Description</th>
                 </tr>
                 <tr>
-                  <td><code>class</code></td>
-                  <td>
-                    <b>Mandatory</b>. Must be the name of a java
-                    class implementing
-                    <code>de.schlund.pfixcore.generator.IWrapper</code>. This implicitly defines a
-                    <code>de.schlund.pfixcore.generator.IHandler</code>, as
-                    every IWrapper knows it's associated IHandler and can be queried for it.
-                  </td>
-                </tr>
-                <tr>
                   <td><code>prefix</code></td>
                   <td>
                     <b>Mandatory</b>. The prefix defines a name for the
@@ -576,6 +566,16 @@
                     defined for an IWrapper that contains a parameter called
                     "Foo", the submitted HTTP parameter must be called
                     <code>bar.Foo</code>.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>class</code></td>
+                  <td>
+                    <b>Mandatory</b>. Must be the name of a java
+                    class implementing
+                    <code>de.schlund.pfixcore.generator.IWrapper</code>. This implicitly defines a
+                    <code>de.schlund.pfixcore.generator.IHandler</code>, as
+                    every IWrapper knows it's associated IHandler and can be queried for it.
                   </td>
                 </tr>
                 <tr>
