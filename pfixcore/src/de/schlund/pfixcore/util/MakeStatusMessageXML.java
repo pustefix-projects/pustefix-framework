@@ -20,16 +20,14 @@
 package de.schlund.pfixcore.util;
 
 
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import javax.xml.parsers.*;
 import org.apache.log4j.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
-import org.xml.sax.*;
 
 /**
  *
@@ -37,7 +35,6 @@ import org.xml.sax.*;
  */
 
 public class MakeStatusMessageXML {
-    private static       DocumentBuilderFactory dbfac            = DocumentBuilderFactory.newInstance();
     private static       Category               CAT              = Category.getInstance(MakeStatusMessageXML.class.getName());
     private static final String                 INCPARTS         = "include_parts";
     private static final String                 PART             = "part";
@@ -60,12 +57,7 @@ public class MakeStatusMessageXML {
     private static final int                    ERR_NOTVALID     = -7;
     private static final int                    ERR_REMNA        = -8;
 
-    static {
-        dbfac.setNamespaceAware(true);
-        dbfac.setValidating(false);
-    }
-    
-    public static void main(String args[]) throws ParserConfigurationException, IOException {
+    public static void main(String args[]) throws IOException {
         MakeStatusMessageXML maker = new MakeStatusMessageXML();
         StatusCodeFactory    scfac = new StatusCodeFactory();
         Properties           props = new Properties();
@@ -106,7 +98,6 @@ public class MakeStatusMessageXML {
 
             TreeSet allscodes = new TreeSet(scfac.getAllSCodes().keySet());
             
-            DocumentBuilder domparser         = dbfac.newDocumentBuilder();
             Document        doc               = null;
             Element         incroot           = null;
             File            statusmessagefile = null;
@@ -119,7 +110,7 @@ public class MakeStatusMessageXML {
                     // try to parse the existing statusmessage xml-file
                     // load statusmessages xml file
                     CAT.warn( ">>> parsing statusmessages xml-file ...");
-                    doc = domparser.parse(messagefile);
+                    doc = Xml.parse(statusmessagefile);
                     // doc.normalize();
                     maker.updateFile(scfac, allscodes, doc, messagefile);
                 } catch (Exception e) {
@@ -128,7 +119,7 @@ public class MakeStatusMessageXML {
                 }
             } else {   
                 // if not found -> generate one
-                doc = dbfac.newDocumentBuilder().newDocument();
+                doc = Xml.createDocument();
                 maker.createFile(scfac, allscodes, doc, messagefile);
             }
 
@@ -195,19 +186,12 @@ public class MakeStatusMessageXML {
 
     private void writeFile(String filename, Document doc, boolean newfile) {
         try {
-            FileOutputStream output  = new FileOutputStream(filename);
-            OutputFormat     format  = new OutputFormat("xml","ISO-8859-1",true);
-            XMLSerializer    serial  = new XMLSerializer(output, format);
             if (newfile) {
                 CAT.warn(">>> Writing NEW messagefile " + filename);
-                format.setIndent(2);
-                format.setPreserveSpace(false);
             } else {
                 CAT.warn(">>> Writing messagefile " + filename + " back");
-                format.setPreserveSpace(true);
             }
-            format.setLineWidth(0);
-            serial.serialize(doc);
+            Xml.serialize(doc, filename, newfile, true);
         } catch (Exception e) {
             CAT.error("FATAL2: " + e.toString());
             System.exit(ERR_SER);
@@ -239,21 +223,14 @@ public class MakeStatusMessageXML {
             CAT.error("No Scode for Part: " + name);
             System.exit(ERR_NOSCODE);
         }
-        Element    deflang = (Element) XPathAPI.selectSingleNode(part, "./product/lang[@name = 'default']");
-        NodeList   nl      = XPathAPI.selectNodeList(deflang, "./node()");
-        // if (nl.getLength() > 1) {
-        //     CAT.error("Part: " + name + " Default Language has more than one ChildNode.");
-        //     System.exit(ERR_TOOMANYNODES);
-        // }
-        // deflang.removeChild(nl.item(0));
-        
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node node = nl.item(i);
+        Element    deflang = (Element) XPath.selectNode(part, "./product/lang[@name = 'default']");
+        List   nl      = XPath.select(deflang, "./node()");
+        for (int i = 0; i < nl.size(); i++) {
+            Node node = (Node) nl.get(i);
             // CAT.warn("----> " + node.getNodeName() + " => " + node.getNodeValue());
-            deflang.removeChild(nl.item(i));
+            deflang.removeChild(node);
         }
         deflang.setAttribute("warning", WARNING);
-        // deflang.appendChild(part.getOwnerDocument().createTextNode(scode.getDefaultMessage()));
         addMessageToLangElem(deflang, scode.getDefaultMessage());
     }
 
@@ -302,14 +279,11 @@ public class MakeStatusMessageXML {
 
     private void addMessageToLangElem(Element langnode, String message) {
         Document doc     = langnode.getOwnerDocument(); 
-        // Text     text    = doc.createTextNode(message);
-        // langnode.appendChild(text);
         String   text = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
             "<foo xmlns:pfx=\"http://www.schlund.de/pustefix/core\">" + message + "</foo>";
         NodeList impelems = null;
         try {
-            DocumentBuilder parser = dbfac.newDocumentBuilder();
-            impelems = parser.parse(new InputSource(new StringReader(text))).getDocumentElement().getChildNodes();
+            impelems = Xml.parseString(text).getDocumentElement().getChildNodes();
         } catch (Exception exp) {
             CAT.error("*** " + message + " *** " + exp.toString());
             System.exit(ERR_NOTVALID);

@@ -3,20 +3,17 @@ package de.schlund.pfixxml;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
-import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixxml.targets.Path;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 
 /**
@@ -43,24 +40,9 @@ public class IncludeDocument {
     private long                              modTime           = 0;
     private static final String               INCPATH           = "incpath";
     private static final Category             CAT               = Category.getInstance(IncludeDocument.class.getName());
-    private static final DocumentBuilder      docBuilder;
     
     //~ Constructors ...............................................................................
-    static {
-        // NOTE: here we want a XERCES-DocumentBuilderFactory
-        DocumentBuilderFactory docBuilderFactory = new DocumentBuilderFactoryImpl();
 
-        if (! docBuilderFactory.isNamespaceAware())
-            docBuilderFactory.setNamespaceAware(true);
-        if (docBuilderFactory.isValidating())
-            docBuilderFactory.setValidating(false);
-        try {
-            docBuilder = docBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            CAT.error(e.getMessage());
-            throw new RuntimeException(e);
-        }  
-    }
     /**
      * Constructor
      */
@@ -80,7 +62,7 @@ public class IncludeDocument {
         modTime = tmp.lastModified();
         
         try {
-            doc = docBuilder.parse(tmp);
+            doc = Xml.parse(tmp);
         } catch (SAXParseException ex) {
             StringBuffer      buf = new StringBuffer(100);
             buf.append("Caught SAXParseException!\n");
@@ -95,7 +77,7 @@ public class IncludeDocument {
         Element rootElement = doc.getDocumentElement();
         rootElement.setAttribute(INCPATH, path.getRelative());
         if (! mutable) {
-            doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
+            doc = Xslt.xmlObjectFromDocument(doc);
         }
     }
 

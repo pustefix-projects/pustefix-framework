@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -37,6 +35,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import de.schlund.pfixxml.util.Xml;
 /**
  * MultiTransform.java
  * 
@@ -49,40 +48,16 @@ import org.w3c.dom.NodeList;
  */
 public class MultiTransform {
     private static TransformerFactory trfac;
-    private static DocumentBuilderFactory dbfac;
     private String srcdir = null;
     private String xslfile = null;
     private String action = null;
     private String out_ext = null;
     private HashMap params = new HashMap();
     private List infiles = new LinkedList();
-    /*
-     * static { BasicConfigurator.configure();
-     * System.getProperties().put(TraxXSLTProcessor.DOCB_FAC_KEY,
-     * TraxXSLTProcessor.DOCB_FAC_VALUE); //
-     * System.getProperties().put(TraxXSLTProcessor.SAXP_FAC_KEY,
-     * TraxXSLTProcessor.SAXP_FAC_VALUE); //
-     * System.getProperties().put(TraxXSLTProcessor.TRANS_FAC_KEY,
-     */
-    /*
-     * trfac = TransformerFactory.newInstance(); dbfac =
-     * DocumentBuilderFactory.newInstance(); dbfac.setNamespaceAware(true);
-     * dbfac.setValidating(false);
-     * System.out.println(MultiTransform.class.getName()+": using :
-     * "+trfac.getClass().getName());
-     * System.out.println(MultiTransform.class.getName()+": using :
-     * "+dbfac.getClass().getName());
-     */
+    
     private MultiTransform() {
         BasicConfigurator.configure();
         trfac = TransformerFactory.newInstance();
-        dbfac = DocumentBuilderFactory.newInstance();
-        dbfac.setNamespaceAware(true);
-        dbfac.setValidating(false);
-        //System.out.println(MultiTransform.class.getName()+": using :
-        // "+trfac.getClass().getName());
-        //System.out.println(MultiTransform.class.getName()+": using :
-        // "+dbfac.getClass().getName());
     }
     
     public static void main(String[] args) throws Exception {
@@ -175,8 +150,7 @@ public class MultiTransform {
             System.exit(-1);
         }
         Templates xsltomcat = trfac.newTemplates(new StreamSource(xslfile_tomcat));
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-        Document doc = domp.parse((String) infiles.get(0));
+        Document doc = Xml.parse((String) infiles.get(0));
         NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {
             Element prj = (Element) nl.item(i);

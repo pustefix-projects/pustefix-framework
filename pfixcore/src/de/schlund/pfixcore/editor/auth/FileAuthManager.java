@@ -19,21 +19,15 @@
 
 package de.schlund.pfixcore.editor.auth;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -41,6 +35,8 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.util.UnixCrypt;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Implementation of the <code>AuthManager</code> interface. Uses
@@ -50,7 +46,6 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class FileAuthManager implements AuthManager {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static TreeMap knownusers = new TreeMap();
     private static TreeMap floatingusers = new TreeMap();
     private static Category CAT = Category.getInstance(FileAuthManager.class.getName());
@@ -69,8 +64,6 @@ public class FileAuthManager implements AuthManager {
     public void commit() throws AuthManagerException {
         try {
             writeFile();
-        } catch (ParserConfigurationException e) {
-            throw new AuthManagerException("Caught ParserConfigurationException.", e);
         } catch (IOException e) {
             throw new AuthManagerException("Caught IOException. ", e);
         }
@@ -150,8 +143,6 @@ public class FileAuthManager implements AuthManager {
             knownusers.put(id, eu);
             try {
                 writeFile();
-            } catch (ParserConfigurationException e) {
-                throw new AuthManagerException("Caught ParserConfigurationException ", e);
             } catch (IOException e) {
                 throw new AuthManagerException("Caught IOException ", e);
             }
@@ -186,8 +177,6 @@ public class FileAuthManager implements AuthManager {
         }
         try {
             writeFile();
-        } catch (ParserConfigurationException e) {
-            throw new AuthManagerException("Caught ParserConfigurationException.", e);
         } catch (IOException e) {
             throw new AuthManagerException("Caught IOException", e);
         }
@@ -199,8 +188,6 @@ public class FileAuthManager implements AuthManager {
 
         try {
             readFile();
-        } catch (ParserConfigurationException e) {
-            throw new AuthManagerException("Caught ParserConfigurationException.", e);
         } catch (SAXException e) {
             throw new AuthManagerException("Caught SAXException.", e);
         } catch (IOException e) {
@@ -217,13 +204,12 @@ public class FileAuthManager implements AuthManager {
     }
 
     private void readFile()
-        throws ParserConfigurationException, SAXException, IOException, XMLException, TransformerException {
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
+        throws SAXException, IOException, XMLException, TransformerException {
         Document doc;
         synchronized (LOCK) {
             File ufile = new File(userfile);
             if (ufile.exists() && ufile.isFile() && ufile.canRead()) {
-                doc = domp.parse(userfile);
+                doc = Xml.parse(ufile);
             } else {
                 throw new XMLException("Userfile " + userfile + " doesn't exist, can't be read or is no ordinary file");
             }
@@ -240,10 +226,10 @@ public class FileAuthManager implements AuthManager {
             info.setPhone(user.getAttribute("phone"));
             info.setPwd(user.getAttribute("pwd"));
 
-            NodeList gl_perms = XPathAPI.selectNodeList(user, "permissions/global");
-            NodeList prj_perms = XPathAPI.selectNodeList(user, "permissions/project");
+            List gl_perms = XPath.select(user, "permissions/global");
+            List prj_perms = XPath.select(user, "permissions/project");
 
-            Element gl = (Element) gl_perms.item(0);
+            Element gl = (Element) gl_perms.get(0);
 
             GlobalPermissions globalp = new GlobalPermissions();
             if (gl == null) {
@@ -259,8 +245,8 @@ public class FileAuthManager implements AuthManager {
             }
             info.setGlobalPermissions(globalp);
 
-            for (int j = 0; j < prj_perms.getLength(); j++) {
-                Element e = (Element) prj_perms.item(j);
+            for (int j = 0; j < prj_perms.size(); j++) {
+                Element e = (Element) prj_perms.get(j);
                 ProjectPermissions prjp = new ProjectPermissions();
                 boolean b = e.getAttribute("editDefaults").equals("true");
                 prjp.setEditDynIncludes(b);
@@ -276,8 +262,8 @@ public class FileAuthManager implements AuthManager {
         }
     }
 
-    private synchronized void writeFile() throws ParserConfigurationException, IOException {
-        Document doc = dbfac.newDocumentBuilder().newDocument();
+    private synchronized void writeFile() throws IOException {
+        Document doc = Xml.createDocument();
         Element root = doc.createElement("userinfo");
         doc.appendChild(root);
         for (Iterator i = knownusers.values().iterator(); i.hasNext();) {
@@ -318,13 +304,8 @@ public class FileAuthManager implements AuthManager {
             user.appendChild(perms);
         }
 
-        FileOutputStream output = new FileOutputStream(userfile);
-        OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-        XMLSerializer ser = new XMLSerializer(output, outfor);
-        outfor.setLineWidth(0);
-
         synchronized (LOCK) {
-            ser.serialize(doc);
+            Xml.serialize(doc, userfile, true, true);
         }
     }
 

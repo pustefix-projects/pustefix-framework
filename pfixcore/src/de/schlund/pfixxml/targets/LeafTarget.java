@@ -24,8 +24,6 @@ import org.apache.log4j.*;
 
 import de.schlund.pfixxml.XMLException;
 
-import javax.xml.parsers.*;
-
 /**
  * LeafTarget.java
  *
@@ -38,8 +36,6 @@ import javax.xml.parsers.*;
  */
 
 public abstract class LeafTarget extends TargetImpl {
-    protected static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-
     // Set this in the Constructor of derived classes!
     protected SharedLeaf sharedleaf;
     
@@ -107,7 +103,7 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long mymodtime  = getModTime(); 
         long maxmodtime = new File(getTargetGenerator().getDocroot() + getTargetKey()).lastModified(); 
         NDC.push("    ");

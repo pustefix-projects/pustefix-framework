@@ -6,16 +6,11 @@
  */
 package de.schlund.pfixcore.editor.handlers;
 
-import java.io.FileOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Category;
 import org.apache.oro.text.regex.MalformedPatternException;
@@ -27,16 +22,11 @@ import org.apache.oro.text.regex.Perl5Matcher;
 import org.apache.oro.text.regex.StringSubstitution;
 import org.apache.oro.text.regex.Substitution;
 import org.apache.oro.text.regex.Util;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixcore.editor.EditorHelper;
@@ -53,6 +43,8 @@ import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
 
@@ -63,7 +55,6 @@ import de.schlund.util.statuscodes.StatusCodeFactory;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class XMLUploadHandler extends EditorStdHandler {
-    private static DocumentBuilderFactory dbfac           = DocumentBuilderFactory.newInstance();
     private static Category               EDITOR          = Category.getInstance("LOGGER_EDITOR");
     private static Category               SERIALIZER      = Category.getInstance("LOGGER_SERIALIZER");
     private static Category               CAT             = Category.getInstance(XMLUploadHandler.class.getName());
@@ -77,7 +68,6 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
     public XMLUploadHandler() throws MalformedPatternException {
         char[] nbsp = { '\u00a0' };
         nbspsign = pc.compile(new String(nbsp));
-        dbfac.setNamespaceAware(true);
     }
     /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(de.schlund.pfixcore.workflow.Context, de.schlund.pfixcore.generator.IWrapper)
@@ -124,9 +114,8 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         + "\">\n      "
                         + content
                         + "\n    </product>";
-                DocumentBuilder domp = dbfac.newDocumentBuilder();
                 try {
-                    impnode = (Node) domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
+                    impnode = (Node) Xml.parseString(content).getDocumentElement();
                 } catch (SAXParseException e) {
                     int line = (e.getLineNumber() - 1);
                     int col = (e.getColumnNumber() - 1);
@@ -174,11 +163,11 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         partnode = EditorHelper.createEmptyPart(incdoc, currinc);
                     }
 
-                    NodeList nl = XPathAPI.selectNodeList(partnode, "./product[@name ='" + currprod + "']");
-                    if (nl.getLength() == 1) {
-                        EditorHelper.createBackup(esess, currinc, nl.item(0));
-                        partnode.replaceChild(newnode, nl.item(0));
-                    } else if (nl.getLength() > 1) {
+                    List nl = XPath.select(partnode, "./product[@name ='" + currprod + "']");
+                    if (nl.size() == 1) {
+                        EditorHelper.createBackup(esess, currinc, (Node) nl.get(0));
+                        partnode.replaceChild(newnode, (Node) nl.get(0));
+                    } else if (nl.size() > 1) {
                         throw new XMLException("FATAL ERROR: Product " + currprod + " of part " + currpart + " is multiple times defined!");
                     } else { // it's new
                         partnode.appendChild(incdoc.createTextNode("\n    "));
@@ -186,12 +175,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
 
-                    FileOutputStream output = new FileOutputStream(currpath.resolve());
-                    OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                    XMLSerializer ser = new XMLSerializer(output, outfor);
-                    outfor.setIndent(0);
-                    outfor.setPreserveSpace(true);
-                    ser.serialize(incdoc);
+                    Xml.serialize(incdoc, currpath.resolve(), false, true);
                     EDITOR.warn("TXT: " + esess.getUser().getId() + ": " + currpart + "@" + currpath.getRelative() + " [" + currprod + "]");
                     // We need to make sure that the modtime will be different
                     // FIXME !! FIXME !! We need this! But why:-)
@@ -217,24 +201,16 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
             Element thepart = EditorHelper.getIncludePart(tgen, currinc);
             if (thepart != null) {
                 pm = new Perl5Matcher();
-                StringWriter output = new StringWriter();
-                OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                XMLSerializer ser = new XMLSerializer(output, outfor);
-                NodeList nl = XPathAPI.selectNodeList(thepart, "./product[@name = '" + product + "']/node()");
-                outfor.setPreserveSpace(true);
-                outfor.setIndent(0);
-                outfor.setOmitXMLDeclaration(true);
-                if (nl.getLength() > 0) {
+                List nl = XPath.select(thepart, "./product[@name = '" + product + "']/node()");
+                if (nl.size() > 0) {
                     DocumentFragment frag = thepart.getOwnerDocument().createDocumentFragment();
-                    for (int i = 0; i < nl.getLength(); i++) {
-                        frag.appendChild(nl.item(i));
+                    for (int i = 0; i < nl.size(); i++) {
+                        frag.appendChild((Node) nl.get(i));
                     }
-                    ser.serialize(frag);
-                    String text = output.toString();
+                    String text = Xml.serialize(frag, false, false);
                     if (text != null) {
                         text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                         text = text.trim();
-
                     } else {
                         text = DEF_TEXT_APPLET;
                     }

@@ -1,11 +1,10 @@
 package de.schlund.pfixcore.util;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Xml;
 import java.io.*;
 import java.util.*;
-import javax.xml.parsers.*;
 import org.apache.log4j.xml.*;
-import org.apache.xml.serialize.*;
 import org.w3c.dom.*;
 
 /**
@@ -19,7 +18,6 @@ import org.w3c.dom.*;
  */
 
 public class CheckIncludes {
-    private static       DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static final String                 XPATH = "/include_parts/part/product";
     
     private HashMap generators       = new HashMap();
@@ -70,7 +68,7 @@ public class CheckIncludes {
     }
 
     public void doCheck() throws Exception {
-        Document doc         = dbfac.newDocumentBuilder().newDocument();
+        Document doc         = Xml.createDocument();
 
         Element  check_root  = doc.createElement("checkresult");
         check_root.setAttribute("xmlns:ixsl","http://www.w3.org/1999/XSL/Transform");
@@ -89,13 +87,7 @@ public class CheckIncludes {
 
         checkForUnavailableIncludes(doc, prj_root);
         
-        OutputFormat out_format = new OutputFormat("xml", "ISO-8859-1", true);
-        out_format.setIndent(2);
-        out_format.setPreserveSpace(false);
-        FileOutputStream out_stream;
-        out_stream = new FileOutputStream(outfile);
-        XMLSerializer ser = new XMLSerializer(out_stream, out_format);
-        ser.serialize(doc);
+        Xml.serialize(doc, outfile, true, true);
     }
     
     public static void main(String[] args) throws Exception {
@@ -171,8 +163,6 @@ public class CheckIncludes {
     }
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
-        // IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
-        
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
             Path path = (Path) i.next();
             Document doc;
@@ -182,10 +172,7 @@ public class CheckIncludes {
             res_incfile.setAttribute("name", path.getRelative());
             
             try {
-                // IncludeDocument incdoc = incfac.getIncludeDocument(path, true);
-                // doc    = incdoc.getDocument();
-                DocumentBuilder incdoc = dbfac.newDocumentBuilder();
-                doc = incdoc.parse(path.resolve());
+                doc = Xml.parse(path.resolve());
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);

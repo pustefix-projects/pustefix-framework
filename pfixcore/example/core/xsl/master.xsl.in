@@ -87,7 +87,7 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl ixsl">
+    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl">
 
       <ixsl:output indent="no" >
         <xsl:if test="not($outputmethod = '')">

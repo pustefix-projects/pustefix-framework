@@ -24,6 +24,8 @@ import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 import de.schlund.util.FactoryInit;
 
@@ -33,12 +35,7 @@ import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Category;
-
-import org.apache.xpath.XPathAPI;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -60,7 +57,6 @@ public class EditorProductFactory implements FactoryInit {
 
     //~ Instance/static variables ..................................................................
 
-    private static DocumentBuilderFactory dbfac         = DocumentBuilderFactory.newInstance();
     private static TreeMap                knownproducts = new TreeMap();
     private static Category               LOG           = Category.getInstance(EditorProductFactory.class.getName());
     private static EditorProductFactory   instance      = new EditorProductFactory();
@@ -108,9 +104,8 @@ public class EditorProductFactory implements FactoryInit {
         }
     }
 
-    private void readFile(String filename) throws Exception {
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-        Document        doc = domp.parse(filename);
+    private static void readFile(String filename) throws Exception {
+        Document        doc = Xml.parse(filename);
         doc.normalize();
         NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {
@@ -119,11 +114,11 @@ public class EditorProductFactory implements FactoryInit {
             if (name == null) {
                 throw new XMLException("Product needs a name!");
             }
-            String comment = ((Text) XPathAPI.selectNodeList(prj, "./comment/text()").item(0)).getNodeValue();
+            String comment = ((Text) XPath.select(prj, "./comment/text()").get(0)).getNodeValue();
             if (comment == null) {
                 throw new XMLException("Product needs a comment element!");
             }
-            String depend = ((Text) XPathAPI.selectNodeList(prj, "./depend/text()").item(0)).getNodeValue();
+            String depend = ((Text) XPath.select(prj, "./depend/text()").get(0)).getNodeValue();
             if (depend == null) {
                 throw new XMLException("Product needs a depend element!");
             }
@@ -140,7 +135,7 @@ public class EditorProductFactory implements FactoryInit {
                 if (hname == null) {
                     throw new XMLException("Handler needs a name!");
                 }
-                String config = ((Text) XPathAPI.selectNodeList(handler, "./properties/text()").item(
+                String config = ((Text) XPath.select(handler, "./properties/text()").get(
                                          0)).getNodeValue();
                 if (config == null) {
                     throw new XMLException("Handler needs a properties element!");
@@ -170,7 +165,7 @@ public class EditorProductFactory implements FactoryInit {
             String[] argument = new String[nliste.getLength()];
             for (int k = 0; k < nliste.getLength(); k++) {
                 Element el   = (Element) nliste.item(k);
-                String  node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
+                String  node = ((Text) XPath.select(el, "./text()").get(0)).getNodeValue();
                 LOG.debug("Documentation found in: " + node);
                 argument[k] = node;
             }

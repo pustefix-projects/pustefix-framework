@@ -30,7 +30,7 @@ import org.apache.log4j.Category;
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
-    /** saxon extension */
+    /** xslt extension */
     public static String log(String type, String path, String part, String product, String docroot,
                              String parent_path, String parent_part, String parent_product,
                              String targetGen, String targetKey) throws Exception {

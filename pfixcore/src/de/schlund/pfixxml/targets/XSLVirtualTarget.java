@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
+import de.schlund.pfixxml.util.Xslt;
 
 /**
  * XSLVirtualTarget.java
@@ -48,11 +49,9 @@ public class XSLVirtualTarget extends VirtualTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            Object retval = xsltproc.xslObjectFromDisc(generator.getDocroot(), thefile.getPath());
-            return retval;
+            return Xslt.loadTransformer(generator.getDocroot(), thefile.getPath());
         } else {
             return null;
         }

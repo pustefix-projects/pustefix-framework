@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
@@ -141,8 +140,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                 throw new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()!", e1);
             } catch(XMLException e2) {
                 throw new TargetGenerationException(e2.getClass().getName()+"  in getModTimeMaybeUpdate()", e2);
-            } catch (ParserConfigurationException e3) {
-                throw new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
             }
             
 
@@ -165,10 +162,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                 throw tex;
             } catch(XMLException e2) {
                 TargetGenerationException tex =  new TargetGenerationException(e2.getClass().getName()+" in getModTimeMayUpdate()", e2);
-                tex.setTargetkey(getTargetKey());
-                throw tex;
-            } catch (ParserConfigurationException e3) {
-                TargetGenerationException tex =  new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
                 tex.setTargetkey(getTargetKey());
                 throw tex;
             }
@@ -281,7 +274,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected abstract Object getValueFromDiscCache() throws TransformerException;
 
     protected abstract long getModTimeMaybeUpdate()
-        throws TargetGenerationException, XMLException, ParserConfigurationException, IOException;
+        throws TargetGenerationException, XMLException, IOException;
 
     protected abstract void setModTime(long mtime);
    

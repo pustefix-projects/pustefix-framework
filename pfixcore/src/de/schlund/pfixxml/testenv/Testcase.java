@@ -14,9 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.net.ssl.SSLSocketFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.pfix_httpclient.HostConfiguration;
@@ -25,7 +22,6 @@ import org.apache.commons.pfix_httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.pfix_httpclient.protocol.Protocol;
 import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -35,6 +31,8 @@ import com.sun.net.ssl.KeyManager;
 import com.sun.net.ssl.SSLContext;
 import com.sun.net.ssl.TrustManager;
 import com.sun.net.ssl.X509TrustManager;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Class for playback of a testcase.
@@ -48,7 +46,6 @@ public class Testcase {
     
     
     private static Category CAT = Category.getInstance(Testcase.class.getName());
-    private static DocumentBuilderFactory DOCBFAC = DocumentBuilderFactory.newInstance();
 
     private String srcDir;
     private String tmpDir;
@@ -104,19 +101,13 @@ public class Testcase {
         checkOptions();
         ArrayList files = getAllFilesFromTestcase();
         
-        DocumentBuilder builder;
-        try {
-            builder = DOCBFAC.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new TestClientException(e.getClass().getName(), e);
-        }
         int i = 0;
         allSteps = new ArrayList();
         
         for(Iterator iter = files.iterator(); iter.hasNext(); ) {
             Document doc;
             try {
-                doc = builder.parse(((File) iter.next()).getAbsoluteFile());
+                doc = Xml.parse(((File) iter.next()).getAbsoluteFile());
             } catch (SAXException e2) {
                 throw new TestClientException(e2.getClass().getName(), e2);
             } catch (IOException e2) {
@@ -126,17 +117,17 @@ public class Testcase {
             Node refnodes;
             String stylesheet;
             try {
-                input = XPathAPI.selectSingleNode(doc, "/step/request");
-                refnodes = XPathAPI.selectSingleNode(doc, "/step/formresult");
-                stylesheet = ((Text)XPathAPI.selectSingleNode(doc, "/step/stylesheet").getFirstChild()).getData();
+                input = XPath.selectNode(doc, "/step/request");
+                refnodes = XPath.selectNode(doc, "/step/formresult");
+                stylesheet = ((Text)XPath.selectNode(doc, "/step/stylesheet").getFirstChild()).getData();
             } catch (TransformerException e1) {
                 throw new TestClientException(e1.getClass().getName(), e1);
             }
             
-            Document indoc = builder.newDocument();
+            Document indoc = Xml.createDocument();
             indoc.appendChild(indoc.importNode(input, true));
             
-            Document recrefdoc = builder.newDocument();
+            Document recrefdoc = Xml.createDocument();
             recrefdoc.appendChild(recrefdoc.importNode(refnodes, true));
             
             TestcaseStep step = new TestcaseStep(indoc);

@@ -22,14 +22,17 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.testenv.*;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 import java.io.*;
 import java.net.SocketException;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
@@ -49,8 +52,6 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     //~ Instance/static variables ..................................................................
 
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    
     private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
     private static final String SESS_RECORDMODE          = "__RECORDMODE__";
     private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
@@ -131,12 +132,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean allowInfo  = true;
     private boolean allowDebug = true;
     
-    //~ Initializers ...............................................................................
-
-    static {
-        dbfac.setNamespaceAware(true);
-    }
-
     //~ Methods ....................................................................................
 
     /**
@@ -480,9 +475,8 @@ public abstract class AbstractXMLServer extends ServletManager {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
             }
-            PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             currtime = System.currentTimeMillis();
-            spdoc.setDocument(xsltproc.xmlObjectFromDocument(spdoc.getDocument()));
+            spdoc.setDocument(Xslt.xmlObjectFromDocument(spdoc.getDocument()));
             if (isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
@@ -596,23 +590,20 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean plain_xml = false;
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object stylevalue = null;
+            Transformer stylevalue;
             
             try {
-                stylevalue = generator.getTarget(stylesheet).getValue();
+                stylevalue = (Transformer) generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = targetex.toXMLRepresentation();
-                errordoc = xsltproc.xmlObjectFromDocument(errordoc);
-                Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-                xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
+                errordoc = Xslt.xmlObjectFromDocument(errordoc);
+                Transformer stvalue = (Transformer) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+                Xslt.transform(errordoc, stvalue, null, res.getOutputStream());
                 return;
             }
             try {
-                xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
-                                             stylevalue, paramhash, 
-                                             res.getOutputStream());
+                Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, res.getOutputStream());
             } catch (TransformerException e) {
             	if(e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());
@@ -629,7 +620,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(spdoc.getDocument()), 
                                                                         new StreamResult(res.getOutputStream()));
         } else {
-            Document ext_doc = dbfac.newDocumentBuilder().newDocument();
+            Document ext_doc = Xml.createDocument();
             Element  root    = ext_doc.createElement("render_external");
             ext_doc.appendChild(root);
             Element  ssheet  = ext_doc.createElement("stylesheet");

@@ -17,13 +17,11 @@
 */
 package de.schlund.pfixxml;
 
-import java.io.*;
 import de.schlund.pfixxml.serverutil.*;
+import de.schlund.pfixxml.util.Xml;
 import java.util.*;
 
 import javax.servlet.http.*;
-
-import org.apache.xml.serialize.*;
 
 import org.w3c.dom.*;
 
@@ -227,20 +225,13 @@ public class SPDocument implements NoCopySessionData {
      */
     public String toString() {
         Document tmp = document;
-        StringWriter sw = new StringWriter();
-        sw.write("\n");
+        StringBuffer sw = new StringBuffer();
+        sw.append("\n");
         if (tmp == null) {
-            sw.write("null\n");
+            sw.append("null\n");
         } else {
-            sw.write("[class: " + tmp.getClass().getName() + "]\n");
-            try {
-                OutputFormat out = new OutputFormat("XML", "UTF-8", true);
-                out.setLineWidth(0);
-                XMLSerializer xs = new XMLSerializer(sw, out);
-                xs.asDOMSerializer().serialize(tmp);
-            } catch (java.io.IOException e) {
-                sw.write(e.toString());
-            }
+            sw.append("[class: " + tmp.getClass().getName() + "]\n");
+            sw.append(Xml.serialize(tmp, true, true));
         }
         return sw.toString();
     }

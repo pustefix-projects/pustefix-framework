@@ -24,13 +24,15 @@ import java.io.IOException;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.NDC;
+import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Xslt;
 
 /**
  * VirtualTarget.java
@@ -167,7 +169,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long maxmodtime = 0l;
         long tmpmodtime;
         NDC.push("    ");
@@ -223,8 +225,7 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws XMLException, TransformerException, ParserConfigurationException, IOException {
-        PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+    private void generateValue() throws XMLException, TransformerException, IOException {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
@@ -243,17 +244,17 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Object xmlobj = ((TargetRW) tmpxmlsource).getCurrValue();
-        Object xslobj = ((TargetRW) tmpxslsource).getCurrValue();
+        Document xmlobj = (Document) ((TargetRW) tmpxmlsource).getCurrValue();
+        Transformer trafo = (Transformer) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
             throw new XMLException("**** xml source " + tmpxmlsource.getTargetKey() + tmpxmlsource.getType() + " doesn't have a value!");
-        if (xslobj == null) 
+        if (trafo == null) 
             throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
         TreeMap tmpparams = getParams();
         AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
 
         //FIXME!!! Do we want to do this right HERE????
-        xsltproc.applyTrafoForOutput(xmlobj, xslobj, tmpparams, new FileOutputStream(cachefile));
+        Xslt.transform(xmlobj, trafo, tmpparams, new FileOutputStream(cachefile));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

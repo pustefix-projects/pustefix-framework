@@ -20,15 +20,14 @@
 package de.schlund.pfixcore.editor;
 import java.io.*;
 import java.util.*;
-import javax.xml.parsers.*;
 import javax.xml.transform.TransformerException;
 
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import org.apache.log4j.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
 
 /**
@@ -45,7 +44,6 @@ import org.w3c.dom.*;
 
 public class EditorHelper {
     private static Category CAT = Category.getInstance(EditorHelper.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static String EDITOR_PERF = "EDITOR_PERF";
     private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
     
@@ -108,7 +106,7 @@ public class EditorHelper {
         if (!incfile.exists()) {
             CAT.debug("===> Going to create " + path.getRelative());
             if (incfile.createNewFile()) {
-                Document skel = dbfac.newDocumentBuilder().newDocument();
+                Document skel = Xml.createDocument();
                 Element root = skel.createElement("include_parts");
                 if (nspaces != null) {
                     for (int i = 0; i < nspaces.length; i++) {
@@ -117,13 +115,7 @@ public class EditorHelper {
                 }
                 skel.appendChild(root);
                 root.appendChild(skel.createComment("Append include parts here..."));
-                FileOutputStream output = new FileOutputStream(incfile);
-                OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                XMLSerializer ser = new XMLSerializer(output, outfor);
-                outfor.setPreserveSpace(true);
-                outfor.setIndent(0);
-                ser.serialize(skel);
-                // CAT.debug("==========> Modtime for file is: " + incfile.lastModified());
+                Xml.serialize(skel, incfile, false, true);
             } else {
                 throw new XMLException("Couldn't generate new file " + path.getRelative());
             }
@@ -179,12 +171,7 @@ public class EditorHelper {
         File file = constructBackupFile(ess, inc);
         if (file != null) {
             try {
-                FileOutputStream output = new FileOutputStream(file);
-                OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                XMLSerializer ser = new XMLSerializer(output, outfor);
-                outfor.setPreserveSpace(true);
-                outfor.setIndent(0);
-                ser.serialize((Element) tosave);
+                Xml.serialize((Element) tosave, file, false, true);
             } catch (Exception e) {
                 CAT.warn("Couldn't serialize into backup file " + file.getAbsolutePath());
             }
@@ -222,8 +209,7 @@ public class EditorHelper {
         String name = constructBackupDir(ess, inc) + "/" + filename;
         File file = new File(name);
         if (file.exists() && file.canRead() && file.isFile()) {
-            DocumentBuilder domp = dbfac.newDocumentBuilder();
-            Document doc = domp.parse(file);
+            Document doc = Xml.parse(file);
             if (kill) {
                 file.delete();
             }
@@ -358,14 +344,7 @@ public class EditorHelper {
     public static Element getIncludePart(Document doc, AuxDependency include) throws Exception {
         String part = include.getPart();
         Path path = include.getPath();
-        NodeList nl = XPathAPI.selectNodeList(doc, "/include_parts/part[@name = '" + part + "']");
-        if (nl.getLength() == 0) {
-            return null;
-        } else if (nl.getLength() == 1) {
-            return (Element) nl.item(0);
-        } else {
-            throw new XMLException("FATAL: Part " + part + " in include file " + path.getRelative() + " is multiple times defined!");
-        }
+        return (Element) XPath.selectNode(doc, "/include_parts/part[@name = '" + part + "']");
     }
 
     public static Element getIncludePart(TargetGenerator tgen, AuxDependency include) throws Exception {
@@ -386,11 +365,11 @@ public class EditorHelper {
         if (elem == null)
             return;
 
-        NodeList nl = XPathAPI.selectNodeList(elem, "./product");
+        List nl = XPath.select(elem, "./product");
         HashSet affedprod = new HashSet();
 
-        for (int i = 0; i < nl.getLength(); i++) {
-            Element tmp = (Element) nl.item(i);
+        for (int i = 0; i < nl.size(); i++) {
+            Element tmp = (Element) nl.get(i);
             String prod = tmp.getAttribute("name");
             if (prod == null)
                 continue;
@@ -448,8 +427,7 @@ public class EditorHelper {
         }
 
         try {
-            DocumentBuilder domp = dbfac.newDocumentBuilder();
-            Document cdoc = domp.parse(filename);
+            Document cdoc = Xml.parse(filename);
             Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {

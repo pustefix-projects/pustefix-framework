@@ -22,23 +22,21 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.FactoryInit;
 
 /**
@@ -54,7 +52,6 @@ import de.schlund.util.FactoryInit;
  */
 
 public class EditorCommonsFactory implements FactoryInit {
-    private static final DocumentBuilderFactory dbfac    = DocumentBuilderFactory.newInstance();
     private static final Category               CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
     private static final EditorCommonsFactory   instance = new EditorCommonsFactory();
     private        TreeSet                allincs  = new TreeSet();
@@ -63,14 +60,6 @@ public class EditorCommonsFactory implements FactoryInit {
     private        boolean                inited   = false;
     
     private EditorCommonsFactory() {
-        if (!dbfac.isNamespaceAware()) {
-            CAT.warn("\n**** Switching DocumentBuilderFactory to be NS-aware ****");
-            dbfac.setNamespaceAware(true);
-        }
-        if (dbfac.isValidating()) {
-            CAT.warn("\n**** Switching DocumentBuilderFactory to be non-validating ****");
-            dbfac.setValidating(false);
-        }
     }
 
     /** TODO: passing docroot is ugly because it's not needed in most cases: get rid 
@@ -105,18 +94,15 @@ public class EditorCommonsFactory implements FactoryInit {
                         + " to common includefiles *******");
                 Long modtime = new Long(comfile.lastModified());
                 incfiles.put(path, modtime);
-                DocumentBuilder domp = dbfac.newDocumentBuilder();
-                Document doc = domp.parse(comfile);
-                NodeList nl = XPathAPI.selectNodeList(doc,
-                        "/include_parts/part");
-                for (int i = 0; i < nl.getLength(); i++) {
-                    Element part = (Element) nl.item(i);
+                Document doc = Xml.parse(comfile);
+                List nl = XPath.select(doc, "/include_parts/part");
+                for (int i = 0; i < nl.size(); i++) {
+                    Element part = (Element) nl.get(i);
                     String partname = part.getAttribute("name");
                     CAT.debug("     * Found part " + partname);
-                    NodeList prodlist = XPathAPI.selectNodeList(part,
-                            "./product");
-                    for (int j = 0; j < prodlist.getLength(); j++) {
-                        Element product = (Element) prodlist.item(j);
+                    List prodlist = XPath.select(part, "./product");
+                    for (int j = 0; j < prodlist.size(); j++) {
+                        Element product = (Element) prodlist.get(j);
                         String prodname = product.getAttribute("name");
                         if (partname != null && prodname != null) {
                             AuxDependency aux = AuxDependencyFactory

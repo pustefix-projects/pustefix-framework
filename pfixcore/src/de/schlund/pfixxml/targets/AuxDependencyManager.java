@@ -23,9 +23,7 @@ import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-
-import javax.xml.parsers.*;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * AuxDependencyManager.java
@@ -40,7 +38,6 @@ import javax.xml.parsers.*;
 
 public class AuxDependencyManager implements DependencyParent {
     private static Category               CAT    = Category.getInstance(AuxDependencyManager.class.getName());
-    private static DocumentBuilderFactory dbfac  = DocumentBuilderFactory.newInstance();
     private static String                 DEPAUX = "depaux";
 
     private Target  target;
@@ -71,22 +68,13 @@ public class AuxDependencyManager implements DependencyParent {
     
     public AuxDependencyManager(Target target) {
         this.target = target;
-        if (!dbfac.isNamespaceAware()) {
-            CAT.warn("\n**** Switching DocumentBuilderFactory to be NS-aware ****");
-            dbfac.setNamespaceAware(true);
-        }
-        if (dbfac.isValidating()) {
-            CAT.warn("\n**** Switching DocumentBuilderFactory to be non-validating ****");
-            dbfac.setValidating(false);
-        }
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
         String auxpath = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
         File   auxfile = new File(auxpath);
         if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
-            DocumentBuilder domp    = dbfac.newDocumentBuilder();
-            Document        doc     = domp.parse(auxpath);
+            Document        doc     = Xml.parse(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
                 String docroot = target.getTargetGenerator().getDocroot();
@@ -105,21 +93,16 @@ public class AuxDependencyManager implements DependencyParent {
         }
     }
 
-    public synchronized void saveAuxdepend() throws ParserConfigurationException, IOException  {
+    public synchronized void saveAuxdepend() throws IOException  {
         CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
         String path = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
         
-        Document auxdoc = dbfac.newDocumentBuilder().newDocument();
+        Document auxdoc = Xml.createDocument();
         Element  root   = auxdoc.createElement("aux");
         auxdoc.appendChild(root);
             
         saveIt(DEPAUX, auxdoc, root, auxset, null);
-        
-        FileOutputStream output = new FileOutputStream(path);
-        OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
-        outfor.setLineWidth(0);
-        XMLSerializer ser    =  new XMLSerializer(output, outfor);
-        ser.serialize(auxdoc);
+        Xml.serialize(auxdoc, path, true, true);
     }
 
     public synchronized void addDependency(DependencyType type, Path path, String part, String product,

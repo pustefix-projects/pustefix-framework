@@ -19,10 +19,10 @@
 
 package de.schlund.pfixcore.workflow;
 
-import javax.xml.parsers.*;
 import org.w3c.dom.*;
-import org.apache.xpath.*;
 import org.apache.log4j.*;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import java.util.*;
 
 /**
@@ -32,27 +32,25 @@ import java.util.*;
 
 public class Navigation {
     private Category CAT = Category.getInstance(Navigation.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
 
     private NavigationElement pageroot = new NavigationElement("__NONE__", "__NONE__");
     
     public Navigation(String navifilename) throws Exception {
-        DocumentBuilder domp     = dbfac.newDocumentBuilder();
-        Document        navitree = domp.parse(navifilename);
-        NodeList        nl       = XPathAPI.selectNodeList(navitree, "/make/navigation/page");
+        Document        navitree = Xml.parse(navifilename);
+        List            nl       = XPath.select(navitree, "/make/navigation/page");
         recursePagetree(pageroot, nl);
     }
 
-    private void recursePagetree(NavigationElement parent, NodeList nl) throws Exception {
-        for (int i = 0; i < nl.getLength(); i++) {
-            Element page    = (Element) nl.item(i);
+    private void recursePagetree(NavigationElement parent, List nl) throws Exception {
+        for (int i = 0; i < nl.size(); i++) {
+            Element page    = (Element) nl.get(i);
             String  name    = page.getAttribute("name");
             String  handler = page.getAttribute("handler");
             
             NavigationElement elem = new NavigationElement(name, handler);
             parent.addChild(elem);
-            NodeList tmp = XPathAPI.selectNodeList(page, "./page");
-            if (tmp.getLength() > 0) {
+            List tmp = XPath.select(page, "./page");
+            if (tmp.size() > 0) {
                 recursePagetree(elem, tmp);
             }
         }

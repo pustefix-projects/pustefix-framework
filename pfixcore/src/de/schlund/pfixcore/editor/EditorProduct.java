@@ -18,7 +18,6 @@
 */
 
 package de.schlund.pfixcore.editor;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
@@ -39,7 +38,6 @@ import de.schlund.pfixxml.targets.TargetGenerator;
  */
 
 public class EditorProduct {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static Category               CAT   = Category.getInstance(EditorProduct.class.getName());
     private        String                 name;
     private        String                 comment;

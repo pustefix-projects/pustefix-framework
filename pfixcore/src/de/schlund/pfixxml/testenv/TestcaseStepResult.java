@@ -9,14 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
 import org.apache.oro.text.regex.MalformedPatternException;
@@ -26,7 +21,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.icl.saxon.TransformerFactoryImpl;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 /**
  * @author Joerg Haecker <haecker@schlund.de>
@@ -104,8 +100,8 @@ public class TestcaseStepResult {
 
         String ref_path = tmpdir + "/_recorded" + this.hashCode();
         String srv_path = tmpdir + "/_current" + this.hashCode();
-        XMLSerializeUtil.getInstance().serializeToFile(serverResponse, srv_path, 2, false);
-        XMLSerializeUtil.getInstance().serializeToFile(recordedReferenceDoc, ref_path, 2, false);
+        Xml.serialize(serverResponse, srv_path, true, true);
+        Xml.serialize(recordedReferenceDoc, ref_path, true, true);
         doDiff(srv_path, ref_path);
     }
 
@@ -180,53 +176,35 @@ public class TestcaseStepResult {
 
         removeSerialNumbers();
 
-        // saxon
-        TransformerFactoryImpl trans_fac = (TransformerFactoryImpl) TransformerFactory.newInstance();
         String path = style_dir + "/" + stylesheet;
         
        // System.out.println("Stylesheet--->"+path);
         
-        File styesheet = new File(path);
-        if (styesheet.exists()) {
+        File stylesheetFile = new File(path);
+        if (stylesheetFile.exists()) {
             if (CAT.isInfoEnabled()) {
                 CAT.info("  Transforming using stylesheet :"+path);
             }
-            StreamSource stream_source = new StreamSource("file://" + path);
-            Templates templates = null;
+            Transformer trafo;
             try {
-                templates = trans_fac.newTemplates(stream_source);
+                trafo = Xslt.loadTransformer(stylesheetFile);
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);
             }
-            Transformer trafo = null;
             try {
-                trafo = templates.newTransformer();
-            } catch (TransformerConfigurationException e) {
-                e.printStackTrace();
-                throw new TestClientException("TransformerConfigurationException occured!", e);
-            }
-
-            DOMSource dom_source1 = new DOMSource(serverResponse);
-            DOMResult dom_result1 = new DOMResult();
-            try {
-                trafo.transform(dom_source1, dom_result1);
+                serverResponse = Xslt.transform(serverResponse, trafo);
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
-            serverResponse = (Document) dom_result1.getNode();
 
-            DOMSource dom_source2 = new DOMSource(recordedReferenceDoc);
-            DOMResult dom_result2 = new DOMResult();
             try {
-                trafo.transform(dom_source2, dom_result2);
+                recordedReferenceDoc = Xslt.transform(recordedReferenceDoc, trafo);
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
-            recordedReferenceDoc = (Document) dom_result2.getNode();
         } else {
             CAT.info("Stylesheet "+path+" not found.");
         }
     }
-
 }

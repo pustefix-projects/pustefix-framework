@@ -14,16 +14,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 import de.schlund.pfixxml.XMLException;
@@ -32,6 +26,8 @@ import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.SharedLeaf;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.FactoryInit;
 
 /**
@@ -47,7 +43,6 @@ public class SPCacheStatistic implements FactoryInit {
     private static SPCacheStatistic theInstance = new SPCacheStatistic();
     private static int REGISTER_MISS = 0;
     private static int REGISTER_HIT = 1;
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static String PROP_PRODUCTDATA = "editorproductfactory.productdata";
     private static String PROP_QUEUESIZE =  "cachestatistic.queuesize";
     private static String PROP_QUEUETICKS = "cachestatistic.queueticks";
@@ -104,14 +99,12 @@ public class SPCacheStatistic implements FactoryInit {
         if (productdatafile == null || productdatafile.equals("")) {
             throw new XMLException("Need property '" + PROP_PRODUCTDATA + "' for retrieving product data.");
         }
-        DocumentBuilder docbuilder = dbfac.newDocumentBuilder();
-        Document doc = docbuilder.parse(new File(productdatafile));
-
-        NodeList nl = XPathAPI.selectNodeList(doc, "/projects/project");
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node project_node = nl.item(i);
+        Document doc = Xml.parse(new File(productdatafile));
+        List nl = XPath.select(doc, "/projects/project");
+        for (int i = 0; i < nl.size(); i++) {
+            Node project_node = (Node) nl.get(i);
             String prjname = ((Element) project_node).getAttribute("name");
-            Node dependxml_node = XPathAPI.selectSingleNode(project_node, "./depend");
+            Node dependxml_node = XPath.selectNode(project_node, "./depend");
             String dependname = ((Text) ((Element) dependxml_node).getFirstChild()).getData();
             if(CAT.isDebugEnabled()) CAT.debug("Init: putting "+dependname+" = "+prjname);
             dependXMLToProductnameMapping.put(dependname, prjname);
@@ -156,12 +149,12 @@ public class SPCacheStatistic implements FactoryInit {
     /**
 	 * Create cache-statistic in XML-format.
 	 */
-    public Document getCacheStatisticAsXML() throws ParserConfigurationException {
+    public Document getCacheStatisticAsXML() {
         
         // do clone or synchronize? We need a stable iterator.
         Hashtable targetgentoinfomap_clone =  (Hashtable) targetGen2AdvanceStatMapping.clone();
 
-        Document doc = dbfac.newDocumentBuilder().newDocument();
+        Document doc = Xml.createDocument();
         Element top = doc.createElement("spcachestatistic");
 
         SPCache currentcache = SPCacheFactory.getInstance().getCache();

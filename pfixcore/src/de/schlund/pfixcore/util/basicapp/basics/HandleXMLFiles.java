@@ -21,8 +21,6 @@ package de.schlund.pfixcore.util.basicapp.basics;
 
 import java.io.File;
 import java.io.IOException;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -41,6 +39,7 @@ import de.schlund.pfixcore.util.basicapp.projectdom.ConfigXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.DependXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.FrameXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.ProjectXmlDom;
+import de.schlund.pfixxml.util.Xml;
 
 
 /**
@@ -146,19 +145,14 @@ public class HandleXMLFiles {
      * @return A dom
      */
     private Document readDom(String currentDoc) {
+        Document doc;
+        
         try {
             System.out.println("Try to read the dom of the given Document: " + currentDoc);
-            // Create a builder factory
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setValidating(false);
-
-            // Create the builder and parse the file
-            Document doc = factory.newDocumentBuilder().parse(new File(currentDoc));
+            doc = Xml.parse(currentDoc);
             System.out.println("Transforming into dom has been successfull");
             return doc;
         } catch (SAXException e) {
-            LOG.debug(e.getMessage(), e);
-        } catch (ParserConfigurationException e) {
             LOG.debug(e.getMessage(), e);
         } catch (IOException e) {
             LOG.debug(e.getMessage(), e);

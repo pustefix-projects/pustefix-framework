@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
 import org.w3c.dom.Element;
@@ -260,8 +258,6 @@ public class CRTestcaseImpl implements CRTestcase {
         RecordManager recman = null;
         try {
             recman = RecordManagerFactory.getInstance().createRecordManager(depend);
-        } catch (ParserConfigurationException e) {
-            throw new TestClientException("ParserConfigurationException!", e);
         } catch (SAXException e) {
             throw new TestClientException("SAXException!", e);
         } catch (IOException e) {

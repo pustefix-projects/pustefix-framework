@@ -28,9 +28,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.Document;
@@ -42,6 +39,7 @@ import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -56,7 +54,6 @@ public class TargetGenerator {
     public static final String XSLPARAM_TKEY            = "__target_key";
         
     private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
-    private static DocumentBuilderFactory dbfac                          = DocumentBuilderFactory.newInstance();
     private static TargetGenerationReport report                         = new TargetGenerationReport();
     private DependencyRefCounter          refcounter                     = new DependencyRefCounter();
     private PageTargetTree                pagetree                       = new PageTargetTree();
@@ -158,13 +155,11 @@ public class TargetGenerator {
     // *******************************************************************************************
 
     private void loadConfig() throws Exception {
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-
         CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
         try {
-            config = domp.parse(confile);
+            config = Xml.parse(confile);
         } catch (SAXException e) {
             CAT.error("\nConfigfile '" + confile + "' couldn't be parsed by XML parser: \n" + e.toString());
             throw e;

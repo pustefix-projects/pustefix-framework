@@ -18,6 +18,7 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
+import java.util.List;
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
@@ -25,12 +26,10 @@ import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import javax.xml.parsers.*;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import org.w3c.dom.*;
 import org.apache.log4j.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
-import java.io.*;
 
 /**
  * IncludesBranchHandler.java
@@ -45,7 +44,6 @@ import java.io.*;
 
 public class IncludesBranchHandler extends EditorStdHandler {
     private        Category               CAT   = Category.getInstance(this.getClass().getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static final String EMPTY  = "empty";
     private static final String COPY   = "copy";
     private static final String DELETE = "delete";
@@ -84,20 +82,20 @@ public class IncludesBranchHandler extends EditorStdHandler {
                             partnode = EditorHelper.createEmptyPart(incdoc, currinc);
                         }
 
-                        NodeList nl = XPathAPI.selectNodeList(partnode, "./product[@name = '" + prodname + "']"); 
+                        List nl = XPath.select(partnode, "./product[@name = '" + prodname + "']"); 
                         
-                        if (nl.getLength() > 1) {
+                        if (nl.size() > 1) {
                             throw new XMLException("FATAL ERROR: Product branch " + prodname + " is multiple times defined!");
-                        } else if (nl.getLength() == 0) {
+                        } else if (nl.size() == 0) {
                             Element newbranch = incdoc.createElement("product");
                             newbranch.setAttribute("name", prodname);
                             partnode.appendChild(incdoc.createTextNode("  "));
                             partnode.appendChild(newbranch);
                             partnode.appendChild(incdoc.createTextNode("\n  "));
                             if (type.equals(COPY)) {
-                                NodeList defcontent = XPathAPI.selectNodeList(partnode, "./product[@name = 'default']/node()");
-                                for (int i = 0; i < defcontent.getLength(); i++) {
-                                    newbranch.appendChild(defcontent.item(i).cloneNode(true));
+                                List defcontent = XPath.select(partnode, "./product[@name = 'default']/node()");
+                                for (int i = 0; i < defcontent.size(); i++) {
+                                    newbranch.appendChild(((Node) defcontent.get(i)).cloneNode(true));
                                 }
                             }
                             doSerialize(incdoc, path);
@@ -117,10 +115,10 @@ public class IncludesBranchHandler extends EditorStdHandler {
                         if (incdoc != null) {
                             Node partnode = EditorHelper.getIncludePart(incdoc, currinc);
                             if (partnode != null) {
-                                NodeList nl = XPathAPI.selectNodeList(partnode, "./product[@name = '" + prodname + "']");
-                                if (nl.getLength() == 1) {
-                                    EditorHelper.createBackup(esess, getCurrentInclude(esess), nl.item(0));
-                                    partnode.removeChild(nl.item(0));
+                                List nl = XPath.select(partnode, "./product[@name = '" + prodname + "']");
+                                if (nl.size() == 1) {
+                                    EditorHelper.createBackup(esess, getCurrentInclude(esess), (Node) nl.get(0));
+                                    partnode.removeChild((Node) nl.get(0));
                                     doSerialize(incdoc, path);
                                 }
                                 EditorHelper.doUpdateForAuxDependency(currinc, tgen);
@@ -137,12 +135,7 @@ public class IncludesBranchHandler extends EditorStdHandler {
     }
 
     private void doSerialize(Document incdoc, Path path) throws Exception {
-        FileOutputStream output = new FileOutputStream(path.resolve());
-        OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
-        XMLSerializer    ser    = new XMLSerializer(output, outfor);
-        outfor.setIndent(0);
-        outfor.setPreserveSpace(true);
-        ser.serialize(incdoc);
+        Xml.serialize(incdoc, path.resolve(), false, true);
     }
     
 }// IncludesBranchHandler

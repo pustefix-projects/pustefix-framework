@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author zaich
@@ -22,8 +20,6 @@ import org.w3c.dom.NodeList;
  * Window>Preferences>Java>Templates.
  */
 public class EditorDocumentation {
-
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static Category LOG                 = Category.getInstance(EditorProductFactory.class.getName());
     private long   creationTime                 = 0;
 
@@ -65,8 +61,7 @@ public class EditorDocumentation {
     // read the xsl-File and create the NodeList
     private void readFile(String filename) throws Exception {
         
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-        this.doc = domp.parse(filename);
+        this.doc = Xml.parse(filename);
         this.doc.normalize();
         
         NodeList nl = doc.getElementsByTagName("xsl:template");
