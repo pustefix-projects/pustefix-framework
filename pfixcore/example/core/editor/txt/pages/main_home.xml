@@ -21,11 +21,20 @@
                 <pfx:argument name="update.DoUpdate">true</pfx:argument>Do it!</pfx:button>
             </td>
           </tr>
+          <tr>
+            <td align="center"><br/>
+              <span class="editor_main_emph">
+              Play-back recorded </span>
+              <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
+                testcases
+                <pfx:argument name="tcreset.Reset">true</pfx:argument>
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
+              </pfx:button>              
+            </td>
+          </tr>
         </table>
-        <br/>
         <table border="0" width="100%">
          <tr>
-            
             <td align="center">           
               <span style="color:#FFFFEE">
               <span style="font-size:175%">
@@ -55,8 +64,6 @@
               </span>
               </span>
             </td>
-            
-           
           </tr>
          </table>
       </lang>

@@ -83,25 +83,38 @@ function __js_progress_user_abort(Event) {
 }
 
 
+//
+// COOKIES
+//
+
+
+function __js_CookieMgr(cookies) {
+    
+
+}
+
+
+//
+// LAYERS
+//
+
 var __js_allLayers  = new Array();
 
-function __js_registerLayerChild(parent_id, child_id, frame) {
-    var parent = __js_getLayer(parent_id, frame);
-    var child  = __js_getLayer(child_id, frame);
+function __js_registerLayerChild(parent_id, child_id) {
+    var parent = __js_getLayer(parent_id);
+    var child  = __js_getLayer(child_id);
     parent.addChild(child);
     child.addParent(parent);
 }
 
-function __js_registerSwitchOn(layer_id, switch_id, frame) {
-    var layer     = __js_getLayer(layer_id, frame);
-    var switch_on = frame.document.getElementById(switch_id);
-    layer.addSwitchOn(switch_on);
+function __js_registerSwitchOn(layer_id, switch_elem) {
+    var layer = __js_getLayer(layer_id);
+    layer.addSwitchOn(switch_elem);
 }
 
-function __js_registerSwitchOff(layer_id, switch_id, frame) {
-    var layer      = __js_getLayer(layer_id, frame);
-    var switch_off = frame.document.getElementById(switch_id);
-    layer.addSwitchOff(switch_off);
+function __js_registerSwitchOff(layer_id, switch_elem) {
+    var layer = __js_getLayer(layer_id);
+    layer.addSwitchOff(switch_elem);
 }
 
 function __js_toggleLayer() {
@@ -114,13 +127,14 @@ function __js_toggleLayer() {
             layer.show();
         }
     }
+    // alert(document.cookie);
 }
 
-function __js_getLayer(id, on_frame) {
+function __js_getLayer(id) {
     if (__js_allLayers[id] != null) {
         return __js_allLayers[id];
     } else {
-        var temp = new __js_Layer(id, on_frame);
+        var temp = new __js_Layer(id);
         __js_allLayers[id] = temp;
         return temp;
     }
@@ -130,15 +144,17 @@ function __js_getLayer(id, on_frame) {
 // These all  are meant to be private
 // 
 
-function __js_Layer(layer_id, on_frame) {
+function __js_Layer(layer_id) {
     this.parents     = new Array();
     this.children    = new Array(); 
     this.switch_on   = new Array();
     this.switch_off  = new Array();
     this.visible     = true;
+    this.frame       = null;
+    this.store       = null;
     this.id          = layer_id;
-    this.frame       = on_frame;
 
+    this.init         = __js_Layer_init;
     this.getId        = __js_Layer_getId;
     this.getFrame     = __js_Layer_getFrame;
     this.show         = __js_Layer_show;
@@ -158,6 +174,35 @@ function __js_Layer(layer_id, on_frame) {
     this.getTop       = __js_Layer_getTop; 
     this.getBottom    = __js_Layer_getBottom; 
 
+}
+
+function __js_Layer_checkCookies(id) {
+    if (navigator.cookieEnabled == true && this.store != "false") {
+        var cookie = document.cookie;
+        if (cookie.indexOf("LR_" + id + "=true") >= 0) {
+            return "true";
+        } else if (cookie.indexOf("LR_" + id + "=false") >= 0) {
+            return "false";
+        }
+    }
+    return "nocookie";
+}
+
+function __js_Layer_init(visible, frame, store) {
+    this.store = store;
+    this.frame = frame;
+    var fromcookie = __js_Layer_checkCookies(this.getId());
+    if (fromcookie == "true") {
+        this.show();
+    } else if (fromcookie == "false") {
+        this.hide();
+    } else {
+        if (visible == 'false') {
+            this.hide();
+        } else {
+            this.show();
+        }
+    }
 }
 
 function __js_Layer_getId() {
@@ -201,6 +246,9 @@ function __js_Layer_getTop() {
 }
 
 function __js_Layer_show() {
+    if (navigator.cookieEnabled == true && this.store != "false") {
+        document.cookie = "LR_" + this.getId() + "=" + "true; path=/";
+    }
     this.getFrame().document.getElementById(this.getId()).style.display = 'block';
     this.visible = true;
     if (this.switch_off != null && this.switch_off.length > 0) {
@@ -218,6 +266,9 @@ function __js_Layer_show() {
 }
 
 function __js_Layer_hide() {
+    if (navigator.cookieEnabled == true && this.store != "false") {
+        document.cookie = "LR_" + this.getId() + "=" + "false; path=/";
+    }
     this.getFrame().document.getElementById(this.getId()).style.display = 'none';
     this.visible = false;
     if (this.switch_off != null && this.switch_off.length > 0) {

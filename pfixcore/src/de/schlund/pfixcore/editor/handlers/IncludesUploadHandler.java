@@ -166,7 +166,8 @@ public class IncludesUploadHandler extends EditorStdHandler {
                 content = this.decodeAppletText(upl.getContent());
                 //System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
                 
-                content = "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
+                content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                    "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
                 DocumentBuilder domp = dbfac.newDocumentBuilder();
                 try {
                     impnode = (Node) domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
@@ -231,9 +232,9 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
 
-                    FileWriter    output = new FileWriter(currpath);
-                    OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                    XMLSerializer ser    = new XMLSerializer(output, outfor);
+                    FileOutputStream output = new FileOutputStream(currpath);
+                    OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                    XMLSerializer    ser    = new XMLSerializer(output, outfor);
                     outfor.setIndent(0);
                     outfor.setPreserveSpace(true);
                     ser.serialize(incdoc);                    
