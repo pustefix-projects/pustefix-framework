@@ -86,7 +86,7 @@
                  <form NAME="the_form">
                  </form>
 
-           <applet code="de/schlund/pfixeditor/test/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true">
+           <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true">
             <param attribut="true"/>
          </applet>
 
