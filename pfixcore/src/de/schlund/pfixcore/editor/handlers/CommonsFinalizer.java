@@ -34,7 +34,6 @@ import de.schlund.util.statuscodes.*;
 import java.util.*;
 import org.w3c.dom.*;
 
-import COM.rsa.jsafe.es;
 
 import java.io.*;
 
@@ -99,9 +98,6 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
             
-            Element perms = resdoc.createNode("xyz");
-            root.appendChild(perms);
-            //checkAcces(esess, perms);
             
             
             if (!lock) {
