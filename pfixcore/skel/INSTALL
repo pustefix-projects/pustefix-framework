@@ -34,7 +34,7 @@ Prerequisites:
           a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
           matter what NAME is). If you don't have DNS configured like this you can 
           still supply the names 
-                 "editor.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
+                 "cmsskel.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
           via your /etc/hosts file.
 
           Note that you may be able to work around this last point by tweaking the
@@ -93,7 +93,7 @@ Prerequisites:
 6)  To see if everything works, you can try to open the editor
     application. Point your browser to
         
-        http://editor.HOSTNAME.DOMAIN 
+        http://cmsskel.HOSTNAME.DOMAIN 
 
 7)  If you want to use the application reloading mechanism described on 
     sourceforge [not yet] you need to compile a small C library. You can do this
