@@ -39,7 +39,7 @@ public abstract class StateImpl implements State {
 
     public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || !requestParamSaysTrue(sdreq)));
+        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || sdreq == null || !sdreq.isTrue()));
     }
     
     public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
@@ -53,18 +53,18 @@ public abstract class StateImpl implements State {
     }
 
     // private
-    protected static boolean requestParamSaysTrue(RequestParam sdreq) {
-        if (sdreq != null && sdreq.getValue() != null) {
-            String sd = sdreq.getValue();
-            return (sd.equals("true") || sd.equals("1") || sd.equals("yes"));
-        }
-        return false;
-    }
+//     protected static boolean requestParamSaysTrue(RequestParam sdreq) {
+//         if (sdreq != null && sdreq.getValue() != null) {
+//             String sd = sdreq.getValue();
+//             return (sd.equals("true") || sd.equals("1") || sd.equals("yes"));
+//         }
+//         return false;
+//     }
     
     
     private boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
         return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
-                !context.jumpToPageIsRunning() && requestParamSaysTrue(sdreq));
+                !context.jumpToPageIsRunning() && sdreq != null && sdreq.isTrue());
     }
 
     // You may want to overwrite this 

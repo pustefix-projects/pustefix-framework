@@ -37,4 +37,5 @@ public interface RequestParam {
     RequestParamType getType();
     boolean          isSynthetic();
     void             setSynthetic(boolean synt);
+    boolean          isTrue();
 }// RequestParam
