@@ -20,7 +20,6 @@
 	* src/de/schlund/pfixxml/testenv/TestClient.java: added more
 	debugging info.
 
->>>>>>> 1.60
 2003-04-08 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
