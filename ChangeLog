@@ -1,5 +1,7 @@
 2004-01-14  Jens Lautenbacher  <jtl@schlund.de>
 
+	* build.xml: started 0.4.3-pre
+
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: ignore exceptions that happen when trying to write 
 	the timing info to the outputstream
 

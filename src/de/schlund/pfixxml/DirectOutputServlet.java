@@ -112,10 +112,11 @@ public class DirectOutputServlet extends ServletManager {
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
          String        name    = ext_cname + ContextXMLServer.CONTEXT_SUFFIX;
-         
          HttpSession   session = preq.getSession(false);
          if (session == null) {
-             throw new RuntimeException("*** didn't get Session from request. ***");
+             //throw new RuntimeException("*** didn't get Session from request. ***");
+             CAT.error("*** didn't get Session from request. Stop processing. ***");
+             return;
          }
          
          Context context = (Context) session.getAttribute(name);
