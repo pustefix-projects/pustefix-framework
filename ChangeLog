@@ -26,6 +26,19 @@
 	  type="submit|image"> new attributes: @pageflow, @jumptopage,
 	  @jumptopageflow, @forcestop. Also new pfx:commands: DESELWRP, SUGGESTCONT
 
+2004-12-07  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* xdocs/**: updated documentation
+	* skel/build.xml:
+	"check-permissions":
+	finally changed to make all .sh files executable within dir.projects.
+	"tomcat.dir.opt":
+	make tomcat extract if there's no dir.tomcat/bin/catalina.sh instead of
+	tomcat dir only; works around cvs empty dir bug on pristine checked out
+	projects
+	"clean-project":
+	deletion of **/WEB-INF/web.xml
+	
 2004-12-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.4-pre
@@ -37,6 +50,7 @@
 	targets, always use the global from the make root node.
 
 2004-12-06  Adam Habermann  <adam.habermann@schlund.de>
+
 	* src/de/schlund/pfixcore/util/XsltGenericTask.java
 	Changed task, so the validate attribute may be true|false|dynamic.
 	* skel/build.xml
