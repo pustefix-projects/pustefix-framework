@@ -18,33 +18,20 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.generator.IWrapperParamInfo;
-import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.ResultForm;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.loader.*;
+import de.schlund.util.statuscodes.StatusCode;
+import java.io.File;
+import java.util.*;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -96,7 +83,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private static final String  GROUP_PREV         = "PREV";  
     private static final String  SELECT_GROUP       = "SELGRP";  
     private static final String  SELECT_WRAPPER     = "SELWRP";  
-    
+    private static final String  WRAPPER_LOGDIR     = "interfacelogging";
+    private static final String  WRAPPER_LOGLIST    = "loginterfaces";
+
     /**
      * This method must be called right after an instance of this class is created.
      *
@@ -364,8 +353,11 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             IHandler handler = wrapper.gimmeIHandler();
             if (handler.isActive(context)) {
                 wrapper.load(reqdata);
-                if (!wrapper.errorHappened() && selectedwrappers.contains(wrapper)) {
-                    handler.handleSubmittedData(context, wrapper);
+                if (selectedwrappers.contains(wrapper)) {
+                    wrapper.tryLogging();
+                    if (!wrapper.errorHappened()) {
+                        handler.handleSubmittedData(context, wrapper);
+                    }
                 }
             }
         }
@@ -546,6 +538,24 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 
                 wrappers.put(realprefix, wrapper);
                 wrapper.init(realprefix);
+
+                String logdir       = context.getProperties().getProperty(WRAPPER_LOGDIR);
+                String debugwrapper = props.getProperty(WRAPPER_LOGLIST);
+                if (logdir != null && !logdir.equals("") && debugwrapper != null && !debugwrapper.equals("")) {
+                    File dir = new File(logdir);
+                    if (dir.isDirectory() && dir.canWrite()) {
+                        StringTokenizer tok = new StringTokenizer(debugwrapper);
+                        for (; tok.hasMoreTokens(); ) {
+                            String debwrp = tok.nextToken();
+                            if (realprefix.equals(debwrp)) {
+                                wrapper.initLogging(logdir, context.getCurrentPageRequest().getName(),
+                                                    context.getVisitId());
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 
                 AppLoader appLoader = AppLoader.getInstance();
                 if (appLoader.isEnabled()) appLoader.addReloader(this);

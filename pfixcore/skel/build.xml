@@ -220,14 +220,14 @@
     <target name="doc" depends="clean-doc, properties" description="generates javadoc">
         <mkdir dir="${dir.javadoc}"/>
         <javadoc
-			source="${javac.source}"
-			sourcepath="${dir.src}"
+            source="${javac.source}"
+            sourcepath="${dir.src}"
             destdir="${dir.javadoc}"
             version="true"
             author="true"
             windowtitle="de.schlund ${project.name}"
             doctitle="&lt;h3&gt;Last update: ${DSTAMP} ${TSTAMP}&lt;/h3&gt;"
-        	maxmemory="128m"
+            maxmemory="128m"
             classpathref="cp.classpath"
             >
             <packageset dir="${dir.src}"/>
