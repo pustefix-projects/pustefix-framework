@@ -132,27 +132,35 @@ cleandoc:
 	@echo "*** Removing Java-Docs files ..."
 	@rm -rf $(JAVADOCDIR)/*
 
-dist:   _tag clean compile jar
-	@cp META-INF/CVS_AUTOTAG example/core/AUTOTAG
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-	@rm example/core/AUTOTAG
+dist:   _tag clean compile jar data skeleton
+	@rm -f example/core/AUTOTAG
+
+notag:	_notag clean compile jar data skeleton
+	@rm -f example/core/AUTOTAG
 
 _tag:
 	@echo "*** tag cvs with ${JARAUTOTAG}!"
 	@(cvs tag ${JARAUTOTAG})
 	$(shell echo ${JARAUTOTAG} > META-INF/CVS_AUTOTAG) 
 
-data:
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-
-notag:	_notag compile jar
-	@rm -f example/core/AUTOTAG
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-
-
 _notag:
 	@echo "*** Remove autotag, because we don't tag in cvs!"
 	$(shell echo no-tag-set > META-INF/CVS_AUTOTAG) 
+
+skeleton:
+	@echo "Building $(PROJECT)-skel.jar in directory dist."
+	@cp META-INF/CVS_AUTOTAG skel/CVS_AUTOTAG
+	@cp -a lib/*.jar skel/lib/
+	@cp dist/$(PROJECT)-${VERSION}.jar dist/$(PROJECT)-data-$(VERSION).tar.gz skel/lib
+	@rm -f dist/$(PROJECT)-skel-*.tar.gz
+	@tar cvzf dist/$(PROJECT)-skel-$(VERSION).tar.gz skel/
+	@rm -f skel/lib/*.jar
+	@rm -f skel/lib/$(PROJECT)-data-$(VERSION).tar.gz
+
+data:
+	@echo "Building $(PROJECT)-data.jar in directory dist."
+	@cp META-INF/CVS_AUTOTAG example/core/CVS_AUTOTAG
+	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
 
 jar:
 	@echo "Building $(PROJECT).jar in directory dist."
@@ -171,4 +179,3 @@ dev:
 	@(rm -f dist/*.jar)
 	@${JAR} cf dist/$(PROJECT)-$(VERSION)-res.jar `find META-INF -type f | grep -v "CVS/"`
 	@(cd res; ${JAR} uf ../dist/$(PROJECT)-${VERSION}-res.jar `find . -type f | grep -v "CVS/"`)
-	
