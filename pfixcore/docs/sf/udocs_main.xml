@@ -21,7 +21,8 @@
         <code>DOCROOT/servletconf/projects.xml.in</code>) that handles
         properties common to all projects. Additionally, there is, for each project,
         a file called <code>DOCROOT/MyProject/conf/project.xml.in</code> that contains the
-        project specific information.
+        project specific information. See <a href="prop.html#list">here</a> for a list of
+        used java property files.
       </p>
       <p>
         The build system builds the final <code>DOCROOT/servletconf/projects.xml</code> file

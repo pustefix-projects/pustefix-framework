@@ -34,7 +34,7 @@
     </properties>
   </xmlcode>
 
-  <p><pustefix/> allows to customize the creation of the property files in certain ways. When the build system
+  <p><a name="custom"/><pustefix/> allows to customize the creation of the property files in certain ways. When the build system
   starts the transformation of the <code>.prop.in</code> files to <code>.prop</code> files, it supplies certain parameters
   to the transforming stylesheet.</p>
 
@@ -45,7 +45,11 @@
       can be changed by tweaking the makefiles). This can be used to
       easily switch preferences depending on the "mode" that is active
       when the application is made, e.g. "test" on the development
-      machines, and "prod" on the production servers. The value is supplied as the parameter <code>mode</code>.</li>
+      machines, and "prod" on the production servers. The value is supplied as the parameter <code>mode</code>.
+      Note that the value of MAKE_MODE also determines if certain features like the
+      possiblity to use the <pustefix/> editor or to get the XML result instead of the rendered page
+      are allowed. These features are turned off for security reasons when the mode is "prod".
+    </li>
     
     <li>The <code>docroot</code>, i.e. the directory where your project's configuration and XML/XSLT files are located in.</li>
 
@@ -111,10 +115,10 @@
     the <code>prop</code> tag would be sufficient to enter every java
     property, there are convenience tags defined for the configuration
     of the most commonly used servlets (see below).</p>
+  <a name="list"/>
   <p>
     The table lists the property files that are used in a typical <pustefix/> system.
   </p>
-
   <table class="stdtable">
     <tr>
       <th>Propertyfile</th>
