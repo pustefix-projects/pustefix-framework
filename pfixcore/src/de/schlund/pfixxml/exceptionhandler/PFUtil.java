@@ -100,6 +100,12 @@ class PFUtil {
         if (CAT_.isDebugEnabled())
             CAT_.debug(text);
     }
+    
+    synchronized void info(String text) {
+        if (CAT_.isInfoEnabled())
+            CAT_.info(text);
+    }
+    
     synchronized void error(String text) {
         CAT_.error(text);
     }

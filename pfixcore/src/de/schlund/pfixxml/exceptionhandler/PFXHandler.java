@@ -93,6 +93,7 @@ class PFXHandler {
                 InstanceCheckerContainer checker = (InstanceCheckerContainer) enm.nextElement();
                 result = checker.doesMatch(th);
                 pfutil_.debug("The InstanceCheckerContainer("+checker.getType() +") returned: " + pfutil_.strByResult(result));
+                
                 if (result == PFUtil.MATCH) {
                     ruleMatch(excontext);
                     break;
@@ -198,6 +199,7 @@ class PFXHandler {
         excontext.addComment("New ExceptionHandler is OFF due to an initialisation error or you do not want to use it!");
         String message = excontext.getMessage();
         try {
+            pfutil_.info("RuleError: Trying to send mail.");
             MailConfig mailconfig = MailConfig.getInstance();
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
         } catch (EmailSenderException e) {
@@ -225,6 +227,7 @@ class PFXHandler {
         String subject = excontext.getHeader();
         String message = excontext.getMessage();
         try {
+            pfutil_.info("RuleMatch: Sending mail now!!");
             MailConfig mailconfig = MailConfig.getInstance();
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
             
@@ -243,6 +246,7 @@ class PFXHandler {
         excontext.addComment("No rule found to match this exception. Please check your configuration!");
         String message = excontext.getMessage();
         try {
+            pfutil_.info("RuleNoMatch: Sending mail now!!");
             MailConfig mailconfig = MailConfig.getInstance();
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
             
@@ -258,6 +262,7 @@ class PFXHandler {
      * @param properties the current properties.
      */
     private void ruleTriggerMatch(ExceptionContext excontext) {
+        pfutil_.info("RuleTriggerMatch: TriggeringReport and calling ruleMatch()!!");
         Throwable th = excontext.getThrowable();
         ReportGeneratorTask rgtask = null;
         pfutil_.debug(" ReportGeneratorTask triggert from " + th.toString() + " at " + excontext.getDate());
