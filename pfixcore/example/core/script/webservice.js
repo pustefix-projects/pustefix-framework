@@ -58,9 +58,9 @@ var QNAME_ARRAY=new QName(XMLNS_SOAPENC,"Array");
 var QNAME_ARRAY_TYPE=new QName(XMLNS_SOAPENC,"arrayType");
 
 //*********************************
-//XMLType
+//XMLTypes
 //*********************************
-function XMLType() {
+function XMLTypes() {
 
 	this.XSD_BASE64=new QName(XMLNS_XSD,"base64Binary");
 	this.XSD_BOOLEAN=new QName(XMLNS_XSD,"boolean");
@@ -90,7 +90,7 @@ function XMLType() {
 	
 }
 
-var xmltype=new XMLType();
+var xmltypes=new XMLTypes();
 
 //*********************************
 //JSType
@@ -109,23 +109,21 @@ var jstype=new JSType();
 
 
 //*********************************
-//Parameter(String name,QName xmlType,String jsType,parameterMode)
+//Parameter(String name,TypeInfo typeInfo,parameterMode)
 //*********************************
 function Parameter() {
 	this.name=null;
-	this.xmlType=null;
-	this.jsType=null;
+	this.typeInfo=null;
 	this.parameterMode=null;
 	this.init(arguments);
 	this.value=null;
 }
 
 Parameter.prototype.init=function(args) {
-	if(args.length==4) {
+	if(args.length==3) {
 		this.name=args[0];
-		this.xmlType=args[1];
-		this.jsType=args[2];
-		this.parameterMode=args[3];
+		this.typeInfo=args[1];
+		this.parameterMode=args[2];
 	} else throw ERR_WRONGARGS;
 }
 
@@ -291,32 +289,30 @@ XMLWriter.prototype.getPrefix=function(nsuri) {
 
 
 //*********************************
-//SimpleTypeSerializer(QName xmlType,String jsType)
+//SimpleTypeSerializer(QName xmlType)
 //*********************************
-function SimpleTypeSerializer(xmlType,jsType) {
-	if(arguments.length==2) {
+function SimpleTypeSerializer(xmlType) {
+	if(arguments.length==1) {
 		this.xmlType=xmlType;
-		this.jsType=jsType;
 	} else throw ERR_WRONGARGS;
 }
 
-//serialize(value,name,writer)
-SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
+//serialize(value,name,typeInfo,writer)
+SimpleTypeSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
 	writer.startElement(name);
-	var prefix=writer.getPrefix(this.xmlType.namespaceUri);
-	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.xmlType.localpart);
+	var prefix=writer.getPrefix(typeInfo.xmlType.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
 	writer.writeChars(value);
 	writer.endElement(name);
 }
 
 
 //*********************************
-//SimpleTypeDeserializer(QName xmlType,String jsType)
+//SimpleTypeDeserializer(QName xmlType)
 //*********************************
-function SimpleTypeDeserializer(xmlType,jsType) {
-	if(arguments.length==2) {
+function SimpleTypeDeserializer(xmlType) {
+	if(arguments.length==1) {
 		this.xmlType=xmlType;
-		this.jsType=jsType;
 	} else throw ERR_WRONGARGS;
 }
 
@@ -330,14 +326,12 @@ SimpleTypeDeserializer.prototype.deserialize=function(value,name,writer) {
 }
 
 
-
 //*********************************
-//ArraySerializer(QName xmlType,String jsType)
+//ArraySerializer(QName xmlType)
 //*********************************
-function ArraySerializer(xmlType,jsType) {
-	if(arguments.length==2) {
+function ArraySerializer(xmlType) {
+	if(arguments.length==1) {
 		this.xmlType=xmlType;
-		this.jsType=jsType;
 	} else throw ERR_WRONGARGS;
 }
 
@@ -410,7 +404,6 @@ function BeanSerializer(type) {
 function TypeMapping() {
 	this.mappings=new Array();
 	this.builtin=new Array();
-	this.jsToXml=new Array();
 	this.SER_SIMPLE=1;
 	this.SER_ARRAY=2;
 	this.init();
@@ -418,53 +411,42 @@ function TypeMapping() {
 
 //init()
 TypeMapping.prototype.init=function() {
-	this.builtin[jstype.JS_BOOLEAN]=this.SER_SIMPLE;
-	this.builtin[jstype.JS_DATE]=this.SER_SIMPLE;
-	this.builtin[jstype.JS_FLOAT]=this.SER_SIMPLE;
-	this.builtin[jstype.JS_INTEGER]=this.SER_SIMPLE;
-	this.builtin[jstype.JS_STRING]=this.SER_SIMPLE;
-	this.jsToXml[jstype.JS_BOOLEAN]=xmltype.XSD_INT;
-	this.jsToXml[jstype.JS_DATE]=xmltype.XSD_DATETIME;
-	this.jsToXml[jstype.JS_FLOAT]=xmltype.XSD_FLOAT;
-	this.jsToXml[jstype.JS_INTEGER]=xmltype.XSD_INT;
-	this.jsToXml[jstype.JS_STRING]=xmltype.XSD_STRING;
+	this.builtin[xmltypes.XSD_BOOLEAN.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltypes.XSD_DATETIME.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltypes.XSD_FLOAT.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltypes.XSD_INT.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltypes.XSD_STRING.hashKey()]=this.SER_SIMPLE;
+	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
 }
 
-//register(String jsType,Serializer serializer)
-TypeMapping.prototype.register=function(jsType,serializer) {
-	this.mappings[jsType]=serializer;
+//register(QName xmlType,Serializer serializer)
+TypeMapping.prototype.register=function(xmlType,serializer) {
+	this.mappings[xmlType.hashKey()]=serializer;
 }
 
-//Serializer getSerializer(QName xmlType,String jsType)
-TypeMapping.prototype.getSerializer=function(xmlType,jsType) {
-	if(arguments.length==2) {
-		var serializer=this.mappings[jsType];
+//Serializer getSerializer(QName xmlType)
+TypeMapping.prototype.getSerializer=function(xmlType) {
+	if(arguments.length==1) {
+		var serializer=this.mappings[xmlType.hashKey()];
 		if(serializer==null) {
-			serializer=this.getBuiltinSerializer(xmlType,jsType);
-			if(serializer==null) throw "Can't find serializer for type '"+jsType+"'";
-			this.register(jsType,serializer);
+			serializer=this.getBuiltinSerializer(xmlType);
+			if(serializer==null) throw "Can't find serializer for type '"+xmlType.toString()+"'";
+			this.register(xmlType,serializer);
 		} 
 		return serializer;
 	} else throw ERR_WRONGARGS;
 }
 
-//Serializer getBuiltinSerializer(QName xmlType,String jsType)
-TypeMapping.prototype.getBuiltinSerializer=function(xmlType,jsType) {
+//Serializer getBuiltinSerializer(QName xmlType)
+TypeMapping.prototype.getBuiltinSerializer=function(xmlType) {
 	var serializer=null;
-	var serType=this.builtin[jsType];
+	var serType=this.builtin[xmlType.hashKey()];
 	if(serType==this.SER_SIMPLE) {
-		serializer=new SimpleTypeSerializer(xmlType,jsType);
+		serializer=new SimpleTypeSerializer(xmlType);
 	} else if(serType==this.SER_ARRAY) {
-		serializer=new ArraySerializer(xmlType,jsType);
-	} else {
-		if(jsType.indexOf("[]")!=-1) serializer=new ArraySerializer(xmlType,jsType);
+		serializer=new ArraySerializer(xmlType);
 	}
 	return serializer;
-}
-
-//String getXmlForJsType(String jsType)
-TypeMapping.prototype.getXmlForJsType=function(jsType) {
-	return this.jsToXml[jsType];
 }
 
 var typeMapping=new TypeMapping();
@@ -480,9 +462,10 @@ function RPCSerializer(opName,params) {
 
 RPCSerializer.prototype.serialize=function(writer) {
 	writer.startElement(this.opName);
+	soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" 
 	for(var i=0;i<this.params.length;i++) {
-		var serializer=typeMapping.getSerializer(this.params[i].xmlType,this.params[i].jsType);
-		serializer.serialize(this.params[i].value,this.params[i].name,writer);
+		var serializer=typeMapping.getSerializer(this.params[i].typeInfo.xmlType);
+		serializer.serialize(this.params[i].value,this.params[i].name,this.params[i].typeInfo,writer);
 	}
 	writer.endElement(this.opName);
 }
@@ -510,8 +493,7 @@ function Call() {
 	this.endpoint=null;
 	this.opName=null;
 	this.params=new Array();
-	this.retXmlType=null;
-	this.retJsType=null;
+	this.retTypeInfo=null;
   this.callback=null;
 }
 
@@ -529,28 +511,17 @@ Call.prototype.setOperationName=function() {
 	}
 }	
 
-//addParameter(paramName,xmlType,parameterMode)
-//addParameter(paramName,xmlType,jsType,parameterMode)
+//addParameter(paramName,typeInfo,parameterMode)
 Call.prototype.addParameter=function() {
-	var param;
 	if(arguments.length==3) {
-		var jsType=typeMapping.getJSTypeForQName(arguments[1]);
-		param=new Parameter(arguments[0],arguments[1],jsType,arguments[2]);
-	} else if(arguments.length==4) {
-		param=new Parameter(arguments[0],arguments[1],arguments[2],arguments[3]);
+		var param=new Parameter(arguments[0],arguments[1],arguments[2]);
+		if(param!=null) this.params.push(param);
 	} else throw ERR_WRONGARGS;
-	if(param!=null) this.params.push(param);
 }
 
-//setReturnType(xmlType)
-//setReturnType(xmlType,typeInfo)
-Call.prototype.setReturnType=function() {
-	if(arguments.length==1) {
-		this.retXmlType=arguments[0];
-	} else if(arguments.length==2) {
-		this.retXmlType=arguments[0];
-		this.retJsType=arguments[1];
-	}
+//setReturnType(retTypeInfo)
+Call.prototype.setReturnType=function(retTypeInfo) {
+	this.retTypeInfo=retTypeInfo;
 }
 
 //invoke()
@@ -738,17 +709,49 @@ function SOAPFault(faultCode,faultString) {
 	this.faultString=faultString;
 }
 
+//*********************************
+// TypeInfo(QName xmlType)
+//*********************************
+function TypeInfo(xmlType) {
+	this.xmlType=xmlType;
+}
+
+//*********************************
+// ArrayInfo(QName xmlType,QName arrayType,Number dimension)
+//*********************************
+function ArrayInfo(xmlType,arrayType,dimension) {
+	this.xmlType=xmlType;
+	this.arrayType=arrayType;
+	this.dimension=dimension;
+}
+
+//*********************************
+// BeanInfo(QName xmlType,Array propToInfo)
+//*********************************
+function ArrayInfo(xmlType,arrayType,propToInfo) {
+	this.xmlType=xmlType;
+	this.arrayType=arrayType;
+	this.propToInfo=propToInfo;
+}
+
+
 
 function test() {
 	
 	var call=new Call();
 	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
-	call.setOperationName(new QName("echoStringMultiArray"));
-	//call.addParameter("value1",xmltype.XSD_STRING,jstype.JS_STRING,"IN");
-	//call.addParameter("value2",xmltype.XSD_INT,jstype.JS_INTEGER,"IN");
-	call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOfArrayOf_xsd_string"),jstype.JS_STRING+"[][]","IN");
 	
-	//call.setReturnType(xmltype.XSD_INT);
+	call.setOperationName(new QName("echoString"));
+	call.addParameter("val",new TypeInfo(xmltypes.XSD_STRING),"IN");
+	call.setReturnType(new TypeInfo(xmltypes.XSD_STRING));
+	call.invoke("testtext");
+	
+	//call.setOperationName(new QName("echoStringMultiArray"));
+	
+	//call.addParameter("value2",xmltypes.XSD_INT,jstype.JS_INTEGER,"IN");
+	//call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOfArrayOf_xsd_string"),jstype.JS_STRING+"[][]","IN");
+	
+	//call.setReturnType(xmltypes.XSD_INT);
 	//try {
 		var arr=new Array(new Array(1,2),new Array(3,4,5));
 		/*
@@ -758,7 +761,7 @@ function test() {
 			}
 		}
 		*/
-		alert("RESULT: "+call.invoke(arr));
+		//alert("RESULT: "+call.invoke(arr));
 		//call.invoke(4,arr);
 	//} catch(exception) {
 		
