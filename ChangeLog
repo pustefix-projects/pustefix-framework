@@ -1,3 +1,13 @@
+2004-02-05  Adam Habermann  <adam.habermann@schlund.de>
+
+	* .classpath: Because of the removal of lib/ant*.jar a local ant.jar must
+	be specified in Java Buildpath for eclipse to build without errors.
+	The ant.jar is now referenced using the eclipse variable PFX_ANT_LIB which
+	is saved somewhere in your workspace/.metadata directory not in the
+	.classpath file which is under cvs control. To set this variable, go to
+	Windows -> Preferences -> Java -> Classpath Variables.
+	Optionally PFX_ANT_SRC may point to the ant source.
+
 2004-02-25  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
 	* example/core/build/create_workersprop.xsl: patched missing customisability of 

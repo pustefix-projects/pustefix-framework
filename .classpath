@@ -3,7 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/bsf.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/commons-pfix_httpclient-2.0-beta1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
@@ -17,8 +16,8 @@
 	<classpathentry kind="lib" path="lib/util-MINI-1.1.10.jar"/>
 	<classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet.jar"/>
 	<classpathentry sourcepath="/sources/saxon-6.5.3/src" kind="lib" path="lib/saxon6_5_3.jar"/>
-	<classpathentry sourcepath="/sources/apache-ant-1.5.3-1/src/main" kind="lib" path="lib/ant-1.5.3-1.jar"/>
 	<classpathentry sourcepath="/sources/xerces-2_6_1/src" kind="lib" path="lib/xercesImpl-2.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
+	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
