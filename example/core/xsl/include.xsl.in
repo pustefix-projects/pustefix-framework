@@ -60,7 +60,7 @@
                          readonly="readonly" align="center" name="__recordmode" type="text" size="4">
                     <ixsl:attribute name="value"><ixsl:value-of select="$__recordmode"/></ixsl:attribute>
                   </input>
-                  <pfx:xinp type="image" align="center" src="/core/img/player_pause.png" title="Switch record mode OFF">
+                  <pfx:xinp type="image" align="center" src="/core/img/record_stop.gif" title="Switch record mode OFF">
                     <pfx:argument name="__recordmode">0</pfx:argument>
                   </pfx:xinp>
                 </form>
