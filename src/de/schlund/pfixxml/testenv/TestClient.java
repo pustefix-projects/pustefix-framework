@@ -15,14 +15,6 @@ import java.util.Iterator;
 import javax.net.ssl.SSLSocketFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.pfix_httpclient.HostConfiguration;
 import org.apache.commons.pfix_httpclient.HttpConnection;
@@ -123,6 +115,7 @@ public class TestClient {
             playbackresult.addTestcaseStepResult(stepresult); 
         }
         
+        conMan.releaseConnection(httpConnect);
         return playbackresult;
     }
 

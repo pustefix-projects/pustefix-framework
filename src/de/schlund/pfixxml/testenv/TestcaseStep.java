@@ -162,12 +162,20 @@ public class TestcaseStep {
                     }
                     CAT.debug("-------------Header data---------------------------");
                 }
-                Header header = post.getResponseHeader("location");
-                if(header == null) {
+                
+                Header conheader = post.getResponseHeader("connection");
+                if(conheader.getValue().equals("close")) {
+                    CAT.error("Connection closed by server. Either the server does not support keep-alive or" +
+                        "the testcase has more steps then keep-alive request are allowed by the server");
+                    return;
+                }
+                
+                Header locheader = post.getResponseHeader("location");
+                if(locheader == null) {
                     CAT.error("Unable to get location information from header!");
                     return;
                 }
-                String redirect_location = post.getResponseHeader("location").getValue();
+                String redirect_location = locheader.getValue();
                 currenturl = redirect_location;
                 if(CAT.isDebugEnabled()) {
                     CAT.debug("redirected to " + redirect_location);
