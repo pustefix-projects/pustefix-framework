@@ -390,6 +390,10 @@ public class Context implements AppContext {
         }
     }
 
+    public boolean isCurrentPageRequestInCurrentFlow() {
+        return isPageRequestInFlow(currentpagerequest, currentpageflow);
+    }
+
     public boolean canContinue() {
         if (prohibitcontinue) {
             LOG.debug(">>> Have already set prohibitcontinue to true!");
@@ -468,10 +472,6 @@ public class Context implements AppContext {
             }
         }
         return null;
-    }
-
-    private boolean isCurrentPageRequestInCurrentFlow() {
-        return isPageRequestInFlow(currentpagerequest, currentpageflow);
     }
 
     private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
