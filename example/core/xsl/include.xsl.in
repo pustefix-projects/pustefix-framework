@@ -175,35 +175,37 @@
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
-    <xsl:param name="href">
-      <xsl:if test="@href">
+    <xsl:param name="href"><xsl:value-of select="@href"/></xsl:param>
+
+    <xsl:variable name="href_int">
+      <xsl:if test="$href">
         <xsl:choose>
-          <xsl:when test="starts-with(@href, '/')">
-            <xsl:value-of select="substring-after(@href, '/')"/>
+          <xsl:when test="starts-with($href, '/')">
+            <xsl:value-of select="substring-after($href, '/')"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="@href"/>
+            <xsl:value-of select="$href"/>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
-    </xsl:param>
-    <xsl:param name="realpath">
-<!--       <xsl:if test="not($__target_key = '__NONE__')"> -->
-        <xsl:choose>
-          <xsl:when test="not(string($href) = '')">
-            <xsl:value-of select="string($href)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="include:makeSystemIdRelative()"/>
-          </xsl:otherwise>
-        </xsl:choose>
-<!--       </xsl:if> -->
-    </xsl:param>
+    </xsl:variable>
+    
+    <xsl:variable name="realpath">
+      <xsl:choose>
+        <xsl:when test="not(string($href_int) = '')">
+          <xsl:value-of select="string($href_int)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="include:makeSystemIdRelative()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="string($part) = ''">
         <b>[Error: &lt;pfx:include&gt; needs "part" attribute]</b>
       </xsl:when>
       <xsl:otherwise>
+<!--         <xsl:message>$HREF |<xsl:value-of select="$href"/>| $REALPATH |<xsl:value-of select="$realpath"/>|</xsl:message> -->
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part), string($product),
                       string($__target_gen), string($__target_key),
