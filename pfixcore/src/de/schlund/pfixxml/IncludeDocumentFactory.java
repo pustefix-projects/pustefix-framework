@@ -98,6 +98,12 @@ public class IncludeDocumentFactory {
     public static IncludeDocumentFactory getInstance() {
         return instance;
     }
+    
+    public void reset() {
+        SPCacheFactory.getInstance().reset();
+        cache= SPCacheFactory.getInstance().getDocumentCache();
+    }
+    
 }
 
 
