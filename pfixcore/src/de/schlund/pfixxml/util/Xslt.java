@@ -45,6 +45,7 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import de.schlund.pfixxml.targets.Path;
+import java.io.FileReader;
 
 public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class.getName());
@@ -84,14 +85,6 @@ public class Xslt {
     }
 
     public static Document xmlObjectFromDocument(Document doc, String systemid) throws TransformerException {
-        if (doc == null) { // TODO: check doesn't belong here!
-            // thats a request to an unkown page!
-            // return null, cause we  want a 404 and no NPExpection
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
-            }
-            return null;
-        }
         if (doc instanceof TinyDocumentImpl) {
             return doc;
         } else {
@@ -113,30 +106,36 @@ public class Xslt {
             // otherwise, I'd construct an wrong uri
         }
         SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path));
+        return xmlObjectFromSource(src);
+    }
+
+    public static Document xmlObjectFromDisc(Path path)  throws TransformerException {
+        System.out.println("=====>" + path.getBase() + path.getRelative());
+        SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path.getBase() + path.getRelative()));
+        return xmlObjectFromSource(src);
+    }
+    
+    public static Document xmlObjectFromString(String str) throws TransformerException {
+        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
+        return xmlObjectFromSource(src);
+    }
+
+    public static Document xmlObjectFromSource(Source input) throws  TransformerException, TransformerConfigurationException {
         try {
-            return xmlObjectFromSource(src);
+            Transformer trans  = factory.newTransformer();
+            DOMResult   result = new DOMResult();
+            trans.transform(input, result);
+            return (TinyDocumentImpl) result.getNode();
         } catch (XPathException e) {
             StringBuffer sb = new StringBuffer();
             sb.append("TransformerException in xmlObjectFromDisc!\n");
-            sb.append("Path: ").append(path).append("\n");
+            sb.append("Path: ").append(input.getSystemId()).append("\n");
             sb.append("Message and Location: ").append(e.getMessage()).append("\n");
             Throwable cause = e.getException();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
             CAT.error(sb.toString());
             throw e;
         }
-    }
-
-    public static Document xmlObjectFromString(String str) throws TransformerException {
-        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
-        return xmlObjectFromSource(src);
-    }
-
-    public static Document xmlObjectFromSource(Source input) throws XPathException, TransformerException, TransformerConfigurationException {
-        Transformer trans  = factory.newTransformer();
-        DOMResult   result = new DOMResult();
-        trans.transform(input, result);
-        return (TinyDocumentImpl) result.getNode();
     }
     
     //-- load transformer
@@ -151,9 +150,7 @@ public class Xslt {
             throw new IllegalArgumentException("absolute path expected: " + path);
             // otherwise, I'd construct an wrong uri
         }
-        
         Source src;
-
         src = Xslt.createSaxSource(new InputSource("file://" + path));
         factory.setURIResolver(new FileResolver(new File(docroot)));
         try {
@@ -222,7 +219,7 @@ public class Xslt {
     
     //--
     
-	static class FileResolver implements URIResolver {
+    static class FileResolver implements URIResolver {
     	private static final String SEP = File.separator; 
         
         // always with tailing /
@@ -250,28 +247,28 @@ public class Xslt {
                 // we don't handle uris with an explicit scheme
             	return new StreamSource(href);
             }
-          	path = 	uri.getPath();
-           	try {
-           	    file = Path.create(root, path).resolve();
-           	} catch (IllegalArgumentException e) {
-           	    throw new TransformerException("cannot resolve " + href, e);
-           	}
-           	return new StreamSource(file);
+            path = uri.getPath();
+            try {
+                file = Path.create(root, path).resolve();
+            } catch (IllegalArgumentException e) {
+                throw new TransformerException("cannot resolve " + href, e);
+            }
+            return new StreamSource(file);
         }
     }
-
+    
     /**
      * Implementation of ErrorListener interface.
      */
     static class PFErrorListener implements ErrorListener {
-
+        
         /**
          * @see javax.xml.transform.ErrorListener#warning(javax.xml.transform.TransformerException)
          */
         public void warning(TransformerException arg0) throws TransformerException {
             throw arg0;
         }
-
+        
         /**
          * @see javax.xml.transform.ErrorListener#error(javax.xml.transform.TransformerException)
          */

@@ -37,7 +37,7 @@ public class Path implements Comparable {
 
 	public static Path create(String base, String relative) {
         if (relative.startsWith(SEP)) {
-		    relative = relative.substring(1);
+            relative = relative.substring(1);
             // TODO: throw new IllegalArgumentException("relative path expected: " + path);
         }
         return new Path(base, relative);
@@ -63,10 +63,10 @@ public class Path implements Comparable {
 	}
 	
     //--
-
-	/** starts and ends with SEP */
-	private final String base;
-	
+    
+    /** starts and ends with SEP */
+    private final String base;
+    
     /** never starts with SEP, never empty */
     private final String relative;
 
@@ -114,7 +114,7 @@ public class Path implements Comparable {
     public String getName() {
         return relative.substring(relative.lastIndexOf(SEP) + 1);
     }
-
+    
     public String getSuffix() {
         return relative.substring(relative.lastIndexOf("."));
     }
@@ -135,11 +135,11 @@ public class Path implements Comparable {
         // TODO: base might be different?!
         return relative.compareTo(((Path) obj).relative);
     }
-
+    
     public int hashCode() {
         return relative.hashCode();
     }
-
+    
     /** use getRelative to get the path without additional text */
     public String toString() {
         return "path " + getRelative();

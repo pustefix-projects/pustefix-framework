@@ -89,7 +89,10 @@ public final class IncludeDocumentExtension {
         
         NodeInfo citem = (NodeInfo) context.getContextItem();
         if (computed_inc.equals("false") && isIncludeDocument(citem)) {
-            parent_path_str = ((NodeInfo) context.getContextItem()).getSystemId();
+            parent_path_str = ((NodeInfo) context.getContextItem()).getSystemId().substring(("file://" + docroot).length());
+            if (parent_path_str.startsWith("/")) {
+                parent_path_str = parent_path_str.substring(1);
+            }
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
         }

@@ -476,7 +476,15 @@ public abstract class AbstractXMLServer extends ServletManager {
                 spdoc.storeFrameAnchors(anchormap);
             }
             currtime = System.currentTimeMillis();
-            spdoc.setDocument(Xslt.xmlObjectFromDocument(spdoc.getDocument()));
+            if (spdoc.getDocument() == null) {
+                // thats a request to an unkown page!
+                // do nothing, cause we  want a 404 and no NPExpection
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
+                }
+            } else {
+                spdoc.setDocument(Xslt.xmlObjectFromDocument(spdoc.getDocument()));
+            }
             if (isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
