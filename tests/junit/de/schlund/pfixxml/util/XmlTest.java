@@ -90,7 +90,7 @@ public class XmlTest extends TestCase {
         assertEquals("<a>\n  <b/>\n  <c/>\n</a>", serialize("<a><b/><c/></a>", true, false));
     }
     public void testSerializeDecl() throws Exception {
-        assertEquals("<?xml version=\"1.0\" encoding=\"utf-8\"?><a/>", serialize("<a/>", false, true));
+        assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><a/>", serialize("<a/>", false, true));
     }
 
     public void testSerializeElement() throws Exception {

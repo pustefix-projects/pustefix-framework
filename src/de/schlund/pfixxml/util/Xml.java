@@ -282,6 +282,8 @@ public final class Xml {
             }
         };
     
+    private static final String ENCODING = "ISO-8859-1";
+    
     /**
      * @param pp pretty print
      */
@@ -295,14 +297,15 @@ public final class Xml {
         Throwable cause;
         DOMSource src;
         
+        // TODO: remove special cases
         if (node instanceof Text) {
-            // TODO:
             write(((Text) node).getData(), dest);
             return; 
         } else if (node instanceof Comment) {
             write("<!--" + ((Comment) node).getData() + "-->", dest);
             return;
         }
+
         if (!(node instanceof Document) && !(node instanceof Element)) {
             throw new IllegalArgumentException("unsupported node type: " + node.getClass());
         }
@@ -312,6 +315,11 @@ public final class Xml {
             t = Xslt.createIdentityTransformer();
         }
         t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, decl? "no" : "yes");
+        if (decl) {
+            t.setOutputProperty(OutputKeys.ENCODING, ENCODING);
+        } else {
+            // don't set encoding, I'd force an xml decl by setting it.
+        }
         t.setOutputProperty(OutputKeys.INDENT, pp? "yes" : "no");
         t.setOutputProperty(SaxonOutputKeys.INDENT_SPACES, "2");
         src = new DOMSource(wrap(node));
@@ -338,7 +346,7 @@ public final class Xml {
         if (dest instanceof Writer) {
             ((Writer) dest).write(str);
         } else {
-            ((OutputStream) dest).write(str.getBytes("UTF-8")); // TODO: encoding
+            ((OutputStream) dest).write(str.getBytes(ENCODING));
         }
     }
     
