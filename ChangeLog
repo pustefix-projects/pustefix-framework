@@ -1,4 +1,4 @@
-2004-10-04  Adam Habermann  <adam.habermann@schlund.de>
+2004-11-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl:
 	Implemented filtering out of duplicate Alias (<passthrough>) directives.
