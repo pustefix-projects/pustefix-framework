@@ -18,19 +18,27 @@
 */
 
 package de.schlund.pfixcore.editor;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.TreeSet;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.log4j.Category;
+import org.apache.xpath.XPathAPI;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.util.FactoryInit;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
-import org.apache.xpath.*;
 
 /**
  * EditorCommonsFactory.java
