@@ -1,3 +1,13 @@
+2003-08-12  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/TestClient.java: release the
+	connection after playback is finished.
+
+	* src/de/schlund/pfixxml/testenv/TestcaseStep.java: print a warning
+	if connection is closed. IMPORTANT NOTE: The Testclient uses the 
+	keep-alive feature. 'MaxKeepAliveRequests' in your apache conf  must be 
+	greater then the number of steps for your testcase. A fix will be applied soon. 
+
 2003-08-11  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/testenv/* : Refactored.
