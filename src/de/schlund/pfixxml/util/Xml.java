@@ -29,6 +29,8 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -36,21 +38,21 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.xerces.parsers.SAXParser;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import com.icl.saxon.expr.XPathException;
+import com.icl.saxon.output.SaxonOutputKeys;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 public final class Xml {
@@ -279,41 +281,64 @@ public final class Xml {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
                                                + "Can't serialize a null node!");
         }
-        OutputFormat format;
-        XMLSerializer ser;
-    
-        format = new OutputFormat("xml", "ISO-8859-1", true);
-        format.setOmitXMLDeclaration(!decl);
-        format.setLineWidth(0); // no line-wrap
-        if (pp) {
-            format.setPreserveSpace(false);
-            format.setIndent(2);
-        } else {
-            format.setPreserveSpace(true);
+        Transformer t;
+        Result result;
+        Throwable cause;
+        DOMSource src;
+        
+        if (node instanceof Text) {
+            // TODO:
+            String str = ((Text) node).getData();
+            if (dest instanceof Writer) {
+                ((Writer) dest).write(str);
+            } else {
+                ((OutputStream) dest).write(str.getBytes("UTF-8"));
+            }
+            return; 
         }
-        if (dest instanceof Writer) { 
-            ser = new XMLSerializer((Writer) dest, format);
+        if (!(node instanceof Document) && !(node instanceof Element)) {
+            throw new IllegalArgumentException("unsupported node type: " + node.getClass());
+        }
+        if (pp) {
+            t = Xslt.createPrettyPrinter();
+        } else {
+            t = Xslt.createIdentityTransformer();
+        }
+        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, decl? "no" : "yes");
+        t.setOutputProperty(OutputKeys.INDENT, pp? "yes" : "no");
+        t.setOutputProperty(SaxonOutputKeys.INDENT_SPACES, "2");
+        src = new DOMSource(wrap(node));
+        if (dest instanceof Writer) {
+            result = new StreamResult((Writer) dest);
         } else if (dest instanceof OutputStream) {
-            ser = new XMLSerializer((OutputStream) dest, format);
+            result = new StreamResult((OutputStream) dest);
         } else {
             throw new RuntimeException("Only Writer or OutputStreams allowed: " + dest.getClass());
         }
-        if (node instanceof Document) {
-            ser.serialize((Document) node);
-        } else if (node instanceof Element) {
-            ser.serialize((Element) node);
-        } else if (node instanceof DocumentFragment) {
-            ser.serialize((DocumentFragment) node);
-        } else {
-            Document doc;
-            DocumentFragment frag;
-            Node cloned;
-            
-            doc = createDocument();
-            frag = doc.createDocumentFragment();
-            cloned = doc.importNode(node, true);
-            frag.appendChild(cloned);
-            ser.serialize(frag);
+        try {
+            t.transform(src, result);
+        } catch (TransformerException e) {
+            cause = e.getCause();
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            } else {
+                throw new RuntimeException("unexpected problem with identity transformer", e);
+            }
         }
+    }
+    private static Document wrap(Node node) {
+        // ugly hack to work-around saxon limitation: 6.5.3 cannot run xslt on sub-trees:
+        // solved in 7.7: http://saxon.sourceforge.net/saxon7.7/changes.html (see 'jaxp changes')
+        
+        // TODO: implicit namespace attributes in tiny-tree nodes might vanish
+        Document doc;
+        
+        if (node instanceof Document) {
+            doc = (Document) node;
+        } else {
+            doc = Xml.createDocument();
+            doc.appendChild(doc.importNode(node, true));
+        }
+        return doc;
     }
 }

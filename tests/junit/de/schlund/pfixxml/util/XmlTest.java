@@ -1,8 +1,14 @@
 package de.schlund.pfixxml.util;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -51,38 +57,82 @@ public class XmlTest extends TestCase {
     	assertEquals(1, lst.getLength());
     	assertTrue(lst.item(0) instanceof Comment);
     }
+
+    public void testNamespaceListInTinyTree() throws Exception {
+        Transformer t;
+        
+        // make sure to get comments
+    	Document doc = Xml.parseString("<pfx:include xmlns:pfx='foo'><a/></pfx:include>");
+    	Element root = doc.getDocumentElement();
+    	NamedNodeMap lst = root.getAttributes();
+    	assertEquals(0, lst.getLength());
+    	t = Xslt.createIdentityTransformer();
+    	t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+    	t.setOutputProperty(OutputKeys.INDENT, "no");
+    	t.transform(new DOMSource(doc), new StreamResult(System.out));
+    }
     
     //-- serialize tests
     
     public void testSerializeSimple() throws Exception {
-        assertEquals("<ok/>\n", serialize("<ok/>", false));
+        assertEquals("<ok/>", serialize("<ok/>", false, false));
     }
 
     public void testSerializePreserve() throws Exception {
-        final String STR = "<a><b/> \n<c/></a>\n";
-        assertEquals(STR, serialize(STR, false));
+        final String STR = "<a>\t<b/>  \n<c/></a>";
+        assertEquals(STR, serialize(STR, false, false));
     }
+    public void testSerializeMergeEvenWithPreserve() throws Exception {
+        assertEquals("<c/>", serialize("<c></c>", false, false));
+    }
+
     public void testSerializePP() throws Exception {
-        assertEquals("<a>\n  <b/>\n  <c/>\n</a>\n", serialize("<a><b/> \n <c/></a>", true));
+        assertEquals("<a>\n  <b/>\n  <c/>\n</a>", serialize("<a><b/><c/></a>", true, false));
+    }
+    public void testSerializeDecl() throws Exception {
+        assertEquals("<?xml version=\"1.0\" encoding=\"utf-8\"?><a/>", serialize("<a/>", false, true));
+    }
+
+    public void testSerializeElement() throws Exception {
+        Document doc = parse("<a><b>foo</b></a>");
+        assertEquals("<b>foo</b>", Xml.serialize(XPath.selectNode(doc, "/a/b"), true, false));
+    }
+
+    public void testSerializeText() throws Exception {
+        Document doc = parse("<a>foo</a>");
+        assertEquals("foo", Xml.serialize(XPath.selectNode(doc, "/a/text()"), false, false));
+    }
+
+    public void testSerializeAttribute() throws Exception {
+        Document doc = parse("<a b='foo'/>");
+        try {
+            Xml.serialize(XPath.selectNode(doc, "/a/@b"), false, false);
+            fail();
+        } catch (IllegalArgumentException e) {
+            // ok
+        }
     }
 
     public void testSerializeExplicitNamespace() throws Exception {
-        Document doc = parse(serialize("<ns:ok xmlns:ns='foo'/>", false));
+        Document doc = parse(serialize("<ns:ok xmlns:ns='foo'/>", false, false));
         assertEquals("foo", doc.getDocumentElement().getNamespaceURI());
     }
     public void testSerializeImplicitNamespace() throws Exception {
-        Document doc = parse(serialize("<ok xmlns='bar'/>", false));
+        Document doc = parse(serialize("<ok xmlns='bar'/>", false, false));
         assertEquals("bar", doc.getDocumentElement().getNamespaceURI());
     }
-    public void testSerializeText() throws Exception {
-        Document doc = parse("<a>foo</a>");
-        assertEquals("foo\n", Xml.serialize(XPath.selectNode(doc, "/a/node()"), false, false));
+    
+    public void testSerializeNoImplicitNamespaceDeclaration() {
+        // saxon does not represent ns decls as attributes 
+        Document doc = Xml.createDocument();
+        doc.appendChild(doc.createElementNS("myuri", "ab:cd"));
+        assertEquals("<ab:cd xmlns:ab=\"myuri\"/>", Xml.serialize(doc, true, false));
     }
 
     //-- helper code
     
-    private static String serialize(String doc, boolean pp) throws Exception {
-        return Xml.serialize(parse(doc), pp, false);
+    private static String serialize(String doc, boolean pp, boolean decl) throws Exception {
+        return Xml.serialize(parse(doc), pp, decl);
     }
     
     private static Document parse(String str) throws Exception {

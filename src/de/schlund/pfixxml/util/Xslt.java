@@ -45,6 +45,41 @@ public class Xslt {
         }
     }
 
+    // pretty-print script by M. Kay, see 
+    // http://www.cafeconleche.org/books/xmljava/chapters/ch17s02.html#d0e32721
+    private static final String ID = 
+        "<?xml version='1.0'?>" +
+        "<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.1'>" + 
+        "  <xsl:output method='xml' indent='yes'/>" + 
+        "  <xsl:strip-space elements='*'/>" + 
+        "  <xsl:template match='/'>" + 
+        "    <xsl:copy-of select='.'/>" + 
+        "  </xsl:template>" + 
+        "</xsl:stylesheet>";
+
+    private static final Templates PP_XSLT;
+    
+    static {
+        Source src;
+        TransformerFactory factory;
+
+        src = new SAXSource(Xml.createXMLReader(), new InputSource(new StringReader(ID)));
+        factory = new TransformerFactoryImpl();
+        try {
+            PP_XSLT = factory.newTemplates(src);
+        } catch (TransformerConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static synchronized Transformer createPrettyPrinter() {
+        try {
+            return PP_XSLT.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static synchronized Templates loadTemplates(Path path) throws TransformerConfigurationException {
         InputSource        input   = new InputSource("file://" + path.getBase() + "/" + path.getRelative());
         Source             src     = new SAXSource(Xml.createXMLReader(), input);
@@ -90,7 +125,7 @@ public class Xslt {
         }
         if (CAT.isDebugEnabled())
             start = System.currentTimeMillis();
-        trafo.transform((TinyDocumentImpl) xml, result);
+        trafo.transform((TinyDocumentImpl) Xml.parse(xml), result);
         if (CAT.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
             CAT.debug("      ===========> Transforming and serializing took " + (stop - start)  + " ms.");

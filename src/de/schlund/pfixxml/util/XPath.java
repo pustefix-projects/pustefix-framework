@@ -70,6 +70,17 @@ public final class XPath {
         return result;
     }
 
+    public static Node selectOne(Node context, String xpath) throws TransformerException {
+        Node node;
+        
+        node = selectNode(context, xpath);
+        if (node == null) {
+            throw new TransformerException("xpath '" + xpath + "' not found in " 
+                    + context.getClass().getName() + " " + Xml.serialize(context, true, false));
+        }
+        return node;
+    }
+
     public static Node selectNode(Node context, String xpath) throws TransformerException {
         List result;
         
