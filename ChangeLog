@@ -1,15 +1,14 @@
 2004-03-04  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: Now you
+	can select a pageflow (via __pageflow) even when the current page
+	is not a member of it.
+	
 	* src/de/schlund/pfixcore/workflow/Context.java: now you can use
 	__jumptopageflow to also set the pageflow to use for a
 	jumptopage (for cases where it's not unambiguous which pageflow to
 	use for a page)
 	
-	NOTE: the mechanism to select pageflows (both for the "normal" and
-	the "jumptopages") is a bit under consideration. For the usual
-	cases it will work as before, but e.g. I consider the possibility to
-	request a pageflow without the current page being a member of it.
-
 2004-03-03 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
