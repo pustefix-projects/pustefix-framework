@@ -388,18 +388,20 @@
     <table width="100%" class="editor_sidebar_content">
       <tr>
         <td>
-          <ixsl:choose>
-            <ixsl:when test="{$path}/@allshown = 'true'">
-              (<pfx:button target="left_navi" frame="left_navi">
-              <pfx:command name="SELWRP">addshow</pfx:command>
-              <pfx:argument name="addshow.DoShow">false</pfx:argument>Hide</pfx:button>)
-            </ixsl:when>
-            <ixsl:otherwise>
-              (<pfx:button target="left_navi" frame="left_navi">
-              <pfx:command name="SELWRP">addshow</pfx:command>
-              <pfx:argument name="addshow.DoShow">true</pfx:argument>Show all</pfx:button>)
-            </ixsl:otherwise>
-          </ixsl:choose>
+          <ixsl:if test="{$path}/@allshown">
+            <ixsl:choose>
+              <ixsl:when test="{$path}/@allshown = 'true'">
+                (<pfx:button target="left_navi" frame="left_navi">
+                <pfx:command name="SELWRP">addshow</pfx:command>
+                <pfx:argument name="addshow.DoShow">false</pfx:argument>Hide</pfx:button>)
+              </ixsl:when>
+              <ixsl:otherwise>
+                (<pfx:button target="left_navi" frame="left_navi">
+                <pfx:command name="SELWRP">addshow</pfx:command>
+                <pfx:argument name="addshow.DoShow">true</pfx:argument>Show all</pfx:button>)
+              </ixsl:otherwise>
+            </ixsl:choose>
+          </ixsl:if>
         </td>
       </tr>
       <ixsl:for-each select="{$path}/directory">
