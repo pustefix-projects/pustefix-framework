@@ -74,6 +74,13 @@ public class AppLoader implements FactoryInit,Runnable {
         AppLoaderConfig config=new AppLoaderConfig(this);
         config.init(globProps);
         if(isEnabled()) {
+            try {
+                ObjectBuilder builder=ObjectBuilder.getInstance();
+            } catch(ObjectBuilderException x) {
+                CAT.error("Can't initialize AppLoader.");
+                setEnabled(false);
+                return;
+            }
             loader=new AppClassLoader(getClass().getClassLoader());
             if(trigger==AUTO_TRIGGER) startModificationThread();
             if(listener!=null) listener.start();
@@ -266,9 +273,26 @@ public class AppLoader implements FactoryInit,Runnable {
         if(isLoading()) direct=false;
         if(direct) loadingStarted(); 
         long t1=System.currentTimeMillis();
+        AppClassLoader oldLoader=loader;
         loader=new AppClassLoader(getClass().getClassLoader());
         StateTransfer.getInstance().reset();
         triggerReloaders();
+        //search classes with no referenced instance
+        HashSet loaderClasses=oldLoader.getAppClasses();
+        HashSet transferClasses=StateTransfer.getInstance().getAppClasses();
+        ArrayList norefs=new ArrayList();
+        Iterator it=loaderClasses.iterator();
+        while(it.hasNext()) {
+            Class clazz=(Class)it.next();
+            if(!transferClasses.contains(clazz) && !clazz.isInterface()) {
+                norefs.add(clazz);
+            }
+        }
+        it=norefs.iterator();
+        while(it.hasNext()) {
+            Class clazz=(Class)it.next();
+            StateTransfer.getInstance().transfer(clazz); 
+        }
         long t2=System.currentTimeMillis();
         CAT.info("Reloaded classes in "+(t2-t1)+" ms.");
         if(direct) loadingEnded();

@@ -22,8 +22,6 @@ package de.schlund.pfixxml.loader;
 import org.apache.log4j.Category;
 import java.io.*;
 import java.util.*;
-import javax.xml.parsers.*;
-import org.w3c.dom.*;
 
 /**
  * AppLoaderConfig.java 
