@@ -55,17 +55,17 @@
         <ol>
             <li><p>Adjust version number in <code>build.xml</code>, <code>project.xml</code>,
               and <code>xdoc/index.xml</code>.</p></li>
-            <li><p>In <code>xdoc/changes.xml</code>: adjust version number and release date.
-              Document important changes in <code>xdocs/changes.xml</code></p></li>
-            <li><p>Run <code>ant notag</code> and test the results in pfixschlund</p></li>
-            <li><p>Run <code>maven site</code> to see if the documentation builds properly</p></li>
+            <li><p>In <code>xdoc/changes.xml</code>: Adjust version number and release date.
+              Document important changes.</p></li>
+            <li><p>Optional: Run <code>ant notag</code> and test the results in pfixschlund</p></li>
+            <li><p>Optional: Update the web site.</p></li>
             <li><code>cvs commit</code></li>
             <li><p>Run <code>ant dist</code> to build the distribution and tag the repository.</p></li>
             <li><p>Upload to sourceforge: 
-              <code>maven sourceforge:deploy -Dmaven.username=XXX -Dmaven.sourceforge.password=XXX</code></p></li>
-            <li><p>Bump the version number in <code>build.xml</code>.</p></li>
+              <code>maven sourceforge:deploy -Dmaven.username=XXX -Dmaven.sourceforge.password=YYY</code></p></li>
+            <li><p>Bump the version number in <code>build.xml</code>, <code>project.xml</code>,
+              <code>xdoc/index.xml</code>, and <code>xdoc/changes.xml</code>.</p></li>
             <li><code>cvs commit</code></li>
-            <li><p>Update website</p></li>
          </ol>
       </subsection>
       <subsection name="Upgrade environment">
@@ -82,7 +82,7 @@
             <li><p>Update the build file:
                 <source>cp pfixcore/skel/build.xml yourenv/build.xml</source>
               </p></li>
-            <li><p>Replace the core file in <core>yourenv/lib</core>:
+            <li><p>Replace the core files in <core>yourenv/lib</core>:
                 <source>
  rm yourenv/lib/pfixcore-*
  cp pfixcore/dist/pfixcore-* yourenv/lib
