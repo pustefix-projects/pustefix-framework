@@ -1,3 +1,14 @@
+2004-10-13  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/script/webservice.js: Renamed SOAP_IntSerializer to
+	SOAP_NumberSerializer, as it is responsible for handling all integer
+	number types (now xsd:long gets also mapped to this serializer).
+	* example/webservice/htdocs/typetest-pfxsoap.js: Added xsd:long test
+	* src/de/schlund/pfixcore/example/webservices/TypeTest.java: Added
+	test method definition for long type
+	* src/de/schlund/pfixcore/example/webservices/TypeTestImpl.java: Added
+	test method implementation for long type
+
 2004-10-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: relased 0.8.0 

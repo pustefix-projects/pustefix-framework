@@ -29,6 +29,10 @@ public class TypeTestImpl implements TypeTest {
         return vals;
     }
     
+    public long echoLong(long val) {
+        return val;
+    }
+    
     public float echoFloat(float val) {
         return val;
     }
