@@ -7,7 +7,7 @@ BUILDDIR=build
 JAR=jar
 PFIXCORE_DATA=$(shell ls -1 lib/pfixcore-data-*.tar.gz)
 
-all:  projects/core check_permissions compile resjar installjars_tc compile_xml 
+all:  projects/core check_permissions compile installjars_tc compile_xml 
 
 projects/core: $(PFIXCORE_DATA)
 	@echo "*** Erasing the whole core subdirectory!"
@@ -38,7 +38,6 @@ compile: generate_src
 compile_xml:
 	cd projects && make -f Makefile all 
 
-
 generate_src:
 	@echo 
 	@echo ROOT: generating src. 
@@ -57,20 +56,12 @@ clean:
 	cd projects && make -f Makefile clean 
 	@(rm -rf dist)
 
-resjar:	compile
-	@echo "Building $(PROJECT)-res.jar in directory dist."
-	@(rm -f dist/*.jar)
-	@(if ! test -d dist; then mkdir dist; fi)
-	@(cd res; ${JAR} cf ../dist/$(PROJECT)-res.jar `find . -type f | grep -v "CVS/"`)
-	@echo Done!
-
-installjars_tc: resjar
-	@echo "Setting link to $(BUILDDIR)/de in projects/servletconf/tomcat/classes."
-	@(cd projects/servletconf/tomcat/; if ! test -d classes; then mkdir classes; fi)
-	@(cd projects/servletconf/tomcat/classes; if ! test -h de; then ln -s ../../../../$(BUILDDIR)/de; fi)
+installjars_tc: compile
+	@echo "Setting link to $(BUILDDIR)/* in projects/servletconf/tomcat/classes."
+	@(cd projects/servletconf/tomcat/; ln -s ../../../$(BUILDDIR) classes)
 	@(rm -f projects/servletconf/tomcat/lib/*.jar)
-	@echo "copy resource jar to tomcat directory"
-	@(cp dist/$(PROJECT)-res.jar projects/servletconf/tomcat/lib/)
+	@echo "create resource jar in tomcat directory"
+	@(cd res; ${JAR} cf ../projects/servletconf/tomcat/lib/$(PROJECT)-res.jar `find . -type f | grep -v "CVS/"`)
 	@echo "link common jars to tomcat directory"
 	@(cd projects/servletconf/tomcat/lib/; ln -s ../../../../lib/*.jar .)
 	@echo Done!
