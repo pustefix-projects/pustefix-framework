@@ -19,26 +19,17 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeMap;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import de.schlund.pfixcore.util.Meminfo;
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.*;
+import java.io.File;
+import java.util.*;
+import org.apache.log4j.Category;
+import org.apache.log4j.xml.DOMConfigurator;
+import org.w3c.dom.*;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -49,8 +40,10 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class TargetGenerator {
-    public static final String XSLPARAM_TG              = "__target_gen";
-    public static final String XSLPARAM_TKEY            = "__target_key";
+    public static final String XSLPARAM_TG   = "__target_gen";
+    public static final String XSLPARAM_TKEY = "__target_key";
+    public static final String CACHEDIR      = ".cache";
+    public static final String RECORDDIR     = ".recorddir";
         
     private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
     private static TargetGenerationReport report                         = new TargetGenerationReport();
@@ -59,7 +52,6 @@ public class TargetGenerator {
     private HashMap                       alltargets                     = new HashMap();
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
-    private final File                    docroot;
     private String name;
     
     private String language;
@@ -72,13 +64,13 @@ public class TargetGenerator {
     
     //--
     
-    public TargetGenerator(File confile) throws Exception {
-        this.docroot = findDocroot(confile);
-        this.config_mtime = confile.lastModified();
+    public TargetGenerator(Path confile) throws Exception {
+        File tmp          = confile.resolve();
+        this.config_mtime = tmp.lastModified();
 
-        Meminfo.print("TG: Before loading " + confile);
+        Meminfo.print("TG: Before loading " + confile.getRelative());
         loadConfig(confile);
-        Meminfo.print("TG: after loading targets for " + confile.getPath());
+        Meminfo.print("TG: after loading targets for " + confile.getRelative());
     }
 
     //-- attributes
@@ -91,16 +83,12 @@ public class TargetGenerator {
         return language;
     }
 
-    public File getDisccachedir() {
-        return new File(getDocroot(), ".cache" + File.separatorChar + getName());
+    public Path getDisccachedir() {
+        return PathFactory.getInstance().createPath(CACHEDIR + File.separatorChar + getName());
     }
     
-    public File getRecorddir() {
-        return new File(getDocroot(), "record_dir" + File.separatorChar + getName());
-    }
-
-    public File getDocroot() {
-        return docroot;
+    public Path getRecorddir() {
+        return PathFactory.getInstance().createPath(RECORDDIR + File.separatorChar + getName());
     }
 
     public PageTargetTree getPageTargetTree() {
@@ -148,32 +136,22 @@ public class TargetGenerator {
         return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
     }
 
-    public static File findDocroot(File file) { // TODO
-        file = file.getAbsoluteFile();
-        while (!isDocroot(file.getName())) {
-            file = file.getParentFile();
-        }
-        return file;
-    }
-    private static boolean isDocroot(String name) {
-        return name.equals("projects") || name.equals("example");
-    }
-    
     // *******************************************************************************************
 
     
-    public synchronized boolean tryReinit(File confile) throws Exception {
-        if (confile.lastModified() > config_mtime) {
+    public synchronized boolean tryReinit(Path confile) throws Exception {
+        File tmp = confile.resolve();
+        if (tmp.lastModified() > config_mtime) {
             CAT.warn(
                 "\n\n###############################\n"
                 + "#### Reloading depend file: "
-                + confile.getAbsoluteFile()
+                + confile.getRelative()
                 + "\n"
                 + "###############################\n");
             refcounter   = new DependencyRefCounter();
             pagetree     = new PageTargetTree();
             alltargets   = new HashMap();
-            config_mtime = confile.lastModified();
+            config_mtime = tmp.lastModified();
             loadConfig(confile);
             return true;
         } else {
@@ -181,19 +159,19 @@ public class TargetGenerator {
         }
     }
 
-    private void loadConfig(File confile) throws Exception {
+    private void loadConfig(Path confile) throws Exception {
         CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
-        config = Xml.parseMutable(confile);
-
+        config = Xml.parseMutable(confile.resolve());
+        
         Element  root    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
         name = getAttribute(root, "project");
         language = getAttribute(root, "lang");
         
-        File disccache = getDisccachedir();
+        File disccache = getDisccachedir().resolve();
         if (!disccache.exists()) {
             disccache.mkdirs();
         } else if (!disccache.isDirectory() || !disccache.canWrite() || !disccache.canRead()) {
@@ -240,7 +218,7 @@ public class TargetGenerator {
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux     = (Element) allaux.item(j);
-                Path auxname    = Path.create(getDocroot(), aux.getAttribute("name"));
+                Path auxname    = PathFactory.getInstance().createPath(aux.getAttribute("name"));
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
@@ -253,14 +231,14 @@ public class TargetGenerator {
                 String  value   = par.getAttribute("value");
                 params.put(parname, value);
             }
-            params.put("docroot", docroot.getPath());
+            params.put("docroot",  confile.getBase().getPath());
             struct.setParams(params);
             allstructs.put(nameattr, struct);
         }
         CAT.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) +
                  "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
-        String tgParam = Path.getRelativeString(getDocroot(), confile.getCanonicalPath());
+        String tgParam = confile.getRelative();
         for (Iterator i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = (TargetStruct) allstructs.get(i.next());
             createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
@@ -442,21 +420,28 @@ public class TargetGenerator {
         }
         DOMConfigurator.configure(log4jconfig);
 
-        if (args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
+        if (args.length > 1) {
+            File docroot = new File(args[0]);
+            if (!docroot.exists() || !docroot.isDirectory()) {
+                throw new IllegalArgumentException("*** First argument has to be the docroot directory! ***");
+            }
+            PathFactory.getInstance().init(docroot.getPath());
+            
+            for (int i = 1; i < args.length; i++) {
                 try {
                     /* resetting the factories for better memory performance */
                     TargetGenerator.resetFactories();
                     System.gc();
-                     
-                    File file = new File(args[i]);
+                    
+                    Path filepath = PathFactory.getInstance().createPath(args[i]);
+                    File file = filepath.resolve();
                     if (file.exists() && file.canRead() && file.isFile()) {
-                        gen = TargetGeneratorFactory.getInstance().createGenerator(file);
+                        gen = TargetGeneratorFactory.getInstance().createGenerator(filepath);
                         gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
-                        TargetGeneratorFactory.getInstance().remove(file);
+                        TargetGeneratorFactory.getInstance().remove(filepath);
                     } else {
                         CAT.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));
@@ -470,7 +455,7 @@ public class TargetGenerator {
             System.out.println(report.toString());
            
         } else {
-            CAT.error("Need configfile to work on");
+            CAT.error("Need docroot and configfile(s) to work on");
         }
     }
 

@@ -51,7 +51,7 @@ public class XMLVirtualTarget extends VirtualTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        File thefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             return Xml.parse(thefile);
         } else {

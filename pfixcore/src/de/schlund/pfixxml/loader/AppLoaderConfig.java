@@ -19,9 +19,10 @@
 
 package de.schlund.pfixxml.loader;
 
-import org.apache.log4j.Category;
+import de.schlund.pfixxml.PathFactory;
 import java.io.*;
 import java.util.*;
+import org.apache.log4j.Category;
 
 /**
  * AppLoaderConfig.java 
@@ -46,7 +47,7 @@ public class AppLoaderConfig {
             Properties props=new Properties();
             String fileName=getProperty(globProps, "apploader.propertyfile");
             try {
-                props.load(new FileInputStream(fileName));
+                props.load(new FileInputStream(PathFactory.getInstance().createPath(fileName).resolve()));
             } catch(IOException x) {
                 throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be loaded.");
             }

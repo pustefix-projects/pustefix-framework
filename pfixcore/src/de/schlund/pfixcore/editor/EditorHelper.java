@@ -406,20 +406,19 @@ public class EditorHelper {
     }
 
     public static void renderTargetContent(Target target, ResultDocument resdoc, Element root) {
-        String key = target.getTargetKey();
-        File cache = target.getTargetGenerator().getDisccachedir();
-        File docroot = target.getTargetGenerator().getDocroot();
-        TargetType type = target.getType();
-        File file;
+        String     key     = target.getTargetKey();
+        Path       cache   = target.getTargetGenerator().getDisccachedir();
+        TargetType type    = target.getType();
+        Path       file;
 
         if (type == TargetType.XML_LEAF || type == TargetType.XSL_LEAF) {
-            file = new File(docroot, key);
+            file = PathFactory.getInstance().createPath(key);
         } else {
-            file = new File(cache, key);
+            file = PathFactory.getInstance().createPath(cache.getRelative() + File.separator + key);
         }
 
         try {
-            Document cdoc = Xml.parseMutable(file);
+            Document cdoc = Xml.parseMutable(file.resolve());
             Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {

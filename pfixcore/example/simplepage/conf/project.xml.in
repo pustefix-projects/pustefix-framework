@@ -14,7 +14,7 @@
   
   <active>true</active>
   <comment>Just one page in order to make a real simple pustefix example available</comment>
-  <depend><cus:docroot/>simplepage/conf/depend.xml</depend>
+  <depend>simplepage/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>simplepage.<cus:fqdn/></servername>
   <serveralias>simplepage.<cus:machine/></serveralias>

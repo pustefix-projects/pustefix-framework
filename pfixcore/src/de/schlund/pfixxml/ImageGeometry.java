@@ -41,8 +41,8 @@ public class ImageGeometry {
     private static Map      imageinfo = new HashMap();
     private static Category CAT       = Category.getInstance(ImageGeometry.class); 
     
-    public static int getHeight(String docroot, String path) {
-        ImageGeometryData data = getImageGeometryData(docroot, path);
+    public static int getHeight(String path) {
+        ImageGeometryData data = getImageGeometryData(path);
         if (data == null) {
             return -1;
         } else {
@@ -50,8 +50,8 @@ public class ImageGeometry {
         }
     }
     
-    public static int getWidth(String docroot, String path) {
-        ImageGeometryData data = getImageGeometryData(docroot, path);
+    public static int getWidth(String path) {
+        ImageGeometryData data = getImageGeometryData(path);
         if (data == null) {
             return -1;
         } else {
@@ -59,8 +59,8 @@ public class ImageGeometry {
         }
     }
 
-    public static String getType(String docroot, String path) {
-        ImageGeometryData data = getImageGeometryData(docroot, path);
+    public static String getType(String path) {
+        ImageGeometryData data = getImageGeometryData(path);
         if (data == null) {
             return null;
         } else {
@@ -68,9 +68,9 @@ public class ImageGeometry {
         }
     }
 
-    private static ImageGeometryData getImageGeometryData(String docroot, String path) {
+    private static ImageGeometryData getImageGeometryData(String path) {
         synchronized (imageinfo) {
-            File img = Path.create(new File(docroot), path).resolve();
+            File img = PathFactory.getInstance().createPath(path).resolve();
             if (img.exists() && img.canRead() && img.isFile()) {
                 long              mtime = img.lastModified();
                 ImageGeometryData tmp = (ImageGeometryData) imageinfo.get(path);

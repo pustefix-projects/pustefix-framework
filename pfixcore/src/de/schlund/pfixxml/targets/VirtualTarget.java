@@ -22,7 +22,7 @@ package de.schlund.pfixxml.targets;
 
 
 import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.util.Xslt;
+import de.schlund.pfixxml.util.*;
 import java.io.*;
 import java.util.*;
 import javax.xml.transform.*;
@@ -96,7 +96,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0l) {
             synchronized (this) {
                 if (modtime == 0l) {
-                    File doc = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
+                    File doc = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -191,7 +191,7 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
+                        File cachefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
@@ -219,7 +219,8 @@ public abstract class VirtualTarget extends TargetImpl {
         String key          = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        File   cachefile    = new File(getTargetGenerator().getDisccachedir(), key);
+        Path   cachepath    = getTargetGenerator().getDisccachedir();
+        File   cachefile    = new File(cachepath.resolve(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
@@ -240,7 +241,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (templ == null) 
             throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
         TreeMap tmpparams = getParams();
-        AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
+        AbstractXMLServer.addDocroot(tmpparams, cachepath.getBase());
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();

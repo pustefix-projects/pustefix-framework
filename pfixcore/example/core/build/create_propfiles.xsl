@@ -249,10 +249,11 @@
 
   <xsl:template match="servletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
-    <xsl:choose>
-      <xsl:when test="starts-with(@depend, '/')"><xsl:value-of select="@depend"/></xsl:when>
-      <xsl:otherwise><xsl:value-of select="$docroot"/>/<xsl:value-of select="@depend"/></xsl:otherwise>
-    </xsl:choose>
+<!--     <xsl:choose> -->
+<!--       <xsl:when test="starts-with(@depend, '/')"><xsl:value-of select="@depend"/></xsl:when> -->
+<!--       <xsl:otherwise><xsl:value-of select="$docroot"/>/<xsl:value-of select="@depend"/></xsl:otherwise> -->
+<!--     </xsl:choose> -->
+    <xsl:value-of select="@depend"/>
     <xsl:text>&#xa;</xsl:text>
     <xsl:text>xmlserver.servlet.name=</xsl:text>
     <xsl:value-of select="@name"/>

@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Path;
 import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
@@ -41,8 +43,9 @@ public class NavigationFactory {
     }
             
     public synchronized Navigation getNavigation(String navifilename) throws Exception {
-        Navigation navi     = null;
-        File       navifile = new File(navifilename);
+        Navigation navi = null;
+        Path       navipath = PathFactory.getInstance().createPath(navifilename);
+        File       navifile = navipath.resolve();
         long       modfile  = navifile.lastModified();
         long       currmod  = modfile;
         
@@ -54,7 +57,7 @@ public class NavigationFactory {
         if (navi == null || (currmod < modfile)) {
             CAT.warn("***** Creating Navigation object *******");
             long now = System.currentTimeMillis();
-            navi     = new Navigation(navifilename);
+            navi     = new Navigation(navifile);
             navis.put(navifilename, navi);
             modts.put(navifilename, new Long(now));
         }

@@ -6,32 +6,30 @@
  */
 package de.schlund.pfixxml.targets;
 
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.util.*;
 import java.io.File;
-import org.w3c.dom.Document;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.Xml;
 import junit.framework.TestCase;
+import org.w3c.dom.Document;
 
 public class TargetGeneratorTest extends TestCase {
     // TODO
     private static final File DOCROOT = new File("example").getAbsoluteFile();
 
-    public void testDocroot() {
-        assertEquals(new File("/projects"), TargetGenerator.findDocroot(new File("/projects/foo/depend.xml")));
-        assertEquals(new File("/foo/example"), TargetGenerator.findDocroot(new File("/foo/example/core/editor/depend.xml")));
+    static {
+        PathFactory.getInstance().init(DOCROOT.getAbsolutePath());
     }
+    
     public void testEmpty() throws Exception {
 
         TargetGenerator gen;
         
         gen = create("<make project='foo' lang='bar'/>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals(DOCROOT, gen.getDocroot());
         assertEquals("foo", gen.getName());
         assertEquals("bar", gen.getLanguage());
-        assertNotNull(Path.getRelativeString(DOCROOT, gen.getDisccachedir().getPath()));
-        assertNotNull(Path.getRelativeString(DOCROOT, gen.getRecorddir().getPath()));
+        assertNotNull(gen.getDisccachedir().getRelative());
+        assertNotNull(gen.getRecorddir().getRelative());
     }
 
     public void testTarget() throws Exception {
@@ -104,7 +102,7 @@ public class TargetGeneratorTest extends TestCase {
         file = File.createTempFile("depend", "xml", new File("example"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
-        gen = new TargetGenerator(file);
+        gen = new TargetGenerator(Path.create(file));
         return gen;
     }
 }

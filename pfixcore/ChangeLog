@@ -1,3 +1,57 @@
+2004-06-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml
+	* example/common/conf/factory.prop.in
+	* example/common/conf/pustefix.prop.in
+	* example/core/build/create_propfiles.xsl
+	* example/core/editor/conf/config.prop.in
+	* example/core/xsl/include.xsl.in
+	* example/sample1/conf/project.xml.in
+	* example/sample1/txt/pages/main_home.xml
+	* example/servletconf/projects.xml.in
+	* example/simpleform/conf/project.xml.in
+	* example/simplelink/conf/project.xml.in
+	* example/simplepage/conf/project.xml.in
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/EditorProduct.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/auth/FileAuthManager.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixcore/workflow/Navigation.java
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/FactoryInitServlet.java
+	* src/de/schlund/pfixxml/ImageGeometry.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java
+	* src/de/schlund/pfixxml/loader/AppLoader.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* src/de/schlund/pfixxml/targets/TargetImpl.java
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java
+	* tests/junit/de/schlund/pfixcore/editor/EditorProductFactoryTest.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+	The big docroot cleanup. Not completely done, need to rething what to do with config files
+	for apache that really needs absolute file names.  Other than that, the editor seems to work,
+	but the editor APPLET is borked. Which is no big problem, as we want to kill it anyway soon.
+
 2004-06-29  Michael Hartmier  <mhm@schlund.de>
 	* src/de/schlund/pfixxml/util/Xml.java: support Text node serialization
 	* src/de/schlund/pfixxml/targets/SPCacheFactory.java: fix java 1.5 warning

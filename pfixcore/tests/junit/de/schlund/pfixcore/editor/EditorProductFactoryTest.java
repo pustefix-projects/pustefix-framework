@@ -1,15 +1,22 @@
 package de.schlund.pfixcore.editor;
 
-import org.w3c.dom.Document;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.Xml;
+import java.io.File;
 import junit.framework.TestCase;
+import org.w3c.dom.Document;
 
 public class EditorProductFactoryTest extends TestCase {
+
+    static {
+        PathFactory.getInstance().init(new File("example").getAbsolutePath());
+    }
+
     public void testProject() throws Exception {
         Document doc = Xml.parseString(
             "<project name='foo'>" + 
             "  <comment>c1</comment>" + 
-            "  <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "  <depend>simplepage/conf/depend.xml</depend>" + 
             "  <servlet name='foo'/>" + 
             "  <servlet name='bar'/>" +
             "  <documentation>example/core/xsl/navigation.xsl.in</documentation>" +
@@ -17,7 +24,7 @@ public class EditorProductFactoryTest extends TestCase {
         EditorProduct p = EditorProductFactory.createProduct(doc.getDocumentElement(), null);
         assertEquals("foo", p.getName());
         assertEquals("c1", p.getComment());
-        assertEquals("example/simplepage/conf/depend.xml", p.getDepend());
+        assertEquals("simplepage/conf/depend.xml", p.getDepend().getRelative());
         assertNotNull(p.getDocumentation());
         
         PfixcoreServlet[] servlets = p.getPfixcoreServlets();
@@ -28,7 +35,7 @@ public class EditorProductFactoryTest extends TestCase {
 
     public void testStandard() throws Exception {
         EditorProductFactory factory = new EditorProductFactory();
-        factory.readFile("example/servletconf/projects.xml");
+        factory.readFile("servletconf/projects.xml");
         assertNull(factory.getEditorProduct("nosuchproduct"));
         EditorProduct proj = factory.getEditorProduct("simpleform");
         assertNotNull(proj);
@@ -40,12 +47,12 @@ public class EditorProductFactoryTest extends TestCase {
             "<projects>" +
             "  <project name='foo'>" + 
             "    <comment>c1</comment>" + 
-            "    <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "    <depend>simplepage/conf/depend.xml</depend>" + 
             "    <servlet name='xxx'/>" + 
             "  </project>" +
             "  <project name='bar'>" + 
             "    <comment>c1</comment>" + 
-            "    <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "    <depend>simplepage/conf/depend.xml</depend>" + 
             "    <servlet name='yyy' useineditor='true'/>" + 
             "  </project>" +
             "</projects>");
@@ -58,7 +65,7 @@ public class EditorProductFactoryTest extends TestCase {
             "<projects>" +
             "  <project name='bar'>" + 
             "    <comment>c1</comment>" + 
-            "    <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "    <depend>simplepage/conf/depend.xml</depend>" + 
             "    <servlet name='yyy' useineditor='true'/>" + 
             "  </project>" +
             "</projects>");
@@ -71,11 +78,11 @@ public class EditorProductFactoryTest extends TestCase {
             "<projects>" +
             "  <project name='bar'>" + 
             "    <comment>c1</comment>" + 
-            "    <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "    <depend>simplepage/conf/depend.xml</depend>" + 
             "    <servlet name='yyy' useineditor='true'/>" + 
             "  </project>" +
             "  <common><documentation>" +
-            "    <doc_file>/home/mhm/src/workspace/pfixcore/example/core/xsl/navigation.xsl.in</doc_file>" +
+            "    <doc_file>core/xsl/navigation.xsl.in</doc_file>" +
             "  </documentation></common>" +
             "</projects>");
         EditorProduct prod = factory.getEditorProduct("bar");
@@ -87,9 +94,9 @@ public class EditorProductFactoryTest extends TestCase {
             "<projects>" +
             "  <project name='bar'>" + 
             "    <comment>c1</comment>" + 
-            "    <depend>example/simplepage/conf/depend.xml</depend>" + 
+            "    <depend>simplepage/conf/depend.xml</depend>" + 
             "    <servlet name='yyy' useineditor='true'/>" + 
-            "    <documentation>/home/mhm/src/workspace/pfixcore/example/core/xsl/navigation.xsl.in</documentation>" +
+            "    <documentation>core/xsl/navigation.xsl.in</documentation>" +
             "  </project>" +
             "</projects>");
         EditorProduct prod = factory.getEditorProduct("bar");

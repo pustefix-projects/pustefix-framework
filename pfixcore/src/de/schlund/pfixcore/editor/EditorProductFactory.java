@@ -18,30 +18,20 @@
 */
 package de.schlund.pfixcore.editor;
 
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
 
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
 
+
+
+
+
+import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.*;
 import de.schlund.util.FactoryInit;
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.TreeMap;
-
+import java.util.*;
 import org.apache.log4j.Category;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 
 /**
@@ -112,7 +102,7 @@ public class EditorProductFactory implements FactoryInit {
     }
 
     public void readFile(String filename) throws Exception {
-        Document doc = Xml.parseMutable(filename);
+        Document doc = Xml.parseMutable(PathFactory.getInstance().createPath(filename).resolve());
         doc.normalize();
         configure(doc);
     }
@@ -143,9 +133,10 @@ public class EditorProductFactory implements FactoryInit {
         if (depend == null) {
             throw new XMLException("Product needs a depend element!");
         }
-        TargetGenerator gen   = TargetGeneratorFactory.getInstance().createGenerator(new File(depend));
-        Navigation      navi  = NavigationFactory.getInstance().getNavigation(depend);
-        NodeList        nlist = prj.getElementsByTagName("servlet");
+        Path            dependpath = PathFactory.getInstance().createPath(depend);
+        TargetGenerator gen        = TargetGeneratorFactory.getInstance().createGenerator(dependpath);
+        Navigation      navi       = NavigationFactory.getInstance().getNavigation(depend);
+        NodeList        nlist      = prj.getElementsByTagName("servlet");
         if (nlist.getLength() == 0) {
             throw new XMLException("Product needs to have servlet elements defined!");
         }
@@ -176,7 +167,7 @@ public class EditorProductFactory implements FactoryInit {
         }
         
         EditorDocumentation edit = createDocumentation(commonDocumentation, prj);
-        return new EditorProduct(name, comment, depend, gen, navi, servlets, nspaces, edit);
+        return new EditorProduct(name, comment, dependpath, gen, navi, servlets, nspaces, edit);
     }
     
     private static EditorDocumentation createDocumentation(Element common, Element project) throws Exception {

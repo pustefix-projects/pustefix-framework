@@ -186,8 +186,8 @@ or delete the DOCTYPE definition -->
 
   <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
     <depend
-     srcdir="${dir.src}"
-     destdir="${dir.build}"
+     srcdir="${dir.src}:${junit.src}"
+     destdir="${dir.build}:${junit.build}"
      cache="${dir.build}"
      >
     </depend>

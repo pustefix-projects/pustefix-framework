@@ -18,25 +18,27 @@
 */
 
 package de.schlund.pfixcore.editor.auth;
+
+
+
+import de.schlund.pfixcore.util.UnixCrypt;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
-
 import javax.xml.transform.TransformerException;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixcore.util.UnixCrypt;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * Implementation of the <code>AuthManager</code> interface. Uses
@@ -46,13 +48,12 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class FileAuthManager implements AuthManager {
-    private static TreeMap knownusers = new TreeMap();
-    private static TreeMap floatingusers = new TreeMap();
-    private static Category CAT = Category.getInstance(FileAuthManager.class.getName());
-    private static FileAuthManager instance = new FileAuthManager();
-
-    public Object LOCK = new Object();
-    private String userfile;
+    private static TreeMap         knownusers    = new TreeMap();
+    private static TreeMap         floatingusers = new TreeMap();
+    private static Category        CAT           = Category.getInstance(FileAuthManager.class.getName());
+    private static FileAuthManager instance      = new FileAuthManager();
+    public Object                  LOCK          = new Object();
+    private Path                   userfile;
 
     public static FileAuthManager getInstance() {
         return instance;
@@ -82,7 +83,7 @@ public class FileAuthManager implements AuthManager {
     public void login(String enteredPasswd, EditorUserInfo info) throws WrongPasswordException {
         if (info == null)
             throw new IllegalArgumentException("Null is not allowed here");
-
+        
         if (!UnixCrypt.matches(info.getPwd(), enteredPasswd)) {
             if (CAT.isDebugEnabled())
                 CAT.debug("Paswords do not match. Throwing WrongPasswordException.");
@@ -127,7 +128,7 @@ public class FileAuthManager implements AuthManager {
     }
 
     public void setPwdFile(String filename) {
-        this.userfile = filename;
+        this.userfile = PathFactory.getInstance().createPath(filename);
     }
     //-------------------------------------------------------------------
 
@@ -207,7 +208,7 @@ public class FileAuthManager implements AuthManager {
         throws SAXException, IOException, XMLException, TransformerException {
         Document doc;
         synchronized (LOCK) {
-            File ufile = new File(userfile);
+            File ufile = userfile.resolve();
             if (ufile.exists() && ufile.isFile() && ufile.canRead()) {
                 doc = Xml.parseMutable(ufile);
             } else {
@@ -305,7 +306,7 @@ public class FileAuthManager implements AuthManager {
         }
 
         synchronized (LOCK) {
-            Xml.serialize(doc, userfile, true, true);
+            Xml.serialize(doc, userfile.resolve(), true, true);
         }
     }
 

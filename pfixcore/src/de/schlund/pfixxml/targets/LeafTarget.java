@@ -18,11 +18,11 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
-import java.io.*;
-import org.apache.log4j.*;
 
-import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.*;
+import java.io.*;
+import java.util.*;
+import org.apache.log4j.*;
 
 /**
  * LeafTarget.java
@@ -69,7 +69,7 @@ public abstract class LeafTarget extends TargetImpl {
     public boolean needsUpdate() throws Exception  {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            File doc       = new File(getTargetGenerator().getDocroot(), getTargetKey());
+            File doc       = PathFactory.getInstance().createPath(getTargetKey()).resolve();
             if (doc.lastModified() > mymodtime) {
                 return true;
             }
@@ -102,7 +102,7 @@ public abstract class LeafTarget extends TargetImpl {
 
     protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long mymodtime  = getModTime(); 
-        long maxmodtime = new File(getTargetGenerator().getDocroot(), getTargetKey()).lastModified(); 
+        long maxmodtime = PathFactory.getInstance().createPath(getTargetKey()).resolve().lastModified(); 
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
         

@@ -108,7 +108,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                     if (log4jconfig == null & log4jconfig.equals("")) {
                         throw new ServletException("*** FATAL: Need the pustefix.log4j.config property... ***");
                     }
-                    DOMConfigurator.configure(log4jconfig);
+                    DOMConfigurator.configure(PathFactory.getInstance().createPath(log4jconfig).resolve().getPath());
                 }
                 CAT.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");

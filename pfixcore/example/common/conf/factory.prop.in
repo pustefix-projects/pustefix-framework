@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
+  <!-- This will be the only place in a future version where docroot is referenced! -->
+  <prop name="pustefix.docroot"><cus:docroot/></prop>
+  
+  <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
 
   <!-- List of all factories to init -->
-  <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
-  <prop name="factory.initialize.01">de.schlund.util.statuscodes.StatusCodeFactory</prop>
-  <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
-  <prop name="factory.initialize.03">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
-  <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorProductFactory</prop>
-  <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
-  <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
-  <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
-  <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
+
+  <prop name="factory.initialize.00">de.schlund.pfixxml.PathFactory</prop>
+  <prop name="factory.initialize.01">de.schlund.pfixxml.loader.AppLoader</prop>
+  <prop name="factory.initialize.02">de.schlund.util.statuscodes.StatusCodeFactory</prop>
+  <prop name="factory.initialize.03">de.schlund.pfixxml.targets.SPCacheFactory</prop>
+  <prop name="factory.initialize.04">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
+  <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorProductFactory</prop>
+  <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
+  <prop name="factory.initialize.07">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
+  <prop name="factory.initialize.08">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
+  <prop name="factory.initialize.09">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
@@ -31,7 +36,7 @@
   <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
 
   <!-- EditorUserFactory -->
-  <prop name="editoruserfactory.userdata"><cus:docroot/>common/conf/userdata.xml</prop>
+  <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
 
   <!-- EditorProductFactory -->
   <cus:choose>
@@ -39,21 +44,15 @@
       <prop name="editorproductfactory.delayinit">false</prop>
     </cus:test>
   </cus:choose>
-  <prop name="editorproductfactory.productdata"><cus:docroot/>servletconf/projects.xml</prop>
+  <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
 
   <!-- EditorCommonsFactory -->
-  <prop name="editorcommonsfactory.includefile.1"><cus:docroot/>common/dyntxt/statusmessages.xml</prop>
+  <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
   
   <!--ExceptionHandler-->
-  <prop name="exceptionhandler.propertyfile"><cus:docroot/>common/conf/exceptionhandler.prop</prop>
+  <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
   
   <!--AppLoader-->
-  <prop name="apploader.propertyfile"><cus:docroot/>common/conf/apploader.prop</prop>
+  <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
   
 </properties>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

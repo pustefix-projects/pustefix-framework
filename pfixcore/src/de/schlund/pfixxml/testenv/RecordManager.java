@@ -1,23 +1,15 @@
 package de.schlund.pfixxml.testenv;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
+
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.util.*;
+import java.io.*;
+import javax.servlet.http.*;
 import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * The purpose of this class is to log
@@ -54,11 +46,11 @@ public final class RecordManager {
      * @param path to file with configuration data. Mostly this
      * is the path to the dependeny configuration file in your project.
      */
-    RecordManager(String depxml) throws SAXException, IOException  {
+    RecordManager(Path depxml) throws SAXException, IOException  {
         if (CAT.isDebugEnabled()) {
             CAT.debug(this.getClass().getName() + " initializing");
         }
-        Document doc = Xml.parseMutable(depxml);
+        Document doc = Xml.parseMutable(depxml.resolve());
         getConfigFromXML(doc);
         debug("RecordManager constructor end");
     }

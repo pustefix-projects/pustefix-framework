@@ -55,9 +55,9 @@ public class CheckIncludes {
         
         input = new BufferedReader(new FileReader(allprj));
         while ((line = input.readLine()) != null) {
-            line = pwd + line;
-            TargetGenerator gen = new TargetGenerator(new File(line));
-            generators.put(line, gen);
+            // line = pwd + line;
+            TargetGenerator gen = new TargetGenerator(PathFactory.getInstance().createPath(line));
+            generators.put(pwd + line, gen);
         }
         input.close();
 
@@ -98,8 +98,9 @@ public class CheckIncludes {
         String allimgarg = args[3];
 
         String dir = new File(".").getCanonicalPath() + "/";
-
+        
         DOMConfigurator.configure(dir + "core/conf/generator_quiet.xml");
+        PathFactory.getInstance().init(dir);
         
         CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
         instance.doCheck();

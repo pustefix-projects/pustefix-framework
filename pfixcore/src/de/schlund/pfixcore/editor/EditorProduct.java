@@ -19,12 +19,13 @@
 
 package de.schlund.pfixcore.editor;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.Path;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
 
 /**
  * EditorProduct.java
@@ -42,14 +43,14 @@ public class EditorProduct {
     
     private final String                 name;
     private final String                 comment;
-    private final String                 depend;
+    private final Path                   depend;
     private final TargetGenerator        generator;
     private final Navigation             navigation;
     private final PfixcoreServlet[]      servlets;
     private final PfixcoreNamespace[]    nspaces;
     private final EditorDocumentation    editdoku;
     
-    public EditorProduct (String name, String comment, String depend, TargetGenerator generator,
+    public EditorProduct (String name, String comment, Path depend, TargetGenerator generator,
                           Navigation navigation, PfixcoreServlet[] servlets, PfixcoreNamespace[] nspaces, 
                           EditorDocumentation editdoku) {
         this.name       = name;
@@ -65,7 +66,7 @@ public class EditorProduct {
 
     public String getName() {return name;}
     public String getComment() {return comment;}
-    public String getDepend() {return depend;}
+    public Path   getDepend() {return depend;}
     public TargetGenerator getTargetGenerator() {return generator;}
     public Navigation getNavigation() {return navigation;}
     public PfixcoreServlet[] getPfixcoreServlets() {return servlets;}

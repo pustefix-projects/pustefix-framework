@@ -19,19 +19,20 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
+
+
+
+import de.schlund.pfixxml.PathFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
@@ -211,21 +212,21 @@ class PropertyManager {
      * @exception PFConfigurationException if any errors occur.
      */
     void init(String propfile) throws PFConfigurationException {
-        initialised_=false;
-        file_       =new File(propfile);
-        FileInputStream istream=null;
+        initialised_            = false;
+        file_                   = PathFactory.getInstance().createPath(propfile).resolve();
+        FileInputStream istream = null;
         try {
-            istream=new FileInputStream(file_);
-        } catch(FileNotFoundException e) {
+            istream = new FileInputStream(file_);
+        } catch (FileNotFoundException e) {
             throw new PFConfigurationException("File Not Found :" + propfile, e);
         }
         try {
-            properties_=new Properties();
+            properties_ = new Properties();
             properties_.load(istream);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new PFConfigurationException("Could Not Load Properties ", e);
         }
-        mtime_=file_.lastModified();
+        mtime_ = file_.lastModified();
     }
 
 

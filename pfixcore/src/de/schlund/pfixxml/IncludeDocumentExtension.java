@@ -76,23 +76,17 @@ public final class IncludeDocumentExtension {
      * @throws Exception on all errors
      */
     public static final Object get(XPathContext context, String path_str, String part, String product,
-                                   String docroot_str, String targetgen, String targetkey,
+                                   String targetgen, String targetkey,
                                    String parent_part_in, String parent_product_in, String computed_inc) throws Exception {
 
-        File docroot = new File(docroot_str);
-        String parent_path_str = "";
-        String parent_part     = "";
-        String parent_product  = "";
+        PathFactory pf              = PathFactory.getInstance();
+        String      parent_path_str = "";
+        String      parent_part     = "";
+        String      parent_product  = "";
+        Path        tgen_path       = pf.createPath(targetgen);
         
-        NodeInfo citem = (NodeInfo) context.getContextItem();
-        if (computed_inc.equals("false") && isIncludeDocument(citem)) {
-            parent_path_str = ((NodeInfo) context.getContextItem()).getSystemId();
-            if (parent_path_str.startsWith("file://" + docroot)) {
-                parent_path_str = parent_path_str.substring(("file://" + docroot).length());
-            }
-            if (parent_path_str.startsWith("/")) {
-                parent_path_str = parent_path_str.substring(1);
-            }
+        if (computed_inc.equals("false") && isIncludeDocument(context)) {
+            parent_path_str = makeSystemIdRelative(context);
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
         }
@@ -106,15 +100,15 @@ public final class IncludeDocumentExtension {
         }
         
         try {
-            Path            path        = Path.create(docroot, path_str);
-            Path            parent_path = "".equals(parent_path_str)? null : Path.create(docroot, parent_path_str);
+            Path            path        = pf.createPath(path_str);
+            Path            parent_path = "".equals(parent_path_str) ? null : pf.createPath(parent_path_str);
             boolean         dolog       = !targetkey.equals(NOTARGET);
             File            incfile     = path.resolve();
             int             length      = 0;
             IncludeDocument iDoc        = null;
             Document        doc;
             
-            VirtualTarget target = (VirtualTarget) TargetGeneratorFactory.getInstance().createGenerator(Path.create(docroot, targetgen).resolve()).getTarget(targetkey);
+            VirtualTarget target = (VirtualTarget) TargetGeneratorFactory.getInstance().createGenerator(tgen_path).getTarget(targetkey);
             if (!incfile.exists()) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEFAULT,
@@ -258,19 +252,37 @@ public final class IncludeDocumentExtension {
             }
         } catch (Exception e) {
             Object[] args = { path_str, part, product,
-                              docroot, targetgen, targetkey, 
+                              targetgen, targetkey, 
                               parent_path_str, parent_part, parent_product};
             String sb = MessageFormat.format("path={0}|part={1}|product={2}|"+
-                                             "docroot={3}|targetgen={4}|targetkey={5}|"+
-                                             "parent_path={6}|parent_part={7}|parent_product={8}", args);
+                                             "targetgen={3}|targetkey={4}|"+
+                                             "parent_path={5}|parent_part={6}|parent_product={7}", args);
             CAT.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
             CAT.error(e);
             throw e;
         }
     }
 
+    public static final String makeSystemIdRelative(XPathContext context) {
+        return makeSystemIdRelative(context, "dummy");
+    }
 
-    public static boolean isIncludeDocument(NodeInfo citem) {
+    public static final String makeSystemIdRelative(XPathContext context, String dummy) {
+        NodeInfo citem   = (NodeInfo) context.getContextItem();
+        String   sysid   = citem.getSystemId();
+        String   docroot = PathFactory.getInstance().createPath("dummy").getBase().getPath();
+
+        if (sysid.startsWith("file://" + docroot)) {
+            sysid = sysid.substring(("file://" + docroot).length());
+        }
+        if (sysid.startsWith("/")) {
+            sysid = sysid.substring(1);
+        }
+        return sysid;
+    }
+
+    public static boolean isIncludeDocument(XPathContext context) {
+        NodeInfo citem   = (NodeInfo) context.getContextItem();
         return ((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts");
     }
 }// end of class IncludeDocumentExtension

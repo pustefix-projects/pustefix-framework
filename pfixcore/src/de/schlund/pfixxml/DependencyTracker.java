@@ -35,30 +35,28 @@ public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
     /** xslt extension */
-    public static String log(XPathContext context, String type,
-                             String path, String part, String product, String docroot_str,
-                             String parent_part_in, String parent_product_in,
-                             String targetGen, String targetKey) throws Exception {
+    public static String logImage(XPathContext context, String path,
+                                  String parent_part_in, String parent_product_in,
+                                  String targetGen, String targetKey) throws Exception {
 
         if (targetKey.equals("__NONE__")) {
             return "0";
         }
 
-        File docroot = new File(docroot_str);
+        Path            tgen_path = PathFactory.getInstance().createPath(targetGen);
+        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+        VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
+
         String parent_path    = "";
         String parent_part    = "";
         String parent_product = "";
 
-        NodeInfo citem = (NodeInfo) context.getContextItem();
-        if (IncludeDocumentExtension.isIncludeDocument(citem)) {
-            parent_path     = ((NodeInfo) context.getContextItem()).getSystemId();
+        if (IncludeDocumentExtension.isIncludeDocument(context)) {
+            parent_path     = IncludeDocumentExtension.makeSystemIdRelative(context);
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
         }
         
-        File            targetFile = Path.create(docroot, targetGen).resolve();
-        TargetGenerator gen        = TargetGeneratorFactory.getInstance().createGenerator(targetFile);
-        VirtualTarget   target     = (VirtualTarget) gen.getTarget(targetKey);
         if (target == null) {
             CAT.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
             return "1";
@@ -67,28 +65,15 @@ public class DependencyTracker {
             CAT.error("Error adding Dependency: empty path"); 
             return "1"; 
         }
-        Path relativePath = relative(docroot, path);
-        if (relativePath == null) {
-            CAT.error("Error adding Dependency: missing src attribute (docroot=" + docroot + ", path=" + path + ")"); 
-            return "1";
-        }
+        Path relativePath   = PathFactory.getInstance().createPath(path);
+        Path relativeParent = parent_path.equals("") ? null : PathFactory.getInstance().createPath(parent_path);
         try {
-            logTyped(type, relativePath, part, product, relative(docroot, parent_path), parent_part, parent_product, target);
+            logTyped("image", relativePath, "", "", relativeParent, parent_part, parent_product, target);
             return "0";
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 
             return "1"; 
         }
-    }
-    
-    private static Path relative(File docroot, String path) {
-        if (path.startsWith(File.separator)) {
-            path = path.substring(1); // TODO: kind of ugly - fix gif src attributes instead!!
-        }
-        if ("".equals(path)) {
-            return null;
-        }
-        return Path.create(docroot, path);
     }
     
     public static void logTyped(String type,Path path, String part, String product,

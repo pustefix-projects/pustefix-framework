@@ -227,7 +227,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // newer any more, so set the mod time of the target to the mod time of the
                     // file in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
-                        setModTime(new File(getTargetGenerator().getDisccachedir(), getTargetKey()).lastModified());
+                        setModTime(new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey()).lastModified());
                     }
 
                     // now the target is generated
@@ -253,7 +253,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
-        File thefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         long disk_mod_time = thefile.lastModified();
         if (CAT.isDebugEnabled()) {
             CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator

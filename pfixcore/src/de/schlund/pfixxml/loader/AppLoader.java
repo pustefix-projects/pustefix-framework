@@ -36,13 +36,12 @@ import org.apache.log4j.Category;
  */
 public class AppLoader implements FactoryInit,Runnable {
  
-    private Category CAT=Category.getInstance(getClass().getName());
-    private static AppLoader instance=new AppLoader();
-    private AppClassLoader loader;
-    private ArrayList loaderHistory=new ArrayList();
-	private static SimpleDateFormat dateFormat=new SimpleDateFormat();
-    private WeakHashMap reloaders=new WeakHashMap();
-    //private ArrayList reloaders=new ArrayList();
+    private Category                CAT           = Category.getInstance(getClass().getName());
+    private static AppLoader        instance      = new AppLoader();
+    private AppClassLoader          loader;
+    private ArrayList               loaderHistory = new ArrayList();
+    private static SimpleDateFormat dateFormat    = new SimpleDateFormat();
+    private WeakHashMap             reloaders     = new WeakHashMap();
     
     public static final int AUTO_TRIGGER=0;
     public static final int MANUAL_TRIGGER=1;

@@ -19,11 +19,12 @@
 
 package de.schlund.pfixcore.workflow;
 
-import org.w3c.dom.*;
-import org.apache.log4j.*;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import java.io.File;
 import java.util.*;
+import org.apache.log4j.*;
+import org.w3c.dom.*;
 
 /**
  *
@@ -35,8 +36,8 @@ public class Navigation {
 
     private NavigationElement pageroot = new NavigationElement("__NONE__", "__NONE__");
     
-    public Navigation(String navifilename) throws Exception {
-        Document        navitree = Xml.parseMutable(navifilename);
+    public Navigation(File navifile) throws Exception {
+        Document        navitree = Xml.parseMutable(navifile);
         List            nl       = XPath.select(navitree, "/make/navigation/page");
         recursePagetree(pageroot, nl);
     }

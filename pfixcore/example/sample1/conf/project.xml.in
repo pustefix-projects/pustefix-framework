@@ -5,7 +5,7 @@
   
   <active>true</active>
   <comment>Sample1 Application For Pfixcore</comment>
-  <depend><cus:docroot/>sample1/conf/depend.xml</depend>
+  <depend>sample1/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>sample1.<cus:fqdn/></servername>
   <serveralias>sample1.<cus:machine/></serveralias>

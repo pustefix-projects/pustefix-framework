@@ -119,7 +119,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private File            targetconf        = null;
+    private Path            targetconf        = null;
     private boolean         render_external   = false;
     private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
@@ -164,9 +164,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     private void initValues() throws ServletException {
-        targetconf = new File(getProperty(PROP_DEPEND));
+        targetconf  = PathFactory.getInstance().createPath(getProperty(PROP_DEPEND));
         servletname = getProperty(PROP_NAME);
-
+        
         String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
         if (prohibitDebug != null && (prohibitDebug.equals("true") || prohibitDebug.equals("1")))
             allowDebug = false;
@@ -443,11 +443,11 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         // Set stylesheet parameters for editconsole
         if (recordmodeAllowed) {
-            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath()).getTestcaseName(session);         
+            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
             if (name != null) {
                 params.put(PARAM_RECORDMODE, name);
             }
-            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath()).isRecordmodeAllowed();
+            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
             params.put("recordmode_allowed", new Boolean(allowed).toString());
         }
 
@@ -467,7 +467,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             
             // start recording if allowed and enabled
             if (recordmodeAllowed) {
-                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath());
+                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
                 recorder.tryRecord(preq, res, spdoc, session);
             }
             if (isDebugEnabled()) {
@@ -620,15 +620,15 @@ public abstract class AbstractXMLServer extends ServletManager {
             try {
                 Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
             } catch (TransformerException e) {
-            	if(e.getException() instanceof SocketException) {
+            	if (e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());
                     if (isInfoEnabled()) {
                         CAT.info("[Ignored TransformerException]", e);
                     }
-            	}	else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                		CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                	} 	else 
-                			throw e;
+            	} else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                } else 
+                    throw e;
             }
         } else if (plain_xml) {
             res.setContentType(XML_CONTENT_TYPE);
@@ -736,9 +736,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, Path.getRelativeString(generator.getDocroot(), targetconf.getPath()));
+        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        addDocroot(paramhash, generator.getDocroot());
+        addDocroot(paramhash, targetconf.getBase());
         return paramhash;
     }
 

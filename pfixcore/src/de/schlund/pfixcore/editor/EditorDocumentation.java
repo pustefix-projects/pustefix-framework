@@ -1,17 +1,18 @@
 package de.schlund.pfixcore.editor;
 
+
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author zaich
@@ -43,7 +44,7 @@ public class EditorDocumentation {
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             try {
-                File file = new File(path);
+                File file = PathFactory.getInstance().createPath(path).resolve();
                 Long time = new Long(file.lastModified());
                 if (time != null && path != null) {
                     filesMap.put(path, time);

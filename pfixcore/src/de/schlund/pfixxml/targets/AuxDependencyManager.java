@@ -19,12 +19,12 @@
 
 package de.schlund.pfixxml.targets;
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
 import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 import org.w3c.dom.*;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.Xml;
 
 /**
  * AuxDependencyManager.java
@@ -72,22 +72,21 @@ public class AuxDependencyManager implements DependencyParent {
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
-        File   auxfile = new File(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
+        File   auxfile = new File(target.getTargetGenerator().getDisccachedir().resolve(), target.getTargetKey() + ".aux");
         if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
             Document        doc     = Xml.parseMutable(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
-                File docroot = target.getTargetGenerator().getDocroot();
                 for (int j = 0; j < auxdeps.getLength(); j++) {
-                    String type            = ((Element) auxdeps.item(j)).getAttribute("type");
-                    Path path              = Path.create(docroot, ((Element) auxdeps.item(j)).getAttribute("path"));
-                    String part            = ((Element) auxdeps.item(j)).getAttribute("part");
-                    String product         = ((Element) auxdeps.item(j)).getAttribute("product");
-                    String parent_attr     = ((Element) auxdeps.item(j)).getAttribute("parent_path");
-                    Path parent_path       = "".equals(parent_attr)? null : Path.create(docroot, parent_attr);
-                    String parent_part     = ((Element) auxdeps.item(j)).getAttribute("parent_part");
-                    String parent_product  = ((Element) auxdeps.item(j)).getAttribute("parent_product");
-                    DependencyType thetype = DependencyType.getByTag(type);
+                    String         type           = ((Element) auxdeps.item(j)).getAttribute("type");
+                    Path           path           = PathFactory.getInstance().createPath(((Element) auxdeps.item(j)).getAttribute("path"));
+                    String         part           = ((Element) auxdeps.item(j)).getAttribute("part");
+                    String         product        = ((Element) auxdeps.item(j)).getAttribute("product");
+                    String         parent_attr    = ((Element) auxdeps.item(j)).getAttribute("parent_path");
+                    Path           parent_path    = "".equals(parent_attr)? null : PathFactory.getInstance().createPath(parent_attr);
+                    String         parent_part    = ((Element) auxdeps.item(j)).getAttribute("parent_part");
+                    String         parent_product = ((Element) auxdeps.item(j)).getAttribute("parent_product");
+                    DependencyType thetype        = DependencyType.getByTag(type);
                     addDependency(thetype, path, part, product, parent_path, parent_part, parent_product);
                 }
             }
@@ -96,7 +95,7 @@ public class AuxDependencyManager implements DependencyParent {
 
     public synchronized void saveAuxdepend() throws IOException  {
         CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
-        File path = new File(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
+        File path = new File(target.getTargetGenerator().getDisccachedir().resolve(), target.getTargetKey() + ".aux");
         
         Document auxdoc = Xml.createDocument();
         Element  root   = auxdoc.createElement("aux");
@@ -155,7 +154,7 @@ public class AuxDependencyManager implements DependencyParent {
             refcounter.ref(child, target);
         } else {
             throw new RuntimeException("AuxDep with parent path/part/product not all == null or all != null: "
-                                       + parent_path + "/" + parent_part + "/" + parent_product);
+                                       + parent_path + "#" + parent_part + "#" + parent_product);
         }
     }
 
