@@ -50,22 +50,18 @@ var __js_Cookie = {
   set : function(name, value)
   {
     var c = this.get_sub().split(this.splitter)
-
     var n = [];
 
+  	// copy other values
     for (var i = 0; i<c.length; i++)
     {
     	if (c[i] == "") continue;
-    	
     	var d = c[i].split(":");
-    	
-    	if (d[0] != name)
-    	  // copy other values
-    	  n[i] = c[i];
-    	else
-    	  // move value set to first position
-        n.unshift(name + ":" + value);
+    	if (d[0] != name) n[i] = c[i];
     };
+
+    // add new value pair
+    n.unshift(name + ":" + value);
 
     // copy to destination array
     d=n;
@@ -105,7 +101,7 @@ var __js_Cookie = {
     // Überflüssige Cookies entfernen
     // Auch die Löschen, die vor einer Rekonfiguration von maxarr angelegt worden sind
     for(var i=j; i<this.maxarrhard; i++) this.erase(this.base + this.norm_sub(i));
-      
+
     return true;
   },
 
