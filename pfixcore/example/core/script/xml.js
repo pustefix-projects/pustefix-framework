@@ -19,7 +19,7 @@ function xmlRequest() {
   this.callback = arguments[2];
   this.context  = arguments[3];
 
-  this.iframes  = 0;
+  this.iframes  = 1;
 
   this.msXmlHttp = "";
 
@@ -167,21 +167,22 @@ xmlRequest.prototype.start = function( content ) {
 
     try {
 
-      var iframe;
-
       //--------------
       // result frame
       //--------------
 
-      iframe = document.createElement("iframe");
-      iframe.style.visibility = "hidden";
-      //     iframe.style.position   = "absolute";
-      //     iframe.style.left       = "0px";
-      //     iframe.style.top        = "0px";
-      iframe.style.width      = "0px";
-      iframe.style.height     = "0px";    
-      iframe.id               = "pfxxmliframe"+i;
-      iframe.name             = "pfxxmliframe"+i;
+      var el;
+
+      //      el = document.createElement("iframe");
+      //      el.style.visibility = "hidden";
+      //      el.style.display = "none";
+      //       el.style.position   = "absolute";
+      //       el.style.left       = "500px";
+      //       el.style.top        = "0px";
+      //       el.style.width      = "500px";
+      //       el.style.height     = "300px";    
+      //       el.name             = "pfxxmliframe"+i;
+      //       el.id               = "pfxxmliframe"+i;
 
       if( this.method.toUpperCase() == "GET" ) {
 
@@ -189,8 +190,13 @@ xmlRequest.prototype.start = function( content ) {
         // GET
         //-----
 
-        iframe.src            = this.url;
-        document.body.appendChild(iframe);
+        el = document.createElement("iframe");
+        el.style.display = "none";
+        el.name             = "pfxxmliframe"+i;
+        el.id               = "pfxxmliframe"+i;
+
+        el.src            = this.url;
+        document.body.appendChild(el);
         _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
 
       } else {
@@ -199,23 +205,22 @@ xmlRequest.prototype.start = function( content ) {
         // POST (or others, which are not supported)
         //-------------------------------------------
 
-        document.body.appendChild(iframe);
+        document.body.innerHTML += '<' + 'iframe id="pfxxmliframe' + i + '" name="pfxxmliframe' + i + '" style="display:none"><' + '/iframe>';
+        //        document.body.appendChild(el);
 
         //------------
         // form frame
         //------------
 
-        iframe = document.createElement("iframe");
-        iframe.style.visibility = "hidden";
-        //     iframe.style.position   = "absolute";
-        //     iframe.style.left       = "0px";
-        //     iframe.style.top        = "0px";
-        iframe.style.width      = "0px";
-        iframe.style.height     = "0px";    
-        iframe.id               = "pfxxmliframeform"+i;
-        iframe.name             = "pfxxmliframeform"+i;
-
-        document.body.appendChild(iframe);
+        el = document.createElement("div");
+        //        el.style.visibility = "hidden";
+        el.style.display = "none";
+//         el.style.position   = "absolute";
+//         el.style.left       = "-1000px";
+//         el.style.top        = "0px";
+//         el.style.width      = "1px";
+//         el.style.height     = "1px";    
+        el.id               = "pfxxmliframeform"+i;
 
         _xml[i] = this.callback;
         _xmlThis[i] = this;
@@ -223,35 +228,29 @@ xmlRequest.prototype.start = function( content ) {
         _xmlTimerCount[i] = 0;
 
         var self = this;
-        setTimeout( function() {
 
-          var iDoc;
-          try {
-            iDoc = iframe.contentWindow.document;
-          } catch(e) {
-            try {
-              iDoc =  iframe.contentDocument;
-            } catch(e) {
-              throw "could not use iframe";
-            }
-          }
+        window.setTimeout( function() {
 
-          var form = iDoc.createElement("form");
-          form.action = self.url;
-          form.target = "pfxxmliframe"+i;
-          form.method = self.method;
+          var elForm = document.createElement("form");
+          elForm.action = self.url;
+          elForm.target = "pfxxmliframe"+i;
+          elForm.method = self.method;
+          
+          var elField = document.createElement("textarea");
+          elField.name = "soapmessage";
+          elField.value = content;
+          elForm.appendChild(elField);
+          el.appendChild(elForm);
+          document.body.appendChild(el);
+          
+          document.getElementById("pfxxmliframeform"+i).target = "pfxxmliframe"+i;
 
-          var field = iDoc.createElement("textarea");
-          field.name = "soapmessage";
-          field.value = content;
-          form.appendChild(field);
+          window.setTimeout( function() {
+            document.forms[document.forms.length-1].submit();
+          }, 10 );
+        }, 10 );        
 
-          iDoc.body.appendChild(form);
-        
-          iDoc.forms[iDoc.forms.length-1].submit();
-
-          _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
-        }, 5 );
+        _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
       }
 
       return "iframe";
@@ -282,14 +281,14 @@ function customOnReadyStateChange() {
       try {
         if( _xmlTimerCount[i]<_xmlTimerCountMax ) {
 
-          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.body.innerHTML && 
-              (/blank\.hmtl$/.test(window.frames['pfxxmliframe'+i].location) || /about\:blank$/.test(window.frames['pfxxmliframe'+i].location)) ) {
+          //          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].document.body && !window.frames['pfxxmliframe'+i].document.body.innerHTML ) {
+          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].location == "about:blank" ) {
             _xmlTimerCount[i]++;
           } else {
 
             _xml[i].call( _xmlThis[i].context, window.frames['pfxxmliframe'+i].document );
             _xml[i] = null;
-            cancelOnReadyStateChange(i);
+            cancelOnReadyStateChange(i); //, "regular finalization");
           }
         } else {
           cancelOnReadyStateChange(i, "too many intervals");
@@ -308,7 +307,7 @@ function cancelOnReadyStateChange( i, msg ) {
 
   try {
     if( msg ) {
-      //      alert("cancelOnReadyStateChange:" + i + ", " + msg);
+      alert("cancelOnReadyStateChange:" + i + ", " + msg);
     }
     window.clearInterval(_xmlTimer[i]);
     _xmlTimer[i] = null;
@@ -317,12 +316,12 @@ function cancelOnReadyStateChange( i, msg ) {
   }
 
   try {
-    var iframe;
-    if( iframe = document.getElementById("pfxxmliframe"+i) ) {
-      document.body.removeChild( iframe );
+    var el;
+    if( el = document.getElementById("pfxxmliframe"+i) ) {
+      document.body.removeChild(el);
     }
-    if( iframe = document.getElementById("pfxxmliframeform"+i) ) {
-      document.body.removeChild( iframe );
+    if( el = document.getElementById("pfxxmliframeform"+i) ) {
+      document.body.removeChild(el);
     }
   } catch(e) {
     alert("Exception3:" + e);
