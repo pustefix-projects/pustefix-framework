@@ -94,30 +94,32 @@ public class AuxDependency implements DependencyParent, Comparable {
         return product;
     }
     
-    public long getModTime(boolean willrebuild) {
+    public long getModTime() {
         File check = path.resolve();
         if (check.exists() && check.canRead() && check.isFile()) {
-            if (last_lastModTime == 0) {  // We change from the file being checked once to not exist to "it exists now".
-                                          // so we need to make sure that the target will be rebuild.
-                if (willrebuild) { // make sure to return the same answer until we will rebuild
-                    last_lastModTime = check.lastModified();
+            if (last_lastModTime == 0) {
+                // We change from the file being checked once to not exist to "it exists now".
+                // so we need to make sure that all targets using it will be rebuild.
+                TreeSet targets = getAffectedTargets();
+                for (Iterator i = targets.iterator(); i.hasNext(); ) {
+                    VirtualTarget target = (VirtualTarget) i.next();
+                    target.setForceUpdate();
                 }
-                return System.currentTimeMillis();
-            } else { // The file existed already the last round of checks.
-                last_lastModTime = check.lastModified();
-                return last_lastModTime;
             }
+            last_lastModTime = check.lastModified();
+            return last_lastModTime;
         } else {
-            if (last_lastModTime > 0) { // The file existed when last check has been made,
-                                        // so make sure target is being rebuild
-                if (willrebuild) { // make sure to return the same answer until we will rebuild
-                    last_lastModTime = 0;
+            if (last_lastModTime > 0) {
+                // The file existed when last check has been made,
+                // so make sure each target using it is being rebuild
+                TreeSet targets = getAffectedTargets();
+                for (Iterator i = targets.iterator(); i.hasNext(); ) {
+                    VirtualTarget target = (VirtualTarget) i.next();
+                    target.setForceUpdate();
                 }
-                return System.currentTimeMillis();
-            } else {
-                last_lastModTime = 0;
-                return 0;
             }
+            last_lastModTime = 0;
+            return 0;
         }
     }
 

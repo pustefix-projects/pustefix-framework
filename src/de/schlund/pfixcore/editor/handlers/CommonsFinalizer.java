@@ -79,7 +79,7 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
                 if(CAT.isDebugEnabled()) 
                     CAT.debug("User is not allowed to edit this dyninclude. No lock required!");    
             } 
-            long    mod     = currcomm.getModTime(false);
+            long    mod     = currcomm.getModTime();
             Path path       = currcomm.getPath();
             String  part    = currcomm.getPart();
             String  product = currcomm.getProduct();

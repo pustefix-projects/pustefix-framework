@@ -187,7 +187,7 @@ public class AuxDependencyManager implements DependencyParent {
         long max = 0;
         for (Iterator i = in.iterator(); i.hasNext(); ) {
             AuxDependency aux = (AuxDependency) i.next();
-            max = Math.max(max, aux.getModTime(willrebuild));
+            max = Math.max(max, aux.getModTime());
             Set children = aux.getChildren();
             if (children != null) {
                 max = Math.max(max, lookForTimestamp(children, willrebuild));

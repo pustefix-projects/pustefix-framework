@@ -69,7 +69,7 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
                     CAT.debug("User is not allowed to edit this image. No lock required.");
                 }
             }
-            long    mod  = currimage.getModTime(false);
+            long    mod  = currimage.getModTime();
             Path    path = currimage.getPath();
             String  name = path.getName();
             root = resdoc.createNode("currentimageinfo");
@@ -131,7 +131,7 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
             Element img = resdoc.createSubNode(elem, "image");
             img.setAttribute("path", path.getRelative());
             img.setAttribute("name", name);
-            if (curr.getModTime(false) == 0) {
+            if (curr.getModTime() == 0) {
                 img.setAttribute("missing", "true");
             }
         }
