@@ -5,14 +5,14 @@
     <product name="default">
       <lang name="default">
         <br/> 
-        <table border="0" width="75%" align="center">
+        <table align="center" border="0" width="75%">
           <tr>
             <td align="center">
               <pfx:include href="core/editor/txt/pages/main_home.xml" part="welcome"/>
             </td>
           </tr>
         </table>
-        <table align="center" cellspacing="1" cellpadding="5">
+        <table align="center" cellpadding="5" cellspacing="1">
           <tr>
             <td>
               <span class="editor_main_emph">
