@@ -126,7 +126,7 @@ public class DirectOutputServlet extends ServletManager {
          ContextResourceManager crm = context.getContextResourceManager();
 
          // check the authentification first....
-         if (context.checkAuthorization() != null) return;
+         if (context.checkAuthorization(false) != null) return;
          
          PageRequest       page  = new PageRequest(preq);
          DirectOutputState state = pagemap.getDirectOutputState(page);
