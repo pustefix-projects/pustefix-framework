@@ -20,6 +20,9 @@
 
 package de.schlund.pfixeditor.editor;
 
+
+
+
 import javax.swing.event.*; 
 import java.awt.AWTPermission;
 import java.awt.Frame;
@@ -41,10 +44,17 @@ import java.util.Hashtable;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import java.net.*;
+
 
 
 import javax.swing.*;
 import netscape.javascript.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener {
     private static final String TITLE = "PfixEditor";
@@ -79,6 +89,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     //JPanel
     JPanel panel;
     JPanel buttonPanel;
+    Panel iPanel;
 
     JButton button;
     JButton hideButton;
@@ -86,6 +97,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     // Menu
     JMenu fileMenu;
     JMenu editMenu;
+    JMenu includeMenu;
+
+    Image img;
 
     //ScrollPane
     JScrollPane scrollPane;
@@ -100,6 +114,12 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     JMenuItem undoedit;
     JMenuItem searchedit;
     JMenuItem replaceedit;
+    JMenuItem testMenu;
+
+
+    // JMenuInclude
+    JMenuItem tagMenu;
+    JMenuItem imageMenu;
     
     //JMenuBar
     JMenuBar mbar;
@@ -115,6 +135,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
     public void init() {
+        System.out.println("Shalala");
         
         frame = new JFrame("Pfix-XML-Editor");
         // frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -171,37 +192,331 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
         //Setting Action
         actions = createActionTable(resultArea);
+
+        System.out.println("Menu Creating");
         
         // Creating the EditMenu
         mbar = new JMenuBar();
         this.createFileMenu();       
         this.createEditMenu();
+        this.createIncludeMenu();
         
         // Layouting Applet
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(mbar, BorderLayout.NORTH);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
+        System.out.println("Menu Added");
+       
         // Setting the Frames position
         frame.setLocation(300,100);
         frame.pack();
-
+        // frame.show();
+        System.out.println("Frame should now be seen");
         // Checking visibility of the applet
+        // haga();
+        System.out.println("Bayern wird Meister");
+        testConnection();
+        doTest();
+        getDocument();
+
+    }
+
+
+    public void haga() {
+        System.out.println("Haga haga");
+    }
+
+
+    public void getDocument() {
+        URL		  url;
+        URLConnection	  urlConn;
+        DataOutputStream  printout;
+        InputStream	  input;
+
+        try {
+            System.out.println("<------------------------------------------------------------------->");
+            
+            
+            System.out.println("Doc: " + getDocumentBase().toString());
+
+
+
+            String location = getDocumentBase().toString();
+
+            String preString = location.substring(0, location.lastIndexOf("/"));
+            String afterString = location.substring(location.lastIndexOf(";"), location.length());
+
+            System.out.println("STRING: + " + preString + "AppletInfo" + afterString + "&__xmlonly=1&__nostore=1");
+
+            // String urlLocation = preString + "/AppletInfo" + afterString + "&__xmlonly=1&__nostore=1";
+            // String urlLocation =  preString + "/AppletInfo" + "&__xmlonly=1&__nostore=1";
+            String urlLocation = location + "&__xmlonly=1";
+            System.out.println(urlLocation);
+            System.out.println(urlLocation);
+
+            url = new URL(urlLocation);
+       
+            urlConn = url.openConnection();
+
+            
+
+            
+            
+            
+
+            
+            
+            input = urlConn.getInputStream();
+
+            System.out.println(input.toString());
+
+
+
+
+            DocumentBuilderFactory docBuilderFactory;
+            DocumentBuilder docBuilder;
+            org.w3c.dom.Document docDo;
+
+            docBuilderFactory = DocumentBuilderFactory.newInstance();
+            docBuilderFactory.setNamespaceAware(true);
+            docBuilderFactory.setValidating(false);
+            // docBuilder = docBuilderFactory.newDocumentBuilder();
+            // docDo = docBuilder.parse(input);
+
+            // org.w3c.dom.Element rootElement = docDo.getDocumentElement();
+
+            /*
+
+
+            
+            
+
+            System.out.println("Und nu ??");
+            // Document doce = (Document) urlConn.getInputStream();
+            DataInputStream dsinp = new DataInputStream(input);
+
+            System.out.println("Und nu ?? Une");
+            // FileInputStream fileInp = new FileInputStream(getDocumentBase().toString());
+            // Document doce = input.read();
+
+            System.out.println("Und nu ?? Deaux");
+            // ObjectInputStream objIn = new ObjectInputStream(fileInp);
+
+            System.out.println("Und nu ?? Trois");
+            // String neu = (String) objIn.readObject();
+
+
+            */
+            byte[] buffer = new byte[200];
+
+
+       
+
+            String test = new String("");
+            // while not eof, read the file
+            int count;
+            do
+                {
+                count = input.read(buffer);
+                System.out.println(new String(buffer));
+                // test = test + new String(buffer);
+            }
+            while(count != -1);
+            
+
+            //System.out.println("TEST:   " + doce.getText(1,20));
+
+ 
+
+            // syntaxPane.setText(rootElement.toString());
+
+            
+            
+             
+        } catch (Exception ex) {
+            System.out.println("ERROR " + ex.getMessage());
+            ex.printStackTrace();
+            syntaxPane.setText(ex.toString());
+            
+            
+        }
+        
+
+
+
+        
+        
+    }
+
+
+    public void paint(Graphics grp)   {
+        //drawing the image using the graphic context on the applets surface
+        //at location 20, 40
+        grp.drawImage(img, 20, 40, this);
+    } 
+
+    
+    
+    private URLConnection getServletConnection()
+        throws MalformedURLException, IOException {
+        
+        // Connection zum Servlet öffnen
+        // URL urlServlet = new URL(getCodeBase()+ "WEB-INF/classes/EchoServlet");
+        URL urlServlet = new URL("http://sample1.zaich.ue.schlund.de/core/script/WEB-INF/classes/EchoServlet.class");
+        URLConnection con = urlServlet.openConnection();
+
+        System.out.println("Still alive");
+        
+        // konfigurieren
+        con.setDoInput(true);
+        con.setDoOutput(true);
+        con.setUseCaches(false);
+        con.setRequestProperty(
+                               "Content-Type",
+                               "application/x-java-serialized-object");
+        
+        // und zurückliefern
+        return con;
+    }
+
+    private void onSendData() {
+            try {
+                // get input data for sending
+                String input = "Holla"; // inputField.getText();
+                
+                // send data to the servlet
+                URLConnection con = getServletConnection();
+
+                System.out.println("ConnectionDone");
+                OutputStream outstream = con.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(outstream);
+                System.out.println("Here I am after OutPutStream");
+                oos.writeObject(input);
+                oos.flush();
+                oos.close();
+
+                System.out.println("After flush");
+                
+                // receive result from servlet
+                System.out.println("try recieving");
+               
+                InputStream instr = con.getInputStream();
+                System.out.println("deutx");
+                ObjectInputStream inputFromServlet = new ObjectInputStream(instr);
+                System.out.println("troi");
+                String result = (String) inputFromServlet.readObject();
+                System.out.println("qautre");
+                inputFromServlet.close();
+                instr.close();
+                System.out.println("RECEIVED");
+                
+                // show result
+                syntaxPane.setText(result);
+                
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println(ex.toString());
+            }
+    }
+    
+    
+    
+
+    public void testConnection() {
+        try {
+            URL			url;
+            URLConnection	urlConn;
+            DataOutputStream	printout;
+            DataInputStream	input;
+            
+            url = new URL (getCodeBase().toString()+"95.jpg");
+            
+            System.out.println(getCodeBase().toString());
+
+            System.out.println("Doc: " + getDocumentBase().toString());
+
+
+            urlConn = url.openConnection();
+
+            System.out.println("URL Connetcion " + urlConn.toString());
+
+            img = this.getImage(url);
+
+            ImageIcon neuImg = new ImageIcon(url);
+            JButton but = new JButton(neuImg);
+           
+            panel.add(but, BorderLayout.WEST);
+            // panel.add(img);
+            repaint();
+
+            urlConn.setDoInput(true);
+            urlConn.setDoOutput(true);
+            urlConn.setUseCaches (false);
+            
+            
+            // input = urlConn.getInputStream();
+            
+
+            
+            
+        } catch (Exception ex) {
+            System.out.println("ERROR ----> " + ex.getMessage());
+            
+        }
+        
+        
+        
+    }
+    
+
+
+    public void doTest() {
+        System.out.println("Im tiefen Föhrenwald da wohnt der Meister");
+        System.out.println("Ich bin do Test");
         boolean checkVisibile = this.checkJSVisibility();
         if (checkVisibile) {
             checkJSUploadField();
-             if (this.uploadField != null) {
+            if (this.uploadField != null) {
+                 System.out.println("Text Added");
                  getJSText();
              }
              frame.show();
         } else {
+            System.out.println("Frame hidden");
             frame.hide();
         }
+        
     }
+
     
+    
+
+    public void createIncludeMenu() {
+        includeMenu = new JMenu("Include");
+
+        tagMenu = new JMenuItem("Test Communication");
+        tagMenu.addActionListener(this);
+        includeMenu.add(tagMenu);
+        
+        this.mbar.add(includeMenu);
+
+        
+
+        // tagMenu();
+        
+    }
+
+
+
     public void createFileMenu() {
         // Creating File Menu
         fileMenu = new JMenu("File");
+
+        testMenu = new JMenuItem("Test");
+        fileMenu.add(testMenu);
+        testMenu.addActionListener(this);
+
         
         wellformedMenu = new JMenuItem("Check wellformed...");
         fileMenu.add(wellformedMenu);
@@ -307,6 +622,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
     public void destroyApplet() {
+        testConnection();
         frame.hide();
         stop();
         destroy();
@@ -314,6 +630,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     
 
     public void showApplet() {
+        testConnection();
         if (!pack) {
             frame.pack();
             pack = true;
@@ -329,6 +646,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
     public void hideApplet() {
+        testConnection();
         frame.hide();
     }
 
@@ -382,16 +700,22 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     public boolean checkJSVisibility() {
         boolean bol = true;
+        System.out.println("in Check JSVisibilty");
         try {
             JSObject win, doc, form, field, frame, parent, parent_parent, frame2, win_doc;
+            System.out.println("Still alive 1");
             win = JSObject.getWindow(this);
+            System.out.println("Zbd ghugu ???");
             doc = (JSObject)win.getMember("document");
+            System.out.println("Still alive 2");
             parent = (JSObject)win.getMember("parent");
             frame = (JSObject)parent.getMember("bottom");
             frame2 = (JSObject)frame.getMember("main");
+            System.out.println("Still alive 3");
             win_doc = (JSObject)frame2.getMember("document");                 
             form = (JSObject)win_doc.getMember("my_form");
             field = (JSObject)form.getMember("visible");
+            System.out.println("Still alive 4");
             String vis = (String)field.getMember("value");
             
             if (vis.equals("false")) {
@@ -455,6 +779,20 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     // Action Handler
     public void actionPerformed(ActionEvent e) {
+
+
+        if (e.getSource() == testMenu) {
+            // doTest();
+             
+        }
+
+        if (e.getSource() == tagMenu) {
+            onSendData();
+             
+        }
+        
+        
+        
 
         if (e.getSource() == colorizeMenu) {
             syntaxPane.hilightAll();                       
