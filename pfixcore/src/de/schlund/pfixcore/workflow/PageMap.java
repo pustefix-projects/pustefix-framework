@@ -22,6 +22,8 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.util.*;
 import java.util.*;
 import org.apache.log4j.*;
+import de.schlund.pfixxml.PropertyObject;
+import de.schlund.pfixxml.PropertyObjectManager;
 
 /**
  *
@@ -29,27 +31,31 @@ import org.apache.log4j.*;
  */
 
 
-public class PageMap {
+public class PageMap implements PropertyObject {
     protected            HashMap  pagemap     = new HashMap();
     public final static String CLASSNAMEPROP = "classname";
     private final static Category CAT         = Category.getInstance(PageMap.class.getName());
 
-    public PageMap(PageRequestProperties preqprops) {
-
+	public void init(Properties properties) throws Exception {
+			
+		//Get PageRequestProperties object from PropertyObjectManager 
+		PageRequestProperties preqprops=(PageRequestProperties)PropertyObjectManager.getInstance().
+																	getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+				
         PageRequest[] pages = preqprops.getAllDefinedPageRequests();
         
         for (int i = 0; i < pages.length; i++) {
-            PageRequest page      = pages[i];
-            Properties  props     = preqprops.getPropertiesForPageRequest(page);
-            String      classname = props.getProperty(CLASSNAMEPROP);
-            State       state     = StateFactory.getInstance().getState(classname);
-            if (state == null) {
-                CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + classname +
+           	PageRequest page      = pages[i];
+            	Properties  props     = preqprops.getPropertiesForPageRequest(page);
+            	String      classname = props.getProperty(CLASSNAMEPROP);
+            	State       state     = StateFactory.getInstance().getState(classname);
+            	if (state == null) {
+                	CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + classname +
                           "couldn't be initialized by the StateFactory");
-            } else {
-                pagemap.put(page, state);
-            }
-            
+            	} else {
+                	pagemap.put(page, state);
+            	}
+     
         }
     }
 
