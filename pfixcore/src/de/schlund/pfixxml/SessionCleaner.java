@@ -28,7 +28,7 @@ public class SessionCleaner {
     private static SessionCleaner instance     = new SessionCleaner();
     private        Timer          timer        = new Timer(true);
     private        String         TASK_POSTFIX = "__TIMER_TASK";
-    private        Category       CAT          = Category.getInstance(this.getClass());
+    Category       CAT          = Category.getInstance(this.getClass());
     
     private SessionCleaner() {}
 
