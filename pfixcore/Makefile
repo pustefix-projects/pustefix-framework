@@ -5,19 +5,16 @@ include Makefile.local
 ################################################################
 # normally, there's no need to change anything below this line #
 ################################################################
-export CLASSPATH = $(shell ./bin/setClassPath.sh `pwd`)
-BUILDPATH    = ${CLASSPATH}:${PWD}/example/servletconf/tomcat/common/lib/servlet.jar:${JDK_HOME}/jre/lib/rt.jar
-
+export CLASSPATH  = $(shell ./bin/setClassPath.sh `pwd`)
 export JAVAC      = jikes -g +D ${JIKESOPTIONS}
 export JAVA       = java
-
 export JAVADOC    = ${JDK_HOME}/bin/javadoc
 export JAR        = ${JDK_HOME}/bin/jar
-
 export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-ALLWRAPPERS = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.iwrp")
+BUILDPATH     = ${CLASSPATH}:${PWD}/example/servletconf/tomcat/common/lib/servlet.jar:${JDK_HOME}/jre/lib/rt.jar
+ALLWRAPPERS   = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.iwrp")
 TRFBUILD      = de.schlund.pfixcore.util.MultiTransform
 TRFBUILDCLASS = de/schlund/pfixcore/util/MultiTransform.class
 
@@ -25,9 +22,13 @@ PFIXSREQCLASS = de/schlund/pfixxml/PfixServletRequest.class
 
 ALLJAVA     = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.java") $(ALLWRAPPERS:.iwrp=.java)
 
-.PHONY : java-common java-tomcat clean doc docpriv cleandoc dist notag clean-rebuild example
+.PHONY : java-common java-tomcat clean doc docpriv cleandoc dist notag clean-rebuild
 
-all: compile example dev
+all: compile dev 
+	@cd example && make -f Makefile all
+
+generate: compile dev
+	@cd example && make -f Makefile generate
 
 compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-common
 
@@ -60,9 +61,6 @@ generate_src:
 	@$(JAVA) $(TRFBUILD) -s $(SRCROOT)/ -a iwrp -x example/core/build/iwrapper.xsl $(ALLWRAPPERS)
 	@echo "*** ...Done!"
 
-example:
-	cd example && make -f Makefile  all
-
 clean: 
 	@echo "*** Removing all under '$(BUILDDIR)'..."
 	@rm -rf $(BUILDDIR)/*
@@ -81,9 +79,6 @@ clean-rebuild:
 
 echo-classpath:
 	@echo ${CLASSPATH}
-
-generate: all
-	@cd example && make -f Makefile generate
 
 doc:
 	@(if ! test -d $(JAVADOCDIR); then mkdir $(JAVADOCDIR); fi)    

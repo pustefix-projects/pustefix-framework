@@ -3,46 +3,26 @@
 #################################################################
 include defines.inc
 
-BUILDDIR  = build
-PWD       = $(shell pwd)
-DOCDIR    = javadoc
-JAVAVM    = java
-JAVAC     = jikes -d ${PWD}/$(BUILDDIR) -sourcepath ${PWD}/$(SRCROOT) -g +D
-ALLJAVA1  = $(shell find $(ALLDIRS) -maxdepth 1 -name "*.java")
-
-JSSE_JARS = ${PWD}/lib/jsse/lib/jcert.jar:${PWD}/lib/jsse/lib/jnet.jar:${PWD}/lib/jsse/lib/jsse.jar
-
-#################################################################
-# generated Settings...
-#################################################################
-
-export CLASSPATH  = $(shell ./bin/setClassPath.sh `pwd`)
-export JIKESPATH  = ${CLASSPATH}:${JDK_HOME}/jre/lib/rt.jar
+ALLJAVA  = $(shell find $(ALLDIRS) -maxdepth 1 -name "*.java")
 
 #################################################################
 # general rules...
 #################################################################
 
 compile:
-ifeq ($(ALLJAVA1),)
+ifeq ($(ALLJAVA),)
 	@echo "*** No java files found ***"
 else
 	echo "Building *.java-files under $(SRCROOT) with ${JAVAC}..."; 
 	@(if ! test -d $(BUILDDIR); then mkdir $(BUILDDIR); fi) 
-	${JAVAC} $(ALLJAVA1)
+	${JAVAC} $(ALLJAVA)
 endif
+
 inc:
 	@(if ! test -d $(BUILDDIR); then mkdir $(BUILDDIR); fi)
-	@${JAVAC} ++ $(ALLJAVA1) $(ALLJAVA2)
+	@${JAVAC} ++ $(ALLJAVA)
 
 clean:
 	@echo "Removing $(BUILDDIR)..."
 	@rm -rf $(BUILDDIR)
-
-echo-alljava:
-	@echo $(ALLJAVA1) 
-	@echo $(ALLJAVA2) 
-
-echo-classpath:
-	@echo ${CLASSPATH}
 

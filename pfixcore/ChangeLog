@@ -1,3 +1,11 @@
+2003-06-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* Makefile:
+	* skel/Makefile: 
+	* skel/Makefile.classes: 
+	* skel/Makefile.iwrp: 
+	* skel/defines.inc: cosmetics, remove old cruft.
+
 2003-06-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java: made a sane menubar with acellerators.
@@ -217,7 +225,7 @@
 
 	* src/de/schlund/pfixxml/ResultDocument.java (addUsedNamespace): new method: add namespaces used in the result tree.
 	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java (renderDefault): use this to add all namespaces defined
-	for the product (as they could occur in an include part)
+	for the product (because they could occur in an include part)
 
 	* example/core/xsl/customizestylesheet.xsl: new file. this replaces
 	all the custommetatags files currently in use.
