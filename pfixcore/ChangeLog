@@ -5,6 +5,7 @@
 	
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
 	another little Syntax-Hilighting Bug fixed
+	Some Styles changed
 
 2003-05-07  Volker Zaich <zaich@schlund.de>
 
