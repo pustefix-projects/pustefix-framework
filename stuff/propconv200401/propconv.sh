@@ -147,18 +147,18 @@ function matches {
 
 #set -x
 # d-relative, caution: --pattern will not be applied to $allprops
-allprops=`cd "$d" && find . -name "*.prop.in"`
+allprops=(`cd "$d" && find . -name "*.prop.in"`)
 # d-relative wo .in
-dwoincontextprops=`xslt $p/xsl/findcontextxmlserverprops.xsl $(find $d -name "project.xml.in")`
+dwoincontextprops=(`xslt $p/xsl/findcontextxmlserverprops.xsl $(find $d -name "project.xml.in")`)
 # d-relative wo .in
-dwoindirectprops=`xslt $p/xsl/finddirectoutputservletprops.xsl $(find $d -name "project.xml.in")`
+dwoindirectprops=(`xslt $p/xsl/finddirectoutputservletprops.xsl $(find $d -name "project.xml.in")`)
 
 for i in $dwoincontextprops
 do
   if matches $i.in ; then
   	# if .prop.in is for contextxmlserver, but formulated as standardprops
     if ! grep -q '<prop  *name="xmlserver.depend.xml" *>' "$d/${i}.in" ; then
-      contextprops="${contextprops}${contextprops:+ }./${i}.in"
+      contextprops=(${contextprops} "./${i}.in")
     fi
   fi
 done
@@ -167,7 +167,7 @@ done
 for i in $dwoindirectprops
 do
   if matches $i.in ; then
-    directprops="${directprops}${directprops:+ }./${i}.in"
+    directprops=(${directprops} "./${i}.in")
   fi
 done
 #echo directprops="${directprops}"
@@ -176,7 +176,7 @@ done
 for i in $allprops
 do
   if matches "$i" ; then
-    dwoinallprops="${dwoinallprops}${dwoinallprops:+ }${i%.in}"
+    dwoinallprops=(${dwoinallprops} "${i%.in}")
   fi
 done
 
@@ -185,18 +185,18 @@ for i in $allprops
 do
   if matches "$i" && ! echo $directprops $contextprops | grep -q $i
   then
-    standardprops="${standardprops}${standardprops:+ }$i"
+    standardprops=(${standardprops} "$i")
   fi
 done
 
 
 
 if [ "$dump" = "true" ]; then
-  echo allprops
-  for i in $allprops
-  do
-    echo $i
-  done
+  #echo allprops
+  #for i in $allprops
+  #do
+  #  echo $i
+  #done
   
   #echo dwoinallprops
   #for i in $dwoinallprops
@@ -301,10 +301,10 @@ function convert {
   do
     #echo saxon -o $d/$i $d/$i${suf} $p/xsl/propconv.xsl roottag="$roottag"
     echo -e "converting <properties> to <$roottag>\t$i${suf}"
-    shopt -s -o pipefail
+    # does not work properly :-( shopt -s -o pipefail
     saxon $d/$i${suf} $p/xsl/propconv.xsl roottag="$roottag" | $p/bin/xmlindent -o $d/$i -i 2 -nas -nae -nbs -nbe
     AH_RET=$?
-    shopt -u -o pipefail
+    #shopt -u -o pipefail
     #echo AH_RET=$AH_RET
     if [ $AH_RET -ne 0 ]; then
       saxon returned $AH_RET. exiting.
