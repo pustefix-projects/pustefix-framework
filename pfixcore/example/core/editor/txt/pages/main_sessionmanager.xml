@@ -5,7 +5,7 @@
   <part name="logoutbutton">
     <product name="default">
       <lang name="default">
-        <pfx:button target="_top" mode="force" normalclass="editor_submit" page="prodselect">Cancel</pfx:button>
+        <pfx:button target="_top" mode="force" page="prodselect">Cancel</pfx:button>
       </lang>
     </product>
   </part>

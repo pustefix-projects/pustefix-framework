@@ -5,7 +5,7 @@
   <part name="logoutbutton">
     <product name="default">
       <lang name="default">
-        <pfx:button target="_top" mode="force" normalclass="editor_submit" page="editoruserdata">
+        <pfx:button target="_top" mode="force" page="editoruserdata">
           <pfx:command  name="SELWRP">cancel</pfx:command>
           <pfx:argument name="cancel.Cancel">true</pfx:argument>Cancel</pfx:button>
       </lang>

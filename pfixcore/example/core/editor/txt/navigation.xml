@@ -11,52 +11,26 @@
         </b>
       </lang>
     </product>
-    
+
   </part>
-  
+
   <part name="top">
     <product name="default">
       <lang name="default">
-        <div class="editor_head">
-          <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 4px;" width="100%">
-            <tr>
-              <td width="1%">
-                <pfx:include href="core/editor/txt/navigation.xml" part="pfix"/>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="home" target="_top">Tools</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="pages" target="_top">Pages</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="targets" target="_top">Targets</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="images" target="_top">Images</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="includes" target="_top">Includes</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="commons" target="_top">DynIncludes</pfx:button>
-              </td>
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="search" target="_top">Search</pfx:button>
-              </td>
-              <td class="navi_cell"> 
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="documentation" target="_top">Docs</pfx:button>
-              </td> 
-              
-              <td align="right" nowrap="nowrap" width="99%">
-                [<b><ixsl:value-of select="/formresult/cr_editorsession/product/@comment"/></b>]
-                <pfx:button normalclass="editor_submit" page="logout" target="_top">
-                  <pfx:argument name="exit.Action">product</pfx:argument>
-                  Leave Product</pfx:button>
-              </td>
-            </tr>
-          </table>
-        </div>
+        <ul class="navi">
+          <li><pfx:button activeclass="active" normalclass="normal" page="home" target="_top">Tools</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="pages" target="_top">Pages</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="targets" target="_top">Targets</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="images" target="_top">Images</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="includes" target="_top">Includes</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="commons" target="_top">DynIncludes</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="search" target="_top">Search</pfx:button></li>
+          <li><pfx:button activeclass="active" normalclass="normal" page="documentation" target="_top">Docs</pfx:button></li>
+         </ul>
+
+         <div class="topbar">
+           <pfx:button page="logout" target="_top"><pfx:argument name="exit.Action">product</pfx:argument>Leave <em><ixsl:value-of select="/formresult/cr_editorsession/product/@comment"/></em></pfx:button>
+         </div>
       </lang>
     </product>
   </part>

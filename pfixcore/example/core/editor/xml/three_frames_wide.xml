@@ -4,8 +4,8 @@
   <pfx:head>
     <title>Pustefix Content Management und Editor</title>
   </pfx:head>
-  <pfx:frameset rows="37,*">
-    <pfx:frame name="top_navi">
+  <pfx:frameset rows="40,*">
+    <pfx:frame name="top_navi" scrolling="no">
       <html>
 	<head>
           <style type="text/css">
@@ -13,7 +13,7 @@
             <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
           </style>
         </head>
-	<body>
+	<body class="navi">
 	  <pfx:include href="core/editor/txt/navigation.xml" part="top"/>
 	</body>
       </html>

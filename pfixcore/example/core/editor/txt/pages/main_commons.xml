@@ -5,11 +5,9 @@
     <product name="default">
       <lang name="default">
         <ixsl:if test="/formresult/currentsearchcommons">
-          <div class="editor_sidebar_head"><center>D y n I n c l u d e s<br/>
-              <span style="font-size: 10px;">(matching last Search)</span></center></div><br/>
-          <displayallcommons path="/formresult/currentsearchcommons"/><br/>
+          <span style="font-size: 10px;">(matching last Search)</span>
+          <displayallcommons path="/formresult/currentsearchcommons"/>
         </ixsl:if>
-        <div class="editor_sidebar_head"><center>D y n I n c l u d e s</center></div><br/>
         <displayallcommons/>
       </lang>
     </product>
