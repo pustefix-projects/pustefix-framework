@@ -5,7 +5,7 @@
      or delete the DOCTYPE definition -->
 
 <project name="pfixcore" default="all" basedir=".">
-    
+
     <!-- set global properties for this build -->
 
     <property file="build.properties"/>
@@ -48,41 +48,45 @@
         <!-- Ant properties are immutable, the order of definition is:
         - ant commandline via the '-Dparam=value' option
         - file build.properties in java.util.Properties format
-        - environment variables, e.g. export makemode=test
-        Note: MAKE_MODE environment variable is supported for backwards
-        compatibility to make based build process
+        - environment variable MAKE_MODE, e.g. export MAKE_MODE=test
         -->
-        <condition property="makemode"      value="test">
-            <equals arg1="${env.MAKE_MODE}"  arg2="test"/>
+        <condition property="makemode" value="${env.MAKE_MODE}">
+            <and>
+                <isset property="env.MAKE_MODE"/>
+                <not><equals arg1="${env.MAKE_MODE}" arg2=""/></not>
+            </and>
         </condition>
-        <condition  property="makemode"     value="stage">
-            <equals arg1="${env.MAKE_MODE}"  arg2="stage"/>
-        </condition>
-        <property  name="makemode"          value="prod"/>
-        
+        <fail unless="makemode" message="Property &quot;makemode&quot; not set or empty. This property specifies whether the pustefix system is built and run in development mode (makemode=test) or production mode (makemode=prod). Specify propery either on the commandline (E.g. ant -Dmakemode=test or with the environment variable MAKE_MODE. See ant -projecthelp for more details." />
+
         <condition property="javahome" value="${env.PFX_JAVA_HOME}">
-            <isset property="env.PFX_JAVA_HOME"/>
+            <and>
+                <isset property="env.PFX_JAVA_HOME"/>
+                <not><equals arg1="${env.PFX_JAVA_HOME}" arg2=""/></not>
+            </and>
         </condition>
         <condition property="javahome" value="${env.JAVA_HOME}">
-            <isset property="env.JAVA_HOME"/>
+            <and>
+                <isset property="env.JAVA_HOME"/>
+                <not><equals arg1="${env.JAVA_HOME}" arg2=""/></not>
+            </and>
         </condition>
-        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use." unless="javahome"/>
+        <fail unless="javahome" message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use."/>
         
-        <condition  property="prohibitedit" value="no">
-            <or>
-                <equals arg1="${makemode}" arg2="test"/>
-                <equals arg1="${makemode}" arg2="stage"/>
-            </or>
+        <condition  property="prohibitedit" value="yes">
+            <equals arg1="${makemode}" arg2="prod"/>
         </condition>
-        <property       name="prohibitedit" value="yes"/>
+        <property       name="prohibitedit" value="no"/>
         
-        <condition property="debug"        value="true">
-            <equals arg1="${makemode}" arg2="test"/>
+        <condition property="debug"        value="false">
+            <equals arg1="${makemode}" arg2="prod"/>
         </condition>
-        <property  name="debug"            value="false"/>
+        <property  name="debug"            value="true"/>
         
         <condition property="machine"       value="${env.MACHINE}">
-            <isset property="env.MACHINE"/>
+            <and>
+                <isset property="env.MACHINE"/>
+                <not><equals arg1="${env.MACHINE}" arg2=""/></not>
+            </and>
         </condition>
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
         <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
@@ -224,14 +228,14 @@
     <target name="doc" depends="clean-doc, properties" description="generates javadoc">
         <mkdir dir="${dir.javadoc}"/>
         <javadoc
-			source="${javac.source}"
-			sourcepath="${dir.src}"
+            source="${javac.source}"
+            sourcepath="${dir.src}"
             destdir="${dir.javadoc}"
             version="true"
             author="true"
             windowtitle="de.schlund ${project.name}"
             doctitle="&lt;h3&gt;Last update: ${DSTAMP} ${TSTAMP}&lt;/h3&gt;"
-        	maxmemory="128m"
+            maxmemory="128m"
             classpathref="cp.classpath"
             >
             <packageset dir="${dir.src}"/>
@@ -290,30 +294,34 @@
             >
         </javac>
     </target>
-    
+
     <target name="ant-tasks" depends="init, init-compile" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
         <taskdef
             name="pfx-xslt"
             classname="de.schlund.pfixcore.util.XsltGenericTask"
             classpathref="cp.classpath"
+            loaderref="pfx-loader"
             description="Performs generic XSLT transformations"
             />
         <taskdef 
             name="pfx-iwrp"
             classname="de.schlund.pfixcore.util.XsltIWrapperTask"
             classpathref="cp.classpath"
+            loaderref="pfx-loader"
             description="Generates .java files out of .iwrp (Interface Wrapper) files"
             />
         <taskdef
             name="pfx-webxml"
             classname="de.schlund.pfixcore.util.XsltWebXmlTask"
             classpathref="cp.classpath"
+            loaderref="pfx-loader"
             description="Creates WEB-INF/web.xml config files for each project"
             />
         <taskdef
             name="pfx-generate"
             classname="de.schlund.pfixcore.util.TargetGeneratorTask"
             classpathref="cp.classpath"
+            loaderref="pfx-loader"
             description="Creates dependencies in ${dir.projects}/.cache"
             />
     </target>
@@ -727,17 +735,28 @@ echoproperties: Dumps all properties and exits.
     
 Properties
 ----------
-makemode
-  value:       test|stage|prod
+-Dmakemode=
+  value:       test|prod
+               test: development mode, editing features enabled
+               prod: production mode, editing features disabled
+               Controls availablilty of editing features of the pustefix
+               content management system:
+               * the editor console, used for displaying information
+                 and setting the page to editable
+               * automatic regeneration of pages changend on disc
   environment: MAKE_MODE
-  default:     prod
-javahome
+  default:     -
+  mandatory:   yes
+
+-Djavahome=
   value:       location of the root directory of the j2se installation
                used for generation of
                ${dir.projects}/servletconf/tomcat/workers.prop
   environment: PFX_JAVA_HOME, JAVA_HOME
   default:     -         
-gen
+  mandatory:   yes
+
+-Dgen=
   value:       include pattern for searching depend.xml files
                for target generate. E.g. for generating only
                project1 and project2 use: ant
@@ -746,15 +765,20 @@ gen
                http://ant.apache.org/manual/dirtasks.html#patterns
   environment: -
   default:     **/depend.xml
-build.compiler:
+  mandatory:   no
+
+-Dbuild.compiler=
   value:       jikes, modern, ...
                see http://ant.apache.org/manual/CoreTasks/javac.html
   environment: -
   default:     jikes         
-debugopts:
+  mandatory:   no
+
+-Ddebugopts=
   value:       see java -X
   environment: -
-  default:     ${debugopts}        
+  default:     ${debugopts}
+  mandatory:   no
 
 Note about Properties
 ---------------------
@@ -776,6 +800,16 @@ Order of definition:
 </project>
 
 <!-- Cut 'n' Paste "Buffer"
+    <path id="cp.generator" description="// DELME">
+        <pathelement location="${dir.build}"/>
+        <fileset dir="${dir.lib}">
+            <include name="log*.jar"/>
+            <include name="util*.jar"/>
+            <include name="jakarta-oro-*.jar"/>
+            <include name="saxon*.jar"/>
+            <include name="*.jar"/>
+        </fileset>
+    </path>
 -->
 
 <!--

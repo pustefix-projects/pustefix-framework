@@ -167,6 +167,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         // does not seem to pick the correct classloader with saxon in its classpath.
         // Simple instantiation or classloading works, since the current classloader is defined
         // by ant and therefore has saxon in its classpath.
+        // TODO_AH check if object creation is really necessary here
         TransformerFactory transFac      = new com.icl.saxon.TransformerFactoryImpl();
         
         transFac.setErrorListener(new PFErrorListener());

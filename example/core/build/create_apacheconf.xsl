@@ -14,7 +14,9 @@
 &lt;VirtualHost <xsl:apply-templates select="$currentprj/virtualhost/node()"/>:<xsl:value-of select="@number"/>&gt;
 
 ServerName <xsl:apply-templates select="$currentprj/servername/node()"/>
+<xsl:if test="count($currentprj/serveralias/node()) > 0">
 ServerAlias <xsl:apply-templates select="$currentprj/serveralias/node()"/>
+</xsl:if>
 
 RewriteEngine on
 

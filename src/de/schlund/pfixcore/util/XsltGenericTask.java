@@ -18,8 +18,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Path;
 
-import com.icl.saxon.TransformerFactoryImpl;
-
 /**
  * @author adam
  *
@@ -231,10 +229,11 @@ public class XsltGenericTask extends MatchingTask {
         outLastModified = out.lastModified();
         styleLastModified = getStyleLastModified();
 
-        // TODO throw out? transformer is expensive
+        // TODO_AH throw out? transformer is expensive
         // transformer is not yet initialized, as it only initializes itself
         // on transformation, therefore the firsttime transformer.toString()
-        // is called, the internal transformer is null
+        // is called, the internal transformer variable of XsltTransformer
+        // is still null
         sb.setLength(0);
         sb.append("styleLastModified=");
         sb.append(new Date(styleLastModified));
@@ -396,13 +395,22 @@ public class XsltGenericTask extends MatchingTask {
         TransformerFactory transformerFactory;
         // using dynamic class loading to keep the ant task compilation
         // independent of additional jars
+        String factoryClassname = "com.icl.saxon.TransformerFactoryImpl";
         Class factoryClass = null;
         try {
-            factoryClass = Class.forName("com.icl.saxon.TransformerFactoryImpl");
+            factoryClass = Class.forName(factoryClassname);
         } catch (ClassNotFoundException e) {
-            throw new BuildException("Could not load Saxon via Class.forName(), check classpath", e);
+            throw new BuildException("Could not load Saxon ("+factoryClassname+") via Class.forName(), check classpath", e);
         }
         try {
+            // This does not work: 
+            // ANT_OPTS="${ANT_OPTS} -Djavax.xml.transform.TransformerFactory=com.icl.saxon.TransformerFactoryImpl" ant targetdefs
+            // transformerFactory = TransformerFactory.newInstance();
+            // Reason: FactoryFinder used within {@link TransformerFactory#newInstance()}
+            // picks the wrong classloader (Context Classloader instead of Default Classloader)
+            // For more info see "Find a way out of the ClassLoader maze
+            // System, current, context? Which ClassLoader should you use?": 
+            // http://www.javaworld.com/javaqa/2003-06/01-qa-0606-load_p.html
             transformerFactory = (TransformerFactory) factoryClass.newInstance();
         } catch (Exception e) {
             throw new BuildException("Could not instantiate Saxon", e);

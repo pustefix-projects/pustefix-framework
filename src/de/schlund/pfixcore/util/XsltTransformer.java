@@ -132,7 +132,7 @@ public class XsltTransformer {
                 } catch (TransformerConfigurationException e) {
                     stylesheetOld = null;
                     stylesheetOldLastModified = 0;
-                    throw new BuildException("Could not initialize XSLT Transformer (stylesheet=\"" + stylesheet + "\").", e);
+                    throw new BuildException("Could not initialize XSLT Transformer (stylesheet=\""+stylesheet+"\" transformerFactory=\""+transformerFactory+"\")", e);
                 }
             }
         }
@@ -183,7 +183,8 @@ public class XsltTransformer {
     }
 
     public String toString() {
-        // TODO throw out debug in XGenTask or cache this String
+        // TODO_AH throw out debug in XsltGenericTask or cache this String?
+        String transformerString = (transformer == null) ? "<unused>" : String.valueOf(transformer); 
         return shortClassname(getClass().getName())+"[transformer="+transformer+"; params="+params+"]";
     }
 
