@@ -28,8 +28,10 @@ public class PfixHighlight extends DefaultStyledDocument {
     PfixTextPane textpane;
 
     private Color colUnset = new Color(0,0,0);
-    private Color colParam = new Color(0,200,100);
-    private Color colElement = new Color(227,100,100);
+    private Color colParam = new Color(34,170,0);
+    private Color colElement = new Color(255,170,68);
+    // private Color colElement = new Color(ffaa44);
+    
     private Color colAttr = new Color(0,0,250);
     private Color colComment =  new Color(153,153,153);
 
@@ -137,7 +139,9 @@ public class PfixHighlight extends DefaultStyledDocument {
     public void colorizeAll(String stati) {
         Color color = getStatiCol(stati);
         MutableAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setBold (attr, true);        
+        if (stati.equals("element")) {
+          StyleConstants.setBold (attr, true);    
+        }                
         StyleConstants.setForeground(attr, color);
         textpane.setCharacterAttributes(attr, false);
     }
@@ -145,7 +149,9 @@ public class PfixHighlight extends DefaultStyledDocument {
     public void colorizeAll(String stati, int start, int end) {
         Color color = getStatiCol(stati);
         MutableAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setBold (attr, true);        
+        if (stati.equals("element")) {
+            StyleConstants.setBold (attr, true);
+        }
         StyleConstants.setForeground(attr, color);
         try {
              textpane.getStyledDocument().setCharacterAttributes(start, end, attr, false);
