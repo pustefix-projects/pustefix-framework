@@ -41,8 +41,6 @@ function wfxEditor( config ) {
   this._linebarheight = null;
 
   this._linenumber = 1;
-  this._lineStart = 1;
-  this._lineEnd   = 1;
 
   this._content_tag;
   this._content_src;
@@ -313,32 +311,27 @@ wfxEditor.prototype.isWellFormedXML = function( xml, err ) {
 //#****************************************************************************
 //#
 //#****************************************************************************
-wfxEditor.prototype.updateLineNumbers = function( html, lineStart ) {
-
-  var doc      = this._linebar.document;
+wfxEditor.prototype.updateLineNumbers = function() {
 
   var doctype =  '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n';
   var html_header1 = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n<head>\n' + 
   '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
-  var html_header2 = '</head>\n<body id="bodynode">\n<table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody>\n';
-  var html_footer  = '</tbody></table>\n</body>\n</html>\n';
+  var html_header2 = '</head>\n<body id="bodynode">\n<pre style="text-align:right">';
+  var html_footer  = '</pre>\n</body>\n</html>\n';
   var style_source = '<style>\n' + 
-  'body { font-family: monospace; font-size: 13px; margin:0px }\n' + 
+  'body,pre { font-family: monospace; font-size: 13px; margin:0px; background-color:#eeeeee }\n' + 
   'td {text-align:right; font-weight:bold }\n' + 
   '</style>\n';
   
   var content = "";
-  var i, linemax;
-  //  linemax = Math.min( this._linebarheight, this._linenumberFromHTML(html)-1 );
-  linemax = this._linebarheight;
-  //  for( i=lineStart; i<=lineStart+linemax-1; i++ ) {
-  for( i=lineStart; i<=200; i++ ) {
-    content += '<tr><td id="td' + i + '">' + i + "&nbsp;</td></tr>\n";
+  for( var i=1; i<=2222; i++ ) {
+    content += i + "&nbsp;\n";
   }
   content = doctype + html_header1 + style_source + html_header2 + content + html_footer;
 
+  var doc = this._linebar.document;
   doc.open();
-  doc.writeln( content || '<html>\n<body>\n0\n</body>\n<html>\n' );
+  doc.writeln(content);
   doc.close();
 }
 
@@ -389,31 +382,6 @@ wfxEditor.prototype.tag2src = function( buf ) {
 
   // colorize indentation
   //  buf = buf.replace( /<br \/>(\s{4})/, '<br /><span style="background-color:red">$1</span>' );
-
-
-
-  //  alert(wfxEditor.str2chr(buf));
-
-//  // indentation: replace 
-//  var rx_indent;
-//  var i;
-//
-//  rx_indent = /(<br \/>(&nbsp;){0,20})\x20/g;
-//  i = 0;
-//  while( i<1000 && rx_indent.test(buf) ) {
-//    //    buf = buf.replace( rx_indent, '$1&nbsp;' );
-//    i++;
-//  }
-//  alert(i);
-//
-//  rx_indent = /(<br \/>(&nbsp;){8,20})\x20/g;
-//  i = 0;
-//  while( i<1000 && rx_indent.test(buf) ) {
-//    //    buf = buf.replace( rx_indent, '$1&nbsp;' );
-//    i++;
-//  }
-//  alert(i);
-
 
   //	buf = buf.replace( /&lt;\/P&gt;/g, '&lt;/P&gt;</span><br>' );
 
@@ -634,7 +602,7 @@ wfxEditor.prototype.execCommand = function(cmdID, UI, param) {
 /** A generic event handler for things that happen in the IFRAME's document.
  * This function also handles key bindings. */
 wfxEditor.prototype._editorEvent = function(ev) {
-  //  alert("_editorEvent()..." + ev.type);
+  //alert("_editorEvent()..." + ev.type);
 
   var editor = this;
 
@@ -834,10 +802,15 @@ wfxEditor.prototype._editorEvent = function(ev) {
       wfxEditor._stopEvent(ev);
       break;
 
-    case 37:
-    case 38:
-    case 39:
-    case 40: // arrow keys
+
+    case 33: // PageUp
+    case 34: // PageDown
+    case 35: // End
+    case 36: // Pos1
+    case 37: // CursorLeft
+    case 38: // CursorUp
+    case 39: // CursorRight
+    case 40: // CursorDown
       this.skipRehighlighting = true;
       break;
     default:
@@ -997,7 +970,6 @@ wfxEditor.prototype._editorEvent = function(ev) {
     if( linenumber && (linenumber != editor._linenumber)) {
       editor._showLine.value = linenumber;
 
-      //      editor._colorizeLine( linenumber );
       editor._linenumber = linenumber;
     }
 
@@ -1345,28 +1317,6 @@ wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber )
 
   return content;
 };
-
-//#----------------------------------------------------------------------------
-//#
-//#----------------------------------------------------------------------------
-wfxEditor.prototype._colorizeLine = function( linenumber ) {
-
-      var linedoc = this._linebar.document;
-      var el;
-
-      if(this._linenumber) {
-	el = linedoc.getElementById("td"+this._linenumber);
-	if(el) { 
-	  el.style.backgroundColor = "white";
-	}
-      }
-
-      el = linedoc.getElementById("td"+linenumber);
-      if(el) { 
-	el.style.backgroundColor = "yellow";
-      }
-
-}
 
 //#----------------------------------------------------------------------------
 //#
@@ -1877,7 +1827,7 @@ wfxEditor.restoreRangeByNewlines = function(root, outputRoot, offsetStart, offse
 wfxEditor.prototype.setRange = function( nodeStart, offsetStart, 
 					 nodeEnd,   offsetEnd ) {
 
-  //  alert("setRange( nodeStart.nodeType:" + nodeStart.nodeName +", offsetStart:"+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
+  //  alert("setRange( nodeStart.nodeType:" + nodeStart.nodeType +", offsetStart:"+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
 
   //    this._dbg.value += "setRange( " + nodeStart +"(" + nodeStart.nodeValue + "), "+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")\n";
 
@@ -2126,11 +2076,9 @@ wfxEditor.prototype.generate = function( target, content ) {
   this._linebar   = document.getElementById("wfxline01").contentWindow;
   this._linebarheight = Math.ceil( parseInt(document.getElementById("wfxline01").style.height) / this._linepx );
 
-  this.updateLineNumbers(this._content_src, 1);
-  //  this._colorizeLine( 1 );
+  this.updateLineNumbers();
 
   //  bench( "...generate()" );
-
 };
 
 //#****************************************************************************
@@ -2141,6 +2089,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
   var editor = this;
 
   this._timerRehighlight = setInterval( function() {
+
+    //    editor._dbg.value += "insideRehighlighting...\n";
   
     if( insideRehighlighting ) {
       editor._dbg.value += "insideRehighlighting ==> cancel\n";
@@ -2149,11 +2099,12 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     }
 
     if( editor.skipRehighlighting ) {
-      //      editor._dbg.value += "s";
+      editor._dbg.value += "S";
       return;
     }
 
     if( (new Date()).getTime() - editor._timestamp < wfxEditor.timeEvent ) {
+      editor._dbg.value += "K";
       return;
     }
 
@@ -2341,7 +2292,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 			 posEnd ] );
     //---------------------------------------------------------------------------
 
-    editor.skipRehighlighting = true;
+    //    editor.skipRehighlighting = true;
 
     bench( "...cursor set", null, 2);
 
@@ -2739,8 +2690,8 @@ wfxEditor.offsetEnd   = -1;
 
 wfxEditor.tabWidth    = 2;
 
-wfxEditor.timeInterval   = 200;   // msec of rehighlighting frequency
-wfxEditor.timeEvent      = 50;    // minimum msec between (key)events
+wfxEditor.timeInterval   = 500;   // msec of rehighlighting frequency
+wfxEditor.timeEvent      = 300;   // minimum msec between (key)events
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
