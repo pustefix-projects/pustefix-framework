@@ -1,4 +1,10 @@
 2003-05-07  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixTextPane.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixAppletNeu.java
+	Undo/Redo-Bugs fixed
+
+2003-05-07  Volker Zaich <zaich@schlund.de>
 	
 	* editorapplet/src/de/schlund/pfixeditor/test/LineNumber.java
 	* editorapplet/src/de/schlund/pfixeditor/test/PfixAppletNeu.java

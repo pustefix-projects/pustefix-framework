@@ -46,7 +46,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.*;
 import netscape.javascript.*;
 
-public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener {
+public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener {
     private static final String TITLE = "PfixEditor";
 
     // JSObject jsWin, jsDocu, jsForm, jsField;
@@ -251,8 +251,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         editMenu.add(getActionByName(DefaultEditorKit.selectAllAction));
 
-        searchedit = new JMenuItem("Search");
-        replaceedit = new JMenuItem("Replace");
+        searchedit = new JMenuItem("Search (CTRL-F)");
+        replaceedit = new JMenuItem("Replace (CTRL-W)");
 
         editMenu.addSeparator();
         editMenu.add(searchedit);
@@ -456,9 +456,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         km.addActionForKeyStroke(ksFind, actFind);
 
         KeyStroke ksReplace = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
-        Action actReplace = new TextAction("Ctrl-R") {
+        Action actReplace = new TextAction("Ctrl-W") {
                 public void actionPerformed(ActionEvent e) {
-                    find();
+                    replace();
                 }
             };
 
@@ -468,7 +468,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         km.addActionForKeyStroke(ksUndo, undoAction);
 
         KeyStroke ksRedo = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
-        km.addActionForKeyStroke(ksUndo, undoAction);
+        km.addActionForKeyStroke(ksRedo, redoAction);
 
         
 
@@ -538,9 +538,11 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
     public void keyReleased(KeyEvent keyEvent) {
-        
+        // Remove UndoListener !!
+        syntaxPane.getDocument().removeUndoableEditListener(undolistener);
         syntaxPane.realtimeHilight();
-      
+        syntaxPane.getDocument().addUndoableEditListener(undolistener);
+        
     }
 
     public void keyTyped(KeyEvent keyEvent) {
@@ -551,9 +553,12 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
     public void setText(String text) {
         if (text != null) {
+            syntaxPane.getDocument().removeUndoableEditListener(undolistener);
             syntaxPane.setText(text);
+            // syntaxPane.getDocument().addUndoableEditListener(undolistener);
         }
         colorize();
+        syntaxPane.getDocument().addUndoableEditListener(undolistener);
         frame.show();        
     }
 
@@ -637,6 +642,19 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
 
+      public void undoableEditHappened(UndoableEditEvent e) {
+          /*    if (!getOperation())
+              {
+                  if (compoundEdit == null)
+                      {
+        currentEdit.addEdit(e.getEdit());
+        //undo.addEdit(e.getEdit());
+      } else
+        compoundEdit.addEdit(e.getEdit());
+        }*/
+  }
+
+
             protected class MyUndoableEditListener implements UndoableEditListener {
                  public void undoableEditHappened(UndoableEditEvent e) {
                //Remember the edit and update the menus.
@@ -655,10 +673,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                         setEnabled(false);
                 }
                 public void actionPerformed(ActionEvent e) {
-                    // for (int i = 0;i<3; i++) {
-                    // do {
-                        System.out.println("Undo:"+ undo.getUndoPresentationName() );
-                        System.out.println("Avent: " + e.ACTION_PERFORMED);
                         try {
                                 
                                 undo.undo();
@@ -669,8 +683,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                                 ex.printStackTrace();
                         }
 
-                        // }
-         //  while (!undo.getPresentationName().equals("Rückgängig Hinzufügen"));
                         
                         updateUndoState();
                         redoAction.updateRedoState();
@@ -682,11 +694,11 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                 protected void updateUndoState() {
                         if (undo.canUndo()) {
                                 setEnabled(true);
-                                putValue(Action.NAME, undo.getUndoPresentationName());
+                                putValue(Action.NAME, undo.getUndoPresentationName() + "  (CTRL-U)");
                                 } 
                        else {
                                 setEnabled(false);
-                                putValue(Action.NAME, "Undo");
+                                putValue(Action.NAME, "Undo  (CTRL-U)");
                       }
                 }      
         }    
@@ -698,8 +710,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                 }
 
                 public void actionPerformed(ActionEvent e) {
-                    for (int i=0; i<3; i++) {
-                                                 try {
+                    try {
                         undo.redo();
                         } 
                         catch (CannotRedoException ex) {
@@ -708,7 +719,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                         }
 
                          
-                    }
+
                         updateRedoState();
                         undoAction.updateUndoState();
                     
@@ -718,11 +729,11 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                 protected void updateRedoState() {
                         if (undo.canRedo()) {
                                 setEnabled(true);
-                                putValue(Action.NAME, undo.getRedoPresentationName());
+                                putValue(Action.NAME, undo.getRedoPresentationName() +"  (CTRL-R)");
                         } 
                         else {
                                 setEnabled(false);
-                                putValue(Action.NAME, "Redo");
+                                putValue(Action.NAME, "Redo  CTRL-R");
                         }
                 }
         }
