@@ -9,9 +9,9 @@
   <xsl:param name="prohibitEdit"/>
 
   <xsl:template match="global"/>
-  
+
   <xsl:template match="make">
-    <xsl:param name="cache" select="./@cachedir"/> 
+    <xsl:param name="cache" select="./@cachedir"/>
     <xsl:param name="recallow" select="./@record_allowed"/>
     <xsl:param name="recdir" select="./@record_dir"/>
     <xsl:if test="not($cache)">
@@ -28,7 +28,7 @@
         <xsl:otherwise>
           <xsl:attribute name="cachedir"><xsl:value-of select="$cache"/></xsl:attribute>
         </xsl:otherwise>
-      </xsl:choose>            
+      </xsl:choose>
       <xsl:if test="$recdir">
         <xsl:choose>
         <xsl:when test="not(starts-with($recdir, '/'))"> <!-- The path isn't absolute -->
@@ -43,7 +43,7 @@
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
-  
+
   <xsl:template match="standardmaster">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
@@ -52,9 +52,9 @@
       <depxsl name="core/xsl/customizemaster.xsl"/>
       <depaux name="{$docroot}/core/xsl/default_copy.xsl"/>
       <depaux name="{$docroot}/core/xsl/include.xsl"/>
-      <depaux name="{$docroot}core/xsl/utils.xsl"/>
-      <depaux name="{$docroot}core/xsl/navigation.xsl"/>
-      <depaux name="{$docroot}core/xsl/forminput.xsl"/>
+      <depaux name="{$docroot}/core/xsl/utils.xsl"/>
+      <depaux name="{$docroot}/core/xsl/navigation.xsl"/>
+      <depaux name="{$docroot}/core/xsl/forminput.xsl"/>
       <depaux name="{$docroot}/{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
@@ -73,7 +73,7 @@
       <depxsl name="core/xsl/customizemaster.xsl"/>
       <depaux name="{$docroot}/core/xsl/default_copy.xsl"/>
       <depaux name="{$docroot}/core/xsl/include.xsl"/>
-      <depaux name="{$docroot}core/xsl/utils.xsl"/>
+      <depaux name="{$docroot}/core/xsl/utils.xsl"/>
       <depaux name="{$docroot}/{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
@@ -120,7 +120,7 @@
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
     </target>
-    
+
     <target name="{@name}.xml" type="xml">
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
@@ -131,7 +131,7 @@
       </xsl:if>
     </target>
   </xsl:template>
-  
+
   <xsl:template name="render_include_ssheets">
     <xsl:if test="./include">
       <xsl:for-each select="include">
@@ -145,8 +145,8 @@
         </xsl:attribute>
       </param>
     </xsl:if>
-  </xsl:template>  
-  
+  </xsl:template>
+
   <xsl:template match="target">
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
@@ -171,7 +171,7 @@
     </xsl:variable>
     <param name="{@name}" value="{$value}"/>
   </xsl:template>
-  
+
   <xsl:template match="depaux">
     <depaux name="{$docroot}/{@name}">
       <xsl:if test="@type">
@@ -213,6 +213,6 @@
 <!--       </xsl:call-template> -->
 <!--     </xsl:if> -->
 <!--   </xsl:template> -->
-  
+
 </xsl:stylesheet>
 
