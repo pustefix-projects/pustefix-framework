@@ -133,10 +133,12 @@ cleandoc:
 	@rm -rf $(JAVADOCDIR)/*
 
 dist:   _tag clean compile jar data skeleton
-	@rm -f example/core/AUTOTAG
+	@rm -f example/core/CVS_AUTOTAG
+	@rm -f skel/CVS_AUTOTAG
 
 notag:	_notag clean compile jar data skeleton
-	@rm -f example/core/AUTOTAG
+	@rm -f example/core/CVS_AUTOTAG
+	@rm -f skel/CVS_AUTOTAG
 
 _tag:
 	@echo "*** tag cvs with ${JARAUTOTAG}!"
