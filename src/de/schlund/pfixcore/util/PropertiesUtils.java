@@ -38,7 +38,11 @@ public class PropertiesUtils {
     }
     
     /**
-     * Insert the method's description here.
+     * find all properties whose name starts with the given prefix,
+     * strip the prefix from the name, and put them into a hashmap with 
+     * their new, shortened name. Example: prefix is "foo", property name
+     * is "foo.bar" -&gt; will result in new property name "bar". 
+     *
      * Creation date: (05/09/00 17:53:25)
      * @return HashMap
      */
