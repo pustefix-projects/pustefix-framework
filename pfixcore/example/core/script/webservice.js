@@ -137,7 +137,7 @@ Parameter.prototype.init=function(args) {
 		this.name=args[0];
 		this.typeInfo=args[1];
 		this.parameterMode=args[2];
-	} else throw new soapIllegalArgumentException("Wrong number of arguments","Parameter.init");
+	} else throw new soapIllegalArgsException("Wrong number of arguments","Parameter.init");
 }
 
 Parameter.prototype.setValue=function(value) {
@@ -307,31 +307,40 @@ function soapException(message,source) {
    this.message=message;
    this.source=source;
    this.name="soapException";
+   this.desc="General error";
 }
-
 soapException.prototype.toString=function() {
-	return this.name+"["+this.source+"] "+this.message;
+	return this.name+":"+this.desc+"["+this.source+"] "+this.message;
 }
 
 //*********************************
-//soapSerializationException
+//soapSerializeEx
 //*********************************
-function soapSerializationException(message,source) {
+function soapSerializeEx(message,source) {
 	soapException.call(this,message,source);
-	this.name="soapSerializationException";
+	this.name="SerializationException";
+	this.desc="Serialization failed";
 }
-soapSerializationException.extend(soapException);
+soapSerializeEx.extend(soapException);
 
 //*********************************
-//soapIllegalArgumentException
+//soapIllegalArgsEx
 //*********************************
-function soapIllegalArgumentException(message,source) {
+function soapIllegalArgsEx(message,source) {
 	soapException.call(this,message,source);
-	this.name="soapIllegalArgumentException";
+	this.name="IllegalArgumentException";
+	this.desc="Illegal arguments";
 }
-soapIllegalArgumentException.extend(soapException);
+soapIllegalArgsEx.extend(soapException);
 
-
+//*********************************
+//soapWrongArgNoEx
+//*********************************
+function soapWrongArgNoEx(message,source) {
+	soapIllegalArgsEx.call(this,message,source);
+	this.desc="Wrong number of arguments";
+}
+soapWrongArgNoEx.extend(soapIllegalArgsEx);
 
 
 //*********************************
@@ -362,18 +371,36 @@ SimpleTypeSerializer.prototype.deserialize=function(typeInfo,element) {
 //IntSerializer(QName xmlType)
 //*********************************
 function IntSerializer(xmlType) {
-	SimpleTypeSerializer.call( this, xmlType);
+	SimpleTypeSerializer.call(this,xmlType);
 }
 
 IntSerializer.extend(SimpleTypeSerializer);
 
 IntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
-	if(typeof value!="number") throw new soapSerializationException("Illegal type: "+(typeof value),"IntSerializer.serialize");
+	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"IntSerializer.serialize");
 	this.superclass.serialize(value,name,typeInfo,writer);
 }
 
 IntSerializer.prototype.deserialize=function(typeInfo,element) {
-	return parseInt(this.superclass.deserialize.call( this, typeInfo,element));
+	return parseInt(this.superclass.deserialize.call(this,typeInfo,element));
+}
+
+//*********************************
+//FloatSerializer(QName xmlType)
+//*********************************
+function FloatSerializer(xmlType) {
+	SimpleTypeSerializer.call(this,xmlType);
+}
+
+FloatSerializer.extend(SimpleTypeSerializer);
+
+FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"FloatSerializer.serialize");
+	this.superclass.serialize(value,name,typeInfo,writer);
+}
+
+FloatSerializer.prototype.deserialize=function(typeInfo,element) {
+	return parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
 }
 
 
@@ -384,7 +411,7 @@ IntSerializer.prototype.deserialize=function(typeInfo,element) {
 function ArraySerializer(xmlType) {
 	if(arguments.length==1) {
 		this.xmlType=xmlType;
-	} else throw new soapIllegalArgumentException("Wrong number of arguments","ArraySerializer");
+	} else throw new soapIllegalArgsEx("Wrong number of arguments","ArraySerializer");
 }
 
 ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer) {
@@ -441,8 +468,9 @@ TypeMapping.prototype.init=function() {
 	this.builtin[xmltypes.XSD_FLOAT.hashKey()]=this.SER_SIMPLE;
 	this.builtin[xmltypes.XSD_INT.hashKey()]=this.SER_SIMPLE;
 	this.builtin[xmltypes.XSD_STRING.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
+	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY
 	this.mappings[xmltypes.XSD_INT.hashKey()]=new IntSerializer();
+	this.mappings[xmltypes.XSD_FLOAT.hashKey()]=new FloatSerializer();	
 }
 
 //register(QName xmlType,Serializer serializer)
@@ -460,7 +488,7 @@ TypeMapping.prototype.getSerializer=function(typeInfo) {
 			this.register(typeInfo.xmlType,serializer);
 		} 
 		return serializer;
-	} else throw new IllegalArgumentException("Wrong number of arguments","TypeMapping.getSerializer");
+	} else throw new soapIllegalArgsEx("Wrong number of arguments","TypeMapping.getSerializer");
 }
 
 //Serializer getBuiltinSerializer(TypeInfo typeInfo)
@@ -543,7 +571,7 @@ Call.prototype.addParameter=function() {
 	} else if(arguments.length==3) {
 		var param=new Parameter(arguments[0],arguments[1],arguments[2]);
 		this.params.push(param);
-	} else throw new soapIllegalArgumentException("Wrong number of arguments","Call.addParameter");
+	} else throw new soapIllegalArgsEx("Wrong number of arguments","Call.addParameter");
 }
 
 //setReturnType(retTypeInfo)
@@ -565,7 +593,7 @@ Call.prototype.invoke=function() {
 			ind++;
 		}
 	}
-	if(this.params.length!=arguments.length-ind) throw new soapIllegalArgumentException("Wrong number of arguments","Call.invoke");
+	if(this.params.length!=arguments.length-ind) throw new soapIllegalArgsEx("Wrong number of arguments","Call.invoke");
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
@@ -574,8 +602,6 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
-  //  alert("writer.xml:\n" + writer.xml);
-  //  document.getElementById('request').value=writer.xml;
   
   var resDoc;
   if( !this.userCallback ) {
@@ -586,20 +612,44 @@ Call.prototype.invoke=function() {
     
   // async
   return new xmlRequest( 'POST', this.endpoint, this.callback, this ).start( writer.xml );
-  
-  //  var resDoc=sendTest(writer.xml,this.endpoint);
-  //	return rpc.deserialize(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
-  //  return new xmlRequest( 'POST', this.endpoint, this.userCallback ).start( writer.xml );
 }
 
+Call.prototype.callback = function( xml ) {
 
+  //  alert("Call.callback()..." + xml);
+	
+	alert(xml);
+	alert(typeof xml);
+	var soapMsg=new SOAPMessage(xml);
+	var fault=xml.getElementsByTagName("Fault");
+
+  //-------------
+  // deserialize
+  //-------------
+
+	var rpc=new RPCSerializer( this.opName, null, this.retTypeInfo);
+  var res = rpc.deserialize(xml.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
+  if( this.userCallback ) {
+    // async
+    this.userCallback( res );
+    return true;
+  } else {
+    // sync
+    return res;
+  }
+};
 
 
 //*********************************
 // SOAPMessage()
+// SOAPMessage(Document xml)
 //*********************************
 function SOAPMessage() {
-	this.soapPart=new SOAPPart();
+	if(arguments.length==0) {
+		this.soapPart=new SOAPPart();
+	} else if(arguments.length==1) {
+		this.soapPart=new SOAPPart(arguments[0]);
+	} else throw new soapWrongArgNoEx("","SOAPMessage");
 }
 
 //SOAPPart getSOAPPart()
@@ -614,10 +664,16 @@ SOAPMessage.prototype.write=function(writer) {
 
 //*********************************
 // SOAPPart()
+// SOAPPart(Document xml)
 //*********************************
 function SOAPPart() {
-	this.envelope=new SOAPEnvelope();
-	
+	if(arguments.length==0) {
+		this.envelope=new SOAPEnvelope();
+	} else if(arguments.length==1) {
+		var e=arguments[0].firstChild;
+		if(e.nodeName!="soapenv:Envelope") throw new soapException("NO SOAP MESSAGE","SOAPPart");
+		this.envelope=new SOAPEnvelope(e);
+	} else throw new soapWrongArgNoEx("","SOAPPart");
 }
 
 //SOAPEnvelope getEnvelope()
@@ -633,10 +689,17 @@ SOAPPart.prototype.write=function(writer) {
 
 //*********************************
 // SOAPEnvelope()
+// SOAPEnvelope(Element elem)
 //*********************************
 function SOAPEnvelope() {
-	this.header=new SOAPHeader();
-	this.body=new SOAPBody();
+	if(arguments.length==0) {
+		this.header=new SOAPHeader();
+		this.body=new SOAPBody();
+	} else if(arguments.length==1) {
+		for(var i=0;i<arguments[0].childNodes.length;i++) {
+			alert(arguments[0].childNodes[i]);
+		}
+	} else throw new soapWrongArgNoEx("","SOAPEnvelope");
 }
 
 //write(XMLWriter writer) {
@@ -769,31 +832,6 @@ function BeanInfo(xmlType,arrayType,propToInfo) {
 }
 
 
-//*****************************************************************************
-//
-//*****************************************************************************
-Call.prototype.callback = function( xml ) {
-
-  //  alert("Call.callback()..." + xml);
-
-  //-------------
-  // deserialize
-  //-------------
-
-	var rpc=new RPCSerializer( this.opName, null, this.retTypeInfo);
-  var res = rpc.deserialize(xml.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
-
-  if( this.userCallback ) {
-    // async
-    this.userCallback( res );
-    return true;
-  } else {
-    // sync
-    return res;
-  }
-};
-
-
 //*********************************
 // soapStub
 //*********************************
@@ -805,107 +843,17 @@ soapStub.prototype._createCall=function() {
   var call=new Call();
   call.setTargetEndpointAddress(this._url);
   return call;
-};
+}
 
 soapStub.prototype._extractCallback=function(args,expLen) {
 	var argLen=args.length;
 	if(argLen==expLen+1 && typeof args[argLen-1]=="function") return args[argLen-1];
-	else if(argLen!=expLen) throw new soapIllegalArgumentException("Wrong number of arguments","soapStub._extractCallback");
+	else if(argLen!=expLen) throw new soapIllegalArgsEx("Wrong number of arguments","soapStub._extractCallback");
 	return null;
 }
 
 soapStub.prototype._setURL=function(url) {
-	alert(window.location);
 	this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,"$1"+window.location.host+"$3");
+	//var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
+	//this._url+=session;
 }
-
-
-var count = 0;
-
-function test() {
-	
-	
-	var call = new Call();
-	var url="http://webservice.zap.ue.schlund.de/xml/webservice/Calculator";
-	
-	url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,"$1"+window.location.host+"$3");
-	
-	
-	call.setTargetEndpointAddress(url);
-	//call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
-	
-	
-	
-	call.setOperationName(new QName("add"));
-	call.addParameter("val1",new TypeInfo(xmltypes.XSD_INT),"IN");
-	call.addParameter("val2",new TypeInfo(xmltypes.XSD_INT),"IN");
-	call.setReturnType(new TypeInfo(xmltypes.XSD_INT));
-
-  if( count % 2 ) {
-    call.userCallback = function(v) { 
-      document.getElementById('request').value += "odd:  async: "+v + "\n";
-    };
-  } else {
-    call.userCallback = function(v) { 
-      document.getElementById('request').value += "even: async: "+v + "\n";
-    };
-  }
-  
-
-	
-	
-
-  try {
-    var res = call.invoke( count++, 2);
-  } catch(e) { alert(e); }
-	
-
-  if( !call.userCallback ) {
-    alert("sync: " + res);
-  }
-
-	/*
-	call.setOperationName(new QName("echoString"));
-	call.addParameter("val",new TypeInfo(xmltypes.XSD_STRING),"IN");
-	call.setReturnType(new TypeInfo(xmltypes.XSD_STRING));
-	var res=call.invoke("testtext");
-	alert("Result: "+res);
-	*/
-	/*
-	call.setOperationName(new QName("echoStringArray"));
-	var info=new ArrayInfo(new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_string"),xmltypes.XSD_STRING,1);
-	call.addParameter("val",info,"IN");
-	call.setReturnType(info);
-	call.invoke(new Array("testtext","foooo","grrrrr"));
-	*/
-	
-	/*
-	call.setOperationName(new QName("echoStringMultiArray"));
-	var info=new ArrayInfo(new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOfArrayOf_xsd_string"),xmltypes.XSD_STRING,2);
-	call.addParameter("val",info,"IN");
-	call.setReturnType(info);
-	call.invoke(new Array(new Array("a","b","c"),new Array("d","e")));
-	*/
-	
-	var wsc=new wsCalculator();
-	var wsc_res=wsc.multiply(23,45, function(v) { alert("async:"+v);} );
-//	alert("WSC:"+wsc_res+" "+(typeof wsc_res));
-	
-		
-}
-
-function sendTest(msg,url) {
-	var req;
-	if (window.XMLHttpRequest) {
-		req=new XMLHttpRequest();
-	} else if(window.ActiveXObject) {
-      req = new ActiveXObject("Microsoft.XMLHTTP");
-	} else {
-		alert("XMLHttpRequest not supported");
-	}
-	req.open("POST", url, false);
-	req.setRequestHeader("SOAPAction",'""');
-	req.send(msg);
-	return req.responseXML;
-}
-

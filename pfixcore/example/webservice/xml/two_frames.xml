@@ -39,12 +39,13 @@
 				<script type="text/javascript" src="/calc-wsdl.js"></script>
 				<script type="text/javascript" src="/calc-mysoap.js"></script>
 				<script type="text/javascript" src="/xml/wsscript/Calculator.js"></script>
-				<script type="text/javascript" src="/calc-pfxsoap.js"></script>
-				
+				<script type="text/javascript" src="/calc-pfxsoap.js"></script>		
 			</ixsl:when>
 			<ixsl:when test="$page='counter'">
 				<script type="text/javascript" src="/counter-soap.js"></script>
 				<script type="text/javascript" src="/counter-wsdl.js"></script>
+				<script type="text/javascript" src="/xml/wsscript/Counter.js"></script>
+				<script type="text/javascript" src="/counter-pfxsoap.js"></script>		
 			</ixsl:when>
 			
 			<ixsl:when test="$page='data'">
