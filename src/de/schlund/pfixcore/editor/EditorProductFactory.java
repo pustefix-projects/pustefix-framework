@@ -150,28 +150,21 @@ public class EditorProductFactory implements FactoryInit {
             }
             
             
-			NodeList nliste = doc.getElementsByTagName("documentation");
-
-
+            NodeList nliste = doc.getElementsByTagName("documentation");
+            
+            
             nliste = prj.getElementsByTagName("documentation");
             String argument[] = new String[nliste.getLength()];
-                       
-                        
-
-			for (int k = 0; k < nliste.getLength(); k++) {
-			
-				Element el = (Element) nliste.item(k);
-			
-				String node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
-				LOG.debug("Documentation found in: " + node);
-				argument[k] = node;
-			
-			}
-			
-						
-			EditorDocumentation edit = new EditorDocumentation(argument);
+            
+            for (int k = 0; k < nliste.getLength(); k++) {
+                Element el = (Element) nliste.item(k);
+                String node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
+                LOG.debug("Documentation found in: " + node);
+                argument[k] = node;
+            }
+            
+            EditorDocumentation edit = new EditorDocumentation(argument);
             EditorProduct product = new EditorProduct(name, comment, gen, navi, servlets, nspaces, edit);
-			
 
             LOG.debug("Init Product: " + product.toString());
             knownproducts.put(name, product);
