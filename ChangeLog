@@ -1,3 +1,8 @@
+2004-01-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: 
+	releaseGenerator: new method.
+
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml:

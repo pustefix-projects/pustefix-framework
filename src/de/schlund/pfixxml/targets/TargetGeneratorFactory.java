@@ -59,4 +59,13 @@ public class TargetGeneratorFactory {
                                     "' isn't a file, can't be read or doesn't exist"));
         }
     }
+
+    public void releaseGenerator(String config) {
+        if (generatormap.containsKey(config)) {
+            synchronized(generatormap) {
+                generatormap.remove(config);
+            }
+        }
+    }
+    
 }
