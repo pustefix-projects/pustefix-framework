@@ -1,5 +1,7 @@
 2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* released 0.8.2
+
 	* src/de/schlund/pfixxml/ServletManager.java: bug fix: make it
 	work without cookies again: we actually have to believe that the
 	session is secure (if it is marked as such) when request doesn't
