@@ -3,7 +3,7 @@
 	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java
 	(updatePart): bug fix, really delete the children before updating
 
-	* Makefile: quite some changes top make generation of a skeleton package work.
+	* Makefile: quite some changes to make generation of a skeleton package work.
 
 	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (addMessageToLangElem): new private method used to 
 	add the default message of a statuscode to the <lang> node. This method now handles the message as a xml fragment.
