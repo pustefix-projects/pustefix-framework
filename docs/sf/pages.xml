@@ -12,6 +12,7 @@
     <page name="project" title="Project definition"/>
     <page name="prop" title="Servlet definition"/>
     <page name="depend" title="Page definition"/>
+    <page name="iwrapper" title="IWrapper"/>
   </page>
   <page name="misc" title="Miscellaneous">
     <page name="apploader" title="AppLoader"/>
