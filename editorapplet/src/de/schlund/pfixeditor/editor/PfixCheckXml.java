@@ -78,8 +78,42 @@ public class PfixCheckXml {
             wellformed = false;
         }
         return wellformed;
-	
+        
     }
+
+     public boolean checkXML(String zeile) {
+
+        boolean wellformed;
+        boolean result=false;
+	ArrayList xmlErrors=null;
+        XmlError xErr=null;
+        XmlTextProcessor xmlProc=new XmlTextProcessor();
+        result=xmlProc.parse("<foo>"+ zeile + "</foo>");
+        xmlErrors=xmlProc.getXmlErrors();
+        if (result) {
+            wellformed = true;
+        }
+        else {
+        Iterator it=xmlErrors.iterator();
+        errorMessage = "";
+                    
+        while (it.hasNext())
+        {
+            xErr=(XmlError) it.next();
+            errorMessage = errorMessage + "Error at line "+xErr.getLine()+", column "+xErr.getColumn()+", offset:"+ xErr.getOffset() +":" + "   " + xErr.getMessage() + "\n";
+
+        }
+            wellformed = false;
+        }
+        return wellformed;
+        
+    }
+
+
+    
+
+
+    
 
     public String getErrorMessage() {
         return errorMessage;
