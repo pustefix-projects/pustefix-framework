@@ -22,10 +22,13 @@ import java.io.File;
 
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.XPathException;
+
+import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
@@ -94,12 +97,14 @@ public final class IncludeDocumentExtension {
         // get the includedocument
         try {
             iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
-        } catch(Exception e) {
+        } catch(SAXException saxex) {
             if(dolog)
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
             
-            target.setStoredException(e);
-            throw e;
+            //TargetGenerationException targetex = new TargetGenerationException("Exception in extension function!", saxex);
+            //targetex.setTargetkey(targetkey);
+            target.setStoredException(saxex);
+            throw saxex;
         }
         doc = iDoc.getDocument();
         

@@ -1,13 +1,17 @@
 package de.schlund.pfixxml;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
@@ -35,18 +39,26 @@ public class IncludeDocument {
 
     private Document doc;
     // NOTE: here we want a XERCES-DocumentBuilderFactory
-    private DocumentBuilderFactoryImpl docBuilderFactory;
+    private static DocumentBuilderFactoryImpl docBuilderFactory = new DocumentBuilderFactoryImpl();
     private long                       modTime = 0;
     private static String              INCPATH = "incpath";
     private static Category            CAT     = Category.getInstance(IncludeDocument.class.getName());
-
+    private static DocumentBuilder docBuilder = null;
     //~ Constructors ...............................................................................
 
+    static {
+        try {
+            docBuilder = docBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            CAT.error(e.getMessage());
+            e.printStackTrace();
+        }  
+    }
     /**
      * Constructor
      */
-    public IncludeDocument() {
-        docBuilderFactory = new DocumentBuilderFactoryImpl();
+    public IncludeDocument()  {
         if (! docBuilderFactory.isNamespaceAware())
             docBuilderFactory.setNamespaceAware(true);
         if (docBuilderFactory.isValidating())
@@ -61,13 +73,13 @@ public class IncludeDocument {
      * @param mutable determine if the document is mutable or not. Any attempts
      * to modify an immutable document will cause an exception.
      */
-    public void createDocument(String path, boolean mutable) throws Exception {
+    public void createDocument(String path, boolean mutable) throws SAXException, IOException, TransformerException {
         File tmp = new File(path);
         modTime = tmp.lastModified();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        
         try {
             doc = docBuilder.parse(path);
-        } catch (Exception ex) {
+        } catch (SAXParseException ex) {
             if (ex instanceof SAXParseException) {
                 SAXParseException saxpex = (SAXParseException) ex;
                 StringBuffer      buf = new StringBuffer(100);

@@ -150,7 +150,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
      * @throws Exception on all errors 
      */
-    public final Document xmlObjectFromDocument(Document doc) throws Exception {
+    public final Document xmlObjectFromDocument(Document doc) throws TransformerException {
         return tinyTreeFromDocument(doc);
     }
 
@@ -217,7 +217,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
     /**
      * Document me!
      */
-    private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws Exception {
+    private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws TransformerException  {
         if (doc == null) {
             // thats a request to an unkown page!
             // return null, cause we  want a 404 and no NPExpection

@@ -1,3 +1,36 @@
+2003-05-06  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/xsl/errorrepresentation.xsl.in: small changes.
+
+	* example/core/xsl/include.xsl.in: removed error-handling from 2003-04-28.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java: added
+	class representing all errors which can occur during generation of a
+	target.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	try/catch block around target.getValue(). Catches
+	TargetGenerationException now.
+
+	* src/de/schlund/pfixxml/IncludeDocument.java: createDocument now
+	throws SAXException, IOException and TransformerException. Moved
+	DocumentBuilder to a static class variable.
+
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: getIncludeDocument
+	now throws SAXException, IOException and TransformerException.
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get): catch
+	SAXExceptions only after getting IncludeDocument.
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:
+	xmlObjectFromDocument now throws TransformerException.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java(getModTimeMaybeUpdate):
+	throw a TargetGenerationException on target specific errors.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: prints a report
+	to screen after generation is complete.
+
 2003-05-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: 

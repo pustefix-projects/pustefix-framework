@@ -22,6 +22,9 @@
     </th>
   </xsl:template>
 
+ <xsl:template match="break">
+   <tr><td colspan="2"><hr/></td></tr>
+ </xsl:template>
 
   <xsl:template match="error">
     <tr>

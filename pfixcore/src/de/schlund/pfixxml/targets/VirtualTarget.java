@@ -154,19 +154,25 @@ public abstract class VirtualTarget extends TargetImpl {
                         // Now we invalidate the mem- and disc cache to force
                         // a complete rebuild of this target the next try
                         storeValue(null);
-                        new File(getTargetGenerator().getDisccachedir() + getTargetKey()).delete();
+                        File cachefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                        if(cachefile.exists()) {
+                            cachefile.delete();
+                        }
                         
                         if(e instanceof TransformerException) {
                             TransformerException tex =  (TransformerException) e;
-                            Throwable th = tex.getException();
-                            if(th != null) {
-                                throw tex;
+                            /*if(storedException != null && tex.getCause() == null && tex.getException() == null) {
+                                tex.initCause(storedException);
+                               // tex = new TransformerException(tex.getMessage(), tex.getCause());
+                            }*/
+                            TargetGenerationException targetex = null;
+                            if(storedException != null) {
+                                targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
                             } else {
-                                if(storedException != null) {
-                                    tex.initCause(storedException);
-                                }
-                                throw tex;
+                                targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
                             }
+                            targetex.setTargetkey(targetkey);
+                            throw targetex;
                         } else {
                             throw e;
                         }

@@ -21,6 +21,7 @@ package de.schlund.pfixxml.targets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -35,6 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.XMLException;
@@ -48,27 +51,38 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class TargetGenerator {
-    private static Category               CAT   = Category.getInstance(TargetGenerator.class.getName());
+    private static Category CAT = Category.getInstance(TargetGenerator.class.getName());
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    private        DependencyRefCounter   refcounter = new DependencyRefCounter();
-    private        PageTargetTree         pagetree   = new PageTargetTree();
-    private        HashMap                alltargets = new HashMap();
-    private        String                 configname;
-    private        File                   confile;
-    private        long                   config_mtime = 0;
-    private        String                 disccachedir;
-    private        String                 docroot;
-    private 	   boolean                isGetModTimeMaybeUpdateSkipped = false;
-        
+    private DependencyRefCounter refcounter = new DependencyRefCounter();
+    private PageTargetTree pagetree = new PageTargetTree();
+    private HashMap alltargets = new HashMap();
+    private String configname;
+    private File confile;
+    private long config_mtime = 0;
+    private String disccachedir;
+    private String docroot;
+    private boolean isGetModTimeMaybeUpdateSkipped = false;
+    private static TargetGenerationReport report = new TargetGenerationReport();
+
     // needed during load.
     private int unnamedcount = 0;
 
-    public DependencyRefCounter getDependencyRefCounter() { return refcounter; }
-    public PageTargetTree       getPageTargetTree() { return pagetree; }
-    public String               getConfigname() { return(configname); }
-    public String               getDisccachedir() { return(disccachedir); }
-    public String               getDocroot() { return(docroot); }
-    
+    public DependencyRefCounter getDependencyRefCounter() {
+        return refcounter;
+    }
+    public PageTargetTree getPageTargetTree() {
+        return pagetree;
+    }
+    public String getConfigname() {
+        return (configname);
+    }
+    public String getDisccachedir() {
+        return (disccachedir);
+    }
+    public String getDocroot() {
+        return (docroot);
+    }
+
     public TreeMap getAllTargets() {
         synchronized (alltargets) {
             return new TreeMap(alltargets);
@@ -81,24 +95,24 @@ public class TargetGenerator {
         }
     }
 
-    public Target createXMLLeafTarget (String key) {
+    public Target createXMLLeafTarget(String key) {
         return (Target) createTarget(TargetType.XML_LEAF, key);
     }
 
-    public Target createXSLLeafTarget (String key) {
+    public Target createXSLLeafTarget(String key) {
         return (Target) createTarget(TargetType.XSL_LEAF, key);
     }
 
     public String toString() {
         return "[TG: " + getConfigname() + "; " + alltargets.size() + " targets defined.]";
     }
-    
+
     // -------------------------------------------------------------------------------------------
 
-    public TargetGenerator (File confile) throws Exception {
+    public TargetGenerator(File confile) throws Exception {
         this.confile = confile;
         Meminfo.print("TG: Before loading " + confile.getPath());
-        configname   = confile.getCanonicalPath();
+        configname = confile.getCanonicalPath();
         config_mtime = confile.lastModified();
         loadConfig();
         Meminfo.print("TG: after loading targets for " + confile.getPath());
@@ -106,12 +120,15 @@ public class TargetGenerator {
 
     public synchronized boolean tryReinit() throws Exception {
         if (confile.lastModified() > config_mtime) {
-            CAT.warn("\n\n###############################\n" +
-                     "#### Reloading depend file: " + confile.getAbsoluteFile() + "\n" +
-                     "###############################\n");
-            refcounter   = new DependencyRefCounter();
-            pagetree     = new PageTargetTree();
-            alltargets   = new HashMap();
+            CAT.warn(
+                "\n\n###############################\n"
+                    + "#### Reloading depend file: "
+                    + confile.getAbsoluteFile()
+                    + "\n"
+                    + "###############################\n");
+            refcounter = new DependencyRefCounter();
+            pagetree = new PageTargetTree();
+            alltargets = new HashMap();
             config_mtime = confile.lastModified();
             loadConfig();
             return true;
@@ -119,58 +136,58 @@ public class TargetGenerator {
             return false;
         }
     }
-    
+
     // *******************************************************************************************
 
-    private void loadConfig () throws Exception {
+    private void loadConfig() throws Exception {
         DocumentBuilder domp = dbfac.newDocumentBuilder();
 
         CAT.warn("\n***** CAUTION! ***** loading config " + configname + "...");
-        Document  config;
-        
+        Document config;
+
         try {
             config = domp.parse(configname);
         } catch (SAXException e) {
-            CAT.error("\nConfigfile '" + configname + "' couldn't be parsed by XML parser: \n"+e.toString());
+            CAT.error("\nConfigfile '" + configname + "' couldn't be parsed by XML parser: \n" + e.toString());
             throw e;
         } catch (IOException e) {
             CAT.error("\nConfigfile '" + configname + "' I/O Error: \n" + e.toString());
             throw e;
         }
 
-        Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
+        Element makenode = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
-        
+
         disccachedir = makenode.getAttribute("cachedir") + "/";
         CAT.debug("* Set CacheDir to " + disccachedir);
         File cache = new File(disccachedir);
         if (!cache.exists()) {
             cache.mkdirs();
         } else if (!cache.isDirectory() || !cache.canWrite() || !cache.canRead()) {
-            XMLException e = new XMLException ("Directory " + disccachedir +
-                                               " is not writeable,readeable or is no directory");
-            throw(e);
+            XMLException e =
+                new XMLException("Directory " + disccachedir + " is not writeable,readeable or is no directory");
+            throw (e);
         }
 
         docroot = makenode.getAttribute("docroot") + "/";
         CAT.debug("* Set docroot to " + docroot);
 
-        HashSet depxmls    = new HashSet();
-        HashSet depxsls    = new HashSet();
+        HashSet depxmls = new HashSet();
+        HashSet depxsls = new HashSet();
         HashMap allstructs = new HashMap();
-        
+
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
-            Element      node   = (Element) targetnodes.item(i);
-            String       name   = node.getAttribute("name");
-            String       type   = node.getAttribute("type");   
+            Element node = (Element) targetnodes.item(i);
+            String name = node.getAttribute("name");
+            String type = node.getAttribute("type");
             TargetStruct struct = new TargetStruct(name, type);
-            HashMap      params = new HashMap();
-            HashSet      depaux = new HashSet();
-            Element      xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
-            Element      xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
-            NodeList     allaux = node.getElementsByTagName("depaux");
-            NodeList     allpar = node.getElementsByTagName("param");
+            HashMap params = new HashMap();
+            HashSet depaux = new HashSet();
+            Element xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
+            Element xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
+            NodeList allaux = node.getElementsByTagName("depaux");
+            NodeList allpar = node.getElementsByTagName("param");
             if (xmlsub != null) {
                 String xmldep = xmlsub.getAttribute("name");
                 if (xmldep != null) {
@@ -194,24 +211,28 @@ public class TargetGenerator {
                 throw new XMLException("Defined VirtualTarget '" + name + "' without [depxsl]");
             }
             for (int j = 0; j < allaux.getLength(); j++) {
-                Element aux     = (Element) allaux.item(j);
-                String  auxname = aux.getAttribute("name");
+                Element aux = (Element) allaux.item(j);
+                String auxname = aux.getAttribute("name");
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
             for (int j = 0; j < allpar.getLength(); j++) {
-                Element par     = (Element) allpar.item(j);
-                String  parname = par.getAttribute("name");
-                String  value   = par.getAttribute("value");
+                Element par = (Element) allpar.item(j);
+                String parname = par.getAttribute("name");
+                String value = par.getAttribute("value");
                 params.put(parname, value);
             }
             struct.setParams(params);
             allstructs.put(name, struct);
         }
-        CAT.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) +
-                 "ms. Now looping over " + allstructs.keySet().size() + " targets");
+        CAT.warn(
+            "\n=====> Preliminaries took "
+                + (System.currentTimeMillis() - start)
+                + "ms. Now looping over "
+                + allstructs.keySet().size()
+                + " targets");
         start = System.currentTimeMillis();
-        for (Iterator i = allstructs.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = (TargetStruct) allstructs.get(i.next());
             createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls);
         }
@@ -221,39 +242,52 @@ public class TargetGenerator {
         CAT.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls) throws Exception {
-        String     key     = struct.getName();
-        String     type    = struct.getType();   
+    private TargetRW createTargetFromTargetStruct(
+        TargetStruct struct,
+        HashMap allstructs,
+        HashSet depxmls,
+        HashSet depxsls)
+        throws Exception {
+        String key = struct.getName();
+        String type = struct.getType();
         TargetType reqtype = TargetType.getByTag(type);
-        TargetRW   tmp     = getTargetRW(key);
+        TargetRW tmp = getTargetRW(key);
 
         if (tmp != null) {
-            if (reqtype == tmp.getType()) { 
+            if (reqtype == tmp.getType()) {
                 return tmp;
             } else {
-                throw new XMLException("Already have a target '" + key + "' with type " + tmp.getType() +
-                                       ". Requested type was '" + reqtype + "'");
+                throw new XMLException(
+                    "Already have a target '"
+                        + key
+                        + "' with type "
+                        + tmp.getType()
+                        + ". Requested type was '"
+                        + reqtype
+                        + "'");
             }
         } else {
-            String   xmldep    = struct.getXMLDep();
-            String   xsldep    = struct.getXSLDep();
+            String xmldep = struct.getXMLDep();
+            String xsldep = struct.getXSLDep();
             TargetRW xmlsource = null;
             TargetRW xslsource = null;
-                        
+
             // We need to handle the xml/xsldep first.
             // Check if xmldep is a leaf node or virtual:
-            
+
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep);
             } else {
-                xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls);
+                xmlsource =
+                    createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls);
             }
-            
+
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep);
             } else {
-                xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
+                xslsource =
+                    createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
             }
 
             tmp = createTarget(reqtype, key);
@@ -261,16 +295,16 @@ public class TargetGenerator {
             tmp.setXSLSource(xslsource);
 
             AuxDependencyManager manager = tmp.getAuxDependencyManager();
-            HashSet              auxdeps = struct.getDepaux();
-            for (Iterator i = auxdeps.iterator(); i.hasNext(); ) {
+            HashSet auxdeps = struct.getDepaux();
+            for (Iterator i = auxdeps.iterator(); i.hasNext();) {
                 String name = (String) i.next();
                 manager.addDependency(DependencyType.FILE, name, null, null, null, null, null);
             }
-            
-            HashMap params    = struct.getParams();
-            String  pageparam = null;
-            for (Iterator i = params.keySet().iterator(); i.hasNext(); ) {
-                String name  = (String) i.next();
+
+            HashMap params = struct.getParams();
+            String pageparam = null;
+            for (Iterator i = params.keySet().iterator(); i.hasNext();) {
+                String name = (String) i.next();
                 String value = (String) params.get(name);
                 CAT.debug("* Adding Param " + name + " with value " + value);
                 tmp.addParam(name, value);
@@ -284,8 +318,12 @@ public class TargetGenerator {
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
                 if (pageparam == null) {
-                    CAT.warn("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' parameter set! Will use 'Unnamed_"
-                             + unnamedcount + "' instead");
+                    CAT.warn(
+                        "*** WARNING *** Target '"
+                            + key
+                            + "' is top-level, but has no 'page' parameter set! Will use 'Unnamed_"
+                            + unnamedcount
+                            + "' instead");
                     pageparam = "Unamed_" + unnamedcount++;
                 }
                 PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam);
@@ -305,41 +343,45 @@ public class TargetGenerator {
     private TargetRW createXMLVirtualTarget(String key) {
         return createTarget(TargetType.XML_VIRTUAL, key);
     }
-    
+
     private TargetRW createXSLVirtualTarget(String key) {
         return createTarget(TargetType.XSL_VIRTUAL, key);
     }
 
-    private TargetRW createTarget (TargetType type, String key) {
+    private TargetRW createTarget(TargetType type, String key) {
         TargetFactory tfac = TargetFactory.getInstance();
-        TargetRW      tmp  = tfac.getTarget(type, this, key);
-        TargetRW      tmp2 = getTargetRW(key);
+        TargetRW tmp = tfac.getTarget(type, this, key);
+        TargetRW tmp2 = getTargetRW(key);
         if (tmp2 == null) {
             synchronized (alltargets) {
                 alltargets.put(tmp.getTargetKey(), tmp);
             }
         } else if (tmp != tmp2) {
-            throw new RuntimeException("Requesting Target '" + key + "' of type " + tmp.getType() +
-                                       ", but already have a Target of type " + tmp2.getType() +
-                                       " with the same key in this Generator!");
+            throw new RuntimeException(
+                "Requesting Target '"
+                    + key
+                    + "' of type "
+                    + tmp.getType()
+                    + ", but already have a Target of type "
+                    + tmp2.getType()
+                    + " with the same key in this Generator!");
         }
         return tmp;
     }
 
-
     private class TargetStruct {
         HashSet depaux;
         HashMap params;
-        String  type;
-        String  name;
-        String  xsldep;
-        String  xmldep;
+        String type;
+        String name;
+        String xsldep;
+        String xmldep;
 
         public TargetStruct(String name, String type) {
             this.name = name;
             this.type = type;
         }
-        
+
         public String getXMLDep() {
             return xmldep;
         }
@@ -375,16 +417,16 @@ public class TargetGenerator {
         public String getName() {
             return name;
         }
-        
+
         public String getType() {
             return type;
         }
     }
-    
+
     // *******************************************************************************************
 
-    public static void main (String[] args) {
-        TargetGenerator gen;
+    public static void main(String[] args) {
+        TargetGenerator gen = null;
 
         String log4jconfig = System.getProperty("log4jconfig");
         if (log4jconfig == null || log4jconfig.equals("")) {
@@ -392,7 +434,7 @@ public class TargetGenerator {
             System.exit(-1);
         }
         DOMConfigurator.configure(log4jconfig);
-        
+
         if (args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 try {
@@ -405,30 +447,46 @@ public class TargetGenerator {
                         System.out.println("---------- ...done [" + args[i] + "]");
                     } else {
                         CAT.error("Couldn't read configfile '" + args[i] + "'");
-                        throw(new XMLException("Oops!"));
+                        throw (new XMLException("Oops!"));
                     }
                 } catch (Exception e) {
                     CAT.error("Oops!", e);
                 }
             }
+            
+            System.out.println(report.toString());
+           
         } else {
             CAT.error("Need configfile to work on");
         }
     }
 
     protected void generateAll() throws Exception {
-        for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext(); ) {
+        for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget((String) e.next());
-            if (current.getType() != TargetType.XML_LEAF &&
-                current.getType() != TargetType.XSL_LEAF) {
-                    StringBuffer buf = new StringBuffer();
-                    buf.append(">>>>> Generating ").append(getDisccachedir()).append(current.getTargetKey()).append(" from ").
-                        append(current.getXMLSource().getTargetKey()).append(" and ").append(current.getXSLSource().getTargetKey());   
-                    System.out.println(buf.toString());
-                if (current.needsUpdate()) {
-                    current.getValue();
+            if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
+                StringBuffer buf = new StringBuffer();
+                buf.append(">>>>> Generating ")
+                    .append(getDisccachedir())
+                    .append(current.getTargetKey())
+                    .append(" from ")
+                    .append(current.getXMLSource().getTargetKey())
+                    .append(" and ")
+                    .append(current.getXSLSource().getTargetKey());
+                System.out.println(buf.toString());
+                
+                boolean needs_update = false;
+                needs_update = current.needsUpdate();
+                if (needs_update) {
+                    try {
+                        current.getValue();
+                    } catch(TargetGenerationException tgex) {
+                        report.addError(tgex, getConfigname());
+                        tgex.printStackTrace();
+                    }
                 }
                 System.out.println("done.");
+                
             }
         }
     }
@@ -446,6 +504,89 @@ public class TargetGenerator {
      */
     public void setIsGetModTimeMaybeUpdateSkipped(boolean isGetModTimeMaybeUpdateSkipped) {
         this.isGetModTimeMaybeUpdateSkipped = isGetModTimeMaybeUpdateSkipped;
+    }
+}
+
+class TargetGenerationReport {
+    private HashMap hash = new HashMap();
+    
+    TargetGenerationReport() {
+    }
+    
+    void addError(Exception e, String key) {
+        if(hash.get(key) == null) {
+            ArrayList list = new ArrayList();
+            hash.put(key, list);
+        } else {
+            ((ArrayList) hash.get(key)).add(e);
+        }
+        
+    }
+    
+    public String toString() {
+        StringBuffer buf = new StringBuffer(255);
+        String prod_break = "'============================================================================================'\n";
+        String ex_break = "|----------------------------------------------------------------------------------\n";
+        if(hash.isEmpty()) {
+            StringBuffer sb = new StringBuffer();            
+            sb.append(prod_break);
+            sb.append("| No exceptions\n");
+            sb.append(prod_break);
+            return sb.toString();
+        }
+        
+        Iterator iter = hash.keySet().iterator();
+        
+        while(iter.hasNext()) {
+           Object key = iter.next();
+           buf.append(prod_break);    
+           buf.append("| Config: ").append((String) key).append("\n");
+           ArrayList exs = (ArrayList) hash.get(key);
+           buf.append("| Exceptions: ").append("\n");
+           for(int i=0; i<exs.size(); i++) {
+               TargetGenerationException tgex = (TargetGenerationException) exs.get(i);
+               printEx(tgex, buf, " ");
+               if(exs.size() - 1 > i)
+                    buf.append(ex_break);
+           }
+           buf.append(prod_break);
+        }
+        return buf.toString();
+    }
+
+    private void printEx(Throwable e, StringBuffer buf, String indent) {
+        String br = "\n"; 
+        if(e == null) {
+            return;
+        }
+        if(e instanceof SAXParseException) { 
+            SAXParseException sex = (SAXParseException) e;
+            buf.append("|").append(br);
+            buf.append("|").append(indent).append("Type: ").append(sex.getClass().getName()).append("\n");
+            buf.append("|").append(indent).append("Message: ").append(sex.getMessage()).append("\n");
+            buf.append("|").append(indent).append("Id: ").append(sex.getSystemId()).append("\n");
+            buf.append("|").append(indent).append("Line: ").append(sex.getLineNumber()).append("\n");
+            buf.append("|").append(indent).append("Column: ").append(sex.getColumnNumber()).append("\n");
+        } else if( e instanceof TargetGenerationException) {
+            TargetGenerationException tgex = (TargetGenerationException)e;
+            buf.append("|").append(br);
+            buf.append("|").append(indent).append("Type: ").append(tgex.getClass().getName()).append("\n");
+            buf.append("|").append(indent).append("Message: ").append(tgex.getMessage()).append("\n");
+            buf.append("|").append(indent).append("Target: ").append(tgex.getTargetkey()).append("\n");
+            printEx(tgex.getNestedException(), buf, indent + " ");
+        } else if(e instanceof TransformerException ) {
+            TransformerException trex = (TransformerException) e;
+            buf.append("|").append(br);
+            buf.append("|").append(indent).append("Type: ").append(trex.getClass().getName()).append("\n");
+            buf.append("|").append(indent).append("Message: ").append(trex.getMessage()).append("\n");
+            printEx(trex.getCause(), buf, indent + " ");   
+        }
+        else {
+            buf.append("|").append(br);
+            buf.append("|").append(indent).append("Type: ").append(e.getClass().getName()).append("\n");
+            buf.append("|").append(indent).append("Message: ").append(e.getMessage()).append("\n");
+        }
+        //printEx(e, buf, indent + " ");
     }
 
 }

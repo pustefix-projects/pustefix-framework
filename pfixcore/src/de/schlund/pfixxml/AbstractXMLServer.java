@@ -28,6 +28,7 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.PublicXSLTProcessor;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetFactory;
+import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.TargetType;
@@ -35,6 +36,7 @@ import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 import de.schlund.pfixxml.testenv.RecordManager;
 import de.schlund.pfixxml.testenv.RecordManagerFactory;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -579,15 +581,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             Object stylevalue = null;
             try {
                 stylevalue = generator.getTarget(stylesheet).getValue();
-            } catch(Exception e) {
-                // handle target creation errors here. Show the error page and return. 
-                if(e instanceof TransformerException ) {
-                    TransformerException tex = (TransformerException) e;
-                    CAT.error("fatal transformer exception! :"+tex.getMessage()+" Cause: "+(tex.getException() != null ? tex.getException().getMessage() : " none "));   
-                } else {
-                    CAT.error("fatal exception! :"+e.getMessage());
-                }
-                Document errordoc = createErrorTree(e, generator.getTarget(stylesheet));
+            } catch(TargetGenerationException targetex) {
+                Document errordoc = createErrorTree(targetex);
                 errordoc = xsltproc.xmlObjectFromDocument(errordoc);
                 Object stvalue = ((Target)TargetFactory.getInstance().getTarget(TargetType.XSL_LEAF, generator, ERROR_STYLESHEET)).getValue();
                 xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
@@ -647,7 +642,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @param e
      * @return Document
      */
-    private Document createErrorTree(Exception e, Target target) throws ParserConfigurationException {
+    private Document createErrorTree(TargetGenerationException targetex) throws ParserConfigurationException, IOException {
         DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = docbuilder.newDocument();
         Element e0 = doc.createElement("error_message");
@@ -657,66 +652,111 @@ public abstract class AbstractXMLServer extends ServletManager {
         e1.appendChild(t1);
         e0.appendChild(e1);
        
-        Element e2 = doc.createElement("error");
-        e2.setAttribute("key", "Type:");
-        Text t2 = doc.createTextNode(e.getClass().getName());
-        e2.appendChild(t2);
-        e0.appendChild(e2);
-       
-        Element e3 = doc.createElement("error");
-        e3.setAttribute("key", "Target:");
-        Text t3 = doc.createTextNode(target.getTargetKey());
-        e3.appendChild(t3);
-        e0.appendChild(e3); 
-       
-        Element e9 = doc.createElement("error");
-        e9.setAttribute("key", "Message:");
-        Text t9 = doc.createTextNode(e.getMessage());
-        e9.appendChild(t9);
-        e0.appendChild(e9);
-        
-        if(e instanceof TransformerException) {
-            TransformerException tex = (TransformerException) e;
-            Throwable ex = tex.getException();
-            if(ex != null) {
-                Element e4 = doc.createElement("error");
-                e4.setAttribute("key", "Cause:");
-                Text t4 = doc.createTextNode(ex.getClass().getName());
-                e4.appendChild(t4);
-                e0.appendChild(e4);
-                
-                Element e5 = doc.createElement("error");
-                e5.setAttribute("key", "Message:");
-                Text t5 = doc.createTextNode(ex.getMessage());
-                e5.appendChild(t5);
-                e0.appendChild(e5);
-                    
-                if(ex instanceof SAXParseException) {
-                    SAXParseException sex = (SAXParseException) ex; 
-                    Element e8 = doc.createElement("error");
-                    e8.setAttribute("key", "Id:");
-                    Text t8 = doc.createTextNode(sex.getSystemId());
-                    e8.appendChild(t8);
-                    e0.appendChild(e8);
-                    
-                    Element e6 = doc.createElement("error");
-                    e6.setAttribute("key", "Line:");
-                    Text t6 = doc.createTextNode(""+sex.getLineNumber());
-                    e6.appendChild(t6);
-                    e0.appendChild(e6);
-                    
-                    Element e7 = doc.createElement("error");
-                    e7.setAttribute("key", "Column:");
-                    Text t7 = doc.createTextNode(""+sex.getColumnNumber());
-                    e7.appendChild(t7);
-                    e0.appendChild(e7);
-                }
-            }
-        }
         doc.importNode(e0, true);
         doc.appendChild(e0);
+        printEx(targetex, doc, e0);
         return doc;
     }
+
+    private void printEx(Throwable e, Document doc, Node e0) {
+        if(e == null) {
+            return;
+        }
+        if(e instanceof SAXParseException) {
+            SAXParseException sex = (SAXParseException) e;
+            Element ee = doc.createElement("break");
+            e0.appendChild(ee);
+             
+            Element e5 = doc.createElement("error");
+            e5.setAttribute("key", "Type:");
+            Text t5 = doc.createTextNode(sex.getClass().getName());
+            e5.appendChild(t5);
+            e0.appendChild(e5);
+            
+            Element e4 = doc.createElement("error");
+            e4.setAttribute("key", "Message:");
+            Text t4 = doc.createTextNode(sex.getMessage());
+            e4.appendChild(t4);
+            e0.appendChild(e4);
+            
+            Element e8 = doc.createElement("error");
+            e8.setAttribute("key", "Id:");
+            Text t8 = doc.createTextNode(sex.getSystemId());
+            e8.appendChild(t8);
+            e0.appendChild(e8);
+                    
+            Element e6 = doc.createElement("error");
+            e6.setAttribute("key", "Line:");
+            Text t6 = doc.createTextNode(""+sex.getLineNumber());
+            e6.appendChild(t6);
+            e0.appendChild(e6);
+                    
+            Element e7 = doc.createElement("error");
+            e7.setAttribute("key", "Column:");
+            Text t7 = doc.createTextNode(""+sex.getColumnNumber());
+            e7.appendChild(t7);
+            e0.appendChild(e7);
+        } else if(e instanceof TargetGenerationException){
+            TargetGenerationException tagex = (TargetGenerationException) e;
+            Element ee = doc.createElement("break");
+            e0.appendChild(ee);
+            
+            Element e1 = doc.createElement("error");
+            e1.setAttribute("key", "Type:");
+            Text t1 = doc.createTextNode(tagex.getClass().getName());
+            e1.appendChild(t1);
+            e0.appendChild(e1);
+            
+            Element e3 = doc.createElement("error");
+            e3.setAttribute("key", "Message:");
+            Text t3 = doc.createTextNode(tagex.getMessage());
+            e3.appendChild(t3);
+            e0.appendChild(e3);
+            
+            Element e2 = doc.createElement("error");
+            e2.setAttribute("key", "Target:");
+            Text t2 = doc.createTextNode(tagex.getTargetkey());
+            e2.appendChild(t2);
+            e0.appendChild(e2);
+            printEx(tagex.getNestedException(), doc, e0);
+        } else if(e instanceof TransformerException) {
+            TransformerException trex = (TransformerException) e;
+            Element e1 = doc.createElement("error");
+            e1.setAttribute("key", "Type:");
+            Text t1 = doc.createTextNode(trex.getClass().getName());
+            e1.appendChild(t1);
+            e0.appendChild(e1);
+           
+            Element e3 = doc.createElement("error");
+            e3.setAttribute("key", "Message:");
+            Text t3 = doc.createTextNode(trex.getMessage());
+            e3.appendChild(t3);
+            e0.appendChild(e3);
+            printEx(trex.getCause(), doc, e0);
+        }
+        else {
+            
+            Element ee = doc.createElement("break");
+            e0.appendChild(ee);
+            
+            Element e11 = doc.createElement("error");
+            e11.setAttribute("key", "Type:");
+            Text t11 = doc.createTextNode(e.getClass().getName());
+            e11.appendChild(t11);
+            e0.appendChild(e11);
+            
+            Element e12 = doc.createElement("error");
+            e12.setAttribute("key", "Message:");
+            Text t12 = doc.createTextNode(e.getMessage());
+            e12.appendChild(t12);
+            e0.appendChild(e12);
+            
+        }
+        
+       
+        //printEx(e.getCause(), doc, e0);
+    }
+    
 
 
     /**

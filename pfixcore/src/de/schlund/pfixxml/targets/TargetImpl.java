@@ -93,6 +93,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getValue()
+     */
     public Object getValue() throws Exception {
         // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
         // but: if the target is not in memory- and disk-cache (has not been generated) we
