@@ -1,3 +1,9 @@
+2004-10-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/conf/generator_tree.xml: 
+	* example/core/conf/generator_quiet.xml: 
+	* example/core/conf/generator_full.xml: added log4j NS 
+
 2004-10-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* removed xerces amd xml-apis jars. It seems that it's no longer needed to have a private version???
