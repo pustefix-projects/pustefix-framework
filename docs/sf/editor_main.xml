@@ -30,8 +30,14 @@
           </tr>
           <tr>
             <td>
-              Note: Section No. 3 is only visible if you have declared a <code>record_dir</code>
-              <a href="depend.html#record_dir">here</a>. 
+              Note:
+              The button Section No. 1 only works if you declared the <code>editmode</code>
+              property <a href="prop.html#editmode">here</a> as <code>true</code>.
+              Alternatively you can switch to EditMode by appending <code>__editmode=admin</code>
+              to the URL.
+              Section No. 3 is only visible if you have declared a <code>record_dir</code>
+              <a href="depend.html#record_dir">here</a>. Also have a look at the
+              <a href="testclient.html">TestClient</a> documentation.
             </td>
           </tr>
         </table>
@@ -45,7 +51,8 @@
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              Here every include part is framed by curly braces. Remember that include parts
+              No the application is in <i>EditMode.</i>
+              In EditMode every include part is framed by red curly braces. Remember that include parts
               can be nested. After each closing curly brace there is a small box with a
               pen symbol in it. Staying with to mouse over it shows the ToolTip
               '<i>Edit include: ...</i>'. Pressing this box opens the Editor in a new

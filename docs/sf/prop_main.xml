@@ -175,6 +175,7 @@
 
   <h2>de.schlund.pfixxml.ContextXMLServer</h2>
 
+  <a name="editmode"/>
   <xmlcode>
     <properties>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
