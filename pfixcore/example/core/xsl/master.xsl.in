@@ -81,6 +81,8 @@
   <!-- Needed for input fields, radio/checkbuttons etc. -->
   <xsl:include href="core/xsl/forminput.xsl"/>
 
+  <cus:custom_xsl/>
+
   <xsl:key name="frameset_key" match="pfx:frameset" use="'fset'"/>
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
@@ -134,7 +136,7 @@
         <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
       </xsl:call-template>
 
-      <cus:custom_ixsl/>
+      <!-- <cus:custom_ixsl/> -->
   
       <ixsl:template match="/">
         <xsl:choose>
