@@ -13,15 +13,16 @@ export CLASSPATH  = $(shell ../../bin/setClassPath.sh `pwd`/../..)
 
 all: transform 
 
-clean:
-	@rm -rf gen
-
 transform:
 	$(SAXON) $(INPUT) $(XSLT)
 
 install: transform
 	@echo "*** Installing pages on Sourceforge site ***"
+	-$(shell ssh $(USER)@$(SF) mkdir $(SFWEB)/img/)
 	$(shell scp gen/*.html $(USER)@$(SF):$(SFWEB)/)
+	$(shell scp gen/img/*.gif $(USER)@$(SF):$(SFWEB)/img/)
+	$(shell scp gen/img/*.jpg $(USER)@$(SF):$(SFWEB)/img/)
 	@echo "*** Fixing permissions ***"
 	-$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/*)
+	-$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/img/*)
 	@echo "*** Done. ***"
