@@ -1,3 +1,13 @@
+2003-06-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java
+	(getClassData): we now use BCEL to add a possibly missing default constructor 
+	to the bytecode of the classes we load before the VM sees it...
+
+	* src/de/schlund/pfixxml/loader/StateTransfer.java (createInstance): 
+	...because of this we don't need the native voodoo anymore, but can be sure to create new instances
+	via constructor.newInstance().
+
 2003-06-25  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
