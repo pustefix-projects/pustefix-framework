@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!-- Using this standard-tree for documentating the pustefix-tags -->
+<!-- Use this standard-tree for documentating the pustefix-tags -->
 
-   <cus:documentation> 
-     <description></description>
-      <param required="0">
-        <name></name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description></description>
-      </param>
+<cus:documentation> 
+  <description></description>
 
-      <children>
-        <name></name>
-        <description></description>        
-      </children>
+  <!-- as many as you want -->
+  <param required="0">
+    <name></name>
+    <standard></standard>               <!-- if there is a standard value -->
+    <possible_values></possible_values> <!-- if there is a list of possible values -->
+    <description></description>
+  </param>
 
+  <!-- if there a mandatory / important child tags you want to document here -->
+  <children>
+    <name></name>
+    <description></description>
+  </children>
 
-      <example>
-        <input>
-          <xmlcode></xmlcode>
-        </input>
-        <output>
-          <xmlcode></xmlcode>
-        </output>
-      </example>
+  <!-- possibly more than one -->
+  <example>
+    <input>
+      <xmlcode></xmlcode>
+    </input>
+    <output>
+      <xmlcode></xmlcode>
+    </output>
+  </example>
 
-      
-    </cus:documentation>
+</cus:documentation>
 
 <!--
 Local Variables:

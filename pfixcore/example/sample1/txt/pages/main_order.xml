@@ -29,6 +29,7 @@
             <br/>
             <pfx:include part="wizard"/>
           </pfx:forminput>
+          <pfx:editconsole/>
         </center>
         <pfx:progressbar>Please Wait...</pfx:progressbar>
       </lang>
@@ -111,7 +112,7 @@
       <lang name="default">
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
           <ixsl:choose>
-            <ixsl:when test="/formresult/cr_counter/@showcounter = &apos;false&apos;">
+            <ixsl:when test="/formresult/counter/@showcounter = &apos;false&apos;">
               <tr>
                 <td colspan="2">
                   <pfx:xinp type="submit" value="Show Counter">
@@ -125,7 +126,7 @@
               <tr>
                 <td align="center" colspan="2">
                   <big><b>
-                      <ixsl:value-of select="/formresult/cr_counter/@counter"/>
+                      <ixsl:value-of select="/formresult/counter/@counter"/>
                     </b></big>
                 </td>
               </tr>
@@ -164,7 +165,7 @@
               </td>
             </tr>
           </pfx:checkactive>
-          <ixsl:if test="/formresult/cr_togglepic[@do_show = &apos;true&apos;]">
+          <ixsl:if test="/formresult/togglepic[@do_show = &apos;true&apos;]">
             <tr>
               <td>
                 <pfx:image src="/sample1/img/test.gif"/>

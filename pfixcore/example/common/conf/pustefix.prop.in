@@ -13,8 +13,28 @@
         xml document containing all needed information for an external renderer -->
   <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
   
-  <!--  Set this to false if you want to be able to just retrieve the xml tree -->
-  <prop name="xmlserver.noxmlonlyallowed">false</prop>
+  <cus:choose>
+    <cus:test mode="prod">
+      <!--  Set this to false if you want to be able to just retrieve the xml tree -->
+      <prop name="xmlserver.noxmlonlyallowed">restricted</prop>
+      <!-- List all ips here which will be able to retrieve plain xml -->
+      <prop name="xmlserver.xmlonlyallowed.host.0">172.17.0.246</prop>
+      <!-- Set this true if you want to enable the record mode of xmlserver -->
+      <prop name="xmlserver.recordmode_allowed">false</prop>
+      <!-- Set this true if you want to skip getModTimeMaybeUpdate -->
+      <prop name="targetgenerator.skip_getmodtimemaybeupdate">true</prop>
+    </cus:test>
+    <cus:test>
+      <!--  Set this to false if you want to be able to just retrieve the xml tree -->
+      <prop name="xmlserver.noxmlonlyallowed">false</prop>
+      <!-- Set this true if you want to enable the record mode of xmlserver -->
+      <prop name="xmlserver.recordmode_allowed">true</prop>
+      <!-- Specify where files in record mode will written to -->
+      <prop name="xmlserver.recordmode_logdir"><cus:docroot/>recorded</prop>
+      <!-- Set this true if you want to skip getModTimeMaybeUpdate -->
+      <prop name="targetgenerator.skip_getmodtimemaybeupdate">false</prop>
+    </cus:test>
+  </cus:choose>
 
   <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
   
