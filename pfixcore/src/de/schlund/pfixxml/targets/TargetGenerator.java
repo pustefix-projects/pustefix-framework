@@ -45,7 +45,6 @@ public class TargetGenerator {
     public static final String XSLPARAM_TG   = "__target_gen";
     public static final String XSLPARAM_TKEY = "__target_key";
     public static final String CACHEDIR      = ".cache";
-    public static final String RECORDDIR     = ".recorddir";
         
     private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
     private static TargetGenerationReport report                         = new TargetGenerationReport();
@@ -89,10 +88,6 @@ public class TargetGenerator {
         return PathFactory.getInstance().createPath(CACHEDIR + File.separatorChar + getName());
     }
     
-    public Path getRecorddir() {
-        return PathFactory.getInstance().createPath(RECORDDIR + File.separatorChar + getName());
-    }
-
     public PageTargetTree getPageTargetTree() {
         return pagetree;
     }
