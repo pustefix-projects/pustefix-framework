@@ -1,3 +1,7 @@
+2004-10-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* added xercesImpl-2.6.2 again. seems it's still needed :-(
+
 2004-10-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: print path.getRelative(), not path
