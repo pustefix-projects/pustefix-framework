@@ -41,7 +41,7 @@ ChatApp.prototype.login=function(name) {
 ChatApp.prototype.startUpdates=function() {
 	refreshMessages();
 	refreshNames();
-	this.msgIv=window.setInterval("refreshMessages()",2000);
+	this.msgIv=window.setInterval("refreshMessages()",1000);
 	this.nameIv=window.setInterval("refreshNames()",5000);
 }
 
