@@ -40,10 +40,14 @@ function pfxsoapCall(method,val1,val2) {
    	var t=t2-t1;
    	pfxsoapPrint(result,t);
 	} catch(ex) {
+		var msg="";
+                if(ex.message) msg=ex.message;
+                else msg=ex.toString();
+
 		var d2=new Date();
    	var t2=d2.getTime();
    	var t=t2-t1;
-		pfxsoapPrintError(ex.toString(),t);
+		pfxsoapPrintError(msg,t);
 	}
 
 	

@@ -31,7 +31,6 @@ public class SOAPActionRequestWrapper extends HttpServletRequestWrapper {
         if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null) {
             soapMsg=req.getParameter(Constants.PARAM_SOAP_MESSAGE);
             if(soapMsg!=null) {
-                System.out.println(soapMsg);
                 myIn=new MyServletInputStream();
             }
         }
