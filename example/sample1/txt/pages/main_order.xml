@@ -75,7 +75,7 @@
                 <pfx:option>--- Please Select ---</pfx:option>
                 <pfx:option value="S">S</pfx:option>
                 <pfx:option value="M">M</pfx:option>
-                <pfx:option value="L">L</pfx:option>
+                <pfx:option value="L" default="true">L</pfx:option>
                 <pfx:option value="XL">XL</pfx:option>
                 <pfx:option value="XXL">XXL</pfx:option>
               </pfx:xinp>
@@ -94,9 +94,9 @@
               <pfx:label name="shirt.Feature">Features</pfx:label>:
             </td>
             <td>
-              <pfx:xinp name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
-              <pfx:xinp name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
-              <pfx:xinp name="shirt.Feature" type="check" value="2"/>Windproof<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="0" default="true"/>Waterproof<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="1" default="true"/>Extra warm<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="2" default="true"/>Windproof<br/>
               <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
             </td>
           </tr>

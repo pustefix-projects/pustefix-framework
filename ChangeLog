@@ -1,3 +1,11 @@
+2003-08-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java (getCoreDocumentationForId): new method
+
+	* src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
+	(renderAllDocumentation): add more attributes to the template_doc
+	tag.
+
 2003-08-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* META-INF/pfixcore.version: release 0.3.8

@@ -30,7 +30,7 @@
                 </td>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-                  <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
+                  <pfx:xinp name="info.Adult" type="radio" value="false" default="true"/><pfx:include part="no"/>
                 </td>
               </tr>
             </table>
@@ -41,7 +41,10 @@
                 </td>
               </tr>
             </table>
+
           </pfx:forminput>
+          
+          
           <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
           <pfx:include part="sample_layers"/>

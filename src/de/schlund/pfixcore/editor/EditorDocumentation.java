@@ -38,53 +38,32 @@ public class EditorDocumentation {
     
     // Constructer called with an array of the xsl.in files
     public EditorDocumentation(String args[]) throws Exception{
-                
         this.allFiles = args;
         this.generateDocumentation(args);
 
     }
     
-    
-    
-    
-    
-    
     public void generateDocumentation(String args[]) throws Exception {
-        
-
         for (int i = 0; i < args.length; i++) {
-
-
             String path = args[i];
-        
             try {
                 File file = new File(path);
-                
-                    Long time = new Long(file.lastModified());
-                    if (time != null && path != null) {
-                        filesMap.put(path, time);
-
-                    }
-
-                
+                Long time = new Long(file.lastModified());
+                if (time != null && path != null) {
+                    filesMap.put(path, time);
+                    
+                }
                 LOG.debug(" * DOCUMENTATION-FILE " + args[i] + " found * ");
                 this.readFile(path);
-
-
-                
             }
             catch (Exception ex) {
                 LOG.debug(" * File " + args[i] + " not found * ");
             }
-
-
         }
     }
     
-
     // read the xsl-File and create the NodeList
     private void readFile(String filename) throws Exception {
-                
         
         DocumentBuilder domp = dbfac.newDocumentBuilder();
         this.doc = domp.parse(filename);
@@ -95,15 +74,9 @@ public class EditorDocumentation {
         for (int i = 0; i < nl.getLength(); i++) {
             
             Element prj = (Element) nl.item(i);
-            
             String name = prj.getAttribute("name");
-            
             String match = prj.getAttribute("match");
-            
             String mode = prj.getAttribute("mode");
-            
-            
-            
             
             // Getting the Filename without the Path
             String filenameNew =
@@ -127,7 +100,6 @@ public class EditorDocumentation {
             coreDoc.setName(name);
             coreDoc.setMode(mode);
             
-            
             // Setting the Mode
             if (!match.equals("") && !name.equals("")) {
                 coreDoc.setModus("public|private");
@@ -139,8 +111,6 @@ public class EditorDocumentation {
                 coreDoc.setModus("private");
             }
             
-            
-            
             // Getting the ChildNotes for put 'em into the Hashmap !
             
             if (neuList.getLength() > 0) {
@@ -150,43 +120,31 @@ public class EditorDocumentation {
                 
                 // HashMap Put with the Id and CoreDoc Object
                 this.hashmap.put(coreDoc.getId(), coreDoc);
-                
             } 
             else {
                 String errormsg = "Documentation for " + match + " not found";
                 LOG.debug(errormsg);
                 coreDoc.setNodeList(neuList);                        
                 this.hashmap.put(coreDoc.getId(), coreDoc);
-                        
-                        
-                        
             }
-
-
         }
         this.nlist = nl;
-
-
     }
-
-
-
-
+    
     // Checks if the Xsl-Files has been modified
     public void checkFile() throws Exception {
                     
-
         // Getting all Files and there LastModified-Time and put 'em into Hashmap
         HashMap files = this.getAllStylesheets();
-
+        
         Collection menge = files.keySet();
-
+        
         boolean destroy = false;
-
+        
         for (Iterator it = menge.iterator(); it.hasNext();) {
-
+            
             String filename = (String) it.next();
-
+            
             File file = new File(filename);
 
             Long time_neu = new Long(file.lastModified());
@@ -209,23 +167,16 @@ public class EditorDocumentation {
             this.filesMap.clear();
             this.generateDocumentation(this.allFiles);
         }
-        
-
-
     }
-
+    
 
 
 // returns true if XSL-Files hase been Modified
     public boolean hasFileModified(String key, Long newtime) throws Exception{
-    
-
         Long oldtime = (Long) this.filesMap.get(key);
-
         // Long time = new Long(newtime);
 
         if (newtime != null && oldtime != null) {
-
             if (newtime.longValue() > oldtime.longValue()) {
                 return true;
             } else {
@@ -234,18 +185,12 @@ public class EditorDocumentation {
         } else {
             return false;
         }
-
+        
     }
-
-
-
-
 
     // Returns the Value for the all_documentation tree in the
     // Result Document
     public String[] getDocumentationValues() throws Exception{
-        
-    
         this.checkFile();
         
         TreeMap treemap = new TreeMap (this.hashmap);
@@ -316,24 +261,15 @@ public class EditorDocumentation {
     }
 
 
-    // Method isn't in use at the moment, so we can remove it l8ter
     public Document getCurrentDoc(String key) throws Exception {
-    
+        
         this.checkFile();    
         CoreDocumentation coreDoc = null;
         Document doc = null;
-
-        try {
-            Collection menge = hashmap.entrySet();
-
-
-            coreDoc = (CoreDocumentation) hashmap.get(key);
-
-            doc = coreDoc.getDocument();
-        } catch (Exception ex) {
-
-
-        }
+        
+        Collection menge = hashmap.entrySet();
+        coreDoc = (CoreDocumentation) hashmap.get(key);
+        doc = coreDoc.getDocument();
         return doc;
     }
 
@@ -358,7 +294,11 @@ public class EditorDocumentation {
     }
 
 
+    public CoreDocumentation getCoreDocumentationForId(String key) {
+        return (CoreDocumentation) hashmap.get(key);
+    }
 
+    
     // Returns array of the Documentation Ids
     public String[] getDocumentationIds() throws Exception{
             
