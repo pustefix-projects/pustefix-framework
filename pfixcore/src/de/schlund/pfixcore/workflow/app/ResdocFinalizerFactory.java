@@ -19,10 +19,14 @@
 
 package de.schlund.pfixcore.workflow.app;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
  * This factory is responsible for creating objects of type ResdocFinalizer.
@@ -36,11 +40,16 @@ import de.schlund.pfixxml.XMLException;
  *
  */
 
-public class ResdocFinalizerFactory {
-    private static Category               LOG      = Category.getInstance(ResdocFinalizerFactory.class.getName());
+public class ResdocFinalizerFactory implements Reloader {
+    private static Category LOG = Category.getInstance(ResdocFinalizerFactory.class.getName());
     /** Store the already created ResdocFinalizer here, use classname as key*/
-    private static HashMap                known    = new HashMap();
+    private static HashMap known = new HashMap();
     private static ResdocFinalizerFactory instance = new ResdocFinalizerFactory();
+
+    private ResdocFinalizerFactory() {
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) appLoader.addReloader(this); 
+    }
 
     /**
      * Return the only instance of this singleton.
@@ -58,10 +67,17 @@ public class ResdocFinalizerFactory {
      */
     public ResdocFinalizer getResdocFinalizer(String classname) throws XMLException {
         synchronized (known) {
-            ResdocFinalizer retval = (ResdocFinalizer) known.get(classname); 
+            ResdocFinalizer retval = (ResdocFinalizer) known.get(classname);
             if (retval == null) {
                 try {
-                    Class theclass = Class.forName(classname);
+                    AppLoader appLoader = AppLoader.getInstance();
+                    Class theclass = null;
+                    if (appLoader.isEnabled()) {
+                        theclass = appLoader.loadClass(classname);
+                    } else {
+                        theclass = Class.forName(classname);
+                    }
+
                     retval = (ResdocFinalizer) theclass.newInstance();
                 } catch (InstantiationException e) {
                     throw new XMLException("unable to instantiate class [" + classname + "]" + e.getMessage());
@@ -78,4 +94,19 @@ public class ResdocFinalizerFactory {
         }
     }
 
-}// ResdocFinalizerFactory
+    /**
+     * @see de.schlund.pfixxml.loader.Reloader#reload()
+     */
+    public void reload() {
+        HashMap knownNew = new HashMap();
+        Iterator it = known.keySet().iterator();
+        while (it.hasNext()) {
+            String str = (String) it.next();
+            ResdocFinalizer rfOld = (ResdocFinalizer) known.get(str);
+            ResdocFinalizer rfNew = (ResdocFinalizer) StateTransfer.getInstance().transfer(rfOld);
+            knownNew.put(str, rfNew);
+        }
+        known= knownNew;
+    }
+
+} // ResdocFinalizerFactory

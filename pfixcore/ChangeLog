@@ -1,3 +1,8 @@
+2003-05-21  Joerg Haecker / Martin Leidig <haecker@schlund.de> <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/ResdocFinalizerFactory.java:
+	Added reloading support for ResdocFinalizers.
+
 2003-05-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* skel/INSTALL: added. 
