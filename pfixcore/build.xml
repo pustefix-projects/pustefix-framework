@@ -792,6 +792,8 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.extract"/>
     <antcall target="tomcat.strip"/>
     <antcall target="tomcat.jndi"/>
+  	<antcall target="tomcat.user"/>
+  	<antcall target="tomcat.cert"/>
   </target>
 
   <target name="tomcat.extract">
@@ -819,11 +821,14 @@ or delete the DOCTYPE definition -->
   </target>
     
   <target name="tomcat.strip">
-    <delete dir="${dir.tomcat}/conf/Catalina"/><!-- remove predefined web-apps -->
-    <delete dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
-    <mkdir dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
-    <delete dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
-    <mkdir dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
+    <delete dir="${dir.tomcat}/conf/Catalina"/>
+
+	<!-- remove predefined web-apps -->
+  	<delete dir="${dir.tomcat}/webapps"/>
+    <mkdir dir="${dir.tomcat}/webapps"/>
+  	
+  	<!-- we keep server/webapps, it contains tomcat manager -->
+  	
     <delete>
       <fileset dir="${dir.tomcat}/conf">
         <include name="jk2.properties"/>
@@ -836,7 +841,26 @@ or delete the DOCTYPE definition -->
   <target name="tomcat.jndi">
     <copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
   </target>
+	
+  <target name="tomcat.user">
+  	<echo file="${dir.tomcat}/conf/tomcat-users.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename="manager"/>
+  <user username="admin" password="pass" roles="manager"/>
+</tomcat-users>]]></echo>
+  </target>
 
+  <target name="tomcat.cert">
+  	<genkey alias="tomcat" storepass="secret" keyalg="RSA" keystore="${dir.tomcat}/conf/keystore">
+  	  <dname>
+  	    <param name="CN" value="ue.schlund.de"/>
+  	    <param name="OU" value="Unix Development"/>
+  	    <param name="O"  value="Schlund und Partner"/>
+  	    <param name="C"  value="DE"/>
+  	  </dname>
+  	</genkey>
+  </target>
+  	
   <description>
     Targets
     -------
