@@ -145,11 +145,13 @@
               </tr>
               <tr>
                 <td>
-                  <pfx:label name="cinput.Sel">Set Counter</pfx:label>
+                  <br/>
+                  <pfx:label name="cinput.Set">Set Counter:</pfx:label>
                 </td>
                 <td>
-                  <pfx:xinp type="text" name="cinput.Sel"/>
-                  <pfx:xinp type="submit">
+                  <br/>
+                  <pfx:xinp type="text" name="cinput.Set" size="3"/>
+                  <pfx:xinp type="submit" value="Set">
                     <pfx:command name="SELWRP">cinput</pfx:command>
                   </pfx:xinp>
                 </td>
