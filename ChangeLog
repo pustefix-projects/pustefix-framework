@@ -1,7 +1,10 @@
 2003-03-04  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed set/getXmlObject(). We
-	store the tinytree just inplace of the original Document.
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed
+	set/getXmlObject(). We store the tinytree just inplace of the
+	original Document.
+	(get/setLiteralResponseContent): HACK! provide for storing the literal
+	response content instead of some XML data tree. This needs more in AbstractXMLServer to work.
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): remove all traces of get/setXmlObject
 	as noted above, just use get/setDocument() instead.
