@@ -57,7 +57,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
 
     private static Category          CAT             = Category.getInstance(TraxXSLTProcessor.class.getName());
     private static TraxXSLTProcessor instance        = new TraxXSLTProcessor();
-    public static final String       TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
+  /*  public static final String       TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
     public static final String       DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
     public static final String       SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
     public static final String       DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
@@ -67,11 +67,11 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
     public static final String       SAXP_FAC_KEY    = "javax.xml.parsers.SAXParserFactory";
     public static final String       TRANS_FAC_VALUE = TRANS_FAC_SAXON;
     public static final String       DOCB_FAC_VALUE  = DOCB_FAC_XERCES;
-    public static final String       SAXP_FAC_VALUE  = SAXP_FAC_XERCES;
+    public static final String       SAXP_FAC_VALUE  = SAXP_FAC_XERCES;*/
 
     //~ Initializers ...............................................................................
 
-    static {
+  /*  static {
         if (CAT.isInfoEnabled()) {
             StringBuffer b = new StringBuffer(100);
             b.append("\nSetting ").append(TRANS_FAC_KEY).append(" to ").append(TRANS_FAC_VALUE).append(
@@ -84,7 +84,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         System.getProperties().put(TRANS_FAC_KEY, TRANS_FAC_VALUE);
         System.getProperties().put(DOCB_FAC_KEY, DOCB_FAC_VALUE);
         System.getProperties().put(SAXP_FAC_KEY, SAXP_FAC_VALUE);
-    }
+    }*/
 
     //~ Methods ....................................................................................
 
@@ -112,6 +112,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         Templates   xsl   = (Templates) xslobj;
        
         Transformer trafo = xsl.newTransformer();
+        
         long        start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
@@ -242,6 +243,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         long stop = 0;
         if (CAT.isInfoEnabled())
             start = System.currentTimeMillis();
+        
         DOMSource  domsource  = new DOMSource(doc);
         Controller controller = new Controller();
         controller.setTreeModel(Builder.TINY_TREE);
