@@ -4,7 +4,7 @@
     <title>Changes</title>
   </properties>
   <body>
-    <release version="0.7.1" date="2004-10-11">
+    <release version="0.8.0" date="2004-10-15">
       <action dev="mtld" type="add">
         <p>
           Added webservice support to Pustefix, which now makes it possible
