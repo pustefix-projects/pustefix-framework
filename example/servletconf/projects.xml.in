@@ -73,7 +73,6 @@
       <doc_file>core/xsl/include.xsl.in</doc_file>
     </documentation>  
     <tomcat>
-      <!--<uriencoding>UTF-8</uriencoding>-->
       <minprocessors>100</minprocessors>
       <maxprocessors>500</maxprocessors>
       <connectorport>8009</connectorport>
