@@ -14,11 +14,11 @@
     <classpathentry kind="lib" path="lib/util-MINI-1.1.10.jar"/>
     <classpathentry kind="lib" path="lib/saxon-6_5_2.jar"/>
     <classpathentry kind="lib" path="lib/xerces-xalan-2.1.0.jar"/>
-    <classpathentry kind="lib" path="lib/commons-httpclient-2.0-alpha2.jar"/>
     <classpathentry kind="lib" path="lib/commons-logging.jar"/>
     <classpathentry kind="lib" path="lib/jcert.jar"/>
     <classpathentry kind="lib" path="lib/jnet.jar"/>
     <classpathentry kind="lib" path="lib/jsse.jar"/>
     <classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet.jar"/>
+    <classpathentry kind="lib" path="lib/commons-pfix_httpclient-2.0-beta1.jar"/>
     <classpathentry kind="output" path="build"/>
 </classpath>
