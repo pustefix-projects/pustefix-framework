@@ -213,7 +213,7 @@
       <lang name="default">
         <b>Display type is:
             <ixsl:choose>
-              <ixsl:when test="/formresult/iwrappergroups/@groupdisplay = &apos;true&apos;">
+              <ixsl:when test="/formresult/iwrappergroups/@groupdisplay = 'true'">
                 <pfx:button accesskey="W" mode="force" nodata="true">
                   <pfx:argument name="__groupdisplay">off</pfx:argument>
                   Wizard</pfx:button>
