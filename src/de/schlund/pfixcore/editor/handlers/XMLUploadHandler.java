@@ -63,17 +63,16 @@ import de.schlund.util.statuscodes.StatusCodeFactory;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public abstract class XMLUploadHandler extends EditorStdHandler {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    private static Category EDITOR = Category.getInstance("LOGGER_EDITOR");
-    private static Category SERIALIZER = Category.getInstance("LOGGER_SERIALIZER");
-    private static Category CAT = Category.getInstance(XMLUploadHandler.class.getName());
-    // private static Category CAT = null;
-    private static PatternCompiler pc = new Perl5Compiler();
-    private static Substitution nbspsubst = new StringSubstitution("&#160;");
-    private static Pattern nbspsign;
-    private PatternMatcher pm;
-    private static final String DEF_TEXT = "<lang name=\"default\">\n      </lang>";
-    private static final String DEF_TEXT_APPLET = "<lang name=|default|>\n      </lang>";
+    private static DocumentBuilderFactory dbfac           = DocumentBuilderFactory.newInstance();
+    private static Category               EDITOR          = Category.getInstance("LOGGER_EDITOR");
+    private static Category               SERIALIZER      = Category.getInstance("LOGGER_SERIALIZER");
+    private static Category               CAT             = Category.getInstance(XMLUploadHandler.class.getName());
+    private static PatternCompiler        pc              = new Perl5Compiler();
+    private static Substitution           nbspsubst       = new StringSubstitution("&#160;");
+    private static Pattern                nbspsign;
+    private PatternMatcher                pm;
+    private static final String           DEF_TEXT        = "<lang name=\"default\">\n      </lang>";
+    private static final String           DEF_TEXT_APPLET = "<lang name=|default|>\n      </lang>";
 
     public XMLUploadHandler() throws MalformedPatternException {
         char[] nbsp = { '\u00a0' };
