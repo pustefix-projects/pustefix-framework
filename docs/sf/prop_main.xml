@@ -382,6 +382,7 @@
                 <tr>
                   <td><code>continue</code></td>
                   <td>
+                    <p>Optional, defaults to <b>false</b>.</p>
                     <p>If the user submits data usually all defined
                       handlers are called. If the submit doesn't result in
                       errors, the usual action is that the context will
