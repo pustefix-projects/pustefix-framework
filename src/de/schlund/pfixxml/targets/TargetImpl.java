@@ -16,10 +16,12 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixxml.targets;
+
 import java.util.*;
+
 import org.apache.log4j.*;
+
 
 /**
  * TargetImpl.java
@@ -31,33 +33,39 @@ import org.apache.log4j.*;
  *
  *
  */
-
 public abstract class TargetImpl implements TargetRW, Comparable {
-    // set in from constructor 
-    protected TargetType           type;
-    protected TargetGenerator      generator;
-    protected String               targetkey;
 
+    //~ Instance/static variables ..................................................................
+
+    private static String PROP_PROHIBIT_EDIT = "prohibitEdit";
+    private static String DO_PROHIBIT_EDIT = "yes";
+    // set in from constructor
+    protected TargetType      type;
+    protected TargetGenerator generator;
+    protected String          targetkey;
     // only needed to init in constructor for virtual targets
     protected AuxDependencyManager auxdepmanager = null;
-    protected TreeMap              params        = null;
-    
-    protected Target               xmlsource     = null;
-    protected Target               xslsource     = null;
+    protected TreeMap              params    = null;
+    protected Target               xmlsource = null;
+    protected Target               xslsource = null;
+    protected Category             CAT       = Category.getInstance(this.getClass().getName());
+    protected Category             TREE      = Category.getInstance(
+                                                       this.getClass().getName() + ".TREE");
+	// determine if the target has been generated. This affects production mode only, where
+	// we do not need to handle that the target is always up to date.
+	private boolean onceGenerated = false;
 
-    protected Category CAT  = Category.getInstance(this.getClass().getName());
-    protected Category TREE = Category.getInstance(this.getClass().getName() + ".TREE");
+    //~ Methods ....................................................................................
 
     // Target interface
-    
     public TargetType getType() {
         return type;
     }
-    
+
     public String getTargetKey() {
         return targetkey;
     }
-    
+
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager;
     }
@@ -78,30 +86,73 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         if (params == null) {
             return null;
         } else {
-            synchronized(params) {
+            synchronized (params) {
                 return new TreeMap(params);
             }
         }
     }
 
     public Object getValue() throws Exception {
-        getModTimeMaybeUpdate();
+        // Idea: if editmode is prohibited we do not need to call getModeTimeMaybeUpdate
+        // but: if the target is not in memory- and disk-cache (has not been generated) we
+        // must call getModTimeMaybeUpdate to make it work
+        if (params.get(PROP_PROHIBIT_EDIT) != null) {
+            if (params.get(PROP_PROHIBIT_EDIT).toString().toLowerCase().equals(DO_PROHIBIT_EDIT.toLowerCase())) {
+                // prohibit-edit is on!
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("Prohibit edit is on. Trying to skip getModTimeMaybeUpdate...");
+                }
+                
+                if (!onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
+                    if (CAT.isDebugEnabled()) {
+                        CAT.debug("Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
+                    }
+                    getModTimeMaybeUpdate();
+                } // cache hit -> nop 
+                else {
+                    if (CAT.isDebugEnabled()) {
+                        CAT.debug("Target has been generated! Skipping getModTimeMaybeUpdate...");
+                    }
+                }
+            } // prohibit-edit found, but unkown key -> getModTimeMaybeUpdate 
+            else {
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("Param " + PROP_PROHIBIT_EDIT
+                             + "found but key is unkown. Calling getModTimeMaybeUpdate...");
+                }
+                getModTimeMaybeUpdate();
+            }
+        } // prohibit-edit is null -> getModTimeMaybeUpdate 
+        else {
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("Param " + PROP_PROHIBIT_EDIT
+                         + " not found. Calling getModTimeMaybeUpdate...");
+            }
+            getModTimeMaybeUpdate();
+        }
         return getCurrValue();
     }
 
-    public abstract void    addPageInfo(PageInfo info);
+    public abstract void addPageInfo(PageInfo info);
+
     public abstract TreeSet getPageInfos();
-    public abstract void    setXMLSource(Target source);
-    public abstract void    setXSLSource(Target source);
-    public abstract void    addParam(String key, String val);
-    public abstract void    storeValue(Object obj);
-    
+
+    public abstract void setXMLSource(Target source);
+
+    public abstract void setXSLSource(Target source);
+
+    public abstract void addParam(String key, String val);
+
+    public abstract void storeValue(Object obj);
+
     public abstract boolean needsUpdate() throws Exception;
-    public abstract long    getModTime();
-    public abstract String  toString();
+
+    public abstract long getModTime();
+
+    public abstract String toString();
 
     public Object getCurrValue() throws Exception {
-        Object obj = getValueFromSPCache(); 
+        Object obj = getValueFromSPCache();
         if (obj == null) {
             synchronized (this) {
                 obj = getValueFromSPCache();
@@ -114,6 +165,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // Example: A NullCache will silently ignore all store requests, so a call to this method
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
+                    // now the target is generated 
+                    onceGenerated = true;
                 }
             }
         }
@@ -121,10 +174,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
 
     // comparable interface
-    
     public int compareTo(Object inobj) {
         Target in = (Target) inobj;
-        if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {  
+        if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {
             return getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname());
         } else {
             return getTargetKey().compareTo(in.getTargetKey());
@@ -134,11 +186,11 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     //
     // implementation
     //
-    
     protected abstract Object getValueFromSPCache();
-    protected abstract Object getValueFromDiscCache() throws Exception;
-    protected abstract long   getModTimeMaybeUpdate() throws Exception;
-    protected abstract void   setModTime(long mtime);
 
-    
-}// TargetImpl
+    protected abstract Object getValueFromDiscCache() throws Exception;
+
+    protected abstract long getModTimeMaybeUpdate() throws Exception;
+
+    protected abstract void setModTime(long mtime);
+} // TargetImpl
