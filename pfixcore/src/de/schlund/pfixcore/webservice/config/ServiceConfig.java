@@ -21,6 +21,8 @@ public class ServiceConfig extends AbstractConfig {
     private final static String PROP_IMPLNAME=".implementation.name";
     private final static String PROP_CTXNAME=".context.name";
     private final static String PROP_SESSTYPE=".session.type";
+    private final static String PROP_ENCODINGSTYLE=".encoding.style";
+    private final static String PROP_ENCODINGUSE=".encoding.use";
 
     ConfigProperties props;
     String name;
@@ -28,6 +30,8 @@ public class ServiceConfig extends AbstractConfig {
     String implName;
     String ctxName;
     String sessType=Constants.SESSION_TYPE_SERVLET;
+    String encStyle;
+    String encUse;
     HashMap params;
     
     public ServiceConfig(ConfigProperties props,String name) throws ConfigException {
@@ -42,6 +46,8 @@ public class ServiceConfig extends AbstractConfig {
         implName=props.getStringProperty(prefix+PROP_IMPLNAME,true);
         ctxName=props.getStringProperty(prefix+PROP_CTXNAME,false);
         sessType=props.getStringProperty(prefix+PROP_SESSTYPE,Constants.SESSION_TYPES,true);
+        encStyle=props.getStringProperty(prefix+PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
+        encUse=props.getStringProperty(prefix+PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
         //TODO: get params
         params=new HashMap();
     }
@@ -76,6 +82,14 @@ public class ServiceConfig extends AbstractConfig {
     
     public String getSessionType() {
         return sessType;
+    }
+    
+    public String getEncodingStyle() {
+        return encStyle;
+    }
+    
+    public String getEncodingUse() {
+        return encUse;
     }
     
     public Iterator getParameterNames() {

@@ -26,7 +26,8 @@ public class Constants {
     
     public final static String ENCODING_STYLE_RPC="rpc";
     public final static String ENCODING_STYLE_DOCUMENT="document";
-    public final static String[] ENCODING_STYLES={ENCODING_STYLE_RPC,ENCODING_STYLE_DOCUMENT};
+    public final static String ENCODING_STYLE_WRAPPED="wrapped";
+    public final static String[] ENCODING_STYLES={ENCODING_STYLE_RPC,ENCODING_STYLE_DOCUMENT,ENCODING_STYLE_WRAPPED};
     public final static String ENCODING_USE_ENCODED="encoded";
     public final static String ENCODING_USE_LITERAL="literal";
     public final static String[] ENCODING_USES={ENCODING_USE_ENCODED,ENCODING_USE_LITERAL};

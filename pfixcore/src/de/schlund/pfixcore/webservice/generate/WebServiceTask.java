@@ -90,8 +90,10 @@ public class WebServiceTask extends Task {
                     Configuration srvConf=new Configuration(cfgProps);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
                     
-                    //System.out.println(globConf.doesDiff(new GlobalServiceConfig(new ConfigProperties(new File[] {globPropsFile}))));
-                    
+                    //Get default message style
+                    encStyle=globConf.getEncodingStyle();
+                    encUse=globConf.getEncodingUse();
+                   
                     File appDir=new File(webappsdir,prjName);
                     if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
                     File webInfDir=new File(appDir,"WEB-INF");
@@ -161,6 +163,12 @@ public class WebServiceTask extends Task {
                         String wsImpl=conf.getImplementationName();
                         String wsItfPkg=getPackageName(wsItf);
                         
+                        //Get service specific message style, if not present take default
+                        String wsEncStyle=encStyle;
+                        if(conf.getEncodingStyle()!=null) wsEncStyle=conf.getEncodingStyle();
+                        String wsEncUse=encUse;
+                        if(conf.getEncodingUse()!=null) wsEncUse=conf.getEncodingUse();
+                        
                         File confPropsFile=new File(tmpDir,wsName+".props");
                         String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
                         File wsItfFile=new File(srcdir,wsItfPath);
@@ -183,7 +191,8 @@ public class WebServiceTask extends Task {
                                 task.setLocation(wsUrl+"/"+wsName);
                                 task.setImplClassName(conf.getImplementationName());
                                 task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
-                                task.setUse(encUse);
+                                task.setStyle(wsEncStyle);
+                                task.setUse(wsEncUse);
                                 task.generate();
                                 log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
                                 conf.saveProperties(new File(tmpDir,wsName+".props"));

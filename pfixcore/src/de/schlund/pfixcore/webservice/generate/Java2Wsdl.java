@@ -15,6 +15,7 @@ public class Java2Wsdl {
     private String output = "." ;
     private String className = "." ;
     private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
+    private String style="rpc";
     private String use="encoded";
     private String implClassName;
     
@@ -31,6 +32,7 @@ public class Java2Wsdl {
             emitter.setIntfNamespace(namespace);
             emitter.setImplCls(implClassName);
             //emitter.setImplNamespace(namespaceImpl); 
+            emitter.setStyle(style);
             emitter.setUse(use);
             emitter.setLocationUrl(location);
             emitter.emit(output,Emitter.MODE_ALL);
@@ -61,6 +63,10 @@ public class Java2Wsdl {
 
     public void setUse(String use) {
         this.use=use;
+    }
+    
+    public void setStyle(String style) {
+    	this.style=style;
     }
     
     public void setImplClassName(String implClassName) {

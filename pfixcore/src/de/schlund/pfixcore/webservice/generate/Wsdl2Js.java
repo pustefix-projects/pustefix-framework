@@ -13,7 +13,7 @@ import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 
-import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.generate.js.*;
 
 /**
  * Wsdl2Js.java 
@@ -66,7 +66,7 @@ public class Wsdl2Js {
                 while(prtIt.hasNext()) {
                     Port port=(Port)prtIt.next();
                     String portName=port.getName();
-                    createClass(portName);
+                    JsClass jsClass=new JsClass(portName);
                     if(getSOAPAddress(port)==null) throw new Exception("No soap address binding found for port "+portName);
                     Binding binding=port.getBinding();
                     if(getSOAPBinding(binding)==null) throw new Exception("No soap binding found for binding "+binding.getQName());
@@ -75,18 +75,28 @@ public class Wsdl2Js {
                     while(bopIt.hasNext()) {
                         BindingOperation bop=(BindingOperation)bopIt.next();
                         Operation op=bop.getOperation();
-                        createMethod(portName,op);
+                       
+                        JsMethod jsMethod=new JsMethod(jsClass,op.getName());
+                        jsClass.addMethod(jsMethod);
+                       
                         Input input=op.getInput();
                         Message inputMsg=input.getMessage();
                         Iterator partIt=inputMsg.getOrderedParts(op.getParameterOrdering()).iterator();
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
-                            
-                            System.out.println(part.getName());
-                            System.out.println(part.getTypeName());
-                            
+                            JsParam jsParam=new JsParam(part.getName());
+                            jsMethod.addParam(jsParam);
+                            //System.out.println(part.getName());
+                            //System.out.println(part.getTypeName());
+                        }   
+                        JsBlock jsBlock=jsMethod.getBody();
+                        jsBlock.addStatement(new JsStatement("var call=new Call()"));
+                        JsParam[] jsParams=jsMethod.getParams();
+                        for(int i=0;i<jsParams.length;i++) {
+                            jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\")"));
                         }
                     }
+                    jsClass.printCode(System.out);
                     
                 }
                 
@@ -105,14 +115,12 @@ public class Wsdl2Js {
         }
     }
     
-    private void createClass(String className) {
-        System.out.println("function "+className+"() {}");
-    }
     
-    private void createMethod(String className,Operation op) {
-        System.out.println(className+".prototype."+op.getName()+"=function() {}");
-        
-    }
+    
+    
+      
+   
+ 
     
     public static void main(String args[]) {
         new Wsdl2Js();
