@@ -49,7 +49,6 @@ import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.util.Path;
@@ -212,10 +211,15 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
             if (thepart != null) {
                 Element ele = (Element) XPath.selectOne(thepart, "./product[@name = '" + product + "']");
                 if (ele != null) {
-                    // make sure we have the ns decl in the root element and thus trip it before the 
-                    // text field is filled.
-                    // TOOD: more ns decls to strip?
-                    ele.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:pfx", ResultDocument.PFIXCORE_NS);
+                    PfixcoreNamespace[] nspaces = esess.getProduct().getPfixcoreNamespace();
+                    if (nspaces != null) {
+                        // make sure we have the ns decl in the root element and thus trip it before the 
+                        // text field is filled.
+                        for (int i = 0; i < nspaces.length; i++) {
+                            ele.setAttribute("xmlns:" + nspaces[i].getPrefix(), nspaces[i].getUri());
+                        }
+                    }
+                    
                     Perl5Matcher pm = new Perl5Matcher();
                     String text = Xml.serialize(ele, false, false);
                     text = Xml.stripElement(text);
