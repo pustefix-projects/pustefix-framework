@@ -39,24 +39,22 @@
   <prop name="pagerequest.order.group.01-Shirt">shirt counter pic</prop> 
   <prop name="pagerequest.order.group.02-Trouser">trouser</prop>
   <!-- These properties can be used with StaticState and descendants -->
-  <prop name="pagerequest.order.resdocfinalizer.insert.cr_counter">de.schlund.pfixcore.example.ContextCounter</prop>
-  <prop name="pagerequest.order.resdocfinalizer.insert.cr_togglepic">de.schlund.pfixcore.example.ContextTogglePic</prop>
-  <!-- The next property can be set additonally for StaticState and descendants (default is shown) -->
+  <prop name="pagerequest.order.insertcr.counter">de.schlund.pfixcore.example.ContextCounter</prop>
+  <prop name="pagerequest.order.insertcr.togglepic">de.schlund.pfixcore.example.ContextTogglePic</prop>
+  <!-- The next property can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
   <!-- <prop name="pagerequest.order.resdocfinalizer>de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer</prop> -->
-  <!-- The next properties can be set additonally for DefaultIWrapperState (default is shown) -->
-  <!-- <prop name="pagerequest.order.iwrappercontainer.policy">ANY</prop> -->
   <!-- <prop name="pagerequest.order.iwrappercontainer">de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer</prop> -->
   <!-- <prop name="pagerequest.order.ihandlercontainer">de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer</prop> -->
+  <!-- <prop name="pagerequest.order.ihandlercontainer.policy">ANY</prop> -->
   <!-- <prop name="pagerequest.order.forcegroupdisplay">false</prop> -->
   <!-- <prop name="pagerequest.order.restrictedcontinue"></prop> -->
   
-  <!-- Here we have a simple state which extends StaticState and by -->
-  <!-- that can make use of a ResdocFinalizer to render ContextResources. -->
+  <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
   <!-- It does the isAccessible() part on it's own. -->
   <prop name="pagerequest.overview.classname">de.schlund.pfixcore.example.OverviewState</prop>
-  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_adultinfo">de.schlund.pfixcore.example.ContextAdultInfo</prop>
-  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_tshirt">de.schlund.pfixcore.example.ContextTShirt</prop>
-  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_trouser">de.schlund.pfixcore.example.ContextTrouser</prop>
+  <prop name="pagerequest.overview.insertcr.adultinfo">de.schlund.pfixcore.example.ContextAdultInfo</prop>
+  <prop name="pagerequest.overview.insertcr.tshirt">de.schlund.pfixcore.example.ContextTShirt</prop>
+  <prop name="pagerequest.overview.insertcr.trouser">de.schlund.pfixcore.example.ContextTrouser</prop>
 
   <!-- *** some additional properties needed for this application *** -->
 

@@ -1,3 +1,135 @@
+2003-01-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.3
+
+2003-01-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (init): make a second, separate loop ovr
+	the contextressources to call init() on them. So all CRs are instantiated first, THEN they a init'ed.
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java
+	(PROP_INSERTCR): change from "resdocfinalizer.insert" =>
+	"insertcr" *** CAUTION *** this means that all property files have
+	to be changed accordingly...
+	* example/sample1/conf/config.prop.in: changed accordingly. 
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer):
+	cosmetics, don't check for contextclassname more often than
+	needed.
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (ContextResourceManager): cosmetics
+
+	* src/de/schlund/pfixcore/workflow/Context.java (do_update): new method (was the reset method)
+	(reset): don't do the work anymore, just register a needs_update status.
+	(handleRequest): check if do_update needs to be called.
+
+2003-01-28  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java: added attributes
+	contextClassName and contextMap
+	(init): set contextClassName
+	(tryReloadProperties): set contextClassName, compare old to new and
+	then iterate over Contexts and reset them resp. remove Contexts from 
+	contextMap
+	(getContext): removed reset parameter, now creates new context and adds
+ 	it to contextMap, if context value is null or if contextclass has 
+	changed (getContext)
+
+	* src/de/schlund/pfixcore/workflow/Context.java: made reset method
+	synchronized
+
+2003-01-27  Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: removed almost
+	all xalan supporting code. Documentation added. Small improvement.
+
+2003-01-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getName): return the supplied name.
+	(getPropertyLoadIndex): removed 
+	(init): new parameter name.
+	(reset_internal):  removed
+	(reset): now handles all reset, as the reload flag for the NavigationFactory is gone.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (tryReloadProperties): also return the value of generator.tryReinit when
+	properties didn't change.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (tryReinit): return true when depend.xml was reloaded.
+
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java (getNavigation): remove force_load flag, now
+	the factory checks the modtimes itself and reloads if necessary
+
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: indentation (tab->spaces)
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(getIHandlerContainer): use IHandlerContainerManager instead of IHandlerContainerFactory
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java (updateIHandlers): remove automatic updating
+	(isPageAccessible): 
+	(areHandlerActive): 
+	(needsData): remove up-to-date check
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	* src/de/schlund/pfixxml/PropertyObject.java: just tab->spaces
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerFactory.java: removed class
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (IHandlerContainerManager): Added class
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (makeContextName): added.
+	(getContext): use it.
+
+	* src/de/schlund/pfixxml/AppContext.java (init): now supply a name argument from the caller
+	
+
+2003-01-24  Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorFactory.java,
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplSaxon.java,
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplXalan.java:
+	removed
+	* example/common/conf/factory.prop.in: removed PFXPathEvaluatorFactory
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: added. 
+	Wrapperclass for calling saxons xpath-api.
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java:
+	now uses PFXPathEvaluator for xpath evaluation.
+	* src/de/schlund/pfixcore/util/Meminfo.java: cosmetics.
+
+2003-01-24  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	new class, which adds support for sharing objects (built from 
+	properties) between contexts
+	* src/de/schlund/pfixxml/PropertyObject.java: 
+	new interface, classes have to implement it to get managed by 
+	PropertyObjectManager
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	inserted call of PropertyObjectManager's resetPropertyObjects 
+	method (tryReloadProperties)
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	PageFlowManager, PageRequestProperties and PageMap aren't newly 
+	created any more, now the context gets them from 
+	PropertyObjectManager (reset_internal)
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, removed dispensable synchronized statements
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, moved Properties construction into init method
+	* src/de/schlund/pfixcore/workflow/PageMap: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, references PageRequestProperties via PropertyObjectManager
+
+2003-01-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: added customizable maxProcessors
+	* example/servletconf/projects.xml: Use it.
+
+2003-01-23  Joerg Haecker <haecker@schlund.de>
+
+	* CVSROOT/cvswrappers: added entry for gifs and jars as binary data.
+
 2003-01-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Bugfix. only init helper classes one time.

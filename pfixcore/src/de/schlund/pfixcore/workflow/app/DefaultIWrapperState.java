@@ -41,9 +41,10 @@ import org.w3c.dom.*;
  */
 
 public class DefaultIWrapperState extends StaticState {
-    protected static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
-    protected static String DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
-    protected static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
+    private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
+    private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
+
+    private static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
     
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
@@ -153,22 +154,12 @@ public class DefaultIWrapperState extends StaticState {
         return fin;
     }
 
-    // Remember, this is a flyweight!!!
-    protected IHandlerContainer getIHandlerContainer(Context context) {
-        Properties        props     = context.getPropertiesForCurrentPageRequest();
-        String            classname = props.getProperty(IHandlerSimpleContainer.PROP_CONTAINER);
-
-        if (classname == null) {
-            classname = DEF_HDL_CONTAINER;
-        }
-
-        IHandlerContainer obj = IHandlerContainerFactory.getInstance().getIHandlerContainer(classname, context);
-
-        if (obj == null) {
-	    throw new RuntimeException("No IHandlerContainer found: classname = " + classname);
-        }
-
-        return obj;
+    // Remember, a IHandlerContainer is a flyweight!!!
+    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
+        Properties                props = context.getProperties();
+    	PropertyObjectManager     pom   = PropertyObjectManager.getInstance();
+        IHandlerContainerManager  ihcm  = (IHandlerContainerManager) pom.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
+        return ihcm.getIHandlerContainer(context);
     }
 
     
