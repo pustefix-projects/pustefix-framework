@@ -1,3 +1,13 @@
+2004-08-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in: always create the "$realpath" and use it 
+	also in the include:get method.
+	
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java (get):
+	assume that the path_str is already correct when entering the
+	method. no need to check if it's empty and use the parent path in
+	this case
+
 2004-08-10  Benjamin Reitzammer <benjamin@schlund.de>
 	* skel/build.xml now uses XsltCustomWebxmlTask to produce web.xml files
 
