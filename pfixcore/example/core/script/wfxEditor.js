@@ -325,7 +325,7 @@ wfxEditor.prototype.updateLineNumbers = function( html, lineStart ) {
   var html_header2 = '</head>\n<body id="bodynode">\n<table cellpadding="0" cellspacing="0" border="0" width="100%"><tbody>\n';
   var html_footer  = '</tbody></table>\n</body>\n</html>\n';
   var style_source = '<style>\n' + 
-  'body { font-family: "Courier New", Courier, monospace; font-size: 13px; margin:0px }\n' + 
+  'body { font-family: monospace; font-size: 13px; margin:0px }\n' + 
   'td {text-align:right; font-weight:bold }\n' + 
   '</style>\n';
   
@@ -720,111 +720,9 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	var charOffset;
 	//-------------------------------------------------------------------------
 
-	if( wfx.is_ie ) {
-	  newline = '\r\n';
-	} else {
-	  newline = '\n';
-	}
-	if( optiTab ) {
-	  newline = '<br />';
-	}
-  
-	count =  0;
-	pos   = -1;
-	posprev = -1;
-	while( (count<linenumber-1) && ((pos = content.indexOf(newline, posprev+1)) != -1) ) {
-	  count++;
-	  if(count<linenumber-1) {
-	    posprev = pos;
-	  }
-	  //	  alert("posprev:"+ posprev + "\npos:" + pos);
-	}
-	//	alert("count:" + count);
-
-	if( optiTab ) {
-	  charOffset = 6;
-	} else {
-	  charOffset = 1;
-	}
-	if( wfx.is_ie && linenumber>1 ) {
-	  charOffset = 2;
-	}
-	if( linenumber==1 ) {
-	  charOffset = 1;
-	}
-	//-------------------------------------------------------------------------
-
-	var prevline = content.substring( (posprev==-1?0:posprev+charOffset), pos );
-
-	if( optiTab ) {
-	  prevline = this.col2tag(prevline);
-	}
-
-	//	alert(wfxEditor.str2chr(prevline));
-
-	var rule_htmlTag        = /<([\w\:\-]+\b.*?)>/g;
-	var rule_htmlEndTag     = /<(\/[\w\:\-]+)>/g;
-	var rule_htmlSingleTag  = /<([\w\:\-]+\b[^>]*?)\/>/g;
-
-	prevline = prevline.replace( rule_htmlSingleTag, "");
-
-	//	alert(wfxEditor.str2chr(prevline));
-
-	
-	var count_tags    = prevline.match(rule_htmlTag);
-	count_tags = (count_tags instanceof Array ? count_tags.length : 0);
-	var count_endtags = prevline.match(rule_htmlEndTag);
-	count_endtags = (count_endtags instanceof Array ? count_endtags.length : 0);
-	var indentdiff = count_tags - count_endtags;
-	if( indentdiff < 0 ) {
-	  indentdiff = 0;
-	}
-	//	alert("count_tags:" + count_tags + "\ncount_endtags:" + count_endtags);
-	//-------------------------------------------------------------------------
-
-	// determine indentation of previous line
-
-	var postmp = (posprev==-1?0:posprev+charOffset);
-
-	var indentprev =  0;
-	while( content.charAt(postmp++) == " " ) {
-	  indentprev++;
-	}
-	//	alert("spaces(prev):" + indentprev);
-	//-------------------------------------------------------------------------
-
-	// determine indentation of current line
-
-	postmp = pos + charOffset;
-
-	var indent =  0;
-	while( content.charAt(postmp++) == " " ) {
-	  indent++;
-	}
-	//	alert("spaces(current):" + indent);
-	//-------------------------------------------------------------------------
-
-	var indentnew = indentprev + indentdiff * 2;
-	var line = content.substr( pos );
-	if( line.search( /^\s*<\// ) != -1 ) { //&& prevline.search( /^\s*<\// ) == -1 ) {
-	  indentnew -= 2;
-	}
-	//-------------------------------------------------------------------------
-
-	if(indentnew < 0) {
-	  indentnew = 0;
-	}
-
-	var indentstr = "";
-	for( var i=0; i<indentnew; i++) {
-	  indentstr += " ";
-	}
-
-	content = content.substr( 0, pos+ charOffset) + indentstr + 
-	  content.substr( pos+ charOffset + indent);
+	content = this.indentCurrentLine( content );
 	//-------------------------------------------------------------------------
 	//-------------------------------------------------------------------------
-
 
 	if( optiTab ) {
 	  buf     = content;
@@ -869,7 +767,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	// getOffsets
 	//------------
     
-	//	alert("getOffsets:\n" + wfxEditor.str2chr(content));
+	//       	alert("getOffsets:\n" + wfxEditor.str2chr(content));
 
 	var ret = new Array();
 	this.getOffsets( content, ret );
@@ -880,7 +778,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	var offsetNewlinesEnd   = ret[3];
 	var posEnd              = ret[4];
 	
-	//	alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\posEnd:" + posEnd);
+	//	alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
 	//-------------------------------------------------------------------------
 
 	try {
@@ -1100,6 +998,169 @@ wfxEditor.prototype._editorEvent = function(ev) {
     //    editor.updateToolbar();
     editor._timerToolbar = null;
   }, 50);
+};
+
+//#----------------------------------------------------------------------------
+//#
+//#----------------------------------------------------------------------------
+wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber ) {
+
+  linenumber = linenumber || this._linenumber;
+
+
+  //  alert( wfxEditor.str2chr(content));
+
+  if( wfx.is_ie ) {
+    newline = '\r\n';
+  } else {
+    newline = '\n';
+  }
+  if( optiTab ) {
+    newline = '<br />';
+  }
+  
+  count =  0;
+  pos   = -1;
+  posprev = -1;
+  while( (count<linenumber-1) && ((pos = content.indexOf(newline, posprev+1)) != -1) ) {
+    count++;
+    if(count<linenumber-1) {
+      posprev = pos;
+    }
+    //	  alert("posprev:"+ posprev + "\npos:" + pos);
+  }
+  //	alert("count:" + count);
+
+  if( optiTab ) {
+    charOffset = 6;
+  } else {
+    charOffset = 1;
+  }
+  if( wfx.is_ie && linenumber>1 ) {
+    charOffset = 2;
+  }
+  if( linenumber==1 ) {
+    charOffset = 1;
+  }
+  //-------------------------------------------------------------------------
+
+  var prevline = content.substring( (posprev==-1?0:posprev+charOffset), pos );
+
+  if( optiTab ) {
+    prevline = this.col2tag(prevline);
+  }
+
+  //alert("prevline:\n" + wfxEditor.str2chr(prevline));
+
+  var rule_htmlTag        = /<([\w\:\-]+\b.*?)>/g;
+  var rule_htmlEndTag     = /<(\/[\w\:\-]+)>/g;
+  var rule_htmlSingleTag  = /<([\w\:\-]+\b[^>]*?)\/>/g;
+
+  prevline = prevline.replace( rule_htmlSingleTag, "");
+	
+  var count_tags    = prevline.match(rule_htmlTag);
+  count_tags = (count_tags instanceof Array ? count_tags.length : 0);
+  var count_endtags = prevline.match(rule_htmlEndTag);
+  count_endtags = (count_endtags instanceof Array ? count_endtags.length : 0);
+  var indentdiff = count_tags - count_endtags;
+  //	alert("count_tags:" + count_tags + "\ncount_endtags:" + count_endtags);
+  //-------------------------------------------------------------------------
+
+  // determine indentation of previous line
+
+  var posStart, posEnd = -1;
+  posStart = prevline.indexOf("[[[sfxStart]]]");
+  if( posStart != -1 ) {
+    content = content.replace( /\[\[\[sfxStart\]\]\]/, "");
+    posEnd   = prevline.indexOf("[[[sfxEnd]]]");
+    if( posEnd != -1 ) {
+      content = content.replace( /\[\[\[sfxEnd\]\]\]/, "");
+    }
+  }
+  //	alert( "posStart:" + posStart + "\nposEnd:" + posEnd );
+
+  var postmp = (posprev==-1?0:posprev+charOffset);
+
+  var indentprev =  0;
+  while( content.charAt(postmp++) == " " ) {
+    indentprev++;
+  }
+  //	alert("spaces(prev):" + indentprev);
+  //-------------------------------------------------------------------------
+
+  var line = content.substr( pos + charOffset );
+  //  alert( "line:\n" + wfxEditor.str2chr(line));
+
+  // determine indentation of current line
+
+  posEnd = -1;
+  posStart = line.indexOf("[[[sfxStart]]]");
+  if( posStart != -1 ) {
+    content = content.replace( /\[\[\[sfxStart\]\]\]/, "");
+    posEnd   = line.indexOf("[[[sfxEnd]]]");
+    if( posEnd != -1 ) {
+      content = content.replace( /\[\[\[sfxEnd\]\]\]/, "");
+    }
+  }
+  //	alert("(current) posStart:" + posStart + "\nposEnd:" + posEnd);
+	
+  postmp = pos + charOffset;
+
+  var indent =  0;
+  while( content.charAt(postmp++) == " " ) {
+    indent++;
+  }
+  //	alert("spaces(current):" + indent);
+  //-------------------------------------------------------------------------
+
+
+  if( prevline.search( /^\s*<\// ) != -1 ) {
+    // previous line starts with endtag
+    indentdiff++;
+  }
+  if( line.replace(/\[\[\[sfx.*?\]\]\]/, "").search( /^\s*<\// ) != -1 ) {
+    // current line starts with endtag
+    indentdiff--;
+  }
+  //-------------------------------------------------------------------------
+
+  var indentnew = indentprev + indentdiff * wfxEditor.tabWidth;
+  if(indentnew < 0) {
+    indentnew = 0;
+  }
+  //-------------------------------------------------------------------------
+	
+  //	alert("indent:" + indent + "\nindentnew:" + indentnew);
+
+  var indentstr = "";
+  for( var i=0; i<indentnew; i++) {
+    indentstr += " ";
+  }
+
+  if( posStart != -1 ) {
+    if( posStart <= indent ) {
+      posStart = indentnew;
+    } else {
+      posStart = indentnew + (posStart - indent);
+    }
+  }
+  //	alert("new posStart:" + posStart);
+  //-------------------------------------------------------------------------
+
+  content = content.substr( 0, pos + charOffset) + indentstr + 
+    content.substr( pos+ charOffset + indent);
+
+  if( posStart != -1 ) {
+    content = content.substr( 0, pos + charOffset + posStart) + 
+      "[[[sfxStart]]]" + content.substr( pos + charOffset + posStart );
+    if( posEnd != -1 ) {
+      content = content.substr( 0, pos + charOffset + posEnd) + 
+	"[[[sfxEnd]]]" + content.substr( pos + charOffset + posEnd);
+    }
+  }
+  //  alert(wfxEditor.str2chr(content));
+
+  return content;
 };
 
 //#----------------------------------------------------------------------------
@@ -1486,6 +1547,7 @@ wfxEditor.prototype.restoreRange = function( offsetStart, offsetEnd, dbg ) {
   wfxEditor.currentOffset = 0;
   wfxEditor.reachedOffset = false;
 
+  //  alert("this.restoreRange( ~, ~, " + offsetStart +", " + offsetEnd + " )");
   wfxEditor.restoreRange(this._doc.body, false, offsetStart, offsetEnd, dbg);
 };
 
@@ -1613,7 +1675,7 @@ wfxEditor.restoreRangeByNewlines = function(root, outputRoot, offsetStart, offse
 wfxEditor.prototype.setRange = function( nodeStart, offsetStart, 
 					 nodeEnd,   offsetEnd ) {
 
-  //alert("setRange( " + nodeStart.nodeType +", "+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
+  //  alert("setRange( nodeStart.nodeType:" + nodeStart.nodeType +", offsetStart:"+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
 
   //    this._dbg.value += "setRange( " + nodeStart +"(" + nodeStart.nodeValue + "), "+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")\n";
 
@@ -1627,8 +1689,14 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 	if( nodeStart.nodeType == 1 ) {
 	  // element node (br)
 
-	  rng.setStartAfter( nodeStart );
-	  rng.setEndAfter(   nodeStart );
+	  if( nodeStart.nextSibling != null ) {
+	    //	    rng.setStartBefore( nodeStart.nextSibling );
+	    //	    rng.setEndAfter(   nodeStart.nextSibling );
+	    rng.selectNode(nodeStart.nextSibling);
+	  } else {
+	    rng.setStartAfter( nodeStart );
+	    rng.setEndAfter(   nodeStart );
+	  }
 
 	} else if( nodeStart.nodeType == 3 ) {
 	  // text node
@@ -1668,7 +1736,7 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 
 	var sel = this._editor.getSelection();
 	sel.removeAllRanges();
-
+	rng.collapse(true);
 	sel.addRange(rng);
       }
     } catch(e) {
@@ -1762,7 +1830,7 @@ wfxEditor.prototype.generate = function( target, content ) {
 //  '</style>\n';
 //  var style_source = '<link rel="stylesheet" type="text/css" href="wfxSource.css" />\n';
   var style_source = '<style>\n' + 
-  'body,pre { font-family: "Courier New", Courier, monospace; font-size: 13px; margin:0px }\n' + 
+  'body,pre { font-family: monospace; font-size: 13px; margin:0px }\n' + 
   'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
   '.string      { color:#118800; font-weight:normal }\n' + 
   '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
@@ -1874,6 +1942,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
   this._timerRehighlight = setInterval( function() {
   
+    return;
+
     if( insideRehighlighting ) {
       editor._dbg.value += "insideRehighlighting ==> cancel\n";
       cancelHighlighting = true;
@@ -2105,7 +2175,7 @@ wfxEditor.prototype.getOffsets = function( content, ret ) {
     } else {
       newlines  = 0;
     }
-    // alert("returns:" + returns + ", newlines:" + newlines );
+    //    alert("newlines:" + newlines );
 
     if( posStart && buf.substr(buf.length-1) == "\n" ) {
       // marker positioned immediately after newline
@@ -2426,6 +2496,8 @@ wfxEditor.nodeStart   = null;
 wfxEditor.offsetStart = -1;
 wfxEditor.nodeEnd     = null;
 wfxEditor.offsetEnd   = -1;
+
+wfxEditor.tabWidth    = 2;
 
 wfxEditor.timeInterval   = 200;   // msec of rehighlighting frequency
 wfxEditor.timeEvent      = 50;    // minimum msec between (key)events
