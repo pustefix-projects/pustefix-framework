@@ -1,5 +1,5 @@
 //*****************************************************************************
-// xml.js
+// xmlRequest.js
 //*****************************************************************************
 
 //-------------------
@@ -26,7 +26,7 @@ _isKhtml  = _browser == "khtml";
 //*****************************************************************************
 //
 //*****************************************************************************
-function xmlRequest() {
+function XML_Request() {
 
   this.method   = arguments[0];
   this.url      = arguments[1];
@@ -42,25 +42,25 @@ function xmlRequest() {
   this.cancelOnReadyStateChange = function(i, msg) { self._cancelOnReadyStateChange(i, msg); };
 }
 
-xmlRequest._xml = [];
-xmlRequest._xmlThis = [];
-xmlRequest._xmlTimer = [];
-xmlRequest._xmlTimerCount = [];
-xmlRequest._xmlTimerCountMax = 1000;
-xmlRequest._xmlTimerInterval = 5;
+XML_Request._xml = [];
+XML_Request._xmlThis = [];
+XML_Request._xmlTimer = [];
+XML_Request._xmlTimerCount = [];
+XML_Request._xmlTimerCountMax = 1000;
+XML_Request._xmlTimerInterval = 5;
 
-xmlRequest.builtin = window.XMLHttpRequest ? true : false;
+XML_Request.builtin = window.XMLHttpRequest ? true : false;
 
 // iframe
-xmlRequest.IFRAMES_NEVER    = -1;
-xmlRequest.IFRAMES_FALLBACK =  0;
-xmlRequest.IFRAMES_ONLY     =  1;
+XML_Request.IFRAMES_NEVER    = -1;
+XML_Request.IFRAMES_FALLBACK =  0;
+XML_Request.IFRAMES_ONLY     =  1;
 
 // set iframe behaviour
-xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_FALLBACK;
+XML_Request.prototype.iframes  = XML_Request.IFRAMES_FALLBACK;
 
 // set headers required for SOAP (Axis)
-xmlRequest.prototype.headers = [ [ 'SOAPAction', '""'] ];
+XML_Request.prototype.headers = [ [ 'SOAPAction', '""'] ];
 
 //-------
 // Opera
@@ -72,21 +72,21 @@ if( _isOpera ) {
   // - Content-Length: 0
 
   // deactivate XMLHttpRequest
-  xmlRequest.builtin = false;
+  XML_Request.builtin = false;
 
   // use iframes instead, if allowed by configuration
-  xmlRequest.prototype.iframes = xmlRequest.prototype.iframes || 1;
+  XML_Request.prototype.iframes = XML_Request.prototype.iframes || 1;
 }
 
 //--------
 // Mshtml
 //--------
 
-xmlRequest.msXmlHttp = null;
+XML_Request.msXmlHttp = null;
 if( !_isOpera && window.ActiveXObject ) {
   // determine working ActiveX XMLHTTP component
   // both security settings needed (secure(1.) and plugins(3.))
-  // if successful, xmlRequest.msXmlHttp is of type "string", 
+  // if successful, XML_Request.msXmlHttp is of type "string", 
   // otherwise "object"
 
   var msXmlHttpList = ["MSXML2.XMLHTTP.5.0", "MSXML2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "MICROSOFT.XMLHTTP.1.0", "MICROSOFT.XMLHTTP.1", "MICROSOFT.XMLHTTP"];
@@ -97,7 +97,7 @@ if( !_isOpera && window.ActiveXObject ) {
       obj = new ActiveXObject(msXmlHttpList[j]);
       
       // success ==> store, quit loop
-      xmlRequest.msXmlHttp = msXmlHttpList[j];
+      XML_Request.msXmlHttp = msXmlHttpList[j];
       break;
     } catch(e) {
       // ignore failures
@@ -105,53 +105,53 @@ if( !_isOpera && window.ActiveXObject ) {
   }
 }
 
-xmlRequest.activeX = typeof xmlRequest.msXmlHttp == "string";
+XML_Request.activeX = typeof XML_Request.msXmlHttp == "string";
 
 //*****************************************************************************
 //
 //*****************************************************************************
-xmlRequest.prototype.start = function( content ) {
+XML_Request.prototype.start = function( content ) {
 
   // unique timestamp to prevent caching
   //  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
-  var i = xmlRequest._xml.length;
+  var i = XML_Request._xml.length;
 
-  if( this.iframes!=xmlRequest.IFRAMES_ONLY ) {
+  if( this.iframes!=XML_Request.IFRAMES_ONLY ) {
 
-    if( xmlRequest.builtin ) {
+    if( XML_Request.builtin ) {
 
       //----------------
       // XMLHttpRequest
       //----------------
 
       try {
-        xmlRequest._xml[i] = new XMLHttpRequest();
+        XML_Request._xml[i] = new XMLHttpRequest();
         
       } catch(e) {
-        xmlRequest._xml[i] = null;
-        if( this.iframes == xmlRequest.IFRAMES_NEVER ) {
-          throw new Error("xmlRequest: Could not create XMLHttpRequest");
+        XML_Request._xml[i] = null;
+        if( this.iframes == XML_Request.IFRAMES_NEVER ) {
+          throw new Error("XML_Request: Could not create XMLHttpRequest");
         } 
       }
-    } else if( xmlRequest.activeX ) {
+    } else if( XML_Request.activeX ) {
 
       //---------
       // ActiveX
       //---------
 
       try {
-        xmlRequest._xml[i] = new ActiveXObject(xmlRequest.msXmlHttp);
+        XML_Request._xml[i] = new ActiveXObject(XML_Request.msXmlHttp);
       } catch(e) {
-        xmlRequest._xml[i] = null;
-        if( this.iframes == xmlRequest.IFRAMES_NEVER ) {
-          throw new Error("xmlRequest: Could not create ActiveXObject " + xmlRequest.msXmlHttp);
+        XML_Request._xml[i] = null;
+        if( this.iframes == XML_Request.IFRAMES_NEVER ) {
+          throw new Error("XML_Request: Could not create ActiveXObject " + XML_Request.msXmlHttp);
         } 
       }
     }
 
-    if( typeof xmlRequest._xml[i] != "undefined" ) {
+    if( typeof XML_Request._xml[i] != "undefined" ) {
 
       if( this.callback ) {
         //-------
@@ -161,72 +161,72 @@ xmlRequest.prototype.start = function( content ) {
         try {
           var self = this;
 
-          if( xmlRequest.activeX ) {
-            xmlRequest._xml[i].onreadystatechange = function() {
-              if( xmlRequest._xml[i].readyState == 4 ) {
-                self.callback.call( self.context, xmlRequest._xml[i].responseXML);
-                xmlRequest._xml[i] = null;
+          if( XML_Request.activeX ) {
+            XML_Request._xml[i].onreadystatechange = function() {
+              if( XML_Request._xml[i].readyState == 4 ) {
+                self.callback.call( self.context, XML_Request._xml[i].responseXML);
+                XML_Request._xml[i] = null;
               }
             };
           } else {
-            xmlRequest._xml[i].onreadystatechange = function() {
-              if( xmlRequest._xml[i].readyState == 4 ) {
+            XML_Request._xml[i].onreadystatechange = function() {
+              if( XML_Request._xml[i].readyState == 4 ) {
                 try {
-                  self.status     = xmlRequest._xml[i].status;
-                  self.statusText = xmlRequest._xml[i].statusText;
+                  self.status     = XML_Request._xml[i].status;
+                  self.statusText = XML_Request._xml[i].statusText;
                 } catch(e) {
                 }
                 if( self.status && self.status >= 300 ) {
-                  throw new Error("xmlRequest: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                  throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
-                self.callback.call( self.context, xmlRequest._xml[i].responseXML );
-                xmlRequest._xml[i] = null;
+                self.callback.call( self.context, XML_Request._xml[i].responseXML );
+                XML_Request._xml[i] = null;
               }
             };
           }
 
         } catch(e) {
-          xmlRequest._xml[i] = null;
-          throw new Error("xmlRequest: Onreadystatechange failed");
+          XML_Request._xml[i] = null;
+          throw new Error("XML_Request: Onreadystatechange failed");
         }
       }
 
 
       try {
-        xmlRequest._xml[i].open( this.method, this.url, this.callback ? true : false); 
+        XML_Request._xml[i].open( this.method, this.url, this.callback ? true : false); 
 
         for( var j=0; j<this.headers.length; j++ ) {
           try {
             // not implemented in Opera 7.6pr1
-            xmlRequest._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
+            XML_Request._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
           } catch(e) {
           }
         }
 
-        xmlRequest._xml[i].send(content);
+        XML_Request._xml[i].send(content);
           
         if( !this.callback ) {
-          this.status=xmlRequest._xml[i].status;
-          this.statusText=xmlRequest._xml[i].statusText;
-          return xmlRequest._xml[i].responseXML;
+          this.status=XML_Request._xml[i].status;
+          this.statusText=XML_Request._xml[i].statusText;
+          return XML_Request._xml[i].responseXML;
         } else {
           return true;
         }
       } catch(e) {
-        xmlRequest._xml[i] = null;
-        throw new Error("xmlRequest: Call failed");
+        XML_Request._xml[i] = null;
+        throw new Error("XML_Request: Call failed");
       }  
     }
   }
 
-  if( this.iframes!=xmlRequest.IFRAMES_NEVER && !xmlRequest._xml[i] && document.createElement ) {
+  if( this.iframes!=XML_Request.IFRAMES_NEVER && !XML_Request._xml[i] && document.createElement ) {
 
     //--------
     // iframe
     //--------
 
     if( !this.callback ) {
-      throw new Error("xmlRequest: Synchronous call by iframe not supported"); 
+      throw new Error("XML_Request: Synchronous call by iframe not supported"); 
     }
 
     try {
@@ -263,7 +263,7 @@ xmlRequest.prototype.start = function( content ) {
         el.src = this.url;
         document.body.appendChild(el);
         var self = this;
-        xmlRequest._xmlTimer[i] = window.setInterval( self.customOnReadyStateChange, xmlRequest._xmlTimerInterval);
+        XML_Request._xmlTimer[i] = window.setInterval( self.customOnReadyStateChange, XML_Request._xmlTimerInterval);
 
       } else if( this.method.toLowerCase() == "post" ) {
 
@@ -279,10 +279,10 @@ xmlRequest.prototype.start = function( content ) {
         el.style.display = "none";
         el.id               = "pfxxmlformdiv"+i;
 
-        xmlRequest._xml[i] = this.callback;
-        xmlRequest._xmlThis[i] = this;
-        xmlRequest._xmlTimer[i] = true;
-        xmlRequest._xmlTimerCount[i] = 0;
+        XML_Request._xml[i] = this.callback;
+        XML_Request._xmlThis[i] = this;
+        XML_Request._xmlTimer[i] = true;
+        XML_Request._xmlTimerCount[i] = 0;
 
         var self = this;
         window.setTimeout( function() {
@@ -316,25 +316,25 @@ xmlRequest.prototype.start = function( content ) {
           }, 1 );
         }, 1 );        
 
-        xmlRequest._xmlTimer[i] = window.setInterval( self.customOnReadyStateChange, xmlRequest._xmlTimerInterval);
+        XML_Request._xmlTimer[i] = window.setInterval( self.customOnReadyStateChange, XML_Request._xmlTimerInterval);
       } else {
         // method other than GET or POST are not supported
-        throw new Error("xmlRequest: Iframes do not support method " + this.method);
+        throw new Error("XML_Request: Iframes do not support method " + this.method);
       }
 
       return "iframe";
     } catch(e) {
-      throw new Error("xmlRequest: Iframes failed" + e);
+      throw new Error("XML_Request: Iframes failed" + e);
     }
   }
 
-  throw new Error("xmlRequest: Failure");
+  throw new Error("XML_Request: Failure");
 };
 
 //*****************************************************************************
 //
 //*****************************************************************************
-xmlRequest.prototype.setRequestHeader = function( field, value ) {
+XML_Request.prototype.setRequestHeader = function( field, value ) {
   
   this.headers.push( [field, value] );
 };
@@ -342,15 +342,15 @@ xmlRequest.prototype.setRequestHeader = function( field, value ) {
 //*****************************************************************************
 //
 //*****************************************************************************
-xmlRequest.prototype._customOnReadyStateChange = function() {
+XML_Request.prototype._customOnReadyStateChange = function() {
 
   var win = null;
 
-  for( var i=0; i<xmlRequest._xml.length; i++ ) {
-    if( xmlRequest._xmlTimer[i] && xmlRequest._xml[i] ) {
+  for( var i=0; i<XML_Request._xml.length; i++ ) {
+    if( XML_Request._xmlTimer[i] && XML_Request._xml[i] ) {
 
       try {
-        if( xmlRequest._xmlTimerCount[i]<xmlRequest._xmlTimerCountMax ) {
+        if( XML_Request._xmlTimerCount[i]<XML_Request._xmlTimerCountMax ) {
 
           win = window.frames['pfxxmliframe'+i];
           if( win && 
@@ -358,12 +358,12 @@ xmlRequest.prototype._customOnReadyStateChange = function() {
               win.location != "about:blank" && 
               (_isMshtml ? win.document.readyState=="complete" : true)) {
 
-            xmlRequest._xml[i].call( xmlRequest._xmlThis[i].context, 
+            XML_Request._xml[i].call( XML_Request._xmlThis[i].context, 
                                      _isMshtml ? win.document.body : win.document );
-            xmlRequest._xml[i] = null;
+            XML_Request._xml[i] = null;
             this.cancelOnReadyStateChange(i);
           } else {
-            xmlRequest._xmlTimerCount[i]++;            
+            XML_Request._xmlTimerCount[i]++;            
           }
         } else {
           this.cancelOnReadyStateChange(i, "too many intervals");
@@ -378,14 +378,14 @@ xmlRequest.prototype._customOnReadyStateChange = function() {
 //*****************************************************************************
 //
 //*****************************************************************************
-xmlRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
+XML_Request.prototype._cancelOnReadyStateChange = function( i, msg ) {
 
   try {
-    window.clearInterval(xmlRequest._xmlTimer[i]);
-    xmlRequest._xmlTimer[i] = null;
-    xmlRequest._xml[i] = null;
-    xmlRequest._xmlThis[i] = null;
-    xmlRequest._xmlTimerCount[i] = 0;
+    window.clearInterval(XML_Request._xmlTimer[i]);
+    XML_Request._xmlTimer[i] = null;
+    XML_Request._xml[i] = null;
+    XML_Request._xmlThis[i] = null;
+    XML_Request._xmlTimerCount[i] = 0;
   } catch(e) {
     msg = "Could not cancel";
   }
@@ -414,7 +414,7 @@ xmlRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
   } catch(e) {}
 
   if( msg ) {
-    throw new Error("xmlRequest: " + msg);
+    throw new Error("XML_Request: " + msg);
   }
 };
 //*****************************************************************************

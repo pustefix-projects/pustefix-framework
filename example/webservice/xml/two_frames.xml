@@ -32,7 +32,7 @@
           </link>
 		  <link rel="stylesheet" type="text/css" href="/webservice.css"/>
           <script type="text/javascript" src="/application.js"></script>
-		  <script type="text/javascript" src="/core/script/xml.js"></script>
+		  <script type="text/javascript" src="/core/script/xmlRequest.js"></script>
 		  <script type="text/javascript" src="/core/script/webservice.js"></script>
 		   <ixsl:choose>
 			<ixsl:when test="$page='calculator'">
