@@ -48,8 +48,20 @@ import javax.xml.transform.TransformerException;
  * @author <a href="mailto:zaich@schlund.de">Volker Zaich</a>
  * @version
  *
+ * AppletInfoFinalizer gets all Includes and Images from the actually project
+ * and put em into the resultDocument. Maybe directorys will be added later.
+ *
+ *
+ *
+ *
+ *
  *
  */
+
+
+
+
+
 
 
 public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
@@ -103,8 +115,6 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
             String dir  = curr.getDir();
             String path = curr.getPath();
             String name = path.substring(path.lastIndexOf("/") + 1);
-
-            System.out.println("DOOOOOOOOOOOCROOOOOOT" + docroot);
 
             String newPath = path.substring(docroot.length(), path.length());
 

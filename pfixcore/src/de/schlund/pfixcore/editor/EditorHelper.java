@@ -665,7 +665,7 @@ public class EditorHelper {
 
 
             String newPath = path.substring(docroot.length(), path.length());
-            System.out.println("Path: " + newPath);
+
             
             Element inc = resdoc.createSubNode(root, "include");
             inc.setAttribute("path", newPath);
