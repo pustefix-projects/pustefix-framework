@@ -26,7 +26,7 @@
           <tr>
             <td>
               <b>Box No. 1</b> contains backup options and the file
-              upload user interfacce.  Backup options appear whenever you change
+              upload user interface.  Backup options appear whenever you change
               the image by uploading a new image file.  The timestamp
               of the former upload is then displayed in the select box
               and you can go back to this point of time by choosing
