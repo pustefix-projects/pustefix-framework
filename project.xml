@@ -23,7 +23,8 @@
   <siteAddress>pustefix.sourceforge.net</siteAddress>
 
   <repository>
-    <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</connection>
+    <!-- specify devel connection only because sourceforge's "normal" connection has a delay of 3+ hours:
+          connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</connection -->
     <developerConnection>scm:cvs:ext:mlhartme@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</developerConnection>
     <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore/</url>
   </repository>
