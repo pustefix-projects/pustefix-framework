@@ -66,8 +66,7 @@ wfxEditor.Config = function () {
 
   this.maxLines = 3333;   // max lines for Moz.
 
-  this.doctype = '<' + '?xml version="1.0" encoding="UTF-8"?>\n' + 
-    '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+  this.doctype = '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
   this.html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">';
   this.head = '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>';
 
@@ -431,7 +430,7 @@ wfxEditor.prototype.initLineNumbers = function() {
     '    ev.returnValue = false;' + 
     '  }' + 
     '}' + 
-    'function setUnselectable(win) {' + 
+    'function setUnselectable() {' + 
     '  if(window.document.attachEvent) {' +
     '	window.document.attachEvent( "onmousedown", stopEvent);' + 
     '	window.document.attachEvent( "onkeypress",  stopEvent);' + 
@@ -984,7 +983,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 
       bench( "...indentCurrentRange", null, 8 );
 
-      document.forms[0].dbg.value = benchMsg;
+      this._dbg.value = benchMsg;
       //-------------------------------------------------------------------------
       //-------------------------------------------------------------------------
 
@@ -1120,12 +1119,12 @@ wfxEditor.prototype._editorEvent = function(ev) {
     } else {
       scrollTop = editor._editor.pageYOffset;
     }
-    //    editor._showColumn.value = scrollTop;
-    
+
     if( scrollTop != editor._scrollTop ) {
       // scroll offset has changed
 
       if( wfx.is_ie ) {
+
 
 	var lineStart = parseInt( scrollTop / editor._linepx );
 	if( lineStart != editor._lineStart ) {
@@ -1158,7 +1157,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	editor._linebar.scroll( 0, scrollTop );
       }
     }
-  }, 30);   // Moz needs some delay to detect current scrolling
+  }, 0);   // Moz needs some delay to detect current scrolling
   //---------------------------------------------------------------------------
 
   //#  // update the toolbar state after some time
@@ -2594,7 +2593,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		    bench("rehighlight()", null, 1);
 
 		    if( doBench ) {
-		      document.forms[0].dbg.value += benchMsg;
+		      editor._dbg.value += benchMsg;
 		      benchMsg = "";
 		    }
 
