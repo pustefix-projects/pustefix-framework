@@ -63,7 +63,6 @@ public class IncludeDocumentFactory {
          //   CAT.debug(path+"("+mutable+") "+"cache hit");
             includeDocument= (IncludeDocument) cache.getValue(key);
         }
-
         return includeDocument;
     }
 

@@ -19,16 +19,15 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.pfixcore.workflow.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import de.schlund.pfixxml.*;
+import de.schlund.pfixcore.workflow.Context;
 
 /**
- *
- *
+ * IHandler are classes which represent application logic and work
+ * on supplied wrappers to get their data or set default values
+ * which should appear on the html form that is used to supply the
+ * data needed by the handler.</br>
+ * From the application programmers point of view these classes which
+ * handle all the application logic have to be written on their own.
  */
 
 public interface IHandler {

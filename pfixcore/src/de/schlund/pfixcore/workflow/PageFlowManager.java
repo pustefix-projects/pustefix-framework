@@ -31,13 +31,13 @@ import org.apache.log4j.*;
  *
  */
 
-public class PageFlowManager {
+public class PageFlowManager implements PropertyObject {
     private              HashMap  flowmap      = new HashMap();
     private       static Category LOG          = Category.getInstance(PageFlowManager.class.getName());
     public  final static String   PROP_PREFIX  = "context.pageflow";
     public  final static String   PARAM_FLOW   = "__pageflow";
 
-    public PageFlowManager(Properties props) {
+    public void init(Properties props) throws Exception {
         HashSet names = new HashSet();
         HashMap tmp   = PropertiesUtils.selectProperties(props, PROP_PREFIX);
         for (Iterator i = tmp.keySet().iterator(); i.hasNext(); ) {
@@ -76,7 +76,7 @@ public class PageFlowManager {
     protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page) {
         LOG.debug("===> Current pageflow: " + currentflow.getName() + " / current page: " + page);
         if (!currentflow.containsPageRequest(page)) {
-            synchronized (flowmap) {
+            
                 for (Iterator i = flowmap.keySet().iterator(); i.hasNext(); ) {
                     PageFlow pf = (PageFlow) flowmap.get(i.next());
                     if (pf.containsPageRequest(page)) {
@@ -84,7 +84,7 @@ public class PageFlowManager {
                         return pf;
                     }
                 }
-            }
+            
             LOG.debug("===> Found no other workflow containing page " +
                       page + ". Reusing flow " + currentflow.getName());
         } else {
@@ -94,8 +94,6 @@ public class PageFlowManager {
     }
 
     public PageFlow getPageFlowByName(String name) {
-        synchronized (flowmap) {
             return (PageFlow) flowmap.get(name);
-        }
     }
 }
