@@ -640,7 +640,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
 
         String session_to_link_from_external = "NOSUCHSESSION";
-        if (session != null) {
+        if (session != null) { 
             Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);
             String  parentid = (String) session.getAttribute(SessionAdmin.PARENT_SESS_ID); 
             if (secure != null && secure.booleanValue() && parentid != null) {
