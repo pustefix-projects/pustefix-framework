@@ -5,7 +5,7 @@
 
 	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: expect relative path name  
 
-	* example/sample1/conf/direct.prop.in: 
+	* example/sample1/conf/direct.prop.in: removed docroot
 	* example/sample1/conf/config.prop.in: removed docroot
 
 	* example/core/build/create_propfiles.xsl: code cleanup
