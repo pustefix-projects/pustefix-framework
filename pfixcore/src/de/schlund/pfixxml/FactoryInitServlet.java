@@ -152,12 +152,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                                 strerror.append("->" + trace[ii] + "\n");
                             }
                             CAT.error(strerror.toString());
-                            // mk: If you run into an  InvocationTargetException and
-                            // if you see a different class name here,
-                            // one cause is a missing or wrong package declaration of your singleton.
-                            // To see  the following debug messages, look in the file pfixlog.xml
-                            // for "FactoryInitServlet" and set the priority to debug
-                            CAT.debug("FactoryInitServlet: class=" + e.getClass());
                             throw new ServletException(e.toString());
                         }
                     }
