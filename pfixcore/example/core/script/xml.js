@@ -54,7 +54,7 @@ xmlRequest.IFRAMES_ONLY     =  1;
 xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_FALLBACK;
 if( /^opera$/.test(_browser) ) {
   // opera 7.6 pr1 supports XMLHttpRequest but not setRequestHeader(), yet
-  xmlRequest.prototype.iframes = 1;
+  //  xmlRequest.prototype.iframes = 1;
 }
 
 xmlRequest.prototype.headers = [ [ 'SOAPAction', '""'] ];
@@ -269,9 +269,18 @@ xmlRequest.prototype.start = function( content ) {
           elForm.id     = "pfxxmlform"+i;
           
           var elField = document.createElement("textarea");
-          elField.name = "soapmessage";
+          elField.name  = "soapmessage";
           elField.value = content;
           elForm.appendChild(elField);
+
+          if( /^mshtml$/i.test(_browser) ) {
+            elField = document.createElement("input");
+            elField.type  = "hidden";
+            elField.name  = "insertpi";
+            elField.value = "1";
+            elForm.appendChild(elField);
+          }
+
           el.appendChild(elForm);
           document.body.appendChild(el);
           
