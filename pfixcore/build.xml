@@ -121,7 +121,7 @@
         <pathelement location="${dir.res}"/>
     </path>
     
-    <target name="init" depends="properties, tomcat_dir_opt">
+    <target name="init" depends="properties">
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.dist}"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
@@ -206,7 +206,7 @@
         <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
-    <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
+    <target name="compile" depends="tomcat_dir_opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -784,16 +784,26 @@
 	</target>
 
 	<target name="tomcat_extract">
-		<property name="tomcat.version" value="5.0.25"/><!-- TODO detemin automatically -->
-	    <property name="tomcat.bindist" location="lib/tomcat/jakarta-tomcat-${tomcat.version}.tar.gz"/>
+	    <path id="src.path">
+	        <fileset dir="lib/tomcat" includes="jakarta-tomcat-*.tar.gz"/>
+	    </path>
+	    <pathconvert property="tomcat.bindist" refid="src.path" dirSep="/"/>
+		<echo>tomcat dist file: ${tomcat.bindist}</echo>
+	    <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
+	    <fail unless="tomcat.bindist.exists" message="tomcat dist file not found"/>
 
 		<delete dir="${dir.tomcat}"/>
-	    <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
-	    <fail unless="tomcat.bindist.exists" message="${tomcat.bindist} not found"/>
-	    <property name="dir" location="${dir.tomcat}/.."/>
-	    <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
-	    <move todir="${dir.tomcat}">
-	        <fileset dir="${dir}/jakarta-tomcat-${tomcat.version}" />
+		<property name="dir" location="${dir.tomcat}/.."/>
+		<untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
+		<path id="dest.path">
+	        <dirset dir="${dir}" includes="jakarta-tomcat-*"/>
+	    </path>
+	    <pathconvert property="tmp.tomcat" refid="dest.path" dirSep="/"/>
+		<echo>tmp directory: ${tmp.tomcat}</echo>
+	    <available file="${tmp.tomcat}" type="dir" property="tmp.tomcat.exists" />
+	    <fail unless="tmp.tomcat.exists" message="tmp.tomcat not found"/>
+		<move todir="${dir.tomcat}">
+	        <fileset dir="${tmp.tomcat}" />
 	    </move>
 	</target>
 	
