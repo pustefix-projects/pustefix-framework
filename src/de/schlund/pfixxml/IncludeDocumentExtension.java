@@ -48,6 +48,9 @@ public final class IncludeDocumentExtension {
     private static Category     CAT      = Category.getInstance(IncludeDocumentExtension.class.getName());
     private static final String DEFAULT  = "default";
     private static final String NOTARGET = "__NONE__";
+	private static final String XPPARTNAME = "/include_parts/part[@name='";
+	private static final String XPPRODNAME = "/product[@name = '";
+	private static final String XPNAMEEND  = "']";
 
     //~ Methods ....................................................................................
 
@@ -91,7 +94,7 @@ public final class IncludeDocumentExtension {
         StringBuffer sb = new StringBuffer(100);
         
         // Get the part
-        sb.append("/include_parts/part[@name='").append(part).append("']");
+        sb.append(XPPARTNAME).append(part).append(XPNAMEEND);
         NodeSetValue ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
         
         length = ns.getCount();
@@ -120,16 +123,16 @@ public final class IncludeDocumentExtension {
         
         // OK, we have found the part. Find the specfic product.
         sb.delete(0, sb.length());
-        sb.append("/include_parts/part[@name = '").append(part).append("']").
-        	append("/product[@name = '").append(product).append("']");
+        sb.append(XPPARTNAME).append(part).append(XPNAMEEND).
+        	append(XPPRODNAME).append(product).append(XPNAMEEND);
         ns     = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
         
         length = ns.getCount();
         if (length == 0) {
             // Didn't find the specific product, trying default:
             sb.delete(0, sb.length());
-            sb.append("/include_parts/part[@name = '").append(part).append("']").
-            	append("/product[@name = '").append(DEFAULT).append("']");
+            sb.append(XPPARTNAME).append(part).append(XPNAMEEND).
+            	append(XPPRODNAME).append(DEFAULT).append(XPNAMEEND);
             ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
             
             int len = ns.getCount();

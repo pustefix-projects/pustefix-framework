@@ -4,11 +4,12 @@
 	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplSaxon.java,
 	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplXalan.java:
 	removed
+	* example/common/conf/factory.prop.in: removed PFXPathEvaluatorFactory
 	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: added. 
 	Wrapperclass for calling saxons xpath-api.
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java:
 	now uses PFXPathEvaluator for xpath evaluation.
-
+	* src/de/schlund/pfixcore/util/Meminfo.java: cosmetics.
 
 2003-01-24  Martin Leidig <mleidig@schlund.de>
 
