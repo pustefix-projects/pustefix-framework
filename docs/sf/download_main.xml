@@ -1,5 +1,5 @@
 <div>
-  <h2>Where to get it?</h2>
+  <h1>Where to get it?</h1>
   <p>
     <pustefix/> is hosted on <a href="http://sourceforge.net/project/showfiles.php?group_id=72089">Sourceforge</a>. All the files
     and also the CVS tree can be downloaded (or checked out) from there.
@@ -12,60 +12,59 @@
     application classes and logic which use the core classes and
     utilities supplied by <i>pfixcore</i>. The files to download are shown in the table below.
   </p>
-  <p>
-    <table class="stdtable">
-      <tr>
-        <td>
-          <i>Filename</i>
-        </td>
-        <td>
-          <i>Content</i>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          pfixcore-skel-&lt;VERSION>.tar.gz
-        </td>
-        <td>
-          <p>
-            This tar file contains a skeleton directory structure with
-            all the things you need to start a new pustefix project.
-            The pfixcore.jar and pfixcore-data.tar.gz files mentioned
-            below are already contained in the file in the version
-            indicated by the VERSION string.</p>
-          <p><b>If you don't already have a running pustefix project, start by
-            downloading this file.</b> For further updates, it's
-            sufficiant to download new pfixcore.jar and
-            pfixcore-data.tar.gz files to replace the ones you have currently in your project.
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          pfixcore-&lt;VERSION>.jar
-        </td>
-        <td>
-          This jar file contains all java classes that the core system
-          needs. Download this file (and the corresponding
-          pfixcore-data.tar.gz file) if you want to update an already running <pustefix/> project.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          pfixcore-data-&lt;VERSION>.tar.gz
-        </td>
-        <td>
-          This tar file contains all the XML/XSLT files that are needed by the core system. Download this file (and the corresponding
-          pfixcore.jar file) if you want to update an already running <pustefix/> project.
-        </td>
-      </tr>
-    </table>
-    
-  </p>
 
+  <table class="stdtable">
+    <tr>
+      <td>
+        <i>Filename</i>
+      </td>
+      <td>
+        <i>Content</i>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        pfixcore-skel-&lt;VERSION>.tar.gz
+      </td>
+      <td>
+        <p>
+          This tar file contains a skeleton directory structure with
+          all the things you need to start a new pustefix project.
+          The pfixcore.jar and pfixcore-data.tar.gz files mentioned
+          below are already contained in the tar file in the version
+          indicated by the VERSION string.</p>
+        <p>
+          <b>If you don't already have a running pustefix project, start by
+            downloading this file.</b> For further updates, it's
+          sufficiant to download new pfixcore.jar and
+          pfixcore-data.tar.gz files to replace the ones you have currently in your project.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        pfixcore-&lt;VERSION>.jar
+      </td>
+      <td>
+        This jar file contains all java classes that the core system
+        needs. Download this file (and the corresponding
+        pfixcore-data.tar.gz file) if you want to update an already running <pustefix/> project.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        pfixcore-data-&lt;VERSION>.tar.gz
+      </td>
+      <td>
+        This tar file contains all the XML/XSLT files that are needed by the core system. Download this file (and the corresponding
+        pfixcore.jar file) if you want to update an already running <pustefix/> project.
+      </td>
+    </tr>
+  </table>
+  
   <p>
     Please follow the instructions on the Sourceforge <a href="http://sourceforge.net/cvs/?group_id=72089">CVS page</a>
     if you want to download the source repository for <pustefix/>. The name of the repository is <b><i>pfixcore</i></b>.
   </p>
-
+  
 </div>
