@@ -35,26 +35,26 @@ class PFConfigurationException extends Exception {
 
     //~ Instance/static variables ..............................................
 
-    private Exception cause_=null;
-    private String msg_=null;
+    private Exception cause_ = null;
+    private String    msg_   = null;
     //~ Constructors ...........................................................
 
     PFConfigurationException(String error, Exception cause) {
         super(error);
-        this.msg_  =error;
-        this.cause_=cause;
+        this.msg_  = error;
+        this.cause_= cause;
     }
 
     //~ Methods ................................................................
 
-    Exception getCause() {
-        if(cause_==null)
-            return new Exception("unkown reason");
+    Exception getExceptionCause() {
+        if (cause_ == null)
+            return new Exception("Unkown reason");
         return cause_;
     }
     
     public String getMessage() {
-        if(msg_==null)
+        if (msg_ == null)
             return "";
         return msg_;
     }

@@ -11,7 +11,6 @@
   <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
   <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
   <prop name="factory.initialize.06">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
-  <prop name="factory.initialize.07">de.schlund.pfixxml.xpath.PFXPathEvaluatorFactory</prop>
 
 
   <!-- StatusCodeFactory -->
@@ -24,9 +23,6 @@
   <prop name="targetcache.cachecapacity">50</prop>
   <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="includecache.cachecapacity">50</prop>
-
-  <!-- XPathExpressionFactory -->
-  <prop name="xpathexpression.processor">saxon</prop>
 
   <!-- EditorUserFactory -->
   <prop name="editoruserfactory.userdata"><cus:docroot/>common/conf/userdata.xml</prop>
