@@ -1,3 +1,11 @@
+2003-05-07  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java,
+	* src/de/schlund/pfixxml/targets/PageInfoFactory.java,
+	* src/de/schlund/pfixxml/targets/PageTargetTree.java: organized
+	imports.
+
+
 2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/editor/txt/pages/main_testcasestart.xml: 
