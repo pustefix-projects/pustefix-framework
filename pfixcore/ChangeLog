@@ -1,3 +1,11 @@
+2005-01-28  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: Improved modification
+	checking. Now also changes in any class depending on the interface are detected and will
+	cause a regeneration of the according descriptors and stubs.
+	* skel/build.xml: The 'pfx-webservice' task has a new attribute 'builddir', which has to
+	be set for dependency checking to work.
+
 2005-01-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Issue warning of level ERROR if
