@@ -162,40 +162,40 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
 
         if (policy.equals("ALL")) {
             retval = true;
-            synchronized (activeset) {
-                for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
-                    IHandler handler = (IHandler) iter.next();
-                    context.startLogEntry();
-                    boolean  test = handler.isActive(context);
-                    
-                    //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
-                    PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                    et.setClass(handler.getClass().getName());
-                    context.endLogEntry(et);
-                    if (!test) {
-                        retval = false;
-                        break;
-                    }
+            // synchronized (activeset) {
+            for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
+                IHandler handler = (IHandler) iter.next();
+                context.startLogEntry();
+                boolean  test = handler.isActive(context);
+                
+                //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
+                PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
+                et.setClass(handler.getClass().getName());
+                context.endLogEntry(et);
+                if (!test) {
+                    retval = false;
+                    break;
                 }
             }
+            // }
         } else if (policy.equals("ANY")) {
             retval = false;
-            synchronized (activeset) {
-                for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
-                    IHandler handler = (IHandler) iter.next();
-                    context.startLogEntry();
-                    boolean  test = handler.isActive(context);
-                    //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
-                    
-                    PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                    et.setClass(handler.getClass().getName());
-                    context.endLogEntry(et);
-                    if (test) {
-                        retval = true;
-                        break;
-                    }
+            // synchronized (activeset) {
+            for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
+                IHandler handler = (IHandler) iter.next();
+                context.startLogEntry();
+                boolean  test = handler.isActive(context);
+                //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
+                
+                PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
+                et.setClass(handler.getClass().getName());
+                context.endLogEntry(et);
+                if (test) {
+                    retval = true;
+                    break;
                 }
             }
+            // }
         } else {
             throw new RuntimeException("ERROR: property '" + PROP_POLICY + "' must be 'ALL', 'ANY'(default) or 'NONE'");
         }
