@@ -18,6 +18,7 @@
 */
 package de.schlund.pfixxml;
 
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -589,9 +590,13 @@ public abstract class AbstractXMLServer extends ServletManager {
                                              stylevalue, paramhash, 
                                              res.getOutputStream());
             } catch (TransformerException e) {
-                CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                if (CAT.isInfoEnabled()) {
-                    CAT.info("[Ignored TransformerException]", e);
+                if(e.getException() instanceof SocketException) {
+                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                    if (CAT.isInfoEnabled()) {
+                        CAT.info("[Ignored TransformerException]", e);
+                    }
+                } else {
+                    throw e;
                 }
             }
         } else if (plain_xml) {
