@@ -757,5 +757,4 @@ public class EditorHelper {
         
         return affected_products;
     }
-
-} // EditorHelper
+}

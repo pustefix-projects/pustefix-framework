@@ -48,6 +48,12 @@ public class XmlTest extends TestCase {
             // ok
         }
     }
+    public void testParseTailingWhitespaceRemoved() throws Exception {
+        Document doc;
+        
+        doc = parse("<ok/> \n");
+        assertEquals(1, doc.getChildNodes().getLength());
+    }
     
     public void testComments() throws Exception {
         // make sure to get comments
@@ -78,9 +84,12 @@ public class XmlTest extends TestCase {
         assertEquals("<ok/>", serialize("<ok/>", false, false));
     }
 
-    public void testSerializePreserve() throws Exception {
+    public void testSerializePreserveInnerWhitespace() throws Exception {
         final String STR = "<a>\t<b/>  \n<c/></a>";
         assertEquals(STR, serialize(STR, false, false));
+    }
+    public void testSerializeRemoveTailingWhitespace() throws Exception {
+        assertEquals("<a/>", serialize("<a/>\t \n", false, false));  // the parser removes it!
     }
     public void testSerializeMergeEvenWithPreserve() throws Exception {
         assertEquals("<c/>", serialize("<c></c>", false, false));
@@ -89,6 +98,11 @@ public class XmlTest extends TestCase {
     public void testSerializePP() throws Exception {
         assertEquals("<a>\n  <b/>\n  <c/>\n</a>", serialize("<a><b/><c/></a>", true, false));
     }
+
+    public void testSerializePPTailingWhitespaceRemoved() throws Exception {
+        assertEquals("<ok/>", serialize("<ok/>\n ", true, false));
+    }
+    
     public void testSerializeDecl() throws Exception {
         assertEquals("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><a/>", serialize("<a/>", false, true));
     }

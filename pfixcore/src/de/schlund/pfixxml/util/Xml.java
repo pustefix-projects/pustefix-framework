@@ -231,6 +231,8 @@ public final class Xml {
      * @param pp pretty print
      */
     public static void serialize(Node node, String filename, boolean pp, boolean decl) throws IOException {
+        FileOutputStream dest;
+        
         if (node == null) {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
                                                + "Can't serialize a null node to a file!");
@@ -239,7 +241,17 @@ public final class Xml {
             throw new IllegalArgumentException("The parameter 'null' or '\"\"' is not allowed here! "
                                                + "Can't serialize a document to " + filename + "!");
         }
-        doSerialize(node, new FileOutputStream(filename), pp, true);
+        
+        dest = new FileOutputStream(filename);
+        
+        doSerialize(node, dest, pp, true);
+        
+        // We append a newline because most editors do so and we want to avoid cvs conflicts.
+        // Note: tailing whitespace is removed when parsing a file, so 
+        // it's save to append it here without checking for exiting newlines. 
+        dest.write('\n');
+        
+        dest.close();
     }
 
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
