@@ -496,11 +496,81 @@
           </div>
         </xmlcodeOFF>
       </pagerequest>
-
+      <prop name="AProperty">AValue</prop>
     </properties>
   </xmlcode>    
     
   <h2>de.schlund.pfixxml.DirectOutputServlet</h2>
 
+  <p>Occasionally you don't
+    want to generate output with an XSLT Transformation, but
+    e.g. deliver binary content directly to the output
+    stream instead. In this case you need to provide another servlet of type
+    <code>de.schlund.pfixxml.DirectOutputServlet</code>. This servlet
+    doesn't have it's own context but instead "hijacks" the context of a
+    foreign <code>de.schlund.pfixxml.ContextXMLServer</code>. The
+    context isn't used for any pageflow handling, only as a means to get
+    to the data (== ContextResources) of the "main" application.</p>
+  <p>The servlet knows about one or many
+    <code>directoutputpagerequest</code>. For the XML/XSLT side of
+    things, they look like normal pages (in fact, the value of the
+    <code>directoutputpagerequest</code>s <code>name</code> attribute
+    must be a page defined in <code>depened.xml</code>). But other
+    than the usual <code>pagerequest</code>, a
+    <code>directoutputpagerequest</code> has an associated
+    <code>directoutputstate</code> whose <code>class</code> attribute is a java class
+    implementing <code>de.schlund.pfixcore.workflow.app.DirectOutputState</code>.
+  </p>
   
+  <xmlcode>
+    <properties>
+      <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
+      <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
+        <ssl force="true"/>
+        <editmode allow="true"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            See the comment for the <code>servletinfo</code> node of the
+            <code>de.schlund.pfixxml.ContextXMLServer</code> property
+            file above.
+          </div>
+        </xmlcodeOFF>
+      </servletinfo>
+      
+      <foreigncontext externalservletname="UniqueNameOfAnotherServlet"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          <p>
+            The <code>externalservletname</code> must the name of a
+            servlet of type
+            <code>de.schlund.pfixxml.ContextXMLServer</code>. The
+            context (or better: the <code>ContextResourceManager</code>)
+            of this servlet is used for getting stored application data.
+          </p>
+          <p>Aditionally, if the context is of type <code>de.schlund.pfixcore.workflow.AuthContext</code>,
+            it's authentification page is checked before any <code>DirectOutputState</code> is called.
+          </p>
+        </div>
+      </xmlcodeOFF>
+      
+      <directoutputpagerequest name="APageName">
+        <directoutputstate class="AClassName"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            See the explanation at the start of this subsection.
+          </div>
+        </xmlcodeOFF>
+        <param name="APropertyKey">AValue</param>
+        <xmlcodeOFF>
+          <div class="comment">
+            <p>The node is optional and can be used multiple times. It will be transformed into a java property
+              that is associated to the page. The java property that is constructed will look like this:
+              <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
+              of the <code>name</code> attribute.
+            </p>
+          </div>
+        </xmlcodeOFF>
+      </directoutputpagerequest>
+    </properties>
+  </xmlcode>
 </div>
