@@ -4,7 +4,7 @@
   <p>The left frame contains all includes of the current project. To edit one
     include, select it and the right frame will display detailed information.</p>
   
-  <p>Additonally, a java applet will pop up that lets you change the currently selected include and
+  <p>Additionally, a java applet will pop up that lets you change the currently selected include and
     write the changes back to the <pustefix/> editor server.
   </p>
   
