@@ -545,7 +545,8 @@ class TargetGenerationReport {
            buf.append("| Exceptions: ").append("\n");
            for(int i=0; i<exs.size(); i++) {
                TargetGenerationException tgex = (TargetGenerationException) exs.get(i);
-               printEx(tgex, buf, " ");
+               String str = tgex.toStringRepresentation();
+               buf.append(str);
                if(exs.size() - 1 > i)
                     buf.append(ex_break);
            }
@@ -588,5 +589,4 @@ class TargetGenerationReport {
         }
         //printEx(e, buf, indent + " ");
     }
-
 }

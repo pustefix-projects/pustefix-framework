@@ -584,7 +584,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 stylevalue = generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
-                Document errordoc = createErrorTree(targetex);
+                Document errordoc = targetex.toXMLRepresentation();
                 errordoc = xsltproc.xmlObjectFromDocument(errordoc);
                 Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
                 xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
@@ -644,50 +644,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @param e
      * @return Document
      */
-    private Document createErrorTree(TargetGenerationException targetex) throws ParserConfigurationException, IOException {
-        DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document        doc        = docbuilder.newDocument();
-        Element         e0         = doc.createElement("error_message");
-        doc.appendChild(e0);
-        printEx(targetex, doc, e0);
-        return doc;
-    }
-
-    private void insertErrInfo(Element error, String key, String value) {
-        Element info = error.getOwnerDocument().createElement("info");
-        info.setAttribute("key", key);
-        info.setAttribute("value", value);
-        error.appendChild(info);
-    }
     
-    private void printEx(Throwable e, Document doc, Node root) {
-        if (e == null) {
-            return;
-        }
-
-        Element error = doc.createElement("error");
-        root.appendChild(error);
-        error.setAttribute("type", e.getClass().getName());
-        insertErrInfo(error, "Message", e.getMessage());
-        
-        if (e instanceof SAXParseException) {
-            SAXParseException sex = (SAXParseException) e;
-            insertErrInfo(error, "Id",     sex.getSystemId());
-            insertErrInfo(error, "Line",   "" + sex.getLineNumber());
-            insertErrInfo(error, "Column", "" + sex.getColumnNumber());
-            printEx(sex.getException(), doc, root);
-        } else if (e instanceof TargetGenerationException){
-            TargetGenerationException tagex = (TargetGenerationException) e;
-            insertErrInfo(error, "Key", tagex.getTargetkey());
-            printEx(tagex.getNestedException(), doc, root);
-        } else if (e instanceof TransformerException) {
-            TransformerException trex = (TransformerException) e;
-            printEx(trex.getCause(), doc, root);
-        } else if (e instanceof SAXException) {
-            SAXException saxex = (SAXException) e;
-            printEx(saxex.getException(), doc, root);
-        } 
-    }
 
 
     /**

@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -107,8 +108,9 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @throws exception on all errors
      */
     public final void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, 
-                                          OutputStream out) throws TransformerException  {
+                                          OutputStream out) throws TransformerException   {
         Templates   xsl   = (Templates) xslobj;
+       
         Transformer trafo = xsl.newTransformer();
         long        start = 0;
         if (params != null) {
@@ -162,6 +164,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      */
     public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException {
         TransformerFactory transFac      = TransformerFactory.newInstance();
+        transFac.setErrorListener(new PFErrorListener());
         StreamSource       stream_source = new StreamSource("file://" + path);
         Object             val           = null;
         try {
@@ -252,5 +255,46 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         domsource  = null;
         controller = null;
         return tiny;
+    }
+    
+    
+}
+
+
+
+/**
+ * Implementation of ErrorListener interface.
+ */
+class PFErrorListener implements ErrorListener {
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#warning(javax.xml.transform.TransformerException)
+     */
+    public void warning(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("warning", arg0);
+        throw arg0;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#error(javax.xml.transform.TransformerException)
+     */
+    public void error(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("error", arg0);
+        throw arg0;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#fatalError(javax.xml.transform.TransformerException)
+     */
+    public void fatalError(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("fatal", arg0);
+        throw arg0;
+    }
+
+    private void print(String msg, TransformerException ex) {
+        System.out.println(msg+": hallo:"+ex.getMessage()+"-->"+ex.getLocationAsString()+"-->"+ex.getException());
     }
 }
