@@ -73,7 +73,7 @@ public class IncludesBranchHandler extends EditorStdHandler {
         String                 prodname = prod.getName();
         TargetGenerator        tgen     = prod.getTargetGenerator();
         AuxDependency          currinc  = getCurrentInclude(esess);
-        String                 path     = currinc.getPath();
+        Path                   path     = currinc.getPath();
         String                 part     = currinc.getPart();
 
         if (currinc != null && dobranch) {
@@ -141,8 +141,8 @@ public class IncludesBranchHandler extends EditorStdHandler {
         }
     }
 
-    private void doSerialize(Document incdoc, String path) throws Exception {
-        FileOutputStream output = new FileOutputStream(path);
+    private void doSerialize(Document incdoc, Path path) throws Exception {
+        FileOutputStream output = new FileOutputStream(path.resolve());
         OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
         XMLSerializer    ser    = new XMLSerializer(output, outfor);
         outfor.setIndent(0);

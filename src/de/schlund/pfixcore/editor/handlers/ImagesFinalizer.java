@@ -75,10 +75,10 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
                 }
             }
             long    mod  = currimage.getModTime();
-            String  path = currimage.getPath();
-            String  name = path.substring(path.lastIndexOf("/") + 1);
+            Path    path = currimage.getPath();
+            String  name = path.getName();
             root = resdoc.createNode("currentimageinfo");
-            root.setAttribute("path", path);
+            root.setAttribute("path", path.getRelative());
             root.setAttribute("name", name);
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
@@ -126,15 +126,15 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
         for (Iterator i = images.iterator(); i.hasNext(); ) {
             AuxDependency curr = (AuxDependency) i.next();
             String dir  = curr.getDir();
-            String path = curr.getPath();
-            String name = path.substring(path.lastIndexOf("/") + 1);
+            Path path = curr.getPath();
+            String name = path.getName();
             if (!olddir.equals(dir) || olddir.equals("")) {
                 elem   = resdoc.createSubNode(root, "directory");
                 elem.setAttribute("name", dir);
                 olddir = dir;
             }
             Element img = resdoc.createSubNode(elem, "image");
-            img.setAttribute("path", path);
+            img.setAttribute("path", path.getRelative());
             img.setAttribute("name", name);
             if (curr.getModTime() == 0) {
                 img.setAttribute("missing", "true");

@@ -29,6 +29,7 @@ import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
 import java.util.*;
@@ -69,7 +70,7 @@ public class ImagesUploadHandler extends EditorStdHandler {
         ImagesUpload           upload   = (ImagesUpload) wrapper;
         Boolean                haveupl  = upload.getHaveUpload();
         AuxDependency          aux      = esess.getCurrentImage();
-        String                 path     = aux.getPath();
+        Path                   path     = aux.getPath();
         StatusCodeFactory      sfac     = new StatusCodeFactory("pfixcore.editor.imagesupload");
         StatusCode             scode    = null;
         Boolean                backup   = upload.getHaveBackup();
@@ -107,12 +108,12 @@ public class ImagesUploadHandler extends EditorStdHandler {
                 }
             }
             if (file != null) {
-                String to_suff = path.substring(path.lastIndexOf("."));
+                String to_suff = path.getSuffix();
                 if (type.equals(BACKUP) ||
                     (to_suff.equals(".gif") && type.equals("image/gif"))  ||
                     (to_suff.equals(".jpg") && type.equals("image/jpeg")) ||
                     (to_suff.equals(".png") && type.equals("image/png"))) {
-                    File to_file   = new File(path);
+                    File to_file   = path.resolve();
                     EditorHelper.createBackupImage(esess, to_file);
                     FileInputStream  fin  = new FileInputStream(file);
                     FileOutputStream fout = new FileOutputStream(to_file);

@@ -35,13 +35,13 @@
       <xsl:choose>
         <xsl:when test="$ns = 'xsl'">
           <xsl:element name="xsl:include">
-            <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',$first)"/></xsl:attribute>
+            <xsl:attribute name="href"><xsl:value-of select="$first"/></xsl:attribute>
           </xsl:element><xsl:text>
         </xsl:text>
         </xsl:when>
         <xsl:when test="$ns = 'ixsl'">
           <xsl:element name="ixsl:include">
-            <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',$first)"/></xsl:attribute>
+            <xsl:attribute name="href"><xsl:value-of select="$first"/></xsl:attribute>
           </xsl:element><xsl:text>
         </xsl:text>
         </xsl:when>
@@ -78,7 +78,7 @@
   <xsl:template match="xsl:include | ixsl:include | xsl:import | ixsl:import">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',@href)"/></xsl:attribute>
+      <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>

@@ -127,7 +127,7 @@ public class EditorProductFactory implements FactoryInit {
             if (depend == null) {
                 throw new XMLException("Product needs a depend element!");
             }
-            TargetGenerator gen   = TargetGeneratorFactory.getInstance().createGenerator(depend);
+            TargetGenerator gen   = TargetGeneratorFactory.getInstance().createGenerator(new File(depend));
             Navigation      navi  = NavigationFactory.getInstance().getNavigation(depend);
             NodeList        nlist = prj.getElementsByTagName("handler");
             if (nlist.getLength() == 0) {

@@ -39,9 +39,7 @@ public class TargetGeneratorFactory {
         return instance;
     }
 
-    public synchronized TargetGenerator createGenerator(String config)
-        throws Exception {
-        File cfile = new File(config);
+    public synchronized TargetGenerator createGenerator(File cfile) throws Exception {
         if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
             String key;
             key = cfile.getCanonicalPath();
@@ -55,17 +53,12 @@ public class TargetGeneratorFactory {
             }
             return generator;
         } else {
-            throw (new XMLException("\nConfigfile '" + config +
+            throw (new XMLException("\nConfigfile '" + cfile.getPath() +
                                     "' isn't a file, can't be read or doesn't exist"));
         }
     }
 
-    public void releaseGenerator(String config) {
-        if (generatormap.containsKey(config)) {
-            synchronized(generatormap) {
-                generatormap.remove(config);
-            }
-        }
+    public void clearMap() {
+        generatormap.clear();
     }
-    
 }

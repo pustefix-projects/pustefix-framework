@@ -7,9 +7,9 @@
 
   <xsl:param name="page"/>
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
-  <xsl:param name="navitree" select="document(concat('file://',$navigation))/make/navigation"/>
+  <xsl:param name="navitree" select="document($navigation)/make/navigation"/>
   
-  <xsl:param name="docroot"><cus:docroot/></xsl:param>
+  <xsl:param name="docroot"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
   

@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
+import de.schlund.util.*;
+
 /**
  * StaticFileDependency.java
  *
@@ -38,7 +40,7 @@ public class StaticFileDependency extends FileDependency {
         return false; 
     }
 
-    public StaticFileDependency (DependencyType type, String path, String dummy, String dummy2) {
+    public StaticFileDependency (DependencyType type, Path path, String dummy, String dummy2) {
         this.type    = type;
         this.path    = path;
         this.part    = null;
@@ -46,7 +48,6 @@ public class StaticFileDependency extends FileDependency {
         if (path == null) {
             throw new RuntimeException("Need Path to construct StaticFileDependency");
         }
-        dir = path.substring(0,path.lastIndexOf("/"));
+        dir = path.getDir();
     }
-
 }// StaticFileDependency

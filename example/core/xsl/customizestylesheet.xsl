@@ -28,7 +28,7 @@
   <xsl:template match="xsl:include | xsl:import">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
-      <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',@href)"/></xsl:attribute>
+      <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>

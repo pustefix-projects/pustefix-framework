@@ -30,7 +30,6 @@ import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -38,10 +37,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.util.*;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -52,6 +51,9 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class TargetGenerator {
+    public static final String XSLPARAM_TG              = "__target_gen";
+    public static final String XSLPARAM_TKEY            = "__target_key";
+        
     private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
     private static DocumentBuilderFactory dbfac                          = DocumentBuilderFactory.newInstance();
     private static TargetGenerationReport report                         = new TargetGenerationReport();
@@ -60,8 +62,8 @@ public class TargetGenerator {
     private HashMap                       alltargets                     = new HashMap();
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
-    private String                        configname;
-    private File                          confile;
+    private final String                  configname;
+    private final File                    confile;
     private String                        disccachedir;
     private String                        docroot;
     
@@ -125,10 +127,11 @@ public class TargetGenerator {
 
     public TargetGenerator(File confile) throws Exception {
         this.confile = confile;
-        Meminfo.print("TG: Before loading " + confile.getPath());
-        configname = confile.getCanonicalPath();
-        config_mtime = confile.lastModified();
-        loadConfig();
+        this.config_mtime = confile.lastModified();
+        this.configname = confile.getCanonicalPath();
+
+        Meminfo.print("TG: Before loading " + confile);
+        loadConfig();  // TODO: don't read docroot from confile!
         Meminfo.print("TG: after loading targets for " + confile.getPath());
     }
 
@@ -156,16 +159,16 @@ public class TargetGenerator {
     private void loadConfig() throws Exception {
         DocumentBuilder domp = dbfac.newDocumentBuilder();
 
-        CAT.warn("\n***** CAUTION! ***** loading config " + configname + "...");
+        CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
         try {
-            config = domp.parse(configname);
+            config = domp.parse(confile);
         } catch (SAXException e) {
-            CAT.error("\nConfigfile '" + configname + "' couldn't be parsed by XML parser: \n" + e.toString());
+            CAT.error("\nConfigfile '" + confile + "' couldn't be parsed by XML parser: \n" + e.toString());
             throw e;
         } catch (IOException e) {
-            CAT.error("\nConfigfile '" + configname + "' I/O Error: \n" + e.toString());
+            CAT.error("\nConfigfile '" + confile + "' I/O Error: \n" + e.toString());
             throw e;
         }
 
@@ -226,7 +229,7 @@ public class TargetGenerator {
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux     = (Element) allaux.item(j);
-                String  auxname = aux.getAttribute("name");
+                Path auxname    = Path.create(getDocroot(), aux.getAttribute("name"));
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
@@ -293,8 +296,8 @@ public class TargetGenerator {
             AuxDependencyManager manager = tmp.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
             for (Iterator i = auxdeps.iterator(); i.hasNext();) {
-                String name = (String) i.next();
-                manager.addDependency(DependencyType.FILE, name, null, null, null, null, null);
+                Path path = (Path) i.next();
+                manager.addDependency(DependencyType.FILE, path, null, null, null, null, null);
             }
             
             HashMap params    = struct.getParams();
@@ -310,8 +313,8 @@ public class TargetGenerator {
                     pageparam = value;
                 }
             }
-            tmp.addParam("__target_gen", configname);
-            tmp.addParam("__target_key", key);
+            tmp.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), configname));
+            tmp.addParam(XSLPARAM_TKEY, key);
 
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
@@ -358,7 +361,7 @@ public class TargetGenerator {
     }
 
     private class TargetStruct {
-        HashSet depaux;
+        HashSet depaux; 
         HashMap params;
         String type;
         String name;
@@ -428,12 +431,12 @@ public class TargetGenerator {
                 try {
                     File confile = new File(args[i]);
                     if (confile.exists() && confile.canRead() && confile.isFile()) {
-                        gen = TargetGeneratorFactory.getInstance().createGenerator(args[i]);
+                        gen = TargetGeneratorFactory.getInstance().createGenerator(confile);
                         gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
-                        TargetGeneratorFactory.getInstance().releaseGenerator(args[i]);
+                        TargetGeneratorFactory.getInstance().clearMap();
                     } else {
                         CAT.error("Couldn't read configfile '" + args[i] + "'");
                         throw (new XMLException("Oops!"));

@@ -53,7 +53,7 @@ public class CommonsHandler extends EditorStdHandler {
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         Commons                includes = (Commons) wrapper;
         EditorProduct          prod     = esess.getProduct();
-        String                 path     = includes.getPath();
+        Path                   path     = Path.create(prod.getTargetGenerator().getDocroot(), includes.getPath());
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
         TreeSet                allcoms  = EditorCommonsFactory.getInstance().getAllCommons();

@@ -21,6 +21,7 @@ package de.schlund.pfixxml.targets;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +29,7 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.NDC;
 
+import de.schlund.pfixxml.AbstractXMLServer;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -243,8 +245,11 @@ public abstract class VirtualTarget extends TargetImpl {
             throw new XMLException("**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
         if (xslobj == null) 
             throw new XMLException("**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
+        TreeMap params = getParams();
+        AbstractXMLServer.addDocroot(params, getTargetGenerator().getDocroot());
+
         //FIXME!!! Do we want to do this right HERE????
-        xsltproc.applyTrafoForOutput(xmlobj, xslobj, getParams(), new FileOutputStream(cachefile));
+        xsltproc.applyTrafoForOutput(xmlobj, xslobj, params, new FileOutputStream(cachefile));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

@@ -21,6 +21,8 @@ package de.schlund.pfixxml.targets;
 import java.util.*;        
 import java.io.File;
 
+import de.schlund.util.*;
+
 /**
  * AbstractDependency.java
  *
@@ -36,7 +38,7 @@ public abstract class AbstractDependency implements Comparable, AuxDependency {
     protected String         dir;
     protected DependencyType type;
 
-    protected String  path;
+    protected Path  path;
     protected String  part;
     protected String  product;
 
@@ -52,7 +54,7 @@ public abstract class AbstractDependency implements Comparable, AuxDependency {
         return dir;
     }
     
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
     
@@ -65,7 +67,7 @@ public abstract class AbstractDependency implements Comparable, AuxDependency {
     }
     
     public long getModTime() {
-        File check = new File(path);
+        File check = path.resolve();
         if (check.exists() && check.canRead() && check.isFile()) {
             return check.lastModified();
         } else {
@@ -94,7 +96,7 @@ public abstract class AbstractDependency implements Comparable, AuxDependency {
     }
 
     public int hashCode() {
-        String key = type.getTag() + "@" + path + "@" + part + "@" + product;
+        String key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         return key.hashCode();
     }
 

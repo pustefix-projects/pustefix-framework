@@ -137,9 +137,9 @@ public class EditorLockFactory {
     private String describe(AuxDependency aux) {
         DependencyType type = aux.getType();
         if (type == DependencyType.IMAGE || type == DependencyType.FILE) {
-            return type.toString() + " " + aux.getPath();
+            return type.toString() + " " + aux.getPath().getRelative();
         } else {
-            return type.toString() + " " + aux.getPath() + "@" + aux.getPart() + "@" + aux.getProduct();
+            return type.toString() + " " + aux.getPath().getRelative() + "@" + aux.getPart() + "@" + aux.getProduct();
         }
     }
 }

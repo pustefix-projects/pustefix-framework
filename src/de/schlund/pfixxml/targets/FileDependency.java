@@ -18,7 +18,9 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;        
+import java.util.*;
+
+import de.schlund.util.*;
 
 /**
  * FileDependency.java
@@ -78,7 +80,7 @@ public class FileDependency extends AbstractDependency {
 
     public FileDependency() {}
 
-    public FileDependency (DependencyType type, String path, String dummy, String dummy2) {
+    public FileDependency (DependencyType type, Path path, String dummy, String dummy2) {
         this.type    = type;
         this.path    = path;
         this.part    = null;
@@ -86,7 +88,7 @@ public class FileDependency extends AbstractDependency {
         if (path == null) {
             throw new RuntimeException("Need Path to construct FileDependency");
         }
-        dir = path.substring(0,path.lastIndexOf("/"));
+        dir = path.getDir();
     }
 
 }// FileDependency

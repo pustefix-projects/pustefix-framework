@@ -22,6 +22,8 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.testenv.*;
+import de.schlund.util.*;
+
 import java.io.*;
 import java.net.SocketException;
 import java.util.*;
@@ -70,8 +72,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String XSLPARAM_SERVER_NAME     = "__server_name";
     private static final String XSLPARAM_FRAME           = "__frame";
     private static final String XSLPARAM_REUSE           = "__reusestamp";
-    private static final String XSLPARAM_TG              = "__target_gen";
-    private static final String XSLPARAM_TKEY            = "__target_key";
     private static final String VALUE_NONE               = "__NONE__";
     private static final String SUFFIX_SAVEDDOM          = "_SAVED_DOM";
     protected static final String PROP_DEPEND              = "xmlserver.depend.xml";
@@ -196,10 +196,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         handleXMLOnlyProps();
         
         try {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
+            generator = TargetGeneratorFactory.getInstance().createGenerator(new File(targetconf));
         } catch (Exception e) {
             CAT.error("Error: ", e);
-            throw (new ServletException("Couldn't get TargetGenerator: " + e.toString()));
+            throw new ServletException("Couldn't get TargetGenerator", e);
         }
         // tell targetgenerator to skip getModTimeMaybeUpdate or not
         generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
@@ -731,11 +731,24 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        paramhash.put(XSLPARAM_TG, targetconf);
-        paramhash.put(XSLPARAM_TKEY, VALUE_NONE);
+        paramhash.put(TargetGenerator.XSLPARAM_TG, Path.getRelativeString(generator.getDocroot(), targetconf));
+        paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
+        addDocroot(paramhash, generator.getDocroot());
         return paramhash;
     }
 
+    // TODO: kind of a hack because - better make sure the map always contains docroot ...
+    public static void addDocroot(Map map, String value) {
+        final String NAME = "docroot";
+
+        if (!value.endsWith(File.separator)) {
+            throw new IllegalArgumentException("docroot value without tailing slash: " + value);
+        }
+        if (map.get(NAME) == null) {
+            map.put(NAME, value);
+        }
+
+    }
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
         String pagename = spdoc.getPagename();

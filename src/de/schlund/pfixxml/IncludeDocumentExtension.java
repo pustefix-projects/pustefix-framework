@@ -26,6 +26,8 @@ import org.xml.sax.SAXException;
 import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.XPathException;
+
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
@@ -73,20 +75,20 @@ public final class IncludeDocumentExtension {
 	 * @throws Exception
 	 *                 on all errors
 	 */
-	public static final NodeSetValue get(String path, String part, String product, String docroot, String targetgen,
-			String targetkey, String parent_path, String parent_part, String parent_product) throws Exception {
+	public static final NodeSetValue get(String path_str, String part, String product, String docroot, String targetgen,
+			String targetkey, String parent_path_str, String parent_part, String parent_product) throws Exception {
 		try {
+		    Path path = Path.create(docroot, path_str);
+		    Path parent_path = Path.createOpt(docroot, parent_path_str);
 			boolean dolog = !targetkey.equals(NOTARGET);
 			int length = 0;
-			File incfile = new File(path);
+			File incfile = path.resolve();
 			IncludeDocument iDoc = null;
 			Document doc;
-			TargetImpl target = (TargetImpl) TargetGeneratorFactory.getInstance().createGenerator(targetgen).getTarget(
-					targetkey);
+			TargetImpl target = (TargetImpl) TargetGeneratorFactory.getInstance().createGenerator(Path.create(docroot, targetgen).resolve()).getTarget(targetkey);
 			if (!incfile.exists()) {
 				if (dolog) {
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				}
 				return new EmptyNodeSet();
 			}
@@ -95,8 +97,7 @@ public final class IncludeDocumentExtension {
 				iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
 			} catch (SAXException saxex) {
 				if (dolog)
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				target.setStoredException(saxex);
 				throw saxex;
 			}
@@ -110,16 +111,14 @@ public final class IncludeDocumentExtension {
 				ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
 			} catch (Exception e) {
 				if (dolog)
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				throw e;
 			}
 			try {
 				length = ns.getCount();
 			} catch (XPathException e) {
 				if (dolog)
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				throw e;
 			}
 			if (length == 0) {
@@ -129,15 +128,13 @@ public final class IncludeDocumentExtension {
 				//CAT.debug("*** Part '" + part + "' is 0 times defined.");
 				CAT.debug(sb.toString());
 				if (dolog) {
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				}
 				return new EmptyNodeSet();
 			} else if (length > 1) {
 				// too many parts. Error!
 				if (dolog) {
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				}
 				sb.delete(0, sb.length());
 				sb.append("*** Part '").append(part).append("' is multiple times defined! Must be exactly 1");
@@ -152,16 +149,14 @@ public final class IncludeDocumentExtension {
 				ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
 			} catch (Exception e) {
 				if (dolog)
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				throw e;
 			}
 			try {
 				length = ns.getCount();
 			} catch (XPathException e) {
 				if (dolog)
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				throw e;
 			}
 			if (length == 0) {
@@ -173,8 +168,7 @@ public final class IncludeDocumentExtension {
 					ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
 				} catch (Exception e) {
 					if (dolog)
-						DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-								targetgen, targetkey);
+						DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 					throw e;
 				}
 				int len;
@@ -182,16 +176,18 @@ public final class IncludeDocumentExtension {
 					len = ns.getCount();
 				} catch (XPathException e) {
 					if (dolog)
-						DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-								targetgen, targetkey);
+						DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 					throw e;
 				}
 				if (len == 1 | len == 0) {
 					// Found one or none default products
-					String retval = "0";
+					boolean ok = true;
 					if (dolog) {
-						retval = DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part,
-								parent_product, targetgen, targetkey);
+						try {
+						    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+						} catch (Exception e) { // TODO
+						    ok = false;
+						}
 					}
 					if (len == 0) {
 						// Specific product and default product not found.
@@ -203,17 +199,12 @@ public final class IncludeDocumentExtension {
 						CAT.warn(sb.toString());
 						return new EmptyNodeSet();
 					} else {
-						if (retval.equals("0")) {
-							return ns;
-						} else {
-							return new EmptyNodeSet();
-						}
+						return ok? ns : new EmptyNodeSet();
 					}
 				} else {
 					// too many default products found. Error!
 					if (dolog) {
-						DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-								targetgen, targetkey);
+						DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 					}
 					sb.delete(0, sb.length());
 					sb.append("*** Part '").append(part).append("' has multiple default product branches! Must be 1.");
@@ -223,21 +214,19 @@ public final class IncludeDocumentExtension {
 				}
 			} else if (length == 1) {
 				// specific product found
-				String retval = "0";
+				boolean ok = true;
 				if (dolog) {
-					retval = DependencyTracker.log("text", path, part, product, parent_path, parent_part,
-							parent_product, targetgen, targetkey);
+					try {
+					    DependencyTracker.logTyped("text", path, part, product, parent_path, parent_part, parent_product, target);
+					} catch (Exception e) { // TODO
+					    ok = false;
+					}
 				}
-				if (retval.equals("0")) {
-					return ns;
-				} else {
-					return new EmptyNodeSet();
-				}
+				return ok? ns : new EmptyNodeSet();
 			} else {
 				// too many specific products found. Error!
 				if (dolog) {
-					DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product,
-							targetgen, targetkey);
+					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
 				}
 				sb.delete(0, sb.length());
 				sb.append("*** Product '").append(product).append("' is defined multiple times under part '").append(
@@ -248,9 +237,9 @@ public final class IncludeDocumentExtension {
 			}
 		} catch (Exception e) {
 			
-			Object[] args = { path, part, product,
+			Object[] args = { path_str, part, product,
 									docroot, targetgen, targetkey, 
-									parent_path, parent_part, parent_product};
+									parent_path_str, parent_part, parent_product};
 			String sb = MessageFormat.format("path={0}|part={1}|product={2}|"+
 											"docroot={3}|targetgen={4}|targetkey={5}|"+
 											"parent_path={6}|parent_part={7}|parent_product={8}", args);

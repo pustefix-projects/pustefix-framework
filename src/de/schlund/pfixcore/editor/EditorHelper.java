@@ -58,7 +58,7 @@ public class EditorHelper {
     
     
     public static void doUpdateForAuxDependency(AuxDependency currinc, TargetGenerator tgen) throws Exception {
-        //String path = currinc.getPath();
+        //Path path = currinc.getPath();
         TreeSet targets = currinc.getAffectedTargets();
         HashSet pages = new HashSet();
         for (Iterator i = targets.iterator(); i.hasNext();) {
@@ -107,13 +107,13 @@ public class EditorHelper {
         return part;
     }
 
-    public static void checkForFile(String path, PfixcoreNamespace[] nspaces) throws Exception {
-        File incfile = new File(path);
+    public static void checkForFile(Path path, PfixcoreNamespace[] nspaces) throws Exception {
+        File incfile = path.resolve();
         if (incfile.exists() && (!incfile.canRead() || !incfile.canWrite() || !incfile.isFile())) {
-            throw new XMLException("File " + path + " is not accessible!");
+            throw new XMLException("File " + path.getRelative() + " is not accessible!");
         }
         if (!incfile.exists()) {
-            CAT.debug("===> Going to create " + path);
+            CAT.debug("===> Going to create " + path.getRelative());
             if (incfile.createNewFile()) {
                 Document skel = dbfac.newDocumentBuilder().newDocument();
                 Element root = skel.createElement("include_parts");
@@ -132,19 +132,19 @@ public class EditorHelper {
                 ser.serialize(skel);
                 // CAT.debug("==========> Modtime for file is: " + incfile.lastModified());
             } else {
-                throw new XMLException("Couldn't generate new file " + path);
+                throw new XMLException("Couldn't generate new file " + path.getRelative());
             }
         }
     }
 
     private static String constructBackupDir(EditorSessionStatus ess, AuxDependency inc) {
-        String path = inc.getPath();
+        Path path = inc.getPath();
         if (inc.getType().equals(DependencyType.TEXT)) {
             String part = inc.getPart();
             String prod = inc.getProduct();
-            return ess.getBackupDir() + "/" + path + "/" + part + "/" + prod;
+            return ess.getBackupDir() + "/" + path.getRelative() + "/" + part + "/" + prod;
         } else {
-            return ess.getBackupDir() + "/" + path;
+            return ess.getBackupDir() + "/" + path.getRelative();
         }
     }
 
@@ -155,7 +155,7 @@ public class EditorHelper {
         String name = time + " [" + user + "]";
         File tmp = new File(dir);
         if (tmp.exists() || tmp.mkdirs()) {
-            return new File(dir + "/" + name);
+            return new File(dir, name);
         } else {
             CAT.warn("Couldn't create backup dir " + dir);
             return null;
@@ -324,10 +324,8 @@ public class EditorHelper {
             throw new XMLException("Dependency is not of Type TEXT");
         }
         String docroot = tgen.getDocroot();
-        String path = include.getPath();
-        if (!path.startsWith(docroot)) {
-            throw new XMLException("Dependency path " + path + " is not in a subdir of the docroot " + docroot);
-        }
+        Path path = include.getPath();
+
         //String name = path.substring(docroot.length());
         /* Target target  = tgen.createXMLLeafTarget(name);
          target.resetModTime();*/
@@ -342,16 +340,12 @@ public class EditorHelper {
             throw new XMLException("Dependency is not of Type TEXT");
         }
         String docroot = tgen.getDocroot();
-        String path = include.getPath();
-        if (!path.startsWith(docroot)) {
-            throw new XMLException("Dependency path " + path + " is not in a subdir of the docroot " + docroot);
-        }
-        File file = new File(path);
+        Path path = include.getPath();
+        File file = path.resolve();
         if (!file.exists()) {
             return null;
         }
-        String name = path.substring(docroot.length());
-        CAT.debug("**************** getIncludeDocument: " + name);
+        CAT.debug("**************** getIncludeDocument: " + path.getRelative());
         Object LOCK = FileLockFactory.getInstance().getLockObj(path);
         synchronized (LOCK) {
             /* Target target = tgen.createXMLLeafTarget(name);
@@ -379,13 +373,6 @@ public class EditorHelper {
                 IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
                 doc = iDoc.getDocument();
             } else {
-                /* DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-                 if(!docBuilderFactory.isNamespaceAware())
-                     docBuilderFactory.setNamespaceAware(true);
-                 if(docBuilderFactory.isValidating())
-                     docBuilderFactory.setValidating(false);
-                 DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-                 doc = docBuilder.parse(path);*/
                 IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, true);
                 doc = (Document) iDoc.getDocument().cloneNode(true);
                 Element root = doc.getDocumentElement();
@@ -397,14 +384,14 @@ public class EditorHelper {
 
     public static Element getIncludePart(Document doc, AuxDependency include) throws Exception {
         String part = include.getPart();
-        String path = include.getPath();
+        Path path = include.getPath();
         NodeList nl = XPathAPI.selectNodeList(doc, "/include_parts/part[@name = '" + part + "']");
         if (nl.getLength() == 0) {
             return null;
         } else if (nl.getLength() == 1) {
             return (Element) nl.item(0);
         } else {
-            throw new XMLException("FATAL: Part " + part + " in include file " + path + " is multiple times defined!");
+            throw new XMLException("FATAL: Part " + part + " in include file " + path.getRelative() + " is multiple times defined!");
         }
     }
 
@@ -419,7 +406,7 @@ public class EditorHelper {
 
     public static void renderBranchOptions(EditorSessionStatus esess, AuxDependency inc, ResultDocument resdoc, Element root) throws Exception {
 
-        String path = inc.getPath();
+        Path path = inc.getPath();
         String part = inc.getPart();
         TargetGenerator tgen = esess.getProduct().getTargetGenerator();
         Element elem = getIncludePart(tgen, inc);
@@ -505,7 +492,7 @@ public class EditorHelper {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "auxfile");
             elem.setAttribute("dir", aux.getDir());
-            elem.setAttribute("path", aux.getPath());
+            elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("count", "" + count++);
         }
     }
@@ -534,7 +521,7 @@ public class EditorHelper {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getDir());
-            elem.setAttribute("path", aux.getPath());
+            elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
@@ -566,7 +553,7 @@ public class EditorHelper {
                 getAuxdepsForInclude(sub, aux, false, DependencyType.TEXT);
                 Element elem = resdoc.createSubNode(root, "include");
                 elem.setAttribute("dir", aux.getDir());
-                elem.setAttribute("path", aux.getPath());
+                elem.setAttribute("path", aux.getPath().getRelative());
                 elem.setAttribute("part", aux.getPart());
                 elem.setAttribute("count", cnt.toString());
                 count.set(0, new Integer(cnt.intValue() + 1));
@@ -585,7 +572,7 @@ public class EditorHelper {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "include");
             elem.setAttribute("dir", aux.getDir());
-            elem.setAttribute("path", aux.getPath());
+            elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("part", aux.getPart());
             elem.setAttribute("product", aux.getProduct());
             elem.setAttribute("count", "" + j++);
@@ -600,7 +587,7 @@ public class EditorHelper {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getDir());
-            elem.setAttribute("path", aux.getPath());
+            elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
@@ -614,7 +601,7 @@ public class EditorHelper {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getDir());
-            elem.setAttribute("path", aux.getPath());
+            elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
@@ -663,16 +650,12 @@ public class EditorHelper {
             AuxDependency curr = (AuxDependency) i.next();
             String docroot = tgen.getDocroot();
             String dir = curr.getDir();
-            String path = curr.getPath();
+            Path path = curr.getPath();
             String part = curr.getPart();
             String product = curr.getProduct();
 
-
-            String newPath = path.substring(docroot.length(), path.length());
-
-            
             Element inc = resdoc.createSubNode(root, "include");
-            inc.setAttribute("path", newPath);
+            inc.setAttribute("path", path.getRelative());
             inc.setAttribute("part", part);
             inc.setAttribute("product", product);
         }
@@ -682,13 +665,13 @@ public class EditorHelper {
     
     public static void renderAllIncludesForNavigation(TreeSet includes, ResultDocument resdoc, Element root) {
         String olddir = "";
-        String oldpath = "";
+        Path oldpath = null;
         Element direlem = null;
         Element pathelem = null;
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
             String dir = curr.getDir();
-            String path = curr.getPath();
+            Path path = curr.getPath();
             String part = curr.getPart();
             String product = curr.getProduct();
             if (!olddir.equals(dir) || olddir.equals("")) {
@@ -696,13 +679,13 @@ public class EditorHelper {
                 direlem.setAttribute("name", dir);
                 olddir = dir;
             }
-            if (!oldpath.equals(path) || olddir.equals("")) {
+            if (!path.equals(oldpath) || olddir.equals("")) {
                 pathelem = resdoc.createSubNode(direlem, "path");
-                pathelem.setAttribute("name", path);
+                pathelem.setAttribute("name", path.getRelative());
                 oldpath = path;
             }
             Element inc = resdoc.createSubNode(pathelem, "include");
-            inc.setAttribute("path", path);
+            inc.setAttribute("path", path.getRelative());
             inc.setAttribute("part", part);
             inc.setAttribute("product", product);
         }
@@ -712,13 +695,13 @@ public class EditorHelper {
         if (es.getStatus() == EditorSearch.SCODE_OK) {
             TreeSet includes = type.equals(EditorSearch.INCLUDE) ? es.getResultSet() : es.getDynResultSet();
             String olddir = "";
-            String oldpath = "";
+            Path oldpath = null;
             Element direlem = null;
             Element pathelem = null;
             for (Iterator i = includes.iterator(); i.hasNext();) {
                 AuxDependency curr = (AuxDependency) i.next();
                 String dir = curr.getDir();
-                String path = curr.getPath();
+                Path path = curr.getPath();
                 String part = curr.getPart();
                 String product = curr.getProduct();
                 if (!olddir.equals(dir) || olddir.equals("")) {
@@ -726,13 +709,13 @@ public class EditorHelper {
                     direlem.setAttribute("name", dir);
                     olddir = dir;
                 }
-                if (!oldpath.equals(path) || olddir.equals("")) {
+                if (!path.equals(oldpath) || olddir.equals("")) {
                     pathelem = resdoc.createSubNode(direlem, "path");
-                    pathelem.setAttribute("name", path);
+                    pathelem.setAttribute("name", path.getRelative());
                     oldpath = path;
                 }
                 Element inc = resdoc.createSubNode(pathelem, "include");
-                inc.setAttribute("path", path);
+                inc.setAttribute("path", path.getRelative());
                 inc.setAttribute("part", part);
                 inc.setAttribute("product", product);
                 EditorSearchContext[] matches = type.equals(EditorSearch.INCLUDE) ? es.getSearchContexts(curr) : es.getDynSearchContexts(curr);
@@ -794,7 +777,7 @@ public class EditorHelper {
     }
 
     /** Get all products which use the image specified by its path */
-    public static HashSet getAffectedProductsForImage(String path_to_image) throws Exception {
+    public static HashSet getAffectedProductsForImage(Path path_to_image) throws Exception {
         
         long start_time = 0;
         if(PERF_LOGGER.isInfoEnabled()) {

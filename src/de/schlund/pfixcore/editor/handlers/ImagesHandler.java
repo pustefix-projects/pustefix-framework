@@ -55,7 +55,7 @@ public class ImagesHandler extends EditorStdHandler {
         EditorProduct          prod   = esess.getProduct();
         TargetGenerator        gen    = prod.getTargetGenerator();
         TreeSet                allimg = gen.getDependencyRefCounter().getDependenciesOfType(DependencyType.IMAGE);
-        String                 path   = images.getPath();
+        Path                   path   = Path.create(gen.getDocroot(), images.getPath());
         AuxDependency          image  =
             AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.IMAGE, path, null, null);
         

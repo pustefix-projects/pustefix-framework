@@ -8,6 +8,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 
@@ -30,6 +31,8 @@ import de.schlund.pfixxml.targets.SPCacheFactory;
 public class IncludeDocumentFactory {
 
     private static Category  CAT = Category.getInstance(IncludeDocumentFactory.class.getName());
+
+    /** maps keys to IncludeDocuments */
     private SPCache cache= SPCacheFactory.getInstance().getDocumentCache();
     private static IncludeDocumentFactory instance= new IncludeDocumentFactory();
        
@@ -40,7 +43,7 @@ public class IncludeDocumentFactory {
      * specified by the path. 
      */
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(String path, boolean mutable) throws SAXException, IOException, TransformerException  {
+    public synchronized IncludeDocument getIncludeDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException  {
         /*
          * CAT.debug("cache is now: "+cache.getClass().getName());
            CAT.debug("cache cap   : "+cache.getCapacity());
@@ -70,11 +73,11 @@ public class IncludeDocumentFactory {
         return includeDocument;
     }
 
-    private boolean isDocumentInCache(String path) {
-        return cache.getValue(path) != null ? true : false;
+    private boolean isDocumentInCache(String key) {
+        return cache.getValue(key) != null ? true : false;
     }
     
-    private String getKey(String path, boolean mutable) {
+    private String getKey(Path path, boolean mutable) {
         String dummy = "";
         if(mutable)
             dummy = "_m";
@@ -82,13 +85,13 @@ public class IncludeDocumentFactory {
             dummy = "_im";
             
         StringBuffer newpath = new StringBuffer();
-        newpath.append(path).append(dummy);
+        newpath.append(path.getRelative()).append(dummy);
         return newpath.toString();
     }
 
-    private boolean isDocumentInCacheObsolete(String path, String newpath) {
-        File file= new File(path);
-        long savedTime= ((IncludeDocument) cache.getValue(newpath)).getModTime();
+    private boolean isDocumentInCacheObsolete(Path path, String newkey) {
+        File file = path.resolve();
+        long savedTime= ((IncludeDocument) cache.getValue(newkey)).getModTime();
         return file.lastModified() > savedTime ? true : false;
     }
 

@@ -21,6 +21,8 @@ package de.schlund.pfixxml.targets;
 
 import java.util.*;
 
+import de.schlund.util.*;
+
 /**
  * Describe class <code>ProductIncludePart</code> here.
  *
@@ -82,7 +84,7 @@ public class ProductIncludePart extends AbstractDependency {
         return tmp;
     }
     
-    public ProductIncludePart(DependencyType type, String path, String part, String product) {
+    public ProductIncludePart(DependencyType type, Path path, String part, String product) {
         this.type    = type;
         this.path    = path;
         this.part    = part;
@@ -93,7 +95,7 @@ public class ProductIncludePart extends AbstractDependency {
                                        + part + "/"
                                        + product);
         }
-        dir = path.substring(0,path.lastIndexOf("/"));
+        dir = path.getDir();
     }
 
     public String toString() {

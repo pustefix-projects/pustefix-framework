@@ -62,7 +62,7 @@ public class IncludesHandler extends EditorStdHandler {
         EditorProduct          prod     = esess.getProduct();
         TargetGenerator        tgen     = prod.getTargetGenerator();
         TreeSet                allinc   = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
-        String                 path     = includes.getPath();
+        Path                   path     = Path.create(tgen.getDocroot(), includes.getPath());
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
         

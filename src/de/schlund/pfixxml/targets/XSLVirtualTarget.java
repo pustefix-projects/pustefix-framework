@@ -51,7 +51,7 @@ public class XSLVirtualTarget extends VirtualTarget {
         PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
         File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            Object retval = xsltproc.xslObjectFromDisc(thefile.getPath());
+            Object retval = xsltproc.xslObjectFromDisc(generator.getDocroot(), thefile.getPath());
             return retval;
         } else {
             return null;

@@ -88,11 +88,11 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
                     CAT.debug("User is not allowed to edit this dyninclude. No lock required!");    
             } 
             long    mod     = currcomm.getModTime();
-            String  path    = currcomm.getPath();
+            Path path       = currcomm.getPath();
             String  part    = currcomm.getPart();
             String  product = currcomm.getProduct();
             root = resdoc.createNode("currentcommoninfo");
-            root.setAttribute("path",    path);
+            root.setAttribute("path",    path.getRelative());
             root.setAttribute("part",    part);
             root.setAttribute("product", product);
             root.setAttribute("modtime", "" + mod);
