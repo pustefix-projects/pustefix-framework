@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0"
                 exclude-result-prefixes="xsl cus" 
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
@@ -49,10 +50,3 @@
   </xsl:template>
 
 </xsl:stylesheet>
-
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

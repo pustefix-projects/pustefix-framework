@@ -1,17 +1,14 @@
-<!-- -*- mode: xml -*- -->
-
-<!--
-     this stylesheet defines the default action: copy through unchanged.
-     The funny variables defined here (_var?) are a very dirty hack to
-     introduce 10 dynamically scoped variables into XSLT. Of course these
-     work only when the default rule actually is called...
--->
-
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
   
+<!--  this stylesheet defines the default action: copy through unchanged. -->
+<!--  The funny variables defined here (_var?) are a very dirty hack to -->
+<!--  introduce 10 dynamically scoped variables into XSLT. Of course these -->
+<!--  work only when the default rule actually is called... -->
+
   <xsl:template match="*">
     <xsl:param name="__env"/>
     <xsl:copy>
