@@ -1,3 +1,15 @@
+2004-01-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: changed the layer stuff so that a
+	layer name that contains a "/" is not treated as page local --
+	with other word, you have some crude way to use "namespaces" for
+	layers (e.g. "GLOBAL/Help" is layer Help in the GLOBAL namespace)
+	Of course nothing internal nows about these as first class
+	objects... It's just that normally a layer name as given via the
+	@name attribute is expanded with the current page name (so you
+	have e.g. home_Help for layer "Help" used on page "home"). This
+	will just be supressed for names with a "/".
+	
 2004-01-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: started 0.4.3-pre

@@ -175,38 +175,38 @@
 
   <xsl:template match="pfx:layer">
     <cus:documentation>
-     <responsible>JTL</responsible>
-     <description>Creates a layer object which can be shown/hidden and moved on demand.</description>
+      <responsible>JTL</responsible>
+      <description>Creates a layer object which can be shown/hidden and moved on demand.</description>
       <param required="1">
         <name>name</name>
         <values><string/></values>
         <description>id of this layer object</description>
       </param>
-
+      
       <param required="0">
         <name>element</name>
         <values><oneof><option default="true">div</option><option>span</option><option>tr</option><option>table</option></oneof></values>
         <description>The html element that is used as the container for the layer content</description>
       </param>
-
+      
       <param required="0">
         <name>pos-left</name>
         <values><html/></values>
         <description>left position</description>
       </param>
-
+      
       <param required="0">
         <name>pos-right</name>
         <values><html/></values>
         <description>right position</description>
       </param>
-
+      
       <param required="0">
         <name>pos-top</name>
         <values><html/></values>
         <description>top position</description>
       </param>
-
+      
       <param required="0">
         <name>pos-bottom</name>
         <values><html/></values>
@@ -230,11 +230,18 @@
         <description>see pfx:switch</description>        
       </children>
     </cus:documentation>
-    <xsl:param name="elem"><xsl:choose>
+    <xsl:param name="elem">
+      <xsl:choose>
         <xsl:when test="@element"><xsl:value-of select="@element"/></xsl:when>
         <xsl:otherwise>div</xsl:otherwise>
-      </xsl:choose></xsl:param>
-    <xsl:param name="name" select="concat($page, '_', @name)"/>
+      </xsl:choose>
+    </xsl:param>
+    <xsl:param name="name">
+      <xsl:choose>
+        <xsl:when test="contains(@name, '/')"><xsl:value-of select="@name"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="concat($page, '_', @name)"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
     <xsl:element name="{$elem}">
       <xsl:attribute name="id"><xsl:value-of select="$name"/></xsl:attribute>
       <xsl:copy-of select="@style"/>
@@ -286,7 +293,7 @@
           <xmlcode>
             <pfx:switch>
               <pfx:layer_ref name="C"/>
-                 Toggle Layer C
+              Toggle Layer C
             </pfx:switch>
           </xmlcode>
         </input>
@@ -300,16 +307,34 @@
     </xsl:param>
     <a class="{$class}" href="javascript://">
       <xsl:attribute name="onclick">top.__js_toggleLayers(<xsl:for-each select=".//pfx:layer_ref[not(@method) or @method = 'toggle']">
-          <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
-          <xsl:if test="count(following-sibling::pfx:layer_ref[not(@method) or @method = 'toggle']) > 0">,</xsl:if>
-        </xsl:for-each>);top.__js_showLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'on']">
-          <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
-          <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'on']) > 0">,</xsl:if>
-        </xsl:for-each>);top.__js_hideLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'off']">
-          <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
-          <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'off']) > 0">,</xsl:if>
-        </xsl:for-each>);
-        return true;</xsl:attribute>      
+      <xsl:variable name="name">
+        <xsl:choose>
+          <xsl:when test="contains(@name, '/')"><xsl:value-of select="@name"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="concat($page, '_', @name)"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:text>'</xsl:text><xsl:value-of select="$name"/><xsl:text>'</xsl:text>
+      <xsl:if test="count(following-sibling::pfx:layer_ref[not(@method) or @method = 'toggle']) > 0">,</xsl:if>
+      </xsl:for-each>);top.__js_showLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'on']">
+      <xsl:variable name="name">
+        <xsl:choose>
+          <xsl:when test="contains(@name, '/')"><xsl:value-of select="@name"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="concat($page, '_', @name)"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:text>'</xsl:text><xsl:value-of select="$name"/><xsl:text>'</xsl:text>
+      <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'on']) > 0">,</xsl:if>
+      </xsl:for-each>);top.__js_hideLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'off']">
+      <xsl:variable name="name">
+        <xsl:choose>
+          <xsl:when test="contains(@name, '/')"><xsl:value-of select="@name"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="concat($page, '_', @name)"/></xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:text>'</xsl:text><xsl:value-of select="$name"/><xsl:text>'</xsl:text>
+      <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'off']) > 0">,</xsl:if>
+      </xsl:for-each>);
+      return true;</xsl:attribute>
       <xsl:apply-templates/>
     </a>
   </xsl:template>
@@ -394,7 +419,12 @@
       </example>
     </cus:documentation>
     
-    <xsl:variable name="name"><xsl:value-of select="concat($page,'_',@name)"/></xsl:variable>
+    <xsl:variable name="name">
+      <xsl:choose>
+        <xsl:when test="contains(@name, '/')"><xsl:value-of select="@name"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="concat($page, '_', @name)"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:variable name="unique"><xsl:value-of select="generate-id(.)"/></xsl:variable>
     <xsl:variable name="type"><xsl:value-of select="@type"/></xsl:variable>
     <xsl:choose>
@@ -443,8 +473,8 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Always a child of &lt;pfx:switch&gt;. This selects which layer
-        should be toggled by the switch. Multiple
-        &lt;pfx:layer_ref&gt; are possible.</description>
+      should be toggled by the switch. Multiple
+      &lt;pfx:layer_ref&gt; are possible.</description>
       <param required="1">
         <name>name</name>
         <values><string/></values>
@@ -461,13 +491,20 @@
         <name>autoclose</name>
         <values><oneof><option>true</option><option default="true">false</option></oneof></values>
         <description>if autoclose is "true", and the pfx:layer_ref tag is contained in another pfx:layer (which is the "parent"),
-          automatically close the referenced layer when the parent layer is closed.</description>
+        automatically close the referenced layer when the parent layer is closed.</description>
       </param>
     </cus:documentation>
     <xsl:param name="parent">
       <xsl:choose>
         <xsl:when test="count(ancestor::pfx:layer) > 0 and @autoclose = 'true'">
-          <xsl:value-of select="concat($page, '_', ancestor::pfx:layer[position() = 1]/@name)"/>
+          <xsl:choose>
+            <xsl:when test="contains(ancestor::pfx:layer[position() = 1]/@name, '/')">
+              <xsl:value-of select="ancestor::pfx:layer[position() = 1]/@name"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="concat($page, '_', ancestor::pfx:layer[position() = 1]/@name)"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:when>
         <xsl:otherwise>__ROOT_LAYER__</xsl:otherwise>
       </xsl:choose>
@@ -483,6 +520,6 @@
 
 <!--
 Local Variables:
-mode: xml
+mode: xsl
 End:
 -->
