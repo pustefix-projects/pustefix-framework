@@ -6,8 +6,8 @@ import gnu.getopt.Getopt;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 import org.apache.log4j.xml.DOMConfigurator;
 
 
@@ -59,11 +59,11 @@ public class ConsoleTestClient {
                 CAT.setAdditivity(false);
                 CAT.addAppender(console);
                 if (loglevel == LOGLEVEL_STD) {
-                    CAT.setPriority(Priority.WARN);
+                    CAT.setLevel(Level.WARN);
                 } else if (loglevel == LOGLEVEL_QUIET) {
-                    CAT.setPriority(Priority.ERROR);
+                    CAT.setLevel(Level.ERROR);
                 } else if (loglevel == LOGLEVEL_VERBOSE) {
-                    CAT.setPriority(Priority.INFO);
+                    CAT.setLevel(Level.INFO);
                 }
             }
             if (tmp_dir == null) {
