@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# The following files need to be writeable:
+#	Duke.x509
+#	signedWriteFile.jar
+#
+# Also, you need to have keytool, jar, and jarsigner in your path.
+
+PATH=/bin:$PATH
+
+KEYSTORE=keystore.$$
+STOREPASS=123abc
+
+KEYTOOL_NOT_FOUND=`which keytool | grep "^no" | wc -l`
+JAR_NOT_FOUND=`which jar | grep "^no" | wc -l`
+JARSIGNER_NOT_FOUND=`which jarsigner | grep "^no" | wc -l`
+
+ANY_NOT_FOUND=`expr $KEYTOOL_NOT_FOUND + $JAR_NOT_FOUND + $JARSIGNER_NOT_FOUND`
+
+if [ $ANY_NOT_FOUND -ne 0 ]; then
+	echo "$ANY_NOT_FOUND required tools not found."
+	exit
+fi
+
+# Step 1: Create identity "Duke" with new keypair and self-signed certificate.
+
+echo " "
+echo "Create identity "Duke" with new keypair and self-signed certificate:"
+keytool -genkey -alias Duke -dname \
+	"cn=Duke, ou=JavaSoft, o=Sun Microsystems, c=us" \
+	-keystore $KEYSTORE -storepass $STOREPASS -keypass $STOREPASS \
+	-validity 1000
+
+# Step 1a: Export Duke's certificate
+
+echo " "
+echo "Export Duke's certificate"
+keytool -export -alias Duke -rfc -file Duke.x509 \
+	-keystore $KEYSTORE -storepass $STOREPASS
+
+# Step 2: Create the archive. 
+
+#echo " "
+#echo "Create the archive:"
+#jar cfv signedWriteFile.jar writeFile.class writeFile.html
+
+# Step 3: Sign the archive. 
+
+echo " "
+echo "Sign the archive:"
+jarsigner -verbose -keystore $KEYSTORE -storepass $STOREPASS \
+	xmlEditorApplet.jar Duke 
+
+# Step 4: Show the contents of the signed archive. 
+
+echo " "
+echo "Contents of the archive are: "
+jar tvf xmlEditorApplet.jar
+
+# Step 5: Show the keystore contents. 
+
+echo " "
+echo "Contents of keystore are: "
+keytool -list -keystore $KEYSTORE -storepass $STOREPASS
+
+# Step 6: Clean up!
+
+rm $KEYSTORE

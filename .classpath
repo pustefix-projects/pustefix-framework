@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="lib" path="lib/ApacheJServ.jar"/>
+    <classpathentry kind="lib" path="lib/bsf.jar"/>
+    <classpathentry kind="lib" path="lib/gnu-regexp-1.0.8.jar"/>
+    <classpathentry kind="lib" path="lib/jakarta-oro-2.0.1.jar"/>
+    <classpathentry kind="lib" path="lib/log4j-1.1.3.jar"/>
+    <classpathentry kind="lib" path="lib/xalan-2.1.0.jar"/>
+    <classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry exported="true" kind="lib" path="res"/>
+    <classpathentry kind="src" path="src-jserv"/>
+    <classpathentry kind="lib" path="lib/jserv/jsdk.jar"/>
+    <classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
+    <classpathentry kind="lib" path="lib/mail-1.3.jar"/>
+    <classpathentry kind="lib" path="lib/util-MINI-1.1.10.jar"/>
+    <classpathentry kind="lib" path="lib/saxon-6_5_2.jar"/>
+    <classpathentry kind="lib" path="lib/xerces-xalan-2.1.0.jar"/>
+    <classpathentry kind="output" path="build"/>
+</classpath>

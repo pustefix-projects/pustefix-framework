@@ -1,0 +1,50 @@
+PROJECT = pfixcore
+
+SRCROOT     = src
+JS_SRCROOT  = src-jserv
+TC4_SRCROOT = src-tomcat4
+
+BUILDDIR   = build
+JAVACR     = $(SRCROOT)/de/schlund
+
+JAVADOCDIR = apidocs
+
+EXTERNAL_JAVADOC =
+
+JAVADOC_GENERALOPTS= -d $(JAVADOCDIR) \
+	-version -author \
+	-windowtitle "de.schlund $(PROJECT)" \
+	-doctitle "<h3>Last update: $(shell date) </h3>" \
+	-sourcepath $(SRCROOT):src-jserv:src-tomcat4 \
+	$(EXTERNAL_JAVADOC) \
+	$(shell echo $(JAVADOCSUBDIRS) | tr '/' '.' | tr ' ' '\n' | sort -u)
+
+
+SUBDIRS = \
+        $(JAVACR)/pfixxml \
+        $(JAVACR)/pfixxml/targets \
+        $(JAVACR)/pfixxml/serverutil \
+        $(JAVACR)/pfixxml/multipart \
+        $(JAVACR)/pfixxml/xpath \
+        $(JAVACR)/pfixxml/exceptionhandler \
+	$(JAVACR)/pfixcore/generator \
+	$(JAVACR)/pfixcore/generator/casters \
+	$(JAVACR)/pfixcore/generator/prechecks \
+	$(JAVACR)/pfixcore/generator/postchecks \
+        $(JAVACR)/pfixcore/util \
+        $(JAVACR)/pfixcore/workflow \
+        $(JAVACR)/pfixcore/workflow/app \
+	$(JAVACR)/pfixcore/editor \
+	$(JAVACR)/pfixcore/editor/interfaces \
+	$(JAVACR)/pfixcore/editor/resources \
+	$(JAVACR)/pfixcore/editor/handlers \
+        $(JAVACR)/pfixcore/example \
+        $(JAVACR)/pfixcore/example/iwrapper
+
+JS_SUBDIRS = \
+        $(JAVACR)/pfixxml/serverutil \
+	$(JS_SRCROOT)/de/schlund/pfixxml/serverutil/jserv
+
+TC4_SUBDIRS = \
+        $(JAVACR)/pfixxml/serverutil \
+        $(TC4_SRCROOT)/de/schlund/pfixxml/serverutil/tomcat4

@@ -1,0 +1,131 @@
+Documentation of the XSL-Tags in Pustefix
+
+
+Requirement:
+-----------
+All xsl-template tags in Pustefix(Pfixcore, Pfixschlund) will now be documentated. 
+The *.xsl-files will be renamed in *.xsl.in-files. The documentation has to been put
+in an XML-Tree directly below the according XSL-Template Tag in the *.xsl.in-File.
+The *.xsl.in-Files will be transformed in the pristinely *.xsl - Files, wihtout the
+documentation-tree of course.
+
+You can choose the documentation in the Pfixcore-Editor by using the documentation
+button in the top-navigation. Now all the xsl-templates will be shown on the left
+side of the frame. Choose a xsl-template and the documentation will be displayed
+in the right frame. Xsl-Tags which are not be documentated will be displayed with
+a blue !
+
+You have to add the documentated files in your /servletcont/projects.xml to the
+according project (with <documentation><doc_file>..filename...</doc_file><documentation>
+
+<project name="sample1">
+[...]
+    <documentation>
+      <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
+      <doc_file><cus:docroot/>sample1/xsl/metatags.xsl.in</doc_file>
+    </documentation>  
+</project>
+
+The Documentation-Tree
+----------------------
+
+All documentation trees start with <cus:documentation>
+
+
+Other nodes are:
+
+<description>
+Write a detailed description of the according tag
+
+Then you have to add the most important params. <param required="1|0">
+The Attribut requiered = 1 means, that the parameter must been set
+The Attribut requiered = 0 means, that setting this parameter is optional
+
+Important Parameters are:
+- params that must been set
+- params that have a standard value (could be override by setting this params)
+- other params (like onmout + onmover in pfx:jscript)
+
+You don't have to add the params which only will be copied.
+
+The param-properties are:
+Name of the param: <param>
+Posible_values: <posible_values>(e.g. true|false)</posible_values>
+Standard_values <standard/>
+A short description of the param (optional) <description/>
+
+Some Pustefix-Tags also expect child-tags like <pfx:argument> in <pfx:button>
+<child>
+The Name of the Child-Tag:<name/>
+A short description of the Child-Tag<description/>
+<child/>
+
+You also can add several examples. An example alwasy excepts an input-node:
+(e.g. <pfx:blank/>) and an output-node.
+
+By using <xmlcode> you can add sample-code to your descriptions or your
+example. Important: You must use <xmlcode>, otherwise the transformer tries
+to perform the tags and then you'll probably get an error.
+
+
+Note:
+----
+Every single Tag has an unique name. The name is displayed in []. This name
+contains several informations like match|name|node (e.g. [ Match="pfx:blank" ])
+The Tag-Name will be generated automatically.
+
+
+Example:
+-----------------------------------
+
+<xsl:template match="pfx:blank">
+ <cus:documentation>
+ <description>Inserts a transparent .gif of the specified 
+              width and height (default  width=1 height=1)
+  </description>
+
+  <param>
+     <name>src</name>
+     <standard_value>/core/img/blank.gif</standard_value>         
+     <posible_values></posible_values>
+  </param>
+  ..
+  ..
+
+  <child>
+     <name>pfx:command</name>
+     <description>foo baz</descpription>
+  </child>
+
+
+  <example>
+    <input>fooo 
+     <xmlcode>
+       <pfx:blank/>
+     </xmlcode>
+    </input>
+    <output>baz bla 
+      <xmlcode>
+        <img src="/core/img/blank.gif" width="1" height="1" border="0" alt="">
+      </xmlcode>
+    </output>
+  </example>
+ </cus:documentation>
+[...]
+<xsl:template match>
+
+
+ 
+ 
+
+
+
+
+
+
+
+

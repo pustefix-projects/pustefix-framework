@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface extends="de.schlund.pfixcore.editor.interfaces.IncludesUpload">
+  <ihandler class="de.schlund.pfixcore.editor.handlers.CommonsUploadHandler"/>
+</interface>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -1,0 +1,5 @@
+*.class
+*.u
+Makefile
+MANIFEST.MF
+CVS_AUTOTAG

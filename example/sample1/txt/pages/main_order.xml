@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+          <pfx:forminput name="main" target="_top">
+            <pfx:errorbox width="500"/>
+            <br/>
+            <pfx:checkactive prefix="shirt">
+              <pfx:include part="shirt"/>
+            </pfx:checkactive>
+            <table>
+              <tr valign="top">
+                <pfx:checkactive prefix="counter">
+                  <td>
+                    <pfx:include part="counter"/>
+                  </td>
+                </pfx:checkactive>
+                <td>
+                  <pfx:include part="pic"/>
+                </td>
+              </tr>
+            </table>
+            <pfx:checkactive prefix="trouser">
+              <pfx:include part="trouser"/>
+            </pfx:checkactive>
+            <br/>
+            <pfx:include part="wizard"/>
+          </pfx:forminput>
+        </center>
+        <pfx:progressbar>Please Wait...</pfx:progressbar>
+      </lang>
+    </product>
+  </part>
+  
+
+  <part name="help_shirt">
+    <product name="default">
+      <lang name="default">
+        Quite some help for all the things you should fill into this
+        wizard dialog page. You need to do this, because you want to
+        buy a nice T-Shirt
+        at <b><i>ACME Shirts&amp;Trousers Inc.</i></b>, 
+        don&apos;t you? I bet you really want to.
+      </lang>
+    </product>
+  </part>
+
+  <part name="shirt">
+    <product name="default">
+      <lang name="default">
+        <table width="400">
+          <tr>
+            <td align="left">
+              <b><big>T-Shirt:</big></b>
+            </td>
+          </tr>
+        </table>            
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
+          <pfx:groupdisplayonly name="01-Shirt">
+            <tr>
+              <td class="sample_group_help" colspan="2"> 
+                <pfx:include part="help_shirt"/>
+              </td>
+            </tr>
+          </pfx:groupdisplayonly>
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="shirt.Size">Size [S,M,L,XL,XXL]</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp name="shirt.Size" type="select">
+                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option value="S">S</pfx:option>
+                <pfx:option value="M">M</pfx:option>
+                <pfx:option value="L">L</pfx:option>
+                <pfx:option value="XL">XL</pfx:option>
+                <pfx:option value="XXL">XXL</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="shirt.Color">Color-No.</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <pfx:label name="shirt.Feature">Features</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="2"/>Windproof<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
+            </td>
+          </tr>
+        </table>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="counter">
+    <product name="default">
+      <lang name="default">
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
+          <ixsl:choose>
+            <ixsl:when test="/formresult/cr_counter/@showcounter = &apos;false&apos;">
+              <tr>
+                <td colspan="2">
+                  <pfx:xinp type="submit" value="Show Counter">
+                    <pfx:argument name="counter.ShowCounter">true</pfx:argument>
+                    <pfx:command name="SELWRP">counter</pfx:command>
+                  </pfx:xinp>
+                </td>
+              </tr>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <tr>
+                <td align="center" colspan="2">
+                  <big><b>
+                      <ixsl:value-of select="/formresult/cr_counter/@counter"/>
+                    </b></big>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <pfx:xinp type="submit" value="Add +1">
+                    <pfx:argument name="counter.Add">1</pfx:argument>
+                    <pfx:command name="SELWRP">counter</pfx:command>
+                  </pfx:xinp>
+                </td>
+                <td>
+                  <pfx:xinp type="submit" value="Add -1">
+                    <pfx:argument name="counter.Add">-1</pfx:argument>
+                    <pfx:command name="SELWRP">counter</pfx:command>
+                  </pfx:xinp>
+                </td>
+              </tr>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </table>
+     </lang>
+    </product>
+  </part>
+  
+  <part name="pic">
+    <product name="default">
+      <lang name="default">
+        <table bgcolor="#bbccff" class="boxed">
+          <pfx:checkactive prefix="pic">
+            <tr>
+              <td align="center">
+                <pfx:xinp type="submit" value="Toggle Pic">
+                  <pfx:argument name="pic.Toggle">true</pfx:argument>
+                  <pfx:command name="SELWRP">pic</pfx:command>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </pfx:checkactive>
+          <ixsl:if test="/formresult/cr_togglepic[@do_show = &apos;true&apos;]">
+            <tr>
+              <td>
+                <pfx:image src="/sample1/img/test.gif"/>
+              </td>
+            </tr>
+          </ixsl:if>
+        </table>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="help_trouser_a">
+    <product name="default">
+      <lang name="default">
+        Here is an awful lot of text, that helps you decide what 
+        things you should fill into this
+        wizard dialog page for buying a nice &quot;Adult 
+        Trouser (TM)&quot; at
+        <b><i>ACME Shirts&amp;Trousers Inc.</i></b>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="help_trouser_b">
+    <product name="default">
+      <lang name="default">
+        Of course we can add more text here. It&apos;s not as if 
+        ProductManagers had problems
+        in fomulating important statements all customers 
+        are eager to read. 
+      </lang>
+    </product>
+  </part>
+  
+  <part name="trouser">
+    <product name="default">
+      <lang name="default">
+        <table width="400">
+          <tr>
+            <td align="left">
+              <b><big>Trousers:</big></b>
+            </td>
+          </tr>
+        </table>
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400"> 
+          <pfx:groupdisplayonly name="02-Trouser">
+            <tr>
+              <td class="sample_group_help" colspan="2"> 
+                <pfx:include part="help_trouser_a"/>
+              </td>
+            </tr>
+          </pfx:groupdisplayonly>
+          
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="trouser.Size">Size [M,L,XL]</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp name="trouser.Size" type="select">
+                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option value="S">S [=&gt; Error]</pfx:option>
+                <pfx:option value="M">M</pfx:option>
+                <pfx:option value="L">L</pfx:option>
+                <pfx:option value="XL">XL</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="trouser.Color">Color-No.</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <pfx:label name="trouser.Feature">Features</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp name="trouser.Feature" type="check" value="0"/>Waterproof<br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="1"/>Extra warm<br/>
+              <pfx:xinp name="trouser.Feature" type="check" value="2"/>Windproof<br/>
+            </td>
+          </tr>
+          <pfx:groupdisplayonly name="02-Trouser">
+            <tr>
+              <td class="sample_group_help" colspan="2"> 
+                <pfx:include part="help_trouser_b"/>
+              </td>
+            </tr>
+          </pfx:groupdisplayonly>
+        </table>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="wizard">
+    <product name="default">
+      <lang name="default">
+        <table width="400">
+          <tr valign="bottom">
+            <pfx:wizardnavigation>
+              <pfx:group>
+                <td nowrap="nowrap">
+                  <pfx:wizardprevious>
+                    <pfx:active>&lt;&lt;Previous</pfx:active>
+                    <pfx:inactive>&lt;&lt; Previous</pfx:inactive>
+                  </pfx:wizardprevious>
+                </td>
+                <td align="right" nowrap="nowrap">
+                  <pfx:wizardnext>
+                    <pfx:active>
+                      <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Next &gt;&gt;">
+                        <pfx:command name="SELGRP">NEXT</pfx:command>
+                      </pfx:xinp>
+                    </pfx:active>
+                    <pfx:inactive>
+                      <span class="sample_next_inactive">Next &gt;&gt;</span>
+                    </pfx:inactive>
+                  </pfx:wizardnext>
+                </td>
+                <td nowrap="nowrap" width="1%">
+                  <pfx:wizardfinish>
+                    <pfx:active>
+                      <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Finish"/>
+                    </pfx:active>
+                    <pfx:inactive><span class="sample_finish_inactive">Finish</span></pfx:inactive>
+                  </pfx:wizardfinish>
+                </td>
+              </pfx:group>
+              <pfx:flat>
+                <td align="right" nowrap="nowrap" width="100%">
+                  <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Submit"/>
+                </td>
+              </pfx:flat>
+            </pfx:wizardnavigation>
+          </tr>
+        </table>
+      </lang>
+    </product>
+  </part>
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

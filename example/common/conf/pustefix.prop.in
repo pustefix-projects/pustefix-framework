@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <!-- shared properties for the pustefix projects -->
+
+  <!-- configuration of log4j -->
+  <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
+
+  <!-- dump of the whole session on Exception -->
+  <prop name="servlet.sessiondumponerror">true</prop>
+
+  <!--  Set this to true if you want to skip the last transformation and only get a
+        xml document containing all needed information for an external renderer -->
+  <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
+  
+  <!--  Set this to false if you want to be able to just retrieve the xml tree -->
+  <prop name="xmlserver.noxmlonlyallowed">false</prop>
+
+  <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
+  
+  <prop name="context.adminmode.default.status">off</prop>  
+
+</properties>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
