@@ -22,7 +22,6 @@ package de.schlund.pfixxml.targets;
 import java.io.OutputStream;
 import java.util.Map;
 
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
