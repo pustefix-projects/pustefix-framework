@@ -1,3 +1,8 @@
+2003-01-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: added customizable maxProcessors
+	* example/servletconf/projects.xml: Use it.
+
 2003-01-23  Joerg Haecker <haecker@schlund.de>
 
 	* CVSROOT/cvswrappers: added entry for gifs and jars as binary data.
