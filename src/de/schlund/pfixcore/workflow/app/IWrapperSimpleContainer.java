@@ -761,20 +761,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             }
         }
     }// IWrapperGroup
-
+    
     public void reload() {
-          HashMap  wrappersNew = new HashMap();
-          Iterator it = wrappers.keySet().iterator();
-          while(it.hasNext()) {
-              String   str       = (String)it.next();
-              IWrapper iwOld     = (IWrapper) wrappers.get(str);
-              IWrapper iwNew     = (IWrapper)  StateTransfer.getInstance().transfer(iwOld);
-              String   className = iwOld.getClass().getName();
-              wrappersNew.put(str,iwNew);
-          }
-          wrappers = wrappersNew;
-          
+        HashMap  wrappersNew = new HashMap();
+        Iterator it = wrappers.keySet().iterator();
+        while(it.hasNext()) {
+            String   str       = (String)it.next();
+            IWrapper iwOld     = (IWrapper) wrappers.get(str);
+            IWrapper iwNew     = (IWrapper)  StateTransfer.getInstance().transfer(iwOld);
+            String   className = iwOld.getClass().getName();
+            wrappersNew.put(str,iwNew);
+        }
+        wrappers = wrappersNew;
     }
-
+    
     
 }// IWrapperSimpleContainer
