@@ -114,7 +114,7 @@ public class Context implements AppContext {
         navigation_element = null;
     }
     
-    public void reset() throws Exception {
+    public synchronized void reset() throws Exception {
     	// get PropertyObjects from PropertyObjectManager
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
         

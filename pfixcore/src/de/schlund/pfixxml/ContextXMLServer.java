@@ -38,8 +38,12 @@ public class ContextXMLServer extends AbstractXMLServer {
     private final static String   CONTEXT_SUFFIX = "__CONTEXT__";
     private final static String   CONTEXT_CLASS  = "context.class";
     
+    private WeakHashMap contextMap=new WeakHashMap();
+    private String contextClassName;
+    
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        contextClassName=getProperties().getProperty(CONTEXT_CLASS);
     }
 
     protected boolean needsSession() {
@@ -52,13 +56,29 @@ public class ContextXMLServer extends AbstractXMLServer {
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
+            //Reset PropertyObjects
             PropertyObjectManager.getInstance().resetPropertyObjects(getProperties());
-            try {
-                if (preq.getSession(false) != null) 
-                    getContext(preq, true);
-            } catch (Exception e) {
-                throw new ServletException("When reloading for Context: " + e);
-            }
+            //Reset Contexts
+            synchronized (contextMap) {
+                //Set name of Context class, compare with old name
+                String oldClassName=contextClassName;
+                contextClassName=getProperties().getProperty(CONTEXT_CLASS);
+                if(contextClassName.equals(oldClassName)) {
+                    //Iterate over Contexts and reset them
+                    Iterator it=contextMap.keySet().iterator();
+                    while(it.hasNext()) {
+                        try {
+                            AppContext appCon=(AppContext)it.next();
+                            appCon.reset();
+                        } catch(Exception e) {
+                            throw new ServletException("Error while resetting context.");
+                        }
+                    }
+                } else {
+                    //Remove deprecated Contexts from contextMap
+                    contextMap.clear();
+                }
+            } 
             return true;
         } else {
             return false;
@@ -66,12 +86,12 @@ public class ContextXMLServer extends AbstractXMLServer {
     }
     
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
-        AppContext context = getContext(preq, false);
+        AppContext context = getContext(preq);
         SPDocument spdoc   = context.handleRequest(preq);
         return spdoc;
     }
 
-    private AppContext getContext(PfixServletRequest preq, boolean reset) throws Exception {
+    private AppContext getContext(PfixServletRequest preq) throws Exception {
         String        contextname = makeContextName();
         HttpSession   session     = preq.getSession(false);
         ContainerUtil conutil     = getContainerUtil();
@@ -79,16 +99,12 @@ public class ContextXMLServer extends AbstractXMLServer {
             throw new XMLException("No valid session found! Aborting...");
         }
         AppContext context = (AppContext) conutil.getSessionValue(session, contextname);
-        if (context == null) {
+        //Create new context and add it to contextMap, if context is null or contextClass has changed
+        if ((context==null) || (!contextClassName.equals(context.getClass().getName()))) {
             context = createContext();
             conutil.setSessionValue(session, contextname, context);
-        } else if (reset) {
-            AppContext tmp = createContext();
-            if (tmp.getClass().getName().equals(context.getClass().getName())) {
-                context.reset();
-            } else {
-                conutil.setSessionValue(session, contextname, null);
-                return null;
+            synchronized (contextMap) {
+                contextMap.put(context,null);
             }
         }
         return context;
