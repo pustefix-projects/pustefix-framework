@@ -375,10 +375,10 @@
       </xsl:if>
       <xsl:apply-templates select="./pfx:off/node()"/>
     </span>
-    <pfx:script>
-      top.__js_getLayer("<xsl:value-of select="$name"/>").addSwitchOn(window.document.getElementById("SWITCH_ON_<xsl:value-of select="$unique"/>"));
-      top.__js_getLayer("<xsl:value-of select="$name"/>").addSwitchOff(window.document.getElementById("SWITCH_OFF_<xsl:value-of select="$unique"/>"));
-    </pfx:script>
+    <script>
+      top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOn(window.document.getElementById('SWITCH_ON_<xsl:value-of select="$unique"/>'));
+      top.__js_getLayer('<xsl:value-of select="$name"/>').addSwitchOff(window.document.getElementById('SWITCH_OFF_<xsl:value-of select="$unique"/>'));
+    </script>
   </xsl:template>
   
   <xsl:template match="pfx:layer_ref">
@@ -402,10 +402,10 @@
       </xsl:choose>
     </xsl:param>
     <xsl:param name="child" select="concat($page, '_', @name)"/>
-    <pfx:script>
-      top.__js_getLayer("<xsl:value-of select="$parent"/>").addChild(top.__js_getLayer("<xsl:value-of select="$child"/>"));
-      top.__js_getLayer("<xsl:value-of select="$child"/>").addParent(top.__js_getLayer("<xsl:value-of select="$parent"/>"));
-    </pfx:script>
+    <script>
+      top.__js_getLayer('<xsl:value-of select="$parent"/>').addChild(top.__js_getLayer('<xsl:value-of select="$child"/>'));
+      top.__js_getLayer('<xsl:value-of select="$child"/>').addParent(top.__js_getLayer('<xsl:value-of select="$parent"/>'));
+    </script>
   </xsl:template>
     
 </xsl:stylesheet>
