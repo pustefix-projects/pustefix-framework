@@ -115,7 +115,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         + content
                         + "\n    </product>";
                 try {
-                    impnode = (Node) Xml.parseString(content).getDocumentElement();
+                    impnode = (Node) Xml.parseStringMutable(content).getDocumentElement();
                 } catch (SAXParseException e) {
                     int line = (e.getLineNumber() - 1);
                     int col = (e.getColumnNumber() - 1);

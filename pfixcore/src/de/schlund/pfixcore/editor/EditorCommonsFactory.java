@@ -94,7 +94,7 @@ public class EditorCommonsFactory implements FactoryInit {
                         + " to common includefiles *******");
                 Long modtime = new Long(comfile.lastModified());
                 incfiles.put(path, modtime);
-                Document doc = Xml.parse(comfile);
+                Document doc = Xml.parseMutable(comfile);
                 List nl = XPath.select(doc, "/include_parts/part");
                 for (int i = 0; i < nl.size(); i++) {
                     Element part = (Element) nl.get(i);

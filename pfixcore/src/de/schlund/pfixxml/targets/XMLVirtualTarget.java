@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
-import de.schlund.pfixxml.util.Xslt;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * XMLVirtualTarget.java
@@ -53,7 +53,7 @@ public class XMLVirtualTarget extends VirtualTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.xmlObjectFromDisc(thefile);
+            return Xml.parse(thefile);
         } else {
             return null;
         }

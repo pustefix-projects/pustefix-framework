@@ -61,7 +61,7 @@ public class EditorDocumentation {
     // read the xsl-File and create the NodeList
     private void readFile(File file) throws Exception {
         
-        this.doc = Xml.parse(file);
+        this.doc = Xml.parseMutable(file);
         this.doc.normalize();
         
         NodeList nl = doc.getElementsByTagName("xsl:template");

@@ -150,7 +150,7 @@ public class MultiTransform {
             System.exit(-1);
         }
         Templates xsltomcat = trfac.newTemplates(new StreamSource(xslfile_tomcat));
-        Document doc = Xml.parse((String) infiles.get(0));
+        Document doc = Xml.parseMutable((String) infiles.get(0));
         NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {
             Element prj = (Element) nl.item(i);

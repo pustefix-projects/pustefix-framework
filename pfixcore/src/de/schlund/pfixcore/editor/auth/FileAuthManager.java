@@ -209,7 +209,7 @@ public class FileAuthManager implements AuthManager {
         synchronized (LOCK) {
             File ufile = new File(userfile);
             if (ufile.exists() && ufile.isFile() && ufile.canRead()) {
-                doc = Xml.parse(ufile);
+                doc = Xml.parseMutable(ufile);
             } else {
                 throw new XMLException("Userfile " + userfile + " doesn't exist, can't be read or is no ordinary file");
             }

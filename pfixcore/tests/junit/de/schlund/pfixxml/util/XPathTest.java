@@ -71,7 +71,7 @@ public class XPathTest extends TestCase {
 
     private static Document parse(String doc) {
         try {
-            return Xml.parseString(doc);
+            return Xml.parseStringMutable(doc);
         } catch (SAXException e) {
             fail("wrong document: " + doc + ":" + e.getMessage());
             return null; // dummy

@@ -107,7 +107,7 @@ public class Testcase {
         for(Iterator iter = files.iterator(); iter.hasNext(); ) {
             Document doc;
             try {
-                doc = Xml.parse(((File) iter.next()).getAbsoluteFile());
+                doc = Xml.parseMutable(((File) iter.next()).getAbsoluteFile());
             } catch (SAXException e2) {
                 throw new TestClientException(e2.getClass().getName(), e2);
             } catch (IOException e2) {

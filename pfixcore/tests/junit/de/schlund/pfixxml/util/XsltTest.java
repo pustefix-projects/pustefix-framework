@@ -46,13 +46,13 @@ public class XsltTest extends TestCase {
         Transformer trafo;
         DOMResult result;
         
-        doc = Xslt.xmlObjectFromDisc(new File(PREFIX + xml));
+        doc = Xml.parse(new File(PREFIX + xml));
         trafo = Xslt.loadTransformer(new File(PREFIX + xsl));
         result = new DOMResult();
         return Xslt.transform(doc, trafo);
     }
     
 	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
-	    return (NodeInfo) Xslt.xmlObjectFromString(str);
+	    return (NodeInfo) Xml.parse(str);
 	}
 }

@@ -20,7 +20,6 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -40,7 +39,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import net.sf.saxon.TransformerFactoryImpl;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
-import net.sf.saxon.xpath.XPathException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -63,73 +61,20 @@ public class Xslt {
         factory.setErrorListener(new PFErrorListener());
     }
 
-    private static SAXSource createSaxSource(InputSource input) {
+    public static SAXSource createSaxSource(InputSource input) {
         return new SAXSource(Xml.createXMLReader(), input);
     }
      
     //-- load documents
     
-    /**
-     * Convert the document implementation which is used for write-access 
-     * by {@link SPDocument} to the document implementation which is used 
-     * by the XSLTProcessor. Note: Currently we convert here from a mutable
-     * DOM implementation to an immutable NodeInfo implementation(saxon).
-     * @param doc the document as source for conversion(mostly a Node implementation
-     * when using xerces)
-     * @return a document as result of conversion(currently saxons TinyDocumentImpl)
-     * @throws Exception on all errors 
-     */
-    public static Document xmlObjectFromDocument(Document doc) {
-        if (doc instanceof TinyDocumentImpl) {
-            return doc;
-        } else {
-            DOMSource domsrc = new DOMSource(doc);
-            try {
-                return xmlObjectFromSource(domsrc);
-            } catch (TransformerException e) {
-                throw new RuntimeException("a dom tree is always well-formed xml", e);
-            }
-        }
-    }
-
-
-    /**
-     * Create a document from a sourcefile in the filesystem. 
-     * @param path the path to the source file in the filesystem
-     * @return the created document(currenly saxons TinyDocumentImpl)
-     * @throws TransformerException on errors
-     */
-    public static Document xmlObjectFromDisc(File file) throws TransformerException {
-        String path = file.getAbsolutePath();
-        SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path));
-        return xmlObjectFromSource(src);
-    }
-
-    public static Document xmlObjectFromString(String str) throws TransformerException {
-        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
-        return xmlObjectFromSource(src);
-    }
-    
-    private static Document xmlObjectFromSource(Source input) throws  TransformerException, TransformerConfigurationException {
+    public static synchronized Transformer loadTransformer() {
         try {
-            Transformer trans  = factory.newTransformer();
-            DOMResult   result = new DOMResult();
-            trans.transform(input, result);
-            return (TinyDocumentImpl) result.getNode();
-        } catch (XPathException e) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("TransformerException in xmlObjectFromDisc!\n");
-            sb.append("Path: ").append(input.getSystemId()).append("\n");
-            sb.append("Message and Location: ").append(e.getMessage()).append("\n");
-            Throwable cause = e.getException();
-            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
-            CAT.error(sb.toString());
-            throw e;
+            return factory.newTransformer();
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
         }
     }
-    
-    //-- load transformer
-    
+
     public static synchronized Transformer loadTransformer(File file) throws TransformerConfigurationException {
         factory.setURIResolver(stdResolver);
         return factory.newTransformer(new StreamSource(file));

@@ -100,7 +100,7 @@ public class TargetGeneratorTest extends TestCase {
         TargetGenerator gen;
         File file;
         
-        Document doc = Xml.parseString(str);
+        Document doc = Xml.parseStringMutable(str);
         file = File.createTempFile("depend", "xml", new File("example"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);

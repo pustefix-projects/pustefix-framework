@@ -36,7 +36,7 @@ public class Navigation {
     private NavigationElement pageroot = new NavigationElement("__NONE__", "__NONE__");
     
     public Navigation(String navifilename) throws Exception {
-        Document        navitree = Xml.parse(navifilename);
+        Document        navitree = Xml.parseMutable(navifilename);
         List            nl       = XPath.select(navitree, "/make/navigation/page");
         recursePagetree(pageroot, nl);
     }

@@ -173,7 +173,7 @@ public class CheckIncludes {
             res_incfile.setAttribute("name", path.getRelative());
             
             try {
-                doc = Xml.parse(path.resolve());
+                doc = Xml.parseMutable(path.resolve());
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);

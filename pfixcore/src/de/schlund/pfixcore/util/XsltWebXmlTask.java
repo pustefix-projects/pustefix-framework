@@ -48,7 +48,7 @@ public class XsltWebXmlTask extends XsltGenericTask {
                 in = new File(srcdirResolved, inname);
                 Document        doc;
                 try {
-                    doc = Xml.parse(in);
+                    doc = Xml.parseMutable(in);
                 } catch (Exception e) {
                     throw new BuildException("Could not parse file "+in, e);
                 }

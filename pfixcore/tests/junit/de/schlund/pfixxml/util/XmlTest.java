@@ -78,6 +78,6 @@ public class XmlTest extends TestCase {
     }
     
     private static Document parse(String str) throws Exception {
-        return Xml.parseString(str);
+        return Xml.parseStringMutable(str);
     }
 }

@@ -144,7 +144,7 @@ public abstract class VirtualTarget extends TargetImpl {
   
     public String toString() {
         return "[TARGET: " + getType() + " " + getTargetKey()
-            + "@" + getTargetGenerator().getConfigname()
+            + "@" + getTargetGenerator().getName()
             + " <" + getXMLSource().getTargetKey() + "> <"
             + getXSLSource().getTargetKey() + ">]";
     }

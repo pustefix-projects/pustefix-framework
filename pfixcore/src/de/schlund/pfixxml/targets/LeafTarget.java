@@ -85,7 +85,7 @@ public abstract class LeafTarget extends TargetImpl {
     }
 
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getConfigname() + "]";
+        return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getName() + "]";
     }
 
     protected void setModTime(long mtime) {

@@ -29,6 +29,15 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
+import net.sf.saxon.tinytree.TinyDocumentImpl;
+import net.sf.saxon.xpath.XPathException;
 import org.apache.log4j.Category;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.xerces.parsers.SAXParser;
@@ -57,31 +66,104 @@ public final class Xml {
         return reader;
     }
     
+    public static DocumentBuilder createDocumentBuilder() {
+        DocumentBuilder result;
+        try {
+            result = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("createDocumentBuilder failed", e);
+        }
+        result.setErrorHandler(ERROR_HANDLER);
+        return result;
+    }
+
     public static Document createDocument() {
         return createDocumentBuilder().newDocument();       
     }
     
-    public static Document parseString(String text) throws SAXException {
+    //-- parse immutable
+    
+    /**
+     * Convert the document implementation which is used for write-access 
+     * by {@link SPDocument} to the document implementation which is used 
+     * by the XSLTProcessor. Note: Currently we convert here from a mutable
+     * DOM implementation to an immutable NodeInfo implementation(saxon).
+     * @param doc the document as source for conversion(mostly a Node implementation
+     * when using xerces)
+     * @return a document as result of conversion(currently saxons TinyDocumentImpl)
+     * @throws Exception on all errors 
+     */
+    public static Document parse(Document doc) {
+        if (doc instanceof TinyDocumentImpl) {
+            return doc;
+        } else {
+            DOMSource domsrc = new DOMSource(doc);
+            try {
+                return Xml.parse(domsrc);
+            } catch (TransformerException e) {
+                throw new RuntimeException("a dom tree is always well-formed xml", e);
+            }
+        }
+    }
+
+    /**
+     * Create a document from a sourcefile in the filesystem. 
+     * @param path the path to the source file in the filesystem
+     * @return the created document(currenly saxons TinyDocumentImpl)
+     * @throws TransformerException on errors
+     */
+    public static Document parse(File file) throws TransformerException {
+        String path = file.getAbsolutePath();
+        SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path));
+        return Xml.parse(src);
+    }
+
+    public static Document parse(String str) throws TransformerException {
+        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
+        return Xml.parse(src);
+    }
+
+    public static Document parse(Source input) throws  TransformerException, TransformerConfigurationException {
         try {
-            return parse(new InputSource(new StringReader(text)));        
+            Transformer trans  = Xslt.loadTransformer();
+            DOMResult   result = new DOMResult();
+            trans.transform(input, result);
+            return (TinyDocumentImpl) result.getNode();
+        } catch (XPathException e) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("TransformerException in xmlObjectFromDisc!\n");
+            sb.append("Path: ").append(input.getSystemId()).append("\n");
+            sb.append("Message and Location: ").append(e.getMessage()).append("\n");
+            Throwable cause = e.getException();
+            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+            CAT.error(sb.toString());
+            throw e;
+        }
+    }
+
+    //-- parse mutable
+    
+    public static Document parseStringMutable(String text) throws SAXException {
+        try {
+            return parseMutable(new InputSource(new StringReader(text)));        
         } catch (IOException e) {
             throw new RuntimeException("unexpected ioexception while reading from memory", e);
         }
     }
     
-    public static Document parse(File file) throws IOException, SAXException {
-        return parse(file.getPath());
+    public static Document parseMutable(File file) throws IOException, SAXException {
+        return parseMutable(file.getPath());
     }
     
-    public static Document parse(String filename) throws IOException, SAXException {
-        return parse(new InputSource(filename));
+    public static Document parseMutable(String filename) throws IOException, SAXException {
+        return parseMutable(new InputSource(filename));
     }
     
-    public static Document parse(InputStream src) throws IOException, SAXException {
-        return parse(new InputSource(src));
+    public static Document parseMutable(InputStream src) throws IOException, SAXException {
+        return parseMutable(new InputSource(src));
     }
     
-    public static Document parse(InputSource src) throws IOException, SAXException {
+    public static Document parseMutable(InputSource src) throws IOException, SAXException {
         try {
             return createDocumentBuilder().parse(src);
         } catch (SAXParseException e) {
@@ -109,8 +191,6 @@ public final class Xml {
             throw e;
         }
     }
-
-    
     
     //-- serialization
     
@@ -165,17 +245,6 @@ public final class Xml {
             fact.setValidating(false);
         }
         return fact;
-    }
-
-    private static DocumentBuilder createDocumentBuilder() {
-        DocumentBuilder result;
-        try {
-            result = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("createDocumentBuilder failed", e);
-        }
-        result.setErrorHandler(ERROR_HANDLER);
-        return result;
     }
 
     // make sure that output is not polluted by prinlns:

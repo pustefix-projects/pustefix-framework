@@ -105,7 +105,7 @@ public class EditorProductFactory implements FactoryInit {
     }
 
     private static void readFile(String filename) throws Exception {
-        Document        doc = Xml.parse(filename);
+        Document        doc = Xml.parseMutable(filename);
         doc.normalize();
         NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {

@@ -490,7 +490,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                     CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
                 }
             } else {
-                spdoc.setDocument(Xslt.xmlObjectFromDocument(spdoc.getDocument()));
+                spdoc.setDocument(Xml.parse(spdoc.getDocument()));
             }
             if (isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
@@ -612,7 +612,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             } catch (TargetGenerationException targetex) {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = targetex.toXMLRepresentation();
-                errordoc = Xslt.xmlObjectFromDocument(errordoc);
+                errordoc = Xml.parse(errordoc);
                 Transformer stvalue = (Transformer) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
                 Xslt.transform(errordoc, stvalue, null, res.getOutputStream());
                 return;

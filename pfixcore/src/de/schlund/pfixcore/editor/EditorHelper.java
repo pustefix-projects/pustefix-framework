@@ -210,7 +210,7 @@ public class EditorHelper {
         String name = constructBackupDir(ess, inc) + "/" + filename;
         File file = new File(name);
         if (file.exists() && file.canRead() && file.isFile()) {
-            Document doc = Xml.parse(file);
+            Document doc = Xml.parseMutable(file);
             if (kill) {
                 file.delete();
             }
@@ -419,7 +419,7 @@ public class EditorHelper {
         }
 
         try {
-            Document cdoc = Xml.parse(file);
+            Document cdoc = Xml.parseMutable(file);
             Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {

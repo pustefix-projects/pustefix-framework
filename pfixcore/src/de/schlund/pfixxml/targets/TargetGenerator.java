@@ -20,7 +20,6 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,9 +60,8 @@ public class TargetGenerator {
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
     private final File                    docroot;
-    private final String                  fullname;
-    
     private String name;
+    
     private String language;
     
     /* All registered TargetGenerationListener */
@@ -77,29 +75,14 @@ public class TargetGenerator {
     public TargetGenerator(File confile) throws Exception {
         this.docroot = findDocroot(confile);
         this.config_mtime = confile.lastModified();
-        this.fullname = confile.getCanonicalPath();
 
         Meminfo.print("TG: Before loading " + confile);
         loadConfig(confile);
         Meminfo.print("TG: after loading targets for " + confile.getPath());
     }
 
-    public void addListener(TargetGeneratorListener listener) {
-        listeners.add(listener);
-    }
+    //-- attributes
     
-    public void removeListener(TargetGeneratorListener listener) {
-        listeners.remove(listener);
-    }
-    
-    
-    public DependencyRefCounter getDependencyRefCounter() {
-        return refcounter;
-    }
-    public PageTargetTree getPageTargetTree() {
-        return pagetree;
-    }
-
     public String getName() {
         return name;
     }
@@ -108,9 +91,6 @@ public class TargetGenerator {
         return language;
     }
 
-    public String getConfigname() {
-        return fullname;
-    }
     public File getDisccachedir() {
         return new File(getDocroot(), ".cache" + File.separatorChar + getName());
     }
@@ -123,6 +103,12 @@ public class TargetGenerator {
         return docroot;
     }
 
+    public PageTargetTree getPageTargetTree() {
+        return pagetree;
+    }
+
+    //-- targets
+    
     public TreeMap getAllTargets() {
         synchronized (alltargets) {
             return new TreeMap(alltargets);
@@ -143,11 +129,24 @@ public class TargetGenerator {
         return (Target) createTarget(TargetType.XSL_LEAF, key);
     }
 
-    public String toString() {
-        return "[TG: " + getConfigname() + "; " + alltargets.size() + " targets defined.]";
+    //-- misc
+    
+    public void addListener(TargetGeneratorListener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(TargetGeneratorListener listener) {
+        listeners.remove(listener);
+    }
+    
+    
+    public DependencyRefCounter getDependencyRefCounter() {
+        return refcounter;
     }
 
-    // -------------------------------------------------------------------------------------------
+    public String toString() {
+        return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
+    }
 
     public static File findDocroot(File file) { // TODO
         file = file.getAbsoluteFile();
@@ -159,6 +158,9 @@ public class TargetGenerator {
     private static boolean isDocroot(String name) {
         return name.equals("projects") || name.equals("example");
     }
+    
+    // *******************************************************************************************
+
     
     public synchronized boolean tryReinit(File confile) throws Exception {
         if (confile.lastModified() > config_mtime) {
@@ -179,13 +181,11 @@ public class TargetGenerator {
         }
     }
 
-    // *******************************************************************************************
-
     private void loadConfig(File confile) throws Exception {
         CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
-        config = Xml.parse(confile);
+        config = Xml.parseMutable(confile);
 
         Element  root    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
@@ -207,9 +207,9 @@ public class TargetGenerator {
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
             Element      node   = (Element) targetnodes.item(i);
-            String       name   = node.getAttribute("name");
+            String       nameattr = node.getAttribute("name");
             String       type   = node.getAttribute("type");
-            TargetStruct struct = new TargetStruct(name, type);
+            TargetStruct struct = new TargetStruct(nameattr, type);
             HashMap      params = new HashMap();
             HashSet      depaux = new HashSet();
             Element      xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
@@ -222,10 +222,10 @@ public class TargetGenerator {
                     struct.setXMLDep(xmldep);
                     depxmls.add(xmldep);
                 } else {
-                    throw new XMLException("Defined VirtualTarget '" + name + "' with depxml without a name");
+                    throw new XMLException("Defined VirtualTarget '" + nameattr + "' with depxml without a name");
                 }
             } else {
-                throw new XMLException("Defined VirtualTarget '" + name + "' without [depxml]");
+                throw new XMLException("Defined VirtualTarget '" + nameattr + "' without [depxml]");
             }
             if (xslsub != null) {
                 String xsldep = xslsub.getAttribute("name");
@@ -233,10 +233,10 @@ public class TargetGenerator {
                     struct.setXSLDep(xsldep);
                     depxsls.add(xsldep);
                 } else {
-                    throw new XMLException("Defined VirtualTarget '" + name + "' with depxsl without a name");
+                    throw new XMLException("Defined VirtualTarget '" + nameattr + "' with depxsl without a name");
                 }
             } else {
-                throw new XMLException("Defined VirtualTarget '" + name + "' without [depxsl]");
+                throw new XMLException("Defined VirtualTarget '" + nameattr + "' without [depxsl]");
             }
             for (int j = 0; j < allaux.getLength(); j++) {
                 Element aux     = (Element) allaux.item(j);
@@ -255,14 +255,15 @@ public class TargetGenerator {
             }
             params.put("docroot", docroot.getPath());
             struct.setParams(params);
-            allstructs.put(name, struct);
+            allstructs.put(nameattr, struct);
         }
         CAT.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) +
                  "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
+        String tgParam = Path.getRelativeString(getDocroot(), confile.getCanonicalPath());
         for (Iterator i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = (TargetStruct) allstructs.get(i.next());
-            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls);
+            createTargetFromTargetStruct(struct, allstructs, depxmls, depxsls, tgParam);
         }
         CAT.warn("\n=====> Creating targets took " + (System.currentTimeMillis() - start) + "ms. Now init pagetree");
         start = System.currentTimeMillis();
@@ -270,7 +271,7 @@ public class TargetGenerator {
         CAT.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls) throws Exception {
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls, String tgParam) throws Exception {
         String     key     = struct.getName();
         String     type    = struct.getType();
         TargetType reqtype = TargetType.getByTag(type);
@@ -294,14 +295,14 @@ public class TargetGenerator {
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep);
             } else {
-                xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls);
+                xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
             } 
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep);
             } else {
-                xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
+                xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
             }
 
             VirtualTarget virtual = (VirtualTarget) createTarget(reqtype, key);
@@ -328,7 +329,7 @@ public class TargetGenerator {
                     pageparam = value;
                 }
             }
-            virtual.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), fullname));
+            virtual.addParam(XSLPARAM_TG, tgParam);
             virtual.addParam(XSLPARAM_TKEY, key);
 
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
@@ -500,7 +501,7 @@ public class TargetGenerator {
                         notifyListenerTargetDone(current);
                     } catch(TargetGenerationException tgex) {
                         notifyListenerTargetException(current,tgex);
-                        report.addError(tgex, getConfigname());
+                        report.addError(tgex, getName());
                         tgex.printStackTrace();
                     }
                 }
@@ -628,53 +629,5 @@ public class TargetGenerator {
             return null;
         }
         return attr.getValue();
-    }
-}
-
-class TargetGenerationReport {
-    private HashMap hash = new HashMap();
-    
-    TargetGenerationReport() {}
-    
-    void addError(Exception e, String key) {
-        if(hash.get(key) == null) {
-            ArrayList list = new ArrayList();
-            list.add(e);
-            hash.put(key, list);
-        } else {
-            ((ArrayList) hash.get(key)).add(e);
-        }
-    }
-    
-    public String toString() {
-        StringBuffer buf        = new StringBuffer(255);
-        String       prod_break = "'============================================================================================'\n";
-        String       ex_break   = "|----------------------------------------------------------------------------------\n";
-        if (hash.isEmpty()) {
-            StringBuffer sb = new StringBuffer();            
-            sb.append(prod_break);
-            sb.append("| No exceptions\n");
-            sb.append(prod_break);
-            return sb.toString();
-        }
-        
-        Iterator iter = hash.keySet().iterator();
-        
-        while(iter.hasNext()) {
-           Object key = iter.next();
-           buf.append(prod_break);    
-           buf.append("| Config: ").append((String) key).append("\n");
-           ArrayList exs = (ArrayList) hash.get(key);
-           buf.append("| Exceptions: ").append("\n");
-           for(int i=0; i<exs.size(); i++) {
-               TargetGenerationException tgex = (TargetGenerationException) exs.get(i);
-               String str = tgex.toStringRepresentation();
-               buf.append(str);
-               if(exs.size() - 1 > i)
-                    buf.append(ex_break);
-           }
-           buf.append(prod_break);
-        }
-        return buf.toString();
     }
 }

@@ -58,7 +58,7 @@ public final class RecordManager {
         if (CAT.isDebugEnabled()) {
             CAT.debug(this.getClass().getName() + " initializing");
         }
-        Document doc = Xml.parse(depxml);
+        Document doc = Xml.parseMutable(depxml);
         getConfigFromXML(doc);
         debug("RecordManager constructor end");
     }

@@ -233,7 +233,7 @@ public class TestcaseStep {
                     throw new TestClientException("IOException occured!", e);
                 }
                 result.setDuration(duration);
-                result.setServerResponse(Xml.parse(response_stream));
+                result.setServerResponse(Xml.parseMutable(response_stream));
                 result.setStatuscode(status_code);
             }
         }

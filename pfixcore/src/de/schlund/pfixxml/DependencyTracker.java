@@ -95,7 +95,7 @@ public class DependencyTracker {
                                 Path parent_path, String parent_part, String parent_product,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
-            String targetGen = target.getTargetGenerator().getConfigname();
+            String project = target.getTargetGenerator().getName();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type        = " + type + "\n" +
                       "Path        = " + path.getRelative() + "\n" +
@@ -104,7 +104,7 @@ public class DependencyTracker {
                       "ParentPath  = " + ((parent_path == null)? "null" : parent_path.getRelative()) + "\n" +
                       "ParentPart  = " + parent_part + "\n" +
                       "ParentProd  = " + parent_product + "\n" +
-                      "TargetGen   = " + targetGen + "\n");
+                      "Project     = " + project + "\n");
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
         target.getAuxDependencyManager().addDependency(thetype, path, part, product,

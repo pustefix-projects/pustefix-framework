@@ -243,8 +243,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
      */
     public int compareTo(Object inobj) {
         Target in = (Target) inobj;
-        if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {
-            return getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname());
+        if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
+            return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {
             return getTargetKey().compareTo(in.getTargetKey());
         }

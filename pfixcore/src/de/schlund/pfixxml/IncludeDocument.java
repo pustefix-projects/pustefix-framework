@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
 
 
 /**
@@ -51,9 +50,9 @@ public class IncludeDocument {
         modTime  = tmp.lastModified();
 
         if (mutable) {
-            doc = Xml.parse(tmp);
+            doc = Xml.parseMutable(tmp);
         } else {
-            doc = Xslt.xmlObjectFromDisc(tmp);
+            doc = Xml.parse(tmp);
         }
     }
 

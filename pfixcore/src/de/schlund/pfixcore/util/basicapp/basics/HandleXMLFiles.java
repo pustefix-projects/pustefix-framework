@@ -149,7 +149,7 @@ public class HandleXMLFiles {
         
         try {
             System.out.println("Try to read the dom of the given Document: " + currentDoc);
-            doc = Xml.parse(currentDoc);
+            doc = Xml.parseMutable(currentDoc);
             System.out.println("Transforming into dom has been successfull");
             return doc;
         } catch (SAXException e) {

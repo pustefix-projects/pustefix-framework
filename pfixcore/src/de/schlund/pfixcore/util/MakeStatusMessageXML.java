@@ -110,7 +110,7 @@ public class MakeStatusMessageXML {
                     // try to parse the existing statusmessage xml-file
                     // load statusmessages xml file
                     CAT.warn( ">>> parsing statusmessages xml-file ...");
-                    doc = Xml.parse(statusmessagefile);
+                    doc = Xml.parseMutable(statusmessagefile);
                     maker.updateFile(scfac, allscodes, doc, messagefile);
                 } catch (Exception e) {
                     CAT.error("FATAL1: " + e.toString());
@@ -282,7 +282,7 @@ public class MakeStatusMessageXML {
             "<foo xmlns:pfx=\"http://www.schlund.de/pustefix/core\">" + message + "</foo>";
         NodeList impelems = null;
         try {
-            impelems = Xml.parseString(text).getDocumentElement().getChildNodes();
+            impelems = Xml.parseStringMutable(text).getDocumentElement().getChildNodes();
         } catch (Exception exp) {
             CAT.error("*** " + message + " *** " + exp.toString());
             System.exit(ERR_NOTVALID);
