@@ -1,3 +1,7 @@
+2003-10-27  Sebastian Werner  <sw@schlund.de>
+	* example/core/script/baselib.js: Fixed bug in add-function for cookie handling. Now should
+	work correctly.
+
 2003-10-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: changed "files" attribute to "includes" as ant doesn't seem to know about this attribute 
