@@ -177,7 +177,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         try {
             obj = getCurrValue();
         } catch (TransformerException e) {
-            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue !", e);
+            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue (xml=" + getXMLSource() + ", xsl=" + getXSLSource() +")!", e);
             tex.setTargetkey(getTargetKey());
             throw tex;
         }

@@ -29,9 +29,6 @@ public class XsltWebXmlTask extends XsltGenericTask {
     
     public void init() throws BuildException {
         super.init();
-//        System.getProperties().put("javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-//        System.getProperties().put("javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl");
-//        System.getProperties().put("javax.xml.transform.TransformerFactory", "com.icl.saxon.TransformerFactoryImpl");
 
         this.dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setNamespaceAware(true);
