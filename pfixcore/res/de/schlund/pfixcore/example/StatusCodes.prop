@@ -1,9 +1,0 @@
-###############
-# STATUSCODES #
-###############
-
-statuscodefactory.statuscode.pfixcore.example.tshirt.SIZECOLOR_OUTOF_STOCK=This combination of size/color is out of stock.
-
-statuscodefactory.statuscode.pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK=The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of features/color is out of stock.
-
-statuscodefactory.statuscode.pfixcore.example.home.AGE_MISSING=Please tell me if you're old enough.
