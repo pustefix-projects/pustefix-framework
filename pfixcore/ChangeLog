@@ -1,3 +1,7 @@
+2003-01-23  Joerg Haecker <haecker@schlund.de>
+
+	* CVSROOT/cvswrappers: added entry for gifs and jars as binary data.
+
 2003-01-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Bugfix. only init helper classes one time.
