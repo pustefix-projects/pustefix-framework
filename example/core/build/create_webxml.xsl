@@ -47,16 +47,28 @@
         <servlet>
           <servlet-name><xsl:value-of select="@name"/></servlet-name>
           <servlet-class><xsl:apply-templates select="class/node()"/></servlet-class>
+          <xsl:for-each select="$common/init-param">
+            <init-param>
+              <param-name><xsl:apply-templates select="./param-name/node()"/></param-name>
+              <param-value><xsl:apply-templates select="./param-value/node()"/></param-value>
+            </init-param>
+          </xsl:for-each>
+          <xsl:for-each select="init-param">
+            <init-param>
+              <param-name><xsl:apply-templates select="./param-name/node()"/></param-name>
+              <param-value><xsl:apply-templates select="./param-value/node()"/></param-value>
+            </init-param>
+          </xsl:for-each>
           <xsl:if test="$common/commonpropfile/node()">
             <init-param>
-        <param-name>servlet.commonpropfile</param-name>
-        <param-value><xsl:apply-templates select="$common/commonpropfile/node()"/></param-value>
+              <param-name>servlet.commonpropfile</param-name>
+              <param-value><xsl:apply-templates select="$common/commonpropfile/node()"/></param-value>
             </init-param>
           </xsl:if>
           <xsl:if test="propfile/node()">
             <init-param>
-        <param-name>servlet.propfile</param-name>
-        <param-value><xsl:apply-templates select="propfile/node()"/></param-value>
+              <param-name>servlet.propfile</param-name>
+              <param-value><xsl:apply-templates select="propfile/node()"/></param-value>
             </init-param>
           </xsl:if>
 
