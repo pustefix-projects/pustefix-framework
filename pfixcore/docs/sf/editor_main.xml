@@ -1,8 +1,13 @@
 <div>
   <h1>The Pustefix Editor</h1>
-  <p>The PustefixEditor is the content management system
-  shipped with <pustefix/>. It is designed for editing
-  static content.</p>
+  <p>The PustefixEditor is a project browser and editor shipped with <pustefix/>.
+    It allows you to browse the structure of targets, pages and
+    include parts of the projects in your <pustefix/>
+    environment. Additionally you can create images and include parts
+    and edit them.</p>
+  
+
+  
 <!--  
   <h2>Normal usage</h2>
   <h3>Login</h3>

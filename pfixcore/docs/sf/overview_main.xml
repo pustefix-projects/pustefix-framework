@@ -10,10 +10,10 @@
     To get a more detailed overview of the business logic, go <a href="java.html">here</a>.
   </p>
 
-  <p>It also states which stylesheet is responsible to render the UI
-    that displays the result data. This stylesheet is requested from
-    the XML/XSLT generator.  Together with the DOM tree as input it is
-    used to create the HTML output that is displayed on the browser.</p>
+  <p>The stylesheet that's responsible to render the UI
+    to displays the result data is requested from the XML/XSLT
+    generator.  It uses the DOM tree as input to
+    create the HTML output that is displayed on the browser.</p>
 
   <p>
     The stylesheet generator makes heavy use of caching to ensure that

@@ -13,8 +13,8 @@
     the whole framework, please go <a href="xml.html">here</a>.
   </p>
 
-  <p>To make life a little easier, you never edit the <code>depend.xml</code> file directly,
-    but instead a <code>depend.xml.in</code> file which is used to
+  <p>To make life a little easier, you <b>never edit the <code>depend.xml</code> file directly,
+      but instead a <code>depend.xml.in</code> file</b> which is used to
     produce the <code>depend.xml</code> file (this is done
     automatically by the build system of the skeleton package and the
     CVS checkout).
@@ -120,8 +120,8 @@
                 convenience tag that can be expressed fully in terms
                 of <code>target</code> tags</b> (Expanding the
               <code>standardpage</code> tag is one of the duties
-              of the transformation [<code>depend.xml.in</code>
-              => <code>depend.xml</code>] mentioned above).</p>
+              of the transformation <code>depend.xml.in</code>
+              => <code>depend.xml</code> mentioned above).</p>
             <p> See below for a detailed explanation of targets and their configuration</p>
           </div>
         </xmlcodeOFF>
@@ -163,7 +163,7 @@
         </table>
       </xmlcodeOFF>
       <depxml name="core/xsl/master.xsl"/>
-      <depxsl name="core/editor/xsl/custommaster.xsl"/>
+      <depxsl name="MyProject/xsl/custommaster.xsl"/>
       <xmlcodeOFF>
         <div class="comment">
           <code>depxml</code> and <code>depxsl</code> reference other
@@ -201,36 +201,90 @@
             is rebuild.
           </p>
           <p>
-            <code>depaux</code> just adds more dependencies
-            that are not automatically detected "by hand". In the example
+            <code>depaux</code> just adds more dependencies "by hand"
+            that are not automatically detected. In the example
             above, the files referenced are XSLT stylesheets that are included via <code>xsl:include</code> into
-            the <code>master.xsl</code> stylesheet. Such external files are not handled automatically currently.</p>
+            the <code>master.xsl</code> stylesheet. Such external dependcies are not currently recognized automatically.</p>
+          <p>E.g. if you use a <code>skin.xsl</code> stylesheet, you
+            need to add the following line to the target
+            definition of <code>master.xsl</code> and <code>metatags.xsl</code></p>
+          <xmlcode>
+            <depaux name="MyProject/xsl/skin.xsl"/>
+          </xmlcode>
         </div>
       </xmlcodeOFF>
-      <param name="product" value="editor"/>
+      <param name="product" value="MyProject"/>
       <param name="lang"    value="en"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          <code>param</code> tags supply XSL transformation parameters that are used when the target is generated.
+          You can supply any parameter you want, but there are two parameters
+          that <b>need to be supplied</b> in the target definition of <code>master.xsl</code> and <code>metatags.xsl</code>:
+          <ul>
+            <li><b>product</b>: This parameter is needed so the system
+            knows which product branch of inlcude parts should be
+            used.</li>
+            <li><b>lang</b>: This is the language that
+            should be used for include parts if it isn't changed
+            explicitely at runtime.</li>
+          </ul>
+          You <b>must never supply</b> a <code>param</code> named <code>docroot</code>. This parameter is inserted automatically
+          during the transformation <code>depend.xml.in</code> => <code>depend.xml</code>.
+        </div>
+      </xmlcodeOFF>
     </target>
   </xmlcode>
 
   <h2>Standard page definition</h2>
-  
+  The <code>standardpage</code> tag is a convenience tag that encapsulates the typical definition of
+  a complete page in the <pustefix/> system.
   <xmlcode>
-    <standardpage name="home"  xml="core/editor/xml/two_frames.xml"/>
+    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml"/>
     <xmlcodeOFF>
-      <div class="comment">
-        after performing the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
-        (automatically done by the build system in the skeleton package and the CVS checkout) this becomes
-      </div>
+      <table class="stdtable">
+        <tr>
+          <th>Attribute</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td>The name of the page. This must be a name already defined in a <code>page</code> tag in the navigation tree.</td>
+        </tr>
+        <tr>
+          <td>xml</td>
+          <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and
+            one of the projects <i>structural xml files</i> (see <a href="xml.html">here</a>).</td>
+        </tr>
+      </table>
       <br/>
     </xmlcodeOFF>
+  </xmlcode>
+  <p>after performing the transformtion <code>depend.xml.in</code> => <code>depend.xml</code>
+    (automatically done by the build system in the skeleton package and the CVS checkout) this becomes</p>
+  <xmlcode>
     <target name="home.xsl" type="xsl">
       <depxml name="home.xml"/>
       <depxsl name="master.xsl"/>
       <param name="page" value="home"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          For every target that is only used in the generation of one single page (if you look at the example given
+          <a href="xml.html">here</a>, this is true for the generated targets <code>BazPage.xml</code> and <code>BazPage.xsl</code>)
+          you <b>must give a parameter called <code>page</code> with the name of the resulting page as the value</b>.
+          While the <code>standardpage</code> tag does this automatically for you make sure that you don't forget it for target
+          structures you define yourself.
+        </div>
+      </xmlcodeOFF>
       <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          As mentioned above, the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
+          inserts a <code>param</code> called <code>docroot</code>.
+        </div>
+      </xmlcodeOFF>
     </target><xmlcodeOFF/>
     <target name="home.xml" type="xml">
-      <depxml name="core/editor/xml/two_frames.xml"/>
+      <depxml name="MyProject/xml/SampleLayout.xml"/>
       <depxsl name="metatags.xsl"/>
       <param name="page" value="home"/>
       <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
