@@ -310,7 +310,7 @@
           </xmlcodeOFF>
         </resource>                               
       </context>
-      <xmlcodeOFF/>
+      <xmlcodeOFF><a name="stopnext"/></xmlcodeOFF>
       <pageflow name="AName" final="APageName" stopnext="true|false">
         <xmlcodeOFF>
           <div class="comment">
@@ -358,6 +358,7 @@
             </table>
             <br/>
           </div>
+          <a name="stophere"/>
         </xmlcodeOFF>
         <flowstep name="AnotherPageName" stophere="true|false"/>
         <xmlcodeOFF>
