@@ -31,8 +31,6 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.spi.ThrowableInformation;
-
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -303,15 +301,13 @@ class ExceptionContext {
         String exceptname = throwable_.getClass().getName();
         String message = throwable_.getMessage();
         if (message == null) {
-            ThrowableInformation info = new ThrowableInformation(throwable_);
-            String[] strace = info.getThrowableStrRep();
-            
+            StackTraceElement[] strace = throwable_.getStackTrace();
             if(strace.length > 1) {
-                message = strace[1].trim();
-            } else if (strace.length == 1){
+                message = strace[1].toString().trim();
+            } else if (strace.length == 1) {
                 // This case can happen when handling a OutofMemoryError, where
                 // the stracktrace has a length of only 1.
-                message = strace[0].trim();
+                message = strace[0].toString().trim();
             } else {
                 // what's this?
                 message = "No information found.";
@@ -346,10 +342,9 @@ class ExceptionContext {
      */
     private StringBuffer createSTraceText() {
         StringBuffer err = new StringBuffer();
-        ThrowableInformation info = new ThrowableInformation(throwable_);
-        String[] strace = info.getThrowableStrRep();
+        StackTraceElement[] strace = throwable_.getStackTrace();
         for (int i = 0; i < strace.length; i++) {
-            err.append(strace[i].trim() + "\n");
+            err.append(strace[i].toString().trim() + "\n");
         }
         return err;
     }

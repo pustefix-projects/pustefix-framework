@@ -1,3 +1,18 @@
+2004-03-03 Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
+        use only methods from JDK for retrieving  stacktrace information
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java,
+        src/de/schlund/pfixxml/exceptionhandler/PFUtil.java: minor
+        
+        * src/de/schlund/pfixxml/exceptionhandler/InstanceCheckerContainer.java,
+        src/de/schlund/pfixxml/exceptionhandler/Report.java,
+        src/de/schlund/pfixxml/exceptionhandler/ReportGeneratorTask.java,
+        src/de/schlund/pfixxml/exceptionhandler/STraceCheckerContainer.java:
+        Now for each stored exception a separate mail will be sent.
+        Subject of reports improved, no trigger and auto stuff more.
+
+
 2004-03-01 Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java:

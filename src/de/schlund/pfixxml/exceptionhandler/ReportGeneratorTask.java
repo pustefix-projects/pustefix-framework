@@ -19,14 +19,9 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.TimerTask;
 import java.util.Vector;
 
@@ -47,9 +42,9 @@ class ReportGeneratorTask extends TimerTask {
     private Vector icheckers_=null;
     private String info_     =null;
     private PFUtil pfutil_   =null;
-    private final String COUNTRY_ ="DE";
-    private final String LANGUAGE_="de";
-    private final String TIMEZONE_="Europe/Berlin";
+//    private final String COUNTRY_ ="DE";
+//    private final String LANGUAGE_="de";
+//    private final String TIMEZONE_="Europe/Berlin";
 
     //~ Constructors ...........................................................
 
@@ -73,41 +68,23 @@ class ReportGeneratorTask extends TimerTask {
         Thread.currentThread().setName("ReportGeneratorTask-Thread");
         pfutil_.debug("ReportGeneratorTask (" + info_ + ") started.");
         ArrayList reports = getReports();
-        if(reports == null)
+        if(reports == null || reports.isEmpty()) {
+            pfutil_.debug("ReportGenerator: No reports. Bye."); 
             return;
-            
-        StringBuffer sb = new StringBuffer();
-        int count = 0;
+        }
+        MailConfig mailconfig = MailConfig.getInstance();
         for(Iterator iter = reports.iterator(); iter.hasNext(); ) {
             Report report = (Report) iter.next();
-            String b = report.getMessage();
-            if(b != null) {
-                sb.append(b + "\n");
-            }
-            count += report.getCount();
-        } 
-        
-        String buf = sb.toString();
-        if(count != 0) {
-            TimeZone tz        =TimeZone.getTimeZone(TIMEZONE_);
-            Locale loc         =new Locale(LANGUAGE_, COUNTRY_);
-            Calendar cal       =Calendar.getInstance(tz, loc);
-            SimpleDateFormat df=new SimpleDateFormat("H:mm:ss");
-            String date        =df.format(cal.getTime());
-            String subject = date + ":Report of collected exceptions (" + count +", "+ info_ + ")";
-            MailConfig mailconfig = MailConfig.getInstance();
             try {
-                EmailSender.sendMail(subject, buf.toString(), 
+                EmailSender.sendMail("Report: "+report.getHeader(), 
+                                    report.getMessage(), 
                                     mailconfig.getTo(),
                                     mailconfig.getFrom(),
                                     mailconfig.getHost());
             } catch (EmailSenderException e) {
                 pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
-            }
-            pfutil_.debug("ReportGeneratorTask (" + info_ + ") mail sent");
-        } else
-            pfutil_.debug(" ReportGeneratorTask: no need to send mail");
-        pfutil_.debug("ReportGeneratorTask (" + info_ + ") ended.");
+          }
+        }
     }
 
     /**
@@ -115,22 +92,13 @@ class ReportGeneratorTask extends TimerTask {
     * @return text containing report data.
     */
     private ArrayList getReports() {
-        boolean doit    =false;
         ArrayList list = new ArrayList();
         for(Enumeration enum=icheckers_.elements(); enum.hasMoreElements();) {
             InstanceCheckerContainer ich=(InstanceCheckerContainer) enum.nextElement();
-            Report report = ich.getReport();
-            if(report != null)
-                list.add(report);
-            /*String b                    =report.getMessage();
-            if(b!=null) {
-                buf.append(b + "\n");
-                doit=true;
-            }*/
-            doit = true;
+            ArrayList reports = ich.getReports();
+            if(reports != null && !reports.isEmpty())
+                list.addAll(reports);
         }
-        if(doit)
-            return list;
-        return null;
+        return list;
     }
 } // ReportGeneratorTask

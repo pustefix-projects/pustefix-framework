@@ -40,7 +40,7 @@ public class ExceptionHandler implements FactoryInit {
 
     //~ Instance/static variables ..............................................
 
-    private static ExceptionHandler instance_ = null;
+    private static ExceptionHandler instance_ = new ExceptionHandler();
     private final String PROP_FILE_  = "exceptionhandler.propertyfile";
     private Cubbyhole cubbyhole_  = null;
     private String propfile_  = null;
@@ -66,9 +66,6 @@ public class ExceptionHandler implements FactoryInit {
      * @return ExceptionHandler the instance.
      */
     public static ExceptionHandler getInstance() {
-        if(instance_==null) {
-            instance_=new ExceptionHandler();
-        }
         return instance_;
     }
 
