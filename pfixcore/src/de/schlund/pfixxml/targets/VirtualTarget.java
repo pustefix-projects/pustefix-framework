@@ -166,17 +166,27 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
     protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
-        long maxmodtime = 0;
+        // long currmodtime = getModTime();
+        long maxmodtime  = 0;
         long tmpmodtime;
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
-        tmpmodtime = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
-        maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        maxmodtime = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
+        // if (maxmodtime > currmodtime) {
+        //     CAT.warn("### XMLSource of "  + getTargetKey() + " is newer! " + maxmodtime + ">" + currmodtime);
+        // }
         tmpmodtime = ((TargetImpl) getXSLSource()).getModTimeMaybeUpdate();
+        // if (tmpmodtime > currmodtime) {
+        //     CAT.warn("### XSLSource of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
+        // }
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
         storedException = null;
         // check all the auxilliary sources from auxsource
-        maxmodtime = Math.max(getAuxDependencyManager().getMaxTimestamp(), maxmodtime);
+        tmpmodtime = getAuxDependencyManager().getMaxTimestamp();
+        // if (tmpmodtime > currmodtime) {
+        //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
+        // }
+        maxmodtime = Math.max(tmpmodtime, maxmodtime);
         if (maxmodtime > getModTime()) {
             synchronized (this) {
                 if (maxmodtime > getModTime()) {

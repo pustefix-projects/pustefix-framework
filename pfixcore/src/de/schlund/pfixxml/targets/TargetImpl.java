@@ -55,7 +55,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected Category             TREE            = Category.getInstance(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle that the target is always up to date (expect make generate!!!)
-    private boolean                onceGenerated   = false;
+    private boolean                onceLoaded      = false;
     // store  exception occured during transformation here. 
     protected Exception            storedException = null;
     
@@ -121,47 +121,44 @@ public abstract class TargetImpl implements TargetRW, Comparable {
      */
     public Object getValue() throws TargetGenerationException {
         // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
-        // but: if the target is not in memory- and disk-cache (has not been generated) we
-        // must call getModTimeMaybeUpdate to make it work
+        // but: if the target is not in disk-cache (has not been generated) we must call
+        // getModTimeMaybeUpdate once to generate it. After that, it can be loaded in getCurrValue()
+        // which sets onceLoaded to true so we don't have to make this check again.
         if (generator.isGetModTimeMaybeUpdateSkipped()) {
             // skip getModTimeMaybeUpdate!
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("skip_getmodtimemaybeupdate is on. Trying to skip getModTimeMaybeUpdate...");
-            }
-            if (!onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug(
-                        "Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
+            CAT.debug("skip_getmodtimemaybeupdate is true. Trying to skip getModTimeMaybeUpdate...");
+            if (!onceLoaded) {
+                // do test for exists here!
+                File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+                if (!thefile.exists()) { // Target has not been loaded once and it doesn't exist in disk cache
+                    CAT.debug("Cant't skip getModTimeMaybeUpdated because it has not been loaded " +
+                              "and doesn't even exist in disk cache! Generating now !!");
+                    try {
+                        getModTimeMaybeUpdate();
+                        // FIXME FIXME ! Do we really handle the exception here, if getmodtimemaybeupdate is slipped????
+                    } catch(IOException e1) {
+                        throw new TargetGenerationException(e1.getClass().getName()+ " in getModTimeMaybeUpdate()!", e1);
+                    } catch(XMLException e2) {
+                        throw new TargetGenerationException(e2.getClass().getName()+ " in getModTimeMaybeUpdate()", e2);
+                    }
+                } else {
+                    CAT.debug("Target exists in disc cache, using it...");
                 }
-            try {
-                getModTimeMaybeUpdate();
-                // FIXME FIXME ! Do we really handle the exception here, if getmodtimemaybeupdate is slipped????
-            } catch(IOException e1) {
-                throw new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()!", e1);
-            } catch(XMLException e2) {
-                throw new TargetGenerationException(e2.getClass().getName()+"  in getModTimeMaybeUpdate()", e2);
+            } else { // target generated -> nop 
+                CAT.debug("Target has already been loaded, reusing it...");
             }
-            
-
-            } // target generated -> nop 
-            else {
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("Target has been generated! Skipping getModTimeMaybeUpdate...");
-                }
-            }
-        } // do not skip getModTimeMaybeUpdate 
-        else {
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
-            }
+        } else { // do not skip getModTimeMaybeUpdate 
+            CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
             try {
                 getModTimeMaybeUpdate();
             } catch(IOException e1) {
-                TargetGenerationException tex = new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()", e1);
+                TargetGenerationException tex = new TargetGenerationException(e1.getClass().getName() +
+                                                                              " in getModTimeMaybeUpdate()", e1);
                 tex.setTargetkey(getTargetKey());
                 throw tex;
             } catch(XMLException e2) {
-                TargetGenerationException tex =  new TargetGenerationException(e2.getClass().getName()+" in getModTimeMayUpdate()", e2);
+                TargetGenerationException tex = new TargetGenerationException(e2.getClass().getName() +
+                                                                               " in getModTimeMayUpdate()", e2);
                 tex.setTargetkey(getTargetKey());
                 throw tex;
             }
@@ -170,7 +167,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         try {
             obj = getCurrValue();
         } catch (TransformerException e) {
-            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue (xml=" + getXMLSource() + ", xsl=" + getXSLSource() +")!", e);
+            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue (xml=" +
+                                                                          getXMLSource() + ", xsl=" + getXSLSource() +")!", e);
             tex.setTargetkey(getTargetKey());
             throw tex;
         }
@@ -231,7 +229,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     }
 
                     // now the target is generated
-                    onceGenerated = true;
+                    onceLoaded = true;
                 }
             }
         }
