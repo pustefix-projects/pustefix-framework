@@ -231,6 +231,9 @@ public final class Xml {
         doSerialize(node, new FileOutputStream(filename), pp, true);
     }
 
+    public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
+        doSerialize(node, dest, pp, decl);
+    }
 
     
 
@@ -288,16 +291,13 @@ public final class Xml {
         } else {
             format.setPreserveSpace(true);
         }
-        if (dest instanceof StringWriter) { // No FileWriter because encoding must be set.
-                                            // Use FileOutputstreams instead 
+        if (dest instanceof Writer) { 
             ser = new XMLSerializer((Writer) dest, format);
-        } else if (dest instanceof FileOutputStream) {
+        } else if (dest instanceof OutputStream) {
             ser = new XMLSerializer((OutputStream) dest, format);
         } else {
-            throw new RuntimeException("Only StringWriter and FileOutputStreams allowed! " +
-                                       "(" + dest.getClass() +")");
+            throw new RuntimeException("Only Writer or OutputStreams allowed: " + dest.getClass());
         }
-
         if (node instanceof Document) {
             ser.serialize((Document) node);
         } else if (node instanceof Element) {
