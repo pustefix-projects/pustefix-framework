@@ -209,6 +209,12 @@
   the IWrapper is just a base class for more specialized IWrapper
   subclasses).</p>
 
+  <subsection name="Java classes">
+  
+  </subsection>
+
+  <img src="images/state-ihandler.gif"/>
+
   </section>
 </body>
 </document>

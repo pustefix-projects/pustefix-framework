@@ -19,7 +19,7 @@
   <package>de.schlund</package>
   <logo>/images/logo.gif</logo>
 
-  <issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl>
+  <!-- not enabled for pustefix: issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl -->
   <siteAddress>pustefix.sourceforge.net</siteAddress>
 
   <repository>
