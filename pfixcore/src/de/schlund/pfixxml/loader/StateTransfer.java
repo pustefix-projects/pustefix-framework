@@ -111,7 +111,7 @@ public class StateTransfer {
                             //get field value
                             Object value=fields[i].get(oldObj);
                             if(debug) {
-                                CAT.debug("Transfer field '"+name+"' ('"+value+"') of class '"+oldClass.getName()+"'.");
+                                CAT.debug("Transfer field '"+name+"' of class '"+oldClass.getName()+"'.");
                             } 
                             //check if field value defined
                             if(value!=null) {value=transfer(value);} 
