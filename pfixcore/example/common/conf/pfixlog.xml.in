@@ -203,7 +203,7 @@
         <priority value="WARN"/>
       </cus:test>
       <cus:test>
-        <priority value="WARN"/>
+        <priority value="DEBUG"/>
       </cus:test>
     </cus:choose>
     <appender-ref ref="LOGGER_GENERAL"/>

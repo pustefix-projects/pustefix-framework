@@ -433,7 +433,7 @@ public class Context implements AppContext {
                 if (preqprops.pageRequestIsDefined(preq)) {
                     // LOG.info("    * found props for page " + name);
                     State       state   = pagemap.getState(preq);
-                    // LOG.info("    * found state " + state.getClass() + " for page " + name);
+                    LOG.debug("    * found state " + state.getClass() + " for page " + name);
                     PageRequest saved   = getCurrentPageRequest();
                     setCurrentPageRequest(preq);
                     
