@@ -309,10 +309,6 @@ public final class Xml {
         Throwable cause;
         DOMSource src;
         
-        if (decl) { 
-            // don' t use saxon here because it does (intenionally!) omit the tailing newline
-            write("<?xml version=\"1.0\" encoding=\"" + ENCODING + "\"?>\n", dest);
-        }
         // TODO: remove special cases
         if (node instanceof Text) {
             write(((Text) node).getData(), dest);
@@ -330,7 +326,12 @@ public final class Xml {
         } else {
             t = Xslt.createIdentityTransformer();
         }
-        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, decl? "no" : "yes");
+        if (decl) {
+            t.setOutputProperty(OutputKeys.ENCODING, ENCODING);
+        } else {
+            // don't set encoding, I'd force an xml decl by setting it.
+        }
         t.setOutputProperty(OutputKeys.INDENT, pp? "yes" : "no");
         t.setOutputProperty(SaxonOutputKeys.INDENT_SPACES, "2");
         src = new DOMSource(wrap(node));
