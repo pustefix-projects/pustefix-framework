@@ -9,28 +9,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.WeakHashMap;
 import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.transform.*;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.ConfigurationException;
-import org.apache.axis.Message;
-import org.apache.axis.utils.Messages;
 import org.apache.axis.AxisEngine;
-import org.apache.axis.MessageContext;
 import org.apache.axis.description.OperationDesc;
 import org.apache.axis.description.ServiceDesc;
-
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
 import de.schlund.pfixcore.webservice.monitor.*;
 import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 
 /**
  * WebServiceServlet.java 
@@ -123,7 +116,6 @@ public class WebServiceServlet extends AxisServlet {
             super.doPost(req,res);
         }
     }
-    
     
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
         HttpSession session=req.getSession(false);
@@ -229,7 +221,6 @@ public class WebServiceServlet extends AxisServlet {
             } catch(ConfigurationException x) {
             
             }
-            //TODO: show available services, wsdl, ...
             writer.println("</div></body></html>");
             writer.close();
         } else sendForbidden(req,res,writer);

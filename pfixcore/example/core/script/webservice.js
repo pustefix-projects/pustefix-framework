@@ -52,7 +52,8 @@ QName.prototype.toString=function() {
 
 //### CONSTANTS ###
 var QNAME_XSI_TYPE=new QName(XMLNS_XSI,"type");
-
+var QNAME_ARRAY=new QName(XMLNS_SOAPENC,"Array");
+var QNAME_ARRAY_TYPE=new QName(XMLNS_SOAPENC,"arrayType");
 
 //*********************************
 //XMLType
@@ -90,13 +91,13 @@ function XMLType() {
 var xmltype=new XMLType();
 
 //*********************************
-//Parameter(name,xmlType,parameterMode)
-//Parameter(name,xmlType,jsType,parameterMode)
+//Parameter(String name,QName xmlType,parameterMode)
+//Parameter(String name,QName xmlType,String typeInfo,parameterMode)
 //*********************************
 function Parameter() {
 	this.name=null;
 	this.xmlType=null;
-	this.jsType=null;
+	this.typeInfo=null;
 	this.parameterMode=null;
 	this.init(arguments);
 	this.value=null;
@@ -110,7 +111,7 @@ Parameter.prototype.init=function(args) {
 	} else if(args.length==4) {
 		this.name=args[0];
 		this.xmlType=args[1];
-		this.jsType=args[2];
+		this.typeInfo=args[2];
 		this.parameterMode=args[3];
 	}
 }
@@ -303,14 +304,15 @@ SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 //*********************************
 //ArraySerializer(type)
 //*********************************
-function ArraySerializer() {
-	this.type=xmltype.SOAP_ARRAY;
+function ArraySerializer(type) {
+	this.type=type;
 }
 
 ArraySerializer.prototype.serialize=function(value,name,writer) {
 	writer.startElement(name);
-	var prefix=writer.getPrefix(this.type.namespaceUri);
-	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.type.localpart);
+	var prefix=writer.getPrefix(QNAME_ARRAY.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+QNAME_ARRAY.localpart);
+	writer.writeAttribute(QNAME_ARRAY_TYPE,"foooo");
 	for(var i=0;i<value.length;i++) {
 		writer.startElement("item");
 		
@@ -333,6 +335,14 @@ ArraySerializer.prototype.serialize=function(value,name,writer) {
 		writer.endElement("item");
 	}
 	writer.endElement(name);
+}
+
+
+//*********************************
+//BeanSerializer(type)
+//*********************************
+function BeanSerializer(type) {
+	this.type=type;
 }
 
 
@@ -396,6 +406,7 @@ RPCSerializer.prototype.serialize=function(writer) {
 	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
 	for(var i=0;i<this.params.length;i++) {
 		var serializer=typeMapping.getSerializer(this.params[i].xmlType);
+		
 		serializer.serialize(this.params[i].value,this.params[i].name,writer);
 	}
 	writer.endElement(this.opName);
@@ -410,7 +421,7 @@ function Call() {
 	this.opName=null;
 	this.params=new Array();
 	this.retXmlType=null;
-	this.retJsType=null;
+	this.retTypeInfo=null;
   this.callback=null;
 }
 
@@ -429,7 +440,7 @@ Call.prototype.setOperationName=function() {
 }	
 
 //addParameter(paramName,xmlType,parameterMode)
-//addParameter(paramName,xmlType,jsType,parameterMode)
+//addParameter(paramName,xmlType,typeInfo,parameterMode)
 Call.prototype.addParameter=function() {
 	var param;
 	if(arguments.length==3) {
@@ -441,13 +452,13 @@ Call.prototype.addParameter=function() {
 }
 
 //setReturnType(xmlType)
-//setReturnType(xmlType,jsType)
+//setReturnType(xmlType,typeInfo)
 Call.prototype.setReturnType=function() {
 	if(arguments.length==1) {
 		this.retXmlType=arguments[0];
 	} else if(arguments.length==2) {
 		this.retXmlType=arguments[0];
-		this.retJsType=arguments[1];
+		this.retTypeInfo=arguments[1];
 	}
 }
 
@@ -638,9 +649,11 @@ function test() {
 	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
 	call.setOperationName(new QName("add"));
 	call.addParameter("value1",xmltype.XSD_INT,"IN");
-	//call.addParameter("value2",xmltype.XSD_INT,"IN");
+	call.addParameter("value2",xmltype.XSD_INT,"IN");
 	//call.addParameter("test",xmltype.SOAP_STRING,"IN");
-	call.addParameter("test",xmltype.SOAP_ARRAY,"IN");
+	//call.addParameter("test",xmltype.SOAP_ARRAY,"xsd:int[]","IN");
+	//call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_int"),"IN");
+	
 	call.setReturnType(xmltype.XSD_INT);
 	//try {
 		call.invoke(4,new Array(4,"jj","fdfdfd"));

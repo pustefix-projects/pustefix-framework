@@ -1,5 +1,6 @@
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.Constants;
@@ -8,6 +9,8 @@ import org.apache.axis.encoding.XMLType;
 import org.apache.axis.utils.Options;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ParameterMode;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 
 import de.schlund.pfixcore.example.webservices.*;
 
@@ -43,8 +46,29 @@ public class TypeTestClient {
                 //bean2.setFloatVal(3f);
 		tt.echoDataBeanArray(new DataBean[] {bean,bean,bean2});
 		//new TypeTestClient();
-
+		Element elem=getDOMElement("test1");
+		tt.echoElement(elem);
+		Element elem2=getDOMElement("test2");
+		tt.echoElementArray(new Element[] {elem,elem,elem2});
+		HashMap map=new HashMap();
+		map.put("stringkey","stringval");
+		map.put(new Integer(1),new Float(1.1));
+		map.put(bean,new int[] {1,2,3});
+		tt.echoHashMap(map);
 	}
+
+	public static Element getDOMElement(String name) throws Exception {
+			DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+			DocumentBuilder db=dbf.newDocumentBuilder();
+			Document doc=db.newDocument();
+			Element root=doc.createElement(name);
+			doc.appendChild(root);
+			Element elem=doc.createElement("foo");
+			elem.setAttribute("grrr","llll");
+			root.appendChild(elem);
+			return root;
+	}
+
 
 	public TypeTestClient() throws Exception {
 		System.out.println("echoInt(3) -> "+echoInt(3));
