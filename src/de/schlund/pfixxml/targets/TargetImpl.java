@@ -122,8 +122,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     /**
      * @see de.schlund.pfixxml.targets.Target#getValue()
      */
-    public Object getValue()
-        throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
+    public Object getValue() throws TargetGenerationException {
         // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
         // but: if the target is not in memory- and disk-cache (has not been generated) we
         // must call getModTimeMaybeUpdate to make it work
@@ -137,7 +136,17 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     CAT.debug(
                         "Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
                 }
+            try {
                 getModTimeMaybeUpdate();
+                // FIXME FIXME ! Do we really handle the exception here, if getmodtimemaybeupdate is slipped????
+            } catch(IOException e1) {
+                throw new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()!", e1);
+            } catch(XMLException e2) {
+                throw new TargetGenerationException(e2.getClass().getName()+"  in getModTimeMaybeUpdate()", e2);
+            } catch (ParserConfigurationException e3) {
+                throw new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
+            }
+            
 
             } // target generated -> nop 
             else {
@@ -150,7 +159,21 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             if (CAT.isDebugEnabled()) {
                 CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
             }
-            getModTimeMaybeUpdate();
+            try {
+                getModTimeMaybeUpdate();
+            } catch(IOException e1) {
+                TargetGenerationException tex = new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()", e1);
+                tex.setTargetkey(getTargetKey());
+                throw tex;
+            } catch(XMLException e2) {
+                TargetGenerationException tex =  new TargetGenerationException(e2.getClass().getName()+" in getModTimeMayUpdate()", e2);
+                tex.setTargetkey(getTargetKey());
+                throw tex;
+            } catch (ParserConfigurationException e3) {
+                TargetGenerationException tex =  new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
+                tex.setTargetkey(getTargetKey());
+                throw tex;
+            }
         }
         Object obj = null;
         try {
