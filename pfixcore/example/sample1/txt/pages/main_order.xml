@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-  
+
   <part name="content">
     <product name="default">
       <lang name="default">
   <center>
+
+    <pfx:pagemessages />
+
+
     <pfx:forminput name="main" target="_top">
       <pfx:errorbox width="500"/>
       <br/>
@@ -34,14 +38,14 @@
 </lang>
     </product>
   </part>
-  
+
 
   <part name="help_shirt">
     <product name="default">
       <lang name="default">
   Quite some help for all the things you should fill into this
   wizard dialog page. You need to do this, because you want to
-  buy a nice T-Shirt at <b><i>ACME Shirts&amp;Trousers Inc.</i></b>, 
+  buy a nice T-Shirt at <b><i>ACME Shirts&amp;Trousers Inc.</i></b>,
   don't you? I bet you really want to.
 </lang>
     </product>
@@ -56,11 +60,11 @@
         <b><big>T-Shirt:</big></b>
       </td>
     </tr>
-  </table>            
+  </table>
   <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
     <pfx:groupdisplayonly name="01-Shirt">
       <tr>
-        <td class="sample_group_help" colspan="2"> 
+        <td class="sample_group_help" colspan="2">
           <pfx:include part="help_shirt"/>
         </td>
       </tr>
@@ -104,7 +108,7 @@
 </lang>
     </product>
   </part>
-  
+
   <part name="counter">
     <product name="default">
       <lang name="default">
@@ -157,11 +161,14 @@
         </tr>
       </ixsl:otherwise>
     </ixsl:choose>
+    <tr>
+      <td colspan="2"><i>Add to the Counter <br/>to see the "PageMessages" <br/>feature in action.</i></td>
+    </tr>
   </table>
 </lang>
     </product>
   </part>
-  
+
   <part name="pic">
     <product name="default">
       <lang name="default">
@@ -187,28 +194,28 @@
 </lang>
     </product>
   </part>
-  
+
   <part name="help_trouser_a">
     <product name="default">
       <lang name="default">
-  Here is an awful lot of text, that helps you decide what 
+  Here is an awful lot of text, that helps you decide what
   things you should fill into this
-  wizard dialog page for buying a nice "Adult 
+  wizard dialog page for buying a nice "Adult
   Trouser (TM)" at
   <b><i>ACME Shirts&amp;Trousers Inc.</i></b>
 </lang>
     </product>
   </part>
-  
+
   <part name="help_trouser_b">
     <product name="default">
       <lang name="default">
   Of course we can add even more information here.
 </lang>
     </product>
-    
+
   </part>
-  
+
   <part name="trouser">
     <product name="default">
       <lang name="default">
@@ -219,15 +226,15 @@
       </td>
     </tr>
   </table>
-  <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400"> 
+  <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
     <pfx:groupdisplayonly name="02-Trouser">
       <tr>
-        <td class="sample_group_help" colspan="2"> 
+        <td class="sample_group_help" colspan="2">
           <pfx:include part="help_trouser_a"/>
         </td>
       </tr>
     </pfx:groupdisplayonly>
-    
+
     <tr>
       <td nowrap="nowrap">
         <pfx:label name="trouser.Size">Size [M,L,XL]</pfx:label>:
@@ -262,7 +269,7 @@
     </tr>
     <pfx:groupdisplayonly name="02-Trouser">
       <tr>
-        <td class="sample_group_help" colspan="2"> 
+        <td class="sample_group_help" colspan="2">
           <pfx:include part="help_trouser_b"/>
         </td>
       </tr>
@@ -271,7 +278,7 @@
 </lang>
     </product>
   </part>
-  
+
   <part name="wizard">
     <product name="default">
       <lang name="default">
