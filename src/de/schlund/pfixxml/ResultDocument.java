@@ -146,7 +146,7 @@ public class ResultDocument {
     
     public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
-        String  part    = code.getPart();
+        String  part    = code.getStatusCodeId();
         Element include = thedoc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
