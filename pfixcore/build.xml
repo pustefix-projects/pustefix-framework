@@ -810,71 +810,12 @@
 	</target>
 	
 	<target name="tomcat_strip">
-		<delete dir="${dir.tomcat}/server/webapps"/>
-		<delete dir="${dir.tomcat}/server/classes"/>
-		<delete dir="${dir.tomcat}/common/endorsed"/>
-		<delete dir="${dir.tomcat}/common/classes"/>
-		<delete dir="${dir.tomcat}/temp"/>
-		<delete dir="${dir.tomcat}/webapps"/>
-		<delete>
-			<fileset dir="${dir.tomcat}/bin">
-				<include name="*.bat"/>
-				<include name="*.exe"/>
-				<include name="catalina.xml"/>
-				<include name="commons-daemon.jar"/>
-				<include name="commons-launcher.jar"/>
-				<include name="digest.*"/>
-				<include name="jsvc.tar.gz"/>
-				<include name="LauncherBootstrap.class"/>
-				<include name="launcher.properties"/>
-				<include name="startup*.*"/>
-				<include name="shutdown*.*"/>
-				<include name="tool-wrapper*.*"/>
-			</fileset>
-		</delete>
-		<delete>
-			<!-- dont delete "jasper-*.jar" because the default web.xml refers to it -->
-		    <fileset dir="${dir.tomcat}/common/lib">
-				<include name="ant.jar"/>
-				<include name="commons-dbcp-*.jar"/>
-				<include name="commons-el.jar"/>
-				<include name="commons-pool-*.jar"/>
-		    	<include name="naming-factory.jar"/>
-		    	<include name="naming-java.jar"/>
-			</fileset>
-		</delete>
-		<delete dir="${dir.tomcat}/conf/Catalina"/>
+		<delete dir="${dir.tomcat}/conf/Catalina"/><!-- remove predefined web-apps -->
 		<delete>
 		    <fileset dir="${dir.tomcat}/conf">
-				<include name="catalina.policy"/>
-				<include name="catalina.properties"/>
 				<include name="jk2.properties"/>
 				<include name="server-minimal.xml"/>
 				<include name="server.xml"/>
-				<include name="tomcat-users.xml"/>
-			</fileset>
-		</delete>
-		<delete>
-			<fileset dir="${dir.tomcat}">
-				<include name="NOTICE"/>
-				<include name="LICENSE"/>
-				<include name="RELEASE-NOTES"/>
-				<include name="RUNNING.txt"/>
-        	</fileset>
-		</delete>
-		<delete>
-			<fileset dir="${dir.tomcat}/server/lib">
-				<!-- don't delete tomcat-http11.jar and jakarta-rexexp-1.3.jar, they're needed for a standalone tomcat -->
-				<include name="catalina-ant.jar"/>
-				<include name="catalina-i18n-??.jar"/>
-				<include name="catalina-optional.jar"/>
-				<include name="catalina-cluster.jar"/>
-				<include name="commons-fileupload-*.jar"/>
-				<include name="jkconfig.jar"/>
-				<include name="jkshm.jar"/>
-				<include name="servlets-webdav.jar"/>
-				<include name="tomcat-jni.jar"/>
-				<include name="*.renametojar"/>
 			</fileset>
 		</delete>
 	</target>
