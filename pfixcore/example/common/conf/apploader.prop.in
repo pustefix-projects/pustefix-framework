@@ -4,18 +4,13 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 	
   <cus:choose>
-  	
     <!--don't use AppLoader in production environment-->
     <cus:test mode="prod">
-    
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">off</prop>
-    
     </cus:test>
-   
     <!--use AppLoader in development environment--> 
     <cus:test>
-    	
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">on</prop>
       
@@ -44,9 +39,13 @@
       <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
-      
     </cus:test>
-    
   </cus:choose>
   
 </properties>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
