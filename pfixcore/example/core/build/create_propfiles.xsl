@@ -164,13 +164,17 @@
 
   <xsl:template match="pageflow">
     <xsl:variable name="prefix">context.pageflow.<xsl:value-of select="@name"/>.</xsl:variable>
+    <xsl:variable name="flowname"><xsl:value-of select="@name"/></xsl:variable>
+    <xsl:variable name="stopnext"><xsl:value-of select="@stopnext"/></xsl:variable>
     <xsl:for-each select="flowstep">
       <xsl:value-of select="$prefix"/><xsl:value-of select="position()"/>=<xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
+      <xsl:if test="@stophere = 'true' or $stopnext = 'true'">
+        <xsl:text>context.pageflowproperty.</xsl:text>
+        <xsl:value-of select="$flowname"/>.stopat.<xsl:value-of select="@name"/>=true<xsl:text>&#xa;</xsl:text>
+      </xsl:if>
     </xsl:for-each>
     <xsl:if test="@final">
       <xsl:value-of select="$prefix"/>FINAL=<xsl:value-of select="@final"/><xsl:text>&#xa;</xsl:text>
-    </xsl:if>
-    <xsl:if test="@stopnext = 'true'">context.pageflowproperty.<xsl:value-of select="@name"/>.stopatfirstaftercurrent=true<xsl:text>&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
 

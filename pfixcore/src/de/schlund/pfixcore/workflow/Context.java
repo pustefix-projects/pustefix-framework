@@ -566,7 +566,7 @@ public class Context implements AppContext {
                         LOG.debug("* Skipping step [" + page + "] in workflow (been there already...)");
                         after_current = true;
                     } else {
-                        if (getCurrentPageFlow().getStopAtFirstAfterCurrent() && after_current) {
+                        if (after_current && getCurrentPageFlow().pageIsClearingPoint(page)) {
                             page.setStatus(PageRequestStatus.WORKFLOW_STOP);
                         } else {
                             page.setStatus(PageRequestStatus.WORKFLOW);

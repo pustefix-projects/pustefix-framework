@@ -33,12 +33,12 @@ import org.apache.log4j.*;
 public class PageFlow {
     private String              flowname;
     private ArrayList           allsteps                = new ArrayList();
+    private HashSet             allclearingpoints       = new HashSet();
     private final static String PROPERTY_PREFIX         = PageFlowManager.PROP_PREFIX;
     private final static String FLAG_FINAL              = "FINAL";
     private final static String PROPERTY_PAGEFLOW       = "context.pageflowproperty";
     private static Category     LOG                     = Category.getInstance(PageFlow.class.getName());
     private PageRequest         finalpage               = null;
-    private boolean             flow_stop_after_current = false;
     
     public PageFlow(Properties props, String name) {
         flowname = name;
@@ -65,18 +65,17 @@ public class PageFlow {
         }
 
         Map    propmap          = PropertiesUtils.selectProperties(props, PROPERTY_PAGEFLOW + "." + name);
-        String stopaftercurrent = (String) propmap.get("stopatfirstaftercurrent");
-
-        if (stopaftercurrent != null && stopaftercurrent.equals("true")) {
-            flow_stop_after_current = true;
-        } else {
-            flow_stop_after_current = false;
-        }
         
         for (Iterator i = sorted.values().iterator(); i.hasNext(); ) {
             String      pagename = (String) i.next();
             PageRequest page     = new PageRequest(pagename);
             allsteps.add(page);
+            // check if step is a clearing point (aka: it should always be triggered in a pageflow if
+            // it is behind the just handled page regardless of the handlers of the associated page.
+            String      clearing = (String) propmap.get("stopat." + pagename);
+            if (clearing != null && clearing.equals("true")) {
+                allclearingpoints.add(page);
+            }
         }
         
         if (LOG.isDebugEnabled()) {
@@ -87,10 +86,6 @@ public class PageFlow {
         }
     }
 
-    public boolean getStopAtFirstAfterCurrent() {
-        return flow_stop_after_current;
-    }
-    
     public boolean containsPageRequest(PageRequest page) {
         return allsteps.contains(page);
     }
@@ -104,6 +99,11 @@ public class PageFlow {
      */
     public int getIndexOfPageRequest(PageRequest page) {
         return allsteps.indexOf(page);
+    }
+
+    
+    public boolean pageIsClearingPoint(PageRequest page) {
+        return allclearingpoints.contains(page);
     }
     
     public String getName() {
