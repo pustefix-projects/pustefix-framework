@@ -98,7 +98,9 @@ public class StateTransfer {
 
     protected Object transfer(Object oldObj,Object predecObj) {
         if(oldObj==null) return null;
-		AppLoader loader=AppLoader.getInstance();
+        AppLoader loader=AppLoader.getInstance();
+        ClassLoader theLoader=oldObj.getClass().getClassLoader();
+        if(theLoader!=null && theLoader.equals(loader.getAppClassLoader())) return oldObj;
         //Transfer classes
         if(oldObj instanceof Class) {
         	Class oldClass=(Class)oldObj;
