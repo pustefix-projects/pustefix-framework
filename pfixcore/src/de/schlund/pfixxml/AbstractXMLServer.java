@@ -628,14 +628,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    /**
-     * Method createErrorTree.
-     * @param e
-     * @return Document
-     */
-    
-
-
+   
     /**
      * Check if the current request will retrieve plain xml.
      * @param the {@link PfixServletRequest} containing all
