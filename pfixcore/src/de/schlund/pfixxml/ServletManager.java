@@ -53,10 +53,10 @@ import org.apache.log4j.Category;
 public abstract class ServletManager extends HttpServlet {
     public    static final String VISIT_ID                      = "__VISIT_ID__";
     public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
+    public    static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     protected static final String DEF_CONTENT_TYPE              = "text/html; charset=iso-8859-1";
     private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
     private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
-    private   static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     private   static final String SECURE_SESS_COOKIE            = "__PFIX_SECURE_SSL_SESS__";
     private   static final String TEST_COOKIE                   = "__PFIX_TEST__";
     private   static final String SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
