@@ -21,36 +21,22 @@ EXTERNAL_JAVADOC =
 #	$(EXTERNAL_JAVADOC) \
 #	$(shell echo $(JAVADOCSUBDIRS) | tr '/' '.' | tr ' ' '\n' | sort -u)
 
-PACKAGES = \
-	de.schlund.pfixeditor.misc \
-	de.schlund.pfixeditor.xml \
-	de.schlund.pfixeditor.test \
-	org.gjt.sp.jedit.textarea \
-	org.gjt.sp.jedit \
-	org.gjt.sp.jedit.gui \
-	org.jext.event \
-	org.jext.search \
-	com.microstar.xml \
-	de.schlund.pfixeditor.view \
-	org.gjt.sp.jedit.syntax \
-	gnu.regexp \
-	de.schlund.pfixeditor
 
-VERSUCH =  de.schlund.pfixeditor.xml \
+
+PACKAGES =  de.schlund.pfixeditor.xml \
            com.microstar.xml \
-	   de.schlund.pfixeditor.netscape \
-           de.schlund.pfixeditor.test \
-	   de.schlund.pfixeditor.neu
+	   de.schlund.pfixeditor.editor \
+	de.schlund.pfixeditor.misc
 
-#VERSUCH = de.schlund.pfixeditor..neu
+
           
-HALLO = de.schlund.pfixeditor.hello
 
 
-#SUBDIRS = $(subst .,/,$(PACKAGES))
-SUBDIRS = $(subst .,/,$(VERSUCH))
 
-#SUBDIRS_NEU = $(subst .,/,$(VERSUCH))
+SUBDIRS = $(subst .,/,$(PACKAGES))
+
+
+
 
 ################################################################
 # normally, there's no need to change anything below this line #
