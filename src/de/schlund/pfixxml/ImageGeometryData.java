@@ -40,9 +40,10 @@ public class ImageGeometryData {
     private long    mtime;
     private String  type;
     
-    public ImageGeometryData(File img) throws FileNotFoundException {
-        ImageInfo info = new ImageInfo();
-        info.setInput(new FileInputStream(img));
+    public ImageGeometryData(File img) throws IOException {
+        ImageInfo       info       = new ImageInfo();
+        FileInputStream img_stream = new FileInputStream(img);
+        info.setInput(img_stream);
         if (info.check()) {
             ok     = true;
             mtime  = img.lastModified();
@@ -50,6 +51,7 @@ public class ImageGeometryData {
             width  = info.getWidth();
             height = info.getHeight(); 
         }
+        img_stream.close();
     }
 
     public boolean isOK() {

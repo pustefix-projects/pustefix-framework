@@ -76,7 +76,7 @@ public class ImageGeometry {
                     // CAT.debug("Cache miss or outdated for: " + path);
                     try {
                         tmp = new ImageGeometryData(img);
-                    } catch (FileNotFoundException e) {
+                    } catch (IOException e) {
                         CAT.error("*** Couldn't get geometry for " + path, e);
                         return null;
                     }
