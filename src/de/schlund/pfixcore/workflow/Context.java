@@ -243,7 +243,6 @@ public class Context implements AppContext {
             } else {
                 jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest);
             }
-
         } else {
             jumptopageflow = null;
         }
@@ -550,12 +549,15 @@ public class Context implements AppContext {
             } else if (jumptopagerequest != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopagerequest + "].");
                 currentpagerequest = jumptopagerequest;
-                currentpageflow    = jumptopageflow;
-                jumptopagerequest  = null; // we don't want to recurse infinitely
-                jumptopageflow     = null; // we don't want to recurse infinitely
-                on_jumptopage      = true; // we need this information to supress the interpretation of
-                                           // the request as one that submits data. See StateImpl,
-                                           // methods isSubmitTrigger & isDirectTrigger
+                if (jumptopageflow != null) {
+                    currentpageflow = jumptopageflow;
+                }
+                jumptopagerequest = null; // we don't want to recurse infinitely
+                jumptopageflow    = null; // we don't want to recurse infinitely
+                on_jumptopage     = true; // we need this information to supress the interpretation of
+                                          // the request as one that submits data. See StateImpl,
+                                          // methods isSubmitTrigger & isDirectTrigger
+                
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();
             } else if (currentpageflow != null) {

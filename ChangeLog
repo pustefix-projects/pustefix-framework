@@ -1,3 +1,9 @@
+2004-04-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java
+	(documentFromFlow): only set currentpageflow to jumptopageflow if
+	the latter is != null
+
 2004-04-27  Michael Hartmeier <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
