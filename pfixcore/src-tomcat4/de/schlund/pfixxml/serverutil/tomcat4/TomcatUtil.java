@@ -1,16 +1,10 @@
 package de.schlund.pfixxml.serverutil.tomcat4;
 
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.PfixServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Iterator;
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.serverutil.*;
+import java.util.*;
+import javax.servlet.http.*;
+import org.apache.log4j.*;
 
 /**
  *
@@ -32,8 +26,8 @@ import java.util.Iterator;
  *
  */
 
-public class TomcatUtil
-    implements ContainerUtil {
+public class TomcatUtil implements ContainerUtil {
+    private Category CAT = Category.getInstance(this.getClass());
 
     private static final String ENC_STR = "jsessionid";
 
@@ -83,10 +77,14 @@ public class TomcatUtil
         try {
             Iterator iter = store.keySet().iterator();
             String key = null;
+            Object value = null;
             while (iter.hasNext()) {
                 key = (String)iter.next();
-                if (!key.equals(SessionAdmin.LISTENER)) {
-                    session.setAttribute(key, store.get(key));
+                value = store.get(key);
+                if (value instanceof NoCopySessionData) {
+                    CAT.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");
+                } else if (!key.equals(SessionAdmin.LISTENER)) {
+                    session.setAttribute(key, value);
                 }
             }
         } catch (NullPointerException e) {
