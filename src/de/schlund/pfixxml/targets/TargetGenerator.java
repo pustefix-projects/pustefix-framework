@@ -288,11 +288,11 @@ public class TargetGenerator {
                 xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
             }
 
-            tmp = createTarget(reqtype, key);
-            tmp.setXMLSource(xmlsource);
-            tmp.setXSLSource(xslsource);
+            VirtualTarget virtual = (VirtualTarget) createTarget(reqtype, key);
+            virtual.setXMLSource(xmlsource);
+            virtual.setXSLSource(xslsource);
 
-            AuxDependencyManager manager = tmp.getAuxDependencyManager();
+            AuxDependencyManager manager = virtual.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
             for (Iterator i = auxdeps.iterator(); i.hasNext();) {
                 Path path = (Path) i.next();
@@ -302,18 +302,18 @@ public class TargetGenerator {
             HashMap params    = struct.getParams();
             String  pageparam = null;
             // we want to remove already defined params (needed when we do a reload)
-            tmp.resetParams();
+            virtual.resetParams();
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
                 String name = (String) i.next();
                 String value = (String) params.get(name);
                 CAT.debug("* Adding Param " + name + " with value " + value);
-                tmp.addParam(name, value);
+                virtual.addParam(name, value);
                 if (name.equals("page")) {
                     pageparam = value;
                 }
             }
-            tmp.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), configname));
-            tmp.addParam(XSLPARAM_TKEY, key);
+            virtual.addParam(XSLPARAM_TG, Path.getRelativeString(getDocroot(), configname));
+            virtual.addParam(XSLPARAM_TKEY, key);
 
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
@@ -323,9 +323,9 @@ public class TargetGenerator {
                     pageparam = "Unamed_" + unnamedcount++;
                 }
                 PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam);
-                pagetree.addEntry(info, tmp);
+                pagetree.addEntry(info, virtual);
             }
-            return tmp;
+            return virtual;
         }
     }
 

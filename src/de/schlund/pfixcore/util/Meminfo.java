@@ -31,6 +31,9 @@ public final class Meminfo {
     //~ Methods ....................................................................................
 
     public final static synchronized void print(String info) {
+        if (!CAT.isDebugEnabled()) {
+            return;
+        }
         long    free;
         long    total;
         long    used_new_bg;
@@ -66,6 +69,5 @@ public final class Meminfo {
         debugString.append("`---------------------------------------------------------------\n");
         last_used = used_new_ag;
         CAT.debug(debugString.toString());
-        debugString = null;
     }
 }

@@ -31,23 +31,22 @@ package de.schlund.pfixxml.targets;
  */
 
 public final class DependencyType {
-
-    public static final DependencyType TEXT  = new DependencyType("text",  "de.schlund.pfixxml.targets.ProductIncludePart");
-    public static final DependencyType IMAGE = new DependencyType("image", "de.schlund.pfixxml.targets.FileDependency");
-    public static final DependencyType FILE  = new DependencyType("file",  "de.schlund.pfixxml.targets.StaticFileDependency");
+    public static final DependencyType TEXT  = new DependencyType("text", true);
+    public static final DependencyType IMAGE = new DependencyType("image", true);
+    public static final DependencyType FILE  = new DependencyType("file", false);
 
     private static final DependencyType[] typearray = {TEXT, IMAGE, FILE}; 
     
-    private String tag;
-    private Class  theclass;
+    private final String tag;
+    private final boolean isDynamic;
     
-    private DependencyType(String tag, String theclass) {
-        try {
-            this.tag      = tag;
-            this.theclass = Class.forName(theclass);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e.toString());
-        }
+    private DependencyType(String tag, boolean isDynamic) {
+        this.tag = tag;
+        this.isDynamic = isDynamic;
+    }
+
+    public boolean isDynamic() {
+        return isDynamic;
     }
 
     public String toString() {
@@ -58,10 +57,6 @@ public final class DependencyType {
         return tag;
     }
     
-    public Class getAuxDependencyClass() {
-        return theclass;
-    }
-
     public static DependencyType getByTag(String type) {
         for (int i = 0; i < typearray.length; i++) {
             DependencyType tmp = typearray[i];
@@ -72,4 +67,7 @@ public final class DependencyType {
         throw new RuntimeException("AuxDep with unknow type '" + type + "'");
     }
         
+    public AuxDependency newInstance(Path path, String part, String product) {
+        return new AuxDependency(this, path, part, product);
+    }
 }// DependencyType

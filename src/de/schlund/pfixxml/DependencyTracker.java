@@ -36,7 +36,7 @@ public class DependencyTracker {
                              String targetGen, String targetKey) throws Exception {
         File targetFile = Path.create(docroot, targetGen).resolve();
         TargetGenerator gen = TargetGeneratorFactory.getInstance().createGenerator(targetFile);
-		TargetImpl target = (TargetImpl) gen.getTarget(targetKey);
+		VirtualTarget target = (VirtualTarget) gen.getTarget(targetKey);
 		if (path.length() == 0) {
 	        CAT.error("Error adding Dependency: empty path"); 
 	        return "1"; 
@@ -59,7 +59,7 @@ public class DependencyTracker {
 
     public static void logTyped(String type,Path path, String part, String product,
                                 Path parent_path, String parent_part, String parent_product,
-                                Target target) {
+                                VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type        = " + type + "\n" +

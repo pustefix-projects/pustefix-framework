@@ -49,8 +49,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected TargetType           type;
     protected TargetGenerator      generator;
     protected String               targetkey;
-    // only needed to init in constructor for virtual targets
-    protected AuxDependencyManager auxdepmanager   = null;
     protected TreeMap              params          = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
@@ -77,13 +75,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
      */
     public String getTargetKey() {
         return targetkey;
-    }
-
-    /**
-     * @see de.schlund.pfixxml.targets.Target#getAuxDependencyManager()
-     */
-    public AuxDependencyManager getAuxDependencyManager() {
-        return auxdepmanager;
     }
 
     /**

@@ -45,7 +45,11 @@ import de.schlund.pfixxml.XMLException;
 public abstract class VirtualTarget extends TargetImpl {
     protected long modtime = 0l;
     protected TreeSet pageinfos = new TreeSet();
-
+    protected AuxDependencyManager auxdepmanager   = null;
+    
+    public AuxDependencyManager getAuxDependencyManager() {
+        return auxdepmanager; 
+    }
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
      */
