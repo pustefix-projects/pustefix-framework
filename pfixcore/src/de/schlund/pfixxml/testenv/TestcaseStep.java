@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.pfix_httpclient.Header;
 import org.apache.commons.pfix_httpclient.HttpConnection;
 import org.apache.commons.pfix_httpclient.HttpException;
 import org.apache.commons.pfix_httpclient.HttpRecoverableException;
@@ -153,6 +154,19 @@ public class TestcaseStep {
 
             if (status_code == HttpStatus.SC_MOVED_PERMANENTLY || status_code == HttpStatus.SC_MOVED_TEMPORARILY) {
                 result.setStatuscode(status_code);
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("-------------Header data---------------------------");
+                    Header[] headers = post.getResponseHeaders();
+                    for(int i=0; i<headers.length; i++) {
+                        CAT.debug(headers[i].getName()+":"+headers[i].getValue());
+                    }
+                    CAT.debug("-------------Header data---------------------------");
+                }
+                Header header = post.getResponseHeader("location");
+                if(header == null) {
+                    CAT.error("Unable to get location information from header!");
+                    return;
+                }
                 String redirect_location = post.getResponseHeader("location").getValue();
                 currenturl = redirect_location;
                 if(CAT.isDebugEnabled()) {
