@@ -403,7 +403,7 @@
         <delete dir="${dir.testskel}"/>
     </target>
 
-    <target name="dist" depends="clean, init" description="Builds release files in dist directory, tags cvs.">
+    <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory, tags cvs.">
         <property name="dist.autotagmessage" value="${tstamp.autotag}"/>
         <!-- looks funny, but if someone called something like
         "ant jar dist" the jar file would have a wrong CVS_AUTOTAG file -->
@@ -413,11 +413,11 @@
         <cvs command="tag ${dist.autotagmessage}"/>
     </target>
 
-    <target name="notag" depends="clean" description="Builds release files in dist directory without tagging cvs.">
+    <target name="notag" depends="clean, dist-examples" description="Builds release files in dist directory without tagging cvs.">
         <antcall target="skeleton" inheritall="true"/>
     </target>
     
-     <target name="dist-examples" description="Builds three basic examples as a pustefix turorial">
+     <target name="dist-examples" depends="clean, init" description="Builds three basic examples as a pustefix turorial">
          <echo message="Building ${name.pfixcore_examples_tgz} in dist directory"/>
          <delete file="${file.pfixcore_examples_tgz}"/>
          <delete>
@@ -439,7 +439,7 @@
     
     
     <target name="basic-app" description="Builds a naked application and creates the basic stuff">
-    	
+        
     </target>
 
     <target name="fixtabs">
