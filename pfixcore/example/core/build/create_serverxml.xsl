@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet version="1.0"
-		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-		xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
-		>
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
+                >
 
   <xsl:param name="trusted"/>
   <xsl:include href="create_lib.xsl"/>
@@ -28,7 +28,7 @@
       
       <GlobalNamingResources>
         <Resource name="UserDatabase" auth="Container" type="org.apache.catalina.UserDatabase"
-           description="User database that can be updated and saved">
+                  description="User database that can be updated and saved">
         </Resource>
         <ResourceParams name="UserDatabase">
           <parameter>
@@ -44,19 +44,19 @@
 
       <Service name="Tomcat-Standalone">
 
-      <xsl:call-template name="create-connector"/>
+        <xsl:call-template name="create-connector"/>
 
-	  <Engine name="Standalone">
-	    <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-	    <xsl:attribute name="defaultHost">
-	      <xsl:value-of select="normalize-space($tomcat_defaulthost)"/>
-	    </xsl:attribute>
-	    <xsl:attribute name="jvmRoute">
-	      <xsl:value-of select="normalize-space($tomcat_jvmroute)"/>
-	    </xsl:attribute>
-  	    <Logger className="org.apache.catalina.logger.FileLogger" prefix="catalina_log." suffix=".txt" timestamp="true"/>
-        <xsl:apply-templates select="/projects/project"/>
-  	  </Engine>
+        <Engine name="Standalone">
+          <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+          <xsl:attribute name="defaultHost">
+            <xsl:value-of select="normalize-space($tomcat_defaulthost)"/>
+          </xsl:attribute>
+          <xsl:attribute name="jvmRoute">
+            <xsl:value-of select="normalize-space($tomcat_jvmroute)"/>
+          </xsl:attribute>
+          <Logger className="org.apache.catalina.logger.FileLogger" prefix="catalina_log." suffix=".txt" timestamp="true"/>
+          <xsl:apply-templates select="/projects/project"/>
+        </Engine>
       </Service>
     </Server>
   </xsl:template>
@@ -72,25 +72,25 @@
       <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
     </xsl:variable>
     <Connector port="8009" enableLookups="false" acceptCount="100" minProcessors="5" maxProcessors="20" protocol="AJP/1.3">
-        <xsl:if test="not(string($jkport) = '')"><xsl:attribute name="port"><xsl:value-of select="$jkport"/></xsl:attribute></xsl:if>
-        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-        <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
-        <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
+      <xsl:if test="not(string($jkport) = '')"><xsl:attribute name="port"><xsl:value-of select="$jkport"/></xsl:attribute></xsl:if>
+      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+      <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
     </Connector>
     <Connector port="8080"
-             maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-             enableLookups="false" redirectPort="8443" acceptCount="100"
-             connectionTimeout="20000"
-             disableUploadTimeout="true">
-        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-        <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
-        <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" redirectPort="8443" acceptCount="100"
+               connectionTimeout="20000"
+               disableUploadTimeout="true">
+      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+      <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
     </Connector>
     <Connector port="8443" 
-         maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-         enableLookups="false" disableUploadTimeout="true"
-         acceptCount="100" debug="0" scheme="https" secure="true"
-         clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" disableUploadTimeout="true"
+               acceptCount="100" debug="0" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
@@ -99,37 +99,52 @@
 
   <xsl:template match="project">
     <xsl:variable name="active">
-    	<xsl:apply-templates select="active/node()"/>
+      <xsl:apply-templates select="active/node()"/>
     </xsl:variable>
     <xsl:if test="normalize-space($active) = 'true'">
- 		<Host xmlValidation="true" unpackWARs="false" autoDeploy="false">
-		  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-		  <xsl:attribute name="name">
-		    <xsl:apply-templates select="servername/node()"/>
-		  </xsl:attribute>
-		  <xsl:call-template name="create_tomcat_aliases">
-			<xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
-		  </xsl:call-template>
-		  <Valve className="org.apache.catalina.valves.AccessLogValve"
-			 directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
-		  
-		  <Logger className="org.apache.catalina.logger.FileLogger"
-			  directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>
-		  
-		  <xsl:call-template name="create_context_list">
-		    <xsl:with-param name="defpath" select="concat('/', substring-before(substring-after(defpath/node(), '/'), '/'))"/>
-		  </xsl:call-template>
-		</Host>
+      <Host xmlValidation="true" unpackWARs="false" autoDeploy="false">
+        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+        <xsl:attribute name="name">
+          <xsl:apply-templates select="servername/node()"/>
+        </xsl:attribute>
+        <xsl:call-template name="create_tomcat_aliases">
+          <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
+        </xsl:call-template>
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
+        
+        <Logger className="org.apache.catalina.logger.FileLogger"
+                directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>
+        
+        <xsl:call-template name="create_context_list">
+          <xsl:with-param name="defpath" select="concat('/', substring-before(substring-after(defpath/node(), '/'), '/'))"/>
+        </xsl:call-template>
+      </Host>
     </xsl:if>
   </xsl:template>
 
   <xsl:template name="create_context_list">
     <xsl:param name="defpath"/>
-	<xsl:call-template name="create_context">
+    <xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
-	  <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
-	  <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
-	</xsl:call-template>
+      <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
+      <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
+    </xsl:call-template>
+    <xsl:if test="documentroot">
+      <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
+      <xsl:choose>
+        <xsl:when test="ext:exists($abs_path)">
+          <xsl:call-template name="create_context">
+            <xsl:with-param name="path">/</xsl:with-param>
+            <xsl:with-param name="docBase"><xsl:value-of select="$abs_path"/></xsl:with-param>
+            <xsl:with-param name="cookies">false</xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
     <xsl:apply-templates select="passthrough"/>
     <xsl:apply-templates select="/projects/common/apache/passthrough"/>
     <Context path="/manager" debug="0" privileged="true" docBase="server/webapps/manager">
@@ -157,8 +172,8 @@
       <xsl:when test="ext:exists($abs_path)">
         <xsl:call-template name="create_context">
           <xsl:with-param name="path">/<xsl:value-of select="$rel_path"/></xsl:with-param>
-	      <xsl:with-param name="docBase">../../<xsl:value-of select="$rel_path"/></xsl:with-param>
-	      <xsl:with-param name="cookies">false</xsl:with-param>
+          <xsl:with-param name="docBase">../../<xsl:value-of select="$rel_path"/></xsl:with-param>
+          <xsl:with-param name="cookies">false</xsl:with-param>
         </xsl:call-template>
       </xsl:when>
       <xsl:otherwise>
@@ -172,10 +187,10 @@
     <xsl:param name="docBase"/>
     <xsl:param name="cookies"/>
     <Context crossContext="true">
-        <xsl:attribute name="cookies"><xsl:value-of select="$cookies"/></xsl:attribute>
-	    <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
-	    <xsl:attribute name="docBase"><xsl:value-of select="$docBase"/></xsl:attribute>
-	    <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:attribute name="cookies"><xsl:value-of select="$cookies"/></xsl:attribute>
+      <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
+      <xsl:attribute name="docBase"><xsl:value-of select="$docBase"/></xsl:attribute>
+      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
     </Context>
   </xsl:template>
   
@@ -187,20 +202,13 @@
         <Alias><xsl:value-of select="$alias_string"/></Alias>
       </xsl:when>
       <xsl:otherwise>
-       <Alias><xsl:value-of select="substring-before($alias_string,' ')"/></Alias>
-       <xsl:call-template name="create_tomcat_aliases">
-         <xsl:with-param name="all_aliases" select="substring-after($alias_string, ' ')"/>
-       </xsl:call-template> 
+        <Alias><xsl:value-of select="substring-before($alias_string,' ')"/></Alias>
+        <xsl:call-template name="create_tomcat_aliases">
+          <xsl:with-param name="all_aliases" select="substring-after($alias_string, ' ')"/>
+        </xsl:call-template> 
       </xsl:otherwise> 
     </xsl:choose>
   </xsl:template>
 
 </xsl:stylesheet>
 
-
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
