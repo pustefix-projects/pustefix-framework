@@ -386,7 +386,7 @@
       </xsl:choose>
     </xsl:variable>
     <form method="post">
-      <xsl:copy-of select="./@*"/>
+      <xsl:copy-of select="./@*[name()!='send-to-page' and name()!='send-to-pageflow']"/>
       <ixsl:attribute name="action">
         <xsl:choose>
           <xsl:when test="$send-to-page">
@@ -398,6 +398,9 @@
         </xsl:choose>
       </ixsl:attribute>
       <input type="hidden" name="{$sendingdata}" value="1"/>
+      <xsl:if test="@send-to-pageflow">
+        <input type="hidden" name="__pageflow" value="{@send-to-pageflow}"/>
+      </xsl:if>
       <ixsl:if test="/formresult/iwrappergroups/@currentindex">
         <input type="hidden">
           <xsl:attribute name="name">__currentindex[<xsl:value-of select="$page"/>]</xsl:attribute>
@@ -421,7 +424,18 @@
       <param required="0">
         <name>send-to-page</name>
         <values><string/></values>
-        <description>Name of the page that should handle the submitted form values</description>
+        <description>
+          Name of the page that should handle the submitted form values.
+          Default is to send the request to the current page.
+        </description>
+      </param>
+      <param required="0">
+        <name>send-to-pageflow</name>
+        <values><string/></values>
+        <description>
+          Name of the page flow that should be selected when the request is submitted.
+          Default is to not select a special page flow.
+        </description>
       </param>
       <param required="0">
         <name>type</name>
