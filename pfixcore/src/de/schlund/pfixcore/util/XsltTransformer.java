@@ -214,4 +214,11 @@ public class XsltTransformer {
         this.cacheStylesheet = cacheStylesheet;
     }
 
+    //-- xslt extensions
+    // TODO: move into separate class?
+    
+    public static boolean exists(String file) {
+    	System.out.println("file: " + file);
+    	return new File(file).exists();
+    }
 }

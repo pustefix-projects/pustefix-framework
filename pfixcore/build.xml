@@ -53,7 +53,10 @@
     <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
     <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
 	<property name="dir.tomcat" location="${dir.projects}/servletconf/tomcat"/>
-    
+	
+	<!-- embedded or standalone -->
+	<property name="tomcat.setup" value="embedded"/>
+	
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
         - ant commandline via the '-Dparam=value' option
@@ -780,7 +783,7 @@
 	    <antcall target="tomcat_extract"/>
 	    <antcall target="tomcat_strip"/>
 		<antcall target="tomcat_jndi"/>
-		<antcall target="tomcat_web_xml"/>
+		<!-- TODO: don't wipte tomcat_web_xml - it's needed for the standalone setup"/-->
 	</target>
 
 	<target name="tomcat_extract">
@@ -862,16 +865,15 @@
 		</delete>
 		<delete>
 			<fileset dir="${dir.tomcat}/server/lib">
+				<!-- don't delete tomcat-http11.jar and jakarta-rexexp-1.3.jar, they're needed for a standalone tomcat -->
 				<include name="catalina-ant.jar"/>
 				<include name="catalina-i18n-??.jar"/>
 				<include name="catalina-optional.jar"/>
 				<include name="catalina-cluster.jar"/>
 				<include name="commons-fileupload-*.jar"/>
-				<include name="jakarta-regexp-1.3.jar"/>
 				<include name="jkconfig.jar"/>
 				<include name="jkshm.jar"/>
 				<include name="servlets-webdav.jar"/>
-				<include name="tomcat-http11.jar"/>
 				<include name="tomcat-jni.jar"/>
 				<include name="*.renametojar"/>
 			</fileset>
@@ -901,12 +903,14 @@
             outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
             style="${dir.projects}/core/build/create_serverxml.xsl"
             >
-            <param name="docroot"   expression="${dir.docroot}"/>
-            <param name="fqdn"      expression="${fqdn}"/>
-            <param name="uid"       expression="${uid}"/>
-            <param name="machine"   expression="${machine}"/>
-            <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
+        	<param name="debug"       expression="0"/>
+            <param name="docroot"     expression="${dir.docroot}"/>
+            <param name="fqdn"        expression="${fqdn}"/>
+            <param name="uid"         expression="${uid}"/>
+            <param name="machine"     expression="${machine}"/>
+            <param name="mode"        expression="${makemode}"/>
+            <param name="container"   expression="tomcat"/>
+        	<param name="setup"       expression="${tomcat.setup}"/>
         </pfx-xslt>
     </target>
     

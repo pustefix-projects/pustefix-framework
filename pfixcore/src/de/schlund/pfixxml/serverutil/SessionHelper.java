@@ -121,9 +121,9 @@ public class SessionHelper {
         if (host == null) host     = req.getServerName();
         StringBuffer rcBuf         = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        // if (scheme == null || !scheme.equals("https")) {
-        //     rcBuf.append(":").append(req.getServerPort());
-        // }
+        if (!"https".equals(scheme)) {
+             rcBuf.append(":").append(req.getServerPort());
+        }
         String       oldSessionId  = stripUriSessionId(null, req.getRequestURI(), rcBuf);
         HttpSession  session       = req.getSession(false);
         
