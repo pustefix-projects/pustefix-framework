@@ -324,7 +324,7 @@ wfxToolbar.Config = function () {
 		this.toolbarURL = "";
 	}
 
-	this.imgURL = "images/";
+	this.imgURL = "/core/img/editor/";
 
 	/** CUSTOMIZING THE TOOLBAR
 	 */
@@ -334,10 +334,10 @@ wfxToolbar.Config = function () {
 			];
 
 	this.btnList = {
-	  //	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
-	  undo: [ "Undo", "images/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
-	  redo: [ "Redo", "images/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
+	  undo: [ "Undo", "/core/img/editor/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
+	  redo: [ "Redo", "/core/img/editor/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
 	};
+	//	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
 };
 
 //#****************************************************************************
