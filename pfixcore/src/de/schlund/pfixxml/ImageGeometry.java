@@ -23,7 +23,7 @@ import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 
 
 /**

@@ -32,7 +32,7 @@ import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 /**
  * Class encapsulating user-information of the Pustefix CMS.
  * <br/>

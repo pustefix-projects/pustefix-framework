@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import net.sf.saxon.value.EmptySequence;
 
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XPath;

@@ -25,6 +25,7 @@ import javax.xml.transform.TransformerException;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import org.apache.log4j.*;

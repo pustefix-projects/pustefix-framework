@@ -25,6 +25,7 @@ import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.util.statuscodes.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import java.util.*;
 
 import org.apache.log4j.Category;

@@ -1,6 +1,7 @@
 package de.schlund.pfixcore.util;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import java.io.*;
 import java.util.*;

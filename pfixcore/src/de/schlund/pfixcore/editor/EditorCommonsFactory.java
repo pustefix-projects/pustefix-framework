@@ -34,7 +34,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.FactoryInit;

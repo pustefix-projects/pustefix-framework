@@ -8,7 +8,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 

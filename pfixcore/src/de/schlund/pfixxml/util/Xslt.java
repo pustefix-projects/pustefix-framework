@@ -44,7 +44,7 @@ import net.sf.saxon.xpath.XPathException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 
 public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class.getName());

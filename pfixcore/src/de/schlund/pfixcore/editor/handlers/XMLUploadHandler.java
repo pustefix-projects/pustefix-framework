@@ -41,7 +41,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.Path;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;

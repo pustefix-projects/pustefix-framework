@@ -39,6 +39,7 @@ import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 
 /**
