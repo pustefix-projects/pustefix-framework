@@ -33,11 +33,13 @@ public class EmailSender {
 
     /**
      * Send a mail.
-     * @param subject A String specifying the mail subject.
-     * @param text The text the mail should contain.
-     * @param to A String arry specifying the  recipients.
-     * @param from A String specifying the from address.
-     * @param smtphost A String specifying the smtp-server to use.
+     * @param subject A String specifying the mail subject. Not null.
+     * @param text The text the mail should contain. Not null.
+     * @param to A String arry specifying the  recipients. Not null.
+     * @param from A String specifying the from address. Not null.
+     * @param smtphost A String specifying the smtp-server to use. Not null.
+     * @throws EmailSenderException on errors when trying to send the mail.
+     * @throws IllegalArgumentException when trying to pass NPs as paramters.
      */
     public static void sendMail(
         String subject,
@@ -48,6 +50,22 @@ public class EmailSender {
         throws EmailSenderException {
         //        Multipart mp         =new MimeMultipart();
         //      MimeBodyPart part    =new MimeBodyPart();
+
+        if(subject == null)
+            throw new IllegalArgumentException("EmailSender: A NP as subject is not allowed!");
+      
+        if(text == null)
+            throw new IllegalArgumentException("EmailSender: A NP as text is not allowed!");
+            
+        if(to == null)
+            throw new IllegalArgumentException("EmailSender: A NP as recipient-list is not allowed!");      
+      
+        if(from == null)
+            throw new IllegalArgumentException("EmailSender: A NP as from address is not allowed!");
+
+        if(smtphost == null)
+            throw new IllegalArgumentException("EmailSender: A NP as SMTP host is not allowed!");
+
 
         Properties properties = new Properties();
         properties.put("mail.smtp.host", smtphost);
