@@ -2,7 +2,7 @@
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
 
-	Prefix button fixed ! <pfx:button> etc. should work now without errors.
+	Prefix bug fixed ! <pfx:button> etc. should work now without errors.
 	Other bugs will be fixed soon
 
 
