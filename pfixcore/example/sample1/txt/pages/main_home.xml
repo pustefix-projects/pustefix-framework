@@ -65,7 +65,7 @@
         <pfx:layer class="layer" name="A" pos-left="10" pos-top="10" visible="false">
           <b>This is Layer A</b><br/>
           <pfx:switch>
-            <pfx:layer_ref name="B" autoclose="true"/>
+            <pfx:layer_ref autoclose="true" name="B"/>
             <pfx:layer_check name="B">
               <pfx:on>Switch Layer B OFF</pfx:on>
               <pfx:off>Switch Layer B ON</pfx:off>
@@ -142,12 +142,10 @@
           </tr>
         </table>
         <br/>
-        <pfx:layer element="div" name="XXX" visible="true"
-          style="border: 1px solid black; padding: 2px; width: 100px; background-color: black; color: #ff7755;">
+        <pfx:layer element="div" name="XXX" style="border: 1px solid black; padding: 2px; width: 100px; background-color: black; color: #ff7755;" visible="true">
           <b>BAZ</b>
         </pfx:layer>
-        <pfx:layer element="div" name="YYY" visible="false"
-          style="border: 1px solid black; padding: 2px; width: 100px; background-color: #ff7755; color: black;">
+        <pfx:layer element="div" name="YYY" style="border: 1px solid black; padding: 2px; width: 100px; background-color: #ff7755; color: black;" visible="false">
           <b>FOOBAR</b>
         </pfx:layer>
       </lang>
@@ -176,15 +174,15 @@
             <pfx:layer_ref name="A"/>
             <pfx:layer_check name="A" type="checkbox"/>Layer A (Closing A also closes B)</pfx:switch>
           <br/>
-          <pfx:layer_check name="B" type="checkbox" disabled="disabled"/>Layer B is
+          <pfx:layer_check disabled="disabled" name="B" type="checkbox"/>Layer B is
           <pfx:layer_check name="B">
             <pfx:on>visible</pfx:on>
             <pfx:off>invisible</pfx:off>
           </pfx:layer_check>
           <br/>
-          <pfx:layer_check name="YYY" type="radio" disabled="disabled"/>FOOBAR is shown...
+          <pfx:layer_check disabled="disabled" name="YYY" type="radio"/>FOOBAR is shown...
           <br/>
-          <pfx:layer_check name="XXX" type="radio" disabled="disabled"/>BAZ is shown...
+          <pfx:layer_check disabled="disabled" name="XXX" type="radio"/>BAZ is shown...
           <br/>
           <pfx:switch>
             <pfx:layer_ref name="C"/>
