@@ -26,7 +26,7 @@ function xmlRequest() {
 //*****************************************************************************
 //
 //*****************************************************************************
-xmlRequest.prototype.start = function() {
+xmlRequest.prototype.start = function( content ) {
 
   // unique timestamp to prevent caching
   var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
@@ -38,8 +38,6 @@ xmlRequest.prototype.start = function() {
 
   if( 0 && window.XMLHttpRequest ) {
 
-    //    alert("load...");
-
     //----------------
     // XMLHttpRequest
     //----------------
@@ -48,11 +46,14 @@ xmlRequest.prototype.start = function() {
       _xml[i] = new XMLHttpRequest();
       _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 && _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); }' );
 //       _xml[i].onreadystatechange = function() {
+//         document.getElementById("dbg").value += "onreadystatechange" + i + "\n";
 //         if( _xml[i].readyState == 4 && _xml[i].status < 300 ) {
+//           alert(_xml[i].responseXML);
 //           this.callback(_xml[i].responseXML);
 //         }
 //       };
       _xml[i].open( this.method, this.url, true);
+      _xml[i].setRequestHeader("SOAPAction", '""');
       _xml[i].send(content);
       return true;
     } catch(e) {
@@ -89,6 +90,7 @@ xmlRequest.prototype.start = function() {
       _xml[i] = new ActiveXObject(_msXmlHttp);
       _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { '+this.callback+'(_xml['+i+']); }' );
       _xml[i].open( this.method, this.url, true);
+      _xml[i].setRequestHeader("SOAPAction", '""');
       _xml[i].send(content);
       return true;
     } catch(e) {
@@ -139,10 +141,8 @@ xmlRequest.prototype.start = function() {
 
         var field = iDoc.createElement("textarea");
         field.name = "soapmessage";
-        field.value = '<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"              xmlns:xs="http://www.w3.org/1999/XMLSchema"              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">   <env:Header/>   <env:Body>      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">         <a0:in0 xsi:type="xs:int">3</a0:in0>         <a0:in1 xsi:type="xs:int">7</a0:in1>      </a0:multiply>   </env:Body></env:Envelope>';
-
-        //attr = iDoc.createTextNode('<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"              xmlns:xs="http://www.w3.org/1999/XMLSchema"              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">   <env:Header/>   <env:Body>      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">         <a0:in0 xsi:type="xs:int">3</a0:in0>         <a0:in1 xsi:type="xs:int">7</a0:in1>      </a0:multiply>   </env:Body></env:Envelope>');
-        //        field.appendChild(attr);
+        field.value = content;
+        //        field.value = '<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"              xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"              env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"              xmlns:xs="http://www.w3.org/1999/XMLSchema"              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">   <env:Header/>   <env:Body>      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">         <a0:in0 xsi:type="xs:int">3</a0:in0>         <a0:in1 xsi:type="xs:int">7</a0:in1>      </a0:multiply>   </env:Body></env:Envelope>';
 
         form.appendChild(field);
 
@@ -180,8 +180,11 @@ function customOnReadyStateChange() {
 
             //            alert( _xmlTimerCount[i] + "\n" + document.getElementById("pfxxmliframe"+i).contentWindow.document );
             
-            eval( _xml[i] + '(window.frames["pfxxmliframe'+i+'"].document);' );
-            //            eval( _xml[i] + '(document.getElementById("pfxxmliframe'+i+'").contentWindow.document);' );
+            //            eval( _xml[i] + '(window.frames["pfxxmliframe'+i+'"].document);' );
+            //            alert("_xml[i]:\n" + _xml[i]);
+            //            alert("innerHTML:\n" + window.frames['pfxxmliframe'+i].document.innerHTML);
+            //            _xml[i](window.frames["pfxxmliframe'+i+'"].document);
+            eval( _xml[i] + '(document.getElementById("pfxxmliframe'+i+'").contentWindow.document);' );
             _xml[i] = null;
             cancelOnReadyStateChange(i);
           }

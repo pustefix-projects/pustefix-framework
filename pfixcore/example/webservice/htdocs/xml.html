@@ -1,14 +1,20 @@
 <html>
 <head>
+<script type="text/javascript" src="/core/script/webservice.js">
+</script>
 <script type="text/javascript" src="xml.js">
 </script>
 <script type="text/javascript" src="xmlinit.js">
+</script>
+<script type="text/javascript">
+var count = 0;
 </script>
 </head>
 <body onload="init()">
 <form>
 <input type="button" value="load" onclick="_reqLoad.start()" />&nbsp;&nbsp;
 <input type="button" value="send" onclick="new xmlRequest( 'POST', 'http://webservice.dvorak.ue.schlund.de/xml/webservice/Calculator', 'cb' ).start()" /><input name="sendcontent" type="text" /><br />
+<input type="button" value="Calculator" onclick='Calculator.multiply( count++, 1)' /><br />
 <textarea id="dbg" cols="80" rows="20"></textarea>
 </form>
 </html>
