@@ -1,3 +1,12 @@
+2005-02-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	code beautification 
+	made some parameters really be changable by reloading
+	changed output of render_external to be of the form as mode_xslt2 expects it.
+
+	* src/de/schlund/pfixcore/example/ContextAdultInfoImpl.java: small cleanup
+
 2005-02-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_serverxml.xsl: changed logging of access valve
