@@ -248,14 +248,14 @@ if [ "$remove" = "true" ]; then
     if [ -e $d/$i.in${suf} ]; then
       rm -v $d/$i.in${suf}
     fi
-    if [ -e $d/$i.in${suf}.sorted ]; then
-      rm -v $d/$i.in${suf}.sorted
-    fi
     if [ -e $d/$i${suf} ]; then
       rm -v $d/$i${suf}
     fi
     if [ -e $d/$i${suf}.sorted ]; then
       rm -v $d/$i${suf}.sorted
+    fi
+    if [ -e $d/$i.sorted ]; then
+      rm -v $d/$i.sorted
     fi
   done
 fi
