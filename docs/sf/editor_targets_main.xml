@@ -28,10 +28,10 @@
       <a href="editor_pages.html">Pages</a> page.</p>
       <p>Box No. 4 lists all includes which are used by the current target.
       To edit an include click on it and it will be opened in the 
-      <a href="editor_includes">Includes</a> page.</p>
+      <a href="editor_includes.html">Includes</a> page.</p>
       <p>Box No. 5 shows all images which are used by the current target.
       To edit an image click on it and it will be opened in the
-      <a href="editor_images">Images</a> page.</p>
+      <a href="editor_images.html">Images</a> page.</p>
       <p>Box No. 6 shows the whole content of the current target. It does
       not provide any interactivity.</p>
     </td>
