@@ -82,10 +82,7 @@
     <xsl:variable name="maxprocessors">
       <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
     </xsl:variable>
-    <xsl:variable name="uriencoding">
-      <xsl:apply-templates select="/projects/common/tomcat/uriencoding/node()"/>
-    </xsl:variable>
-    <Connector enableLookups="false" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" URIEncoding="UTF-8" protocol="AJP/1.3">		
+    <Connector enableLookups="false" acceptCount="100" maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true" protocol="AJP/1.3">		
       <xsl:attribute name="port">
         <xsl:choose>
           <xsl:when test="string($jkport) = ''">
@@ -101,25 +98,22 @@
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minSpareThreads"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="maxSpareThreads"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxThreads"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
-			<xsl:if test="not(string($uriencoding)='')"><xsl:attribute name="URIEncoding"><xsl:value-of select="$uriencoding"/></xsl:attribute></xsl:if>
     </Connector>
     <xsl:if test="$standalone = 'true'">
-      <Connector maxThreads="150" minSpareThreads="25" maxSpareThreads="75" URIEncoding="UTF-8"
+      <Connector maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true"
                  enableLookups="false" acceptCount="100"
                  connectionTimeout="20000"
                  disableUploadTimeout="true">
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
         <xsl:attribute name="port"><xsl:value-of select="$portbase+80"/></xsl:attribute>
         <xsl:attribute name="redirectport"><xsl:value-of select="$portbase+443"/></xsl:attribute>
-        <xsl:if test="not(string($uriencoding)='')"><xsl:attribute name="URIEncoding"><xsl:value-of select="$uriencoding"/></xsl:attribute></xsl:if>
       </Connector>
-      <Connector maxThreads="150" minSpareThreads="25" maxSpareThreads="75" URIEncoding="UTF-8"
+      <Connector maxThreads="150" minSpareThreads="25" maxSpareThreads="75" useBodyEncodingForURI="true"
                  enableLookups="false" disableUploadTimeout="true"
                  acceptCount="100" debug="0" scheme="https" secure="true"
                  clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
         <xsl:attribute name="port"><xsl:value-of select="$portbase+443"/></xsl:attribute>
         <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-        <xsl:if test="not(string($uriencoding)='')"><xsl:attribute name="URIEncoding"><xsl:value-of select="$uriencoding"/></xsl:attribute></xsl:if>
       </Connector>
     </xsl:if>
   </xsl:template>
