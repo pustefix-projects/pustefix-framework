@@ -905,7 +905,8 @@
     <xsl:param name="type"/>
     <xsl:param name="select"/>
     <xsl:param name="upload"/>
-    <pfx:forminput target="bottom">
+      
+    <pfx:forminput target="bottom" name="my_form">
       <pfx:xinp type="hidden" name="__anchor">
         <ixsl:attribute name="value">left_navi:<ixsl:value-of select="/formresult/current{$type}info/@path"/></ixsl:attribute>
       </pfx:xinp>
@@ -957,11 +958,34 @@
               [Locked by <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@name"/>
               (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
               <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
+              <input type="hidden" name="visible" value="false"/>
+              <script>
+                parent.parent.frames["applet"].hideApplet();
+              </script>
             </td>
           </tr>
         </ixsl:if>
         <pfx:checkactive prefix="{$upload}">
           <tr>
+            <script>
+              
+              function f_do() {
+                alert('Bin drin');
+                parent.parent.frames["applet"].do_test();
+               }
+
+
+              function doSub() {
+                alert('Da');
+                text=parent.parent.frames["applet"].document.applets["xmlEditor"].getText();
+                
+                window.document.getElementById('test').value=text
+                document.forms[0].submit();
+              }
+
+
+              
+            </script>
 
             <!-- CONVERTER VERSION 1.1 -->
 <!--             <script> -->
@@ -995,14 +1019,23 @@
               
 <!--             </applet> -->
 <!--             <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" cols="0" rows="0" style="width: 100%; visibility:hidden; display:none "/> -->
+
             <td colspan="2">
-              <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" style="height: 400px; width: 100%"/>
+              <input type="hidden" value="{$upload}.Content" name="upload"/>
+              <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
+             <!--  name="{$upload}.Content" -->
+            <!--  <pfx:xinp name="hallo2" type="area" style="height: 400px; width: 100%" class="editor_textarea" id="hallo">Neineineneineineinei</pfx:xinp> -->
+              <input type="hidden" name="visible" value="true"/>
+              <script>
+                parent.parent.frames["applet"].showApplet();
+               
+              </script>
             </td>
           </tr>
           <tr valign="middle">
             <td>
 <!--               <pfx:xinp class="editor_submit" type="submit" value="Upload Data" onclick="return getAppletText()"> -->
-              <pfx:xinp class="editor_submit" type="submit" value="Upload Data">
+              <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
                 <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
                 <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
               </pfx:xinp>

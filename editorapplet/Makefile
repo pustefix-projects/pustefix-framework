@@ -1,8 +1,8 @@
 
 PROJECT = pfixeditorapplet
 PROJECT_ROOT= $(shell pwd)
-#PFIXCORE_APPLETPATH=$(PROJECT_ROOT)/../example/core/script
-PFIXCORE_APPLETPATH=~/try
+PFIXCORE_APPLETPATH=$(PROJECT_ROOT)/../example/core/script
+#PFIXCORE_APPLETPATH=~/try
 
 SRCROOT    = src
 BUILDDIR   = build
@@ -39,11 +39,12 @@ PACKAGES = \
 VERSUCH =  de.schlund.pfixeditor.xml \
            com.microstar.xml \
 	   de.schlund.pfixeditor.netscape \
-           de.schlund.pfixeditor.test
+           de.schlund.pfixeditor.test \
+	   de.schlund.pfixeditor.neu
 
 #VERSUCH = de.schlund.pfixeditor..neu
           
-
+HALLO = de.schlund.pfixeditor.hello
 
 
 #SUBDIRS = $(subst .,/,$(PACKAGES))
