@@ -1,5 +1,7 @@
 2004-10-23  Jens Lautenbacher  <jtl@schlund.de>
 
+	* removed xerces amd xml-apis jars. It seems that it's no longer needed to have a private version???
+
 	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: removed shadowed props variable
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: small bugfix. print path.getRelative(), not path
