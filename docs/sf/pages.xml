@@ -8,7 +8,9 @@
   </page>
   <page name="download" title="Download"/>
   <page name="udocs" title="Userdocs">
+    <page name="depend" title="Page definition"/>
     <page name="editor" title="Pustefix Editor"/>
+    <page name="testclient" title="Test client"/>
   </page>
   <page name="misc" title="Misc."/>
   

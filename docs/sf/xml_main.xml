@@ -1,5 +1,24 @@
 <div>
+  <p>
+    The XML/XSLT System of <pustefix/> is responsible for generating the
+    final stylesheet that represent the static content of a page.  This
+    stylesheets is then used together with the DOM tree that holds the
+    result of the request as given by the business logic to produce the
+    final HTML output.
+  </p>
+
+  <p>The figure below shows the typical transformations and files that
+    are involved in producing the final stylesheet
+    <code>BazPage.xsl</code>. Note that we only discuss the common case
+    here, arbitrary complex and deep transformation trees are in fact possible.
+  </p>
+    
   <stdimg src="img/targets.png">
-    Typical transformation steps used to generate one page
+    Typical transformation steps used to generate a single page.
   </stdimg>
+
+  <stdtable>
+    
+
+  </stdtable>
 </div>

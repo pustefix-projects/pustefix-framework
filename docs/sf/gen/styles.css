@@ -71,3 +71,14 @@ h2 {
 
 .stdimg-img { text-align: left; background-color: white; } 
 .stdimg-txt { background-color: black; color: white; text-align: left; padding: 5px; font-size: 10px; } 
+
+.xmlcodeOFF { text-align: center; border: 1px solid black; }
+
+.xmlcode { margin: 10px; background-color: white;}
+.ltgt    { color: #ff0000; }
+.tagxsl  { color: #dd0000; }
+.tagixsl { color: #cc44aa; }
+.tagpfx  { color: #0000aa; }
+.tagother{ color: #ffaa44; }
+.attrkey { color: #0000ff; }
+.attrval { color: #22aa00; }

@@ -26,6 +26,7 @@
                   <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param>
                   <xsl:with-param name="parent" select="/pagedef"/>
                 </xsl:call-template>
+                <img border="0" src="img/blank.gif" width="125" height="1" alt="" title=""/>
               </td>
               <td class="mainbody">
                 <xsl:apply-templates select="document(concat(@name, '_main.xml'))">
@@ -64,6 +65,68 @@
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
+
+  <xsl:template match="xmlcodeOFF" mode="static_disp">
+    <xsl:apply-templates/>
+  </xsl:template>
+  
+  <xsl:template match="*" mode="static_disp">
+    <xsl:param name="ind">&#160;&#160;</xsl:param>
+    <xsl:param name="break">true</xsl:param>
+    <xsl:param name="col">
+      <xsl:choose>
+        <xsl:when test="starts-with(name(),'xsl:')">tagxsl</xsl:when>
+        <xsl:when test="starts-with(name(),'ixsl:')">tagixsl</xsl:when>
+        <xsl:when test="starts-with(name(),'pfx:')">tagpfx</xsl:when>
+        <xsl:otherwise>tagother</xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
+    <xsl:if test="$break='false'">
+      <br/>
+    </xsl:if>
+    <xsl:if test="(name() = 'xsl:template') or (name() = 'xsl:template')">
+      <br/></xsl:if>
+    <xsl:value-of select="$ind"/>
+    <span class="ltgt">&lt;</span>
+    <span><xsl:attribute name="class"><xsl:value-of select="$col"/>
+      </xsl:attribute><xsl:value-of select="name()"/></span>
+    <xsl:for-each select="@*">&#160;<span class="attrkey">
+        <xsl:value-of select="name()"/></span><xsl:text>="</xsl:text><span class="attrval">
+        <xsl:value-of select="."/></span><xsl:text>"</xsl:text></xsl:for-each><span class="ltgt">
+      <xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
+    <xsl:apply-templates mode="static_disp">
+      <xsl:with-param name="ind">
+        <xsl:value-of select="$ind"/>&#160;&#160;&#160;&#160;</xsl:with-param>
+      <xsl:with-param name="break">false</xsl:with-param>
+    </xsl:apply-templates>
+    <xsl:if test="not(count(./node()) = 0)">
+      <xsl:if test="count(./*) > 0">
+        <br/>
+        <xsl:value-of select="$ind"/>
+      </xsl:if>
+      <span class="ltgt">&lt;/</span>
+      <span>
+        <xsl:attribute name="class"><xsl:value-of select="$col"/></xsl:attribute>
+        <xsl:value-of select="name()"/></span>
+      <span class="ltgt">&gt;</span>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="text()" mode="static_disp">
+    <xsl:value-of select="normalize-space(current())"/>
+  </xsl:template>
+
+  <xsl:template match="comment()" mode="static_disp">
+    <br/> <font color="#999999">&lt;!--<xsl:value-of select="."/>--&gt;</font>
+  </xsl:template>
+  
+
+  <xsl:template match="xmlcode">
+    <div class="xmlcode">
+      <xsl:apply-templates mode="static_disp" select="node()"/>
+    </div>
+  </xsl:template>
+  
   
   <xsl:template name="gen_navi">
     <xsl:param name="parent"/>
