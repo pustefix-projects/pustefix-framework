@@ -252,7 +252,7 @@ class ExceptionContext {
         } else {
             /* no relocate? let us use the pfixservletrequest.getCurrentXXX methods */
             que = pfrequest_.getQueryString();
-            uri = pfrequest_.getRequestURI(getResponse());
+            uri = pfrequest_.getRequestURI();
             scheme = pfrequest_.getScheme();
             port = pfrequest_.getServerPort();
         }

@@ -82,7 +82,6 @@ public class PfixServletRequest {
     public void startLogEntry() {
         if (perflog != null) {
             long now   = System.currentTimeMillis();
-            int  index = perflog.size(); // this is the index the new entry will get
             
             PerfEvent evn = new PerfEvent(now, ">>>", PerfEvent.START);
             perflog.add(evn);
@@ -301,8 +300,8 @@ public class PfixServletRequest {
      * Retrieve the request uri from the current request
      * @return the request uri
      */
-    public String getRequestURI(HttpServletResponse res) {
-        return SessionHelper.encodeURI(request,res);
+    public String getRequestURI() {
+        return SessionHelper.encodeURI(request);
     }
 
     /**

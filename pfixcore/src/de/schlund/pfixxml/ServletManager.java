@@ -303,13 +303,13 @@ public abstract class ServletManager extends HttpServlet {
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
-        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSSL(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to session-less request URL under SSL");
-        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.getClearedURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -332,7 +332,7 @@ public abstract class ServletManager extends HttpServlet {
                     if (cookie.getValue().equals(secure_id)) {
                         CAT.debug("   ... and the value is correct!");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
-                        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res, secure_id);
+                        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req,  secure_id);
                         relocate(res, redirect_uri);
                         return;
                     } else {
@@ -376,7 +376,7 @@ public abstract class ServletManager extends HttpServlet {
         CAT.debug("*** Copying data back to new session");
         SessionHelper.copySessionData(map, session);
         CAT.debug("*** Setting ContainerUtil.SESSION_ID_URL to " +  session.getAttribute(SessionHelper.SESSION_ID_URL));
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting SECURE flag");
         session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
@@ -393,7 +393,7 @@ public abstract class ServletManager extends HttpServlet {
         res.addCookie(cookie);
         
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -407,12 +407,12 @@ public abstract class ServletManager extends HttpServlet {
         if (!reuse_session) {
             registerSession(req, session);
         }
-        session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
@@ -422,13 +422,13 @@ public abstract class ServletManager extends HttpServlet {
         String      parentid      = req.getRequestedSessionId();
         HttpSession session       = req.getSession(true);
         // registerSession(req, session);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
         session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
-        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
     
@@ -442,22 +442,22 @@ public abstract class ServletManager extends HttpServlet {
         String      curr_visit_id = (String) child.getAttribute(VISIT_ID);
         HttpSession session       = req.getSession(true);
         LinkedList  traillog      = SessionAdmin.getInstance().getInfo(child).getTraillog();
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
         SessionAdmin.getInstance().registerSession(session, traillog);
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 
     private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         HttpSession session = req.getSession(true);
-        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
+        session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         registerSession(req, session);
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
-        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req, res);
+        String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
         relocate(res, redirect_uri);
     }
 

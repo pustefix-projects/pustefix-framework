@@ -41,6 +41,7 @@ public class SessionHelper {
                 store.put(valName, session.getAttribute(valName));
             }
         } catch (NullPointerException e) {
+            CAT.warn("Caught NP-Exception: "+e.getMessage());
         }
     }
 
@@ -59,23 +60,23 @@ public class SessionHelper {
                 }
             }
         } catch (NullPointerException e) {
+            CAT.warn("Caught NP-Exception: "+e.getMessage());
         }
     }
 
-    public static String getClearedURI(PfixServletRequest req, HttpServletResponse res) {
-        StringBuffer rcBuf = new StringBuffer();
-        stripUriSessionId(null, req.getRequestURI(res), rcBuf);
-        return rcBuf.toString();
-    }
-
-    public static String getClearedURI(HttpServletRequest req, HttpServletResponse res) {
+    public static String getClearedURI(PfixServletRequest req) {
         StringBuffer rcBuf = new StringBuffer();
         stripUriSessionId(null, req.getRequestURI(), rcBuf);
         return rcBuf.toString();
     }
 
-    public static String getClearedURL(String scheme, String host,
-            HttpServletRequest req, HttpServletResponse res) {
+    public static String getClearedURI(HttpServletRequest req) {
+        StringBuffer rcBuf = new StringBuffer();
+        stripUriSessionId(null, req.getRequestURI(), rcBuf);
+        return rcBuf.toString();
+    }
+
+    public static String getClearedURL(String scheme, String host, HttpServletRequest req) {
         if (scheme == null) scheme = req.getScheme();
         if (host == null) host = req.getServerName();
         StringBuffer rcBuf = new StringBuffer();
@@ -90,12 +91,12 @@ public class SessionHelper {
         return rcBuf.toString();
     }
 
-    public static String getURLSessionId(HttpServletRequest req, HttpServletResponse res) {
+    public static String getURLSessionId(HttpServletRequest req) {
         String rc = ENC_STR + "=" + req.getSession(false).getId();
         return rc;
     }
 
-    public static String encodeURI(HttpServletRequest req, HttpServletResponse res) {
+    public static String encodeURI(HttpServletRequest req) {
         StringBuffer rcBuf = new StringBuffer();
 
         String oldSessionId = stripUriSessionId(null, req.getRequestURI(), rcBuf);
@@ -110,14 +111,13 @@ public class SessionHelper {
         return rcBuf.toString();
     }
 
-    public static String encodeURL(String scheme, String host,
-            HttpServletRequest req, HttpServletResponse res) {
-        return encodeURL(scheme, host, req, res, null);
+    public static String encodeURL(String scheme, String host, HttpServletRequest req) {
+        return encodeURL(scheme, host, req, null);
     }
 
     
     public static String encodeURL(String scheme, String host,
-            HttpServletRequest req, HttpServletResponse res, String sessid) {
+            HttpServletRequest req,  String sessid) {
         if (scheme == null) scheme = req.getScheme();
         if (host == null) host = req.getServerName();
         StringBuffer rcBuf = new StringBuffer();
@@ -164,6 +164,7 @@ public class SessionHelper {
 
             rcUri.append(uri);
         } catch (NullPointerException e) {
+            CAT.warn("Caught NP-Exception: "+e.getMessage());
         }
         return rc;
     }
