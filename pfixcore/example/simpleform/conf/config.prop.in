@@ -31,8 +31,8 @@
 		for a short DemoText :o).
 	-->
 	<context defaultflow="DefaultFlow">
-    <resource class="de.schlund.pfixcore.example.ContextDemoTextImpl">
-      <implements class="de.schlund.pfixcore.example.ContextDemoText"/>
+    <resource class="de.skelexamples.ContextDemoTextImpl">
+      <implements class="de.skelexamples.ContextDemoText"/>
     </resource>
   </context>
   
@@ -65,7 +65,7 @@
 	--> 
    <pagerequest name="home"> 
    	<ihandler>
-      <interface prefix="demo" class="de.schlund.pfixcore.example.iwrapper.DemoText"/>
+      <interface prefix="demo" class="de.skelexamples.DemoText"/>
     </ihandler>   
   </pagerequest>
   
@@ -79,7 +79,7 @@
   -->
   	<pagerequest name="output">
     	<output>
-      <resource node="data" class="de.schlund.pfixcore.example.ContextDemoText"/>
+      <resource node="data" class="de.skelexamples.ContextDemoText"/>
     </output>
   </pagerequest>
 

@@ -13,7 +13,7 @@
   <!-- The simplepage application -->
   
   <active>true</active>
-  <comment>Just one page in order to make a real simple pustefix example available</comment>
+  <comment>How a form request will be handled by pustefix</comment>
   <depend><cus:docroot/>simplepage/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>simpleform.<cus:fqdn/></servername>
