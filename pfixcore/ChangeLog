@@ -37,7 +37,6 @@
 
 	* docs/sf/*: new files. Start of sourceforge web site online documentation. Real content follows (I hope)
 
->>>>>>> 1.142
 2003-06-17  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java(callProcess):
