@@ -6,9 +6,9 @@
       <lang name="default">
         <!-- Put core CSS here -->
         body      { color: #000000; background-color: #ffffff;
-                    font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif; font-size: 12px; }
-	td        { font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif; font-size: 12px; }
-
+                    font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+	td        { font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+        
         .core_errorbox_table   { background-color: #cccccc; }
         .core_errorlabel_td    { align: left; }
         .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
@@ -18,7 +18,7 @@
         .core_button_normal    { }
         .core_button_invisible { }
 
-        .core_xml_errorbox     {background-color: #cccccc; color: #ff0000; font-weight: bold; border:outset 1px #000000;}
+        .core_xml_errorbox     { background-color: #cccccc; color: #ff0000; font-weight: bold; border:outset 1px #000000; }
         
         #core_progress_wait { position:absolute; visibility:hidden; 
                               top:10%; left:40%; right:40%;
