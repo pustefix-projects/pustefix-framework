@@ -1,3 +1,10 @@
+2004-06-03  Michael Hartmier  <mhm@schlund.de>
+	Minore cleanup to prepare pfixschlund upgrade:
+	* build.xml
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+
 2004-06-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument):

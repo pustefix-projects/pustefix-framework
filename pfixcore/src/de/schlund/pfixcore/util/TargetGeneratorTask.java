@@ -15,13 +15,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.targets.TargetFactory;
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.targets.PageInfoFactory;
-import de.schlund.pfixxml.targets.SharedLeafFactory;
-import de.schlund.pfixxml.targets.AuxDependencyFactory;
 
 /**
  * @author adam
