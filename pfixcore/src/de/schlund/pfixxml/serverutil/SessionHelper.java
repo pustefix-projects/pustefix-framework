@@ -124,9 +124,9 @@ public class SessionHelper {
         if (ServletManager.isDefault(req.getServerPort())) {
             // don't care about port -- stick with defaults
         } else {
-            // we're running on none-default ports: repeat port in encoded url
+            // we're running with none-default ports: repeat port in encoded url
             if ("https".equals(scheme)) {
-                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT);
+                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT); // TODO: ask tomcat's ssl port
             } else {
                 rcBuf.append(":").append(req.getServerPort());
             }
