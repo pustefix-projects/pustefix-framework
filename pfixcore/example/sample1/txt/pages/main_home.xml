@@ -31,7 +31,7 @@
                 </td>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-                  <pfx:xinp name="info.Adult" type="radio" value="false" default="true"/><pfx:include part="no"/>
+                  <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
                 </td>
               </tr>
             </table>
@@ -84,24 +84,24 @@
 
         
         <pfx:switch>
-          <pfx:layer_ref name="FOO" method="on"/>
+          <pfx:layer_ref method="on" name="FOO"/>
           <pfx:layer_check name="FOO">
             <pfx:on class="core_button_invisible">Show it...</pfx:on>
             <pfx:off>Show it...</pfx:off>
           </pfx:layer_check>
         </pfx:switch>
         <br/>
-        <table cellpadding="5" border="1">
+        <table border="1" cellpadding="5">
           <tr>
             <td colspan="2">You can hide the</td>
           </tr>
           <tr>
             <td>last</td>
-            <pfx:layer store="false" element="td" name="FOO"><b>cell</b></pfx:layer>
+            <pfx:layer element="td" name="FOO" store="false"><b>cell</b></pfx:layer>
           </tr>
         </table>
         <pfx:switch>
-          <pfx:layer_ref name="FOO" method="off"/>
+          <pfx:layer_ref method="off" name="FOO"/>
           <pfx:layer_check name="FOO">
             <pfx:on>Hide it...</pfx:on>
             <pfx:off class="core_button_invisible">Hide it...</pfx:off>
@@ -113,14 +113,14 @@
           <tr>
             <td>
               <pfx:switch>
-                <pfx:layer_ref name="XXX" method="on"/>
-                <pfx:layer_ref name="YYY" method="off"/>
+                <pfx:layer_ref method="on" name="XXX"/>
+                <pfx:layer_ref method="off" name="YYY"/>
                 <pfx:layer_check name="YYY">
                   <pfx:on>
-                    <tt>[ ]</tt> Show "BAZ"
+                    <tt>[ ]</tt> Show &quot;BAZ&quot;
                   </pfx:on>
                   <pfx:off class="core_button_invisible">
-                    <tt>[X]</tt> Show "BAZ"
+                    <tt>[X]</tt> Show &quot;BAZ&quot;
                   </pfx:off>
                 </pfx:layer_check>
               </pfx:switch>
@@ -129,14 +129,14 @@
           <tr>
             <td>
               <pfx:switch>
-                <pfx:layer_ref name="XXX" method="off"/>
-                <pfx:layer_ref name="YYY" method="on"/>
+                <pfx:layer_ref method="off" name="XXX"/>
+                <pfx:layer_ref method="on" name="YYY"/>
                 <pfx:layer_check name="YYY">
                   <pfx:on class="core_button_invisible">
-                    <tt>[X]</tt> Show "FOOBAR"
+                    <tt>[X]</tt> Show &quot;FOOBAR&quot;
                   </pfx:on>
                   <pfx:off>
-                    <tt>[ ]</tt> Show "FOOBAR"
+                    <tt>[ ]</tt> Show &quot;FOOBAR&quot;
                   </pfx:off>
                 </pfx:layer_check>
               </pfx:switch>
@@ -144,7 +144,7 @@
           </tr>
         </table>
         <br/>
-        <pfx:layer element="span"  name="XXX" visible="true">
+        <pfx:layer element="span" name="XXX" visible="true">
           BAZ
         </pfx:layer>
         <pfx:layer element="span" name="YYY" visible="false">
@@ -171,9 +171,9 @@
   <part name="switch">
     <product name="default">
       <lang name="default">
-        <pfx:switch><pfx:layer_ref name="A"/>Toggle Layer A</pfx:switch>
+        <pfx:switch><pfx:layer_ref name="A"/>Toggle Layer a</pfx:switch>
           
-        <pfx:switch><pfx:layer_ref name="B"/>Toggle Layer B</pfx:switch>
+        <pfx:switch><pfx:layer_ref name="B"/>Toggle Layer b</pfx:switch>
       </lang>
     </product>
   </part>
@@ -196,12 +196,12 @@
         <b>Display type is:
             <ixsl:choose>
               <ixsl:when test="/formresult/iwrappergroups/@groupdisplay = &apos;true&apos;">
-                <pfx:button mode="force" nodata="true" accesskey="W">
+                <pfx:button accesskey="W" mode="force" nodata="true">
                   <pfx:argument name="__groupdisplay">off</pfx:argument>
                   Wizard</pfx:button>
               </ixsl:when>
               <ixsl:otherwise>
-                <pfx:button mode="force" nodata="true" accesskey="W">
+                <pfx:button accesskey="W" mode="force" nodata="true">
                   <pfx:argument name="__groupdisplay">on</pfx:argument>
                   Flat</pfx:button>
               </ixsl:otherwise>
