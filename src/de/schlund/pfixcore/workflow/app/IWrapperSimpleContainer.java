@@ -509,6 +509,11 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 } else {
                     throw new XMLException("You need to give a order for the interfaces to be called!");
                 }
+
+                if (wrappers.get(realprefix) != null) {
+                    throw new XMLException("FATAL: you have already defined a wrapper with prefix " +
+                                           realprefix + " on page " + context.getCurrentPageRequest().getName());
+                }
                 
                 String iface  = (String) interfaces.get(prefix);
                 if (iface == null || iface.equals("")) {
@@ -538,6 +543,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 if (order > -1) {
                     wrapper.defineOrder(order);
                 }
+                
                 wrappers.put(realprefix, wrapper);
                 wrapper.init(realprefix);
                 
