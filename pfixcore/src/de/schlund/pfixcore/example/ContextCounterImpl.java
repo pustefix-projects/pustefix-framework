@@ -18,12 +18,14 @@
  */
 
 package de.schlund.pfixcore.example;
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.util.statuscodes.StatusCodeFactory;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
+
 /**
  * ContextCounter.java
  *
@@ -36,11 +38,16 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class ContextCounterImpl implements ContextResource, ContextCounter{
-    private Boolean showcounter = Boolean.FALSE;
-    private int     counter     = 0;
-    private Category CAT = Category.getInstance(this.getClass().getName());
 
-    public void init(Context context) {}
+    private Boolean           showcounter = Boolean.FALSE;
+    private int               counter     = 0;
+    private Category          CAT         = Category.getInstance(this.getClass().getName());
+    private StatusCodeFactory sfac        = new StatusCodeFactory("pfixcore.example.counter");
+    private Context           context;
+    
+    public void init(Context context) {
+        this.context = context;
+    }
     
     public void reset() {
         showcounter = Boolean.FALSE;
@@ -53,10 +60,21 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
     
     public void setShowCounter(Boolean showcounter) {
         this.showcounter = showcounter;
+        checkValue();
     }
 
     public void setCounter(int count) {
         counter = count;
+        checkValue();
+    }
+
+    private void checkValue() {
+        // demo of pageMessage feature
+        if (counter > 5 ) {
+            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), "warn", new String[] {""+counter});
+        } else if (counter > 3 ) {
+            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), "info", new String[] {""+counter});
+        }
     }
 
     public void addToCounter(int count) {
