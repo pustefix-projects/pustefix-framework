@@ -1,3 +1,9 @@
+2003-05-13 Martin Leidig  <mleidig@schlund.de>
+	
+	* src/de/schlund/pfixxml/loader/StateTransfer.java:
+        Added support for handling different java versions and the different ways instances of classes
+        with no no-arg constructors are created. Now supports Sun and IBM JDK versions 1.3.x and 1.4.x. 
+
 2003-05-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.3.0
