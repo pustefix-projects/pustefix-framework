@@ -3,7 +3,7 @@ This file describes how to get the package up and running.
 Prerequisites:
 
         * A Java installation. Version 1.4.1 is recommended. 
-          The environment variable JDK_HOME mu.ast be set to the 
+          The environment variable JDK_HOME must be set to the 
           location of your java installation.
 
         * jikes if you want to compile out-of-the-box.  Compilation

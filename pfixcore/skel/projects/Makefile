@@ -23,7 +23,7 @@ endif
 FQDN      = $(MACHINE).$(shell dnsdomainname)
 UID       = $(USER)
 ifndef MAKE_MODE
-MAKE_MODE = prod
+MAKE_MODE = test 
 endif
 PROHIBIT_EDIT = no
 ifeq ($(MAKE_MODE), prod)
