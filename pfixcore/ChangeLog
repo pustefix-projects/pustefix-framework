@@ -1,5 +1,16 @@
 2003-06-04  Martin Leidig <mleidig@schlund.de>
 
+	* src/de/schlund/pfixxml/loader/Profiler.java:
+	Added class which does some application introspection via reflection. E.g. it 
+	tries to detect if there are class definitions loaded by different AppLoaders,
+	it also provides some statistics (object count grouped by classes and classloaders).
+	It can be run using the commandline tool.
+	* src/de/schlund/pfixxml/loader/CommandProcessor.java:
+	Added new commands for Profiler usage. 'typecheck' does some application introspection,
+	'classinfo' prints out some class information, like class hierarchy and members.
+
+2003-06-04  Martin Leidig <mleidig@schlund.de>
+
 	* src/de/schlund/pfixxml/loader/StateTransfer.java:
 	Optimized lookup strategy for packages which are excluded form traversing during 
 	state transfer. Removed logging of object value in debug mode to avoid possible 
