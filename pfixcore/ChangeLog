@@ -1,7 +1,13 @@
-2003-11-08  Jens Lautenbacher  <jtl@schlund.de>
+2003-11-10  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/workflow/PageFlow.java: (getIndexOfPageRequest): new method. This allows to retrieve the 
-	index of a PageRequest in the pageflow. returns -1 if PageRequest is not contained in the page flow. 
+	* released 0.4.1
+
+2003-11-08  Jens Lautenbacher  <jtl@schlund.de>
+	
+	* src/de/schlund/pfixcore/workflow/PageFlow.java:
+	(getIndexOfPageRequest): new method. This allows to retrieve the
+	index of a PageRequest in the pageflow. returns -1 if PageRequest
+	is not contained in the page flow.
 
 	* src/de/schlund/pfixcore/workflow/Context.java:
 	(getInitialPageRequest) new method. the initialpagerequest is now
@@ -14,8 +20,9 @@
 	the remote IP address and servername to the xsl parameters for the
 	transormation
 
-	* src/de/schlund/pfixcore/workflow/Context.java (handleRequest): add the current pageflow name to the 
-	spdoc properties (and by that to the used xsl parameters).
+	* src/de/schlund/pfixcore/workflow/Context.java (handleRequest):
+	add the current pageflow name to the spdoc properties (and by that
+	to the used xsl parameters).
 
 	* example/core/xsl/master.xsl.in: handle the above with the ixsl variables pageflow, 
 	__remote_addr and __server_name
@@ -60,7 +67,8 @@
 	* example/core/build/create_depend.xsl:
 	* example/core/xsl/master.xsl.in:  handle the new tags and attributes.
 
-	* build.xml: use modern as default compiler because jikes doesn't seem to trigger a "build failed" reliably.
+	* build.xml: use modern as default compiler because jikes doesn't
+	seem to trigger a "build failed" reliably.
 
 	* example/core/script/baselib.js: Just some source code cleanups 
 

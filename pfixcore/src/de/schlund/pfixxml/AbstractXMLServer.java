@@ -18,14 +18,17 @@
 */
 package de.schlund.pfixxml;
 
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 
+
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.testenv.RecordManager;
+import de.schlund.pfixxml.testenv.RecordManagerFactory;
+import java.net.SocketException;
+import java.util.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -36,33 +39,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.PageInfoFactory;
-import de.schlund.pfixxml.targets.PageTargetTree;
-import de.schlund.pfixxml.targets.PublicXSLTProcessor;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
-import de.schlund.pfixxml.testenv.RecordManager;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
-
 
 /**
- *
- *
- * -------------------------------------------------------------------------
- *
  * This class is at the top of the XML/XSLT System.
  * It serves as an abstract parent class for all servlets
  * needing access to the XML/XSL cache system povided by
@@ -75,36 +58,38 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     //~ Instance/static variables ..................................................................
 
-    private static DocumentBuilderFactory dbfac            = DocumentBuilderFactory.newInstance();
-    public static final String            SESS_LANG        = "__SELECTED_LANGUAGE__";
-    public static final String            SESS_RECORDMODE  = "__RECORDMODE__";
-    public static final String            XML_CONTENT_TYPE = "text/xml; charset=iso-8859-1";
-    public static final String            PARAM_XMLONLY    = "__xmlonly";
-    public static final String            PARAM_ANCHOR     = "__anchor";
-    public static final String            PARAM_EDITMODE   = "__editmode";
-    public static final String            PARAM_LANG       = "__language";
-    public static final String            PARAM_FRAME      = "__frame";
-    public static final String            PARAM_NOSTORE    = "__nostore";
-    public static final String            PARAM_REUSE      = "__reuse"; // internally used
-    public static final String            PARAM_RECORDMODE = "__recordmode";
-    private static final String           PARAM_VAL_RECORDMODE_OFF = "0";
-    public static final String            XSLPARAM_LANG    = "lang";
-    public static final String            XSLPARAM_SESSID  = "__sessid";
-    public static final String            XSLPARAM_URI     = "__uri";
-    public static final String            XSLPARAM_SERVP   = "__servletpath";
-    public static final String            XSLPARAM_REMOTE_ADDR = "__remote_addr";
-    public static final String            XSLPARAM_SERVER_NAME = "__server_name";
-    public static final String            XSLPARAM_FRAME   = "__frame";
-    public static final String            XSLPARAM_REUSE   = "__reusestamp";
-    private static final String           XSLPARAM_TG      = "__target_gen";
-    private static final String           XSLPARAM_TKEY    = "__target_key";
-    private static final String           VALUE_NONE       = "__NONE__";
-    public static final String            SUFFIX_SAVEDDOM  = "_SAVED_DOM";
-    public static final String            PROP_DEPEND      = "xmlserver.depend.xml";
-    public static final String            PROP_NAME        = "xmlserver.servlet.name";
-    public static final String            PROP_NOEDIT      = "xmlserver.noeditmodeallowed";
-    public static final String            PROP_RENDER_EXT  = "xmlserver.output.externalrenderer";
-    public static final String            PROP_CLEANER_TO  = "sessioncleaner.timeout";
+    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    
+    public static final String  SESS_LANG                = "__SELECTED_LANGUAGE__";
+    public static final String  SESS_RECORDMODE          = "__RECORDMODE__";
+    public static final String  XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
+    public static final String  PARAM_XMLONLY            = "__xmlonly";
+    public static final String  PARAM_ANCHOR             = "__anchor";
+    public static final String  PARAM_EDITMODE           = "__editmode";
+    public static final String  PARAM_LANG               = "__language";
+    public static final String  PARAM_FRAME              = "__frame";
+    public static final String  PARAM_NOSTORE            = "__nostore";
+    public static final String  PARAM_REUSE              = "__reuse"; // internally used
+    public static final String  PARAM_RECORDMODE         = "__recordmode";
+    private static final String PARAM_VAL_RECORDMODE_OFF = "0";
+    public static final String  XSLPARAM_LANG            = "lang";
+    public static final String  XSLPARAM_SESSID          = "__sessid";
+    public static final String  XSLPARAM_URI             = "__uri";
+    public static final String  XSLPARAM_SERVP           = "__servletpath";
+    public static final String  XSLPARAM_REMOTE_ADDR     = "__remote_addr";
+    public static final String  XSLPARAM_SERVER_NAME     = "__server_name";
+    public static final String  XSLPARAM_FRAME           = "__frame";
+    public static final String  XSLPARAM_REUSE           = "__reusestamp";
+    private static final String XSLPARAM_TG              = "__target_gen";
+    private static final String XSLPARAM_TKEY            = "__target_key";
+    private static final String VALUE_NONE               = "__NONE__";
+    public static final String  SUFFIX_SAVEDDOM          = "_SAVED_DOM";
+    public static final String  PROP_DEPEND              = "xmlserver.depend.xml";
+    public static final String  PROP_NAME                = "xmlserver.servlet.name";
+    public static final String  PROP_NOEDIT              = "xmlserver.noeditmodeallowed";
+    public static final String  PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
+    public static final String  PROP_CLEANER_TO          = "sessioncleaner.timeout";
+
     // xml output only, no transformation
     private static final String PROP_NOXML_KEY                    = "xmlserver.noxmlonlyallowed";
     private static final String PROP_XMLONLY_NOT_ENABLED_VALUE    = "true";
@@ -112,16 +97,16 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String PROP_XMLONLY_RESTRICTED_VALUE     = "restricted";
     private static final String PROP_XMLONLY_RESTRICTED_HOSTS_KEY = "xmlserver.xmlonlyallowed.host";
     // record mode
-    private static final String PROP_RECORDMODE_KEY           = "xmlserver.recordmode_allowed";
-    private static final String PROP_RECORDMODE_ALLOWED_VALUE = "true";
+    private static final String PROP_RECORDMODE_KEY               = "xmlserver.recordmode_allowed";
+    private static final String PROP_RECORDMODE_ALLOWED_VALUE     = "true";
    
     // skip stat on all targets
-    private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = 
-            "targetgenerator.skip_getmodtimemaybeupdate";
+    private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = "targetgenerator.skip_getmodtimemaybeupdate";
     private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE = "true";
-    private static final int    XML_ONLY_ALLOWED                              = 0;
-    private static final int    XML_ONLY_RESTRICTED                           = 1;
-    private static final int    XML_ONLY_PROHIBITED                           = 2;
+
+    private static final int XML_ONLY_ALLOWED    = 0;
+    private static final int XML_ONLY_RESTRICTED = 1;
+    private static final int XML_ONLY_PROHIBITED = 2;
 
     private static final String PROP_PROHIBITDEBUG = "xmlserver.prohibitdebug";
     private static final String PROP_PROHIBITINFO  = "xmlserver.prohibitinfo";
@@ -152,10 +137,10 @@ public abstract class AbstractXMLServer extends ServletManager {
     private int             isXMLOnlyAllowed  = XML_ONLY_PROHIBITED;
     private String[]        xmlOnlyValidHosts = null;
 
-    private int             scleanertimeout   = 300;
+    private int scleanertimeout = 300;
 
-    private boolean         allowInfo         = true;
-    private boolean         allowDebug        = true;
+    private boolean allowInfo  = true;
+    private boolean allowDebug = true;
     
     //~ Initializers ...............................................................................
 
@@ -183,7 +168,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private void initValues() throws ServletException{
+    private void initValues() throws ServletException {
         if ((targetconf = getProperties().getProperty(PROP_DEPEND)) == null) {
             throw (new ServletException("Need property '" + PROP_DEPEND + "'"));
         }
@@ -232,7 +217,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
             render_external = true;
         }
-        if(isInfoEnabled()) {
+        if (isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
             sb.append("                targetconf = ").append(targetconf).append("\n");
@@ -241,17 +226,17 @@ public abstract class AbstractXMLServer extends ServletManager {
             sb.append("                   timeout = ").append(timeout).append("\n");
             sb.append("        recordmode allowed = ").append(recordmodeAllowed).append("\n");
             String str = null;
-            if(isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
+            if (isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
                 str = "allowed";
-            } else if(isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
+            } else if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
                 str = "restricted";
-            } else if(isXMLOnlyAllowed == XML_ONLY_PROHIBITED) {
+            } else if (isXMLOnlyAllowed == XML_ONLY_PROHIBITED) {
                 str = "prohibited";
             } else str = "???";
             sb.append("            xmlOnlyAllowed = ").append(str).append("\n");
-            if(isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
-                if(xmlOnlyValidHosts!=null) {
-                    for(int i=0; i<xmlOnlyValidHosts.length; i++) {
+            if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
+                if (xmlOnlyValidHosts!=null) {
+                    for (int i=0; i<xmlOnlyValidHosts.length; i++) {
                         sb.append("                       host = ").append(xmlOnlyValidHosts).append("\n");
                     }
                 }
@@ -474,8 +459,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         
         if (spdoc == null) {
             currtime = System.currentTimeMillis();
+            spdoc    = getDom(preq);
             
-            spdoc = getDom(preq);
             // start recording if allowed and enabled
             if(recordmodeAllowed) {
                 RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
@@ -596,6 +581,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (! render_external && ! plain_xml) {
             TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             Object stylevalue = null;
+            
             try {
                 stylevalue = generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
