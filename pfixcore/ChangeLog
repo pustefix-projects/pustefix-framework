@@ -1,45 +1,46 @@
 2004-06-22  Benjamin Reitzammer <benjamin@schlund.de>
 
-   * example/core/build/create_tomcatweb.xsl
-     If you set project/includeexternalwebxml/@include to 'true' a web.xml that
-     lies in the project's conf directory will be included into the final web.xml
-     that's the result of the transformation. No checks regarding validity (beyond
-     well-formedness) are performed on the included configuration.
+	* example/core/build/create_tomcatweb.xsl
+	If you set project/includeexternalwebxml/@include to 'true' a web.xml that
+	lies in the project's conf directory will be included into the final web.xml
+	that's the result of the transformation. No checks regarding validity (beyond
+	well-formedness) are performed on the included configuration.
 
 
 2004-06-21  Jörg Häcker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
-        Do not catch TargetGenerationExcpetions any more, they should
-        be processed by a defined ExceptionProcessor.
-        * src/de/schlund/pfixxml/targets/TargetGenerationException.java: minor changes.
-        * example/core/xsl/errorrepresentation.xsl.in: stylesheet for rendering errors on screen.
-        * src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
-        ExceptionProcessor rendering errors on screen.
-        * src/de/schlund/pfixxml/ServletManager.java(callProcess):
-        - if there is no processor defined for the passed throwable, use the old
-          exceptionhandler.
-        - check if the passed throwable is an instance of the defined
-          throwable. If true, use the defined processor.
-        * src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor.java:
-        added  parameter properties to the processException-method.
-        * src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor.java:
-        adjusted to above changes.
-        * example/common/conf/pustefix.prop.in: added
-        UniversalExceptionProcessor for all Throwables in test-mode.
-        * src/de/schlund/pfixxml/exceptionprocessor/ExceptionDataValueHelper.java:
-        added new helper class.
-        * lib/rmiobj.jar: added jar with value-objects and helper classes.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	Do not catch TargetGenerationExcpetions any more, they
+	be processed by a defined ExceptionProcessor.
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java: minor changes.	 
+	* example/core/xsl/errorrepresentation.xsl.in: stylesheet for rendering errors on screen.
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
+	ExceptionProcessor rendering errors on screen.
+	* src/de/schlund/pfixxml/ServletManager.java(callProcess):
+	- if there is no processor defined for the passed throwable, use the old
+	  exceptionhandler.
+	- check if the passed throwable is an instance of the defined
+	  throwable. If true, use the defined processor.
+	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor.java:
+	added  parameter properties to the processException-method.
+	* src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor.java:
+	adjusted to above changes.
+	* example/common/conf/pustefix.prop.in: added
+	UniversalExceptionProcessor for all Throwables in test-mode.
+	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionDataValueHelper.java:
+	added new helper class.
+	* lib/rmiobj.jar: added jar with value-objects and helper classes.
 
 2004-06-21  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/ServletManager.java: fixed generated property __PROPERTIES_LOAD_INDEX to really
-	get incremented every time the properties are reloaded.
+	* src/de/schlund/pfixxml/ServletManager.java: fixed generated property 
+	__PROPERTIES_LOAD_INDEX to really get incremented every time the 
+	properties are reloaded.
 
 2004-06-19  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/core/editor/xsl/metatags.xsl: fixed again differently (using "/" instead of ../../ to match the
-	aliases defined anyway)
+	* example/core/editor/xsl/metatags.xsl: fixed again differently 
+	(using "/" instead of ../../ to match the aliases defined anyway)
 
 2004-06-18  Michael Hartmier  <mhm@schlund.de>
 	* example/core/editor/xsl/metatags.xsl: fix image preview
