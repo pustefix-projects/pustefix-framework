@@ -27,6 +27,7 @@ import de.schlund.pfixxml.serverutil.SessionInfoStruct;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class ExceptionDataValueHelper {
+    
 	/**
 	 * @param exception
 	 * @param pfixReq
@@ -70,12 +71,19 @@ public class ExceptionDataValueHelper {
 	    
 	    
 	    HashMap sessdata = new HashMap();
-        StringBuffer err = new StringBuffer();
         Enumeration enm = session.getAttributeNames();
         while (enm.hasMoreElements()) {
             String key = (String) enm.nextElement();
             Object value = session.getAttribute(key);
-            sessdata.put(key, value.toString());
+            String strvalue = null;
+            try {
+                strvalue = value.toString();
+            } catch(Exception e) {
+                // Catch all exceptions here. If an exception occurs in context.toString
+                // we definitly want the exception-info to be generated.
+                strvalue = e.getMessage();
+            }
+            sessdata.put(key, strvalue);
         }
 	    
         exdata.setSessionKeysAndValues(sessdata);
