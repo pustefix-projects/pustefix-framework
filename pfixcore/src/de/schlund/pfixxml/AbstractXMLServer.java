@@ -312,8 +312,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new ServletException(msg);
         } else {
             String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
-            skip_getmodtimemaybeupdate = tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase())
-                                             ? true : false;
+            skip_getmodtimemaybeupdate = tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? true : false;
             if (CAT.isInfoEnabled()) {
                 CAT.info("SKIP_GETMODTIMEMAYBEUPDATE: " + skip_getmodtimemaybeupdate);
             }
@@ -334,8 +333,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new ServletException(msg);
         } else {
             String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
-            recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase())
-                                    ? true : false;
+            recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase()) ? true : false;
             if (CAT.isInfoEnabled()) {
                 CAT.info("RecordModeAllowed is: " + recordmodeAllowed);
             }
@@ -390,13 +388,12 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @param HttpServletResponse res
      * @exception Exception
      */
-    protected void process(PfixServletRequest preq, HttpServletResponse res)
-                    throws Exception {
-        Properties    params            = new Properties();
-        HttpSession   session           = preq.getSession(false);
-        boolean       doreuse           = doReuse(preq);
-        ContainerUtil conutil           = getContainerUtil();
-        SPDocument    spdoc             = null;
+    protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        Properties    params  = new Properties();
+        HttpSession   session = preq.getSession(false);
+        boolean       doreuse = doReuse(preq);
+        ContainerUtil conutil = getContainerUtil();
+        SPDocument    spdoc   = null;
         RequestParam  value;
         long          currtime;
         // We look for the request parameter __frame and __reuse.
@@ -453,7 +450,6 @@ public abstract class AbstractXMLServer extends ServletManager {
             boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
             params.put("recordmode_allowed", new Boolean(allowed).toString());
         }
-
         
         if (spdoc == null) {
             currtime = System.currentTimeMillis();
@@ -500,8 +496,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res, 
-                                  SPDocument spdoc, Properties params, boolean doreuse)
-                           throws Exception {
+                                  SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
         boolean plain_xml = false;
         // if the document contains a error code, do errorhandling here and no further processing.
         int    err;
