@@ -6,43 +6,71 @@
   <body>
     <release version="0.7.0" date="in cvs">
       <action dev="jenstl" type="update">
-        More relative paths for configuration files.
+        <p>
+          More relative paths for configuration files. We try to remove
+          as many instances of &lt;cus:docroot&gt; from the config
+          files as possible. Currently we still miss this goal by a long
+          shot. The file types already cleared are:
+          common/conf/pustefix.prop.in, PRJ/conf/depend.xml.in and
+          PRJ/conf/SERVLETNAME.prop.in. The property file
+          common/conf/factory.prop.in defines in one place the docroot property
+          that is used to configure all the other places in the running
+          application (This is done by configuring a PathFactory, that
+          is able to resolve relative to a given root directory).
+        </p>
+        <p>
+          There are still a lot of places where we need to have the
+          docroot around unfortunately.  These are at least all the
+          log4j config files, the PRJ/conf/project.xml.in files and
+          maybe more (depending on the application). The goal is to
+          have only one place left where we configure this root
+          directory.
+        </p>
       </action>
       <action dev="mlhartme" type="remove">
-        Removed <code>common/conf/projects.prj</code>, the necessary data 
-        is read from <code>servletconf/projects.xml.in</code> now. 
+        <p>
+          Removed <code>common/conf/projects.prj</code>, the necessary data 
+          is read from <code>servletconf/projects.xml.in</code> now. 
+        </p>
       </action>
       <action dev="mlhartme" type="remove">
+        <p>
         Removed the following properties from depend.xml: record_dir, cachedir and docroot. 
         Pustefix automatically passes them to the xslt processor, you don't have to
         mention them in depend files.
+        </p>
       </action>
       <action dev="mlhartme" type="update">
+        <p>
         XML dependencies are concentrated in three files (in the <code>de.schlund.pfixxml.util</code> package):
         <code>Xml.java</code> for parsing and serialization, <code>XPath</code> for xpath compuations, and 
         <code>Xslt</code> for XSL processing. 
+        </p>
       </action>
     </release>
     <release version="0.6.7" date="2004-08-06">
       <action dev="jenstl" type="remove">
-        The tomcat distribution has been removed from the skeleton, the install instructions
-        describe how to get it.
+        <p>The tomcat distribution has been removed from the skeleton, the install instructions
+        describe how to get it.</p>
       </action>
       <action dev="jenstl" type="fix">
-        Various Tomcat 5 fixes.
+        <p>
+          Various Tomcat 5 fixes.
+        </p>
       </action>
       <action dev="mlhartme" type="add">
-        Enable stylechecker and fix missing copyright headers reported by it.
+        <p>Enable stylechecker and fix missing copyright headers reported by it.</p>
       </action>
     </release>
     <release version="0.6.6" date="2004-08-03">
       <action dev="mlhartme" type="update">
-        Switched from Tomcat 4.1.30 to 5.0.27.
+        <p>Switched from Tomcat 4.1.30 to 5.0.27.</p>
       </action>
       <action dev="mlhartme" type="update">
+        <p>
         Convert documentation to xdoc and configure a maven build. 
         The <code>docs</code> directory is gone, all documentation resides in 
-        <code>xdocs</code> now.
+        <code>xdocs</code> now.</p>
       </action>
     </release>
     <release version="0.6.5" date="2004-07-11">
@@ -63,9 +91,9 @@
         environment.</p>
       </action>
       <action dev="jenstl" type="update">
-        Cleanup and bug fixes on our way to xslt 2.0. We already have another branch 
+        <p>Cleanup and bug fixes on our way to xslt 2.0. We already have another branch 
         where this work is done now, called SAXON_8. Please see there if you're 
-        interested in this.
+        interested in this.</p>
       </action>
     </release>
     <release version="0.5.4" date="2004-06-01">
