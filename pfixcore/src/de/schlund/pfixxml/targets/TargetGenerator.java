@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -63,7 +64,20 @@ public class TargetGenerator {
     private File                          confile;
     private String                        disccachedir;
     private String                        docroot;
+    
+    /* All registered TargetGenerationListener */
+    private Set listeners = new HashSet();
 
+    
+    public void addListener(TargetGeneratorListener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(TargetGeneratorListener listener) {
+        listeners.remove(listener);
+    }
+    
+    
     // needed during load.
     private int unnamedcount = 0;
 
@@ -461,15 +475,79 @@ public class TargetGenerator {
                 if (needs_update) {
                     try {
                         current.getValue();
+                        notifyListenerTargetDone(current);
                     } catch(TargetGenerationException tgex) {
+                        notifyListenerTargetException(current,tgex);
                         report.addError(tgex, getConfigname());
                         tgex.printStackTrace();
                     }
                 }
+                else {
+                    notifyListenerTargetDone(current);
+                }
                 System.out.println("done.");
+            }
+            else {
+                notifyListenerTargetDone(current);
+            }
+            /* if all listeners want to stop, 
+             * there is no point in continuing ... */
+            if (needsToStop()) {
+                break;
             }
         }
     }
+    
+    /**
+     * This method checks, if a TargetGeneratorListener wants to stop,
+     * if so he will get kicked out of the listener set. 
+     * 
+     * @return true if all listeners want to stop
+     */
+    private boolean needsToStop() {
+        boolean result = false;
+        if (listeners.size() > 0) {
+            result = true;
+            for (Iterator it=listeners.iterator();it.hasNext();) {
+                TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+                if (listener.needsStop()) {
+                    result = result && true;
+                    it.remove();
+                }
+                else {
+                    result = false;
+                }
+            }
+        }
+        return result;
+    }
+    
+    
+    /**
+     * This calls the finishedTarget method of all registered listeners
+     * @param target the finished target
+     */
+    private void notifyListenerTargetDone(Target target) {
+        for (Iterator it = listeners.iterator();it.hasNext();) {
+            TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+            listener.finishedTarget(target);
+        }
+    }
+
+    /**
+     * This calls the generationException method of all registered listeners
+     * @param target the finished target
+     * @param tgex the exception!
+     */
+    private void notifyListenerTargetException(Target target,TargetGenerationException tgex) {
+        for (Iterator it = listeners.iterator();it.hasNext();) {
+            TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
+            listener.generationException(target,tgex);
+        }
+    }
+    
+    
+    
     /**
      * Returns the isGetModTimeMaybeUpdateSkipped.
      * @return boolean
