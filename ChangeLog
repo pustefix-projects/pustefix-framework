@@ -1,3 +1,8 @@
+2004-12-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: added public addCookies method. 
+	added private storeCookies() to move the cookies into the SPDocument prior to returning.
+
 2004-12-03  Adam Habermann  <adam.habermann@schlund.de>
 
 	See following article for some background info about XML Schema

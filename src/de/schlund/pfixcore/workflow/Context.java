@@ -84,12 +84,12 @@ public class Context implements AppContext {
     private boolean            on_jumptopage;
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
+    private ArrayList          cookielist;
     
     private HashMap messageSCodes      = new HashMap();
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
     private boolean needs_update;
-    
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -126,6 +126,7 @@ public class Context implements AppContext {
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
         startwithflow              = false;
+        cookielist                 = new ArrayList();
         
         if (needs_update) {
             do_update();
@@ -155,6 +156,7 @@ public class Context implements AppContext {
             spdoc = resdoc.getSPDocument();
             spdoc.setPagename(admin_pagereq.getName());
             insertPageMessages(spdoc);
+            storeCookies(spdoc);
             return spdoc;
         }
 
@@ -173,6 +175,7 @@ public class Context implements AppContext {
             currentpagerequest = prevpage;
             currentpageflow    = prevflow;
             insertPageMessages(spdoc);
+            storeCookies(spdoc);
             return spdoc;
         }
 
@@ -191,6 +194,7 @@ public class Context implements AppContext {
 
         LOG.debug("\n");
         insertPageMessages(spdoc);
+        storeCookies(spdoc);
         return spdoc;
     }
 
@@ -296,7 +300,17 @@ public class Context implements AppContext {
     public Cookie[] getRequestCookies() {
         return currentpreq.getCookies();
     }
- 
+
+    public void addCookie(Cookie cookie) {
+        cookielist.add(cookie);
+    }
+
+    private void storeCookies(SPDocument spdoc) {
+        for (Iterator i = cookielist.iterator(); i.hasNext();) {
+            spdoc.addCookie((Cookie) i.next());
+        }
+    }
+    
     /**
      * <code>getCurrentSessionId</code> returns the visit_id.
      *
