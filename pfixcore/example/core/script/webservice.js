@@ -90,7 +90,7 @@ xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
 	if(node.childNodes==null || node.childNodes.length==0) return null;
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
-    if(this.scopeSupport) {
+    if(this.scopeSupport && node.childNodes[i].nodeName.indexOf(":")==-1) {
     	if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
 	 } else {
 	 	if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
