@@ -41,7 +41,7 @@
   <ul>
     <li>
       The value of the <b>MAKE_MODE</b> environment variable, or
-      "<b>test</b>" if the variable is not set (the default behaviour
+      "<b>test</b>" if the variable is not set (the default behavior
       can be changed by tweaking the makefiles). This can be used to
       easily switch preferences depending on the "mode" that is active
       when the application is made, e.g. "test" on the development
@@ -242,7 +242,7 @@
             <div class="comment">
               <code>class</code> is <b>mandatory</b>, must be a
               <code>ContextResource</code>. There may be many
-              <code>ressource</code> tags given.
+              <code>resource</code> tags given.
             </div>
           </xmlcodeOFF>
           <implements class="An_Interface">
@@ -399,7 +399,7 @@
                       <code>continue</code> set to <b>true</b>, the context again will switch to the next page.
                     </p>
                     <p>
-                      Note that all of the explained behaviour can be
+                      Note that all of the explained behavior can be
                       freely changed by the use of <b>Finalisers</b>
                       (See above).
                     </p>
@@ -548,7 +548,7 @@
             context (or better: the <code>ContextResourceManager</code>)
             of this servlet is used for getting stored application data.
           </p>
-          <p>Aditionally, if the context is of type <code>de.schlund.pfixcore.workflow.AuthContext</code>,
+          <p>Additionally, if the context is of type <code>de.schlund.pfixcore.workflow.AuthContext</code>,
             it's authentification page is checked before any <code>DirectOutputState</code> is called.
           </p>
         </div>
