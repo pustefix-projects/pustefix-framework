@@ -1,3 +1,16 @@
+2004-03-24  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	(addErrorCodes)	call wrapper.tryErrorLogging() to maybe log StatusCodes
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java: 
+	(tryParamLogging) changed name from tryLogging
+	(tryErrorLogging) new method
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: implement
+	changes above. Now a wrapper also logs it's StatusCodes (when in
+	logging mode)
+
 2004-03-12  Joerg Haecker <haecker@schlund.de>
 
 	* Integrated tomcat 4.1.30 into pfixcore(but not skel yet)
