@@ -70,6 +70,6 @@ public class XMLServer extends AbstractXMLServer {
             CAT.debug(spdoc.toString());
         }
         
-        return(spdoc);
+        return spdoc;
     }
 }
