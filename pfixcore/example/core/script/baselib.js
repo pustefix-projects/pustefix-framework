@@ -49,15 +49,17 @@ var __js_Cookie = {
 
   set : function(name, value)
   {
+    if (name==null||typeof name=="undefined"||value==null||typeof value=="undefined") return;
+  
     var c = this.get_sub().split(this.splitter)
     var n = [];
 
-  	// copy other values
+    // copy other values
     for (var i = 0; i<c.length; i++)
     {
     	if (c[i] == "") continue;
     	var d = c[i].split(":");
-    	if (d[0] != name) n[i] = c[i];
+    	if (d[0] != name) n.push(c[i]);
     };
 
     // add new value pair
@@ -69,6 +71,7 @@ var __js_Cookie = {
     // Neue Daten optimiert abspeichern
     var s = "";
     var j=0;
+    
     for (var i=0; i<d.length; i++)
     {
       // ignore some erroneous values
@@ -81,7 +84,7 @@ var __js_Cookie = {
         this.create(this.base + this.norm_sub(j), s, this.days);
 
         // Wert ersetzen
-        s = d[i] + this.splitter;
+        s = d[i];
         j++;
 
         // Wert vergessen, wenn kein Platz mehr vorhanden
@@ -90,7 +93,8 @@ var __js_Cookie = {
       else
       {
         // Wert anhängen
-        s += d[i] + this.splitter;
+	if(s!="") s+= this.splitter;
+        s += d[i];
       };
     };
 
