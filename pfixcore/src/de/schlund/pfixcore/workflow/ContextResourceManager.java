@@ -84,7 +84,7 @@ public class ContextResourceManager implements Reloader {
     public void init(Context context) throws Exception{
         CAT.debug("initialize ContextResources...");
 	// CAT.debug("Properties:\n" + context.getProperties());
-
+        
 	// Getting all Properties beginning with PROP_RESOURCE
 	TreeMap cr_create = PropertiesUtils.selectPropertiesSorted(context.getProperties(), PROP_RESOURCE);
         List    cr_init   = new LinkedList();
@@ -104,21 +104,21 @@ public class ContextResourceManager implements Reloader {
 		String          interfacelist = (String) cr_create.get(resourcename);
 		StringTokenizer tokenizer     = new StringTokenizer(interfacelist, SEPERATOR); 
 		ContextResource cr            = null;
-
+                
 		// Now create an object of the requested class 
 		try {
 		    CAT.debug("Creating object with name [" + classname + "]");
-            AppLoader appLoader=AppLoader.getInstance();
-            if(appLoader.isEnabled()) {
-                cr=(ContextResource)appLoader.loadClass(classname).newInstance();
-            } else {
-                cr=(ContextResource)Class.forName(classname).newInstance();
-            }
+                    AppLoader appLoader=AppLoader.getInstance();
+                    if (appLoader.isEnabled()) {
+                        cr = (ContextResource)appLoader.loadClass(classname).newInstance();
+                    } else {
+                        cr = (ContextResource)Class.forName(classname).newInstance();
+                    }
 		} catch (Exception e) {
 		    throw new ServletException("Exception while creating object " +
 					       classname + ":" + e);
 		}
-
+                
 		// initialize it...
 		// cr.init(context);
                 cr_init.add(cr);
@@ -141,8 +141,8 @@ public class ContextResourceManager implements Reloader {
 	} else {
 	    CAT.debug("No Properties with prefix " + PROP_RESOURCE + " found! ");
 	}
-        AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) appLoader.addReloader(this);   
+        AppLoader appLoader = AppLoader.getInstance();
+        if (appLoader.isEnabled()) appLoader.addReloader(this);   
     }
 
     /**
@@ -166,10 +166,10 @@ public class ContextResourceManager implements Reloader {
 	// implemented interfaces of the object
 	try {
         AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) {
-            wantedinterface=appLoader.loadClass(interfacename);
+        if (appLoader.isEnabled()) {
+            wantedinterface = appLoader.loadClass(interfacename);
         } else {
-            wantedinterface       = Class.forName(interfacename) ;
+            wantedinterface = Class.forName(interfacename) ;
         }
         implementedinterfaces = obj.getClass().getInterfaces();
 	} catch (ClassNotFoundException e) {
@@ -220,15 +220,15 @@ public class ContextResourceManager implements Reloader {
     }
     
     public void reload() {
-        HashMap resNew=new HashMap();
-        Iterator it=resources.keySet().iterator();
-        while(it.hasNext()) {
-            String str=(String)it.next();
-            ContextResource crOld=(ContextResource)resources.get(str);
-            ContextResource crNew=(ContextResource)StateTransfer.getInstance().transfer(crOld);
+        HashMap  resNew = new HashMap();
+        Iterator it     = resources.keySet().iterator();
+        while (it.hasNext()) {
+            String str = (String) it.next();
+            ContextResource crOld = (ContextResource)resources.get(str);
+            ContextResource crNew = (ContextResource)StateTransfer.getInstance().transfer(crOld);
             resNew.put(str,crNew);
         }
-        resources=resNew;
+        resources = resNew;
     }
     
 }
