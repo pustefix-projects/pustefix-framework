@@ -93,7 +93,9 @@ public class ExceptionHandler implements FactoryInit {
         // if it is the first time, skip reinitialisation
         // This is called from various threads, so everyone needs its own context !
         ExceptionContext excontext=new ExceptionContext(t, req, res, properties);
+        PFUtil.getInstance().debug("Initialising exception context.");
         excontext.init();
+        PFUtil.getInstance().debug("Looking if properties have changed.");
         if(propman_.needsReinitialisation()) {
             PFUtil.getInstance().debug("Reinitialization needed");
             try {
