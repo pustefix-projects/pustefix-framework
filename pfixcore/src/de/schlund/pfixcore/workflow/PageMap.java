@@ -19,17 +19,20 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.util.*;
-import java.util.*;
-import org.apache.log4j.*;
 import de.schlund.pfixxml.PropertyObject;
 import de.schlund.pfixxml.PropertyObjectManager;
-import de.schlund.pfixxml.loader.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import org.apache.log4j.Category;
 
-public class PageMap implements PropertyObject, Reloader {
-    protected            HashMap  pagemap     = new HashMap();
-    public  final static String CLASSNAMEPROP = "classname";
-    private final static Category CAT         = Category.getInstance(PageMap.class.getName());
+public class PageMap implements   PropertyObject, Reloader {
+    protected            HashMap  pagemap       = new HashMap();
+    public  final static String   CLASSNAMEPROP = "classname";
+    private final static Category CAT           = Category.getInstance(PageMap.class.getName());
     
     public void init(Properties properties) throws Exception {
 
@@ -44,6 +47,7 @@ public class PageMap implements PropertyObject, Reloader {
             Properties  props     = preqprops.getPropertiesForPageRequest(page);
             String      classname = props.getProperty(CLASSNAMEPROP);
             State       state     = StateFactory.getInstance().getState(classname);
+
             if (state == null) {
                 CAT.error("***** Skipping page '" + page + "' as it's corresponding class " + classname +
                           "couldn't be initialized by the StateFactory");
@@ -51,7 +55,8 @@ public class PageMap implements PropertyObject, Reloader {
                 pagemap.put(page, state);
             }
         }
-        AppLoader appLoader=AppLoader.getInstance();
+
+        AppLoader appLoader = AppLoader.getInstance();
         if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
@@ -74,14 +79,14 @@ public class PageMap implements PropertyObject, Reloader {
     }
     
     public void reload() {
-        HashMap pageNew=new HashMap();
-        Iterator it=pagemap.keySet().iterator();
-        while(it.hasNext()) {
-            PageRequest page=(PageRequest)it.next();
-            State stOld=(State)pagemap.get(page);
-            State stNew=(State)StateTransfer.getInstance().transfer(stOld);
+        HashMap  pageNew = new HashMap();
+        Iterator i       = pagemap.keySet().iterator();
+        while (i.hasNext()) {
+            PageRequest page  = (PageRequest) i.next();
+            State       stOld = (State) pagemap.get(page);
+            State       stNew = (State) StateTransfer.getInstance().transfer(stOld);
             pageNew.put(page,stNew);
         }
-        pagemap=pageNew;
+        pagemap = pageNew;
     }
 }
