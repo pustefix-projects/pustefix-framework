@@ -99,16 +99,6 @@ public class DefaultIWrapperState extends StaticState {
                     }
                     rfinal.onSuccess(container);
                 }
-                //if (container.continueSubmit()) {
-                //    CAT.debug("... Container says he wants to stay on this page...\n" +
-                //              "=> retrieving current status.");
-                //    container.retrieveCurrentStatus();
-                //    rfinal.onRetrieveStatus(container);
-                //} else {
-                //    CAT.debug("... Container says he is ready: End of submit successfully...\n" +
-                //              "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
-                //    rfinal.onSuccess(container);
-                //}
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
             CAT.debug(">>> In DirectTriggerHandling...\n" +
