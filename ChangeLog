@@ -1,3 +1,10 @@
+2004-03-01  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
+
+	* src/de/schlund/pfixxml/IncludeDocument.java: 
+	* src/de/schlund/pfixcore/workflow/PageRequest.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixcore/workflow/PageMap.java: whitespace fixes
+
 2004-02-26  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
 
 	* example/core/xsl/include.xsl.in: cleanup. moved <cus:documentation> nodes to end of templates to

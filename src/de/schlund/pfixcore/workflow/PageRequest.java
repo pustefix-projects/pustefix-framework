@@ -42,7 +42,7 @@ public class PageRequest {
      * @return a <code>String</code> value
      */
     public String getName() {
-	return pagename;
+        return pagename;
     }
 
     /**
@@ -50,8 +50,8 @@ public class PageRequest {
      *
      * @return a <code>String</code> value
      */
-    public String toString() {
-	return getName();
+    public String toString() { 
+        return getName();
     }
 
     /**
@@ -79,11 +79,11 @@ public class PageRequest {
      * @return a <code>boolean</code> value
      */
     public boolean equals(Object arg) {
-	if ((arg != null) && (arg instanceof PageRequest)) {
-	    return pagename.equals(((PageRequest) arg).getName());
-	} else {
-	    return false;
-	}
+        if ((arg != null) && (arg instanceof PageRequest)) {
+            return pagename.equals(((PageRequest) arg).getName());
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -92,11 +92,11 @@ public class PageRequest {
      * @return an <code>int</code> value
      */
     public int hashCode() {
-	if (pagename == null) {
+        if (pagename == null) {
 	    return 0;
-	} else {
+        } else {
 	    return pagename.hashCode();
-	}
+        }
     }
 
     /**
@@ -135,7 +135,6 @@ public class PageRequest {
      * @param name a <code>String</code> value
      */
     public PageRequest(String name){
-	pagename = name;
+        pagename = name;
     }
-
 }

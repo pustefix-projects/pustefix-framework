@@ -50,37 +50,37 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     
-    public static final String  SESS_LANG                = "__SELECTED_LANGUAGE__";
-    public static final String  SESS_RECORDMODE          = "__RECORDMODE__";
-    public static final String  XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
-    public static final String  PARAM_XMLONLY            = "__xmlonly";
-    public static final String  PARAM_ANCHOR             = "__anchor";
-    public static final String  PARAM_EDITMODE           = "__editmode";
-    public static final String  PARAM_LANG               = "__language";
-    public static final String  PARAM_FRAME              = "__frame";
-    public static final String  PARAM_NOSTORE            = "__nostore";
-    public static final String  PARAM_REUSE              = "__reuse"; // internally used
-    public static final String  PARAM_RECORDMODE         = "__recordmode";
+    private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
+    private static final String SESS_RECORDMODE          = "__RECORDMODE__";
+    private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
+    private static final String PARAM_XMLONLY            = "__xmlonly";
+    public  static final String PARAM_ANCHOR             = "__anchor";
+    private static final String PARAM_EDITMODE           = "__editmode";
+    private static final String PARAM_LANG               = "__language";
+    private static final String PARAM_FRAME              = "__frame";
+    private static final String PARAM_NOSTORE            = "__nostore";
+    private static final String PARAM_REUSE              = "__reuse"; // internally used
+    private static final String PARAM_RECORDMODE         = "__recordmode";
     private static final String PARAM_VAL_RECORDMODE_OFF = "0";
-    public static final String  XSLPARAM_LANG            = "lang";
-    public static final String  XSLPARAM_SESSID          = "__sessid";
-    public static final String  XSLPARAM_URI             = "__uri";
-    public static final String  XSLPARAM_SERVP           = "__servletpath";
-    public static final String  XSLPARAM_REMOTE_ADDR     = "__remote_addr";
-    public static final String  XSLPARAM_SERVER_NAME     = "__server_name";
-    public static final String  XSLPARAM_FRAME           = "__frame";
-    public static final String  XSLPARAM_REUSE           = "__reusestamp";
+    private static final String XSLPARAM_LANG            = "lang";
+    private static final String XSLPARAM_SESSID          = "__sessid";
+    private static final String XSLPARAM_URI             = "__uri";
+    private static final String XSLPARAM_SERVP           = "__servletpath";
+    private static final String XSLPARAM_REMOTE_ADDR     = "__remote_addr";
+    private static final String XSLPARAM_SERVER_NAME     = "__server_name";
+    private static final String XSLPARAM_FRAME           = "__frame";
+    private static final String XSLPARAM_REUSE           = "__reusestamp";
     private static final String XSLPARAM_TG              = "__target_gen";
     private static final String XSLPARAM_TKEY            = "__target_key";
     private static final String VALUE_NONE               = "__NONE__";
-    public static final String  SUFFIX_SAVEDDOM          = "_SAVED_DOM";
-    public static final String  PROP_DEPEND              = "xmlserver.depend.xml";
-    public static final String  PROP_NAME                = "xmlserver.servlet.name";
-    public static final String  PROP_NOEDIT              = "xmlserver.noeditmodeallowed";
-    public static final String  PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
-    public static final String  PROP_CLEANER_TO          = "sessioncleaner.timeout";
-
-    // xml output only, no transformation
+    private static final String SUFFIX_SAVEDDOM          = "_SAVED_DOM";
+    protected static final String PROP_DEPEND              = "xmlserver.depend.xml";
+    protected static final String PROP_NAME                = "xmlserver.servlet.name";
+    protected static final String PROP_NOEDIT              = "xmlserver.noeditmodeallowed";
+    protected static final String PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
+    protected static final String PROP_CLEANER_TO          = "sessioncleaner.timeout";
+                                 
+    // xml output only, no tra n sformation
     private static final String PROP_NOXML_KEY                    = "xmlserver.noxmlonlyallowed";
     private static final String PROP_XMLONLY_NOT_ENABLED_VALUE    = "true";
     private static final String PROP_XMLONLY_ENABLED_VALUE        = "false";
@@ -190,7 +190,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         handleRecordModeProps();
-       
+        
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
         
         handleXMLOnlyProps();
@@ -293,7 +293,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * Handle the properties concerning if the targetgenerator should skip
      * the check for modfied dependencies of targets (and the update of the respective target).
      * @return true if enabled, else false
-     * @throws ServletException if the properties can not be found. 
+     * @throws ServletException if the properties can not be found.
      */
     private boolean handleSkipGetModTimeMaybeUpdateProps() throws ServletException {
         boolean skip_getmodtimemaybeupdate = false;
@@ -444,7 +444,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (recordmodeAllowed) {
             String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
             if (name != null) {
-                params.put(PARAM_RECORDMODE, name);            
+                params.put(PARAM_RECORDMODE, name);
             }
             boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
             params.put("recordmode_allowed", new Boolean(allowed).toString());
@@ -664,7 +664,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         preq.endLogEntry("HANDLEDOCUMENT (" + stylesheet + ")", 0);
     }
 
-   
+
     /**
      * Check if the current request will retrieve plain XML.
      * @param the {@link PfixServletRequest} containing all
@@ -791,9 +791,12 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean isDebugEnabled() {
         return CAT.isDebugEnabled() && allowDebug;
     }
+    
 
     private boolean isInfoEnabled() {
         return CAT.isInfoEnabled() && allowInfo;
     }
 
 }
+
+
