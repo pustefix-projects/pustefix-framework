@@ -18,9 +18,6 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
@@ -29,7 +26,11 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.StateImpl;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.SPDocument;
 import de.schlund.pfixxml.XMLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * StaticState.java
@@ -43,17 +44,43 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class StaticState extends StateImpl {
-    public static final String PROP_INSERTCR = "insertcr";
-
+    public  static final String PROP_INSERTCR = "insertcr";
+    private static final String MIMETYPE      = "mimetype";
+    private static final String HEADER        = "responseheader";
+    private static final String def_mime      = "text/html";
     /**
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
      */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
+        Properties      props  = context.getPropertiesForCurrentPageRequest();
+        String          mime   = props.getProperty(MIMETYPE);
+        SPDocument      doc    = resdoc.getSPDocument();
         renderContextResources(context, resdoc);
+
+        if (mime != null) {
+            doc.setResponseContentType(mime);
+        } else {
+            doc.setResponseContentType(def_mime);
+        }
+
+        addResponseHeader(doc, props);
         return resdoc;
     }
 
+
+    private void addResponseHeader(SPDocument doc, Properties props) {
+        HashMap headers = PropertiesUtils.selectProperties(props, HEADER);
+        if (headers != null && !headers.isEmpty()) {
+            for (Iterator iter = headers.keySet().iterator(); iter.hasNext(); ) {
+                String key = (String) iter.next();
+                String val = (String) headers.get(key);
+                CAT.warn("***Adding response header: " + key + " => " + val);
+                doc.addResponseHeader(key, val);
+            }
+        }
+    }
+    
     
     /**
      * Method renderContextResources.

@@ -69,7 +69,15 @@
   </pagerequest>
   
   <pagerequest name="gencss" nostore="true">
-    <state class="de.schlund.pfixcore.util.CssState"/>
+    <param name="mimetype">text/css</param>
+    <cus:choose>
+      <cus:test mode="prod">
+        <param name="responseheader.Cache-Control">max-age="3600"</param>
+      </cus:test>
+      <cus:test mode="test">
+        <param name="responseheader.Cache-Control">max-age="30"</param>
+      </cus:test>
+    </cus:choose>
   </pagerequest>
 
   <!-- *** some additional properties needed for this application *** -->
