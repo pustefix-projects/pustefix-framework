@@ -1,3 +1,8 @@
+2004-03-12  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext(createLastSteps):
+        fix for possible NPEx.
+
 2004-03-09  Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createSTraceText):
