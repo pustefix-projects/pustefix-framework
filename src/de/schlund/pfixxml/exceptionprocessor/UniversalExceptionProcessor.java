@@ -64,6 +64,9 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         Document doc = null;
         String text = null;
         
+        LOG.error("Processing throwable: ", exception);
+        
+        
         if(exception instanceof TargetGenerationException) {
             TargetGenerationException tex = (TargetGenerationException) exception;
             doc = tex.toXMLRepresentation();
