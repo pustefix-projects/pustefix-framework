@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+       <h1>Result:</h1>
+       <ixsl:for-each select="/formresult/test_results/child::*">
+       <table border="1" bgcolor="#AAAAAA" cellspacing="0" cellpadding="0">
+        <th><ixsl:value-of select="name()"/> Id=
+          <ixsl:value-of select="@id"/>
+        </th>
+        <ixsl:for-each select="./child::*">
+          <tr>
+            <td>
+              <ixsl:value-of select="name()"/>
+              <ixsl:value-of select="@id"/>
+            </td>
+            <td>
+              <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0">
+                <ixsl:choose>
+                  <ixsl:when test="./child::*">
+                    <ixsl:for-each select="./child::*">
+                      <tr>
+                        <ixsl:variable name="line" select="."/>
+                        <ixsl:choose>
+                          <ixsl:when test="substring($line, 1, 1)='-'">
+                            <td bgcolor="#CC0A0A">
+                              <ixsl:value-of select="$line"/>
+                            </td>
+                          </ixsl:when>
+                          <ixsl:when test="substring($line, 1, 1)='+'">
+                            <td bgcolor="#1D7C06">
+                              <ixsl:value-of select="$line"/>
+                            </td>
+                          </ixsl:when>
+                          <ixsl:otherwise>
+                            <td>
+                              <ixsl:value-of select="$line"/>
+                            </td>
+                          </ixsl:otherwise>
+                        </ixsl:choose>
+                      </tr>
+                    </ixsl:for-each>
+                  </ixsl:when>
+                  <ixsl:otherwise>
+                    <tr>
+                      <td>
+                        :-)
+                      </td>
+                    </tr>
+                  </ixsl:otherwise>
+                </ixsl:choose>
+              </table>
+            </td>
+          </tr>
+        </ixsl:for-each>
+       </table>
+       </ixsl:for-each>
+      </lang>
+      </product>
+  </part>
+
+
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -54,6 +54,9 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
+
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 
@@ -93,12 +96,11 @@ public class TestClient {
     private DocumentBuilderFactoryImpl  doc_factory;
     private long                        request_count = 0;
     private String                      sessionId;
-    private boolean                     modeQuiet     = false;
-    private boolean                     modeVerbose   = false;
     private boolean                     ssl           = false;
     private HostConfiguration           currentConfig = new HostConfiguration();
     private String                      uri_session   = new String();
     private SimpleHttpConnectionManager conMan        = new SimpleHttpConnectionManager();
+    private static Category             CAT           = Category.getInstance(TestClient.class.getName());
 
     //~ Constructors ...............................................................................
 
@@ -106,17 +108,19 @@ public class TestClient {
         doc_factory = (DocumentBuilderFactoryImpl) DocumentBuilderFactoryImpl.newInstance();
         doc_factory.setValidating(false);
         doc_factory.setNamespaceAware(true);
+        //DOMConfigurator.configure("/home/jh/workspace/pfixcore/example/testenv/log4jconf.xml");
     }
 
     //~ Methods ....................................................................................
 
     public static void main(String[] args) {
-        System.out.println("|====================================================|");
-        System.out.println("|               Pustefix Test TextClient             |");
-        System.out.println("|====================================================|");
+        CAT.setPriority(Priority.DEBUG);
         TestClient tc = null;
         try {
             tc = new TestClient();
+            CAT.info("|====================================================|");
+            CAT.info("|               Pustefix Test TextClient             |");
+            CAT.info("|====================================================|");
             if (! tc.scanOptions(args)) {
                 tc.printUsage();
                 return;
@@ -124,54 +128,62 @@ public class TestClient {
             tc.checkOptions();
             ArrayList    files  = tc.readFiles();
             StepConfig[] config = tc.doPrepare(files);
-            System.out.println("\n Starting test NOW!\n");
+            CAT.info("\n Starting test NOW!\n");
             for (int i = 0; i < LOOP_COUNT; i++) {
                 tc.doTest(config);
             }
         } catch (TestClientException e) {
-            System.out.println("\n**********************************************");
-            System.out.println("ERROR in TestClient");
-            System.out.println("Exception:");
-            System.out.println(e.getMessage());
+            CAT.error("\n**********************************************");
+            CAT.error("ERROR in TestClient");
+            CAT.error("Exception:");
+            CAT.error(e.getMessage());
             e.printStackTrace();
-            System.out.println("Nested Exception:");
-            System.out.println(e.getCause().getMessage());
+            CAT.error("Nested Exception:");
+            CAT.error(e.getCause().getMessage());
             e.getCause().printStackTrace();
-            System.out.println("\n**********************************************");
+            CAT.error("\n**********************************************");
         }
     }
 
-    private void doTest(StepConfig[] config) throws TestClientException {
-        boolean has_diff = false;
-        //boolean redo = false;
+    public String[] makeTest(String log_dir, String style_dir, String tmp_dir)
+                      throws TestClientException {
+        CAT.warn("Starting test NOW");
+        srcDir   = log_dir;
+        styleDir = style_dir;
+        tmpDir   = tmp_dir;
+        ArrayList    files = readFiles();
+        StepConfig[] config = doPrepare(files);
+        return doTest(config);
+    }
+
+    private String[] doTest(StepConfig[] config) throws TestClientException {
+        boolean  has_diff = false;
+        String[] result = new String[config.length];
         for (int j = 0; j < config.length; j++) {
-            //System.out.println("j ist:"+j);
-            if (modeQuiet) {
-            } else if (modeVerbose) {
+            if (CAT.isDebugEnabled()) {
                 StringBuffer sb = new StringBuffer();
-                sb.append("________________________________________________________________\n");
+                sb.append("\n________________________________________________________________\n");
                 sb.append("Step ").append(j).append("\n");
                 sb.append("  File=").append(config[j].getFileName()).append("\n");
-                System.out.println(sb.toString());
-            } else {
-                System.out.println("\nDoing step " + j);
+                CAT.debug(sb.toString());
+            } else if (CAT.isInfoEnabled()) {
+                CAT.info("\nDoing step " + j);
             }
             Document current_output_tree = null;
             try {
                 current_output_tree = getResultFromFormInput(config[j].getRecordedInput());
             } catch (TestClientException e) {
                 if (e.getCause() instanceof HttpRecoverableException) {
-                    System.out.println("Uuuups...skipping...");
+                    CAT.warn("Uuuups...skipping...");
                     break;
                 } else {
                     throw e;
                 }
             }
-            if (modeQuiet) {
-            } else if (modeVerbose) {
-                System.out.println("  Transforming recorded and current output document...");
-            } else {
-                System.out.println("  Transforming...");
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("  Transforming recorded and current output document...");
+            } else if (CAT.isInfoEnabled()) {
+                CAT.info("  Transforming...");
             }
             Document tmp_rec       = doTransform(config[j].getRecordedOutput(), 
                                                  config[j].getStyleSheet());
@@ -180,28 +192,22 @@ public class TestClient {
             String   tmp_fname_rec = tmpDir + "/_recorded" + j;
             writeDocument(tmp_out, tmp_fname_cur);
             writeDocument(tmp_rec, tmp_fname_rec);
-            if (modeQuiet) {
-            } else if (modeVerbose) {
-                System.out.println("  Diffing " + tmp_fname_cur + " and " + tmp_fname_rec + " ...");
-            } else {
-                System.out.println("  Diffing...");
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("  Diffing " + tmp_fname_cur + " and " + tmp_fname_rec + " ...");
+            } else if (CAT.isInfoEnabled()) {
+                CAT.info("  Diffing...");
             }
             String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
-            if (modeQuiet) {
-            } else if (modeVerbose) {
-                System.out.print("  Output:");
-            } else {
-                System.out.print("  Output:");
-            }
+            result[j] = msg;
             if (msg == null || msg.equals("")) {
                 msg = ":-)";
             } else {
                 has_diff = true;
             }
-            System.out.println("  " + msg);
         }
-        System.out.print("\n*** Resut: ***");
-        System.out.println(has_diff ? ";-(" : ";-)");
+        CAT.warn("\n*** Resut: ***");
+        CAT.warn(has_diff ? ";-(" : ";-)");
+        return result;
     }
 
     private StepConfig[] doPrepare(ArrayList files) throws TestClientException {
@@ -213,13 +219,13 @@ public class TestClient {
         } catch (ParserConfigurationException e) {
             throw new TestClientException("Could not get a DocumentBuilder!", e);
         }
-        System.out.println("Analyzing files...");
+        if (CAT.isInfoEnabled()) {
+            CAT.info("Analyzing files...");
+        }
         for (int i = 0; i < files.size(); i++) {
             File file = (File) files.get(i);
-            if (modeQuiet) {
-            } else if (modeVerbose) {
-                System.out.println("  " + file.getName());
-            } else {
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("  " + file.getName());
             }
             Document file_content = null;
             try {
@@ -273,14 +279,20 @@ public class TestClient {
                 throw new TestClientException("TransformerException occured!", e);
             }
             if (proto.toUpperCase().equals("https".toUpperCase()) && ! ssl_initialized) {
-                System.out.println("https detected!");
-                System.out.print("Initializing SSL...");
+                if (CAT.isInfoEnabled()) {
+                    CAT.info("https detected!");
+                    CAT.info("Initializing SSL...");
+                }
                 initSSL();
-                System.out.println("Done");
+                if (CAT.isInfoEnabled()) {
+                    CAT.info("Done");
+                }
                 ssl_initialized = true;
             }
         }
-        System.out.println("Done");
+        if(CAT.isInfoEnabled()) {
+            CAT.info("Done");
+        }
         return config;
     }
 
@@ -349,7 +361,9 @@ public class TestClient {
 
     private String doDiff(String path1, String path2) throws TestClientException {
         String diff = GNU_DIFF + " " + path2 + " " + path1;
-        //System.out.println(" Doing diff :"+diff);
+        if(CAT.isDebugEnabled()) {
+            CAT.debug(" Executing :"+diff);
+        }
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(diff);
@@ -366,7 +380,6 @@ public class TestClient {
         } catch (IOException e) {
             throw new TestClientException("IOException occured!", e);
         }
-        //System.out.println("=============>>====>>>"+buf.toString());
         try {
             reader.close();
         } catch (IOException e) {
@@ -381,6 +394,7 @@ public class TestClient {
     }
 
     private ArrayList readFiles() throws TestClientException {
+        //System.out.println(getClass().getName() + " " + srcDir);
         File      dir       = new File(srcDir);
         File[]    all_files = dir.listFiles();
         ArrayList files     = new ArrayList();
@@ -390,17 +404,16 @@ public class TestClient {
             }
         }
         Arrays.sort(files.toArray());
-        if (modeQuiet) {
-        } else if (modeVerbose) {
-            System.out.println("Reading files...");
+        if (CAT.isDebugEnabled()) {
+            CAT.debug("Reading files...");
             for (int i = 0; i < files.size(); i++) {
-                System.out.println("  " + ((File) files.get(i)).getName());
+                CAT.debug("  " + ((File) files.get(i)).getName());
             }
-        } else {
-            System.out.println("Reading files...");
+        } else if (CAT.isInfoEnabled()) {
+            CAT.info("Reading files...");
         }
-        if (! modeQuiet) {
-            System.out.println("Done");
+        if (CAT.isInfoEnabled()) {
+            CAT.info("Done");
         }
         return files;
     }
@@ -420,12 +433,10 @@ public class TestClient {
                     styleDir = getopt.getOptarg();
                     break;
                 case 'q':
-                    modeQuiet   = true;
-                    modeVerbose = false;
+                    CAT.setPriority(Priority.WARN);
                     break;
                 case 'v':
-                    modeVerbose = true;
-                    modeQuiet   = false;
+                    CAT.setPriority(Priority.DEBUG);
                     break;
                 default:
             }
@@ -439,7 +450,7 @@ public class TestClient {
     }
 
     private void checkOptions() throws TestClientException {
-        System.out.print("Checking options...");
+        CAT.info("Checking options...");
         File input_dir = new File(srcDir);
         if (! input_dir.isDirectory() || ! input_dir.canRead()) {
             throw new TestClientException(srcDir + " is not a directory or not readable!", null);
@@ -452,12 +463,11 @@ public class TestClient {
         if (! style_dir.isDirectory() || ! style_dir.canRead()) {
             throw new TestClientException(styleDir + " is not a directory or not readable!", null);
         }
-        System.out.println("Ok");
+        CAT.info("Ok");
     }
 
     private void printUsage() {
-        System.out.println(
-                "TestClient -d [recorded dir] -t [temporary dir] -s [stylesheet dir] -q -v");
+        CAT.warn("TestClient -d [recorded dir] -t [temporary dir] -s [stylesheet dir] -q -v");
     }
 
     private void initHttpConnection(String hostname, int port, String proto)
@@ -470,7 +480,7 @@ public class TestClient {
             StringBuffer sb = new StringBuffer(255);
             currentConfig = config;
             sessionId     = null;
-            sb.append("----------------------------------------------\n");
+            sb.append("\n----------------------------------------------\n");
             if (httpConnect == null) {
                 sb.append("No HTTP Connection. Establishing new connection.\n");
             } else if (! config.hostEquals(httpConnect)) {
@@ -490,9 +500,9 @@ public class TestClient {
                 throw new TestClientException("Unable to reopen HTTP connection!", e);
             }
             sb.append("   SSL=").append(httpConnect.isSecure()).append("\n");
-            sb.append("----------------------------------------------\n");
-            if (! modeQuiet) {
-                System.out.println(sb.toString());
+            sb.append("\n----------------------------------------------\n");
+            if (CAT.isInfoEnabled()) {
+                CAT.info(sb.toString());
             }
         }
     }
@@ -502,7 +512,6 @@ public class TestClient {
         int    port  = getPortFromInput(form_data);
         String proto = getProtoFromInput(form_data);
         initHttpConnection(host, port, proto);
-        //       return true;
         String          uri         = getURIFromInput(form_data);
         NameValuePair[] post_params = getPostParamsFromInput(form_data);
         PostMethod      post        = null;
@@ -512,12 +521,9 @@ public class TestClient {
             //It not the first request, we already have a session
             uri_session = uri_session + ";jsessionid=" + sessionId;
         }
-        StringBuffer sb = null;
-        if (! modeQuiet) {
-            sb = new StringBuffer(255);
-        }
-        if (modeQuiet) {
-        } else if (modeVerbose) {
+       
+        if (CAT.isDebugEnabled()) {
+            StringBuffer sb = new StringBuffer();
             sb.append("  Executing HTTP POST\n");
             sb.append("          URI=").append(uri_session).append("\n");
             sb.append("       Params=\n");
@@ -525,8 +531,9 @@ public class TestClient {
                 sb.append("            ").append(post_params[i].getName()).append("=").append(post_params[i].getValue())
                   .append("\n");
             }
-        } else {
-            sb.append("  Executing HTTP POST\n");
+            CAT.debug(sb.toString());
+        } else if (CAT.isInfoEnabled()) {
+            CAT.info("  Executing HTTP POST\n");
         }
         post = new PostMethod(uri_session);
         post.setFollowRedirects(true);
@@ -540,12 +547,12 @@ public class TestClient {
             throw new TestClientException("IOException occured!", e);
         }
         request_count++;
-        if (! modeQuiet) {
-            sb.append("   StatusCode=").append(status_code).append("\n");
+        if (CAT.isInfoEnabled()) {
+            CAT.info("   StatusCode="+status_code+"\n");
         }
         if (sessionId == null) { // it's the first request, follow redirect to get a new session
-            if (modeVerbose) {
-                System.out.println("No session yet. Will follow redirect to get one.");
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("No session yet. Will follow redirect to get one.");
             }
             try {
                 uri = post.getURI().toString();
@@ -556,7 +563,6 @@ public class TestClient {
             uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
         }
         if (status_code != HttpStatus.SC_OK) {
-            //String resp = post.getResponseBodyAsString();
             throw new TestClientException("HTTP-Status code =" + status_code + " (Must be 200)! ", 
                                           null);
         }
@@ -566,6 +572,13 @@ public class TestClient {
         } catch (IOException e) {
             throw new TestClientException("IOException occured!", e);
         }
+        return convertInputStreamToDocument(response_stream);
+    }
+
+
+
+
+    private Document convertInputStreamToDocument(InputStream istream) throws TestClientException {
         DocumentBuilder doc_builder = null;
         try {
             doc_builder = doc_factory.newDocumentBuilder();
@@ -574,15 +587,11 @@ public class TestClient {
         }
         Document doc = null;
         try {
-            doc = doc_builder.parse(response_stream);
+            doc = doc_builder.parse(istream);
         } catch (SAXException e) {
             throw new TestClientException("SaxException occured", e);
-        }
-         catch (IOException e) {
+        } catch (IOException e) {
             throw new TestClientException("IOException occured", e);
-        }
-        if (! modeQuiet) {
-            System.out.println(sb.toString());
         }
         return doc;
     }

@@ -31,6 +31,7 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 import de.schlund.pfixxml.testenv.RecordManager;
+import de.schlund.pfixxml.testenv.RecordManagerFactory;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private static DocumentBuilderFactory dbfac            = DocumentBuilderFactory.newInstance();
     public static final String            SESS_LANG        = "__SELECTED_LANGUAGE__";
-    public static final String            SESS_RECORDMODE  = "__RECORD_MODE__";
+    public static final String            SESS_RECORDMODE  = "__RECORDMODE__";
     public static final String            XML_CONTENT_TYPE = "text/xml; charset=iso-8859-1";
     public static final String            PARAM_XMLONLY    = "__xmlonly";
     public static final String            PARAM_ANCHOR     = "__anchor";
@@ -87,6 +88,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     public static final String            PARAM_NOSTORE    = "__nostore";
     public static final String            PARAM_REUSE      = "__reuse"; // internally used
     public static final String            PARAM_RECORDMODE = "__recordmode";
+    private static final String           PARAM_VAL_RECORDMODE_OFF = "0";
     public static final String            XSLPARAM_LANG    = "lang";
     public static final String            XSLPARAM_SESSID  = "__sessid";
     public static final String            XSLPARAM_URI     = "__uri";
@@ -110,8 +112,8 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String PROP_XMLONLY_RESTRICTED_HOSTS_KEY = "xmlserver.xmlonlyallowed.host";
     // record mode
     private static final String PROP_RECORDMODE_KEY           = "xmlserver.recordmode_allowed";
-    private static final String PROP_RECORDMODE_ENABLED_VALUE = "true";
-    private static final String PROP_RECORDMODE_LOGDIR        = "xmlserver.recordmode_logdir";
+    private static final String PROP_RECORDMODE_ALLOWED_VALUE = "true";
+   
     // skip stat on all targets
     private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = 
             "targetgenerator.skip_getmodtimemaybeupdate";
@@ -141,9 +143,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
     private boolean         editmodeAllowed   = false;
     private boolean         recordmodeAllowed = false;
-    private String          recordmodeLogDir  = null;
     private int             isXMLOnlyAllowed  = XML_ONLY_PROHIBITED;
     private String[]        xmlOnlyValidHosts = null;
+
     private int             scleanertimeout   = 300;
     
     //~ Initializers ...............................................................................
@@ -172,13 +174,14 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private void initValues() throws ServletException {
+    private void initValues() throws ServletException{
         if ((targetconf = getProperties().getProperty(PROP_DEPEND)) == null) {
             throw (new ServletException("Need property '" + PROP_DEPEND + "'"));
         }
         if ((servletname = getProperties().getProperty(PROP_NAME)) == null) {
             throw (new ServletException("Need property '" + PROP_NAME + "'"));
         }
+
         String noedit = getProperties().getProperty(PROP_NOEDIT);
         if (noedit != null && (noedit.equals("false") || noedit.equals("0"))) {
             editmodeAllowed = true;
@@ -193,7 +196,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                 throw new ServletException(e.getMessage());
             }
         }
+
         handleRecordModeProps();
+       
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
         handleXMLOnlyProps();
         try {
@@ -289,8 +294,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     /**
      * Handle the properties concerning if the record mode is accessible.
-     * Sets the <see>recormodeAllowed</see> and the
-     * <see>recordmodeLogDir</see> fields if enabled.
+     * Sets the <see>recormodeAllowed</see> field if enabled.
      * @throws ServletException if the properties can not be found.
      */
     private void handleRecordModeProps() throws ServletException {
@@ -301,22 +305,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new ServletException(msg);
         } else {
             String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
-            recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ENABLED_VALUE.toUpperCase())
+            recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase())
                                     ? true : false;
             if (CAT.isInfoEnabled()) {
                 CAT.info("RecordModeAllowed is: " + recordmodeAllowed);
-            }
-        }
-        if (recordmodeAllowed) {
-            // analyze the RECORDMODE_LOGDIR property
-            if (getProperties().getProperty(PROP_RECORDMODE_LOGDIR) == null) {
-                CAT.fatal("Need property '" + PROP_RECORDMODE_LOGDIR + "'");
-                throw new ServletException("Need property '" + PROP_RECORDMODE_LOGDIR + "'");
-            } else {
-                recordmodeLogDir = getProperties().getProperty(PROP_RECORDMODE_LOGDIR);
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("RecordMode logdir is: " + recordmodeLogDir);
-                }
             }
         }
     }
@@ -377,8 +369,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         SPDocument    spdoc             = null;
         RequestParam  value;
         long          currtime;
-        boolean       recording_enabled = false;
-        String        record_logdir     = "0";
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
         // they will be stored in the params properties and will be applied as stylesheet
@@ -399,25 +389,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                     spdoc = (SPDocument) conutil.getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
                 }
             }
-            // do this only if recordmode is allowed
-            if (recordmodeAllowed) {
-                // Look for the __recordmode parameter and store it in the session
-                // if its there.
-                if ((value = preq.getRequestParam(PARAM_RECORDMODE)) != null) {
-                    if (value.getValue() != null) {
-                        conutil.setSessionValue(session, SESS_RECORDMODE, value.getValue());
-                    }
-                }
-                // get the parameter from the session
-                if ((record_logdir = (String) conutil.getSessionValue(session, SESS_RECORDMODE)) != null) {
-                    recording_enabled = (record_logdir.equals("0") || record_logdir.equals("")) ? false : true;
-                    params.put(PARAM_RECORDMODE, record_logdir);
-                    if (CAT.isInfoEnabled()) {
-                        CAT.info("Recording enabled=" + recording_enabled + " directory ="
-                                 + record_logdir);
-                    }
-                }
-            }
+           
             // Now look for the parameter __editmode, and store it in the
             // session if it's there. Get the parameter from the session, and hand it over to the
             // Stylesheet params. Do the same for the parameter __language.
@@ -441,23 +413,24 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
+
+        // Set stylesheet parameters for editconsole
+        if(recordmodeAllowed) {
+            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session, conutil);         
+            if(name != null) {
+                params.put(PARAM_RECORDMODE, name);            
+            }
+        }
+
+        
         if (spdoc == null) {
             currtime = System.currentTimeMillis();
+            
             spdoc = getDom(preq);
             // start recording if allowed and enabled
-            if (recordmodeAllowed && recording_enabled) {
-                CAT.warn("Recording enabled!");
-                // create counter if none exists
-                if (conutil.getSessionValue(session, "RECORD_COUNTER") == null) {
-                    conutil.setSessionValue(session, "RECORD_COUNTER", new Integer(0));
-                }
-                Integer count = (Integer) conutil.getSessionValue(session, "RECORD_COUNTER");
-                String  dir  = recordmodeLogDir + "/" + record_logdir;
-                String  ruri = preq.getRequestURI(res);
-                RecordManager.getInstance().doRecord(count.intValue(), dir, ruri, preq, spdoc);
-                // Increase counter
-                conutil.setSessionValue(session, "RECORD_COUNTER", 
-                                        new Integer(count.intValue() + 1));
+            if(recordmodeAllowed) {
+                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
+                recorder.tryRecord(preq, res, spdoc, session, conutil);
             }
             if (CAT.isDebugEnabled()) {
                 CAT.debug("* Document for XMLServer is" + spdoc);

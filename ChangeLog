@@ -1,3 +1,48 @@
+2003-03-21  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: removed code
+	making decisions on record mode. Moved this code to RecordManager.
+	Now the record manager is configured for each servlet(depend.xml).
+	Only one global property left to enable or disable record mode.
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/TestClient.java: changes for
+	integration into pustefix cms.
+
+	* src/de/schlund/pfixcore/editor/resources/EditorRes.java:
+	added method for retrieving CR for testcases.
+
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/EditorProduct.java: store path
+	to depend.xml in EditorProduct.
+
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseOverview.iwrp
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseSelect.iwrp
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseStart.iwrp
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java: 
+	 added pages, handlers, finalizers, iwrapper and contextresource for test case
+	 handling in pustefix cms.
+
+	 * example/sample1/conf/depend.xml.in
+	 * example/core/editor/txt/navigation.xml
+	 * example/core/build/create_depend.xsl
+	 * example/core/editor/conf/depend.xml.in: adjusted.
+
+	 * example/common/conf/pustefix.prop.in: removed recordmode_logdir
+	  property
+
+	 * NOTE: Testcase handling in pustefix cms not for production use !
+
 2003-03-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/SessionCleaner.java (storeSPDocument): remove the boolean stattask parameter, 
