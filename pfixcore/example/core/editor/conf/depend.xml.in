@@ -17,9 +17,6 @@
     <page name="search"            handler="/xml/edit"/>
     <page name="logout"            handler="/xml/edit"/>
     <page name="documentation"     handler="/xml/edit"/>
-    <page name="testcaseselect"    handler="/xml/edit"/>
-    <page name="testcasestart"     handler="/xml/edit"/>
-    <page name="testcaseoverview"  handler="/xml/edit"/>
   </navigation>
 
   <global>
@@ -40,9 +37,6 @@
   <standardpage name="sessionmanager"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="editoruserdata"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="editorusermanager" xml="core/editor/xml/two_frames_deaktiv.xml"/>
-  <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
-  <standardpage name="testcasestart"     xml="core/editor/xml/two_frames.xml"/>
-  <standardpage name="testcaseoverview"  xml="core/editor/xml/two_frames.xml"/>
 
   <standardpage name="home"              xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="pages"             xml="core/editor/xml/three_frames_wide.xml"/>

@@ -16,15 +16,6 @@
         </pfx:button>
 
         </li>
-        <li>
-
-        <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
-          <pfx:argument name="tcreset.Reset">true</pfx:argument>
-          <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
-          <ixsl:text>Play-back recorded testcases</ixsl:text>
-        </pfx:button>
-        
-        </li>
         </ul>
         </div>
       </lang>
