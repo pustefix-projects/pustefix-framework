@@ -355,7 +355,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public boolean needsData() throws Exception{
         if (wrappers.isEmpty()) return true; // border case
 
-        synchronized (wrappers) {
+        // synchronized (wrappers) {
             for (Iterator i = wrappers.values().iterator(); i.hasNext(); ) {
                 IWrapper wrapper = (IWrapper) i.next();
                 IHandler handler = wrapper.gimmeIHandler();
@@ -363,7 +363,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                     return true;
                 }
             }
-        }
+        // }
         return false;
     }
     
@@ -706,7 +706,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private IWrapperGroup getCurrentGroupFromRequest() throws Exception {
         CAT.debug("* looking for group index: " +  GROUP_CURR);
         RequestParam page = preq.getRequestParam(GROUP_CURR);
-        synchronized (activegroups) { 
+        // synchronized (activegroups) { 
             if (page == null || page.getValue().equals("")) {
                 CAT.debug("*** Request specifies NO group index: Using index 0");
                 return (IWrapperGroup) activegroups.get(0);
@@ -715,7 +715,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 Integer index = new Integer(page.getValue());
                 return (IWrapperGroup) activegroups.get(index.intValue());
             }
-        }
+        // }
     }
     
     private Integer checkForNextIndexInRequest() {
@@ -811,9 +811,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         }
             
         public IWrapper[] getIWrappers() {
-            synchronized (group) {
+            // synchronized (group) {
                 return (IWrapper[]) group.toArray(new IWrapper[] {});
-            }
+            // }
         }
     }// IWrapperGroup
     

@@ -132,7 +132,7 @@
           <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
         </xsl:call-template>
         <Valve className="org.apache.catalina.valves.AccessLogValve"
-               directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
+               directory="logs" prefix="access_log." suffix=".txt" pattern="%h %l %u %t &quot;%r&quot; %s %b %D"/>
         
         <Logger className="org.apache.catalina.logger.FileLogger"
                 directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>

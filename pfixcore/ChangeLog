@@ -1,3 +1,14 @@
+2005-02-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: changed logging of access valve
+
+	* example/core/xsl/forminput.xsl.in: don't copy unneeded attributes from <pfx:xinp type="submit"> into the
+	result <input type="submit"> tag
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java:
+	remove unneeded synchronized blocks (I hope so)
+
 2005-02-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetImpl.java: if disccache
