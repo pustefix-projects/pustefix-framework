@@ -22,7 +22,7 @@
       </ol>
     </section>
     <section name="Example projects">
-      <p>You install the pustefix examples, just unpack the respective download with 
+      <p>To install the pustefix examples, just unpack the respective download with 
         <code>tar xvzf example.tar.gz</code> into the projects directory and take a 
         short look at the resulting <code>README_EXAMPLES.txt</code> file.</p>
       <p>To get started with the examples, please study the
@@ -31,8 +31,8 @@
       be easy to understand the way to go.</p>
     </section>
     
-    <section name="Host configuration">
-      <p>Make sure your machine is configured as follows:</p>
+    <section name="Apache configuration">
+      <p>Prerequisites: Make sure your machine is configured as follows</p>
       <ul>
         <li><p>Your host ip must not be <code>127.0.0.1</code>. (TODO: why, what happens if not.)
          Verify this by running <source>ping HOSTNAME</source></p></li>
@@ -43,10 +43,8 @@
         Alternatively, you can add individual entries for every project
         (e.g. <code>sample1.HOSTNAME.DOMAIN</code>) to your <code>/etc/hosts</code>.</p></li>
       </ul>
-    </section>
-        
-    <section name="Apache configuration">
-      <p>TODO: don't belong to getting started - it's an advanced subject.</p>
+      
+      <p>TODO: doesn't belong to getting started - it's an advanced subject.</p>
       <p>To run pustefix applications in productions environments, you might want to embed tomcat
       in an apache web server. This section describes how to do this on Linux machines.</p>
 
@@ -55,11 +53,12 @@
           are supplied for most Linux distributions.</p></li>
         <li><p>Install mod_jk: mod_jk is the apache connection module for tomcat.
           Rpm packages can be found at <a href="http://jpackage.org">jpackage.org</a>.
-          General configuration can be found <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">here</a>.
+          Documentation can be found <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">here</a>.
           </p></li>
-        <li><p>Make sure that mod_ssl is installed. Otherwise, apache will complain that about the above
-          <code>httpd.conf</code> include.</p></li>
-        <li><p>Make sure the rewrite module is installed.</p></li>
+        <li><p>Make sure that mod_ssl is installed: look for a file <code>/usr/lib/httpd/modules/mod_rewrite.so</code>.
+          Without mod_ssl, apache will complain that about the <code>httpd.conf</code> include below. Most 
+          distributions include mod_ssl rpm files. </p></li>
+        <li><p>Make sure the rewrite module is installed: look for a file <code>/usr/lib/httpd/modules/mod_rewrite.so</code></p></li>
         <li><p>Load mod_jk: Add the following line to your httpd.conf, right before the <code>rewrite</code>
           module configuration: <source>
   LoadModule jk_module modules/mod_jk.so
