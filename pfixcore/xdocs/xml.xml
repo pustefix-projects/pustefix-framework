@@ -225,7 +225,7 @@
   <p>A part is referenced with two attributes: The filename of the include file that contains it, and the name of the part.</p>
 
   <xmlcode>
-    <include href="MyProject/txt/MyIncludefile" part="Foo"/>
+    <pfx:include href="MyProject/txt/MyIncludefile" part="Foo"/>
   </xmlcode>
 
   <p>Using this tag results in the matching product branch of the include part to be inserted in place of the tag.</p>
