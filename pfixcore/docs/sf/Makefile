@@ -22,7 +22,7 @@ install: transform
 	$(shell scp gen/*.html $(USER)@$(SF):$(SFWEB)/)
 	$(shell scp gen/*.css $(USER)@$(SF):$(SFWEB)/)
 	$(shell scp gen/img/*.gif $(USER)@$(SF):$(SFWEB)/img/)
-	$(shell scp gen/img/*.jpg $(USER)@$(SF):$(SFWEB)/img/)
+	$(shell scp gen/img/*.png $(USER)@$(SF):$(SFWEB)/img/)
 	@echo "*** Fixing permissions ***"
 	-$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/*)
 	-$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/img/*)
