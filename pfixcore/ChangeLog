@@ -1,7 +1,9 @@
 2004-03-24  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
 
-	* build.xml: released 0.5.3
+	* build.xml: released 0.5.4-pre
 
+	* build.xml: released 0.5.3
+	
 	* src/de/schlund/pfixcore/workflow/Context.java: make sure to
 	throw an 404 when the user requests an unknown page
 
