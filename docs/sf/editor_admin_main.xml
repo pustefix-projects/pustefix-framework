@@ -76,12 +76,44 @@
           <tr>
             <td>
               This page is for editing user specific data like name, section, phone
-              and password. Addintionaly you can define the rights a user has to edit
-              differnet parts of your project(s). This is explained below. 
+              and password. Additionally you can define the rights a user has to edit
+              different parts of your project(s). This is explained below. 
             </td>
           </tr>
           <tr>
-            <td>Common rights: These rights are shared among all existing projects.</td>
+            <td><b>Common rights</b>: These rights are shared among all existing projects.
+              There are two common rights. The first determines if the user has admin role.
+              Admins are allowed to edit anything and can manage all user data. The second
+              determines if the user is allowed to edit the default branch of dynamic
+              includes like statuscodes. The default branch of dynamic includes is used
+              by all projects which do not have a product specific branch of them.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Project specific rights</b>: As the name says a project specific right 
+              is only valid for a single project. It consists of a set of three
+              special rights. Every project has such a set of rights.<br/>
+              The first determines if a user is allowed to create and edit 
+              include parts for the project. With this right you are also
+              allowed to create and delete product specific branches.
+              If you want to modify an include 
+              which is used by another project you must have the '<i>Edit Includes</i>'
+              right for this project.<br/>
+              
+              The next one determines if a user is allowed to upload images
+              for the project. If you want to change an image which is used
+              by another product you must have the '<i>Edit Images</i>' right for this
+              product.<br/>
+
+              The last right determines if you are allowed to create or edit product
+              specific branches of dynamic includes.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Note: The words 'project' and 'product' are used synonymical here.
+            </td>
           </tr>
         </table>
       </td>
