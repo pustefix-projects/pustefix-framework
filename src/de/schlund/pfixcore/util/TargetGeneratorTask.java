@@ -36,11 +36,11 @@ public class TargetGeneratorTask extends MatchingTask {
         // code has been taken over from de/schlund/pfixxml/targets/TargetGenerator#main(String[])
         
         File log4jconfigfile = getLog4jconfig();
-        String log4jconfig = (log4jconfigfile == null) ? null : log4jconfigfile.toString();
-        if (log4jconfig == null || log4jconfig.equals("")) {
+        String log4jconfigstr = (log4jconfigfile == null) ? null : log4jconfigfile.toString();
+        if (log4jconfigstr == null || log4jconfigstr.equals("")) {
             throw new BuildException("Need the log4jconfig attribute.");
         }
-        DOMConfigurator.configure(log4jconfig);
+        DOMConfigurator.configure(log4jconfigstr);
 
         DirectoryScanner scanner = getDirectoryScanner(getDir());
         scanner.scan();

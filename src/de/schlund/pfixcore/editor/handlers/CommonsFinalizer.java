@@ -42,14 +42,16 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
     private static String PROD_DEFAULT = "default";
 
     protected void renderDefault(IWrapperContainer container) throws Exception {
-        Context                context  = container.getAssociatedContext();
-        ContextResourceManager crm      = context.getContextResourceManager();
-        EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
-        EditorSearch           esearch  = EditorRes.getEditorSearch(crm);
-        ResultDocument         resdoc   = container.getAssociatedResultDocument();
-        EditorProduct          eprod    = esess.getProduct();
-        TargetGenerator        tgen     = eprod.getTargetGenerator();
-        AuxDependency          currcomm = esess.getCurrentCommon();
+        Context                context      = container.getAssociatedContext();
+        ContextResourceManager crm          = context.getContextResourceManager();
+        EditorSessionStatus    esess        = EditorRes.getEditorSessionStatus(crm);
+        EditorSearch           esearch      = EditorRes.getEditorSearch(crm);
+        ResultDocument         resdoc       = container.getAssociatedResultDocument();
+        EditorProduct          eprod        = esess.getProduct();
+        TargetGenerator        tgen         = eprod.getTargetGenerator();
+        AuxDependency          currcomm     = esess.getCurrentCommon();
+        boolean                showincs     = esess.getShowAdditionalIncfiles();
+        esess.showAdditionalIncfiles(false);
         
         // Render the current status of the editor session
         esess.insertStatus(resdoc, resdoc.createNode("cr_editorsession"));
@@ -57,12 +59,12 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
         // Render all dynamic includes
         TreeSet commons = EditorCommonsFactory.getInstance().getAllCommons();
         Element root    = resdoc.createNode("allcommons"); 
-        EditorHelper.renderAllIncludesForNavigation(commons, resdoc, root);
+        EditorHelper.renderAllIncludesForNavigation(commons, resdoc, root, currcomm, showincs);
 
         TreeSet searchcom = esearch.getDynResultSet();
         if (searchcom != null && searchcom.size() > 0) {
             root = resdoc.createNode("currentsearchcommons");
-            EditorHelper.renderAllIncludesForNavigation(searchcom, resdoc, root);
+            EditorHelper.renderAllIncludesForNavigation(searchcom, resdoc, root, null, true);
         }
 
         // Render detailed view of currently selected include

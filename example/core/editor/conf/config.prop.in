@@ -101,6 +101,7 @@
       <interface prefix="create" class="de.schlund.pfixcore.editor.interfaces.IncludesBranch"/>
       <interface prefix="incsel" class="de.schlund.pfixcore.editor.interfaces.Includes"/>
       <interface prefix="uplinc" class="de.schlund.pfixcore.editor.interfaces.IncludesUpload"/>
+      <interface prefix="addshow" class="de.schlund.pfixcore.editor.interfaces.ShowIncFile"/>
     </ihandler>
   </pagerequest>
 
@@ -117,6 +118,7 @@
       <interface prefix="comsel" class="de.schlund.pfixcore.editor.interfaces.Commons"/>
       <interface prefix="create" class="de.schlund.pfixcore.editor.interfaces.CommonsBranch"/>
       <interface prefix="uplcom" class="de.schlund.pfixcore.editor.interfaces.CommonsUpload"/>
+      <interface prefix="addshow" class="de.schlund.pfixcore.editor.interfaces.ShowIncFile"/>
     </ihandler>
   </pagerequest>
   

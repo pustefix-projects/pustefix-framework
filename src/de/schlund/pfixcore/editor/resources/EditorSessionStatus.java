@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.editor.resources;
 
-import java.util.HashSet;
 
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorUser;
@@ -27,7 +26,9 @@ import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.Target;
+import java.util.HashSet;
 
 /**
  * EditorSessionStatus.java
@@ -41,32 +42,33 @@ import de.schlund.pfixxml.targets.Target;
  */
 
 public interface EditorSessionStatus extends ContextResource {
-    EditorUser    getUser();
-    EditorUserInfo    getUserForEdit();
-    EditorProduct getProduct();
-    PageInfo      getCurrentPage();
-    Target        getCurrentTarget();
-    AuxDependency getCurrentImage();
-    AuxDependency getCurrentInclude();
-    AuxDependency getCurrentCommon();
-    String        getCurrentDocumentationId();
-    void          setUser(EditorUser user);
-    //void          setUserForEdit(EditorUser user);
-    void          setUserForEdit(EditorUserInfo user);
-    void          setProduct(EditorProduct product);
-    void          setCurrentPage(PageInfo page);
-    void          setCurrentTarget(Target target);
-    void          setCurrentImage(AuxDependency bild);
-    void          setCurrentInclude(AuxDependency include);
-    void          setCurrentCommon(AuxDependency common);
-    void          setCurrentDocumentationId(String id);
-    boolean       getLock(AuxDependency aux);
-    boolean       isOwnLock(AuxDependency aux);
-    void          releaseLock();
-    String        getEditorSessionId();
-    void          setLoginAllowed(boolean status);
-    boolean       getLoginAllowed();
-    String        getBackupDir();
-    HashSet       getAffectedProductsForCurrentInclude() throws Exception;
-    void          resetAffectedProductsForCurrentInclude();
+    EditorUser     getUser();
+    EditorUserInfo getUserForEdit();
+    EditorProduct  getProduct();
+    PageInfo       getCurrentPage();
+    Target         getCurrentTarget();
+    AuxDependency  getCurrentImage();
+    AuxDependency  getCurrentInclude();
+    AuxDependency  getCurrentCommon();
+    String         getCurrentDocumentationId();
+    void           setUser(EditorUser user);
+    void           setUserForEdit(EditorUserInfo user);
+    void           setProduct(EditorProduct product);
+    void           setCurrentPage(PageInfo page);
+    void           setCurrentTarget(Target target);
+    void           setCurrentImage(AuxDependency bild);
+    void           setCurrentInclude(AuxDependency include);
+    void           setCurrentCommon(AuxDependency common);
+    void           setCurrentDocumentationId(String id);
+    boolean        getLock(AuxDependency aux);
+    boolean        isOwnLock(AuxDependency aux);
+    void           releaseLock();
+    String         getEditorSessionId();
+    void           setLoginAllowed(boolean status);
+    boolean        getLoginAllowed();
+    String         getBackupDir();
+    HashSet        getAffectedProductsForCurrentInclude() throws Exception;
+    void           resetAffectedProductsForCurrentInclude();
+    void           showAdditionalIncfiles(boolean doshow);
+    boolean        getShowAdditionalIncfiles();
 }// EditorSessionStatus

@@ -56,10 +56,12 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         EditorSearch           esearch     = EditorRes.getEditorSearch(crm);
         ResultDocument         resdoc      = container.getAssociatedResultDocument();
         
-        TargetGenerator        tgen        = esess.getProduct().getTargetGenerator();
-        AuxDependency          currinclude = esess.getCurrentInclude();
-        PfixcoreNamespace[]    nspaces     = esess.getProduct().getPfixcoreNamespace();
-
+        TargetGenerator     tgen         = esess.getProduct().getTargetGenerator();
+        AuxDependency       currinclude  = esess.getCurrentInclude();
+        PfixcoreNamespace[] nspaces      = esess.getProduct().getPfixcoreNamespace();
+        boolean             doshow       = esess.getShowAdditionalIncfiles();
+        esess.showAdditionalIncfiles(false);
+        
         for (int i = 0; i < nspaces.length; i++) {
             PfixcoreNamespace nsp = nspaces[i];
             resdoc.addUsedNamespace(nsp.getPrefix(), nsp.getUri());
@@ -71,12 +73,12 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         // Render all includes
         TreeSet includes = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
         Element root     = resdoc.createNode("allincludes"); 
-        EditorHelper.renderAllIncludesForNavigation(includes, resdoc, root);
+        EditorHelper.renderAllIncludesForNavigation(includes, resdoc, root, currinclude, doshow);
 
         TreeSet searchinc = esearch.getResultSet();
         if (searchinc != null && searchinc.size() > 0) {
             root = resdoc.createNode("currentsearchincludes");
-            EditorHelper.renderAllIncludesForNavigation(searchinc, resdoc, root);
+            EditorHelper.renderAllIncludesForNavigation(searchinc, resdoc, root, null, true);
         }
         
         if(PERF_LOGGER.isInfoEnabled()) {
