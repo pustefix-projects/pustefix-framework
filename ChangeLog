@@ -1,3 +1,7 @@
+2004-06-07  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml: Let target "generate" depend on "all" again
+	(instead of "targetdefs, stylesheets, compile, installjars, check-permissions")
 
 2004-06-01  Ralf Rapude    <rapude@schlund.de>
 	* A project generator has been integrated in pfixcore

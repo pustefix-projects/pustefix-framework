@@ -169,7 +169,7 @@
         </exec>
     </target>
     
-    <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions" description="Generates Targets to ${dir.projects}/.cache">
+    <target name="generate" depends="all" description="Generates Targets to ${dir.projects}/.cache">
         <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
     </target>
