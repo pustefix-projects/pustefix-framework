@@ -67,9 +67,14 @@ bin/setvars.sh: core/src/setvars.sh.template
 
 
 $(PRJFILE):  $(PRJFILESRC) $(PRJFILESEXT)
+ifneq ($(PRJFILESEXT),)
 	$(SAXON) -o $@ $(PRJFILESRC) core/build/create_projects.xsl \
-		docroot="$(DOCROOT)"  \
-		files="$(shell echo $(PRJFILESEXT) | sed -e 'y/ /|/')"
+		files="$(shell echo $(PRJFILESEXT) | sed -e 'y/ /|/')" \
+		docroot="$(DOCROOT)"
+else
+	$(SAXON) -o $@ $(PRJFILESRC) core/build/create_projects.xsl \
+		docroot="$(DOCROOT)"
+endif
 
 depend:  targetdefs $(patsubst %.prj.in,%.prj,$(filter %.prj.in, $(CONFIGS)))
 
