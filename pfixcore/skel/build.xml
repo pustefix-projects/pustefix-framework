@@ -4,7 +4,7 @@
      If any problems arise either regenerate ant.dtd by invoking ant dtd
      or delete the DOCTYPE definition -->
 
-<project name="pfixcore_skel" default="all" basedir=".">
+<project name="skel" default="all" basedir=".">
 
     <!-- set global properties for this build -->
     <property file="build.properties"/>
@@ -32,8 +32,6 @@
     <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
     <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
-    <property name="name.build-include"       value="build-include.xml"/>
-    <property name="file.build-include"       location="${name.build-include}"/>
 
     <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
     <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
@@ -158,8 +156,8 @@
     </target>
     
     <target name="generate" depends="all" description="Generates Targets to ${dir.projects}/.cache">
-        <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
+        <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
     </target>
     
     <target name="all"
@@ -181,17 +179,9 @@
         </depend>
     </target>
     
-    <target name="build-include-available">
-        <available file="${file.build-include}" property="avl.build-include"/>
-    </target>
-
-    <target name="clean-build-include" depends="build-include-available" if="avl.build-include">
-        <ant antfile="${file.build-include}" target="clean"/>
-    </target>
-    
-    <target name="pre-compile" depends="build-include-available" if="avl.build-include">
-        <echo message="Calling target pre-compile in ${name.build-include}"/>
-        <ant antfile="${file.build-include}" target="pre-compile"/>
+    <target name="pre-compile">
+        <!-- general purpose hook for build files importing this build file -->
+        <echo>build-skel.xml: pre-compile</echo>
     </target>
 
     <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
@@ -210,9 +200,9 @@
         </javac>
     </target>
     
-    <target name="post-compile" depends="build-include-available, compile" if="avl.build-include">
-        <echo message="Calling target post-compile in ${name.build-include}"/>
-        <ant antfile="${file.build-include}" target="post-compile"/>
+    <target name="post-compile" depends="compile">
+        <!-- general purpose hook for build files importing this build file -->
+        <echo>build-skel.xml: post-compile</echo>
     </target>
 
     <target name="jni">
@@ -328,7 +318,7 @@
         <delete file="ant.dtd"/>
     </target>
 
-    <target name="clean" depends="clean-project, clean-build-include" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
+    <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
         <delete dir="${dir.dist}"/>
@@ -565,16 +555,16 @@
     </target>
     
     <target name="newprjlog_xml" depends="ant-tasks" description="creates common/conf/newprjlog.xml from common/conf/newprjlog.xml.in with core/build/create_log4j_config.xsl">
-           <pfx-xslt
-               style="${dir.projects}/core/build/create_log4j_config.xsl"
-               srcdir="${dir.projects}"
-               destdir="${dir.projects}"
-               includes="common/conf/newprjlog.xml.in"
-               extension=""
-               >
-               <param name="docroot" expression="${dir.docroot}"/>
-           </pfx-xslt>
-           </target>
+       <pfx-xslt
+           style="${dir.projects}/core/build/create_log4j_config.xsl"
+           srcdir="${dir.projects}"
+           destdir="${dir.projects}"
+           includes="common/conf/newprjlog.xml.in"
+           extension=""
+           >
+           <param name="docroot" expression="${dir.docroot}"/>
+       </pfx-xslt>
+    </target>
     
     <target name="products_prj" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_products.xsl">
         <pfx-xslt

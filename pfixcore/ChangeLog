@@ -1,3 +1,11 @@
+2004-06-07  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml:
+	target "generate": print memory and ANT_OPTS hint before generating
+	* skel/build.xml:
+	targets "pre-compile","post-compile": removed ant invocations on
+	build-include.xml in favour of overriding targets via <import>
+
 2004-06-16  Michael Hartmier  <mhm@schlund.de>
 	Minore cleanup to prepare pfixschlund upgrade:
 	* build.xml
