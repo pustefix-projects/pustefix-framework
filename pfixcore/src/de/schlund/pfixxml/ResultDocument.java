@@ -19,15 +19,17 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import java.util.Date;
+import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * @author jtl
@@ -137,11 +139,22 @@ public class ResultDocument {
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
+        return createIncludeFromStatusCode(props, code, null);
+    }
+    
+    public Element createIncludeFromStatusCode(Properties props, StatusCode code, String[] args) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
         String  part    = code.getStatusCodeWithDomain();
         Element include = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                Element arg   = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:arg");
+                arg.setAttribute("value", args[i]);
+                include.appendChild(arg);
+            }
+        }
         return include;
     }
     

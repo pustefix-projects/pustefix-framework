@@ -78,6 +78,11 @@ public class SPCacheFactory implements FactoryInit {
                 documentCache= tmp;
             }
         }
+        if(CAT.isInfoEnabled()) {
+        	CAT.info("SPCacheFactory initialized: ");
+        	CAT.info("  TargetCache   : Class="+targetCache.getClass().getName()+" Capacity=" + targetCache.getCapacity() + " Size="+targetCache.getSize());
+        	CAT.info("  DocumentCache : Class="+documentCache.getClass().getName()+" Capacity=" + documentCache.getCapacity() + " Size="+documentCache.getSize());
+        }
     }
 
     private SPCache getConfiguredCache(Properties props, String propNameClass, String propNameSize) {
@@ -97,7 +102,7 @@ public class SPCacheFactory implements FactoryInit {
                 }
             } else {
                 sizeError= true;
-                CAT.error("The propety " + propNameSize + " is null");
+                CAT.error("The property " + propNameSize + " is null");
             }
 
             if (classname != null && !sizeError) {
@@ -112,7 +117,7 @@ public class SPCacheFactory implements FactoryInit {
             
         } else
             CAT.error("Properties for caches are null");
-
+            
         return tmp;
     }
 
@@ -134,7 +139,6 @@ public class SPCacheFactory implements FactoryInit {
         } catch (ClassCastException e) {
             CAT.error("class [" + classname + "] does not implement the interface IHandler", e);
         }
-
         return retval;
     }
 
