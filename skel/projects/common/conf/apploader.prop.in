@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+
 <!--APPLOADER CONFIGURATION-->
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 	
@@ -6,12 +7,15 @@
   	
     <!--don't use AppLoader in production environment-->
     <cus:test mode="prod">
+
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">off</prop>
+
     </cus:test>
 
     <!--use AppLoader in development environment--> 
     <cus:test>
+
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">on</prop>
       
@@ -35,15 +39,18 @@
       <prop name="apploader.policy.inconsistency.probable">restart</prop>
       
       <!--directory where reloadable classes are stored-->
-      <prop name="apploader.repository"><cus:docroot/>/servletconf/tomcat/classes</prop>
+      <prop name="apploader.repository"><cus:docroot/>/servletconf/tomcat/shared/classes</prop>
       
       <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
-      <!--
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
       <prop name="apploader.package.include.3">de.schlund.pfixcore.editor</prop>
-      -->
-
+      <prop name="apploader.package.include.3">de.skelexamples</prop>
+      
+      <!--add classes which shouldn't be reloadable even though their packages are-->
+      <prop name="apploader.class.exclude.1">de.schlund.pfixschlund.util.addresschecker.ReturnValue</prop>
+      <prop name="apploader.class.exclude.2">de.schlund.pfixschlund.util.addresschecker.soap.ReturnValueSoap</prop>
+      
       <!--add packages which don't have to be traversed for state transfer-->
       <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
       <prop name="apploader.traverse.excludepackage.2">org.apache.log4j</prop>
@@ -51,7 +58,9 @@
       <!--add classes which have to be traversed even though their packages have not-->
       <prop name="apploader.traverse.includeclass.1">java.lang.Object</prop>
       <prop name="apploader.traverse.includeclass.2">java.lang.Thread</prop>
+      
     </cus:test>
+
   </cus:choose>
   
 </properties>
