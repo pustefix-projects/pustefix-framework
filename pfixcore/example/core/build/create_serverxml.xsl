@@ -15,6 +15,9 @@
     <xsl:param name="debug">
       <xsl:apply-templates select="/projects/common/tomcat/debug/node()"/>
     </xsl:param>
+    <xsl:param name="minprocessors">
+      <xsl:apply-templates select="/projects/common/tomcat/minprocessors/node()"/>
+    </xsl:param>
     <xsl:param name="maxprocessors">
       <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
     </xsl:param>
@@ -32,10 +35,11 @@
       <Service name="Tomcat-Standalone">
 	
 	<Connector className="org.apache.ajp.tomcat4.Ajp13Connector"
-                   enableLookups="false" port="8009" minProcessors="200" acceptCount="100">
-          <xsl:if test="not(string($port) = '')"><xsl:attribute name="port"><xsl:value-of select="$port"/></xsl:attribute></xsl:if>
-	  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-          <xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute>
+                   enableLookups="false" port="8009" acceptCount="100" minProcessors="5" maxProcessors="20">
+        <xsl:if test="not(string($port) = '')"><xsl:attribute name="port"><xsl:value-of select="$port"/></xsl:attribute></xsl:if>
+        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+        <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+        <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
 	</Connector>
 	<Engine name="Standalone">
 	  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
