@@ -74,12 +74,16 @@ public class PfixServletRequest {
     private long                  starttime        = 0;
 
     
-    public void initPerfLog() {
-        perflog   = new LinkedList();
-        perfstack = new LinkedList();
+    public synchronized void initPerfLog() {
+        if (perflog == null) {
+            perflog   = new LinkedList();
+        }
+        if (perfstack == null) {
+            perfstack = new LinkedList();
+        }
     }
 
-    public void startLogEntry() {
+    public synchronized void startLogEntry() {
         if (perflog != null) {
             long now   = System.currentTimeMillis();
             
@@ -89,11 +93,11 @@ public class PfixServletRequest {
         }
     }
 
-    public void endLogEntry(String info, long delay) {
+    public synchronized void endLogEntry(String info, long delay) {
         if (perflog != null) {
             long      now   = System.currentTimeMillis();
             PerfEvent start = null;
-            if (!perfstack.isEmpty()) {
+            if (perfstack.size() > 0) {
                 start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
             }
             if (start != null) {
