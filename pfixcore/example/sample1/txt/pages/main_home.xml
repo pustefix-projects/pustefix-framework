@@ -46,6 +46,11 @@
           ~~~~ Requested variant: <ixsl:value-of select="/formresult/@requested-variant"/> ~~~~<br/>
           ~~~~ Selected variant: <ixsl:value-of select="$variant"/> ~~~~<br/>
           <pfx:include part="theme-test"/><br/>
+          <pfx:themeselect>
+            <pfx:theme name="foo">
+              FOO
+            </pfx:theme>
+          </pfx:themeselect>
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>

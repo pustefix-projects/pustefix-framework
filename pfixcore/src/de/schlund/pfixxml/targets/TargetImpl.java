@@ -86,7 +86,11 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
 
     public String[] getThemes() {
-        return themes;
+        if (themes != null) {
+            return themes;
+        } else {
+            return getTargetGenerator().getGlobalThemes();
+        }
     }
     
     /**

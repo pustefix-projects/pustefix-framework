@@ -1,3 +1,11 @@
+2005-03-31  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): always supply a "themes" XSLT parameter containing
+	all the valid themes for the target as a space separated list.
+
+	* example/core/xsl/include.xsl.in: add pfx:themeselect to have the possibility to switch "inline", that means without 
+	having to create another include part, between different content based on the theme fallback queue.
+
 2005-03-29  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setForceUpdate): new method, sets a boolean arg to true which
