@@ -306,7 +306,7 @@
     <antcall target="skeleton" inheritall="true">
       <param name="autotagmessage" value="${dist.autotagmessage}"/>
     </antcall>
-    <echo message="would call: cvs command=tag ${autotagmessage}"/>
+    <cvs command="tag ${autotagmessage}"/>
   </target>
 
   <target name="notag" depends="clean">
@@ -453,14 +453,13 @@
     <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
     <dependset>
       <srcfileset refid="id.fileset.projectxmlin"/>
-      <targetfilelist dir="${dir.projects}/servletconf" files="projects.xml" description="// TODO better declaration "/>
+      <targetfileset dir="${dir.projects}/servletconf" files="projects.xml"/>
     </dependset>
     <pfx-xslt
       style="${dir.projects}/core/build/create_projects.xsl"
       srcdir="${dir.projects}"
       destdir="${dir.projects}"
       includes="servletconf/projects.xml.in"
-      description="// TODO depend on all project.xml.in"
       >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="files"   expression="${projectxmlins}"/>
