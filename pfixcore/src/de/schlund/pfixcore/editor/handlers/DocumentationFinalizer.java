@@ -18,8 +18,6 @@
  */
 package de.schlund.pfixcore.editor.handlers;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.workflow.*;
@@ -39,8 +37,6 @@ import org.w3c.dom.*;
 public class DocumentationFinalizer extends ResdocSimpleFinalizer {
 
 	private String currdoc = null;
-	private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-
 	protected void renderDefault(IWrapperContainer container) throws Exception {
             
             Context context = container.getAssociatedContext();

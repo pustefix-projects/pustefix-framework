@@ -18,15 +18,17 @@
  */
 
 package de.schlund.pfixcore.editor.handlers;
+
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.util.statuscodes.*;
 import java.util.*;
-
 import org.apache.log4j.Category;
 
 /**
@@ -49,7 +51,7 @@ public class CommonsHandler extends EditorStdHandler {
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         Commons                includes = (Commons) wrapper;
         EditorProduct          prod     = esess.getProduct();
-        Path                   path     = Path.create(prod.getTargetGenerator().getDocroot(), includes.getPath());
+        Path                   path     = PathFactory.getInstance().createPath(includes.getPath());
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
         EditorCommonsFactory   ecf      = EditorCommonsFactory.getInstance();

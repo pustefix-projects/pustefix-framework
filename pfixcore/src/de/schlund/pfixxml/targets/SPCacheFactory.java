@@ -124,8 +124,8 @@ public class SPCacheFactory implements FactoryInit {
     private SPCache getCache(String classname) {
         SPCache retval= null;
         try {
-            Constructor constr= Class.forName(classname).getConstructor(null);
-            retval= (SPCache) constr.newInstance(null);
+            Constructor constr= Class.forName(classname).getConstructor((Class[]) null);
+            retval= (SPCache) constr.newInstance((Object[]) null);
         } catch (InstantiationException e) {
             CAT.error("unable to instantiate class [" + classname + "]", e);
         } catch (IllegalAccessException e) {

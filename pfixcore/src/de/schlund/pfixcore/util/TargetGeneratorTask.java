@@ -18,15 +18,15 @@
  */
 package de.schlund.pfixcore.util;
 
-import java.io.File;
 
-import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.MatchingTask;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.Path;
+import java.io.File;
+import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.tools.ant.*;
+import org.apache.tools.ant.taskdefs.MatchingTask;
 
 /**
  * @author adam
@@ -48,12 +48,13 @@ public class TargetGeneratorTask extends MatchingTask {
         // code has been taken over from de/schlund/pfixxml/targets/TargetGenerator#main(String[])
         
         File log4jconfigfile = getLog4jconfig();
-        String log4jconfigstr = (log4jconfigfile == null) ? null : log4jconfigfile.toString();
-        if (log4jconfigstr == null || log4jconfigstr.equals("")) {
+        if (log4jconfigfile == null) {
             throw new BuildException("Need the log4jconfig attribute.");
         }
-        DOMConfigurator.configure(log4jconfigstr);
+        DOMConfigurator.configure(log4jconfig.getPath());
 
+        PathFactory.getInstance().init(getDir().getPath());
+        
         DirectoryScanner scanner = getDirectoryScanner(getDir());
         scanner.scan();
         String[] confignames = scanner.getIncludedFiles(); // **/depend.xml relative to getDir()
@@ -61,10 +62,11 @@ public class TargetGeneratorTask extends MatchingTask {
         if (confignames.length > 0) {
             try {
                 for (int i = 0; i < confignames.length; i++) {
-                    File confile = new File(getDir(), confignames[i]);
+                    Path confilepath = PathFactory.getInstance().createPath(confignames[i]);
+                    File confile = confilepath.resolve();
                     if (confile.exists() && confile.canRead() && confile.isFile()) {
                         try {
-                            gen = createTargetGenerator(confile);
+                            gen = createTargetGenerator(confilepath);
                             gen.setIsGetModTimeMaybeUpdateSkipped(false);
                             System.out.println("---------- Doing " + confignames[i] + "...");
                             gen.generateAll();
@@ -72,7 +74,7 @@ public class TargetGeneratorTask extends MatchingTask {
 
                             TargetGenerator.resetFactories();
                         } catch (Exception e) {
-                            throw new BuildException("Oops! TargetGenerator exit!", e);
+                            throw new BuildException(confile + ": " + e.getMessage(), e);
                         }
                     } else {
                         throw new BuildException("Couldn't read configfile '" + confignames[i] + "'");
@@ -87,14 +89,12 @@ public class TargetGeneratorTask extends MatchingTask {
         
     }
     
-    protected TargetGenerator createTargetGenerator(File confile) {
-        TargetGenerator ret;        
+    protected TargetGenerator createTargetGenerator(Path confilepath) {
         try {
-            ret = new TargetGenerator(confile);
+            return new TargetGenerator(confilepath);
         } catch (Exception e) {
-            throw new BuildException("Can not initialize TargetGenerator",e);
+            throw new BuildException(e.getMessage(), e);
         }
-        return ret;
     }
 
     public File getDir() {

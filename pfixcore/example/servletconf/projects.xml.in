@@ -12,7 +12,7 @@
   <project name="cmscore">
     <active>true</active>
     <comment>CMS for Pfixcore</comment>
-    <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
+    <depend>core/editor/conf/depend.xml</depend>
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>cmscore.<cus:fqdn/></servername>
     <serveralias>cmscore.<cus:machine/></serveralias>
@@ -62,11 +62,11 @@
   <common>
     <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
     <documentation>
-      <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/forminput.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
+      <doc_file>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file>core/xsl/utils.xsl.in</doc_file>
+      <doc_file>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file>core/xsl/master.xsl.in</doc_file>
+      <doc_file>core/xsl/include.xsl.in</doc_file>
     </documentation>  
     <tomcat>
       <minprocessors>100</minprocessors>

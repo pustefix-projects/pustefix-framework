@@ -19,7 +19,7 @@
 
 package de.schlund.pfixcore.editor;
 
-import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import java.util.*;
 
 /**

@@ -4,7 +4,30 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.7.0" date="in cvs">
+      <action dev="jenstl" type="update">
+        More relative paths for configuration files.
+      </action>
+      <action dev="mlhartme" type="remove">
+        Removed <code>common/conf/projects.prj</code>, the necessary data 
+        is read from <code>servletconf/projects.xml.in</code> now. 
+      </action>
+      <action dev="mlhartme" type="remove">
+        Removed the following properties from depend.xml: record_dir, cachedir and docroot. 
+        Pustefix automatically passes them to the xslt processor, you don't have to
+        mention them in depend files.
+      </action>
+      <action dev="mlhartme" type="update">
+        XML dependencies are concentrated in three files (in the <code>de.schlund.pfixxml.util</code> package):
+        <code>Xml.java</code> for parsing and serialization, <code>XPath</code> for xpath compuations, and 
+        <code>Xslt</code> for XSL processing. 
+      </action>
+    </release>
     <release version="0.6.7" date="2004-08-06">
+      <action dev="jenstl" type="remove">
+        The tomcat distribution has been removed from the skeleton, the install instructions
+        describe how to get it.
+      </action>
       <action dev="jenstl" type="fix">
         Various Tomcat 5 fixes.
       </action>

@@ -65,12 +65,12 @@ public class TargetFactory {
     }
 
     private String createKey(TargetType type, TargetGenerator gen, String targetkey) {
-        return(type.getTag() + "@" + gen.getConfigname() + "@" + targetkey);
+        return(type.getTag() + "@" + gen.getName() + "@" + targetkey);
     }
     
     private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey) {
         TargetRW target;
-        CAT.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getConfigname() + "]");
+        CAT.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
         try {
             Class       theclass    = type.getTargetClass();
             Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass()});

@@ -1,0 +1,152 @@
+/*
+* This file is part of PFIXCORE.
+*
+* PFIXCORE is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* PFIXCORE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with PFIXCORE; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*/
+package de.schlund.pfixxml.util;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.*;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.tinytree.TinyDocumentImpl;
+
+public class Xslt {
+    private static final Category           CAT        = Category.getInstance(Xslt.class.getName());
+    private static final TransformerFactory ifactory   = new TransformerFactoryImpl();
+    private static final HashMap            factorymap = new HashMap();
+    
+    //-- load documents
+    
+    public static synchronized Transformer createIdentityTransformer() {
+        try {
+            return ifactory.newTransformer();
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static synchronized Templates loadTemplates(Path path) throws TransformerConfigurationException {
+        InputSource        input   = new InputSource("file://" + path.getBase() + "/" + path.getRelative());
+        Source             src     = new SAXSource(Xml.createXMLReader(), input);
+        TransformerFactory factory = (TransformerFactory) factorymap.get(path.getBase());
+
+        if (factory == null) {
+            // Create a new factory with the correct URIResolver.
+            factory = new TransformerFactoryImpl();
+            factory.setURIResolver(new FileResolver(path.getBase()));
+            factory.setErrorListener(new PFErrorListener());
+            factorymap.put(path.getBase(), factory);
+        }
+        
+        try {
+            Templates retval = factory.newTemplates(src);
+            return retval;
+        } catch (TransformerConfigurationException e) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("TransformerConfigurationException in doLoadTemplates!\n");
+            sb.append("Path: ").append(path).append("\n");
+            sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+            Throwable cause = e.getException();
+            if (cause == null) cause = e.getCause();
+            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+            CAT.error(sb.toString());
+            throw e;
+        }
+    }
+
+    //-- apply transformation
+    
+    public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
+        Transformer trafo = templates.newTransformer();
+        long        start = 0;
+        if (params != null) {
+            for (Iterator e = params.keySet().iterator(); e.hasNext();) {
+                String name  = (String) e.next();
+                String value = (String) params.get(name);
+                if (name != null && value != null) {
+                    trafo.setParameter(name, value);
+                }
+            }
+        }
+        if (CAT.isDebugEnabled())
+            start = System.currentTimeMillis();
+        trafo.transform((TinyDocumentImpl) xml, result);
+        if (CAT.isDebugEnabled()) {
+            long stop = System.currentTimeMillis();
+            CAT.debug("      ===========> Transforming and serializing took " + (stop - start)  + " ms.");
+        }
+    }
+    
+    //--
+    
+    static class FileResolver implements URIResolver {
+    	private static final String SEP = File.separator; 
+        private final File          root;
+        
+        public FileResolver(File root) {
+            this.root = root;
+        }
+        /**
+         * Resolve file url relative to root. 
+         * @param base ignored, always relative to root 
+         * */
+        public Source resolve(String href, String base) throws TransformerException {
+            URI    uri;
+            String path;
+            File   file;
+            try {
+                uri = new URI(href);
+            } catch (URISyntaxException e) {
+            	return new StreamSource(href);
+            }
+            if (uri.getScheme() != null) {
+                // we don't handle uris with an explicit scheme
+            	return new StreamSource(href);
+            }
+            path = uri.getPath();
+            try {
+                file = Path.create(root, path).resolve();
+            } catch (IllegalArgumentException e) {
+                throw new TransformerException("cannot resolve " + href, e);
+            }
+            return new StreamSource(file);
+        }
+    }
+    
+    /**
+     * Implementation of ErrorListener interface.
+     */
+    static class PFErrorListener implements ErrorListener {
+        public void warning(TransformerException arg) throws TransformerException {
+            throw arg;
+        }
+        
+        public void error(TransformerException arg) throws TransformerException {
+            throw arg;
+        }
+        
+        public void fatalError(TransformerException arg) throws TransformerException {
+            throw arg;
+        }
+    }
+}

@@ -53,10 +53,11 @@ import org.apache.log4j.xml.DOMConfigurator;
 public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     //~ Instance/static variables ..................................................................
-
-    private Object         LOCK       = new Object();
-    private Category       CAT        = Category.getInstance(FactoryInitServlet.class.getName());
-    private static boolean configured = false;
+    private static String  PROP_DOCROOT = "pustefix.docroot";
+    private static String  PROP_LOG4J   = "pustefix.log4j.config";
+    private Object         LOCK         = new Object();
+    private Category       CAT          = Category.getInstance(FactoryInitServlet.class.getName());
+    private static boolean configured   = false;
     private ArrayList      factories;
 
     //~ Methods ....................................................................................
@@ -104,11 +105,16 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         synchronized (LOCK) {
             if (!configured) {
                 if (properties != null) {
-                    String log4jconfig = properties.getProperty("pustefix.log4j.config");
-                    if (log4jconfig == null & log4jconfig.equals("")) {
-                        throw new ServletException("*** FATAL: Need the pustefix.log4j.config property... ***");
+                    String docrootstr = properties.getProperty(PROP_DOCROOT);
+                    if (docrootstr == null || docrootstr.equals("")) {
+                        throw new RuntimeException("*** FATAL: Need the docroot property in factory.prop! ***");
                     }
-                    DOMConfigurator.configure(log4jconfig);
+                    PathFactory.getInstance().init(docrootstr);
+                    String log4jconfig = properties.getProperty(PROP_LOG4J);
+                    if (log4jconfig == null & log4jconfig.equals("")) {
+                        throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.prop! ***");
+                    }
+                    DOMConfigurator.configure(PathFactory.getInstance().createPath(log4jconfig).resolve().getPath());
                 }
                 CAT.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");

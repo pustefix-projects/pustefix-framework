@@ -39,7 +39,7 @@
       <prop name="editorproductfactory.delayinit">false</prop>
     </cus:test>
   </cus:choose>
-  <prop name="editorproductfactory.productdata"><cus:docroot/>common/conf/products.prj</prop>
+  <prop name="editorproductfactory.productdata"><cus:docroot/>servletconf/projects.xml</prop>
 
   <!-- EditorCommonsFactory -->
   <prop name="editorcommonsfactory.includefile.1"><cus:docroot/>common/dyntxt/statusmessages.xml</prop>

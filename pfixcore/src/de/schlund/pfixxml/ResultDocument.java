@@ -22,13 +22,11 @@ package de.schlund.pfixxml;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
 
 /**
@@ -42,7 +40,6 @@ public class ResultDocument {
     public  static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
     
     private        Category               CAT   = Category.getInstance(ResultDocument.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     
     protected Element    formresult;
     protected Element    formvalues;
@@ -53,14 +50,13 @@ public class ResultDocument {
     protected SPDocument spdoc;
     protected boolean    do_continue = false;
     
-    public ResultDocument() throws ParserConfigurationException {
+    public ResultDocument() {
         init();
     }
 
-    protected void init() throws ParserConfigurationException {
+    protected void init() {
         spdoc  = new SPDocument();
-        dbfac.setNamespaceAware(true);
-        doc    = dbfac.newDocumentBuilder().newDocument();
+        doc    = Xml.createDocument();
         
         Date date = new Date();
 

@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.loader.*;
-import de.schlund.pfixcore.util.*;
+import de.schlund.pfixcore.util.PropertiesUtils;
 import java.util.*;
 import javax.servlet.*;
 import org.apache.log4j.*;

@@ -19,29 +19,16 @@
 
 package de.schlund.pfixxml.testenv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
 
+
+import de.schlund.pfixxml.util.*;
+import java.io.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
 import org.apache.log4j.Category;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import com.icl.saxon.TransformerFactoryImpl;
+import org.apache.oro.text.regex.*;
+import org.w3c.dom.*;
 
 /**
  * @author Joerg Haecker <haecker@schlund.de>
@@ -60,7 +47,7 @@ public class TestcaseStepResult {
     private long preProc = 0;
     private long getDom = 0;
     private long hdlDoc = 0;
-    
+
     public void setRecordedReferenceDoc(Document reference_data) {
         if (reference_data == null) {
             throw new IllegalArgumentException("A NP as referencedata is NOT allowed here!");
@@ -119,8 +106,8 @@ public class TestcaseStepResult {
 
         String ref_path = tmpdir + "/_recorded" + this.hashCode();
         String srv_path = tmpdir + "/_current" + this.hashCode();
-        XMLSerializeUtil.getInstance().serializeToFile(serverResponse, srv_path, 2, false);
-        XMLSerializeUtil.getInstance().serializeToFile(recordedReferenceDoc, ref_path, 2, false);
+        Xml.serialize(serverResponse, srv_path, true, true);
+        Xml.serialize(recordedReferenceDoc, ref_path, true, true);
         doDiff(srv_path, ref_path);
     }
 
@@ -195,53 +182,39 @@ public class TestcaseStepResult {
 
         removeSerialNumbers();
 
-        // saxon
-        TransformerFactoryImpl trans_fac = (TransformerFactoryImpl) TransformerFactory.newInstance();
         String path = style_dir + "/" + stylesheet;
         
        // System.out.println("Stylesheet--->"+path);
         
-        File styesheet = new File(path);
-        if (styesheet.exists()) {
+        File stylesheetFile = new File(path);
+        if (stylesheetFile.exists()) {
             if (CAT.isInfoEnabled()) {
                 CAT.info("  Transforming using stylesheet :"+path);
             }
-            StreamSource stream_source = new StreamSource("file://" + path);
-            Templates templates = null;
+            Templates trafo;
             try {
-                templates = trans_fac.newTemplates(stream_source);
+                trafo = Xslt.loadTemplates(Path.create(stylesheetFile));
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);
             }
-            Transformer trafo = null;
             try {
-                trafo = templates.newTransformer();
-            } catch (TransformerConfigurationException e) {
-                e.printStackTrace();
-                throw new TestClientException("TransformerConfigurationException occured!", e);
-            }
-
-            DOMSource dom_source1 = new DOMSource(serverResponse);
-            DOMResult dom_result1 = new DOMResult();
-            try {
-                trafo.transform(dom_source1, dom_result1);
+                DOMResult result = new DOMResult();
+                Xslt.transform(serverResponse, trafo, null, result);
+                serverResponse = (Document) result.getNode();
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
-            serverResponse = (Document) dom_result1.getNode();
 
-            DOMSource dom_source2 = new DOMSource(recordedReferenceDoc);
-            DOMResult dom_result2 = new DOMResult();
             try {
-                trafo.transform(dom_source2, dom_result2);
+                DOMResult result = new DOMResult();
+                Xslt.transform(recordedReferenceDoc, trafo, null, result);
+                recordedReferenceDoc = (Document) result.getNode();
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
-            recordedReferenceDoc = (Document) dom_result2.getNode();
         } else {
             CAT.info("Stylesheet "+path+" not found.");
         }
     }
-
 }

@@ -18,10 +18,7 @@
 
      NOTE: THIS IS NOT A WORKING MASTER STYLESHEET!  You need to
      process it with a customization stylesheet that handles the tags
-     <cus:docroot/>, <cus:product/>, <cus:lang/>, <cus:custom_xsl/> and
-     <cus:custom_ixsl/>. Because of the way this works, in this file,
-     always use paths relative to the DOCROOT parameter in xsl:include
-     and ixsl:include!
+     <cus:product/>, <cus:lang/>, <cus:navigation/> and <cus:custom_xsl/>.
 
      Let me repeat once again: NEVER EVER change anything here that
      doesn't apply to the most general case. If the need arises, do
@@ -62,7 +59,6 @@
   <xsl:param name="stylesheets_to_include"/>
   
   <!-- Needed for includes to work. Remember to include this in the resulting stylesheet, too! -->
-  <xsl:param name="docroot"/>
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
 
@@ -87,7 +83,7 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl ixsl">
+    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl">
 
       <ixsl:output indent="no" >
         <xsl:if test="not($outputmethod = '')">
@@ -124,7 +120,6 @@
       <ixsl:param name="__reusestamp">-1</ixsl:param>
       
       <!-- Needed for includes to work -->
-      <ixsl:param name="docroot"/>
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
       <ixsl:param name="product"><xsl:value-of select="$product"/></ixsl:param>
       <ixsl:include href="core/xsl/include.xsl"/>
@@ -136,8 +131,6 @@
         <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
       </xsl:call-template>
 
-      <!-- <cus:custom_ixsl/> -->
-  
       <ixsl:template match="/">
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->

@@ -5,7 +5,7 @@
   
   <active>true</active>
   <comment>Sample1 Application For Pfixcore</comment>
-  <depend><cus:docroot/>sample1/conf/depend.xml</depend>
+  <depend>sample1/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>sample1.<cus:fqdn/></servername>
   <serveralias>sample1.<cus:machine/></serveralias>
@@ -54,9 +54,5 @@
     <class>de.schlund.pfixxml.DirectOutputServlet</class>
     <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
   </servlet>
-  <documentation>
-    <doc_file><cus:docroot/>sample1/xsl/metatags.xsl.in</doc_file>
-  </documentation>  
-  <!-- <namespace prefix="foo" uri="http://bar.foobaz"/> -->
 </project>
 

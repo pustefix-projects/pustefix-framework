@@ -18,15 +18,14 @@
  */
 package de.schlund.pfixcore.editor;
 
+
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,8 +39,6 @@ import org.w3c.dom.NodeList;
  * Window>Preferences>Java>Templates.
  */
 public class EditorDocumentation {
-
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static Category LOG                 = Category.getInstance(EditorProductFactory.class.getName());
     private long   creationTime                 = 0;
 
@@ -65,14 +62,14 @@ public class EditorDocumentation {
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             try {
-                File file = new File(path);
+                File file = PathFactory.getInstance().createPath(path).resolve();
                 Long time = new Long(file.lastModified());
                 if (time != null && path != null) {
                     filesMap.put(path, time);
                     
                 }
                 LOG.debug(" * DOCUMENTATION-FILE " + args[i] + " found * ");
-                this.readFile(path);
+                this.readFile(file);
             }
             catch (Exception ex) {
                 LOG.debug(" * File " + args[i] + " not found * ");
@@ -81,10 +78,9 @@ public class EditorDocumentation {
     }
     
     // read the xsl-File and create the NodeList
-    private void readFile(String filename) throws Exception {
+    private void readFile(File file) throws Exception {
         
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-        this.doc = domp.parse(filename);
+        this.doc = Xml.parseMutable(file);
         this.doc.normalize();
         
         NodeList nl = doc.getElementsByTagName("xsl:template");
@@ -97,6 +93,7 @@ public class EditorDocumentation {
             String mode = prj.getAttribute("mode");
             
             // Getting the Filename without the Path
+            String filename = file.getPath();
             String filenameNew =
                 filename.substring(filename.lastIndexOf("/") + 1, filename.lastIndexOf("."));
             

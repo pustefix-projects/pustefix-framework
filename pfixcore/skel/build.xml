@@ -24,7 +24,6 @@ or delete the DOCTYPE definition -->
   <property name="dir.res"                  location="res"/>
   <property name="dir.dist"                 location="dist"/>
   <property name="dir.skel"                 location="skel"/>
-  <property name="dir.javadoc"              location="target/api"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.projects"             location="projects"/>
@@ -174,7 +173,7 @@ or delete the DOCTYPE definition -->
           />
   
   <target name="compile-xml"
-          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
           description="performs xslt transformations in dir.projects"
           />
   
@@ -232,27 +231,6 @@ or delete the DOCTYPE definition -->
     <ant dir="${dir.jni}" target="clean"/>
   </target>
   
-  <target name="doc" depends="clean-doc, properties" description="generates javadoc">
-    <mkdir dir="${dir.javadoc}"/>
-    <javadoc
-     source="${javac.source}"
-     sourcepath="${dir.src}"
-     destdir="${dir.javadoc}"
-     version="true"
-     author="true"
-     windowtitle="de.schlund ${project.name}"
-     doctitle="&lt;h3&gt;Last update: ${DSTAMP} ${TSTAMP}&lt;/h3&gt;"
-     maxmemory="128m"
-     classpathref="cp.classpath"
-     >
-      <packageset dir="${dir.src}"/>
-    </javadoc>
-  </target>
-
-  <target name="clean-doc">
-    <delete dir="${dir.javadoc}"/>
-  </target>
-
   <target name="installjars">
     <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
          as ${dir.build} is specified as location it always resolves to an absolute path;
@@ -370,7 +348,7 @@ or delete the DOCTYPE definition -->
           <mapper type="glob" from="*.prop" to="*.prop.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop"/>
+      <fileset dir="${dir.projects}" includes="common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop"/>
     </delete>
     <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
   </target>
@@ -504,6 +482,10 @@ or delete the DOCTYPE definition -->
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="files"   expression="${projectxmlins}"/>
+   	  <param name="fqdn"    expression="${fqdn}"/>
+      <param name="uid"     expression="${uid}"/>
+      <param name="machine" expression="${machine}"/>
+      <param name="mode"    expression="${makemode}"/>    	
     </pfx-xslt>
   </target>
 
@@ -576,20 +558,6 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
   
-  <target name="products_prj" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_products.xsl">
-    <pfx-xslt
-     infile="${dir.projects}/servletconf/projects.xml"
-     outfile="${dir.projects}/common/conf/products.prj"
-     style="${dir.projects}/core/build/create_products.xsl"
-     >
-      <param name="docroot"   expression="${dir.docroot}"/>
-      <param name="fqdn"      expression="${fqdn}"/>
-      <param name="uid"       expression="${uid}"/>
-      <param name="machine"   expression="${machine}"/>
-      <param name="mode"      expression="${makemode}"/>
-    </pfx-xslt>
-  </target>
-
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"

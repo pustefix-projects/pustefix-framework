@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   
-<!--  <xsl:param name="docroot"/>
-  <xsl:param name="uid"/>
-  <xsl:param name="machine"/>
-  <xsl:param name="mode"/>-->
-
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes" doctype-system="log4j.dtd"/>
   <xsl:include href="create_lib.xsl"/>
 

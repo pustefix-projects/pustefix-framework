@@ -18,30 +18,21 @@
  */
 package de.schlund.pfixcore.editor.resources;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import javax.xml.parsers.ParserConfigurationException;
 
+
+import de.schlund.pfixcore.editor.EditorProduct;
+import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.testenv.*;
+import de.schlund.pfixxml.util.Path;
+import java.io.*;
+import java.util.*;
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
-
-
-import de.schlund.pfixcore.editor.EditorProduct;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.testenv.RecordManager;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
-import de.schlund.pfixxml.testenv.Testcase;
-import de.schlund.pfixxml.testenv.TestClientException;
-import de.schlund.pfixxml.testenv.TestcasePlaybackResult;
-import de.schlund.pfixxml.testenv.TestcaseStepResult;
 
 
 /**
@@ -274,16 +265,16 @@ public class CRTestcaseImpl implements CRTestcase {
         if(product == null) {
             return null;
         }
-        String depend = product.getDepend();
+        Path depend = product.getDepend();
         RecordManager recman = null;
         try {
             recman = RecordManagerFactory.getInstance().createRecordManager(depend);
-        } catch (ParserConfigurationException e) {
-            throw new TestClientException("ParserConfigurationException!", e);
         } catch (SAXException e) {
             throw new TestClientException("SAXException!", e);
         } catch (IOException e) {
             throw new TestClientException("IOException!", e);
+        } catch (XMLException e) {
+            throw new TestClientException("XMLException!", e);
         }
         return recman.getRecordmodeBaseDir();
     }

@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:cus="http://www.schlund.de/pustefix/customize"
                 version="1.0">
 
+  <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="no"/>
   <xsl:param name="files"/>
-  <xsl:param name="docroot"/>
-
-  <xsl:template match="*">
-    <xsl:copy>
-      <xsl:copy-of select="./@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
 
   <xsl:template match="insertexternalprojects">
     <xsl:call-template name="recurser">
@@ -35,7 +27,7 @@
     </xsl:variable>
 
     <xsl:if test="not($file = '')">
-      <xsl:copy-of select="document(concat($docroot, '/', $file))"/>
+      <xsl:apply-templates select="document(concat($docroot, '/', $file))"/>
     </xsl:if>
     
     <xsl:if test="contains($remaining, '|')">

@@ -3,9 +3,6 @@
 
   <!-- shared properties for the pustefix projects -->
 
-  <!-- configuration of log4j -->
-  <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
-
   <!-- dump of the whole session on Exception -->
   <prop name="servlet.sessiondumponerror">true</prop>
 
@@ -52,9 +49,3 @@
   </cus:choose>
 
 </properties>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

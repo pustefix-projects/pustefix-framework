@@ -74,11 +74,6 @@ public final class DependXmlDom {
      * @return The new dom
      */
     private void prepareDependXml() {
-        // change attribute make
-        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_MAKE,
-                 AppValues.DEPENDATT_CACHE, 
-                 AppValues.DEPENDATT_CACHEPREFIX + projectName, false);
-        
         // change attribute project
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_MAKE,
                  AppValues.DEPENDATT_PROJECT, 
