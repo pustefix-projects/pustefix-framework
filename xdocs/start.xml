@@ -42,6 +42,9 @@
         To configure this you can add an <code>* entry</code> to your DNS configuration.
         Alternatively, you can add individual entries for every project
         (e.g. <code>sample1.HOSTNAME.DOMAIN</code>) to your <code>/etc/hosts</code>.</p></li>
+        <li><p>The pustefix directory has to be world-readable, otherwise, apache cannot serve
+        static resources like pictures or style-sheets. Usually, this is done by running
+        <code>chmod a+rx +</code>.</p></li>
       </ul>
       
       <p>TODO: doesn't belong to getting started - it's an advanced subject.</p>
