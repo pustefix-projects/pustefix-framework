@@ -5,9 +5,7 @@
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
 
-	JTrees added instead of ComboBoxes
-	
-	
+	JTrees added instead of ComboBoxes		
 
 2003-07-18  Martin Leidig <mleidig@schlund.de>
 
