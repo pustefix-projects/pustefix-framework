@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core"
+              xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  <pfx:head>
+    <title>Pustefix Content Management und Editor</title>
+  </pfx:head>
+  <pfx:frameset rows="37,*">
+    <pfx:frame name="top_navi">
+      <html>
+	<head>
+          <style type="text/css">
+            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
+          </style>
+        </head>
+	<body>
+	  <pfx:include href="core/editor/txt/navigation.xml" part="top"/>
+	</body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="bottom">
+      <pfx:frameset cols="300,*" border="2" frameborder="2" framespacing="1">
+	<pfx:frame name="left_navi" noresize="false">
+	  <html>
+	    <head>
+              <style type="text/css">
+                <pfx:include href="core/txt/styles.xml" part="standard"/>
+                <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
+              </style>
+            </head>
+	    <body class="editor_body_sidebar">
+              <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="sidebar"/>
+	    </body>
+	  </html>
+        </pfx:frame>
+        <pfx:frame name="main">
+	  <html>
+	    <head>
+              <style type="text/css">
+                <pfx:include href="core/txt/styles.xml" part="standard"/>
+                <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
+              </style>
+            </head>
+	    
+	    <script>
+
+function resize() {
+   
+   var w_newWidth,w_newHeight;
+   var w_maxWidth=2000, w_maxHeight=1200, w_staticHeight=550;
+
+              
+   if (navigator.appName.indexOf("Microsoft") != -1)
+   {
+     
+     w_newWidth=document.body.clientWidth;
+     w_newHeight=document.body.clientHeight-1;
+     //alert("iexplorer resize - width:"+w_newWidth+" height:"+w_staticHeight+" Applet - width:"+document.applets["xmlEditor"].getWidth());           
+ 
+   }else{
+   var netscapeScrollWidth=15;
+   w_newWidth=window.innerWidth-netscapeScrollWidth;
+   w_newHeight=window.innerHeight-netscapeScrollWidth;
+   if (w_newWidth>w_maxWidth)
+     w_newWidth=w_maxWidth;
+
+   if (w_newHeight>w_maxHeight)
+     w_newHeight=w_maxHeight;
+   document.applets["xmlEditor"].setSize(w_newWidth,w_staticHeight);
+   document.applets["xmlEditor"].resize(w_newWidth,w_staticHeight);
+   }
+   window.scroll(0,0);
+}
+
+window.onResize = resize;
+window.onLoad = resize;
+
+	    </script>
+
+	    <body  onLoad="resize()" onResize="resize()" >
+              
+              <div style="padding-left: 10px; padding-right: 10px;">
+                <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="content"/>
+              </div>
+	    </body>
+	  </html>
+	</pfx:frame>
+      </pfx:frameset>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
