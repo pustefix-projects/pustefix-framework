@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <table>
+          <th>You have selected to following testcases:</th>
+          <ixsl:for-each select="/formresult/selected_testcases/selected_testcase">
+          <tr>
+            <td>
+              <ul>
+                <li><h4><ixsl:value-of select="."/></h4></li>
+              </ul>
+            </td>
+          </tr>
+          </ixsl:for-each>
+          <tr>
+            <td>
+              <pfx:button normalclass="editor_submit" page="testcaseselect">
+                Back
+              </pfx:button>
+            </td>
+            <td>
+              <pfx:forminput target="_top">
+                <pfx:xinp normalclass="editor_submit" type="submit" value="Next"/>
+              <!--<pfx:button normalclass="editor_submit" page="testcaseoverview">
+                Start
+              </pfx:button>-->
+              </pfx:forminput>
+            </td>
+          </tr>
+        </table>
+      </lang>
+      </product>
+  </part>
+
+
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

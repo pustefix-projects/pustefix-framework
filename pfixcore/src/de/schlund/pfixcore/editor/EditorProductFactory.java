@@ -16,21 +16,35 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixcore.editor;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
+
+import de.schlund.pfixcore.workflow.Navigation;
+import de.schlund.pfixcore.workflow.NavigationFactory;
+
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+
 import de.schlund.util.FactoryInit;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
-import org.apache.xpath.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import java.util.Properties;
+import java.util.TreeMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.log4j.Category;
+
+import org.apache.xpath.XPathAPI;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+
 
 /**
  * EditorProductFactory.java
@@ -42,42 +56,45 @@ import org.apache.xpath.*;
  *
  *
  */
-
 public class EditorProductFactory implements FactoryInit {
+
+    //~ Instance/static variables ..................................................................
+
     private static DocumentBuilderFactory dbfac         = DocumentBuilderFactory.newInstance();
     private static TreeMap                knownproducts = new TreeMap();
     private static Category               LOG           = Category.getInstance(EditorProductFactory.class.getName());
     private static EditorProductFactory   instance      = new EditorProductFactory();
     private static String                 productfile   = null;
     private static boolean                already_read  = false;
-    
-    private static final String PROP_DELAY = "editorproductfactory.delayinit";
-    private static final String PROP_PF    = "editorproductfactory.productdata";
-    private static final String IXSL_PFIX  = "ixsl";
-    private static final String IXSL_URI   = "http://www.w3.org/1999/XSL/Transform";
-    private static final String PFX_PFIX   = "pfx";
-    private static final String PFX_URI    = "http://www.schlund.de/pustefix/core";
-    
+    private static final String           PROP_DELAY    = "editorproductfactory.delayinit";
+    private static final String           PROP_PF       = "editorproductfactory.productdata";
+    private static final String           IXSL_PFIX     = "ixsl";
+    private static final String           IXSL_URI      = "http://www.w3.org/1999/XSL/Transform";
+    private static final String           PFX_PFIX      = "pfx";
+    private static final String           PFX_URI       = "http://www.schlund.de/pustefix/core";
+
+    //~ Methods ....................................................................................
+
     public static EditorProductFactory getInstance() {
         return instance;
     }
 
     public synchronized EditorProduct getEditorProduct(String name) throws Exception {
-        if (!already_read) {
+        if (! already_read) {
             readFile(productfile);
         }
         return (EditorProduct) knownproducts.get(name);
     }
 
     public synchronized EditorProduct[] getAllEditorProducts() throws Exception {
-        if (!already_read) {
+        if (! already_read) {
             readFile(productfile);
         }
-        return (EditorProduct[]) knownproducts.values().toArray(new EditorProduct[] {});
+        return (EditorProduct[]) knownproducts.values().toArray(new EditorProduct[]{});
     }
-    
+
     public synchronized void init(Properties properties) throws Exception {
-        productfile  = properties.getProperty(PROP_PF);
+        productfile = properties.getProperty(PROP_PF);
         if (productfile == null) {
             throw new XMLException("Need to have property " + PROP_PF + " set!");
         }
@@ -92,10 +109,9 @@ public class EditorProductFactory implements FactoryInit {
 
     private void readFile(String filename) throws Exception {
         DocumentBuilder domp = dbfac.newDocumentBuilder();
-        Document        doc  = domp.parse(filename);
+        Document        doc = domp.parse(filename);
         doc.normalize();
-        NodeList        nl   = doc.getElementsByTagName("project");
-
+        NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {
             Element prj  = (Element) nl.item(i);
             String  name = prj.getAttribute("name");
@@ -106,7 +122,7 @@ public class EditorProductFactory implements FactoryInit {
             if (comment == null) {
                 throw new XMLException("Product needs a comment element!");
             }
-            String depend  = ((Text) XPathAPI.selectNodeList(prj, "./depend/text()").item(0)).getNodeValue();
+            String depend = ((Text) XPathAPI.selectNodeList(prj, "./depend/text()").item(0)).getNodeValue();
             if (depend == null) {
                 throw new XMLException("Product needs a depend element!");
             }
@@ -119,11 +135,12 @@ public class EditorProductFactory implements FactoryInit {
             PfixcoreServlet[] servlets = new PfixcoreServlet[nlist.getLength()];
             for (int j = 0; j < nlist.getLength(); j++) {
                 Element handler = (Element) nlist.item(j);
-                String  hname   = handler.getAttribute("name");
+                String  hname = handler.getAttribute("name");
                 if (hname == null) {
                     throw new XMLException("Handler needs a name!");
                 }
-                String config = ((Text) XPathAPI.selectNodeList(handler, "./properties/text()").item(0)).getNodeValue();
+                String config = ((Text) XPathAPI.selectNodeList(handler, "./properties/text()").item(
+                                         0)).getNodeValue();
                 if (config == null) {
                     throw new XMLException("Handler needs a properties element!");
                 }
@@ -131,9 +148,8 @@ public class EditorProductFactory implements FactoryInit {
                 hprop.load(new FileInputStream(new File(config)));
                 servlets[j] = new PfixcoreServlet(hname, hprop);
             }
-
             nlist = prj.getElementsByTagName("namespace");
-            PfixcoreNamespace[] nspaces = new PfixcoreNamespace[nlist.getLength() +  2];
+            PfixcoreNamespace[] nspaces = new PfixcoreNamespace[nlist.getLength() + 2];
             nspaces[0] = new PfixcoreNamespace(IXSL_PFIX, IXSL_URI);
             nspaces[1] = new PfixcoreNamespace(PFX_PFIX, PFX_URI);
             for (int j = 0; j < nlist.getLength(); j++) {
@@ -148,32 +164,20 @@ public class EditorProductFactory implements FactoryInit {
                 }
                 nspaces[j + 2] = new PfixcoreNamespace(prefix, uri);
             }
-            
-            
             NodeList nliste = doc.getElementsByTagName("documentation");
-            
-            
             nliste = prj.getElementsByTagName("documentation");
-            String argument[] = new String[nliste.getLength()];
-            
+            String[] argument = new String[nliste.getLength()];
             for (int k = 0; k < nliste.getLength(); k++) {
-                Element el = (Element) nliste.item(k);
-                String node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
+                Element el   = (Element) nliste.item(k);
+                String  node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
                 LOG.debug("Documentation found in: " + node);
                 argument[k] = node;
             }
-            
-            EditorDocumentation edit = new EditorDocumentation(argument);
-            EditorProduct product = new EditorProduct(name, comment, gen, navi, servlets, nspaces, edit);
-
+            EditorDocumentation edit    = new EditorDocumentation(argument);
+            EditorProduct       product = new EditorProduct(name, comment, depend, gen, navi, 
+                                                            servlets, nspaces, edit);
             LOG.debug("Init Product: " + product.toString());
             knownproducts.put(name, product);
         }
     }
-    
-    
-    
-    
-    
-    
 }
