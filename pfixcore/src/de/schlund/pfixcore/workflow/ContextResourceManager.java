@@ -86,13 +86,12 @@ public class ContextResourceManager {
 	// CAT.debug("Properties:\n" + context.getProperties());
 
 	// Getting all Properties beginning with PROP_RESOURCE
-	TreeMap to_init = PropertiesUtils.selectPropertiesSorted(context.getProperties(), PROP_RESOURCE);
-
+	TreeMap cr_create = PropertiesUtils.selectPropertiesSorted(context.getProperties(), PROP_RESOURCE);
+        HashSet cr_init   = new HashSet();
 	// Hope, I got properties
-	if (to_init != null && !to_init.isEmpty()) {
-
+	if (cr_create != null && !cr_create.isEmpty()) {
 	    // For each property...
-	    for (Iterator i = to_init.keySet().iterator(); i.hasNext(); ) {
+	    for (Iterator i = cr_create.keySet().iterator(); i.hasNext(); ) {
 		// Get the classname and create a tokenizer to traverse the
 		// list of interfaces
 		String resourcename   = (String) i.next();
@@ -102,7 +101,7 @@ public class ContextResourceManager {
 					       " ContextResource-Property !");
 		}
 		String          classname     = resourcename.substring(classnameIndex);  
-		String          interfacelist = (String) to_init.get(resourcename);
+		String          interfacelist = (String) cr_create.get(resourcename);
 		StringTokenizer tokenizer     = new StringTokenizer(interfacelist, SEPERATOR); 
 		ContextResource cr            = null;
 
@@ -116,7 +115,8 @@ public class ContextResourceManager {
 		}
 
 		// initialize it...
-		cr.init(context);
+		// cr.init(context);
+                cr_init.add(cr);
                 
 		if (tokenizer.countTokens() == 0) {
 		    throw new ServletException("No interfaces given for object of class [" + classname + "]"); 
@@ -129,9 +129,14 @@ public class ContextResourceManager {
 		    resources.put(interfacename, cr);
 		}
 	    }
+            for (Iterator i = cr_init.iterator(); i.hasNext(); ) {
+                ContextResource cr = (ContextResource) i.next();
+                cr.init(context);
+            }
 	} else {
 	    CAT.debug("No Properties with prefix " + PROP_RESOURCE + " found! ");
 	}
+        
     }
 
     /**
