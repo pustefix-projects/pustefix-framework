@@ -214,7 +214,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         mbar = new JMenuBar();
         this.createFileMenu();       
         this.createEditMenu();
-        this.createIncludeMenu();
+        // this.createIncludeMenu();
 
         
         // Layouting Applet
