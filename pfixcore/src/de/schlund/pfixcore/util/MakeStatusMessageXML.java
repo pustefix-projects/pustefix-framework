@@ -175,9 +175,9 @@ public class MakeStatusMessageXML {
 
     private void writeFile(String filename, Document doc, boolean newfile) {
         try {
-            FileWriter    output  = new FileWriter(filename);
-            OutputFormat  format  = new OutputFormat("xml","ISO-8859-1",true);
-            XMLSerializer serial  = new XMLSerializer(output, format);
+            FileOutputStream output  = new FileOutputStream(filename);
+            OutputFormat     format  = new OutputFormat("xml","ISO-8859-1",true);
+            XMLSerializer    serial  = new XMLSerializer(output, format);
             if (newfile) {
                 CAT.warn(">>> Writing NEW messagefile " + filename);
                 format.setIndent(2);
