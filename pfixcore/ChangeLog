@@ -1,3 +1,21 @@
+2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml:
+	Added hook for plugging in a build file (Name: build-include.xml).
+	Targets being called from the "main" build file are pre-compile, post-compile 
+	and clean.
+	* build.xml:
+	Removed property "build.compiler.fulldepend" (=true), as compile dependencies
+	are handled by task depend now.
+	Removed uptodate check properties "upd.jni" and "upd.jni.javah" as the
+	are not used anymore (jni is in separate build file).
+	Renamed tagret pre-compile to init-compile to avoid name clash with new targets
+	pre-compile and post-compile.
+	* skel/build.xml:
+	Changed creation of *-res.jar from being recreated from scratch on every build
+	to being updated by task jar. Note: files being deleted from directory
+	res remain in *-res.jar until next clean build.
+
 2003-12-15  Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java
@@ -27,7 +45,7 @@
 
 	* build.xml, skel/build.xml:
 	Removed java.home fallback for property javahome, as it might lead to confusing results.
-	Fixed/Improved *.jar symlink handling in target installjars. Deletion of symlinks did not work.
+	Fixed/Improved *.jar symlink handling in target installjars. Deletion of symlinks did not work
 	with task delete. Using native tools now (os=Linux).
 	Fixed/Added deletion of *.jar symlinks and de/classes symlinks in target clean.
 
