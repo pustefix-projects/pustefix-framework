@@ -11,7 +11,7 @@ USER  = $(shell cat CVS/Root  | cut -d ":" -f 3 | cut -d "@" -f 1)
 export CLASSPATH  = $(shell ../../bin/setClassPath.sh `pwd`/../..)
 
 
-all: transform install
+all: transform 
 
 clean:
 	@rm -rf gen
