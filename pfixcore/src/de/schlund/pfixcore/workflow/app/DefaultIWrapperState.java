@@ -91,7 +91,7 @@ public class DefaultIWrapperState extends StaticState {
                 rfinal.onWorkError(container);
             } else {
                 CAT.debug("    => No error happened during work ...");
-                if (container.continueSubmit()) {
+                if (container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page:");
                     CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
