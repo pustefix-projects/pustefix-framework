@@ -27,6 +27,7 @@ import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+import de.schlund.pfixxml.util.PfxProperties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -598,7 +599,7 @@ public abstract class ServletManager extends HttpServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        properties = new Properties(System.getProperties());
+        properties = new PfxProperties(System.getProperties());
 
         ServletContext ctx   = config.getServletContext();
         CAT.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
