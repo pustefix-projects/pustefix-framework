@@ -6,3 +6,6 @@ local
 .ALLINCFILES
 .ALLPROJECTS
 CHECKOUTPUT.xml
+UnusedInfo.txt
+Cleanup.xml
+
