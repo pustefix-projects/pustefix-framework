@@ -86,7 +86,7 @@ public class DefaultIWrapperState extends StaticState {
                         CAT.debug("... Container says he wants to stay on this page...\n" +
                             "=> retrieving current status.");
                     }
-                    container.retrieveCurrentStatus(false);
+                    container.retrieveCurrentStatus();
                     rfinal.onRetrieveStatus(container);
                 } else {
                     if(CAT.isDebugEnabled()) {
@@ -101,7 +101,7 @@ public class DefaultIWrapperState extends StaticState {
                 CAT.debug(">>> In DirectTriggerHandling...\n" +
                     "=> retrieving current status.");
             }
-            container.retrieveCurrentStatus(false);
+            container.retrieveCurrentStatus();
             rfinal.onRetrieveStatus(container);
         } else if (context.flowIsRunning()) {
             if(CAT.isDebugEnabled()) {
@@ -111,7 +111,7 @@ public class DefaultIWrapperState extends StaticState {
                 if(CAT.isDebugEnabled()) {
                     CAT.debug("=> needing data, retrieving current status.");
                 }
-                container.retrieveCurrentStatus(false);
+                container.retrieveCurrentStatus();
                 rfinal.onRetrieveStatus(container);
             } else {
                 if(CAT.isDebugEnabled()) {
@@ -125,7 +125,6 @@ public class DefaultIWrapperState extends StaticState {
         // We need to check because in the success case, the SPDocument
         // may well be set to null to trigger workflow continuation
         if (resdoc.getSPDocument() != null) {
-            // container.retrieveCurrentStatus(true);
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
