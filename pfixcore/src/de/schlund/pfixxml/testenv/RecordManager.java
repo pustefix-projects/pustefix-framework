@@ -100,8 +100,8 @@ public final class RecordManager {
         Node     stylesheet_node = doDefaultStylesheettoXML();
         Document doc             = new DocumentImpl();
         Element  step            = doc.createElement("step");
-        step.setAttribute("hostname", pfix_servlet_request.getServerName());
-        step.setAttribute("hostport", "" + pfix_servlet_request.getServerPort());
+        //step.setAttribute("hostname", pfix_servlet_request.getServerName());
+        //step.setAttribute("hostport", "" + pfix_servlet_request.getServerPort());
         doc.appendChild(step);
         Node imp1 = doc.importNode(input_node, true);
         step.appendChild(imp1);
@@ -128,7 +128,29 @@ public final class RecordManager {
         } else {
             new_uri = uri.substring(0, uri.indexOf('=') + 1) + "[SESSION_ID]";
         }
-        ele.setAttribute("uri", new_uri);
+        //ele.setAttribute("uri", new_uri);
+        Element ele_uri = doc.createElement("uri");
+        Text text_uri = doc.createTextNode(new_uri);
+        ele_uri.appendChild(text_uri);
+        ele.appendChild(ele_uri);
+        
+        Element ele_hostname = doc.createElement("hostname");
+        Text text_hostname = doc.createTextNode(pfreq.getServerName());
+        ele_hostname.appendChild(text_hostname);
+        ele.appendChild(ele_hostname);
+        
+        Element ele_port = doc.createElement("port");
+        Text text_port = doc.createTextNode(""+pfreq.getServerPort());
+        ele_port.appendChild(text_port);
+        ele.appendChild(ele_port);
+        
+        Element ele_proto = doc.createElement("proto");
+        Text text_proto = doc.createTextNode(pfreq.getScheme());
+        ele_proto.appendChild(text_proto);
+        ele.appendChild(ele_proto);
+        
+        Element ele_params = doc.createElement("params");
+        
         String[] req_param_names = pfreq.getRequestParamNames();
         for (int i = 0; i < req_param_names.length; i++) {
             // we don't want to send the record parameter
@@ -141,9 +163,11 @@ public final class RecordManager {
                 Text    text = doc.createTextNode(values[j].getValue());
                 e.setAttribute("name", name);
                 e.appendChild(text);
-                ele.appendChild(e);
+                ele_params.appendChild(e);
             }
         }
+        
+        ele.appendChild(ele_params);
         return ele;
     }
 	/**
