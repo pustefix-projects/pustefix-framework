@@ -1,3 +1,7 @@
+2004-02-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* released 0.5.2
+
 2004-02-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: remember all pages that have been visited, set the 
