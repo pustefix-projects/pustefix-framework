@@ -9,6 +9,8 @@
     <property name="uid"                      value="${env.USER}"/>
     <property name="javahome"                 value="${env.JAVA_HOME}"/>
     <property name="build.compiler"           value="jikes"/>
+    <property name="build.compiler.emacs"     value="true"/>
+    <property name="javac.source"             value="1.4"/>
     <property name="name.jnipkg"              value="jni.tar.gz"/>
     <property name="name.cvsautotag"          value="CVS_AUTOTAG"/>
     <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
@@ -135,6 +137,7 @@
             destdir="${dir.build}"
             debug="${debug}"
             classpathref="cp.classpath"
+            source="${javac.source}"
             excludes="${excludes.src}"
             />    
     </target>
@@ -144,6 +147,7 @@
     </target>
     
     <target name="jni">
+        <!-- unjar jni.tar.gz out of pfixcore.jar -->
         <unjar dest="${dir.lib}" overwrite="true">
             <fileset refid="id.fs.pfixcore_jar"/>
             <patternset>
@@ -215,7 +219,6 @@
             description="Creates dependencies in ${dir.projects}/.cache"
             />
         <antstructure output="ant.dtd"/>
-        <copy file="ant.dtd" todir="${dir.skel}"/>
     </target>
     
     <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
@@ -262,22 +265,18 @@
         <delete dir="${dir.projects}/.cache"/>
     </target>
 
-    <target name="core-data">
+    <target name="core-data-check" unless="pfx.force">
         <!-- extract only if pfixcore-data.jar is newer than dir ${dir.projects}/core -->
-        <uptodate property="core-data.uptodate">
+        <uptodate property="upd.core-data">
             <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
             <mapper type="merge" to="${dir.projects}/core"></mapper>
         </uptodate>
-        <delete>
-            <fileset dir="${dir.projects}">
-                <include name="core/**/*" unless="core-data.uptodate"/>
-            </fileset>
-        </delete>
+    </target>
+    
+    <target name="core-data" depends="core-data-check" unless="upd.core-data">
+        <delete dir="${dir.projects}/core"/>
         <untar dest="${dir.projects}" compression="gzip" overwrite="true">
             <fileset refid="id.fs.pfixcore_data_tgz"/>
-            <patternset>
-                <exclude name="**/*" if="core-data.uptodate"/>
-            </patternset>
         </untar>
     </target>
     
@@ -286,6 +285,13 @@
             <arg line="a+x"/>
             <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh"/>
         </apply>
+    </target>
+    
+    <target name="force" description="disables uptodate checks">
+        <!-- All targets *-check that have set the attribute unless="pfx.force"
+             will be skipped, so the uptodate properties (upd.*), the execution of the actual tasks
+             depends on, do not get set and in turn the actual tasks get executed. -->
+        <property name="pfx.force" value="true"/>
     </target>
     
     <target name="checkfiles">
@@ -364,7 +370,7 @@
     
     <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
         <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
-        <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep=" ">
+        <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
             <map from="${dir.projects}/" to=""/>
         </pathconvert>
         <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
@@ -516,3 +522,14 @@
     </target>
 
 </project>
+
+<!--
+               sourcepath="${dir.src}"
+            target="${javac.target}"
+            source="${javac.source}"
+            memorymaximumsize="200M"
+            fork="no"
+            <compilerarg compiler="jikes" line="-target ${javac.target}"/>
+            <compilerarg compiler="jikes" line="-sourcepath ${dir.src}"/>
+
+-->
