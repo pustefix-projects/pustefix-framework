@@ -593,16 +593,54 @@ public abstract class ServletManager extends HttpServlet {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
-            xhandler.handle(e, preq, properties);
-            processException(preq, req, res, e);
+        	ExceptionConfig exconf = getExceptionConfigForThrowable(e);
+        	
+        	if(exconf != null && exconf.getProcessor()!= null) { 
+        		if ( preq.getLastException() != null ) {
+                    return;
+        		}
+        		ExceptionProcessor eproc = exconf.getProcessor();
+        		eproc.processException(e, exconf, preq,
+                        getServletConfig().getServletContext(),
+                        req, res, properties);
+
+        	} else {
+        		// This is the default case when no
+        		// exceptionprocessors are defined.
+        		xhandler.handle(e, preq, properties);
+        	}
             throw new ServletException("callProcess failed", e);
         }
     }
 
     /**
+     * 
+     * @return null if no processor is responsible for the passed throwable
+     * @throws ServletException
+     * @throws ClassNotFoundException
+     */
+    private ExceptionConfig getExceptionConfigForThrowable(Throwable th) throws ServletException {
+        for(Iterator iter = exceptionConfigs.keySet().iterator(); iter.hasNext(); ) {
+            String key = (String) iter.next();
+            //TODO: avoid frequent creation of temporary class objects 
+            Class clazz;
+            try {
+                clazz = Class.forName(key);
+            } catch (ClassNotFoundException e) {
+                throw new ServletException("Unable to instantiate class: "+key, e);
+            }
+            if(clazz.isInstance(th)) {
+                // bingo
+                return (ExceptionConfig) exceptionConfigs.get(key);
+            }
+        }    
+        return null;
+    }
+    
+    /**
      *
      */
-    private void processException(PfixServletRequest preq, HttpServletRequest req,
+    /*private void processException(ExceptionProcessor proc, PfixServletRequest preq, HttpServletRequest req,
                                   HttpServletResponse res, Throwable exception)
                            throws ServletException, IOException {
         // make sure, that if the current request is already the result of a
@@ -612,16 +650,12 @@ public abstract class ServletManager extends HttpServlet {
         if ( preq.getLastException() != null )
             return;
 
-        String exceptionType = exception.getClass().getName();
-        ExceptionConfig exConfig = (ExceptionConfig) exceptionConfigs.get(exceptionType);
-
-        if ( exConfig != null ) {
-            ExceptionProcessor processor = exConfig.getProcessor();
-            processor.processException(exception, exConfig, preq,
+        ExceptionConfig conf = 
+        proc.processException(exception, exConfig, preq,
                                        getServletConfig().getServletContext(),
                                        req, res);
-        }
-    }
+        
+    }*/
 
     /**
      * This method uses all properties prefixed with 'exception' to build ExceptionConfig

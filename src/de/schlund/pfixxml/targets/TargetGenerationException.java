@@ -59,7 +59,8 @@ public class TargetGenerationException extends Exception {
         throws ParserConfigurationException {
         DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document doc = docbuilder.newDocument();
-        Element e0 = doc.createElement("error_message");
+        Element e0 = doc.createElement("error");
+        e0.setAttribute("type", targetex.getClass().getName());
         doc.appendChild(e0);
         printEx(targetex, doc, e0);
         return doc;
@@ -77,7 +78,7 @@ public class TargetGenerationException extends Exception {
             return;
         }
 
-        Element error = doc.createElement("error");
+        Element error = doc.createElement("exception");
         root.appendChild(error);
         error.setAttribute("type", e.getClass().getName());
         insertErrInfo(error, "Message", e.getMessage());
