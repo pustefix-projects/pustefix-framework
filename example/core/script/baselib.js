@@ -181,7 +181,7 @@ function __js_Layer_checkCookies(id) {
         var cookie = document.cookie;
         if (cookie.indexOf("LR_" + id + "=true") >= 0) {
             return "true";
-        } else if (cookie.indexOf("LR_" + id + "=false") > 0) {
+        } else if (cookie.indexOf("LR_" + id + "=false") >= 0) {
             return "false";
         }
     }

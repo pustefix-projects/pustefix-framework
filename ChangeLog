@@ -1,9 +1,10 @@
 2003-04-16  Jens Lautenbacher  <jtl@schlund.de>
 
-	* started 0.3.0-pre
-
 	* released 0.2.9
 	
+	* example/core/script/baselib.js (__js_Layer_checkCookies): added missing "=" 
+	(bug reported by sebastian.werner@schlund.de) 
+
 	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): Now also print out the
 	value of all alt and title tags (as they may contain visible content, too that may need translation)
 
