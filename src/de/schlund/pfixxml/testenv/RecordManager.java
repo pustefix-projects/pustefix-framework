@@ -159,7 +159,7 @@ public final class RecordManager {
     private void getConfigFromXML(Document doc) throws Exception {
         Element root = doc.getDocumentElement();
         String  dir  = root.getAttribute(ATTR_RECORDDIR);
-        if (dir == null) {
+        if (dir == null || dir.equals("")) {
             CAT.warn("Unable to find recording directory! Setting record mode allowed to false!");
             recordBaseDir = null;
             recordAllowed = false;
