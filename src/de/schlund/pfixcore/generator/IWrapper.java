@@ -17,6 +17,10 @@
 *
 */
 package de.schlund.pfixcore.generator;
+
+import java.io.IOException;
+
+
 /**
  * IWrappers are objects which aggregate part of the submitted data
  * of a HTTP post or get event in a typesafe way and present getter
@@ -39,8 +43,10 @@ package de.schlund.pfixcore.generator;
  */
      
 public interface IWrapper extends Comparable {
-    void                init(String prefix) throws Exception;
-    void                load(RequestData req) throws Exception;
+    void init(String prefix) throws Exception;
+    void initLogging(String logdir, String pagename, String visitid);
+    void tryLogging() throws IOException;
+    void load(RequestData req) throws Exception;
     // The reason for these to not being called get* is to avoid nameclashes with
     // descendents who may want to use a Parameter called e.g. "Prefix" (which would
     // result in a method getPrefix be generated)
