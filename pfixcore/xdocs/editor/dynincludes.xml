@@ -12,7 +12,7 @@
   <p>The left frame lists all dynamic includes used in your product. Select such a dynamic include
     from the list for editing.</p>
 
-  <img src="../images/editor_dynincludes.png"/>
+  <img src="../images/editor_dynincludes.gif"/>
   <table>
     <tr>
       <td>
@@ -29,7 +29,7 @@
 
   <section name="The EditorApplet of the Pustefix editor">
 
-  <img src="../images/editor_applet_dynincludes.png"/>
+  <img src="../images/editor_applet_dynincludes.gif"/>
 
   <p>This is the <i>EditorApplet</i>. It works for dynamic includes in the same way as for
       includes explained in the <a href="includes.html">Includes</a> page.</p>
