@@ -4,6 +4,14 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.8.1" date="2004-10-20">
+      <action dev="jenstl" type="update">
+        <p>
+          brown paper bag release: fix an embarrassing security hole
+          in the DerefServer.
+        </p>
+      </action>
+    </release>
     <release version="0.8.0" date="2004-10-15">
       <action dev="mtld" type="add">
         <p>
