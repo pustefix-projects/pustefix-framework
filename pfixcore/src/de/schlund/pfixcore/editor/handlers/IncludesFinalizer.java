@@ -19,25 +19,14 @@
 
 package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.auth.ProjectPermissions;
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.Navigation.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
 import java.util.*;
-
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.*;
-import java.io.*;
-
-import javax.xml.transform.TransformerException;
 
 /**
  * IncludesFinalizer.java

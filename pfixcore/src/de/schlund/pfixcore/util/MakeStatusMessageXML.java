@@ -20,8 +20,6 @@
 package de.schlund.pfixcore.util;
 
 
-import de.schlund.pfixxml.*;
-import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
 import java.net.URL;
@@ -263,7 +261,7 @@ public class MakeStatusMessageXML {
         CAT.warn("*** Part " + part.getAttribute("name") + " is no longer defined in the statuscodes.\n" +
                  "*** Trying to remove it...");
         if (do_remove) {
-            Node next = (Node) part.getNextSibling();
+            Node next = part.getNextSibling();
             if (next.getNodeType() == Node.TEXT_NODE) {
                 part.getOwnerDocument().getDocumentElement().removeChild(next);
             }
@@ -377,13 +375,13 @@ public class MakeStatusMessageXML {
     
     private static HashMap selectProperties(Properties props, String prefix) {
     	String p;
-    	Enumeration enum;
+    	Enumeration enm;
     	HashMap     result = new HashMap();
         
     	prefix += '.';
-    	enum = props.propertyNames();
-    	while (enum.hasMoreElements()) {
-            p = (String) enum.nextElement();
+    	enm = props.propertyNames();
+    	while (enm.hasMoreElements()) {
+            p = (String) enm.nextElement();
             if (p.startsWith(prefix)) {
                 String suffix = p.substring(prefix.length(),p.length());
                 result.put(suffix,props.get(p));

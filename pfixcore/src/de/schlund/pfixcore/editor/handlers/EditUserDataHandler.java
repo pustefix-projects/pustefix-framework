@@ -26,7 +26,6 @@ import org.apache.log4j.Category;
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorProductFactory;
 import de.schlund.pfixcore.editor.EditorUser;
-import de.schlund.pfixcore.editor.auth.AuthManager;
 import de.schlund.pfixcore.editor.auth.AuthManagerFactory;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.editor.auth.ProjectPermissions;

@@ -23,16 +23,9 @@ import java.util.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.TransformerException;
 
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.testenv.XMLSerializeUtil;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
 import org.apache.log4j.*;
 import org.apache.xml.serialize.*;
 import org.apache.xpath.*;
@@ -477,7 +470,7 @@ public class EditorHelper {
         try {
             DocumentBuilder domp = dbfac.newDocumentBuilder();
             Document cdoc = domp.parse(filename);
-            Node cinfo = resdoc.getSPDocument().getDocument().importNode((Node) cdoc.getDocumentElement(), true);
+            Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {
             // 

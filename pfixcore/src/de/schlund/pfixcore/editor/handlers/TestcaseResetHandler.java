@@ -31,7 +31,7 @@ public class TestcaseResetHandler implements IHandler {
                 CAT.debug("TestcaseResetHandler: resetting ContextResource ");
             }
             ContextResourceManager crm = context.getContextResourceManager();
-            CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+            CRTestcase crtc = EditorRes.getCRTestcase(crm);
             crtc.doReset();
         }
     }

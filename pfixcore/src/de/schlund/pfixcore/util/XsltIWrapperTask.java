@@ -9,8 +9,6 @@ package de.schlund.pfixcore.util;
 import java.io.File;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
 
 /**
  * @author adam

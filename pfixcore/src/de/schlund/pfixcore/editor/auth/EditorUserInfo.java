@@ -257,8 +257,8 @@ final public class EditorUserInfo {
         }
 
         for (Iterator iter = affected_products.iterator(); iter.hasNext();) {
-            String name = ((EditorProduct) iter.next()).getName();
-            ProjectPermissions p = getProjectPerms(name);
+            String productname = ((EditorProduct) iter.next()).getName();
+            ProjectPermissions p = getProjectPerms(productname);
             if (!p.isEditImages()) {
                 ret = false;
             }
@@ -347,8 +347,8 @@ final public class EditorUserInfo {
         }*/
 
         for (Iterator iter = affected_products.iterator(); iter.hasNext();) {
-            String name = ((EditorProduct) iter.next()).getName();
-            ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(name);
+            String productname = ((EditorProduct) iter.next()).getName();
+            ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(productname);
             if (!p.isEditIncludes()) {
                 ret =  false;
             }

@@ -265,12 +265,10 @@ public class EditorDocumentation {
         
         this.checkFile();    
         CoreDocumentation coreDoc = null;
-        Document doc = null;
         
         Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
-        doc = coreDoc.getDocument();
-        return doc;
+        return coreDoc.getDocument();
     }
 
 
@@ -280,17 +278,17 @@ public class EditorDocumentation {
         this.checkFile();
 
         CoreDocumentation coreDoc = null;
-        NodeList nlist = null;
+        NodeList tmpnlist = null;
 
         Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
 
-        nlist = coreDoc.getNodeList();
+        tmpnlist = coreDoc.getNodeList();
 
 
         NodeList nl = this.doc.getElementsByTagName(key);
             
-        return nlist;
+        return tmpnlist;
     }
 
 

@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixcore.util.*;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;

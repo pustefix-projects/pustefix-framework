@@ -86,9 +86,9 @@ public class CommandClient {
 		            if(args.length==3) cmd+=" "+args[2];
 		            try {
                         int ind=adr.indexOf(':');
-			            String host=adr.substring(0,ind);
-			            int port=Integer.parseInt(adr.substring(ind+1));
-			            CommandClient cc=new CommandClient(host,port);
+			            String hostname=adr.substring(0,ind);
+			            int portno=Integer.parseInt(adr.substring(ind+1));
+			            CommandClient cc=new CommandClient(hostname,portno);
 			            cc.sendCommand(cmd);
                     } catch(NumberFormatException x) {
                         System.err.println(usage);

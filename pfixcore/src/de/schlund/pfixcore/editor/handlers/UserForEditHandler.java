@@ -24,10 +24,7 @@ import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
 
 /**
  * UserForEditHandler.java
@@ -55,7 +52,7 @@ public class UserForEditHandler implements IHandler {
             if (eduser != null) {
                 esess.setUserForEdit(eduser);
             } else {
-                StatusCode scode = sfac.getInstance().getStatusCode("USER_UNDEF");
+                StatusCode scode = StatusCodeFactory.getInstance().getStatusCode("USER_UNDEF");
                 toedit.addSCodeUser(scode);
             }
         } else {

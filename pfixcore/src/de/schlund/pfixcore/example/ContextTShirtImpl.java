@@ -89,7 +89,7 @@ public class ContextTShirtImpl implements ContextResource, ContextTShirt{
         if (tshirtfeatures != null) {
             for (int i = 0; i < tshirtfeatures.length; i++) {
                 Integer feat = tshirtfeatures[i];
-                resdoc.addTextChild(tshirt, "feature", (String) featmap.get(feat.toString()));
+                ResultDocument.addTextChild(tshirt, "feature", (String) featmap.get(feat.toString()));
             }
         }
     }

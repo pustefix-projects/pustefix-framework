@@ -19,8 +19,6 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
-
 /**
  * Defines a observable ContextResource. 
  * 

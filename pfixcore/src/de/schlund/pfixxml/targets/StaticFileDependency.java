@@ -19,8 +19,6 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.util.*;
-
 /**
  * StaticFileDependency.java
  *

@@ -35,9 +35,9 @@ public class SessionHelper {
 
     public static void saveSessionData(Map store, HttpSession session) {
         try {
-            Enumeration enum = session.getAttributeNames();
-            while (enum.hasMoreElements()) {
-                String valName = (String)enum.nextElement();
+            Enumeration enm = session.getAttributeNames();
+            while (enm.hasMoreElements()) {
+                String valName = (String)enm.nextElement();
                 store.put(valName, session.getAttribute(valName));
             }
         } catch (NullPointerException e) {

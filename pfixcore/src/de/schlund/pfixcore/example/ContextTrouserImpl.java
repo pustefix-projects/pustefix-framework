@@ -57,7 +57,7 @@ public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrou
             if (trouserfeatures != null) {
                 for (int i = 0; i < trouserfeatures.length; i++) {
                     Integer feat = trouserfeatures[i];
-                    resdoc.addTextChild(elem, "feature", (String) featmap.get(feat.toString()));
+                    ResultDocument.addTextChild(elem, "feature", (String) featmap.get(feat.toString()));
                 } 
             }
         }

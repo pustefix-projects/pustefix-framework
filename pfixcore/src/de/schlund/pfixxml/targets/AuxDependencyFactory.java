@@ -21,8 +21,6 @@ package de.schlund.pfixxml.targets;
 import java.lang.reflect.*;
 import java.util.*;
 
-import de.schlund.util.*;
-
 /**
  * AuxDependencyFactory.java
  *

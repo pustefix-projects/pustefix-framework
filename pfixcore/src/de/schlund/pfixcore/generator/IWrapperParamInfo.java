@@ -22,9 +22,7 @@ package de.schlund.pfixcore.generator;
 import de.schlund.pfixxml.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
-import java.lang.*;
 import java.util.*;
-import javax.servlet.http.*;
 import org.apache.log4j.*;
 
 /**
@@ -151,9 +149,9 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
                 RequestParam val = (RequestParam) i.next();
                 CAT.debug(">>> [" + thename + "] Input: >" + val + "<");
                 if (val.getType().equals(RequestParamType.SIMPLE) || val.getType().equals(RequestParamType.FIELDDATA)) {
-                    String value = val.getValue().trim();
-                    if (!value.equals("")) {
-                        val.setValue(value);
+                    String tmp = val.getValue().trim();
+                    if (!tmp.equals("")) {
+                        val.setValue(tmp);
                         out.add(val);
                     }
                 } else if (val.getType().equals(RequestParamType.FILEDATA)) {
@@ -187,8 +185,6 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
             rparamv = defaultval;
         }
 
-        HashSet allerr;
-        
         if (rparamv == null && !optional) {
             synchronized (scodes) {
                 scodes.add(missing);

@@ -57,7 +57,7 @@ public class SPCacheFactory implements FactoryInit {
     private static final String PROP_DOCUMENT_CACHE_CLASS= "includecache.cacheclass";
     private static final String PROP_DOCUMENT_CACHE_SIZE = "includecache.cachecapacity";
 
-    private SPCacheFactory() {};
+    private SPCacheFactory() {}
 
     /**
      * Implemented from FactoryInit.

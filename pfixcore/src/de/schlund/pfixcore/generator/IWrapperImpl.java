@@ -19,10 +19,8 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.pfixxml.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
-import java.net.*;
 import java.text.*;
 import java.util.*;
 import org.apache.log4j.*;
@@ -64,11 +62,11 @@ public abstract class IWrapperImpl implements IWrapper {
         if (logdir != null && pagename != null && visitid != null) {
             File                log    = new File(logdir + "/" + pagename + "#" + prefix);
             Writer              out    = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
-            IWrapperParamInfo[] errors = gimmeAllParamInfosWithErrors();
-            if (errors != null && errors.length > 0) {
+            IWrapperParamInfo[] tmperrors = gimmeAllParamInfosWithErrors();
+            if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
-                for (int j = 0; j < errors.length; j++) {
-                    IWrapperParamInfo param  = errors[j];
+                for (int j = 0; j < tmperrors.length; j++) {
+                    IWrapperParamInfo param  = tmperrors[j];
                     StatusCode[]      scodes = param.getStatusCodes();
                     if (scodes != null) {
                         appendErrorInfoLog(param, buff);

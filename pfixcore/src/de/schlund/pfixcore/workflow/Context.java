@@ -140,7 +140,7 @@ public class Context implements AppContext {
         PageFlow    prevflow = currentpageflow;
 
         if (visit_id == null)
-            visit_id = (String) currentpreq.getSession(false).getValue(ServletManager.VISIT_ID);
+            visit_id = (String) currentpreq.getSession(false).getAttribute(ServletManager.VISIT_ID);
 
         if (in_adminmode) {
             ResultDocument resdoc;
@@ -761,12 +761,12 @@ public class Context implements AppContext {
                               HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page     = pages[i];
-            String            name     = page.getName();
-            PageRequest       pagereq  = new PageRequest(name);
+            String            pagename     = page.getName();
+            PageRequest       pagereq  = new PageRequest(pagename);
             Element           pageelem = doc.createElement("page");
 
             parent.appendChild(pageelem);
-            pageelem.setAttribute("name", name);
+            pageelem.setAttribute("name", pagename);
             pageelem.setAttribute("handler", page.getHandler());
 
             Integer page_vis = null;
@@ -780,7 +780,7 @@ public class Context implements AppContext {
                 if (visible == -1) {
                     pageelem.setAttribute("visited", "-1");
                 } else {
-                    if (visited_pages.contains(name)) {
+                    if (visited_pages.contains(pagename)) {
                         pageelem.setAttribute("visited", "1");
                     } else {
                         pageelem.setAttribute("visited", "0");
@@ -799,7 +799,7 @@ public class Context implements AppContext {
                             vis_map.put(page, new Integer(0));
                         }
                     }
-                    if (visited_pages.contains(name)) {
+                    if (visited_pages.contains(pagename)) {
                         pageelem.setAttribute("visited", "1");
                     } else {
                         pageelem.setAttribute("visited", "0");

@@ -18,7 +18,6 @@
 */
 
 package de.schlund.pfixcore.editor;
-import java.util.*;
 
 /**
  * PfixcoreNamespace.java

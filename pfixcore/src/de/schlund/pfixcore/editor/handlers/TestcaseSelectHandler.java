@@ -5,7 +5,6 @@ import java.util.Iterator;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
-import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
 import de.schlund.pfixcore.editor.resources.CRTestcase;
 import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.generator.IHandler;
@@ -32,7 +31,7 @@ public class TestcaseSelectHandler implements IHandler {
             String[] foo = testcase.getSelect();
                         
             ContextResourceManager crm = context.getContextResourceManager();
-            CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+            CRTestcase crtc = EditorRes.getCRTestcase(crm);
             if(select) {
                 crtc.setSelectedTestcases(foo);
             } else if(delete) {
@@ -48,7 +47,7 @@ public class TestcaseSelectHandler implements IHandler {
     public void retrieveCurrentStatus(Context context, IWrapper wrapper)
         throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
 
         if(crtc.hasSelectedTestcases()) {
             String[] foo =  new String[crtc.getSelectedTestcases().size()];
@@ -73,7 +72,7 @@ public class TestcaseSelectHandler implements IHandler {
      */
     public boolean isActive(Context context) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
         boolean ret = crtc.getAvailableTestcases() != null && crtc.getAvailableTestcases().length > 0;
         return ret;
     }

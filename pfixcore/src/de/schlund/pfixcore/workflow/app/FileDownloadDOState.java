@@ -19,14 +19,11 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.util.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import java.io.*;
 import java.util.*;
-import javax.servlet.*;
 import javax.servlet.http.*;
-import org.apache.log4j.*;
 
 /**
  * FileDownloadDOState.java

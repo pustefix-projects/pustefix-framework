@@ -20,15 +20,8 @@
 package de.schlund.pfixcore.workflow;
 
 
-import de.schlund.pfixcore.util.*;
 import java.util.*;
-import org.apache.log4j.Category;
 import de.schlund.pfixxml.ResultDocument;
-import org.apache.xpath.XPathAPI;
-
-import org.w3c.dom.Document;
-import org.apache.xpath.objects.XObject;
-import javax.xml.transform.TransformerException;
 
 /**
  * @author: jtl@schlund.de

@@ -658,17 +658,17 @@ public class ImageInfo {
 		} else {
 			int index = 0;
 			while (index < args.length) {
-				FileInputStream in = null;
+				FileInputStream tmp = null;
 				try {
 					String filename = args[index++];
 					System.out.print(filename + ";");
-					in = new FileInputStream(filename);
-					run(in, imageInfo);
-					in.close();
+					tmp = new FileInputStream(filename);
+					run(tmp, imageInfo);
+					tmp.close();
 				} catch (Exception e) {
 					System.out.println(e);
 					try {
-						in.close();
+						tmp.close();
 					} catch (Exception ee) {
 					}
 				}

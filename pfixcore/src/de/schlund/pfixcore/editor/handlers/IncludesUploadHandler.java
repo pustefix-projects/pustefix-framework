@@ -18,31 +18,14 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
-import de.schlund.pfixcore.editor.auth.ProjectPermissions;
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.text.*;
 import java.util.*;
-import java.net.URLEncoder;
-import java.net.URLDecoder;
-import javax.xml.parsers.*;
-import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.*;
 import org.apache.oro.text.regex.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
 
 /**
  * IncludesUploadHandler.java

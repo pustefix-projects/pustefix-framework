@@ -9,7 +9,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixxml.testenv.TestClientException;
 
 
 /**
@@ -29,7 +28,7 @@ public class TestcaseStartHandler implements IHandler {
         boolean doit = tcs.getDoStart().booleanValue();
         if(doit) {
             ContextResourceManager crm = context.getContextResourceManager();
-            CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+            CRTestcase crtc = EditorRes.getCRTestcase(crm);
             crtc.executeTest();
         }
     }
@@ -46,7 +45,7 @@ public class TestcaseStartHandler implements IHandler {
      */
     public boolean prerequisitesMet(Context context) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
-        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
         boolean ret = crtc.hasSelectedTestcases();
         return ret;
     }

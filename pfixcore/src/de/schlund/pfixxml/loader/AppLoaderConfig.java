@@ -128,9 +128,9 @@ public class AppLoaderConfig {
             }
             //policy
             name="apploader.policy.inconsistency.";
-            Enumeration enum=props.propertyNames();
-            while(enum.hasMoreElements()) {
-                String key=(String)enum.nextElement();
+            Enumeration enm=props.propertyNames();
+            while(enm.hasMoreElements()) {
+                String key=(String)enm.nextElement();
                 if(key.startsWith(name)) {
                     String typeName=key.substring(name.length());
                     int type;
@@ -174,9 +174,9 @@ public class AppLoaderConfig {
             }
             //package
             name="apploader.package.include.";
-            enum=props.propertyNames();
-            while(enum.hasMoreElements()) {
-                String key=(String)enum.nextElement();
+            enm=props.propertyNames();
+            while(enm.hasMoreElements()) {
+                String key=(String)enm.nextElement();
                 if(key.startsWith(name)) {
                     val=props.getProperty(key);
                     if(val!=null && !val.equals("")) {
@@ -188,9 +188,9 @@ public class AppLoaderConfig {
             } 
             //class
             name="apploader.class.exclude.";
-            enum=props.propertyNames();
-            while(enum.hasMoreElements()) {
-                String key=(String)enum.nextElement();
+            enm=props.propertyNames();
+            while(enm.hasMoreElements()) {
+                String key=(String)enm.nextElement();
                 if(key.startsWith(name)) {
                     val=props.getProperty(key);
                     if(val!=null && !val.equals("")) {
@@ -203,9 +203,9 @@ public class AppLoaderConfig {
             //traverse
             String exName="apploader.traverse.excludepackage";
             String inName="apploader.traverse.includeclass";
-            enum=props.propertyNames();
-            while(enum.hasMoreElements()) {
-                String key=(String)enum.nextElement();
+            enm=props.propertyNames();
+            while(enm.hasMoreElements()) {
+                String key=(String)enm.nextElement();
                 if(key.startsWith(exName) || key.startsWith(inName)) {
                     val=props.getProperty(key);
                     if(val!=null && !val.equals("")) {

@@ -107,8 +107,8 @@ class STraceCleanupTask extends TimerTask {
     private int cleanUp() {
         InstanceCheckerContainer icc=null;
         int num                     =0;
-        for(Enumeration enum=icheckers_.elements(); enum.hasMoreElements();) {
-            icc=(InstanceCheckerContainer) enum.nextElement();
+        for(Enumeration enm=icheckers_.elements(); enm.hasMoreElements();) {
+            icc=(InstanceCheckerContainer) enm.nextElement();
             int count=icc.removeObsoleteCheckers();
             num+=count;
         }

@@ -20,7 +20,6 @@
 package de.schlund.pfixxml;
 
 import java.util.Properties;
-import javax.servlet.ServletException;
 
 /**
  *

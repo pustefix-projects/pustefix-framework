@@ -22,9 +22,6 @@ package de.schlund.pfixcore.example;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
-import de.schlund.util.*;
-import java.util.*;
-import javax.servlet.http.*;
 
 /**
  * OverviewState.java

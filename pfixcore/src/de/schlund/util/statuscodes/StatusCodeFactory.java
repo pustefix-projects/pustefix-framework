@@ -1,7 +1,6 @@
 package de.schlund.util.statuscodes;
 
 import java.util.*;
-import java.io.*;
 import org.apache.log4j.*; 
 import de.schlund.util.FactoryInit;
 import java.net.URL;
@@ -9,7 +8,7 @@ import java.net.URL;
 /**
  * factory object that produces StatusCode objects for all framework classes
  *
- * @autor Wolfram Müller, jtl
+ * @autor Wolfram Mï¿½ller, jtl
  */
 
 public class StatusCodeFactory implements FactoryInit {
@@ -134,13 +133,13 @@ public class StatusCodeFactory implements FactoryInit {
 
     private static HashMap selectProperties(Properties props, String prefix) {
     	String p;
-    	Enumeration enum;
+    	Enumeration enm;
     	HashMap     result = new HashMap();
 
     	prefix += '.';
-    	enum = props.propertyNames();
-    	while (enum.hasMoreElements()) {
-            p = (String) enum.nextElement();
+    	enm = props.propertyNames();
+    	while (enm.hasMoreElements()) {
+            p = (String) enm.nextElement();
             if (p.startsWith(prefix)) {
                 String suffix = p.substring(prefix.length(),p.length());
                 result.put(suffix,props.get(p));

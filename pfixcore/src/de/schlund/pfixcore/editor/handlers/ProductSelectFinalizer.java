@@ -18,10 +18,7 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.editor.EditorProduct;
-import de.schlund.pfixcore.editor.EditorProductFactory;
 import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixcore.workflow.Context;

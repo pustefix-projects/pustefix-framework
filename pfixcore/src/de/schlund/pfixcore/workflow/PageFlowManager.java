@@ -22,7 +22,6 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixcore.util.*;
 import java.util.*;
-import javax.servlet.http.*;
 import org.apache.log4j.*;
 
 /**

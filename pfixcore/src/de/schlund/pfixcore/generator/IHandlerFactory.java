@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;

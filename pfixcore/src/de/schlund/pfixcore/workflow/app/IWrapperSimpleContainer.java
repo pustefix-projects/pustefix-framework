@@ -298,9 +298,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
             status.setAttribute("name", name);
             status.setAttribute("current", curr);
 
-            IWrapper[] wrappers = group.getIWrappers();
-            for (int j = 0; j < wrappers.length; j++) {
-                IWrapper wrapper = wrappers[j];
+            IWrapper[] tmpwrappers = group.getIWrappers();
+            for (int j = 0; j < tmpwrappers.length; j++) {
+                IWrapper wrapper = tmpwrappers[j];
                 IHandler handler = wrapper.gimmeIHandler();
                 Element  wrap    = resdoc.createSubNode(status, "interface");
                 wrap.setAttribute("active", "" + handler.isActive(context));
@@ -410,7 +410,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private void splitIWrappers() throws Exception {
         reqdata = (RequestData) (new RequestDataImpl(context, preq));
         checkGroupDisplayStatus();
-        boolean group_wanted = ((Boolean) preq.getSession(false).getValue(GROUP_STATUS)).booleanValue();
+        boolean group_wanted = ((Boolean) preq.getSession(false).getAttribute(GROUP_STATUS)).booleanValue();
         boolean group_defined = hasGroupDefinition();
         if (group_wanted && group_defined) {
             readIWrapperGroupsConfigFromProperties();
@@ -467,19 +467,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         RequestParam status  = preq.getRequestParam(GROUP_STATUS_PARAM);
         if (status != null && (status.getValue().equals(GROUP_ON_PARAM))) {
             CAT.debug("*** Request says: Groupdisplay ON");
-            session.putValue(GROUP_STATUS, GROUP_ON);
+            session.setAttribute(GROUP_STATUS, GROUP_ON);
             return true;
         } else if (status != null && status.getValue().equals(GROUP_OFF_PARAM)) {
             CAT.debug("*** Request says: Groupdisplay OFF");
-            session.putValue(GROUP_STATUS, GROUP_OFF);
+            session.setAttribute(GROUP_STATUS, GROUP_OFF);
             return false;
-        } else if (session.getValue(GROUP_STATUS) == null) {
+        } else if (session.getAttribute(GROUP_STATUS) == null) {
             CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
-            session.putValue(GROUP_STATUS, GROUP_ON);
+            session.setAttribute(GROUP_STATUS, GROUP_ON);
             return true;
         } else {
-            CAT.debug("*** Session says: Groupddisplay is " + session.getValue(GROUP_STATUS));
-            return ((Boolean) session.getValue(GROUP_STATUS)).booleanValue();
+            CAT.debug("*** Session says: Groupddisplay is " + session.getAttribute(GROUP_STATUS));
+            return ((Boolean) session.getAttribute(GROUP_STATUS)).booleanValue();
         }
     }
 

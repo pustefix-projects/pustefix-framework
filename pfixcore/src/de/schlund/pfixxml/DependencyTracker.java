@@ -23,7 +23,6 @@ package de.schlund.pfixxml;
 import java.io.File;
 
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
 
 import org.apache.log4j.Category;
 

@@ -44,7 +44,6 @@ import javax.servlet.GenericServlet;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
-import org.apache.log4j.helpers.NullEnumeration;
 import org.apache.oro.text.perl.Perl5Util;
 
 /**

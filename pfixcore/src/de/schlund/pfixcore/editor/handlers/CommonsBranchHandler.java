@@ -19,11 +19,8 @@
 
 package de.schlund.pfixcore.editor.handlers;
 
-import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import org.apache.oro.text.regex.*;
 
 /**
  * CommonsBranchHandler.java

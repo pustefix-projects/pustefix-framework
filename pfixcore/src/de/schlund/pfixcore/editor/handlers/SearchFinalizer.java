@@ -19,15 +19,11 @@
 
 package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
-import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
-import java.util.*;
 import org.w3c.dom.*;
 
 /**
@@ -61,11 +57,11 @@ public class SearchFinalizer extends ResdocSimpleFinalizer {
         esess.insertStatus(resdoc, resdoc.createNode("cr_editorsession"));
 
         StatusCode status = es.getStatus();
-        if (status == es.SCODE_OK) {
+        if (status == EditorSearch.SCODE_OK) {
             Element root = resdoc.createNode("matchingincludes"); 
-            EditorHelper.renderAllPatternMatchingIncludes(es, resdoc, root, es.INCLUDE);
+            EditorHelper.renderAllPatternMatchingIncludes(es, resdoc, root, EditorSearch.INCLUDE);
             root = resdoc.createNode("matchingcommons"); 
-            EditorHelper.renderAllPatternMatchingIncludes(es, resdoc, root, es.COMMON);
+            EditorHelper.renderAllPatternMatchingIncludes(es, resdoc, root, EditorSearch.COMMON);
         }
     }
     

@@ -44,13 +44,13 @@ public class PropertiesUtils {
      */
     public static HashMap selectProperties(Properties props,String prefix) {
     	String      p;
-    	Enumeration enum;
+    	Enumeration enm;
     	HashMap     result = new HashMap();
 
     	prefix += '.';
-    	enum    = props.propertyNames();
-    	while (enum.hasMoreElements()) {
-            p = (String) enum.nextElement();
+    	enm    = props.propertyNames();
+    	while (enm.hasMoreElements()) {
+            p = (String) enm.nextElement();
             if (p.startsWith(prefix)) {
                 String suffix = p.substring(prefix.length(),p.length());
                 result.put(suffix,props.get(p));
@@ -90,11 +90,11 @@ public class PropertiesUtils {
         if (props != null) {
             if (prefix != null && 0 < prefix.length()) {
                 String dottedPrefix = prefix + '.';
-                Enumeration enum = props.propertyNames();
+                Enumeration enm = props.propertyNames();
                 String pKey = null;
                 String newKey = null;
-                while (enum.hasMoreElements()) {
-                    pKey = (String) enum.nextElement();
+                while (enm.hasMoreElements()) {
+                    pKey = (String) enm.nextElement();
                     if (pKey.startsWith(dottedPrefix)) {
                         try {
                             newKey = pKey.substring(dottedPrefix.length(), pKey.length());

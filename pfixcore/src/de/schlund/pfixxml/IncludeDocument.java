@@ -81,16 +81,13 @@ public class IncludeDocument {
         try {
             doc = docBuilder.parse(tmp);
         } catch (SAXParseException ex) {
-            if (ex instanceof SAXParseException) {
-                SAXParseException saxpex = (SAXParseException) ex;
-                StringBuffer      buf = new StringBuffer(100);
-                buf.append("Caught SAXParseException!\n");
-                buf.append("  Message  : ").append(saxpex.getMessage()).append("\n");
-                buf.append("  SystemID : ").append(saxpex.getSystemId()).append("\n");
-                buf.append("  Line     : ").append(saxpex.getLineNumber()).append("\n");
-                buf.append("  Column   : ").append(saxpex.getColumnNumber()).append("\n");
-                CAT.error(buf.toString());
-            }
+            StringBuffer      buf = new StringBuffer(100);
+            buf.append("Caught SAXParseException!\n");
+            buf.append("  Message  : ").append(ex.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(ex.getSystemId()).append("\n");
+            buf.append("  Line     : ").append(ex.getLineNumber()).append("\n");
+            buf.append("  Column   : ").append(ex.getColumnNumber()).append("\n");
+            CAT.error(buf.toString());
             throw ex;
         }
         Element rootElement = doc.getDocumentElement();

@@ -21,8 +21,6 @@ package de.schlund.pfixxml.targets;
 
 import java.util.*;
 
-import de.schlund.util.*;
-
 /**
  * Describe class <code>ProductIncludePart</code> here.
  *
@@ -101,8 +99,8 @@ public class ProductIncludePart extends AbstractDependency {
     public String toString() {
         String retval = "[AUXDEP: " + getType() + " " + getPath() + "@" + getPart() + "@" + getProduct() + "]\n";
         retval += "        -------------- Children: --------------\n";
-        TreeSet children = getChildren();
-        for (Iterator i = children.iterator(); i.hasNext(); ) {
+        TreeSet set = getChildren();
+        for (Iterator i = set.iterator(); i.hasNext(); ) {
             AuxDependency child = (AuxDependency) i.next();
             retval += "        " + "[AUXDEP: " + child.getType() + " " +
                 child.getPath() + "@" + child.getPart() + "@" + child.getProduct() + "]\n";

@@ -19,17 +19,12 @@
 
 package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import org.w3c.dom.*;
-import java.util.*;
 import de.schlund.pfixcore.workflow.Navigation.*;
 
 /**
