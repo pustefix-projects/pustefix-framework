@@ -339,6 +339,8 @@ XML_Writer.prototype.writeChars=function(chars) {
     this.xml+=">";
     this.inStart=false;
   }
+  chars=chars.replace(/&/,"&amp;");
+  chars=chars.replace(/</,"&lt;");
   this.xml+=chars;
 }
 
@@ -376,6 +378,12 @@ XML_Writer.prototype.getPrefix=function(nsuri) {
 
 
 //CONSTANTS
+
+var SOAP_ENCSTYLE_RPC="rpc";
+var SOAP_ENCSTYLE_DOCUMENT="document";
+var SOAP_ENCUSE_ENCODED="encoded";
+var SOAP_ENCUSE_LITERAL="literal";
+
 var SOAP_XSI_TYPE=new XML_QName(XML_NS_XSI,"type");
 var SOAP_ARRAY_TYPE=new XML_QName(XML_NS_SOAPENC,"arrayType");
 
@@ -405,12 +413,26 @@ SOAP_SerializeEx.extend(SOAP_Exception);
 
 
 //*********************************
+//SOAP_SerializeCtx
+//*********************************
+function SOAP_SerializeCtx() {
+  this.style=null;
+  this.use=null;
+}
+
+SOAP_SerializeCtx.prototype.setEncoding=function(style,use) {
+  this.style=style;
+  this.use=use;
+}
+
+
+//*********************************
 //SOAP_SimpleSerializer
 //*********************************
 function SOAP_SimpleSerializer() {
 }
-//serialize(value,name,typeInfo,writer)
-SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+//serialize(value,name,typeInfo,writer,ctx)
+SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   writer.startElement(name);
   var nsuri=typeInfo.xmlType.namespaceUri;
   var prefix=writer.currentCtx.getPrefix(nsuri);
@@ -418,8 +440,10 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
     prefix=writer.getPrefix(nsuri);
     writer.writeNamespaceDeclaration(nsuri);
   }
-  writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
-  writer.writeChars(value);
+  if(ctx.use==SOAP_ENCUSE_ENCODED) {
+    writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
+  }
+  writer.writeChars(""+value);
   writer.endElement(name);
 }
 //deserialize(typeInfo,element)
@@ -436,10 +460,10 @@ function SOAP_NumberSerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
 SOAP_NumberSerializer.extend(SOAP_SimpleSerializer);
-SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_NumberSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_NumberSerializer.serialize");
   if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_NumberSerializer.serialize");
-  this.superclass.serialize(value,name,typeInfo,writer);
+  this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_NumberSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
@@ -455,10 +479,10 @@ function SOAP_FloatSerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
 SOAP_FloatSerializer.extend(SOAP_SimpleSerializer);
-SOAP_FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(typeof value!="number") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_FloatSerializer.serialize");
   if(isNaN(value)) throw new SOAP_SerializeEx("Illegal value: "+value,"SOAP_FloatSerializer.serialize");
-  this.superclass.serialize(value,name,typeInfo,writer);
+  this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_FloatSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
@@ -474,9 +498,9 @@ function SOAP_StringSerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
 SOAP_StringSerializer.extend(SOAP_SimpleSerializer);
-SOAP_StringSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_StringSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(typeof value!="string") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_StringSerializer.serialize");
-  this.superclass.serialize(value,name,typeInfo,writer);
+  this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_StringSerializer.prototype.deserialize=function(typeInfo,element) {
   return this.superclass.deserialize.call(this,typeInfo,element);
@@ -490,9 +514,9 @@ function SOAP_BooleanSerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
 SOAP_BooleanSerializer.extend(SOAP_SimpleSerializer);
-SOAP_BooleanSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_BooleanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(typeof value!="boolean") throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_BooleanSerializer.serialize");
-  this.superclass.serialize(value,name,typeInfo,writer);
+  this.superclass.serialize(value,name,typeInfo,writer,ctx);
 }
 SOAP_BooleanSerializer.prototype.deserialize=function(typeInfo,element) {
   var str=this.superclass.deserialize.call(this,typeInfo,element);
@@ -534,13 +558,13 @@ SOAP_DateTimeSerializer.prototype.parseDate=function(dateStr) {
   date.setUTCMilliseconds(millis);
   return date;
 }
-SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_DateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   if(!(value instanceof Date)) throw new SOAP_SerializeEx("Illegal type: "+(typeof value),"SOAP_DateTimeSerializer.serialize");
   var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
     this.fillNulls(value.getUTCDate(),2)+"T"+this.fillNulls(value.getUTCHours(),2)+":"+
     this.fillNulls(value.getUTCMinutes(),2)+":"+this.fillNulls(value.getUTCSeconds(),2)+"."+
     this.fillNulls(value.getUTCMilliseconds(),3)+"Z";
-  this.superclass.serialize(date,name,typeInfo,writer);
+  this.superclass.serialize(date,name,typeInfo,writer,ctx);
 }
 SOAP_DateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
   var val=this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
@@ -554,12 +578,14 @@ function SOAP_ArraySerializer(xmlType) {
   SOAP_SimpleSerializer.call(this,xmlType);
 }
 SOAP_ArraySerializer.extend(SOAP_SimpleSerializer);
-SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer) {
+SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer,ctx) {
   if(dim>0 && value instanceof Array) {
     writer.startElement(name);
     if(dim==typeInfo.dimension) {
       var prefix=writer.getPrefix(XML_Types.SOAP_ARRAY.namespaceUri);
-      writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+XML_Types.SOAP_ARRAY.localpart);
+      if(ctx.use==SOAP_ENCUSE_ENCODED) {
+        writer.writeAttribute(SOAP_XSI_TYPE,prefix+":"+XML_Types.SOAP_ARRAY.localpart);
+      }
     }
     var dimStr="";
     for(var j=0;j<dim;j++) dimStr+="[]";
@@ -574,17 +600,17 @@ SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,wri
     
     writer.writeAttribute(SOAP_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.xmlType.localpart+dimStr);
     for(var i=0;i<value.length;i++) {
-      this.serializeSub(value[i],"item",typeInfo,dim-1,writer);
+      this.serializeSub(value[i],"item",typeInfo,dim-1,writer,ctx);
     }
     writer.endElement(name);
   } else {
     var serializer=SOAP_TypeMapping.getSerializerByInfo(typeInfo.arrayType);
-    serializer.serialize(value,name,typeInfo.arrayType,writer);
+    serializer.serialize(value,name,typeInfo.arrayType,writer,ctx);
   }
 }
 
-SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer) {
-  this.serializeSub(value,name,typeInfo,typeInfo.dimension,writer);
+SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
+  this.serializeSub(value,name,typeInfo,typeInfo.dimension,writer,ctx);
 }
 
 SOAP_ArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
@@ -622,7 +648,7 @@ function SOAP_BeanSerializer(type) {
   SOAP_SimpleSerializer.call(this,type);
 }
 SOAP_BeanSerializer.extend(SOAP_SimpleSerializer);
-SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   writer.startElement(name);
   for(var i=0;i<typeInfo.propNames.length;i++) {
     var propName=typeInfo.propNames[i];
@@ -630,7 +656,7 @@ SOAP_BeanSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
     var serializer=SOAP_TypeMapping.getSerializerByInfo(propInfo);
     var propVal=value[propName];
     if(propVal==undefined) throw new SOAP_SerializeEx("Missing bean property: "+propName,"SOAP_BeanSerializer.serialize");
-    serializer.serialize(propVal,propName,propInfo,writer);
+    serializer.serialize(propVal,propName,propInfo,writer,ctx);
   }
   writer.endElement(name);
 }
@@ -657,7 +683,7 @@ function SOAP_ElementSerializer(type) {
   SOAP_SimpleSerializer.call(this,type);
 }
 SOAP_ElementSerializer.extend(SOAP_SimpleSerializer);
-SOAP_ElementSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+SOAP_ElementSerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
   writer.startElement(name);
   this.serializeSub(value,writer);
   writer.endElement(name);
@@ -737,10 +763,11 @@ var SOAP_TypeMapping=new SOAP_TypeMapping();
 //*********************************
 // SOAP_RPCSerializer(XML_QName opName,ArrayOfParameter params,values,...)
 //*********************************
-function SOAP_RPCSerializer(opName,params,retTypeInfo) {
+function SOAP_RPCSerializer(opName,params,retTypeInfo,serCtx) {
   this.opName=opName;
   this.params=params;
   this.retTypeInfo=retTypeInfo;
+  this.serCtx=serCtx;
 }
 
 SOAP_RPCSerializer.prototype.serialize=function(writer) {
@@ -748,7 +775,7 @@ SOAP_RPCSerializer.prototype.serialize=function(writer) {
   writer.writeAttribute(new XML_QName(XML_NS_SOAPENV,"encodingStyle"),XML_NS_SOAPENC);
   for(var i=0;i<this.params.length;i++) {
     var serializer=SOAP_TypeMapping.getSerializerByInfo(this.params[i].typeInfo);
-    serializer.serialize(this.params[i].value,this.params[i].name,this.params[i].typeInfo,writer);
+    serializer.serialize(this.params[i].value,this.params[i].name,this.params[i].typeInfo,writer,this.serCtx);
   }
   writer.endElement(this.opName);
 }
@@ -804,6 +831,8 @@ function SOAP_Call() {
   this.userCallback=null;
   this.requestID=null;
   this.request=null;
+  this.style=null;
+  this.use=null;
 }
 
 //setTargetEndpointAddress(address)
@@ -811,6 +840,11 @@ SOAP_Call.prototype.setTargetEndpointAddress=function() {
   if(arguments.length==1) {
     this.endpoint=arguments[0];
   }
+}
+
+SOAP_Call.prototype.setEncoding=function(style,use) {
+  this.style=style;
+  this.use=use;
 }
 
 SOAP_Call.prototype.setUserCallback=function(cb) {
@@ -861,7 +895,10 @@ SOAP_Call.prototype.invoke=function() {
   }
   if(this.params.length!=arguments.length-ind) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Call.invoke");
   for(var i=0;i<this.params.length;i++) this.params[i].setValue(arguments[i+ind]);
-  var rpc=new SOAP_RPCSerializer(this.opName,this.params,this.retTypeInfo);
+  
+  var serCtx=new SOAP_SerializeCtx();
+  serCtx.setEncoding(this.style,this.use);
+  var rpc=new SOAP_RPCSerializer(this.opName,this.params,this.retTypeInfo,serCtx);
   
   var bodyElem=new SOAP_BodyElement(rpc);
   soapMsg.getSoapPart().getEnvelope().getBody().addBodyElement(bodyElem);

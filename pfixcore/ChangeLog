@@ -1,3 +1,23 @@
+2004-11-22  Martin Leidig  <mleidig@schlund.de>
+
+	Added client-side support of RPC/Literal encoding. Improved special
+	character handling.
+
+	* example/core/script/webservice.js: Encoding style and use now
+	can be set at SOAP_Call objects via the setEncoding() method. The
+	serialize() method of the serializer base class SOAP_SimpleSerializer 
+	and all derived classes now has an additional argument for passing
+	a SOAP_SerializeCtx object, which represents the current serialization
+	context and gives access to data needed during the serialization
+	process (like the encoding use). Also improved special character
+	handling: the XML_Writer method writeChars() now writes forbidden
+	characters as entities.
+
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java: Encoding
+	style and use information now is read from the WSDL description and
+	transformed into according SOAP_Call setEncoding() statements within
+	the webservice stub methods.
+
 2004-11-18  Jörg Häcker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java

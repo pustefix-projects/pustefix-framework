@@ -15,6 +15,7 @@ import javax.wsdl.xml.*;
 import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
+import javax.wsdl.extensions.soap.SOAPBody;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.*;
@@ -74,6 +75,29 @@ public class Wsdl2Js {
         return null;
     }
     
+    private SOAPBody getSOAPBody(BindingInput binding) {
+        Iterator it=binding.getExtensibilityElements().iterator();
+        while(it.hasNext()) {
+            ExtensibilityElement elem=(ExtensibilityElement)it.next();
+            if(elem instanceof SOAPBody) {
+                SOAPBody body=(SOAPBody)elem;
+                return body;
+            }
+        }
+        return null;
+    }
+    
+    private SOAPBody getSOAPBody(BindingOutput binding) {
+        Iterator it=binding.getExtensibilityElements().iterator();
+        while(it.hasNext()) {
+            ExtensibilityElement elem=(ExtensibilityElement)it.next();
+            if(elem instanceof SOAPBody) {
+                SOAPBody body=(SOAPBody)elem;
+                return body;
+            }
+        }
+        return null;
+    }
     
     
     
@@ -142,15 +166,21 @@ public class Wsdl2Js {
                     JsBlock block=jsClass.getConstructorBody();
                     block.addStatement(new JsStatement("this._setURL(\""+soapAdr.getLocationURI()+"\")"));
                     
-                    
                     Binding binding=port.getBinding();
-                    if(getSOAPBinding(binding)==null) throw new Exception("No soap binding found for binding "+binding.getQName());
+                    SOAPBinding soapBinding=getSOAPBinding(binding);
+                    if(soapBinding==null) throw new Exception("No soap binding found for binding "+binding.getQName());
+                    String style=soapBinding.getStyle();
+                    
                     PortType portType=binding.getPortType();
                     Iterator bopIt=binding.getBindingOperations().iterator();
                     while(bopIt.hasNext()) {
                         BindingOperation bop=(BindingOperation)bopIt.next();
                         Operation op=bop.getOperation();
                        
+                        SOAPBody soapBody=getSOAPBody(bop.getBindingInput());
+                        if(soapBody==null) throw new Exception("No soap binding found for operation "+bop.getName());
+                        String use=soapBody.getUse();
+                        
                         JsMethod jsMethod=new JsMethod(jsClass,op.getName());
                         jsClass.addMethod(jsMethod);
                        
@@ -169,6 +199,7 @@ public class Wsdl2Js {
                         JsBlock jsBlock=jsMethod.getBody();
                         jsBlock.addStatement(new JsStatement("var call=this._createCall()"));
                         jsBlock.addStatement(new JsStatement("this._extractCallback(call,arguments,"+jsMethod.getParams().length+")"));
+                        jsBlock.addStatement(new JsStatement("call.setEncoding(\""+style+"\",\""+use+"\")"));
                         jsBlock.addStatement(new JsStatement("call.setOperationName(\""+jsMethod.getName()+"\")"));
                         JsParam[] jsParams=jsMethod.getParams();
                         for(int i=0;i<jsParams.length;i++) {
