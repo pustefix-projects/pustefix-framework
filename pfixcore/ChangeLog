@@ -1,3 +1,7 @@
+2004-06-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: small cleanup
+
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
 	- simplified depend.xml: the following attributes have been dumped
 	  o docroot
