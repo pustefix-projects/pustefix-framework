@@ -140,7 +140,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean allowDebug = true;
     
     //~ Methods ....................................................................................
-
     /**
      * Init method of all servlets inheriting from AbstractXMLServers.
      * It calls super.init(Config) as a first step.
@@ -507,7 +506,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         preq.endLogEntry(et);
     }
     
-    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
+    private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
+        TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
         switch (rendering) {
         case RENDER_NORMAL:
             renderNormal(spdoc, res, paramhash, stylesheet);
@@ -530,7 +530,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         Xml.serialize(spdoc.getDocument(), res.getOutputStream(), true, true);
     }
 
-    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TargetGenerationException, IOException, TransformerException {
+    private void renderNormal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
+        TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
         stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
         if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
