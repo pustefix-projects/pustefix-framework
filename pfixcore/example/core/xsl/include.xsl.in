@@ -390,23 +390,10 @@
             <xsl:variable name="path">
               <xsl:value-of select="$src"/>
             </xsl:variable>
-            <xsl:variable name="parent_path">
-              <xsl:if test="/include_parts and not($__target_key='__NONE__')">
-                <xsl:value-of select="/include_parts/@incpath"/>
-              </xsl:if>
-            </xsl:variable>
-            <xsl:variable name="parent_part">
-              <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-                <xsl:value-of select="ancestor::part[position() = 1]/@name"/>
-              </xsl:if>
-            </xsl:variable>
-            <xsl:variable name="parent_product">
-              <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-                <xsl:value-of select="ancestor::product[position() = 1]/@name"/>
-              </xsl:if>
-            </xsl:variable>
+            <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
+            <xsl:variable name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:variable>
             <xsl:variable name="add_dep" select="runtime:log('image',string($src),'','',string($docroot),
-                          string($parent_path),string($parent_part),string($parent_product),
+                          string($parent_part),string($parent_product),
                           string($__target_gen),string($__target_key))"/>
             <xsl:variable name="width">
               <xsl:choose>

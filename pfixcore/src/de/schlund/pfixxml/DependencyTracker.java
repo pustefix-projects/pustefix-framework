@@ -26,51 +26,74 @@ import de.schlund.pfixxml.targets.*;
 
 import org.apache.log4j.Category;
 
+import net.sf.saxon.expr.XPathContext;
+
+import net.sf.saxon.om.NodeInfo;
+
+import org.w3c.dom.Document;
+
 
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
     /** xslt extension */
-    public static String log(String type, String path, String part, String product, String docroot,
-                             String parent_path, String parent_part, String parent_product,
+    public static String log(XPathContext context, String type,
+                             String path, String part, String product, String docroot,
+                             String parent_part_in, String parent_product_in,
                              String targetGen, String targetKey) throws Exception {
-        File targetFile = Path.create(docroot, targetGen).resolve();
-        TargetGenerator gen = TargetGeneratorFactory.getInstance().createGenerator(targetFile);
-		VirtualTarget target = (VirtualTarget) gen.getTarget(targetKey);
-		if (target == null) {
-	        CAT.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
-	        return "1";
-		}
-		if (path.length() == 0) {
-	        CAT.error("Error adding Dependency: empty path"); 
-	        return "1"; 
-		}
-		Path relativePath = relative(docroot, path);
-		if (relativePath == null) {
-	        CAT.error("Error adding Dependency: missing src attribute (docroot=" + docroot + ", path=" + path + ")"); 
-			return "1";
-		}
+
+        if (targetKey.equals("__NONE__")) {
+            return "0";
+        }
+
+        String parent_path    = "";
+        String parent_part    = "";
+        String parent_product = "";
+
+        NodeInfo citem = (NodeInfo) context.getContextItem();
+        if (((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts")) {
+            parent_path     = ((NodeInfo) context.getContextItem()).getSystemId();
+            parent_part     = parent_part_in;
+            parent_product  = parent_product_in;
+        }
+        
+        File            targetFile = Path.create(docroot, targetGen).resolve();
+        TargetGenerator gen        = TargetGeneratorFactory.getInstance().createGenerator(targetFile);
+        VirtualTarget   target     = (VirtualTarget) gen.getTarget(targetKey);
+        if (target == null) {
+            CAT.error("Error adding Dependency: target not found (targetGen=" + targetGen + ", targetKey=" + targetKey + ")");
+            return "1";
+        }
+        if (path.length() == 0) {
+            CAT.error("Error adding Dependency: empty path"); 
+            return "1"; 
+        }
+        Path relativePath = relative(docroot, path);
+        if (relativePath == null) {
+            CAT.error("Error adding Dependency: missing src attribute (docroot=" + docroot + ", path=" + path + ")"); 
+            return "1";
+        }
         try {
-    		logTyped(type, relativePath, part, product, relative(docroot, parent_path), parent_part, parent_product, target);
-    		return "0";
+            logTyped(type, relativePath, part, product, relative(docroot, parent_path), parent_part, parent_product, target);
+            return "0";
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 
             return "1"; 
         }
     }
-
+    
     private static Path relative(String docroot, String path) {
-		if (path.startsWith(File.separator)) {
-			path = path.substring(1); // TODO: kind of ugly - fix gif src attributes instead!!
-		} 
-		return Path.createOpt(docroot, path);
-	}
-
+        if (path.startsWith(File.separator)) {
+            path = path.substring(1); // TODO: kind of ugly - fix gif src attributes instead!!
+        } 
+        return Path.createOpt(docroot, path);
+    }
+    
     public static void logTyped(String type,Path path, String part, String product,
                                 Path parent_path, String parent_part, String parent_product,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
-        	String targetGen = target.getTargetGenerator().getConfigname();
+            String targetGen = target.getTargetGenerator().getConfigname();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type        = " + type + "\n" +
                       "Path        = " + path.getRelative() + "\n" +
