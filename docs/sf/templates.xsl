@@ -79,6 +79,7 @@
     <xsl:param name="col">
       <xsl:choose>
         <xsl:when test="starts-with(name(),'xsl:')">tagxsl</xsl:when>
+        <xsl:when test="starts-with(name(),'cus:')">tagcus</xsl:when>
         <xsl:when test="starts-with(name(),'ixsl:')">tagixsl</xsl:when>
         <xsl:when test="starts-with(name(),'pfx:')">tagpfx</xsl:when>
         <xsl:otherwise>tagother</xsl:otherwise>

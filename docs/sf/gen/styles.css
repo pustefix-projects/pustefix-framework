@@ -81,6 +81,7 @@ h2 {
 .xmlcode { margin: 10px; background-color: white;}
 .ltgt    { color: #ff0000; }
 .tagxsl  { color: #dd0000; }
+.tagcus  { color: #990066; }
 .tagixsl { color: #cc44aa; }
 .tagpfx  { color: #0000aa; }
 .tagother{ color: #ffaa44; }
