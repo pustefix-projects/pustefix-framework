@@ -128,6 +128,12 @@
       <lang name="default">The value of counter is already greater 5! Beware! (Counter value is <pfx:argref pos="1"/>)</lang>
     </product>
   </part>
+  <part name="pfixcore.example.counter.WARN_GREATER_9">
+    <product name="default">
+      <lang name="default">The value of counter is already greater 9! You can't continue with this.
+        (Counter value is <pfx:argref pos="1"/>)</lang>
+    </product>
+  </part>
   <part name="pfixcore.example.home.AGE_MISSING">
     <product name="default">
       <lang name="default">Please tell me if you're old enough.</lang>
@@ -215,6 +221,11 @@
   </part>
 
   <!-- please note that level names in part names are _always_ lowercase -->
+  <part name="pfixcore.pagemessages.level.error">
+    <product name="default">
+      <lang name="default">ERROR:</lang>
+    </product>
+  </part>
   <part name="pfixcore.pagemessages.level.info">
     <product name="default">
       <lang name="default">NOTE:</lang>

@@ -83,7 +83,7 @@ public class Context implements AppContext {
     private boolean            on_jumptopage;
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
-
+    
     private HashMap messageSCodes      = new HashMap();
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
@@ -125,7 +125,7 @@ public class Context implements AppContext {
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
         startwithflow              = false;
-
+        
         if (needs_update) {
             do_update();
         }
@@ -566,13 +566,13 @@ public class Context implements AppContext {
             }
 
             resdoc = documentFromCurrentStep();
-            if (resdoc.wantsContinue() &&
+            if (resdoc.wantsContinue() && !pageMessageIsError() &&
                 currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest);
                 step.applyActionsOnContinue(this, resdoc);
             }
 
-            if (!resdoc.wantsContinue()) {
+            if (!resdoc.wantsContinue() || pageMessageIsError()) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
             } else if (jumptopagerequest != null) {
@@ -861,12 +861,13 @@ public class Context implements AppContext {
 
                 Iterator iter = messageSCodes.keySet().iterator();
                 while (iter.hasNext()) {
-                    StatusCode scode        = (StatusCode) iter.next();
-                    List       levelAndArgs = (List) messageSCodes.get(scode);
-                    String     level        = (String)   levelAndArgs.remove(0);
-                    String[]   args         = (String[]) levelAndArgs.toArray(new String[0]);
-                    Element    msg          = doc.createElement("message");
-                    Element    inc          = ResultDocument.createIncludeFromStatusCode(doc, properties, scode, args);
+                    PageMessage pm           = (PageMessage) iter.next();
+                    StatusCode  scode        = pm.getStatusCode();
+                    List        levelAndArgs = (List) messageSCodes.get(pm);
+                    String      level        = (String)   levelAndArgs.remove(0);
+                    String[]    args         = (String[]) levelAndArgs.toArray(new String[0]);
+                    Element     msg          = doc.createElement("message");
+                    Element     inc          = ResultDocument.createIncludeFromStatusCode(doc, properties, scode, args);
                     msg.setAttribute("level", level);
                     msg.appendChild(inc);
                     messagesElem.appendChild(msg);
@@ -931,7 +932,16 @@ public class Context implements AppContext {
         return currentpreq.getLastException();
     }
 
-
+    public boolean pageMessageIsError() {
+        for (Iterator iter = messageSCodes.keySet().iterator(); iter.hasNext();) {
+            PageMessage pm = (PageMessage) iter.next();
+            if (pm.isError()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
      * as it accesses a non-thread-safe field of this class.
@@ -943,8 +953,8 @@ public class Context implements AppContext {
      * the request. If it's null, nothing will be stored in the request.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
      */
-    public void addPageMessage(StatusCode scode) {
-        addPageMessage(scode, null, null);
+    public void addPageMessage(StatusCode scode, boolean isError) {
+        addPageMessage(scode, null, null, isError);
     }
 
     /**
@@ -959,8 +969,8 @@ public class Context implements AppContext {
      * @param level the level associated with the specified <code>StatusCode</code>.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
      */
-    public void addPageMessage(StatusCode scode, String level) {
-        addPageMessage(scode, level, null);
+    public void addPageMessage(StatusCode scode, String level, boolean isError) {
+        addPageMessage(scode, level, null, isError);
     }
 
     /**
@@ -975,7 +985,7 @@ public class Context implements AppContext {
      * is <code>null</code> or an empty String, the value of
      * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
      */
-    public void addPageMessage(StatusCode scode, String level, String[] args) {
+    public void addPageMessage(StatusCode scode, String level, String[] args, boolean isError) {
         if (scode == null)
             return;
         
@@ -987,6 +997,24 @@ public class Context implements AppContext {
         if (args != null)
             list.addAll(Arrays.asList(args));
         
-        messageSCodes.put(scode, list);
+        messageSCodes.put(new PageMessage(scode, isError), list);
+    }
+
+    private class PageMessage {
+        StatusCode scode;
+        boolean    isError;
+
+        PageMessage(StatusCode scode, boolean isError) {
+            this.scode   = scode;
+            this.isError = isError;
+        }
+
+        StatusCode getStatusCode() {
+            return scode;
+        }
+        
+        boolean isError() {
+            return isError;            
+        }
     }
 }
