@@ -5,7 +5,7 @@
   <id>pfixcore</id>
   <name>Pustefix Core</name>
   <groupId>pustefix</groupId>
-  <currentVersion>0.8.0</currentVersion>
+  <currentVersion>0.8.1-pre</currentVersion>
   <organization>
     <name>The Pustefix Group</name>
     <url>http://sourceforge.net</url>
