@@ -894,7 +894,7 @@
         <xsl:with-param name="type" select="$type"/>
         <xsl:with-param name="docroot" select="$docroot"/>
       </xsl:call-template>
-  
+      
       <ixsl:choose>
         <ixsl:when test="/formresult/current{$type}info/lockinguser/user">
           <xsl:call-template name="handleuserlock">
@@ -949,6 +949,11 @@
     </ixsl:variable>
     <ixsl:choose>
       <ixsl:when test="$forbidden_inc = ''">
+        <xsl:call-template name="show_upload">
+          <xsl:with-param name="upload" select="$upload"/>
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
+        <br/>
         <ixsl:choose>
           <ixsl:when test="/formresult/currentincludeinfo/@product='default'">
             <xsl:call-template name="create_specific_branch">
@@ -962,10 +967,6 @@
             </xsl:call-template>
           </ixsl:otherwise>
         </ixsl:choose>
-        <xsl:call-template name="show_upload">
-          <xsl:with-param name="upload" select="$upload"/>
-          <xsl:with-param name="type" select="$type"/>
-        </xsl:call-template>
       </ixsl:when>
       <ixsl:otherwise>
         <ixsl:choose>
@@ -1020,12 +1021,13 @@
             <ixsl:when test="$edit_dyn_default = 'true'">
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
-                  <xsl:call-template name="create_specific_branch">
-                    <xsl:with-param name="upload" select="$upload"/>
-                  </xsl:call-template>
                   <xsl:call-template name="show_upload">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                  <br/>
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
                   </xsl:call-template>
                 </ixsl:when>
                 <ixsl:otherwise><!-- edit_dyn_currprj != 'true' --> 
@@ -1057,11 +1059,12 @@
             <ixsl:when test="$edit_dyn_default = 'true'">
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
-                  <xsl:call-template name="handle_specific_branch">
+                  <xsl:call-template name="show_upload">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
-                  <xsl:call-template name="show_upload">
+                  <br/>
+                  <xsl:call-template name="handle_specific_branch">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
@@ -1074,11 +1077,12 @@
             <ixsl:otherwise> <!-- $edit_dyn_default != 'true' -->
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
-                  <xsl:call-template name="handle_specific_branch">
+                  <xsl:call-template name="show_upload">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
-                  <xsl:call-template name="show_upload">
+                  <br/>
+                  <xsl:call-template name="handle_specific_branch">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
@@ -1152,17 +1156,47 @@
     <xsl:param name="upload"/>
     <xsl:param name="type"/>
     <pfx:checkactive prefix="{$upload}">
-      <input type="hidden" value="{$upload}.Content" name="upload"/>
-      <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
-      <input type="hidden" name="visible" value="true"/>
-      <xsl:call-template name="applet_show"/>
-      <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
-        <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-        <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
-      </pfx:xinp>
-      <ixsl:if test="/formresult/current{$type}info/backup/option">
-        <br/>
-        <table class="editor_box" width="100%">
+      <br/>
+      <table class="editor_box" width="100%">
+        <tr>
+          <td colspan="2" align="right">
+            <div id="wfxtb01" style="border:1px solid black"></div>
+            <table cellpadding="0" cellspacing="0" width="100%" border="0">
+              <tbody>
+                <tr>
+                  <td width="50"><iframe id="wfxline01" frameborder="0" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left" src="about:blank" scrolling="no"></iframe></td>
+                  <td><iframe id="wfxedit01" frameborder="0" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right" src="about:blank" scrolling="yes"></iframe></td>
+                </tr>
+              </tbody>
+            </table>
+            <br />
+            <input class="editor_submit" type="button" value="Upload Data" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" />
+            <br />
+            <div style="display:none">
+              Line: <input type="text" id="wfxed_line" size="3" value="" />
+              Scroll: <input type="text" id="wfxed_column" size="3" value="" />
+              Message: <input type="text" id="wfxed_msg" size="100" value="" />
+              <br />
+              <textarea id="ta_src" rows="10" cols="130" style="display:none"></textarea>
+              <textarea id="ta_col" rows="10" cols="130" style="display:none"></textarea>
+							<textarea id="dbg" rows="25" cols="130" style="display:none"></textarea>
+              <br />
+              <pfx:xinp class="editor_textarea" wrap="off" type="area" id="wfxta01" name="{$upload}.Content"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" align="right">
+            <pfx:xinp class="editor_submit"  type="submit" id="wfxsubmit01" name="Upload Data" value="Upload Data" style="display:none">
+              <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+              <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
+              </pfx:xinp>
+          </td>
+        </tr>
+        <ixsl:if test="/formresult/current{$type}info/backup/option">
+          <tr>
+            <td colspan="2"><hr/></td>
+          </tr>
           <tr valign="top">
             <td>
               If you want to return to a previous version of the include, select one of the backups below.
@@ -1176,29 +1210,12 @@
               </pfx:xinp>
             </td>
           </tr>
-        </table>
-      </ixsl:if>
+        </ixsl:if>
+      </table>
     </pfx:checkactive>
   </xsl:template>
 
 
-
-  <xsl:template name="applet_hide">
-    <pfx:script>
-      if (parent.parent.frames.appLoad == true) {
-        parent.parent.frames["applet"].hideApplet();
-      }
-    </pfx:script>
-  </xsl:template>
-
-  <xsl:template name="applet_show">
-    <pfx:script>
-      if (parent.parent.frames.appLoad == true) {
-        parent.parent.frames["applet"].showApplet();
-      }
-    </pfx:script>
-  </xsl:template>
- 
   
   <xsl:template name="handleformerrors">
     <xsl:param name="select"/>
@@ -1261,7 +1278,6 @@
             (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
             <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
             <input type="hidden" name="visible" value="false"/>
-            <xsl:call-template name="applet_hide"/>
           </td>
         </tr>
       </ixsl:if>
@@ -1343,11 +1359,8 @@
 
   <xsl:template name="include_perm_denied">
     <xsl:param name="type"/>
-      <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
-      <xsl:call-template name="applet_hide"/>
+    <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
   </xsl:template>
-  
-
   
   <xsl:template match="displayimagedetails">
     <ixsl:if test="/formresult/currentimageinfo">

@@ -1,11 +1,5 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="xmlserver.prohibitdebug">true</prop>
-  <prop name="xmlserver.prohibitinfo">true</prop>
-
-  <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
-  <prop name="sessioncleaner.timeout">10</prop>
-  
   <servletinfo depend="core/editor/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
     <editmode allow="false"/>
   </servletinfo>
@@ -192,18 +186,10 @@
   </pagerequest>
 
 
-  <pagerequest name="AppletInfo">
+  <prop name="xmlserver.prohibitdebug">false</prop>
+  <prop name="xmlserver.prohibitinfo">false</prop>
 
-    <state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
-    <finalizer class="de.schlund.pfixcore.editor.handlers.AppletInfoFinalizer"/>
-    
-  </pagerequest>
-
+  <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
+  <prop name="sessioncleaner.timeout">10</prop>
   
 </properties>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -34,7 +34,7 @@
   <part name="welcome">
     <product name="default">
       <lang name="default">
-        <h1>Pustefix Contentmanagement System</h1>
+        <h1>Pustefix Content Management System</h1>
         <p>
          Please use the menubar to go to the different sections of the CMS.
         </p>

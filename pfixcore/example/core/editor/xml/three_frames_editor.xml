@@ -40,11 +40,15 @@
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
               </style>
+              <script type="text/javascript" src="/core/script/wfx.js"></script>
+              <script type="text/javascript" src="/core/script/wfxToolbar.js"></script>
+              <script type="text/javascript" src="/core/script/wfxEditor.js"></script>
+              <script type="text/javascript" src="/core/script/wfxhere.js"></script>
             </head>
-            <body>
+            <body onload="wfxinit()">
               <div style="padding-left: 10px; padding-right: 10px;">
                 <pfx:maincontent path="core/editor/txt/pages" prefix="main_" 
-                  part="content"/>
+                                 part="content"/>
               </div>
             </body>
           </html>

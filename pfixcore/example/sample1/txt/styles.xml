@@ -4,7 +4,7 @@
   <part name="standard">
     <product name="default">
       <lang name="default">
-        <!-- Put application specific CSS here -->
+
         .core_errorbox_table  { border-width: 1px; border-color: #000000; 
                                 border-style: solid; }
         
@@ -38,16 +38,8 @@
 
         .boxed    { border-width: 1px; border-color: #000000; border-style: solid; } 
 
-        .layer    { background-color: #ddccaa; padding: 5px; border: 1px outset threeDFace;
-                    position: absolute; min-width: 100px; }
-        
       </lang>
     </product>
-    
   </part>
 
-</include_parts><!--
-Local Variables:
-mode: xml
-End:
--->
+</include_parts>

@@ -1,3 +1,29 @@
+2004-07-07  Jens Lautenbacher  <jtl@schlund.de>, Andreas Ecker <ae@schlund.de>
+
+	The new javascript based editing area has landed.
+	
+	* example/core/script/xmlEditorApplet.jar
+	* example/core/editor/xml/three_frames_applet.xml
+	* example/core/editor/txt/pages/main_AppletInfo.xml
+	* editorapplet/* Removed.
+
+	* example/core/editor/xml/three_frames_editor.xml
+	* example/core/img/editor/ed_blank.gif
+	* example/core/img/editor/ed_copy.gif
+	* example/core/img/editor/ed_cut.gif
+	* example/core/img/editor/ed_paste.gif
+	* example/core/img/editor/ed_redo.gif
+	* example/core/img/editor/ed_undo.gif
+	* example/core/img/editor/p.gif
+	* example/core/script/wfx.js
+	* example/core/script/wfxEditor.js
+	* example/core/script/wfxToolbar.js
+	* example/core/script/wfxUnselectable.js
+	* example/core/script/wfxhere.js Added.
+
+	Poked into quite a lot of xml files while testing the reindenting
+	features of the new editor...
+
 2004-07-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.6.5-pre

@@ -3,10 +3,10 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <center><b>SSL TEST</b><br/>
-          <br/><pfx:button page="home">Home</pfx:button>
-        </center>
-      </lang>
+  <center><b>SSL TEST</b><br/>
+    <br/><pfx:button page="home">Home</pfx:button>
+  </center>
+</lang>
     </product>
   </part>
 </include_parts>
