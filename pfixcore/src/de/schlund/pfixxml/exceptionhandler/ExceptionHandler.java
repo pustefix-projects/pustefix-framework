@@ -117,8 +117,7 @@ public class ExceptionHandler implements FactoryInit {
      * and <see>PFXThreadHandler#doit</see> method.
      */
     public void init(Properties properties) {
-        PFUtil.getInstance().debug(
-                "ExceptionHandler.init called from FactoryInit.");
+        PFUtil.getInstance().debug("ExceptionHandler.init called from FactoryInit.");
         propfile_= properties.getProperty(PROP_FILE_, "");
         try {
             propman_.init(propfile_);
@@ -128,10 +127,10 @@ public class ExceptionHandler implements FactoryInit {
             xhandler_.doIt();
         } catch(PFConfigurationException e) {
             // This should never happen
-            PFUtil.getInstance().fatal(
-                    "Configuration of exceptionhandler failed: " + 
-                    e.getMessage() + " reason: " + 
-                    e.getExceptionCause().getClass()+":"+e.getExceptionCause().getMessage());
+            PFUtil.getInstance().fatal("Configuration of exceptionhandler failed: " + 
+                                       e.getMessage() + " reason: " + 
+                                       e.getExceptionCause().getClass() + ":" +
+                                       e.getExceptionCause().getMessage());
             xhandler_.setErrorFlag(true);
             xhandler_.doIt();
             return;

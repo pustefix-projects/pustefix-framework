@@ -21,6 +21,7 @@ package de.schlund.pfixxml.targets;
 
 import java.io.File;
 import java.util.*;
+import de.schlund.pfixxml.util.Path;
 
 /**
  * Additional dependency besides XML and XSL source. 

@@ -1,25 +1,15 @@
 package de.schlund.pfixxml.testenv;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
+
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.util.*;
+import java.io.*;
+import javax.servlet.http.*;
 import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.SPDocument;
 
 /**
  * The purpose of this class is to log
@@ -35,7 +25,6 @@ public final class RecordManager {
     //~ Instance/static variables ..................................................................
 
     private static Category CAT = Category.getInstance(RecordManager.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static final String SESS_RECORDMODE_DIR = "__RECORDMODE__";
     private static final String SESS_RECORD_COUNTER = "__RECORDCOUNT__";
     private static final String ATTR_RECORDDIR = "record_dir";
@@ -50,13 +39,6 @@ public final class RecordManager {
     /** store the flag if recording is allowed here */
     private boolean recordAllowed = false;
 
-    //~ Initializers ...............................................................................
-
-    static {
-        dbfac.setNamespaceAware(true);
-        dbfac.setValidating(false);
-    }
-
     //~ Constructors ...............................................................................
 
     /**
@@ -64,12 +46,11 @@ public final class RecordManager {
      * @param path to file with configuration data. Mostly this
      * is the path to the dependeny configuration file in your project.
      */
-    RecordManager(String depxml) throws ParserConfigurationException, SAXException, IOException  {
+    RecordManager(Path depxml) throws SAXException, IOException  {
         if (CAT.isDebugEnabled()) {
             CAT.debug(this.getClass().getName() + " initializing");
         }
-        DocumentBuilder db = dbfac.newDocumentBuilder();
-        Document doc = db.parse(depxml);
+        Document doc = Xml.parseMutable(depxml.resolve());
         getConfigFromXML(doc);
         debug("RecordManager constructor end");
     }
@@ -281,7 +262,7 @@ public final class RecordManager {
         Node input_node = doPFServletRequesttoXML(uri, pfix_servlet_request);
         Node output_node = doSPDocumenttoXML(result_document);
         Node stylesheet_node = doDefaultStylesheettoXML();
-        Document doc = createDocument();
+        Document doc = Xml.createDocument();
         Element step = doc.createElement("step");
         doc.appendChild(step);
         Node imp1 = doc.importNode(input_node, true);
@@ -302,7 +283,7 @@ public final class RecordManager {
             file = new File(new_filename);
         }
         try {
-            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getAbsolutePath(), 2, false);
+            Xml.serialize(doc, file.getAbsolutePath(), true, true);
         } catch (FileNotFoundException e) {
             throw new RecordManagerException("Unable to serialize! File not found.", e);
         } catch (IOException e) {
@@ -327,7 +308,7 @@ public final class RecordManager {
      * @return a Node containing the generated XML
      */
     private Node doPFServletRequesttoXML(String uri, PfixServletRequest pfreq) {
-        Document doc = createDocument();
+        Document doc = Xml.createDocument();
         Element ele = doc.createElement("request");
 
         String new_uri = uri.substring(0, uri.indexOf(';'));
@@ -371,18 +352,10 @@ public final class RecordManager {
      * @return a Node containing the generated XML
      */
     private Node doDefaultStylesheettoXML() {
-        Document doc = createDocument();
+        Document doc = Xml.createDocument();
         Element ele = doc.createElement("stylesheet");
         Text text = doc.createTextNode(DEFAULT_STYLESHEET);
         ele.appendChild(text);
         return ele;
-    }
-    
-    private static Document createDocument() {
-        try {
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -13,9 +13,6 @@
     <li>The config files for every <b>webapp</b> (each project is mapped to a webapp):<br/>
       <code>servletconf/tomcat/webapps/[project name]/WEB-INF/web.xml</code>
     </li>
-    <li>The config file that tells the <a href="editor.html"><pustefix/> editor</a> about all the projects that
-      can be edited in your environment:<br/>
-      <code>common/conf/products.prj</code></li>
   </ul>
 
   <p>This information is contained in a site wide file

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
@@ -141,8 +140,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                 throw new TargetGenerationException(e1.getClass().getName()+" in getModTimeMaybeUpdate()!", e1);
             } catch(XMLException e2) {
                 throw new TargetGenerationException(e2.getClass().getName()+"  in getModTimeMaybeUpdate()", e2);
-            } catch (ParserConfigurationException e3) {
-                throw new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
             }
             
 
@@ -165,10 +162,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                 throw tex;
             } catch(XMLException e2) {
                 TargetGenerationException tex =  new TargetGenerationException(e2.getClass().getName()+" in getModTimeMayUpdate()", e2);
-                tex.setTargetkey(getTargetKey());
-                throw tex;
-            } catch (ParserConfigurationException e3) {
-                TargetGenerationException tex =  new TargetGenerationException(e3.getClass().getName()+" in getModTimeMaybeUpdate()", e3);
                 tex.setTargetkey(getTargetKey());
                 throw tex;
             }
@@ -234,7 +227,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // newer any more, so set the mod time of the target to the mod time of the
                     // file in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
-                        setModTime(new File(getTargetGenerator().getDisccachedir() + getTargetKey()).lastModified());
+                        setModTime(new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey()).lastModified());
                     }
 
                     // now the target is generated
@@ -250,8 +243,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
      */
     public int compareTo(Object inobj) {
         Target in = (Target) inobj;
-        if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {
-            return getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname());
+        if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
+            return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {
             return getTargetKey().compareTo(in.getTargetKey());
         }
@@ -260,10 +253,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     
     public boolean isDiskCacheNewerThenMemCache() {
         long target_mod_time = getModTime();
-        File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         long disk_mod_time = thefile.lastModified();
         if (CAT.isDebugEnabled()) {
-            CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir()
+            CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + File.separator
                     + getTargetKey() + " (" + disk_mod_time + ") is "
                     + (disk_mod_time > target_mod_time ? " newer " : "older")
                     + " than target(" + target_mod_time + ")");
@@ -281,7 +274,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected abstract Object getValueFromDiscCache() throws TransformerException;
 
     protected abstract long getModTimeMaybeUpdate()
-        throws TargetGenerationException, XMLException, ParserConfigurationException, IOException;
+        throws TargetGenerationException, XMLException, IOException;
 
     protected abstract void setModTime(long mtime);
    

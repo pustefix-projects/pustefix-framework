@@ -20,15 +20,15 @@
 package de.schlund.pfixcore.editor;
 import java.io.*;
 import java.util.*;
-import javax.xml.parsers.*;
 import javax.xml.transform.TransformerException;
 
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import org.apache.log4j.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
 
 /**
@@ -45,7 +45,6 @@ import org.w3c.dom.*;
 
 public class EditorHelper {
     private static Category CAT = Category.getInstance(EditorHelper.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static String EDITOR_PERF = "EDITOR_PERF";
     private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
     
@@ -108,7 +107,7 @@ public class EditorHelper {
         if (!incfile.exists()) {
             CAT.debug("===> Going to create " + path.getRelative());
             if (incfile.createNewFile()) {
-                Document skel = dbfac.newDocumentBuilder().newDocument();
+                Document skel = Xml.createDocument();
                 Element root = skel.createElement("include_parts");
                 if (nspaces != null) {
                     for (int i = 0; i < nspaces.length; i++) {
@@ -117,13 +116,7 @@ public class EditorHelper {
                 }
                 skel.appendChild(root);
                 root.appendChild(skel.createComment("Append include parts here..."));
-                FileOutputStream output = new FileOutputStream(incfile);
-                OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                XMLSerializer ser = new XMLSerializer(output, outfor);
-                outfor.setPreserveSpace(true);
-                outfor.setIndent(0);
-                ser.serialize(skel);
-                // CAT.debug("==========> Modtime for file is: " + incfile.lastModified());
+                Xml.serialize(skel, incfile, false, true);
             } else {
                 throw new XMLException("Couldn't generate new file " + path.getRelative());
             }
@@ -179,12 +172,7 @@ public class EditorHelper {
         File file = constructBackupFile(ess, inc);
         if (file != null) {
             try {
-                FileOutputStream output = new FileOutputStream(file);
-                OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
-                XMLSerializer ser = new XMLSerializer(output, outfor);
-                outfor.setPreserveSpace(true);
-                outfor.setIndent(0);
-                ser.serialize((Element) tosave);
+                Xml.serialize((Element) tosave, file, false, true);
             } catch (Exception e) {
                 CAT.warn("Couldn't serialize into backup file " + file.getAbsolutePath());
             }
@@ -222,8 +210,7 @@ public class EditorHelper {
         String name = constructBackupDir(ess, inc) + "/" + filename;
         File file = new File(name);
         if (file.exists() && file.canRead() && file.isFile()) {
-            DocumentBuilder domp = dbfac.newDocumentBuilder();
-            Document doc = domp.parse(file);
+            Document doc = Xml.parseMutable(file);
             if (kill) {
                 file.delete();
             }
@@ -316,7 +303,6 @@ public class EditorHelper {
         if (include.getType() != DependencyType.TEXT) {
             throw new XMLException("Dependency is not of Type TEXT");
         }
-        String docroot = tgen.getDocroot();
         Path path = include.getPath();
 
         //String name = path.substring(docroot.length());
@@ -328,11 +314,10 @@ public class EditorHelper {
         CAT.debug("==========> After reset: Modtime for IncludeDocument: " + includeDocument.getModTime());
     }
 
-    public static Document getIncludeDocument(TargetGenerator tgen, AuxDependency include, boolean mutable) throws Exception {
+    public static Document getIncludeDocument(TargetGenerator tgen, AuxDependency include) throws Exception {
         if (include.getType() != DependencyType.TEXT) {
             throw new XMLException("Dependency is not of Type TEXT");
         }
-        String docroot = tgen.getDocroot();
         Path path = include.getPath();
         File file = path.resolve();
         if (!file.exists()) {
@@ -342,15 +327,8 @@ public class EditorHelper {
         Object LOCK = FileLockFactory.getInstance().getLockObj(path);
         synchronized (LOCK) {
             Document doc = null;
-            if (!mutable) {
-                IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
-                doc = iDoc.getDocument();
-            } else {
-                IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, true);
-                doc = (Document) iDoc.getDocument().cloneNode(true);
-                Element root = doc.getDocumentElement();
-                root.removeAttribute("incpath");
-            }
+            IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+            doc = iDoc.getDocument();
             return doc;
         }
     }
@@ -358,18 +336,11 @@ public class EditorHelper {
     public static Element getIncludePart(Document doc, AuxDependency include) throws Exception {
         String part = include.getPart();
         Path path = include.getPath();
-        NodeList nl = XPathAPI.selectNodeList(doc, "/include_parts/part[@name = '" + part + "']");
-        if (nl.getLength() == 0) {
-            return null;
-        } else if (nl.getLength() == 1) {
-            return (Element) nl.item(0);
-        } else {
-            throw new XMLException("FATAL: Part " + part + " in include file " + path.getRelative() + " is multiple times defined!");
-        }
+        return (Element) XPath.selectNode(doc, "/include_parts/part[@name = '" + part + "']");
     }
 
     public static Element getIncludePart(TargetGenerator tgen, AuxDependency include) throws Exception {
-        Document doc = getIncludeDocument(tgen, include, true);
+        Document doc = getIncludeDocument(tgen, include);
         if (doc == null) {
             return null;
         } else {
@@ -386,11 +357,11 @@ public class EditorHelper {
         if (elem == null)
             return;
 
-        NodeList nl = XPathAPI.selectNodeList(elem, "./product");
+        List nl = XPath.select(elem, "./product");
         HashSet affedprod = new HashSet();
 
-        for (int i = 0; i < nl.getLength(); i++) {
-            Element tmp = (Element) nl.item(i);
+        for (int i = 0; i < nl.size(); i++) {
+            Element tmp = (Element) nl.get(i);
             String prod = tmp.getAttribute("name");
             if (prod == null)
                 continue;
@@ -435,21 +406,19 @@ public class EditorHelper {
     }
 
     public static void renderTargetContent(Target target, ResultDocument resdoc, Element root) {
-        String key = target.getTargetKey();
-        String cache = target.getTargetGenerator().getDisccachedir();
-        String path = target.getTargetGenerator().getDocroot();
-        TargetType type = target.getType();
-        String filename;
+        String     key     = target.getTargetKey();
+        Path       cache   = target.getTargetGenerator().getDisccachedir();
+        TargetType type    = target.getType();
+        Path       file;
 
         if (type == TargetType.XML_LEAF || type == TargetType.XSL_LEAF) {
-            filename = path + key;
+            file = PathFactory.getInstance().createPath(key);
         } else {
-            filename = cache + key;
+            file = PathFactory.getInstance().createPath(cache.getRelative() + File.separator + key);
         }
 
         try {
-            DocumentBuilder domp = dbfac.newDocumentBuilder();
-            Document cdoc = domp.parse(filename);
+            Document cdoc = Xml.parseMutable(file.resolve());
             Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {
@@ -624,7 +593,6 @@ public class EditorHelper {
     public static void renderIncludesForAppletInfo(TargetGenerator tgen, TreeSet includes, ResultDocument resdoc, Element root) {
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
-            String docroot = tgen.getDocroot();
             Path path = curr.getPath();
             String dir = path.getDir();
             String part = curr.getPart();

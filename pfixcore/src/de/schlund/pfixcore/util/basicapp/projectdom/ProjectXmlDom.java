@@ -94,7 +94,7 @@ public final class ProjectXmlDom {
                 buffy.toString(), /*true if firstChild ->*/ true);
         buffy.setLength(0);
         
-        // change the contend of the defpath tag
+        // change the content of the defpath tag
         String defServletHandler = ((ServletObject)(project.getServletList().get(0))).getServletName();
         buffy.append(AppValues.XMLCONSTANT);
         buffy.append(defServletHandler);

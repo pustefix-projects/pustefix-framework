@@ -18,32 +18,20 @@
 */
 package de.schlund.pfixcore.editor;
 
-import de.schlund.pfixcore.workflow.Navigation;
-import de.schlund.pfixcore.workflow.NavigationFactory;
 
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
+
+
+
+
+import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.*;
 import de.schlund.util.FactoryInit;
-
-import java.io.File;
-import java.io.FileInputStream;
-
-import java.util.Properties;
-import java.util.TreeMap;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import java.util.*;
 import org.apache.log4j.Category;
-
-import org.apache.xpath.XPathAPI;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 
 /**
@@ -60,14 +48,15 @@ public class EditorProductFactory implements FactoryInit {
 
     //~ Instance/static variables ..................................................................
 
-    private static DocumentBuilderFactory dbfac         = DocumentBuilderFactory.newInstance();
-    private static TreeMap                knownproducts = new TreeMap();
     private static Category               LOG           = Category.getInstance(EditorProductFactory.class.getName());
     private static EditorProductFactory   instance      = new EditorProductFactory();
-    private static String                 productfile   = null;
-    private static boolean                already_read  = false;
+
+    private TreeMap   knownproducts;
+    private String    productfile;
+    private boolean   already_read;
+    
+    public static final String            PROP_PF       = "editorproductfactory.productdata";
     private static final String           PROP_DELAY    = "editorproductfactory.delayinit";
-    private static final String           PROP_PF       = "editorproductfactory.productdata";
     private static final String           IXSL_PFIX     = "ixsl";
     private static final String           IXSL_URI      = "http://www.w3.org/1999/XSL/Transform";
     private static final String           PFX_PFIX      = "pfx";
@@ -77,6 +66,12 @@ public class EditorProductFactory implements FactoryInit {
 
     public static EditorProductFactory getInstance() {
         return instance;
+    }
+
+    public EditorProductFactory() {
+        knownproducts = new TreeMap();
+        productfile = null;
+        already_read = false;
     }
 
     public synchronized EditorProduct getEditorProduct(String name) throws Exception {
@@ -100,85 +95,103 @@ public class EditorProductFactory implements FactoryInit {
             throw new XMLException("Need to have property " + PROP_PF + " set!");
         }
         String delay = properties.getProperty(PROP_DELAY);
+        already_read = false;
         if (delay != null && delay.equals("false")) {
             readFile(productfile);
-            already_read = true;
-        } else {
-            already_read = false;
         }
     }
 
-    private void readFile(String filename) throws Exception {
-        DocumentBuilder domp = dbfac.newDocumentBuilder();
-        Document        doc = domp.parse(filename);
+    public void readFile(String filename) throws Exception {
+        Document doc = Xml.parseMutable(PathFactory.getInstance().createPath(filename).resolve());
         doc.normalize();
+        configure(doc);
+    }
+    
+    public void configure(Document doc) throws Exception {
+        already_read = true;
+        Element documentation = (Element) XPath.selectNode(doc, "/projects/common/documentation");
         NodeList nl = doc.getElementsByTagName("project");
         for (int i = 0; i < nl.getLength(); i++) {
             Element prj  = (Element) nl.item(i);
-            String  name = prj.getAttribute("name");
-            if (name == null) {
-                throw new XMLException("Product needs a name!");
+            if (XPath.test(prj, "servlet[@useineditor = 'true']")) {
+                EditorProduct product = createProduct(prj, documentation);
+                knownproducts.put(product.getName(), product);
             }
-            String comment = ((Text) XPathAPI.selectNodeList(prj, "./comment/text()").item(0)).getNodeValue();
-            if (comment == null) {
-                throw new XMLException("Product needs a comment element!");
-            }
-            String depend = ((Text) XPathAPI.selectNodeList(prj, "./depend/text()").item(0)).getNodeValue();
-            if (depend == null) {
-                throw new XMLException("Product needs a depend element!");
-            }
-            TargetGenerator gen   = TargetGeneratorFactory.getInstance().createGenerator(new File(depend));
-            Navigation      navi  = NavigationFactory.getInstance().getNavigation(depend);
-            NodeList        nlist = prj.getElementsByTagName("handler");
-            if (nlist.getLength() == 0) {
-                throw new XMLException("Product needs to have handler elements defined!");
-            }
-            PfixcoreServlet[] servlets = new PfixcoreServlet[nlist.getLength()];
-            for (int j = 0; j < nlist.getLength(); j++) {
-                Element handler = (Element) nlist.item(j);
-                String  hname = handler.getAttribute("name");
-                if (hname == null) {
-                    throw new XMLException("Handler needs a name!");
-                }
-                String config = ((Text) XPathAPI.selectNodeList(handler, "./properties/text()").item(
-                                         0)).getNodeValue();
-                if (config == null) {
-                    throw new XMLException("Handler needs a properties element!");
-                }
-                Properties hprop = new Properties();
-                hprop.load(new FileInputStream(new File(config)));
-                servlets[j] = new PfixcoreServlet(hname, hprop);
-            }
-            nlist = prj.getElementsByTagName("namespace");
-            PfixcoreNamespace[] nspaces = new PfixcoreNamespace[nlist.getLength() + 2];
-            nspaces[0] = new PfixcoreNamespace(IXSL_PFIX, IXSL_URI);
-            nspaces[1] = new PfixcoreNamespace(PFX_PFIX, PFX_URI);
-            for (int j = 0; j < nlist.getLength(); j++) {
-                Element nspace = (Element) nlist.item(j);
-                String  prefix = nspace.getAttribute("prefix");
-                if (prefix == null) {
-                    throw new XMLException("Namespace needs a prefix attribute!");
-                }
-                String uri = nspace.getAttribute("uri");
-                if (uri == null) {
-                    throw new XMLException("Namespace needs an uri attribute!");
-                }
-                nspaces[j + 2] = new PfixcoreNamespace(prefix, uri);
-            }
-            NodeList nliste = doc.getElementsByTagName("documentation");
-            nliste = prj.getElementsByTagName("documentation");
-            String[] argument = new String[nliste.getLength()];
-            for (int k = 0; k < nliste.getLength(); k++) {
-                Element el   = (Element) nliste.item(k);
-                String  node = ((Text) XPathAPI.selectNodeList(el, "./text()").item(0)).getNodeValue();
-                LOG.debug("Documentation found in: " + node);
-                argument[k] = node;
-            }
-            EditorDocumentation edit    = new EditorDocumentation(argument);
-            EditorProduct       product = new EditorProduct(name, comment, depend, gen, navi, 
-                                                            servlets, nspaces, edit);
-            LOG.debug("Init Product: " + product.toString());
-            knownproducts.put(name, product);
         }
     }
+    
+    public static EditorProduct createProduct(Element prj, Element commonDocumentation) throws Exception {
+        String  name = prj.getAttribute("name");
+        if (name == null) {
+            throw new XMLException("Product needs a name!");
+        }
+        String comment = ((Text) XPath.select(prj, "./comment/text()").get(0)).getNodeValue();
+        if (comment == null) {
+            throw new XMLException("Product needs a comment element!");
+        }
+        String depend = ((Text) XPath.select(prj, "./depend/text()").get(0)).getNodeValue();
+        if (depend == null) {
+            throw new XMLException("Product needs a depend element!");
+        }
+        Path            dependpath = PathFactory.getInstance().createPath(depend);
+        TargetGenerator gen        = TargetGeneratorFactory.getInstance().createGenerator(dependpath);
+        Navigation      navi       = NavigationFactory.getInstance().getNavigation(depend);
+        NodeList        nlist      = prj.getElementsByTagName("servlet");
+        if (nlist.getLength() == 0) {
+            throw new XMLException("Product needs to have servlet elements defined!");
+        }
+        PfixcoreServlet[] servlets = new PfixcoreServlet[nlist.getLength()];
+        for (int j = 0; j < nlist.getLength(); j++) {
+            Element handler = (Element) nlist.item(j);
+            String  hname = handler.getAttribute("name");
+            if (hname == null) {
+                throw new XMLException("Handler needs a name!");
+            }
+            servlets[j] = new PfixcoreServlet(hname);
+        }
+        nlist = prj.getElementsByTagName("namespace");
+        PfixcoreNamespace[] nspaces = new PfixcoreNamespace[nlist.getLength() + 2];
+        nspaces[0] = new PfixcoreNamespace(IXSL_PFIX, IXSL_URI);
+        nspaces[1] = new PfixcoreNamespace(PFX_PFIX, PFX_URI);
+        for (int j = 0; j < nlist.getLength(); j++) {
+            Element nspace = (Element) nlist.item(j);
+            String  prefix = nspace.getAttribute("prefix");
+            if (prefix == null) {
+                throw new XMLException("Namespace needs a prefix attribute!");
+            }
+            String uri = nspace.getAttribute("uri");
+            if (uri == null) {
+                throw new XMLException("Namespace needs an uri attribute!");
+            }
+            nspaces[j + 2] = new PfixcoreNamespace(prefix, uri);
+        }
+        
+        EditorDocumentation edit = createDocumentation(commonDocumentation, prj);
+        return new EditorProduct(name, comment, dependpath, gen, navi, servlets, nspaces, edit);
+    }
+    
+    private static EditorDocumentation createDocumentation(Element common, Element project) throws Exception {
+        NodeList nliste;
+        String[] argument;
+        List lst;
+
+        lst = new ArrayList();
+        if (common != null) {
+            addDocumentation(common.getElementsByTagName("doc_file"), lst);
+        }
+        addDocumentation(project.getElementsByTagName("documentation"), lst);
+        argument = new String[lst.size()];
+        lst.toArray(argument);
+        return new EditorDocumentation(argument);
+    }
+
+    private static void addDocumentation(NodeList nliste, List result) throws Exception {
+        for (int k = 0; k < nliste.getLength(); k++) {
+            Element el   = (Element) nliste.item(k);
+            String  node = ((Text) XPath.select(el, "./text()").get(0)).getNodeValue();
+            LOG.debug("Documentation found in: " + node);
+            result.add(node);
+        }
+    }
+    
 }

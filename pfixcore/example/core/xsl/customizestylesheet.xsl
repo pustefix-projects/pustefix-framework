@@ -7,13 +7,16 @@
 
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
 
-  <xsl:param name="docroot"/>
   <xsl:param name="product"/>
   <xsl:param name="lang"/>
   <xsl:param name="__target_gen"/>
   
   <!-- No customizeable parts below -->
   
+  <xsl:template match="/">
+    <xsl:apply-templates/>
+  </xsl:template>
+
   <xsl:template match="*">
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
@@ -21,26 +24,10 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="/">
-    <xsl:apply-templates/>
-  </xsl:template>
-
-  <xsl:template match="xsl:include | xsl:import">
-    <xsl:copy>
-      <xsl:copy-of select="@*"/>
-      <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>
-  
   <xsl:template match="cus:navigation">
     <xsl:value-of select="$__target_gen"/>
   </xsl:template>
 
-  <xsl:template match="cus:docroot">
-    <xsl:value-of select="$docroot"/>
-  </xsl:template>
-  
   <xsl:template match="cus:product">
     <xsl:value-of select="$product"/>
   </xsl:template>

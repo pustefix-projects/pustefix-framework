@@ -20,12 +20,11 @@
 package de.schlund.pfixcore.workflow;
 
 
-import de.schlund.pfixcore.util.*;
+import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.util.XPath;
 import java.util.*;
 import org.apache.log4j.Category;
-import org.apache.xpath.objects.XObject;
-import org.apache.xpath.XPathAPI;
 
 import org.w3c.dom.Document;
 import javax.xml.transform.TransformerException;
@@ -113,13 +112,7 @@ public class FlowStep {
         if (test.equals("")) {
             return true;
         }
-
-        XObject obj = XPathAPI.eval(doc.getDocumentElement(), test);
-        if (obj.bool()) {
-            return true;
-        } else {
-            return false;
-        }
+        return XPath.test(doc.getDocumentElement(), test);
     }
 
     public boolean hasOnContinueAction() {

@@ -543,7 +543,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 String logdir       = context.getProperties().getProperty(WRAPPER_LOGDIR);
                 String debugwrapper = props.getProperty(WRAPPER_LOGLIST);
                 if (logdir != null && !logdir.equals("") && debugwrapper != null && !debugwrapper.equals("")) {
-                    File dir = new File(logdir);
+                    File dir = PathFactory.getInstance().createPath(logdir).resolve();
                     if (dir.isDirectory() && dir.canWrite()) {
                         StringTokenizer tok = new StringTokenizer(debugwrapper);
                         for (; tok.hasMoreTokens(); ) {

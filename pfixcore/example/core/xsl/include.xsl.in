@@ -138,7 +138,6 @@
  
   <xsl:template name="pfx:missinc">
     <xsl:param name="part"/>
-    <xsl:param name="path"/>
     <xsl:param name="href"/>
     <xsl:variable name="thetext">Missing include: '<xsl:value-of select="$part"/>' in file '<xsl:value-of select="$href"/>'</xsl:variable>
     <img src="/core/img/warning.gif">
@@ -146,7 +145,7 @@
       <xsl:attribute name="title"><xsl:value-of select="$thetext"/></xsl:attribute>
     </img>
     <xsl:message>*** Include not found:
-      Document = <xsl:value-of select="$path"/>
+      Document = <xsl:value-of select="$href"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
     <cus:documentation>
       <responsible>JTL</responsible>
@@ -160,68 +159,45 @@
 
   <xsl:template match="pfx:include" name="pfx:include">
     <xsl:param name="__env"/>
-    <xsl:param name="parent_path">
-      <xsl:if test="/include_parts and not($__target_key='__NONE__')">
-        <xsl:value-of select="/include_parts/@incpath"/>
-      </xsl:if>
-    </xsl:param>
-    <xsl:param name="parent_part">
-      <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-        <xsl:value-of select="ancestor::part[position() = 1]/@name"/>
-      </xsl:if>
-    </xsl:param>
-    <xsl:param name="parent_product">
-      <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-        <xsl:value-of select="ancestor::product[position() = 1]/@name"/>
-      </xsl:if>
-    </xsl:param>
+    <xsl:param name="computed_inc">false</xsl:param>
+    <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
+    <xsl:param name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
     <xsl:param name="href">
-      <xsl:choose>
-        <xsl:when test="@href">
-          <xsl:choose>
-            <xsl:when test="starts-with(@href, '/')">
-              <xsl:value-of select="substring-after(@href, '/')"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="@href"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:when test="not(string($parent_path) = '')">
-          <xsl:choose>
-            <xsl:when test="starts-with($parent_path, '/')">
-              <xsl:value-of select="substring-after($parent_path, '/')"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$parent_path"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:message terminate="yes">Error. Need href specification for part</xsl:message>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:if test="@href">
+        <xsl:choose>
+          <xsl:when test="starts-with(@href, '/')">
+            <xsl:value-of select="substring-after(@href, '/')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="@href"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
     </xsl:param>
-    <xsl:param name="path">
-      <xsl:if test="not(string($href) = '')">
-        <xsl:value-of select="$href"/>
+    <xsl:param name="realpath">
+      <xsl:if test="not($__target_key = '__NONE__')">
+        <xsl:choose>
+          <xsl:when test="not(string($href) = '')">
+            <xsl:value-of select="string($href)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="include:makeSystemIdRelative('dummy')"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
     </xsl:param>
     <xsl:choose>
       <xsl:when test="string($part) = ''">
         <b>[Error: &lt;pfx:include&gt; needs "part" attribute]</b>
       </xsl:when>
-      <xsl:when test="string($href) = ''">
-        <b>[Error: &lt;pfx:include&gt; needs "href" attribute or a &lt;pfx:include&gt; parent]</b>
-      </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="incnodes"
-                      select="include:get(string($path), string($part), string($product),
-                      string($docroot), string($__target_gen), string($__target_key),
-                      string($parent_path), string($parent_part), string($parent_product))"/>
+                      select="include:get(string($href), string($part), string($product),
+                      string($__target_gen), string($__target_key),
+                      string($parent_part), string($parent_product), $computed_inc)"/>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
@@ -252,9 +228,8 @@
                           </xsl:when>
                           <xsl:when test="not($noerror = 'true')">
                             <xsl:call-template name="pfx:missinc">
-                              <xsl:with-param name="href" select="$href"/>
+                              <xsl:with-param name="href" select="$realpath"/>
                               <xsl:with-param name="part" select="$part"/>
-                              <xsl:with-param name="path" select="$path"/>
                             </xsl:call-template>
                           </xsl:when>
                         </xsl:choose>
@@ -279,9 +254,8 @@
                             <xsl:when test="not($noerror = 'true')">
                               <ixsl:otherwise>
                                 <xsl:call-template name="pfx:missinc">
-                                  <xsl:with-param name="href" select="$href"/>
+                                  <xsl:with-param name="href" select="$realpath"/>
                                   <xsl:with-param name="part" select="$part"/>
-                                  <xsl:with-param name="path" select="$path"/>
                                 </xsl:call-template>
                               </ixsl:otherwise>
                             </xsl:when>
@@ -306,9 +280,8 @@
                       </xsl:when>
                       <xsl:when test="not($noerror = 'true')">
                         <xsl:call-template name="pfx:missinc">
-                          <xsl:with-param name="href" select="$href"/>
+                          <xsl:with-param name="href" select="$realpath"/>
                           <xsl:with-param name="part" select="$part"/>
-                          <xsl:with-param name="path" select="$path"/>
                         </xsl:call-template>
                       </xsl:when>
                     </xsl:choose>
@@ -319,9 +292,8 @@
               <xsl:when test="not($noerror = 'true')">
                 <!-- Have no language nodes as child -->
                 <xsl:call-template name="pfx:missinc">
-                  <xsl:with-param name="href" select="$href"/>
+                  <xsl:with-param name="href" select="$realpath"/>
                   <xsl:with-param name="part" select="$part"/>
-                  <xsl:with-param name="path" select="$path"/>
                 </xsl:call-template>
                 <!-- End of have no language nodes as child -->
               </xsl:when>
@@ -329,9 +301,8 @@
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
-              <xsl:with-param name="href" select="$href"/>
+              <xsl:with-param name="href" select="$realpath"/>
               <xsl:with-param name="part" select="$part"/>
-              <xsl:with-param name="path" select="$path"/>
             </xsl:call-template>
           </xsl:when>
         </xsl:choose>
@@ -341,16 +312,16 @@
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
-                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="$href"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="$href"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="string($realpath)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                 <img border="0" src="/core/img/edit.gif"
-                     alt="Edit include: '{$part}' in file '{$href}'"
-                     title="Edit include: '{$part}' in file '{$href}'"/>
+                     alt="Edit include: '{$part}' in file '{$realpath}'"
+                     title="Edit include: '{$part}' in file '{$realpath}'"/>
               </a>
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
-            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={$href}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi|{$href}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
-              <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$href}'" title="Edit include: '{$part}' in file '{$href}'"/>
+            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={$realpath}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi|{$realpath}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
+              <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$realpath}'" title="Edit include: '{$part}' in file '{$realpath}'"/>
             </a>
           </xsl:when>
         </xsl:choose>
@@ -410,74 +381,68 @@
     <xsl:param name="src">
       <xsl:value-of select="./@src"/>
     </xsl:param>
-	<xsl:choose>
-	  <xsl:when test="string($src) = ''">
-  	    <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl: no src specified ****</xsl:message>
-  	  </xsl:when>
-  	  <xsl:otherwise>
+    <xsl:choose>
+      <xsl:when test="string($src) = ''">
+        <xsl:message terminate="no">**** Caution:      Error calling pfx:image_geom_impl: no src specified ****</xsl:message>
+      </xsl:when>
+      <xsl:otherwise>
         <xsl:variable name="path">
-	      <xsl:value-of select="$src"/>
+          <xsl:choose>
+            <xsl:when test="starts-with($src, '/')">
+              <xsl:value-of select="substring-after($src, '/')"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$src"/>
+            </xsl:otherwise>
+          </xsl:choose>
         </xsl:variable>
-	    <xsl:variable name="parent_path">
-	      <xsl:if test="/include_parts and not($__target_key='__NONE__')">
-	        <xsl:value-of select="/include_parts/@incpath"/>
-	      </xsl:if>
-	    </xsl:variable>
-	    <xsl:variable name="parent_part">
-	      <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-	        <xsl:value-of select="ancestor::part[position() = 1]/@name"/>
-	      </xsl:if>
-	    </xsl:variable>
-	    <xsl:variable name="parent_product">
-	      <xsl:if test="not(string($parent_path) = '')"> <!-- only when above is set -->
-	        <xsl:value-of select="ancestor::product[position() = 1]/@name"/>
-	      </xsl:if>
-	    </xsl:variable>
-	    <xsl:variable name="add_dep" select="runtime:log('image',string($src),'','',string($docroot),
-	                                         string($parent_path),string($parent_part),string($parent_product),
-	                                         string($__target_gen),string($__target_key))"/>
-	    <xsl:variable name="width">
-	      <xsl:choose>
-	        <xsl:when test="./@width">
-	          <xsl:value-of select="./@width"/>
-	        </xsl:when>
-	        <xsl:otherwise>
-	          <xsl:value-of select="geometry:getWidth(string($docroot),string($path))"/>
-	        </xsl:otherwise>
-	      </xsl:choose>
-	    </xsl:variable>
-	    <xsl:variable name="height">
-	      <xsl:choose>
-	        <xsl:when test="./@height">
-	          <xsl:value-of select="./@height"/>
-	        </xsl:when>
-	        <xsl:otherwise>
-	          <xsl:value-of select="geometry:getHeight(string($docroot),string($path))"/>
-	        </xsl:otherwise>
-	      </xsl:choose>
-	    </xsl:variable>
-	    <xsl:if test="not($add_dep = '0')">
-	      <xsl:message terminate="no">**** Caution:      Error calling DependencyTracker ****</xsl:message>
-	      <xsl:message terminate="no">|    path:         <xsl:value-of select="$src"/></xsl:message>
-	      <xsl:message terminate="no">|    __target_gen: <xsl:value-of select="$__target_gen"/></xsl:message>
-	      <xsl:message terminate="no">|    __target_key: <xsl:value-of select="$__target_key"/></xsl:message>
-	    </xsl:if>
-	    <xsl:if test="not($width = -1)">
-  	      <xsl:attribute name="width">
-	        <xsl:value-of select="$width"/>
-	      </xsl:attribute>
-	    </xsl:if>
-	    <xsl:if test="not($height = -1)">
-	      <xsl:attribute name="height">
-	        <xsl:value-of select="$height"/>
-	      </xsl:attribute>
-	    </xsl:if>
-	  </xsl:otherwise>
-	</xsl:choose>
+        <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
+        <xsl:variable name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:variable>
+        <xsl:variable name="add_dep" select="runtime:logImage(string($path),
+                      string($parent_part),string($parent_product),
+                      string($__target_gen),string($__target_key))"/>
+        <xsl:variable name="width">
+          <xsl:choose>
+            <xsl:when test="./@width">
+              <xsl:value-of select="./@width"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="geometry:getWidth(string($path))"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="height">
+          <xsl:choose>
+            <xsl:when test="./@height">
+              <xsl:value-of select="./@height"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="geometry:getHeight(string($path))"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="not($add_dep = '0')">
+          <xsl:message terminate="no">**** Caution:      Error calling DependencyTracker ****</xsl:message>
+          <xsl:message terminate="no">|    path:         <xsl:value-of select="$src"/></xsl:message>
+          <xsl:message terminate="no">|    __target_gen: <xsl:value-of select="$__target_gen"/></xsl:message>
+          <xsl:message terminate="no">|    __target_key: <xsl:value-of select="$__target_key"/></xsl:message>
+        </xsl:if>
+        <xsl:if test="not($width = -1)">
+          <xsl:attribute name="width">
+            <xsl:value-of select="$width"/>
+          </xsl:attribute>
+        </xsl:if>
+        <xsl:if test="not($height = -1)">
+          <xsl:attribute name="height">
+            <xsl:value-of select="$height"/>
+          </xsl:attribute>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Called by pfx:image</description>
     </cus:documentation>
   </xsl:template>
-
+  
 </xsl:stylesheet>

@@ -22,14 +22,18 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.testenv.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 import java.io.*;
 import java.net.SocketException;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
@@ -49,8 +53,6 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     //~ Instance/static variables ..................................................................
 
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    
     private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
     private static final String SESS_RECORDMODE          = "__RECORDMODE__";
     private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
@@ -117,7 +119,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private String          targetconf        = null;
+    private Path            targetconf        = null;
     private boolean         render_external   = false;
     private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
@@ -131,12 +133,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean allowInfo  = true;
     private boolean allowDebug = true;
     
-    //~ Initializers ...............................................................................
-
-    static {
-        dbfac.setNamespaceAware(true);
-    }
-
     //~ Methods ....................................................................................
 
     /**
@@ -157,14 +153,20 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private void initValues() throws ServletException {
-        if ((targetconf = getProperties().getProperty(PROP_DEPEND)) == null) {
-            throw (new ServletException("Need property '" + PROP_DEPEND + "'"));
+    private String getProperty(String name) throws ServletException {
+        String value;
+        
+        value = getProperties().getProperty(name);
+        if (value == null) {
+            throw new ServletException("Need property '" + name + "'");
         }
-        if ((servletname = getProperties().getProperty(PROP_NAME)) == null) {
-            throw (new ServletException("Need property '" + PROP_NAME + "'"));
-        }
+        return value;
+    }
 
+    private void initValues() throws ServletException {
+        targetconf  = PathFactory.getInstance().createPath(getProperty(PROP_DEPEND));
+        servletname = getProperty(PROP_NAME);
+        
         String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
         if (prohibitDebug != null && (prohibitDebug.equals("true") || prohibitDebug.equals("1")))
             allowDebug = false;
@@ -195,7 +197,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         handleXMLOnlyProps();
         
         try {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(new File(targetconf));
+            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
         } catch (Exception e) {
             CAT.error("Error: ", e);
             throw new ServletException("Couldn't get TargetGenerator", e);
@@ -339,7 +341,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 // This is a fake. We also return true when only depend.xml change, but the properties not.
                 // But we can only signal one type of "reload" event with the return value of this method,
                 // so it's better to reload the properties one time too often.
-                return generator.tryReinit();
+                return generator.tryReinit(targetconf);
             } catch (Exception e) {
                 throw new ServletException("When trying to reinit generator: " + e);
             }
@@ -480,9 +482,16 @@ public abstract class AbstractXMLServer extends ServletManager {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
             }
-            PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             currtime = System.currentTimeMillis();
-            spdoc.setDocument(xsltproc.xmlObjectFromDocument(spdoc.getDocument()));
+            if (spdoc.getDocument() == null) {
+                // thats a request to an unkown page!
+                // do nothing, cause we  want a 404 and no NPExpection
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
+                }
+            } else {
+                spdoc.setDocument(Xml.parse(spdoc.getDocument()));
+            }
             if (isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
@@ -596,45 +605,42 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean plain_xml = false;
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object stylevalue = null;
+            Templates stylevalue;
             
             try {
-                stylevalue = generator.getTarget(stylesheet).getValue();
+                stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = targetex.toXMLRepresentation();
-                errordoc = xsltproc.xmlObjectFromDocument(errordoc);
-                Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-                xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
+                errordoc = Xml.parse(errordoc);
+                Templates stvalue = (Templates) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+                Xslt.transform(errordoc, stvalue, null, new StreamResult(res.getOutputStream()));
                 return;
             }
             try {
-                xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
-                                             stylevalue, paramhash, 
-                                             res.getOutputStream());
+                Xslt.transform(spdoc.getDocument(), stylevalue, paramhash, new StreamResult(res.getOutputStream()));
             } catch (TransformerException e) {
-            	if(e.getException() instanceof SocketException) {
+            	if (e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());
                     if (isInfoEnabled()) {
                         CAT.info("[Ignored TransformerException]", e);
                     }
-            	}	else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                		CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                	} 	else 
-                			throw e;
+            	} else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                } else 
+                    throw e;
             }
         } else if (plain_xml) {
             res.setContentType(XML_CONTENT_TYPE);
             TransformerFactory.newInstance().newTransformer().transform(new DOMSource(spdoc.getDocument()), 
                                                                         new StreamResult(res.getOutputStream()));
         } else {
-            Document ext_doc = dbfac.newDocumentBuilder().newDocument();
+            Document ext_doc = Xml.createDocument();
             Element  root    = ext_doc.createElement("render_external");
             ext_doc.appendChild(root);
             Element  ssheet  = ext_doc.createElement("stylesheet");
             root.appendChild(ssheet);
-            ssheet.setAttribute("name", generator.getDisccachedir() + stylesheet);
+            ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
             for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
                 String  key   = (String) i.next();
                 String  val   = (String) paramhash.get(key);
@@ -730,24 +736,11 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, Path.getRelativeString(generator.getDocroot(), targetconf));
+        paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        addDocroot(paramhash, generator.getDocroot());
         return paramhash;
     }
 
-    // TODO: kind of a hack because - better make sure the map always contains docroot ...
-    public static void addDocroot(Map map, String value) {
-        final String NAME = "docroot";
-
-        if (!value.endsWith(File.separator)) {
-            throw new IllegalArgumentException("docroot value without tailing slash: " + value);
-        }
-        if (map.get(NAME) == null) {
-            map.put(NAME, value);
-        }
-
-    }
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
         String pagename = spdoc.getPagename();

@@ -24,6 +24,7 @@ import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import java.util.*;
 import org.w3c.dom.*;
 

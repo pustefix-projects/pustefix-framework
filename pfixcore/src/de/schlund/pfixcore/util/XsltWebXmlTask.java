@@ -8,14 +8,12 @@ package de.schlund.pfixcore.util;
 
 import java.io.File;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author adam
@@ -25,14 +23,8 @@ import org.w3c.dom.NodeList;
  */
 public class XsltWebXmlTask extends XsltGenericTask {
     
-    protected DocumentBuilderFactory dbFactory;
-    
     public void init() throws BuildException {
         super.init();
-
-        this.dbFactory = DocumentBuilderFactory.newInstance();
-        dbFactory.setNamespaceAware(true);
-        dbFactory.setValidating(false);
     }
 
     protected void doTransformations() {
@@ -54,12 +46,9 @@ public class XsltWebXmlTask extends XsltGenericTask {
 
                 inname = infilenames[i];
                 in = new File(srcdirResolved, inname);
-
-                DocumentBuilder domp;
                 Document        doc;
                 try {
-                    domp = dbFactory.newDocumentBuilder();
-                    doc = domp.parse(in);
+                    doc = Xml.parseMutable(in);
                 } catch (Exception e) {
                     throw new BuildException("Could not parse file "+in, e);
                 }

@@ -18,19 +18,17 @@
 */
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
+
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.util.*;
+import java.io.*;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.NDC;
-
-import de.schlund.pfixxml.AbstractXMLServer;
-import de.schlund.pfixxml.XMLException;
+import org.w3c.dom.Document;
 
 /**
  * VirtualTarget.java
@@ -43,9 +41,9 @@ import de.schlund.pfixxml.XMLException;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long modtime = 0l;
-    protected TreeSet pageinfos = new TreeSet();
-    protected AuxDependencyManager auxdepmanager   = null;
+    protected long                 modtime       = 0l;
+    protected TreeSet              pageinfos     = new TreeSet();
+    protected AuxDependencyManager auxdepmanager = null;
     
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager; 
@@ -98,7 +96,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0l) {
             synchronized (this) {
                 if (modtime == 0l) {
-                    File doc = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                    File doc = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -142,7 +140,7 @@ public abstract class VirtualTarget extends TargetImpl {
   
     public String toString() {
         return "[TARGET: " + getType() + " " + getTargetKey()
-            + "@" + getTargetGenerator().getConfigname()
+            + "@" + getTargetGenerator().getName()
             + " <" + getXMLSource().getTargetKey() + "> <"
             + getXSLSource().getTargetKey() + ">]";
     }
@@ -167,7 +165,7 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long maxmodtime = 0l;
         long tmpmodtime;
         NDC.push("    ");
@@ -186,28 +184,22 @@ public abstract class VirtualTarget extends TargetImpl {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
                     } catch (TransformerException e) {
-                        CAT.error(
-                            "Error when generating: "
-                                + getTargetKey()
-                                + " from "
-                                + getXMLSource().getTargetKey()
-                                + " and "
-                                + getXSLSource().getTargetKey(),
-                            e);
+                        CAT.error("Error when generating: " + getTargetKey() + " from "
+                                  + getXMLSource().getTargetKey() + " and "
+                                  + getXSLSource().getTargetKey(), e);
                         // Now we invalidate the mem- and disc cache to force
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                        File cachefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
-
+                        
                         TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
-                            targetex =
-                                new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
+                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
                         } else {
                             targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
                         }
@@ -223,17 +215,17 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws XMLException, TransformerException, ParserConfigurationException, IOException {
-        PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-        String key = getTargetKey();
+    private void generateValue() throws XMLException, TransformerException, IOException {
+        String key          = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        File cachefile = new File(getTargetGenerator().getDisccachedir() + key);
+        Path   cachepath    = getTargetGenerator().getDisccachedir();
+        File   cachefile    = new File(cachepath.resolve(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" +
+                      tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
         }
-
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
         getAuxDependencyManager().reset();
         // as the file will be rebuild in the disc cache, we need to make sure that we will load it again
@@ -243,17 +235,16 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Object xmlobj = ((TargetRW) tmpxmlsource).getCurrValue();
-        Object xslobj = ((TargetRW) tmpxslsource).getCurrValue();
+        Document  xmlobj = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
+        Templates templ  = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
-            throw new XMLException("**** xml source " + tmpxmlsource.getTargetKey() + tmpxmlsource.getType() + " doesn't have a value!");
-        if (xslobj == null) 
-            throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xml source " +
+                                   tmpxmlsource.getTargetKey() + " (" + tmpxmlsource.getType() + ") doesn't have a value!");
+        if (templ == null) 
+            throw new XMLException("**** xsl source " +
+                                   tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap tmpparams = getParams();
-        AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
-
-        //FIXME!!! Do we want to do this right HERE????
-        xsltproc.applyTrafoForOutput(xmlobj, xslobj, tmpparams, new FileOutputStream(cachefile));
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

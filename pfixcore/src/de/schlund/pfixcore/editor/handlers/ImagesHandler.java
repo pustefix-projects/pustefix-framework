@@ -18,15 +18,17 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
+
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.util.statuscodes.*;
 import java.util.*;
-
 import org.apache.log4j.Category;
 
 /**
@@ -52,7 +54,7 @@ public class ImagesHandler extends EditorStdHandler {
         EditorProduct          prod   = esess.getProduct();
         TargetGenerator        gen    = prod.getTargetGenerator();
         TreeSet                allimg = gen.getDependencyRefCounter().getDependenciesOfType(DependencyType.IMAGE);
-        Path                   path   = Path.create(gen.getDocroot(), images.getPath());
+        Path                   path   = PathFactory.getInstance().createPath(images.getPath());
         AuxDependency          image  =
             AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.IMAGE, path, null, null);
         

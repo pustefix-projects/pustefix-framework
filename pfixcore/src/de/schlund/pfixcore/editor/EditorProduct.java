@@ -18,14 +18,14 @@
 */
 
 package de.schlund.pfixcore.editor;
-import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.Path;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
 
 /**
  * EditorProduct.java
@@ -39,18 +39,18 @@ import de.schlund.pfixxml.targets.TargetGenerator;
  */
 
 public class EditorProduct {
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static Category               CAT   = Category.getInstance(EditorProduct.class.getName());
-    private        String                 name;
-    private        String                 comment;
-    private        String                 depend;
-    private        TargetGenerator        generator;
-    private        Navigation             navigation;
-    private        PfixcoreServlet[]      servlets;
-    private        PfixcoreNamespace[]    nspaces;
-    private        EditorDocumentation    editdoku;
     
-    public EditorProduct (String name, String comment, String depend, TargetGenerator generator,
+    private final String                 name;
+    private final String                 comment;
+    private final Path                   depend;
+    private final TargetGenerator        generator;
+    private final Navigation             navigation;
+    private final PfixcoreServlet[]      servlets;
+    private final PfixcoreNamespace[]    nspaces;
+    private final EditorDocumentation    editdoku;
+    
+    public EditorProduct (String name, String comment, Path depend, TargetGenerator generator,
                           Navigation navigation, PfixcoreServlet[] servlets, PfixcoreNamespace[] nspaces, 
                           EditorDocumentation editdoku) {
         this.name       = name;
@@ -66,7 +66,7 @@ public class EditorProduct {
 
     public String getName() {return name;}
     public String getComment() {return comment;}
-    public String getDepend() {return depend;}
+    public Path   getDepend() {return depend;}
     public TargetGenerator getTargetGenerator() {return generator;}
     public Navigation getNavigation() {return navigation;}
     public PfixcoreServlet[] getPfixcoreServlets() {return servlets;}

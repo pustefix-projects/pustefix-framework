@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.TreeMap;
 
 import javax.xml.transform.TransformerException;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * XMLVirtualTarget.java
@@ -50,11 +51,9 @@ public class XMLVirtualTarget extends VirtualTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object                thedoc   = xsltproc.xmlObjectFromDisc(thefile.getPath());
-            return thedoc;
+            return Xml.parse(thefile);
         } else {
             return null;
         }

@@ -1,8 +1,5 @@
 package de.schlund.pfixxml.targets;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
@@ -10,6 +7,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Exception subclass which represents errors during generation of a target.
@@ -51,14 +49,12 @@ public class TargetGenerationException extends Exception {
         targetkey = key;
     }
 
-    public Document toXMLRepresentation() throws ParserConfigurationException {
+    public Document toXMLRepresentation() {
         return createErrorTree(this);
     }
 
-    private Document createErrorTree(TargetGenerationException targetex)
-        throws ParserConfigurationException {
-        DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = docbuilder.newDocument();
+    private Document createErrorTree(TargetGenerationException targetex) {
+        Document doc = Xml.createDocument();
         Element e0 = doc.createElement("error_message");
         doc.appendChild(e0);
         printEx(targetex, doc, e0);

@@ -6,9 +6,8 @@ package de.schlund.pfixxml.testenv;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.pfix_httpclient.Header;
@@ -20,12 +19,11 @@ import org.apache.commons.pfix_httpclient.HttpStatus;
 import org.apache.commons.pfix_httpclient.NameValuePair;
 import org.apache.commons.pfix_httpclient.methods.PostMethod;
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author Joerg Haecker <haecker@schlund.de>
@@ -34,7 +32,6 @@ import org.xml.sax.SAXException;
 public class TestcaseStep {
 
     private static Category CAT = Category.getInstance(TestcaseStep.class.getName());
-    private static DocumentBuilderFactory DOCBUILDERFAC = DocumentBuilderFactory.newInstance();
     private static String XMLONLY_PARAM_KEY = "__xmlonly";
     private static String XMLONLY_PARAM_VALUE = "1";
 
@@ -236,12 +233,11 @@ public class TestcaseStep {
                     throw new TestClientException("IOException occured!", e);
                 }
                 result.setDuration(duration);
-                result.setServerResponse(convertServerResponseToDocument(response_stream));
+                result.setServerResponse(Xml.parseMutable(response_stream));
                 result.setStatuscode(status_code);
             }
         }
         return result;
-
     }
     
     
@@ -249,16 +245,16 @@ public class TestcaseStep {
 
     /** extract postparams from the recorded request data */
     private NameValuePair[] getPostParamsFromInput() throws TestClientException {
-        NodeList value = null;
+        List value;
         try {
-            value = XPathAPI.selectNodeList(formInput, "/request/params/param");
+            value = XPath.select(formInput, "/request/params/param");
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
-        NameValuePair[] post_params = new NameValuePair[value.getLength() + 1];
+        NameValuePair[] post_params = new NameValuePair[value.size() + 1];
         int i = 0;
-        for (int ii = 0; ii < value.getLength(); ii++) {
-            Element e = (Element) value.item(ii);
+        for (int ii = 0; ii < value.size(); ii++) {
+            Element e = (Element) value.get(ii);
             String param_name = e.getAttribute("name");
             String param_value = e.hasChildNodes() ? e.getFirstChild().getNodeValue() : "";
             post_params[i] = new NameValuePair(param_name, param_value);
@@ -272,7 +268,7 @@ public class TestcaseStep {
     private String getHostnameFromInput() throws TestClientException {
         Node value = null;
         try {
-            value = XPathAPI.selectSingleNode(formInput, "/request/hostname");
+            value = XPath.selectNode(formInput, "/request/hostname");
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
@@ -284,7 +280,7 @@ public class TestcaseStep {
     private int getPortFromInput() throws TestClientException {
         Node value = null;
         try {
-            value = XPathAPI.selectSingleNode(formInput, "/request/port");
+            value = XPath.selectNode(formInput, "/request/port");
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
@@ -297,7 +293,7 @@ public class TestcaseStep {
     private String getProtoFromInput() throws TestClientException {
         Node value = null;
         try {
-            value = XPathAPI.selectSingleNode(formInput, "/request/proto");
+            value = XPath.selectNode(formInput, "/request/proto");
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
@@ -309,17 +305,11 @@ public class TestcaseStep {
     private String getURIFromInput() throws TestClientException {
         Node value = null;
         try {
-            value = XPathAPI.selectSingleNode(formInput, "/request/uri");
+            value = XPath.selectNode(formInput, "/request/uri");
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
         String uri = ((Element) value).getFirstChild().getNodeValue();
         return uri;
-    }
-
-    /** Convert the inputstream from the server into a XML-document */
-    private Document convertServerResponseToDocument(InputStream istream)
-        throws ParserConfigurationException, SAXException, IOException {
-        return DOCBUILDERFAC.newDocumentBuilder().parse(istream);
     }
 }

@@ -14,7 +14,7 @@
   
   <active>true</active>
   <comment>Just two links</comment>
-  <depend><cus:docroot/>simplelink/conf/depend.xml</depend>
+  <depend>simplelink/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>simplelink.<cus:fqdn/></servername>
   <serveralias>simplelink.<cus:machine/></serveralias>

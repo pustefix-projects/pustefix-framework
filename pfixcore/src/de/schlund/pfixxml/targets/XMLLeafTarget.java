@@ -19,8 +19,10 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
 
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
+import java.io.File;
 import javax.xml.transform.TransformerException;
 
 /**
@@ -37,21 +39,21 @@ import javax.xml.transform.TransformerException;
 public class XMLLeafTarget extends LeafTarget {
 
     public XMLLeafTarget(TargetType type, TargetGenerator gen, String key) throws Exception {
-        this.type       = type;
-        this.generator  = gen;
-        this.targetkey  = key;
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + key);
+        this.type      = type;
+        this.generator = gen;
+        this.targetkey = key;
+        Path targetpath = PathFactory.getInstance().createPath(key);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
     }
 
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(getTargetKey());
+        File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object                thedoc   = xsltproc.xmlObjectFromDisc(thefile.getPath());
-            return thedoc;
+            return Xml.parse(thefile);
         } else {
             return null;
         }

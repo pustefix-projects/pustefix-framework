@@ -6,20 +6,11 @@
  */
 package de.schlund.pfixcore.util;
 
+
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.*;
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -30,7 +21,7 @@ import org.apache.tools.ant.BuildException;
  */
 public class XsltTransformer {
 
-    protected TransformerFactory transformerFactory;
+    protected TransformerFactory factory;
     protected Transformer transformer;
     protected File stylesheet;
     protected boolean isValidStylesheet = false;
@@ -54,26 +45,12 @@ public class XsltTransformer {
     }
 
     /**
-     * The Stylesheet needs to be set with {@link #setStylesheet(File)} when using this
-     * constructor.
-     * 
-     * @param transformerFactory if null, {@link TransformerFactory#newInstance()} is used
-     */
-    public XsltTransformer(TransformerFactory transformerFactory) {
-        this(transformerFactory, null);
-    }
-
-    /**
      * @param transformerFactory if null, {@link TransformerFactory#newInstance()} is used
      * @param stylesheet may be null
      */
-    public XsltTransformer(TransformerFactory transformerFactory, File stylesheet) {
-        if ( transformerFactory != null) {
-            this.transformerFactory = transformerFactory;
-        } else {
-            this.transformerFactory = TransformerFactory.newInstance();
-        } 
+    public XsltTransformer(File stylesheet) {
         setStylesheet(stylesheet);
+        factory = TransformerFactory.newInstance();
     }
 
     public void transform(File baseDir, String infilename, File destDir, String outfilename) {
@@ -115,9 +92,7 @@ public class XsltTransformer {
                     reload = reload || (stylesheet.equals(stylesheetOld) == false);
                     reload = reload || (lastModified > stylesheetOldLastModified);
                     if (reload) {
-                        StreamSource sourceStylesheet = new StreamSource(stylesheet);
-                        templates = transformerFactory.newTemplates(sourceStylesheet);
-                        transformer = templates.newTransformer();
+                        transformer = factory.newTransformer(new StreamSource(stylesheet));
                         stylesheetOld = stylesheet;
                         stylesheetOldLastModified = lastModified;
                         isValidStylesheet = true;
@@ -126,7 +101,7 @@ public class XsltTransformer {
                 } catch (TransformerConfigurationException e) {
                     stylesheetOld = null;
                     stylesheetOldLastModified = 0;
-                    throw new BuildException("Could not initialize XSLT Transformer (stylesheet=\""+stylesheet+"\" transformerFactory=\""+transformerFactory+"\")", e);
+                    throw new BuildException("Could not initialize XSLT Transformer (stylesheet=\""+stylesheet+"\")", e);
                 }
             }
         }
@@ -213,5 +188,4 @@ public class XsltTransformer {
         }
         this.cacheStylesheet = cacheStylesheet;
     }
-
 }

@@ -1,8 +1,8 @@
 (jde-project-file-version "1.0")
 (jde-set-variables
  '(jde-make-working-directory "./")
- '(jde-global-classpath (quote ("/opt/apache-ant-1.5.4/lib/ant.jar" "/opt/apache-ant-1.5.4/lib/optional.jar" "./src" "./build" "./res" "./lib" "./example/servletconf/tomcat/common/lib/servlet.jar")))
+ '(jde-global-classpath (quote ("./build" "./res" "./lib" "./example/servletconf/tomcat/common/lib/servlet.jar" "./tests/build/classes")))
  '(jde-run-working-directory "./")
  '(jde-compile-option-directory "./build")
- '(jde-sourcepath (quote ("./src")))
+ '(jde-sourcepath (quote ("./src" "./tests/junit")))
  '(jde-built-class-path (quote ("./build"))))

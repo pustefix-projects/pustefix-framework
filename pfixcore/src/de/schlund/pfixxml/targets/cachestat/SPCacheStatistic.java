@@ -4,7 +4,6 @@
  */
 package de.schlund.pfixxml.targets.cachestat;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,24 +13,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 
+import de.schlund.pfixcore.editor.EditorProductFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
 import de.schlund.pfixxml.targets.SharedLeaf;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.FactoryInit;
 
 /**
@@ -47,8 +40,6 @@ public class SPCacheStatistic implements FactoryInit {
     private static SPCacheStatistic theInstance = new SPCacheStatistic();
     private static int REGISTER_MISS = 0;
     private static int REGISTER_HIT = 1;
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    private static String PROP_PRODUCTDATA = "editorproductfactory.productdata";
     private static String PROP_QUEUESIZE =  "cachestatistic.queuesize";
     private static String PROP_QUEUETICKS = "cachestatistic.queueticks";
     private static Category CAT = Category.getInstance(SPCacheStatistic.class.getName());
@@ -57,8 +48,6 @@ public class SPCacheStatistic implements FactoryInit {
     
     /** Maps TargetGenerators to AdvanceCacheStatistic */
     private Hashtable targetGen2AdvanceStatMapping;
-    /** Maps config files (depend.xml.in) for  TargetGenerators to product names */ 
-    private HashMap dependXMLToProductnameMapping;
     /** Format for hitrate */
     private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
     /** Timer used for AdvanceCacheStatistic */
@@ -100,21 +89,9 @@ public class SPCacheStatistic implements FactoryInit {
         }
         if(CAT.isDebugEnabled()) CAT.debug("Got property '"+PROP_QUEUETICKS+"' ="+queueTicks);
         
-        String productdatafile = props.getProperty(PROP_PRODUCTDATA);
+        String productdatafile = props.getProperty(EditorProductFactory.PROP_PF);
         if (productdatafile == null || productdatafile.equals("")) {
-            throw new XMLException("Need property '" + PROP_PRODUCTDATA + "' for retrieving product data.");
-        }
-        DocumentBuilder docbuilder = dbfac.newDocumentBuilder();
-        Document doc = docbuilder.parse(new File(productdatafile));
-
-        NodeList nl = XPathAPI.selectNodeList(doc, "/projects/project");
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node project_node = nl.item(i);
-            String prjname = ((Element) project_node).getAttribute("name");
-            Node dependxml_node = XPathAPI.selectSingleNode(project_node, "./depend");
-            String dependname = ((Text) ((Element) dependxml_node).getFirstChild()).getData();
-            if(CAT.isDebugEnabled()) CAT.debug("Init: putting "+dependname+" = "+prjname);
-            dependXMLToProductnameMapping.put(dependname, prjname);
+            throw new XMLException("Need property '" + EditorProductFactory.PROP_PF + "' for retrieving product data.");
         }
     }
 
@@ -126,7 +103,6 @@ public class SPCacheStatistic implements FactoryInit {
      */
     private SPCacheStatistic() {
         targetGen2AdvanceStatMapping = new Hashtable();
-        dependXMLToProductnameMapping = new HashMap();
     }
 
     /**
@@ -156,12 +132,12 @@ public class SPCacheStatistic implements FactoryInit {
     /**
 	 * Create cache-statistic in XML-format.
 	 */
-    public Document getCacheStatisticAsXML() throws ParserConfigurationException {
+    public Document getCacheStatisticAsXML() {
         
         // do clone or synchronize? We need a stable iterator.
         Hashtable targetgentoinfomap_clone =  (Hashtable) targetGen2AdvanceStatMapping.clone();
 
-        Document doc = dbfac.newDocumentBuilder().newDocument();
+        Document doc = Xml.createDocument();
         Element top = doc.createElement("spcachestatistic");
 
         SPCache currentcache = SPCacheFactory.getInstance().getCache();
@@ -199,11 +175,10 @@ public class SPCacheStatistic implements FactoryInit {
         for (Iterator i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext();) {
             TargetGenerator tgen = (TargetGenerator) i.next();
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetgentoinfomap_clone.get(tgen);
-            String productname = getProductnameForTargetGenerator(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
             String hitrate = formatHitrate(hits, misses);
-            sb.append("|" + productname + ":" + hits + "," + misses + "," + hitrate);
+            sb.append("|" + tgen.getName() + ":" + hits + "," + misses + "," + hitrate);
             totalmisses += misses;
             totalhits += hits;
         }
@@ -251,9 +226,8 @@ public class SPCacheStatistic implements FactoryInit {
         for (Iterator i = targetgentoinfomap.keySet().iterator(); i.hasNext();) {
             TargetGenerator tgen = (TargetGenerator) i.next();
             Element ele_tg = doc.createElement("product");
-            String configattr = getProductnameForTargetGenerator(tgen);
 
-            ele_tg.setAttribute("name", configattr);
+            ele_tg.setAttribute("name", tgen.getName());
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetgentoinfomap.get(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
@@ -314,7 +288,7 @@ public class SPCacheStatistic implements FactoryInit {
             TargetGenerator tgen = (TargetGenerator) i.next();
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetGen2AdvanceStatMapping.get(tgen);
 
-            String productname = getProductnameForTargetGenerator(tgen);
+            String productname = tgen.getName();
             long hits = stat.getHits();
             long misses = stat.getMisses();
             totalmisses += misses;
@@ -325,20 +299,6 @@ public class SPCacheStatistic implements FactoryInit {
         ele_currentcache.setAttribute("misses", "" + totalmisses);
         String hitrate = formatHitrate(totalhits, totalmisses) + "%";
         ele_currentcache.setAttribute("hitrate", hitrate);
-    }
-
-    /**
-     * Get the product-name for a given TargetGenerator by
-     * inspecting the dependXMLToProductnameMapping.
-     */
-    private String getProductnameForTargetGenerator(TargetGenerator tgen) {
-        String dependxml = tgen.getConfigname();
-        if (dependXMLToProductnameMapping.containsKey(dependxml)) {
-            return (String) dependXMLToProductnameMapping.get(dependxml);
-        } else {
-            if(CAT.isDebugEnabled()) CAT.debug("No productname found !"+dependxml);
-            return dependxml;
-        }
     }
 
     private String formatHitrate(double hits, double misses) {

@@ -43,7 +43,7 @@ public class PageInfoFactory {
     }
 
     public PageInfo getPage(TargetGenerator gen, String name) {
-        String   key = gen.getConfigname() + "@" + name;
+        String   key = gen.getName() + "@" + name;
         PageInfo ret = (PageInfo) pagemap.get(key);
         if (ret == null) {
             ret = new PageInfo(gen, name);

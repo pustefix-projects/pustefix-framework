@@ -18,10 +18,9 @@
 */
 
 package de.schlund.pfixcore.editor;
-import java.util.*;
 
 /**
- * PfixcoreServlet.java
+ * TODO: currently not used
  *
  *
  * Created: Sat Nov 24 23:12:22 2001
@@ -30,17 +29,12 @@ import java.util.*;
  *
  *
  */
-
 public class PfixcoreServlet {
     private String     name;
-    private Properties properties;
     
-    public PfixcoreServlet (String name, Properties properties){
+    public PfixcoreServlet (String name){
         this.name       = name;
-        this.properties = properties;
     }
 
     public String getName() {return name;}
-    public Properties getProperties() {return properties;}
-    
-}// PfixcoreServlet
+}

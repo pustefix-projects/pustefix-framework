@@ -24,6 +24,7 @@ import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
 import java.util.*;
 import org.apache.log4j.Category;
 import org.w3c.dom.*;
@@ -102,7 +103,6 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
         Element elem    = null;
         for (Iterator i = images.iterator(); i.hasNext(); ) {
             AuxDependency curr = (AuxDependency) i.next();
-            String docroot = tgen.getDocroot();
             Path path = curr.getPath();
             String dir  = path.getDir();
             String name = path.getName();

@@ -8,9 +8,6 @@ package de.schlund.pfixcore.util;
 
 import java.io.File;
 import java.util.Date;
-
-import javax.xml.transform.TransformerFactory;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
@@ -292,8 +289,7 @@ public class XsltGenericTask extends MatchingTask {
     }
     protected XsltTransformer getTransformer() {
         if ( transformer == null ) {
-            TransformerFactory transformerFactory = loadTransformerFactory(getProject());
-            transformer = new XsltTransformer(transformerFactory);
+            transformer = new XsltTransformer();
         }
         return transformer;
     }
@@ -383,37 +379,5 @@ public class XsltGenericTask extends MatchingTask {
     // --- Helper methods ---
     protected static boolean isNothing(String s) {
         return (s == null) || (s.trim().length() == 0);
-    }
-    
-    
-    /**
-     * @param  project needed for logging, if null logging to System.out
-     * @throws BuildException
-     */
-    public static TransformerFactory loadTransformerFactory(Project project) {
-        TransformerFactory transformerFactory;
-        // using dynamic class loading to keep the ant task compilation
-        // independent of additional jars
-        String factoryClassname = "com.icl.saxon.TransformerFactoryImpl";
-        Class factoryClass = null;
-        try {
-            factoryClass = Class.forName(factoryClassname);
-        } catch (ClassNotFoundException e) {
-            throw new BuildException("Could not load Saxon ("+factoryClassname+") via Class.forName(), check classpath", e);
-        }
-        try {
-            // This does not work: 
-            // ANT_OPTS="${ANT_OPTS} -Djavax.xml.transform.TransformerFactory=com.icl.saxon.TransformerFactoryImpl" ant targetdefs
-            // transformerFactory = TransformerFactory.newInstance();
-            // Reason: FactoryFinder used within {@link TransformerFactory#newInstance()}
-            // picks the wrong classloader (Context Classloader instead of Default Classloader)
-            // For more info see "Find a way out of the ClassLoader maze
-            // System, current, context? Which ClassLoader should you use?": 
-            // http://www.javaworld.com/javaqa/2003-06/01-qa-0606-load_p.html
-            transformerFactory = (TransformerFactory) factoryClass.newInstance();
-        } catch (Exception e) {
-            throw new BuildException("Could not instantiate Saxon", e);
-        }
-        return transformerFactory;
     }
 }

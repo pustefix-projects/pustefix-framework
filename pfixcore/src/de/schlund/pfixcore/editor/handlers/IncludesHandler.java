@@ -18,15 +18,17 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
+
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.util.statuscodes.*;
 import java.util.*;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.*;
 
@@ -59,7 +61,7 @@ public class IncludesHandler extends EditorStdHandler {
         EditorProduct          prod     = esess.getProduct();
         TargetGenerator        tgen     = prod.getTargetGenerator();
         TreeSet                allinc   = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
-        Path                   path     = Path.create(tgen.getDocroot(), includes.getPath());
+        Path                   path     = PathFactory.getInstance().createPath(includes.getPath());
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
         

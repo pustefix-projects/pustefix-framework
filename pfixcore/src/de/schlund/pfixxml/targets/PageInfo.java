@@ -49,15 +49,15 @@ public class PageInfo implements Comparable {
 
     public int compareTo(Object inobj) {
         PageInfo in = (PageInfo) inobj;
-        if (getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname()) != 0) {
-            return getTargetGenerator().getConfigname().compareTo(in.getTargetGenerator().getConfigname());
+        if (getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName()) != 0) {
+            return getTargetGenerator().getName().compareTo(in.getTargetGenerator().getName());
         } else {
             return getName().compareTo(in.getName());
         }
     }
 
     public String toString() {
-        return "[PAGE: " + name + " " + generator.getConfigname() + "]";
+        return "[PAGE: " + name + " " + generator.getName() + "]";
     }
     
 }// PageInfo

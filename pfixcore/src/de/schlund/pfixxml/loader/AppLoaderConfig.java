@@ -19,9 +19,10 @@
 
 package de.schlund.pfixxml.loader;
 
-import org.apache.log4j.Category;
+import de.schlund.pfixxml.PathFactory;
 import java.io.*;
 import java.util.*;
+import org.apache.log4j.Category;
 
 /**
  * AppLoaderConfig.java 
@@ -43,88 +44,67 @@ public class AppLoaderConfig {
     protected void init(Properties globProps) {
         try {
             //read properties
-            String fileName=globProps.getProperty("apploader.propertyfile");
             Properties props=new Properties();
-            if(fileName!=null) {
-                try {
-                    props.load(new FileInputStream(fileName));
-                } catch(IOException x) {
-                    throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be loaded.");
-                }
-            } else {
-                throw new AppLoaderConfigException("AppLoader config file property isn't set.");
+            String fileName=getProperty(globProps, "apploader.propertyfile");
+            try {
+                props.load(new FileInputStream(PathFactory.getInstance().createPath(fileName).resolve()));
+            } catch(IOException x) {
+                throw new AppLoaderConfigException("AppLoader config file '"+fileName+"' can't be loaded.");
             }
             //apploader
             String name="apploader.mode";
-            String val=props.getProperty(name);
-            if(val!=null) {
-                if(val.equals("on")) {
-                    loader.setEnabled(true);
-                } else if(val.equals("off")) {
-                    loader.setEnabled(false);
-                    return;
-                } else {
-                    throw new AppLoaderConfigException("Property '"+name+"' needs value 'on|off'.");
-                }    
+            String val=getProperty(props, name);
+            if(val.equals("on")) {
+                loader.setEnabled(true);
+            } else if(val.equals("off")) {
+                loader.setEnabled(false);
+                return;
             } else {
-                throw new AppLoaderConfigException("Property '"+name+"' needed.");
-            }
+                throw new AppLoaderConfigException("Property '"+name+"' needs value 'on|off'.");
+            }    
             //cmdlistener
             name="apploader.cmdlistener.mode";
-            val=props.getProperty(name);
-            if(val!=null) {
-                boolean active=false;
-                if(val.equals("on")) {
-                    active=true;
-                } else if(val.equals("off")) {
-                    active=false;
-                } else {
-                    throw new AppLoaderConfigException("Property '"+name+"' needs value 'on|off'.");
-                }    
-                name="apploader.cmdlistener.port";
-                val=props.getProperty(name);
-                if(val!=null) {
-                    try {
-                        int port=Integer.parseInt(val);
-                        if(active) {
-                            CommandListener cl=new CommandListener(port);
-                            loader.setCommandListener(cl);
-                        }
-                    } catch(NumberFormatException x) {
-                        throw new AppLoaderConfigException("Property '"+name+"' has invalid value.");
-                    }
-                } else {
-                    throw new AppLoaderConfigException("Property '"+name+"' needed.");
-                }
+            val=getProperty(props, name);
+
+            boolean active=false;
+            if(val.equals("on")) {
+                active=true;
+            } else if(val.equals("off")) {
+                active=false;
             } else {
-                throw new AppLoaderConfigException("Property '"+name+"' needed.");
+                throw new AppLoaderConfigException("Property '"+name+"' needs value 'on|off'.");
+            }    
+            name="apploader.cmdlistener.port";
+            val=getProperty(props, name);
+            try {
+                int port=Integer.parseInt(val);
+                if(active) {
+                    CommandListener cl=new CommandListener(port);
+                    loader.setCommandListener(cl);
+                }
+            } catch(NumberFormatException x) {
+                throw new AppLoaderConfigException("Property '"+name+"' has invalid value.");
             }
             //trigger
             name="apploader.trigger.type";
-            val=props.getProperty(name);
-            if(val!=null) {
-                if(val.equals("auto")) {
-                    loader.setTrigger(AppLoader.AUTO_TRIGGER);
-                } else if(val.equals("manual")) {
-                    loader.setTrigger(AppLoader.MANUAL_TRIGGER);
-                } else {
-                    throw new AppLoaderConfigException("Property '"+name+"' needs value 'auto|manual'.");
-                }
+            val=getProperty(props, name);
+            if(val.equals("auto")) {
+                loader.setTrigger(AppLoader.AUTO_TRIGGER);
+            } else if(val.equals("manual")) {
+                loader.setTrigger(AppLoader.MANUAL_TRIGGER);
             } else {
-                throw new AppLoaderConfigException("Property '"+name+"' needed.");
+                throw new AppLoaderConfigException("Property '"+name+"' needs value 'auto|manual'.");
             }
             String ttype=val;
-            name="apploader.trigger.interval";
-            val=props.getProperty(name);
-            if(val!=null) {
+            if(ttype.equals("auto")) {
+                name="apploader.trigger.interval";
+                val=getProperty(props, name);
                 try {
                     int interval=Integer.parseInt(val)*1000;
                     loader.setInterval(interval);
                 } catch(NumberFormatException x) {
                     throw new AppLoaderConfigException("Property '"+name+"' has invalid value.");
                 }
-            } else {
-                if(ttype.equals("auto")) throw new AppLoaderConfigException("Property '"+name+"' needed.");
             }
             //policy
             name="apploader.policy.inconsistency.";
@@ -141,36 +121,28 @@ public class AppLoaderConfig {
                     } else {
                         throw new AppLoaderConfigException("Property '"+name+"' needs extension 'possible|probable'.");
                     }
-                    val=props.getProperty(key);
+                    val=getProperty(props, key);
                     int action;
-                    if(val!=null) {
-                        if(val.equals("reload")) {
-                            action=AppLoader.RELOAD_ACTION;
-                        } else if(val.equals("restart")) {
-                            action=AppLoader.RESTART_ACTION;
-                        } else if(val.equals("ignore")) {
-                            action=AppLoader.IGNORE_ACTION;
-                        } else {
-                            throw new AppLoaderConfigException("Property '"+key+"' needs value 'reload|restart|ignore'.");
-                        }
+                    if(val.equals("reload")) {
+                        action=AppLoader.RELOAD_ACTION;
+                    } else if(val.equals("restart")) {
+                        action=AppLoader.RESTART_ACTION;
+                    } else if(val.equals("ignore")) {
+                        action=AppLoader.IGNORE_ACTION;
                     } else {
-                        throw new AppLoaderConfigException("Property '"+key+"' needed.");
+                        throw new AppLoaderConfigException("Property '"+key+"' needs value 'reload|restart|ignore'.");
                     }
                     loader.setPolicy(type,action);
                 }
             }
             //repository
             name="apploader.repository";
-            val=props.getProperty(name);
-            if(val!=null && !val.equals("")) {
-                File file=new File(val);
-                if(file.exists()) {
-                    loader.setRepository(file);
-                } else {
-                    throw new AppLoaderConfigException("Property '"+name+"' needs existing directory as value.");
-                }
+            val=getProperty(props, name);
+            File file=new File(val);
+            if(file.exists()) {
+                loader.setRepository(file);
             } else {
-                throw new AppLoaderConfigException("Property '"+name+"' needed.");
+                throw new AppLoaderConfigException("Property '"+name+"' needs existing directory as value.");
             }
             //package
             name="apploader.package.include.";
@@ -178,26 +150,18 @@ public class AppLoaderConfig {
             while(enm.hasMoreElements()) {
                 String key=(String)enm.nextElement();
                 if(key.startsWith(name)) {
-                    val=props.getProperty(key);
-                    if(val!=null && !val.equals("")) {
-                        loader.includePackage(val);
-                    } else {
-                        throw new AppLoaderConfigException("Property '"+key+"' needs package name as value.");
-                    }
+                    val=getProperty(props, key);
+                    loader.includePackage(val);
                 }
             } 
             //class
             name="apploader.class.exclude.";
             enm=props.propertyNames();
             while(enm.hasMoreElements()) {
-                String key=(String)enm.nextElement();
+                String key=(String) enm.nextElement();
                 if(key.startsWith(name)) {
-                    val=props.getProperty(key);
-                    if(val!=null && !val.equals("")) {
-                        loader.excludeClass(val);
-                    } else {
-                        throw new AppLoaderConfigException("Property '"+key+"' needs class name as value.");
-                    }
+                    val=getProperty(props, key);
+                    loader.excludeClass(val);
                 }
             }
             //traverse
@@ -208,213 +172,26 @@ public class AppLoaderConfig {
                 String key=(String)enm.nextElement();
                 if(key.startsWith(exName) || key.startsWith(inName)) {
                     val=props.getProperty(key);
-                    if(val!=null && !val.equals("")) {
-                        if(key.startsWith(exName)) {
-                            loader.excludeTraversePackage(val);
-                        } else if(key.startsWith(inName)) {
-                            loader.includeTraverseClass(val); 
-                        }
+                    if(key.startsWith(exName)) {
+                        loader.excludeTraversePackage(val);
+                    } else if(key.startsWith(inName)) {
+                        loader.includeTraverseClass(val); 
                     }
                 }
             }
-        } catch(AppLoaderConfigException x) {
+        } catch (AppLoaderConfigException x) {
             CAT.error("Error while reading AppLoader configuration.",x);
             loader.setEnabled(false);
         }
     }
-    
-    /**
-    protected void load() {
-         try {
-             DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
-             DocumentBuilder builder=factory.newDocumentBuilder();
-             File file=new File(CONFIG_FILE);
-             Document doc=builder.parse(file);
-             doc.normalize();
-            
-             //apploader
-             NodeList nl=doc.getElementsByTagName("apploader");
-             if(nl!=null && nl.getLength()==1) {
-                 Node node=nl.item(0);
-                 NamedNodeMap nnm=node.getAttributes();
-                 if(nnm==null || nnm.getNamedItem("mode")==null) {
-                     throw new AppLoaderConfigException("Element 'apploader' needs attribute 'mode'.");
-                 } else {
-                     Node att=nnm.getNamedItem("mode");
-                     String val=att.getNodeValue();
-                     if(val.equals("on")) {
-                         loader.setEnabled(true);
-                     } else if(val.equals("off")) {
-                         loader.setEnabled(false);
-                     } else {
-                         throw new AppLoaderConfigException("Attribute 'mode' needs value 'on|off'.");
-                     }
-                 }
-             } else {
-                throw new AppLoaderConfigException("Element 'apploader' needed.");
-             }
-            
-             //cmdlistener
-             nl=doc.getElementsByTagName("cmdlistener");
-             if(nl!=null && nl.getLength()==1) {
-                 Node node=nl.item(0);
-                 NamedNodeMap nnm=node.getAttributes();
-                 if(nnm==null) {
-                     throw new AppLoaderConfigException("Element 'cmdlistener' needs attributes 'mode' and 'port'.");
-                 } else {
-                     boolean active=false;
-                     Node att=nnm.getNamedItem("mode");
-                     if(att==null) {
-                         throw new AppLoaderConfigException("Element 'cmdlistener' needs attribute 'mode'.");
-                     } else {
-                        String val=att.getNodeValue();
-                        if(val.equals("on")) {
-                            active=true;
-                        } else if(val.equals("off")) {
-                            active=false;
-                        } else {
-                            throw new AppLoaderConfigException("Attribute 'mode' needs value 'on|off'.");
-                        }
-                     }
-                     att=nnm.getNamedItem("port");
-                     if(att==null) {
-                         throw new AppLoaderConfigException("Element 'cmdlistener' needs attribute 'port'.");
-                     } else {
-                        String val=att.getNodeValue();
-                        try {
-                            int port=Integer.parseInt(val);
-                            if(active) {
-                                CommandListener cl=new CommandListener(port);
-                                loader.setCommandListener(cl);
-                            }
-                        } catch(NumberFormatException x) {
-                            throw new AppLoaderConfigException("Attribute 'port' has invalid value.");
-                        }
-                     }
-                 }
-             } else {
-                throw new AppLoaderConfigException("Element 'cmdlistener' needed.");
-             }
-             
-             //trigger
-             nl=doc.getElementsByTagName("trigger");
-             if(nl!=null && nl.getLength()==1) {
-                 Node node=nl.item(0);
-                 NamedNodeMap nnm=node.getAttributes();
-                 if(nnm==null) {
-                     throw new AppLoaderConfigException("Element 'trigger' needs attributes 'type' and 'interval'.");
-                 } else {
-                     boolean active=false;
-                     Node att=nnm.getNamedItem("type");
-                     if(att==null) {
-                         throw new AppLoaderConfigException("Element 'trigger' needs attribute 'type'.");
-                     } else {
-                        String val=att.getNodeValue();
-                        if(val.equals("auto")) {
-                            loader.setTrigger(AppLoader.AUTO_TRIGGER);
-                        } else if(val.equals("manual")) {
-                            loader.setTrigger(AppLoader.MANUAL_TRIGGER);
-                        } else {
-                            throw new AppLoaderConfigException("Attribute 'type' needs value 'auto|manual'.");
-                        }
-                     }
-                     att=nnm.getNamedItem("interval");
-                     if(att==null) {
-                         throw new AppLoaderConfigException("Element 'trigger' needs attribute 'interval'.");
-                     } else {
-                        String val=att.getNodeValue();
-                        try {
-                            int interval=Integer.parseInt(val)*1000;
-                            loader.setInterval(interval);
-                        } catch(NumberFormatException x) {
-                            throw new AppLoaderConfigException("Attribute 'interval' has invalid value.");
-                        }
-                     }
-                 }
-             } else {
-                throw new AppLoaderConfigException("Element 'trigger' needed.");
-             }
-             
-             //modification
-             nl=doc.getElementsByTagName("modification");
-             if(nl!=null && nl.getLength()>0) {
-                 for(int i=0;i<nl.getLength();i++) {
-                     Node node=nl.item(i);
-                     NamedNodeMap nnm=node.getAttributes();
-                     if(nnm==null) {
-                         throw new AppLoaderConfigException("Element 'modification' needs attributes 'type' and 'action'.");
-                     } else {
-                         int type,action;
-                         Node att=nnm.getNamedItem("type");
-                         if(att==null) {
-                             throw new AppLoaderConfigException("Element 'modification' needs attribute 'type'.");
-                         } else {
-                            String val=att.getNodeValue();
-                            if(val.equals("general")) {
-                                type=AppLoader.GENERAL_MODIFICATION;
-                            } else if(val.equals("member")) {
-                                type=AppLoader.MEMBER_MODIFICATION;
-                            } else {
-                                throw new AppLoaderConfigException("Attribute 'type' needs value 'general|member'.");
-                            }
-                         }
-                         att=nnm.getNamedItem("action");
-                         if(att==null) {
-                             throw new AppLoaderConfigException("Element 'modification' needs attribute 'action'.");
-                         } else {
-                            String val=att.getNodeValue();
-                            if(val.equals("reload")) {
-                                action=AppLoader.RELOAD_ACTION;
-                            } else if(val.equals("restart")) {
-                                action=AppLoader.RESTART_ACTION;
-                            } else if(val.equals("ignore")) {
-                                action=AppLoader.IGNORE_ACTION;
-                            } else {
-                                throw new AppLoaderConfigException("Attribute 'type' needs value 'reload|restart|ignore'.");
-                            }
-                         }
-                         loader.setModificationPolicy(type,action);
-                     }
-                 }
-             } else {
-                 throw new AppLoaderConfigException("Element 'modification' needed.");
-             }
-              
-            //repository
-            nl=doc.getElementsByTagName("repository");
-            if(nl!=null && nl.getLength()==1) {
-                Node n=nl.item(0).getFirstChild();
-                if(n!=null) {
-                    String val=n.getNodeValue();
-                    loader.setRepository(new File(val));
-                } else {
-                    throw new AppLoaderConfigException("Element 'repository' is empty.");
-                }
-             } else {
-                 throw new AppLoaderConfigException("Element 'repository' needed.");
-             }
-             
-             //package
-             nl=doc.getElementsByTagName("package");
-             if(nl!=null && nl.getLength()>0) {
-                 for(int i=0;i<nl.getLength();i++) {
-                     Node n=nl.item(i).getFirstChild();
-                     if(n!=null) {
-                         String val=n.getNodeValue();
-                         loader.includePackage(val);
-                     } else {
-                         throw new AppLoaderConfigException("Element 'package' is empty.");
-                     }
-                 }
-             } else {
-                 throw new AppLoaderConfigException("Element 'package' needed.");
-             }
 
-         } catch(Exception x) {
-             CAT.error("Error while reading AppLoader configuration.",x);
-             loader.setEnabled(false);
-         }
-     }
-    */
-    
+    private static String getProperty(Properties props, String key) throws AppLoaderConfigException {
+        String val;
+
+        val = props.getProperty(key);
+        if (val == null) {
+            throw new AppLoaderConfigException("Property '"+key+"' needed.");
+        }
+        return val;
+    }
 }

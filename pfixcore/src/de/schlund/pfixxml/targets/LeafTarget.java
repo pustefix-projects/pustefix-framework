@@ -18,13 +18,11 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
+
+import de.schlund.pfixxml.*;
 import java.io.*;
+import java.util.*;
 import org.apache.log4j.*;
-
-import de.schlund.pfixxml.XMLException;
-
-import javax.xml.parsers.*;
 
 /**
  * LeafTarget.java
@@ -38,8 +36,6 @@ import javax.xml.parsers.*;
  */
 
 public abstract class LeafTarget extends TargetImpl {
-    protected static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-
     // Set this in the Constructor of derived classes!
     protected SharedLeaf sharedleaf;
     
@@ -73,7 +69,7 @@ public abstract class LeafTarget extends TargetImpl {
     public boolean needsUpdate() throws Exception  {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            File doc       = new File(getTargetGenerator().getDocroot() + getTargetKey());
+            File doc       = PathFactory.getInstance().createPath(getTargetKey()).resolve();
             if (doc.lastModified() > mymodtime) {
                 return true;
             }
@@ -89,11 +85,8 @@ public abstract class LeafTarget extends TargetImpl {
     }
 
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getConfigname() + "]";
+        return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getName() + "]";
     }
-
-    // still to implement from TargetImpl:
-    //protected abstract Object  getValueFromDiscCache() throws Exception;
 
     protected void setModTime(long mtime) {
         synchronized (sharedleaf) {
@@ -107,9 +100,9 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long mymodtime  = getModTime(); 
-        long maxmodtime = new File(getTargetGenerator().getDocroot() + getTargetKey()).lastModified(); 
+        long maxmodtime = PathFactory.getInstance().createPath(getTargetKey()).resolve().lastModified(); 
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
         

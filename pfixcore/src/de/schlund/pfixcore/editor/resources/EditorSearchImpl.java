@@ -23,13 +23,12 @@ import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.*;
-import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 import org.apache.oro.text.regex.*;
-import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
 
 
@@ -201,7 +200,7 @@ public class EditorSearchImpl implements ContextResource, EditorSearch {
             
             Element  part = EditorHelper.getIncludePart(tgen, incpart);
             if (part != null) {
-                Element content = (Element) XPathAPI.selectSingleNode(part, "./product[@name='" + prod + "']");
+                Element content = (Element) XPath.selectNode(part, "./product[@name='" + prod + "']");
                 if (content != null) {
                     doSearch(incpart, content, result);
                 } else {
@@ -219,7 +218,7 @@ public class EditorSearchImpl implements ContextResource, EditorSearch {
                 if (!allcommons.contains(tmp)) {
                     Element  part = EditorHelper.getIncludePart(tgen, dynpart);
                     if (part != null) {
-                        Element content = (Element) XPathAPI.selectSingleNode(part, "./product[@name='default']");
+                        Element content = (Element) XPath.selectNode(part, "./product[@name='default']");
                         if (content != null) {
                             doSearch(dynpart, content, dynresult);
                         }
@@ -228,7 +227,7 @@ public class EditorSearchImpl implements ContextResource, EditorSearch {
             } else if (prod.equals(product)) {
                 Element  part = EditorHelper.getIncludePart(tgen, dynpart);
                 if (part != null) {
-                    Element content = (Element) XPathAPI.selectSingleNode(part, "./product[@name='" + product + "']");
+                    Element content = (Element) XPath.selectNode(part, "./product[@name='" + product + "']");
                     if (content != null) {
                         doSearch(dynpart, content, dynresult);
                     }
@@ -248,13 +247,7 @@ public class EditorSearchImpl implements ContextResource, EditorSearch {
     }
 
     private void doSourceCodeSearch(AuxDependency incpart, Element content, HashMap resmap) throws Exception {
-        StringWriter  sw  = new StringWriter();
-        OutputFormat  out = new OutputFormat("XML","ISO-8859-1",true);
-        XMLSerializer xs  = new XMLSerializer(sw, out);
-        out.setLineWidth(0);
-        xs.asDOMSerializer().serialize(content);
-        
-        String text = sw.getBuffer().toString();
+        String text = Xml.serialize(content, true, true);
         Perl5Matcher        matcher = new Perl5Matcher();
         PatternMatcherInput minp    = new PatternMatcherInput(text);
         while (matcher.contains(minp, pattern)) {
@@ -273,9 +266,9 @@ public class EditorSearchImpl implements ContextResource, EditorSearch {
     }
     
     private void doTextNodeSearch(AuxDependency incpart, Element content, HashMap resmap) throws Exception {
-        NodeList textnodes = XPathAPI.selectNodeList(content, ".//text()");
-        for (int j = 0; j < textnodes.getLength(); j++) {
-            String text = ((Text) textnodes.item(j)).getNodeValue();
+        List textnodes = XPath.select(content, ".//text()");
+        for (int j = 0; j < textnodes.size(); j++) {
+            String text = ((Text) textnodes.get(j)).getNodeValue();
             text = text.trim();
             if (!text.equals("")) {
                 // CAT.debug("===>>>> Looking in: " + text);

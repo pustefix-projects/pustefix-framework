@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.editor;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.util.FactoryInit;
-import de.schlund.pfixcore.util.*;
+import de.schlund.pfixcore.util.Meminfo;
 import java.util.*;
 import org.apache.log4j.*;
 

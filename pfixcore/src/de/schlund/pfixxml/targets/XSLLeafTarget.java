@@ -19,8 +19,11 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
 
+
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.*;
+import java.io.File;
 import javax.xml.transform.TransformerException;
 
 /**
@@ -40,18 +43,18 @@ public class XSLLeafTarget extends LeafTarget {
         this.type       = type;
         this.generator  = gen;
         this.targetkey  = key;
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + key);
+        Path targetpath = PathFactory.getInstance().createPath(key);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
     }
 
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(getTargetKey());
+        File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object                retval   = xsltproc.xslObjectFromDisc(generator.getDocroot(), thefile.getPath()); 
-            return retval;
+            return Xslt.loadTemplates(thepath); 
         } else {
             return null;
         }
