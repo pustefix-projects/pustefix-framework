@@ -19,12 +19,12 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixcore.util.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.Navigation.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixcore.util.*;
 import java.util.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;
@@ -55,6 +55,7 @@ public class Context implements AppContext {
     private final static String   ADMINPAGE         = "context.adminmode.page";
     private final static String   ADMINMODE         = "context.adminmode";
     private final static String   AUTH_PROP         = "authcontext.authpage";
+    private final static String   JUMPPAGE          = "__jumptopage";
     
     // from constructor
     private String     name;
@@ -77,10 +78,11 @@ public class Context implements AppContext {
     private PageRequest admin_pagereq;
 
     // the request state
-    protected PfixServletRequest currentpreq;
-    protected PageRequest        currentpagerequest;
-    // protected PageRequest        initialpagerequest;
-    protected PageFlow           currentpageflow;
+    private PfixServletRequest currentpreq;
+    private PageRequest        currentpagerequest;
+    private PageRequest        jumptopagerequest;
+    private PageFlow           currentpageflow;
+    private boolean            on_jumptopage;
     
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
@@ -117,7 +119,10 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        currentpreq = preq;
+        currentpreq       = preq;
+        jumptopagerequest = null;
+        on_jumptopage     = false;
+        
         if (needs_update) {
             do_update();
         }
@@ -143,7 +148,7 @@ public class Context implements AppContext {
             return spdoc;
         }
         
-    	trySettingPageRequestAndFlow();
+        trySettingPageRequestAndFlow();
         spdoc = documentFromFlow();
 
         if (spdoc != null && spdoc.getPagename() == null) {
@@ -216,6 +221,30 @@ public class Context implements AppContext {
         return currentpagerequest;
     }
 
+    public void setJumpToPageRequest(String pagename) {
+        PageRequest page = new PageRequest(pagename);
+        if (pagemap.getState(page) != null) {
+            jumptopagerequest = page;
+        } else {
+            LOG.warn("*** Trying to set jumppage " + pagename + ", but it's not defined ***");
+        }
+        
+    }
+    
+    public PageRequest getJumpToPageRequest() {
+        return jumptopagerequest;
+    }
+
+    /**
+     * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
+     * It returnes true if the pagerequest has already been jumped to internally after a successful submit.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean jumpToPageIsRunning() {
+        return on_jumptopage;
+    }
+    
     /**
      * <code>flowIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returned true if the Context is currently running one of the defined pageflows.
@@ -352,8 +381,9 @@ public class Context implements AppContext {
         preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
         pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
 
-        // The navigation is possibly shared across more than one context, i.e. more than one properties object.
-        // So we can't let it be handled by the PropertyObjectManager.
+        // The navigation is possibly shared across more than one
+        // context, i.e. more than one properties object.  So we can't
+        // let it be handled by the PropertyObjectManager.
         if (properties.getProperty(NAVPROP) != null) {
             navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP));
         }
@@ -474,80 +504,99 @@ public class Context implements AppContext {
         if (!resdoc.wantsContinue()) {
             LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping workflow.");
             document = resdoc.getSPDocument();
+        } else if (jumptopagerequest != null) {
+            LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopagerequest + "].");
+            currentpagerequest = jumptopagerequest;
+            currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest);
+            jumptopagerequest  = null; // we don't want to recurse infinitely
+            on_jumptopage      = true; // we need this information to supress the interpretation of
+                                       // the request as one that submits data. See StateImpl,
+                                       // methods isSubmitTrigger & isDirectTrigger  
+            LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
+            document = documentFromFlow();
         } else if (currentpageflow != null) {
             LOG.debug("* [" + currentpagerequest + "] signalled success, starting workflow process");
             // We need to re-check the authorisation because the just handled submit could have changed the authorisation status.
-            document = checkAuthorization();
-            if (document != null) {
-                return document;
-            }
-            workflow                  = currentpageflow.getAllSteps();
-            PageRequest saved         = currentpagerequest;
-            boolean     after_current = false;
-            for (int i = 0; i < workflow.length; i++) {
-                PageRequest page = workflow[i];
-                if (page.equals(saved)) {
-                    LOG.debug("* Skipping step [" + page + "] in workflow (been there already...)");
-                    after_current = true;
-                } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
-                    LOG.debug("* Skipping step [" + page + "] in workflow (state is not accessible...)");
-                    // break;
-                } else {
-                    LOG.debug("* Workflow is at step " + i + ": [" + page + "]");
-                    boolean needsdata;
-                    if (after_current && currentpageflow.pageIsClearingPoint(page)) {
-                        LOG.debug("=> [" + page + "]: Workflow wants to stop, getting document now.");
-                        currentpagerequest = page;
-                        page.setStatus(PageRequestStatus.WORKFLOW);
-                        resdoc             = documentFromCurrentStep();
-                        document           = resdoc.getSPDocument();
-                        if (document == null) {
-                            throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
-                        }
-                        LOG.debug("* [" + page + "] returned document => show it.");
-                        break;
-                    } else if (checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
-                        LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving workflow and getting document now.");
-                        currentpagerequest = page;
-                        page.setStatus(PageRequestStatus.WORKFLOW);
-                        resdoc             = documentFromCurrentStep();
-                        document           = resdoc.getSPDocument();
-                        if (document == null) {
-                            throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
-                        }
-                        LOG.debug("* [" + page + "] returned document => show it.");
-                        break;
-                    } else {
-                        LOG.debug("=> [" + page + "]: Workflow doesn't want to stop and needsData() returned FALSE");
-                        LOG.debug("=> [" + page + "]: going to next step in workflow.");
-                    }
-                }
-            }
-            if (document == null) {
-                PageRequest finalpage = currentpageflow.getFinalPage();
-                if (finalpage == null) {
-                    throw new XMLException("*** Reached end of Workflow '" + currentpageflow.getName() + "' " +
-                                           "with neither getting a non-null SPDocument or having a FINAL page defined ***");
-                } else if (!checkIsAccessible(finalpage, PageRequestStatus.FINAL)) {
-                    throw new XMLException("*** Reached end of Workflow '" + currentpageflow.getName() + "' " +
-                                           "but FINAL page [" + finalpage + "] is inaccessible ***");
-                } else {
-                    currentpagerequest = finalpage;
-                    currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, finalpage);
-                    finalpage.setStatus(PageRequestStatus.FINAL);
-                    resdoc             = documentFromCurrentStep();
-                    document           = resdoc.getSPDocument();
-                    if (document == null) {
-                        throw new XMLException("*** FATAL: " + finalpage + " returns a 'null' SPDocument! ***");
-                    }
-                }
-            }
+            document = runPageFlow();
         } else {
             throw new XMLException("*** ERROR! *** current Stateflow == null!");
         }
         return document;
     }
 
+
+    private SPDocument runPageFlow() throws Exception {
+        ResultDocument resdoc   = null;
+        SPDocument     document = checkAuthorization();
+        if (document != null) {
+            return document;
+        }
+        PageRequest[] workflow    = currentpageflow.getAllSteps();
+        PageRequest saved         = currentpagerequest;
+        boolean     after_current = false;
+        
+        for (int i = 0; i < workflow.length; i++) {
+            PageRequest page = workflow[i];
+            if (page.equals(saved)) {
+                LOG.debug("* Skipping step [" + page + "] in workflow (been there already...)");
+                after_current = true;
+            } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
+                LOG.debug("* Skipping step [" + page + "] in workflow (state is not accessible...)");
+                // break;
+            } else {
+                LOG.debug("* Workflow is at step " + i + ": [" + page + "]");
+                boolean needsdata;
+                if (after_current && currentpageflow.pageIsClearingPoint(page)) {
+                    LOG.debug("=> [" + page + "]: Workflow wants to stop, getting document now.");
+                    currentpagerequest = page;
+                    page.setStatus(PageRequestStatus.WORKFLOW);
+                    resdoc             = documentFromCurrentStep();
+                    document           = resdoc.getSPDocument();
+                    if (document == null) {
+                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                    }
+                    LOG.debug("* [" + page + "] returned document => show it.");
+                    break;
+                } else if (checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
+                    LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving workflow and getting document now.");
+                    currentpagerequest = page;
+                    page.setStatus(PageRequestStatus.WORKFLOW);
+                    resdoc             = documentFromCurrentStep();
+                    document           = resdoc.getSPDocument();
+                    if (document == null) {
+                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                    }
+                    LOG.debug("* [" + page + "] returned document => show it.");
+                    break;
+                } else {
+                    LOG.debug("=> [" + page + "]: Workflow doesn't want to stop and needsData() returned FALSE");
+                    LOG.debug("=> [" + page + "]: going to next step in workflow.");
+                }
+            }
+        }
+        if (document == null) {
+            PageRequest finalpage = currentpageflow.getFinalPage();
+            if (finalpage == null) {
+                throw new XMLException("*** Reached end of Workflow '" + currentpageflow.getName() + "' " +
+                                       "with neither getting a non-null SPDocument or having a FINAL page defined ***");
+            } else if (!checkIsAccessible(finalpage, PageRequestStatus.FINAL)) {
+                throw new XMLException("*** Reached end of Workflow '" + currentpageflow.getName() + "' " +
+                                       "but FINAL page [" + finalpage + "] is inaccessible ***");
+            } else {
+                currentpagerequest = finalpage;
+                currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, finalpage);
+                finalpage.setStatus(PageRequestStatus.FINAL);
+                resdoc             = documentFromCurrentStep();
+                document           = resdoc.getSPDocument();
+                if (document == null) {
+                    throw new XMLException("*** FATAL: " + finalpage + " returns a 'null' SPDocument! ***");
+                }
+            }
+        }
+        return document;
+    }
+
+    
     /**
      * <code>documentFromCurrentStep</code> handles how to get a SPDocument from the state
      * that is associated (via the properties) to the current PageRequest.
@@ -577,13 +626,11 @@ public class Context implements AppContext {
         if (!page.isEmpty() && (authpage == null || !page.equals(authpage))) {
             page.setStatus(PageRequestStatus.DIRECT);
             currentpagerequest = page;
-            // initialpagerequest = page;
             currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, page, currentpreq);
             LOG.debug("* Setting currentpagerequest to [" + page + "]");
             LOG.debug("* Setting currentpageflow to [" + currentpageflow.getName() + "]");
         } else {
             page = currentpagerequest;
-            // initialpagerequest = page;
             if (page != null) {
                 page.setStatus(PageRequestStatus.DIRECT);
                 LOG.debug("* Reusing page [" + page + "]");
@@ -591,6 +638,10 @@ public class Context implements AppContext {
             } else {
                 throw new RuntimeException("Don't have a current page to use as output target");
             }
+        }
+        RequestParam jump = currentpreq.getRequestParam(JUMPPAGE);
+        if (jump != null && !jump.getValue().equals("")) {
+            setJumpToPageRequest(jump.getValue());
         }
     }
 

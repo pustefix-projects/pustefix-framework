@@ -38,36 +38,32 @@ public abstract class StateImpl implements State {
     
     public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        String       sd    = null;
-        if (sdreq != null) {
-            sd = sdreq.getValue();
-        }
-        return (!context.flowIsRunning() && (sd == null || (!sd.equals("true") && !sd.equals("1") && !sd.equals("yes"))));
+        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || !requestParamSaysSubmit(sdreq)));
     }
     
     public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        String       sd    = null;
-        if (sdreq != null) {
-            sd = sdreq.getValue();
-        }
-        return (isSubmitTriggerAny(context, sd));
+        return (isSubmitTriggerAny(context, sdreq));
     }
     
     public final boolean isSubmitAuthTrigger(Context context, PfixServletRequest preq) {
         RequestParam sdreq = preq.getRequestParam(SENDAUTHDATA);
-        String       sd    = null;
-        if (sdreq != null) {
-            sd = sdreq.getValue();
-        }
-        return (isSubmitTriggerAny(context, sd));
+        return (isSubmitTriggerAny(context, sdreq));
     }
 
     // private
+    private boolean requestParamSaysSubmit(RequestParam sdreq) {
+        if (sdreq != null) {
+            String sd = sdreq.getValue();
+            return (sd.equals("true") || sd.equals("1") || sd.equals("yes"));
+        }
+        return false;
+    }
     
-    private boolean isSubmitTriggerAny(Context context, String sd) {
-        return (!context.flowIsRunning() && !context.finalPageIsRunning() && sd != null &&
-                (sd.equals("true") || sd.equals("1") || sd.equals("yes")));
+    
+    private boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
+        return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
+                !context.jumpToPageIsRunning() && requestParamSaysSubmit(sdreq));
     }
 
     // You may want to overwrite this 

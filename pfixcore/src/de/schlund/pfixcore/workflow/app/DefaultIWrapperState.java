@@ -91,7 +91,11 @@ public class DefaultIWrapperState extends StaticState {
                 rfinal.onWorkError(container);
             } else {
                 CAT.debug("    => No error happened during work ...");
-                if (container.stayAfterSubmit()) {
+                if (context.getJumpToPageRequest() != null) {
+                    CAT.debug("... Context has a jumppage set: [" + context.getJumpToPageRequest() + "]");
+                    CAT.debug("    => continue there...");
+                    container.getAssociatedResultDocument().setContinue(true);
+                } else if (container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page:");
                     CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
@@ -132,8 +136,8 @@ public class DefaultIWrapperState extends StaticState {
         } else {
             throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-        // We need to check because in the success case, there's no need to 
-        // add anything to the SPDocument, as we will advance in the pageflow anyway
+        // We need to check because in the success case, there's no need to add anything to the
+        // SPDocument, as we will advance in the pageflow anyway  
         if (!resdoc.wantsContinue()) {
             container.addStringValues();
             container.addIWrapperStatus();
