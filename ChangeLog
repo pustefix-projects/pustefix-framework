@@ -1,3 +1,10 @@
+2003-06-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: (button_impl) Changed the
+	way mode=desc works. It used to not make a link when the page it
+	points to or any subpage are the current page. Now only the visible appearence is changed 
+	when the condition matches, but a link is still created when the current page is a subpage.
+
 2003-06-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/script/baselib.js: bug fix from sebastian.werner@schlund.de to
