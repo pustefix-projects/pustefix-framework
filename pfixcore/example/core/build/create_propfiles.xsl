@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<xsl:stylesheet version="1.0" 
+<xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  
+
   <!--  <xsl:param name="docroot"/>
   <xsl:param name="uid"/>
   <xsl:param name="machine"/>
@@ -10,13 +10,13 @@
 
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
   <xsl:include href="create_lib.xsl"/>
-    
+
   <!--- match the root node -->
   <xsl:template match="/">
     <xsl:apply-templates/>
   </xsl:template>
-  
-  <!-- the property template -->  
+
+  <!-- the property template -->
   <xsl:template match="prop">
     <xsl:param name="key"><xsl:value-of select="./@name"/></xsl:param>
     <xsl:value-of select="$key"/><xsl:text>=</xsl:text>
@@ -25,11 +25,11 @@
     </xsl:apply-templates>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
-  
+
   <!-- match text nodes but just if it contains a property value -->
   <xsl:template match="text()">
     <xsl:param name="doit"/>
-    <xsl:if test="$doit"> 
+    <xsl:if test="$doit">
       <xsl:value-of select="translate(normalize-space(.), '&#xa;&#xd;', '  ')"/>
     </xsl:if>
   </xsl:template>
@@ -49,56 +49,66 @@
   </xsl:template>
 
   <xsl:template match="pagerequest">
-    <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
-    <xsl:variable name="nostore">
-      <xsl:choose>
-        <xsl:when test="@nostore and @nostore = 'true'">true</xsl:when>
-        <xsl:otherwise>false</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:if test="$nostore = 'true'">
-      <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
-    </xsl:if>
-    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
-    <xsl:choose>
-      <xsl:when test="./state"><xsl:value-of select="./state/@class"/></xsl:when>
-      <xsl:when test="./ihandler">
-        <xsl:choose>
-          <xsl:when test="/properties/servletinfo/defaultihandlerstate">
-            <xsl:value-of select="/properties/servletinfo/defaultihandlerstate/@class"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
+    <xsl:param name="name" select="@name"/>
+     <xsl:choose>
+      <xsl:when test="@copyfrom">
+        <xsl:variable name="copyfrom_name" select="@copyfrom" />
+        <xsl:apply-templates select="//pagerequest[@name= $copyfrom_name]">
+          <xsl:with-param name="name" select="$name" />
+        </xsl:apply-templates>
       </xsl:when>
-      <xsl:when test="./authhandler"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</xsl:text></xsl:when>
       <xsl:otherwise>
+        <xsl:variable name="nostore">
+          <xsl:choose>
+            <xsl:when test="@nostore and @nostore = 'true'">true</xsl:when>
+            <xsl:otherwise>false</xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="$nostore = 'true'">
+          <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+        </xsl:if>
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
         <xsl:choose>
-          <xsl:when test="/properties/servletinfo/defaultstate">
-            <xsl:value-of select="/properties/servletinfo/defaultstate/@class"/>
+          <xsl:when test="./state"><xsl:value-of select="./state/@class"/></xsl:when>
+          <xsl:when test="./ihandler">
+            <xsl:choose>
+              <xsl:when test="/properties/servletinfo/defaultihandlerstate">
+                <xsl:value-of select="/properties/servletinfo/defaultihandlerstate/@class"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:when>
+          <xsl:when test="./authhandler"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</xsl:text></xsl:when>
           <xsl:otherwise>
-            <xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text>
+            <xsl:choose>
+              <xsl:when test="/properties/servletinfo/defaultstate">
+                <xsl:value-of select="/properties/servletinfo/defaultstate/@class"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:otherwise>
         </xsl:choose>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:apply-templates>
+          <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/></xsl:with-param>
+        </xsl:apply-templates>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:text>&#xa;</xsl:text>
-    <xsl:apply-templates>
-      <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/></xsl:with-param>
-    </xsl:apply-templates>
   </xsl:template>
 
   <xsl:template match="/properties/servletinfo/defaultstate"/>
   <xsl:template match="/properties/servletinfo/defaultihandlerstate"/>
-  
+
   <xsl:template match="finalizer">
     <xsl:param name="prefix"/>
     <xsl:value-of select="$prefix"/><xsl:text>.resdocfinalizer=</xsl:text>
     <xsl:value-of select="@class"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
-  
+
   <xsl:template match="ihandler">
     <xsl:param name="prefix"/>
     <xsl:if test="@policy">
@@ -142,8 +152,8 @@
       <xsl:value-of select="$prefix"/>.auxinterface.<xsl:value-of select="position()"/>.<xsl:value-of select="@prefix"/>
       <xsl:text>=</xsl:text><xsl:value-of select="@class"/><xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
-  </xsl:template> 
-  
+  </xsl:template>
+
   <xsl:template match="output">
     <xsl:param name="prefix"/>
     <xsl:for-each select="./resource">
@@ -184,7 +194,7 @@
   </xsl:template>
 
   <xsl:template match="context">
-    <xsl:text>context.class=</xsl:text>      
+    <xsl:text>context.class=</xsl:text>
     <xsl:choose>
       <xsl:when test="@class"><xsl:value-of select="@class"/></xsl:when>
       <xsl:otherwise>de.schlund.pfixcore.workflow.Context</xsl:otherwise>
@@ -210,7 +220,7 @@
       </xsl:for-each>
     </xsl:for-each>
   </xsl:template>
-  
+
   <xsl:template match="servletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
     <xsl:choose>
@@ -245,7 +255,7 @@
     </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
-  
+
   <xsl:template match="adminmode">
     <xsl:text>context.adminmode.watch=</xsl:text>
     <xsl:value-of select="./@watch"/><xsl:text>&#xa;</xsl:text>
