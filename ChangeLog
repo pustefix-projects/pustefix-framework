@@ -1,3 +1,7 @@
+2004-10-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: relased 0.8.0 
+
 2004-10-11  Martin Leidig  <mleidig@schlund.de>
 
 	Added a "real world" webservice example application: a simple 
