@@ -820,7 +820,11 @@
             <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
             <td nowrap="nowrap">
               <ixsl:value-of select="$ind"/>
-              <pfx:button page="includes" target="_top" frame="_top" mode="force">
+              <pfx:button page="includes" mode="force">
+                <xsl:if test="not($page = 'includes')">
+                  <xsl:attribute name="target">_top</xsl:attribute>
+                  <xsl:attribute name="frame">_top</xsl:attribute>
+                </xsl:if>
                 <pfx:command  name="SELWRP" page="includes">incsel</pfx:command>
                 <pfx:command  name="SELWRP" page="includes">uplinc</pfx:command>
                 <pfx:argument name="incsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
@@ -959,82 +963,25 @@
               (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
               <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
               <input type="hidden" name="visible" value="false"/>
-              <script>
-                parent.parent.frames["applet"].hideApplet();
-              </script>
+              <pfx:script>
+                parent.parent.frames["applet"].hideApplet(); 
+              </pfx:script>
             </td>
           </tr>
         </ixsl:if>
         <pfx:checkactive prefix="{$upload}">
           <tr>
-            <script>
-              
-              function f_do() {
-                alert('Bin drin');
-                parent.parent.frames["applet"].do_test();
-               }
-
-
-              function doSub() {
-                alert('Da');
-                text=parent.parent.frames["applet"].document.applets["xmlEditor"].getText();
-                
-                window.document.getElementById('test').value=text
-                document.forms[0].submit();
-              }
-
-
-              
-            </script>
-
-            <!-- CONVERTER VERSION 1.1 -->
-<!--             <script> -->
-<!--               function getAppletText() { -->
-<!--                 if (!document.applets["xmlEditor"].isValid()) { -->
-<!--                   alert("xml code is not wellformed"); -->
-<!--                   return false; -->
-<!--                 } else { -->
-<!--                   text=document.applets["xmlEditor"].getText(); -->
-<!--                   window.document.getElementById('hallo').value=text; -->
-<!--                   // alert('value:'+window.document.getElementById('hallo').value); -->
-<!--                   return true;  -->
-<!--                 } -->
-<!--               } -->
-<!--             </script> -->
-
-            
-<!--             <applet code="de/schlund/pfixeditor/XmlEditorApplet" -->
-<!--                     codebase="/core/script" -->
-<!--                     name="xmlEditor" -->
-<!--                     archive="xmlEditorApplet.jar" -->
-<!--                     width="100%" height="550"> -->
-              
-<!--               <ixsl:element name="param"> -->
-<!--                 <ixsl:attribute name="name">text</ixsl:attribute> -->
-<!--                 <ixsl:attribute name="value"> -->
-<!--                   <ixsl:value-of select="/formresult/formvalues/param[@name='{$upload}.Content']/text()"/> -->
-<!--                 </ixsl:attribute> -->
-<!--               </ixsl:element> -->
-<!--               <param name="log" value="off"/> -->
-              
-<!--             </applet> -->
-<!--             <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" cols="0" rows="0" style="width: 100%; visibility:hidden; display:none "/> -->
-
             <td colspan="2">
               <input type="hidden" value="{$upload}.Content" name="upload"/>
               <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
-             <!--  name="{$upload}.Content" -->
-            <!--  <pfx:xinp name="hallo2" type="area" style="height: 400px; width: 100%" class="editor_textarea" id="hallo">Neineineneineineinei</pfx:xinp> -->
               <input type="hidden" name="visible" value="true"/>
-              <script>
+              <pfx:script>
                 parent.parent.frames["applet"].showApplet();
-               
-              </script>
+              </pfx:script>
             </td>
           </tr>
           <tr valign="middle">
             <td>
-<!--               <pfx:xinp class="editor_submit" type="submit" value="Upload Data" onclick="return getAppletText()"> -->
               <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
                 <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
                 <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
@@ -1121,7 +1068,6 @@
           </ixsl:choose>
         </pfx:checkactive>
       </table>
-      
     </pfx:forminput>
   </xsl:template>
   
