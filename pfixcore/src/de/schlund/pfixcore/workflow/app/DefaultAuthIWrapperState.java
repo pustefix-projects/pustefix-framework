@@ -18,24 +18,13 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.TreeMap;
 
-import de.schlund.pfixcore.generator.IHandler;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.generator.IWrapperParamInfo;
-import de.schlund.pfixcore.generator.RequestData;
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.StateImpl;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.ResultForm;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.pfixcore.generator.*;
+import de.schlund.pfixcore.util.*;
+import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.*;
+import de.schlund.util.statuscodes.*;
+import java.util.*;
 
 /**
  * DefaultAuthIWrapperState.java
@@ -95,7 +84,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         String authprefix  = (String) authwrp.keySet().iterator().next();
         String authwrapper = (String) authwrp.get(authprefix);
         if (authwrapper == null || authwrapper.equals("")) {
-                throw new XMLException("No interface for prefix " + authprefix);
+            throw new XMLException("No interface for prefix " + authprefix);
         }
 
         if(CAT.isDebugEnabled()) {
@@ -219,6 +208,15 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 // put the stringvals into hidden variables,
                 // so the next submit will supply them again.
                 resform.addHiddenValue(prefix + "." + par.getName(), val);
+            }
+        }
+        for (Iterator i = rdata.getParameterNames(); i.hasNext(); ) {
+            String name = (String) i.next();
+            if (name.equals(AbstractXMLServer.PARAM_ANCHOR)) {
+                RequestParam[] vals = rdata.getParameters(name);
+                for (int j = 0; j < vals.length; j++) {
+                    resform.addHiddenValue(name, vals[j].getValue());
+                }
             }
         }
     }
