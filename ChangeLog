@@ -1,3 +1,21 @@
+2003-07-31 Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
+	src/de/schlund/pfixxml/testenv/TestClient.java,
+	example/core/editor/txt/pages/main_testcasestart.xml: more information
+	printed on selected testcases.
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java(load),
+	src/de/schlund/pfixcore/generator/casters/ToFile.java(castValue):
+	added some CAT.isDebugEnabled for loops.
+
+	* src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java(ruleNoMatch):
+	only do mail of mailsending is enabled.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java(getDocument):
+	more information on 'ERROR: Need exactly one interface definition for
+	authpage!' exception.
+
 2003-07-30  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/LRUCache.java (getIterator): new

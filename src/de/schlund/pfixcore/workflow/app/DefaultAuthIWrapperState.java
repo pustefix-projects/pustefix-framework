@@ -79,6 +79,18 @@ public class DefaultAuthIWrapperState extends StateImpl {
         TreeMap        auxwrp  = PropertiesUtils.selectPropertiesSorted(props, PROP_AUXIFACE);
 
         if (authwrp == null || authwrp.size() != 1) {
+            if(authwrp == null) {
+                CAT.error("authwrp == null");
+            } else {
+                StringBuffer msg = new StringBuffer();
+                msg.append("\nauthwrp.size = ").append(authwrp.size()).append("\n");
+                Set keys = authwrp.keySet();
+                for(Iterator iter=keys.iterator(); iter.hasNext();) {
+                    Object key = iter.next();
+                    msg.append("key="+iter.next()+" value= "+authwrp.get(key)).append("\n");
+                }
+                CAT.error(msg);
+            }
             throw new XMLException("ERROR: Need exactly one interface definition for authpage!");
         }
 

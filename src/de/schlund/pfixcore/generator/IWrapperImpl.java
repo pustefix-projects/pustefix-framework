@@ -62,10 +62,14 @@ public abstract class IWrapperImpl implements IWrapper {
 
         for (Iterator i = params.values().iterator(); i.hasNext();) {
             IWrapperParamInfo pinfo = (IWrapperParamInfo) i.next();
-            CAT.debug("===> Doing init for ParamInfo: " + pinfo.getName());
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("===> Doing init for ParamInfo: " + pinfo.getName());
+            }
             pinfo.initValueFromRequest(prefix, req);
             if (pinfo.errorHappened()) {
-                CAT.debug("*** ERROR happened for ParamInfo: " + pinfo.getName());
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("*** ERROR happened for ParamInfo: " + pinfo.getName());
+                }
                 synchronized (errors) {
                     errors.put(pinfo.getName(), pinfo);
                 }
@@ -73,7 +77,9 @@ public abstract class IWrapperImpl implements IWrapper {
         }
         for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
             IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
-            CAT.debug("===> Doing init for IndexedParam: " + pindex.getName());
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("===> Doing init for IndexedParam: " + pindex.getName());
+            }
             pindex.initValueFromRequest(prefix, req);
             // error handling happens inside the IWRapperIndexedParam...
         }

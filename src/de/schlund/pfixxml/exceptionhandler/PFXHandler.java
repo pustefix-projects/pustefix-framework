@@ -242,7 +242,12 @@ class PFXHandler {
         String message = excontext.getMessage();
         try {
             MailConfig mailconfig = MailConfig.getInstance();
-            EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
+            if(mailconfig.isSend()) {
+                EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
+            } else {
+                if(CAT.isDebugEnabled()) 
+                    CAT.debug("MailSending is disabled");
+            }
         } catch (EmailSenderException e) {
             pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
         }
