@@ -1,6 +1,5 @@
 package de.schlund.pfixcore.webservice.generate;
 
-import org.apache.axis.encoding.DefaultSOAPEncodingTypeMappingImpl;
 import org.apache.axis.wsdl.fromJava.Emitter;
 
 import java.io.File;

@@ -3,8 +3,6 @@ package de.schlund.pfixcore.webservice.generate;
 import org.apache.axis.enum.Scope;
 import org.apache.axis.wsdl.toJava.Emitter;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 
 import org.apache.axis.tools.ant.wsdl.TypeMappingVersionEnum;
 

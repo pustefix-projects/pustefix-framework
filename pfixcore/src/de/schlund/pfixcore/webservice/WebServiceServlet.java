@@ -8,13 +8,7 @@ import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -29,8 +23,6 @@ import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
 import de.schlund.pfixcore.webservice.monitor.*;
-import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
-import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
 
 /**
