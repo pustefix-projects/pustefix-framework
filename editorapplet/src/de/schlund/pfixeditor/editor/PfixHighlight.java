@@ -343,17 +343,21 @@ public class PfixHighlight extends DefaultStyledDocument {
 
                     int prePos = preText.lastIndexOf(":");
                     
-                    if (prePos > elPos) {
+                     if (prePos > elPos) {
                         String fix = preText.substring(elPos + 1, prePos);
 
                         if (!prefixUnsetter) {
-                            if (currentPos == prePos + 1) {
+                            
+                            if (currentPos == prePos + 1) {                                
                                 for (int j = 0; j < prefixes.length; j++) {
-                                if (prefixes[j].equals(fix)) {                
-                                    setPrefixCol(elPos+1, prePos, j);
+                                if (prefixes[j].equals(fix)) {                                    
+                                    int lenge = prePos - elPos;
+                                    
+                                    setPrefixCol(elPos+1, lenge, j);
                                     setPrefixCol(j);
                                     prefixUnsetter = true;
                                     // this.elemStartUnsetter = false;
+
                                 
                                 }
                                 String endfix = "/" + prefixes[j];
