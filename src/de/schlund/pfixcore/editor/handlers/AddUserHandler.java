@@ -18,25 +18,31 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
-import java.util.*;
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.editor.EditorPageUpdater;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.EditorProduct;
+import de.schlund.pfixcore.editor.EditorProductFactory;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.auth.GlobalPermissions;
+import de.schlund.pfixcore.editor.auth.NoSuchUserException;
+import de.schlund.pfixcore.editor.auth.ProjectPermissions;
+import de.schlund.pfixcore.editor.interfaces.AddUser;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
- * AddUserHandler.java
+ * Handler for adding new users to the Pustefix CMS. 
  *
- *
- * Created: Sun Dec 12 03:05:24 2001
- *
+ * <br/>
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
  *
  */
 
@@ -50,14 +56,28 @@ public class AddUserHandler implements IHandler {
         String                 newid   = adduser.getId();
         StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.editor.adduser");
 
-        EditorUser tmp = EditorUserFactory.getInstance().getEditorUser(newid);
-        if (tmp == null) {
-            tmp = EditorUserFactory.getInstance().createEditorUser(newid);
-            esess.setUserForEdit(tmp);
-        } else {
+        EditorUserInfo tmp = null;
+        try {
+            tmp = EditorUser.getUserInfoByLogin(newid);
             StatusCode scode = sfac.getStatusCode("USER_EXISTS");
             adduser.addSCodeId(scode);
-        }
+        } catch(NoSuchUserException e) {
+            tmp = new EditorUserInfo(newid);
+            // here we set default permissions for the new user
+            GlobalPermissions gp = new GlobalPermissions();
+            gp.setAdmin(false);
+            gp.setEditDynIncludesDefault(false);
+            tmp.setGlobalPermissions(gp);
+            EditorProduct[] prods = EditorProductFactory.getInstance().getAllEditorProducts();
+            for(int i=0; i<prods.length; i++) {
+                ProjectPermissions p = new ProjectPermissions();
+                p.setEditDynIncludes(false);
+                p.setEditImages(false);
+                p.setEditIncludes(false);
+                tmp.addProjectPermission(prods[i].getName(), p);
+            }
+            esess.setUserForEdit(tmp);
+        } 
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
@@ -68,7 +88,7 @@ public class AddUserHandler implements IHandler {
         ContextResourceManager crm   = context.getContextResourceManager();
         EditorSessionStatus    esess = EditorRes.getEditorSessionStatus(crm);
         EditorUser             user  = esess.getUser();
-        if (user != null && user.isAdmin()) {
+        if (user != null && user.getUserInfo().isAdmin()) {
             return true;
         } else {
             return false;

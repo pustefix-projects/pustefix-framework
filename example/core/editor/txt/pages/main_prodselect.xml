@@ -56,7 +56,7 @@
                 <br/>
               </td>
             </tr>
-            <ixsl:if test="/formresult/cr_editorsession/user/@group = &apos;wheel&apos;">
+            <ixsl:if test="/formresult/cr_editorsession/user/permissions/global/@admin = 'true'">
               <tr>
                 <td>
                   <table class="editor_box" width="100%">

@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
+import de.schlund.pfixcore.editor.auth.ProjectPermissions;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
@@ -30,8 +31,12 @@ import de.schlund.pfixxml.targets.*;
 import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
+
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.*;
 import java.io.*;
+
+import javax.xml.transform.TransformerException;
 
 /**
  * IncludesFinalizer.java
@@ -52,10 +57,10 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         EditorSessionStatus    esess       = EditorRes.getEditorSessionStatus(crm);
         EditorSearch           esearch     = EditorRes.getEditorSearch(crm);
         ResultDocument         resdoc      = container.getAssociatedResultDocument();
-        EditorProduct          eprod       = esess.getProduct();
-        TargetGenerator        tgen        = eprod.getTargetGenerator();
+        
+        TargetGenerator        tgen        = esess.getProduct().getTargetGenerator();
         AuxDependency          currinclude = esess.getCurrentInclude();
-        PfixcoreNamespace[]    nspaces     = eprod.getPfixcoreNamespace();
+        PfixcoreNamespace[]    nspaces     = esess.getProduct().getPfixcoreNamespace();
 
         for (int i = 0; i < nspaces.length; i++) {
             PfixcoreNamespace nsp = nspaces[i];
@@ -90,7 +95,20 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             root.setAttribute("product", product);
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
-
+            
+            
+            // render all affected products for current include
+            Element aff_prods = resdoc.createNode("affectedproducts");
+            HashSet set = EditorHelper.getAffectedProductsForInclude(esess, path, part);
+            for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+                EditorProduct prod = (EditorProduct) iter.next();
+                String name = prod.getName();
+                Element pr = resdoc.createNode("product");
+                pr.setAttribute("name", name);
+                aff_prods.appendChild(pr);
+            }
+            root.appendChild(aff_prods);
+            
             if (!lock) {
                 try {
                     EditorSessionStatus foreign = EditorLockFactory.getInstance().getLockingEditorSessionStatus(currinclude);
@@ -124,6 +142,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         }
     }
 
+  
     public void onSuccess(IWrapperContainer container) throws Exception{
         renderDefault(container);
     }

@@ -18,16 +18,20 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
-import java.util.*;
+import java.util.ArrayList;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.editor.EditorPageUpdater;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.interfaces.DeleteUser;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
  * DeleteUserHandler.java
@@ -52,16 +56,17 @@ public class DeleteUserHandler implements IHandler {
         
         for (int i = 0; i < delid.length; i++) {
             String     id  = delid[i];
-            EditorUser tmp = EditorUserFactory.getInstance().getEditorUser(id);
+            EditorUserInfo tmp = EditorUser.getUserInfoByLogin(id);
             if (tmp != null) {
                 CAT.debug("*****  Deleting user " + id);
-                users.add(tmp);
+                EditorUser.removeUser(tmp);
             }
         }
 
-        if (!users.isEmpty()) {
+       /* if (!users.isEmpty()) {
             EditorUserFactory.getInstance().delEditorUser((EditorUser[]) users.toArray(new EditorUser[] {}));
-        }
+        }*/
+       
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
@@ -72,7 +77,7 @@ public class DeleteUserHandler implements IHandler {
         ContextResourceManager crm   = context.getContextResourceManager();
         EditorSessionStatus    esess = EditorRes.getEditorSessionStatus(crm);
         EditorUser             user  = esess.getUser();
-        if (user != null && user.isAdmin()) {
+        if (user != null && user.getUserInfo().isAdmin()) {
             return true;
         } else {
             return false;

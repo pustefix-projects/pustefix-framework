@@ -18,17 +18,17 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.app.IWrapperContainer;
+import de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * EditorUserManagerFinalizer.java
@@ -55,13 +55,12 @@ public class EditorUserManagerFinalizer extends ResdocSimpleFinalizer {
         // Render all Locks
         Element root = resdoc.createNode("allusers"); 
 
-        EditorUser[]  allusers = EditorUserFactory.getInstance().getAllEditorUsers();
+        EditorUserInfo[]  allusers = EditorUser.getAllEditorUserInfo();
         for (int i = 0; i < allusers.length; i++) {
-            EditorUser user = allusers[i];
+            EditorUserInfo user = allusers[i];
             Element    elem = resdoc.createSubNode(root, "user");
             elem.setAttribute("count", "" + i);
             elem.setAttribute("id", user.getId());
-            elem.setAttribute("group", user.getGroup());
             elem.setAttribute("name", user.getName());
             elem.setAttribute("phone", user.getPhone());
             elem.setAttribute("sect", user.getSect());

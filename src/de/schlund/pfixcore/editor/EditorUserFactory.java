@@ -18,16 +18,9 @@
 */
 
 package de.schlund.pfixcore.editor;
-import de.schlund.pfixcore.util.*;
+import java.util.Properties;
+
 import de.schlund.util.FactoryInit;
-import de.schlund.pfixxml.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
 
 /**
  * EditorUserFactory.java
@@ -41,41 +34,41 @@ import javax.xml.parsers.*;
  */
 
 public class EditorUserFactory implements FactoryInit {
-    private static DocumentBuilderFactory dbfac         = DocumentBuilderFactory.newInstance();
+  /*  private static DocumentBuilderFactory dbfac         = DocumentBuilderFactory.newInstance();
     private static TreeMap                knownusers    = new TreeMap();
     private static TreeMap                floatingusers = new TreeMap();
     private static Category               LOG           = Category.getInstance(EditorUserFactory.class.getName());
-    private static EditorUserFactory      instance      = new EditorUserFactory();
-
+   */ private static EditorUserFactory      instance      = new EditorUserFactory();
+/*
     private static final String PROP_UF  = "editoruserfactory.userdata";
     public               Object LOCK     = new Object();
     private              String userfile;
-    
+    */
     public static EditorUserFactory getInstance() {
         return instance;
     }
-
+/*
     public EditorUser createEditorUser(String id) {
         EditorUser user = getEditorUser(id);
         if (user == null) {
             synchronized (floatingusers) {
-                user = new EditorUser(id);
+            //    user = new EditorUser(id);
                 floatingusers.put(id, user);
             }
         }
         return user;
     }
-    
+    */
     public void init(Properties properties) throws Exception {
-        userfile = properties.getProperty(PROP_UF);
+       /* userfile = properties.getProperty(PROP_UF);
         if (userfile == null) {
             throw new XMLException("Need property " + PROP_UF + " set!");
         }
         synchronized (knownusers) {
             readFile();
-        }
+        }*/
     }
-
+/*
     public EditorUser getEditorUser(String id) {
         synchronized (knownusers) {
             return (EditorUser) knownusers.get(id); 
@@ -167,5 +160,5 @@ public class EditorUserFactory implements FactoryInit {
             ser.serialize(doc);
         }
     }
-
+*/
 }// EditorUserFactory

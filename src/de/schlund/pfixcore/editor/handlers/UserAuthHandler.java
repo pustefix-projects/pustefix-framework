@@ -18,15 +18,21 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.editor.EditorException;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.auth.NoSuchUserException;
+import de.schlund.pfixcore.editor.auth.WrongPasswordException;
+import de.schlund.pfixcore.editor.interfaces.UserAuth;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
  * UserAuthHandler.java
@@ -51,8 +57,9 @@ public class UserAuthHandler implements IHandler {
         boolean                loginok = esess.getLoginAllowed();
         StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.editor.auth");
         StatusCode             scode;
+ 
 
-        EditorUser eu = EditorUserFactory.getInstance().getEditorUser(user);
+        /*EditorUser eu = EditorUserFactory.getInstance().getEditorUser(user);
         if (eu != null && UnixCrypt.matches(eu.getPwd(), pass)) {
             if (loginok || eu.isAdmin()) {
                 esess.setUser(eu);
@@ -66,6 +73,24 @@ public class UserAuthHandler implements IHandler {
                 CAT.debug("PWD doesn't match: " + pass );
             }
             auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+        }*/
+        
+        EditorUser editor_user = null;
+        
+        try {
+            editor_user = EditorUser.logIn(user, pass);
+        } catch (WrongPasswordException e) {
+            auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            return;
+        } catch (NoSuchUserException e) {
+            auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            return;
+        }
+        
+        if (loginok ) {
+            esess.setUser(editor_user);
+        } else {
+            auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));
         }
     }
         

@@ -21,10 +21,14 @@ package de.schlund.pfixcore.editor.handlers;
 
 import org.apache.log4j.*;
 import de.schlund.pfixcore.editor.*;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.auth.GlobalPermissions;
+import de.schlund.pfixcore.editor.auth.ProjectPermissions;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import org.apache.oro.text.regex.*;
+
 
 /**
  * CommonsUploadHandler.java
@@ -37,8 +41,8 @@ import org.apache.oro.text.regex.*;
  *
  */
 
-public class CommonsUploadHandler extends IncludesUploadHandler {
-    private static Category CAT = Category.getInstance(IncludesUploadHandler.class.getName());
+public class CommonsUploadHandler extends XMLUploadHandler {
+    private static Category CAT = Category.getInstance(CommonsUploadHandler.class.getName());
 
     public CommonsUploadHandler() throws MalformedPatternException {
         super();
@@ -46,6 +50,40 @@ public class CommonsUploadHandler extends IncludesUploadHandler {
 
     public AuxDependency getCurrentInclude(EditorSessionStatus esess) {
         return esess.getCurrentCommon();
+    }
+
+    /**
+     * @see de.schlund.pfixcore.editor.handlers.XMLUploadHandler#checkAccess(de.schlund.pfixcore.editor.auth.EditorUserInfo, java.lang.String)
+     */
+    public void checkAccess(EditorSessionStatus esess) throws XMLException {
+        if(CAT.isDebugEnabled())
+            CAT.debug("checkAccess start");
+        EditorUserInfo user = esess.getUser().getUserInfo();
+        GlobalPermissions gp = user.getGlobalPerms();
+        ProjectPermissions pp = user.getProjectPerms(esess.getProduct().getName());
+        String prod = getCurrentInclude(esess).getProduct();
+        if(gp.isEditDynIncludesDefault()) {
+            if(pp.isEditDynIncludes()) {}
+            else {
+                if(prod.equals("default")) {}
+                else {
+                    throw new XMLException("PermissionDenied! You are trying to edit a specific branch, but"+
+                        " you do not have the proper permissions!\n"+user.toString());
+                }
+            }
+        } else {
+            if(pp.isEditDynIncludes()) {
+                if(prod.equals("default")) {
+                    throw new XMLException("Permission denied! You are trying to edit the default branch, but"+
+                        " you do not have the proper permissions!\n"+user.toString()); 
+                } else {}
+            } else {
+                throw new XMLException("PermissionDenied! You are trying to edit a specific branch, but"+
+                    " you do not have the proper permissions!\n"+user.toString());
+            }
+        }
+        if(CAT.isDebugEnabled())
+            CAT.debug("checkAccess end. Permission granted.");
     }
 
 }

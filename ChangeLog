@@ -1,3 +1,20 @@
+2003-06-24  Joerg Haecker <haecker@schlund.de>
+
+	* example/common/conf/apploader.prop.in: added support for editor.
+
+	* example/common/conf/factory.prop.in: added AuthManagerFactory(see
+	  below)
+
+	* src/de/schlund/pfixcore/editor: added new management of access
+	  rights. For details see the pustefix-devel mailing list.
+	  This is work in progress.
+
+	* example/core/editor/txt/pages/main_editoruserdata.xml,
+	* example/core/editor/txt/pages/main_prodselect.xml,
+	* example/core/editor/xsl/metatags.xsl: GUI changes
+
+	* example/common/conf/userdata.xml: adjusted.
+
 2003-06-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: removed the whole stuff of the last change again :-) 
