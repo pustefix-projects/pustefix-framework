@@ -110,10 +110,24 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
     }
 
     public Object[] getValueArr() { return value; }
-    public String[] getStringValue() { return stringval; }
-    public void     setStringValue(String[] v) { stringval = v; }
 
-    private void     setStringValue(RequestParam[] values) {
+    public String[] getStringValue() { return stringval; }
+
+    public void setStringValue(String[] v) { stringval = v; }
+
+    public void setSimpleObjectValue(Object[] v) {
+        if (v != null) {
+            String[] tmp = new String[v.length];
+            for (int i = 0; i < v.length; i++) {
+                tmp[i] = v[i].toString();
+            }
+            stringval = tmp;
+        } else {
+            stringval = null;
+        }
+    }
+    
+    private void setStringValue(RequestParam[] values) {
         if (values != null) {
             stringval = new String[values.length];
             for (int i = 0; i < values.length; i++) {
@@ -122,8 +136,6 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
         } else {
             stringval = null;
         }
-        
-        
     }
 
     public void initValueFromRequest(String prefix, RequestData reqdata) {

@@ -76,21 +76,9 @@ public class TrouserHandler implements IHandler {
         // we use the ct.needsData() call to look if the Context Ressource has meaningful content
         // to display. This may be handled differently depending on the case.
         if (!ct.needsData()) {
-            trouser.setStringValColor(ct.getColor().toString());
-            trouser.setStringValSize(ct.getSize());
-            Integer[] features = ct.getFeature();
-
-            // ugly thing... we must set the String value for output, so for an array we
-            // resort to a loop to construct a String array
-            if (features != null) {
-                String[]  feat = new String[features.length];
-                for (int i = 0; i < features.length; i++) {
-                    feat[i] = features[i].toString();
-                }
-                trouser.setStringValFeature(feat);
-            } else {
-                trouser.setStringValFeature(null);
-            }
+            trouser.setColor(ct.getColor());
+            trouser.setSize(ct.getSize());
+            trouser.setFeature(ct.getFeature());
         }
     }
     
