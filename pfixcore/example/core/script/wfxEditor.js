@@ -83,13 +83,13 @@ wfxEditor.prototype.setRangeMarker = function() {
 
     rngStart = rng.duplicate();
     rngStart.collapse(true);
-    rngStart.pasteHTML('<span id="sfxStart"></span>');
+    rngStart.pasteHTML('<span class="sfxStart"></span>');
 
     //    alert("sel.type:" + sel.type);
     if( sel.type == "Text" ) {
       rngEnd   = rng.duplicate();
       rngEnd.collapse(false);
-      rngEnd.pasteHTML('<span id="sfxEnd"></span>');
+      rngEnd.pasteHTML('<span class="sfxEnd"></span>');
     }
 
   } else {
@@ -110,14 +110,14 @@ wfxEditor.prototype.setRangeMarker = function() {
     var mynode;
 
     mynode = this._doc.createElement("span");
-    mynode.id = "sfxStart";
+    mynode.className = "sfxStart";
     mydoc.appendChild(mynode);
 //    mynode = this._doc.createComment("sfxStart");
 //    mydoc.appendChild(mynode);
 
     if( !sel.isCollapsed) {
       mynode = this._doc.createElement("span");
-      mynode.id = "sfxEnd";
+      mynode.className = "sfxEnd";
       mydoc.appendChild(mynode);
 
       var rngEnd = this._doc.createRange();
@@ -140,7 +140,7 @@ wfxEditor.prototype.setRangeMarker = function() {
 //#****************************************************************************
 wfxEditor.prototype.changeRangeMarker = function(buf) {
 
-  return buf.replace( /<span id="(sfx.+?)"><\/span>/g, "[[[$1]]]");
+  return buf.replace( /<span class="(sfx.+?)"><\/span>/g, "[[[$1]]]");
 };
 
 //#****************************************************************************
@@ -421,7 +421,7 @@ wfxEditor.prototype.src2col = function( buf ) {
   //  var rule_argval  = /(\"[^\0]*?\")/g;
   var rule_argval  = /(=\s*)(([\"\'])[^\0]*?\3)/g;
 
-  var rule_entity  = /(&amp;([^&]+?;))/g;
+  var rule_entity  = /(&amp;[^&]+?;)/g;
   var rule_comment = /(&lt;!--[^\0]*?--&gt;)/g;
   var rule_cdata   = /(&lt;!\[CDATA\[[^\0]*?\]\]&gt;)/g;
 
@@ -516,7 +516,7 @@ wfxEditor.prototype.src2col = function( buf ) {
   }
 
   bench( null, 6 );
-  buf = buf.replace( rule_entity,     '<span class="entity" title="\&$2">$1</span>' );
+  buf = buf.replace( rule_entity,     '<span class="entity">$1</span>' );
   bench( "  entities", null, 6 );
 
   //--------------------------
@@ -764,7 +764,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 
 	if( optiTab ) {
 	  content = buf;
-	  content = content.replace( /<span id="sfx.+?"><\/span>/g, "");
+	  content = content.replace( /<span class="sfx.+?"><\/span>/g, "");
 	} else {
 	  content = this.removeChangedRangeMarker(content);
 	}
@@ -1520,7 +1520,7 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     html = html.replace( /\"/g, '&quot;');
 
-    html = html.replace( /<SPAN (class|id)=(.*?)>/g, '<span $1="$2">');
+    html = html.replace( /<SPAN class=(.*?)>/g, '<span class="$1">');
     html = html.replace( /<\/SPAN>/g, '</span>' );
     html = html.replace( /<BR>/g, '<br />' );
     html = html.replace( /<(\/?)PRE>/g, '<$1pre>' );
@@ -1553,14 +1553,18 @@ wfxEditor.prototype.getHTML = function(dbg) {
   } else {
     html = this._doc.body.innerHTML;
 
-    html = html.replace( /^\n*/g, "");
+    // Windows
+    html = html.replace( /\r/g, "");
+
+    html = html.replace( /^\n?<pre>\n?/g, "<pre>");
+    html = html.replace( /\n?<\/pre>\n$/g, "</pre>");
 
     html = html.replace( /<br>/g, '<br />' );
 
     // Ctrl-A selects entire content including <pre>
     // ==> bring leading and trailing range markers inside <pre>
-    html = html.replace( /^(.+?)\n<pre>/, "<pre>$1");
-    html = html.replace( /<\/pre>\n?(.+?)$/, "$1</pre>");
+    html = html.replace( /^(.+?)<pre>/, "<pre>$1");
+    html = html.replace( /<\/pre>(.+?)$/, "$1</pre>");
 
     // after Ctrl-A + Backspace to empty entire content, a Ctrl-V to paste new
     // content could be inserted after empty pre tags including wrong newlines
