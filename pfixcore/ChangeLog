@@ -1,3 +1,6 @@
+2004-08-04 Michael Hartmeier  <mhm@schlund.de>
+	* build.xml, skel/build.xml: ant clean has to delete toncat/conf/Catalina
+
 2004-08-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl: same here as below... /xml is fix for the time being.
