@@ -88,6 +88,8 @@
 
   <!-- *** some additional properties needed for this application *** -->
 
+  <!-- <prop name="interfacelogging"><cus:docroot/>sample1/log</prop> -->
+
   <prop name="contexttshirt.feature.0">Waterproof</prop>
   <prop name="contexttshirt.feature.1">Extra warm</prop>
   <prop name="contexttshirt.feature.2">Windproof</prop>

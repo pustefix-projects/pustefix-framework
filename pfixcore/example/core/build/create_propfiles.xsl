@@ -2,7 +2,7 @@
 <xsl:stylesheet version="1.0" 
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   
-<!--  <xsl:param name="docroot"/>
+  <!--  <xsl:param name="docroot"/>
   <xsl:param name="uid"/>
   <xsl:param name="machine"/>
   <xsl:param name="fqdn"/>
@@ -23,8 +23,7 @@
     <xsl:apply-templates  select="./* | ./text()">
       <xsl:with-param name="doit" select="'yes'"/>
     </xsl:apply-templates>
-    <xsl:text>
-</xsl:text>
+    <xsl:text>&#xa;</xsl:text>
   </xsl:template>
   
   <!-- match text nodes but just if it contains a property value -->
@@ -120,6 +119,12 @@
     <xsl:if test="./interface[@alwaysretrieve = 'true']">
       <xsl:value-of select="$prefix"/><xsl:text>.alwaysretrieve=</xsl:text>
       <xsl:for-each select="./interface[@alwaysretrieve = 'true']">
+        <xsl:value-of select="@prefix"/><xsl:text> </xsl:text>
+      </xsl:for-each><xsl:text>&#xa;</xsl:text>
+    </xsl:if>
+    <xsl:if test="./interface[@logging = 'true']">
+      <xsl:value-of select="$prefix"/><xsl:text>.loginterfaces=</xsl:text>
+      <xsl:for-each select="./interface[@logging = 'true']">
         <xsl:value-of select="@prefix"/><xsl:text> </xsl:text>
       </xsl:for-each><xsl:text>&#xa;</xsl:text>
     </xsl:if>

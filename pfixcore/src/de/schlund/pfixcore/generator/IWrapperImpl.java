@@ -19,10 +19,12 @@
 
 package de.schlund.pfixcore.generator;
 
-import java.util.*;
 import de.schlund.pfixxml.*;
 import de.schlund.util.statuscodes.*;
+import java.io.*;
 import java.net.*;
+import java.text.*;
+import java.util.*;
 import org.apache.log4j.*;
 
 /**
@@ -38,15 +40,49 @@ import org.apache.log4j.*;
 
 public abstract class IWrapperImpl implements IWrapper {
     protected RequestData req;
-    protected String      prefix  = "__undef";
-    protected Integer     order   = new Integer(0);
-    private   Category    CAT     = Category.getInstance(this.getClass().getName());
-    protected HashMap     params  = null; // single static parameters (of the form PREFIX.NAME)
-    protected HashMap     errors  = null; // errors on single parameters
-    protected HashMap     idxprms = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
-    protected IHandler    handler = null; // Make sure that you set the handler in the
+    protected String      prefix   = "__undef";
+    protected Integer     order    = new Integer(0);
+    private   Category    CAT      = Category.getInstance(this.getClass().getName());
+    private   String      logdir   = null; 
+    private   String      pagename = null;
+    private   String      visitid  = null;
+    
+    protected HashMap     params   = null; // single static parameters (of the form PREFIX.NAME)
+    protected HashMap     errors   = null; // errors on single parameters
+    protected HashMap     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
+    protected IHandler    handler  = null; // Make sure that you set the handler in the
                                           // constructor of a derived class
     
+    public void initLogging(String logdir, String pagename, String visitid) {
+        CAT.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
+        this.logdir   = logdir;
+        this.pagename = pagename;
+        this.visitid  = visitid;
+    }
+
+    public void tryLogging() throws IOException {
+        if (logdir != null && pagename != null && visitid != null) {
+            File log = new File(logdir + "/" + pagename + "#" + prefix);
+            Writer       out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
+            StringBuffer buff = new StringBuffer(256);
+            long         now  = System.currentTimeMillis();
+            DateFormat   fmt  = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+            buff.append(fmt.format(new Date(now)) + "|" + visitid);
+            for (Iterator iter = params.values().iterator(); iter.hasNext(); ) {
+                appendParamInfoLog((IWrapperParamInfo) iter.next(), buff);
+            }
+            for (Iterator iter = idxprms.values().iterator(); iter.hasNext();) {
+                IWrapperIndexedParam pindex  = (IWrapperIndexedParam) iter.next();
+                IWrapperParamInfo[] pinfoarr = pindex.getAllParamInfos();
+                for (int i = 0; i < pinfoarr.length; i++) {
+                    appendParamInfoLog((IWrapperParamInfo) iter.next(), buff);
+                }
+            }
+            out.write(buff.toString() + "\n");
+            out.flush();
+        }
+    }
+
     public final void init(String prefix) throws Exception {
         params  = new HashMap();
         errors  = new HashMap();
@@ -60,12 +96,12 @@ public abstract class IWrapperImpl implements IWrapper {
 
         for (Iterator i = params.values().iterator(); i.hasNext();) {
             IWrapperParamInfo pinfo = (IWrapperParamInfo) i.next();
-            if(CAT.isDebugEnabled()) {
+            if (CAT.isDebugEnabled()) {
                 CAT.debug("===> Doing init for ParamInfo: " + pinfo.getName());
             }
             pinfo.initValueFromRequest(prefix, req);
             if (pinfo.errorHappened()) {
-                if(CAT.isDebugEnabled()) {
+                if (CAT.isDebugEnabled()) {
                     CAT.debug("*** ERROR happened for ParamInfo: " + pinfo.getName());
                 }
                 synchronized (errors) {
@@ -75,7 +111,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
         for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
             IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
-            if(CAT.isDebugEnabled()) {
+            if (CAT.isDebugEnabled()) {
                 CAT.debug("===> Doing init for IndexedParam: " + pindex.getName());
             }
             pindex.initValueFromRequest(prefix, req);
@@ -83,6 +119,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
 
+    
     public final IHandler gimmeIHandler() {
         if (handler == null) {
             throw new RuntimeException(
@@ -191,4 +228,20 @@ public abstract class IWrapperImpl implements IWrapper {
         return (gimmeOrder().compareTo(in.gimmeOrder()));
     }
 
+    private void appendParamInfoLog(IWrapperParamInfo pinfo, StringBuffer buff) {
+        String   name  = pinfo.getName();
+        String[] value = pinfo.getStringValue();
+        buff.append("|" + name + "=");
+        if (value != null) {
+            for (int i = 0; i < value.length; i++) {
+                buff.append(value[i]);
+                if (i < (value.length - 1)) {
+                    buff.append("&");
+                }
+            }
+        } else {
+            buff.append("NULL");
+        }
+    }
+    
 } // IWrapperImpl

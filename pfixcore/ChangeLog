@@ -1,3 +1,18 @@
+2004-03-08  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
+
+	* src/de/schlund/pfixcore/generator/IWrapper{Impl}.java: Add logging to the IWrapper. 
+	(initLogging) needs to be called to switch on logging for an IWrapper. 
+	(tryLogging) called by IWrapperSimpleContainer to finally log the input whenever a IWrapper got data.
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	(handleSubmittedData): call tryLogging() on wrappers.
+	(readIWrappersConfigFromProperties): call initLogging() according to properties from config file.
+	* example/core/build/create_propfiles.xsl: make it configurable:
+	attribute logging="true" on an <interface> node marks this IWrapper for logging.
+	You need to have a property set for the directory where to log to:
+
+	E.g. <prop name="interfacelogging"><cus:docroot/>sample1/log</prop>
+
+
 2004-03-04  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: you can specify a
