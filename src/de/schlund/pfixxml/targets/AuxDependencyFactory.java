@@ -31,7 +31,7 @@ import java.util.*;
 
 public class AuxDependencyFactory {
     private static AuxDependencyFactory instance     = new AuxDependencyFactory();
-    private static TreeMap              includeparts = new TreeMap();
+    private TreeMap              includeparts = new TreeMap();
     
     private AuxDependencyFactory() {}
     
@@ -59,5 +59,10 @@ public class AuxDependencyFactory {
         }
         return retval;
     }
+    
+    public void reset() {
+        includeparts = new TreeMap();
+    }
+    
     
 }// AuxDependencyFactory

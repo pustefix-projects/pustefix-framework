@@ -48,8 +48,8 @@ public class SPCacheFactory implements FactoryInit {
     private static Category CAT= Category.getInstance(SPCacheFactory.class.getName());
     private static SPCacheFactory instance= new SPCacheFactory();
 
-    private static SPCache targetCache= new LRUCache();
-    private static SPCache documentCache= new LRUCache();
+    private SPCache targetCache= new LRUCache();
+    private SPCache documentCache= new LRUCache();
 
     private static final String PROP_TARGET_CACHE_CLASS= "targetcache.cacheclass";
     private static final String PROP_TARGET_CACHE_SIZE = "targetcache.cachecapacity";
@@ -172,5 +172,15 @@ public class SPCacheFactory implements FactoryInit {
             return documentCache;
         }
     }
+    
+    /**
+     * To be used with care! If you need it, take care to throw away your old instance of SPCache retrieved 
+     * through getCache() and getDocumentCache()!
+     */
+     public void reset() {
+         targetCache= new LRUCache();
+         documentCache= new LRUCache();
+     }
+    
 
 } // SPCacheFactory

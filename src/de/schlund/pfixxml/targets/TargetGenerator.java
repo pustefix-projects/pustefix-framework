@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.util.Meminfo;
+import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -428,6 +429,14 @@ public class TargetGenerator {
         if (args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 try {
+                    /* resetting the factories for better memory performance */
+                    TargetFactory.getInstance().reset();
+                    IncludeDocumentFactory.getInstance().reset();
+                    PageInfoFactory.getInstance().reset();
+                    SharedLeafFactory.getInstance().reset();
+                    AuxDependencyFactory.getInstance().reset();
+                    System.gc();
+                     
                     File file = new File(args[i]);
                     if (file.exists() && file.canRead() && file.isFile()) {
                         gen = TargetGeneratorFactory.getInstance().createGenerator(file);
