@@ -34,6 +34,8 @@ import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -301,7 +303,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean      doreuse     = doReuse(preq);
         SPDocument   spdoc       = null;
         RequestParam value;
-        
+        long         currtime;
+        long         preproctime = -1;
+        long         getdomtime  = -1;
+        long         handletime  = -1;
+
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
         // they will be stored in the params properties and will be applied as stylesheet
@@ -358,8 +364,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         // Now we will store the time needed from the creation of the request up to now
+        currtime    = System.currentTimeMillis();
         PerfEventType pet = PerfEventType.XMLSERVER_PREPROCESS;
         preq.endLogEntry(pet);
+        preproctime = pet.getDuration();
        
         if (spdoc == null) {
             preq.startLogEntry();
@@ -380,6 +388,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
             }
+            currtime = System.currentTimeMillis();
             if (spdoc.getDocument() == null) {
                 // thats a request to an unkown page!
                 // do nothing, cause we  want a 404 and no NPExpection
@@ -401,9 +410,28 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             // this will remain at -1 when we don't have to enter the businesslogic codepath
             // (whenever there is a stored spdoc already)
+            getdomtime = System.currentTimeMillis() - currtime;
         }
+        currtime = System.currentTimeMillis();
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         handleDocument(preq, res, spdoc, params, doreuse);
+        handletime = System.currentTimeMillis() - currtime;
+        if (isInfoEnabled()) {
+            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
+        }
+        try {
+            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
+                OutputStream       out          = res.getOutputStream();
+                OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
+                writer.write("\n<!-- PRE_PROC: " + preproctime +
+                             " GET_DOM: " + getdomtime +
+                             " HDL_DOC: " + handletime + " -->");
+                writer.flush();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
