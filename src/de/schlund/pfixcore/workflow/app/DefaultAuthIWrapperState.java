@@ -23,6 +23,7 @@ import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.util.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.loader.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
 
@@ -90,7 +91,13 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if(CAT.isDebugEnabled()) {
             CAT.debug("======> Interface for authentication: " + authprefix + " => " + authwrapper);
         }
-        Class    thewrapper  = Class.forName(authwrapper);
+        Class thewrapper=null;
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            thewrapper=appLoader.loadClass(authwrapper);
+        } else {
+            thewrapper=Class.forName(authwrapper);
+        }
         IWrapper user        = (IWrapper) thewrapper.newInstance();
         user.init(authprefix);
         IHandler userhandler = user.gimmeIHandler();
@@ -103,7 +110,12 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 if (iface == null || iface.equals("")) {
                     throw new XMLException("No interface for prefix " + prefix);
                 }
-                Class    auxwrapper = Class.forName(iface);
+                Class auxwrapper=null;
+                if(appLoader.isEnabled()) {
+                    auxwrapper=appLoader.loadClass(iface);
+                } else {
+                    auxwrapper=Class.forName(iface);
+                }
                 IWrapper wrapper    = (IWrapper) auxwrapper.newInstance();
                 wrapper.init(prefix);
                 aux.add(wrapper);
