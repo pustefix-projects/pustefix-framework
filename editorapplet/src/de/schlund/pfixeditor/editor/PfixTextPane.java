@@ -69,6 +69,36 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
         hilight.realtimeHilight();     
     }
 
+
+
+
+    public void insertTag(String include) {
+        int curPos = getCaretPosition();
+        String text = "";
+        DefaultStyledDocument docNeed = (DefaultStyledDocument) getStyledDocument();
+        
+        try {
+            text = docNeed.getText(0, docNeed.getLength()); 
+        }
+        catch (Exception ex) {
+            
+        }
+
+        String saveString = text.substring(0, curPos);
+        String endString = text.substring(curPos, text.length());
+
+        String neu = saveString + include + endString;
+
+        setText(neu);
+        setCaretPosition(curPos);
+        hilightAll();
+                    
+        
+    }
+    
+
+
+    
     public void closeFinalTag() {
         int curPos = getCaretPosition();
         

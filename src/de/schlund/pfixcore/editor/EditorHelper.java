@@ -654,16 +654,21 @@ public class EditorHelper {
     }
 
 
-    public static void renderIncludesForAppletInfo(TreeSet includes, ResultDocument resdoc, Element root) {
+    public static void renderIncludesForAppletInfo(TargetGenerator tgen, TreeSet includes, ResultDocument resdoc, Element root) {
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
+            String docroot = tgen.getDocroot();
             String dir = curr.getDir();
             String path = curr.getPath();
             String part = curr.getPart();
             String product = curr.getProduct();
 
+
+            String newPath = path.substring(docroot.length(), path.length());
+            System.out.println("Path: " + newPath);
+            
             Element inc = resdoc.createSubNode(root, "include");
-            inc.setAttribute("path", path);
+            inc.setAttribute("path", newPath);
             inc.setAttribute("part", part);
             inc.setAttribute("product", product);
         }

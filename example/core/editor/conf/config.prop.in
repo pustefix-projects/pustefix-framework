@@ -190,8 +190,8 @@
 
 
   <pagerequest name="AppletInfo">
-    <ihandler class="de.schlund.pfixcore.editor.handlers.AppletInfoHandler" />
-    
+
+    <state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
     <finalizer class="de.schlund.pfixcore.editor.handlers.AppletInfoFinalizer"/>
     
   </pagerequest>
