@@ -18,10 +18,15 @@
 */
 
 package de.schlund.pfixcore.generator;
-import java.util.*;
-import org.apache.log4j.*;
-import de.schlund.util.*;
-import de.schlund.pfixxml.loader.*;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 
 /**
  * IHandlerFactory.java
@@ -77,13 +82,13 @@ public class IHandlerFactory implements Reloader {
                         retval = (IHandler) stateclass.newInstance();
                     }
                 } catch (InstantiationException e) {
-                    LOG.error("unable to instantiate class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    LOG.error("unable access class [" + classname + "]", e);
+                    throw new IllegalStateException("unable access class [" + classname + "] :" + e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to find class [" + classname + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface IHandler", e);
+                    throw new IllegalStateException("class [" + classname + "] does not implement the interface IHandler. :" + e.getMessage());
                 }
                 knownhandlers.put(classname, retval);
             }
@@ -107,13 +112,13 @@ public class IHandlerFactory implements Reloader {
                         retval              = wrapper.gimmeIHandler();
                     }
                 } catch (InstantiationException e) {
-                    LOG.error("unable to instantiate class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to instantiate class [" + classname + "] :" + e.getMessage());
                 } catch (IllegalAccessException e) {
-                    LOG.error("unable access class [" + classname + "]", e);
+                   throw new IllegalStateException("unable access class [" + classname + "] :" + e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                    throw new IllegalStateException("unable to find class [" + classname + "] :" + e.getMessage());
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface IWrapper", e);
+                    throw new IllegalStateException("class [" + classname + "] does not implement the interface IWrapper :"+ e.getMessage());
                 }
                 wrapper2handlers.put(classname, retval);
             }
