@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+  <pfx:head>
+    <title>Pustefix Content Management und Editor</title>
+  </pfx:head>
+  <pfx:frameset cols="200,*">
+    <pfx:frame name="left">
+      <html>
+        <head>
+          <style type="text/css">
+            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
+          </style>
+        </head>
+        <body>
+          <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="content"/>
+        </body>
+      </html>
+    </pfx:frame>
+    <pfx:frame name="right">
+      <html>
+        <head>
+          <style type="text/css">
+            <pfx:include href="core/txt/styles.xml" part="standard"/>
+            <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
+          </style>
+        </head>
+        <body>
+          <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="testcaseoutput"/>
+        </body>
+      </html>
+    </pfx:frame>
+  </pfx:frameset>
+</pfx:document>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

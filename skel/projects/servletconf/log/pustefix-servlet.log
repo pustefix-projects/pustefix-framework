@@ -1,0 +1,620 @@
+2003-05-16 15:00:42,215 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():112]  - >>>> LOG4J Init OK <<<<
+2003-05-16 15:00:42,237 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [00] class: [de.schlund.util.statuscodes.StatusCodeFactory] <<<<
+2003-05-16 15:00:42,260 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.util.statuscodes.StatusCodeFactory@ac6a45
+2003-05-16 15:00:42,293 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.util.statuscodes.StatusCodeFactory@ac6a45 took 30 ms
+2003-05-16 15:00:42,297 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [01] class: [de.schlund.pfixxml.targets.SPCacheFactory] <<<<
+2003-05-16 15:00:42,322 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.targets.SPCacheFactory@1581593
+2003-05-16 15:00:42,324 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.targets.SPCacheFactory@1581593 took 1 ms
+2003-05-16 15:00:42,325 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [02] class: [de.schlund.pfixcore.editor.EditorUserFactory] <<<<
+2003-05-16 15:00:42,359 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorUserFactory@1113622
+2003-05-16 15:00:42,363 [main] ERROR de.schlund.pfixxml.FactoryInitServlet [init():156]  - de.schlund.pfixxml.XMLException: Userfile /home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/userdata.xml doesn't exist, can't be read or is no ordinary file
+2003-05-16 15:00:42,374 [main] ERROR de.schlund.pfixxml.FactoryInitServlet [init():163]  - ->de.schlund.pfixxml.XMLException: Userfile /home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/userdata.xml doesn't exist, can't be read or is no ordinary file
+->	at de.schlund.pfixcore.editor.EditorUserFactory.readFile(EditorUserFactory.java:125)
+->	at de.schlund.pfixcore.editor.EditorUserFactory.init(EditorUserFactory.java:75)
+->	at de.schlund.pfixxml.FactoryInitServlet.init(FactoryInitServlet.java:149)
+->	at org.apache.catalina.core.StandardWrapper.loadServlet(StandardWrapper.java:918)
+->	at org.apache.catalina.core.StandardWrapper.load(StandardWrapper.java:810)
+->	at org.apache.catalina.core.StandardContext.loadOnStartup(StandardContext.java:3279)
+->	at org.apache.catalina.core.StandardContext.start(StandardContext.java:3421)
+->	at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1123)
+->	at org.apache.catalina.core.StandardHost.start(StandardHost.java:638)
+->	at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1123)
+->	at org.apache.catalina.core.StandardEngine.start(StandardEngine.java:343)
+->	at org.apache.catalina.core.StandardService.start(StandardService.java:388)
+->	at org.apache.catalina.core.StandardServer.start(StandardServer.java:506)
+->	at org.apache.catalina.startup.Catalina.start(Catalina.java:781)
+->	at org.apache.catalina.startup.Catalina.execute(Catalina.java:681)
+->	at org.apache.catalina.startup.Catalina.process(Catalina.java:179)
+->	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+->	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+->	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+->	at java.lang.reflect.Method.invoke(Method.java:324)
+->	at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:243)
+
+2003-05-16 15:00:42,386 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():169]  - FactoryInitServlet: class=class de.schlund.pfixxml.XMLException
+2003-05-16 15:00:51,675 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.ServletManager [init():486]  - *** Tomcat-4 detected
+2003-05-16 15:00:51,957 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():145]  - 
+***** CAUTION! ***** loading config /home/jh/wuergspace/workspace/pfixcore/example/core/editor/conf/depend.xml...
+2003-05-16 15:00:52,051 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():228]  - 
+=====> Preliminaries took 38ms. Now looping over 38 targets
+2003-05-16 15:00:52,145 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.AuxDependencyManager [<init>():74]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 15:00:52,249 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():239]  - 
+=====> Creating targets took 195ms. Now init pagetree
+2003-05-16 15:00:52,271 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():242]  - 
+=====> Init of Pagetree took 21ms. Ready...
+2003-05-16 15:00:52,433 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [initValues():244]  - 
+AbstractXMLServer properties after initValues(): 
+                targetconf = /home/jh/wuergspace/workspace/pfixcore/example/core/editor/conf/depend.xml
+               servletname = pfixcore_project:core_editor_servlet:1
+           editModeAllowed = false
+                   timeout = 10
+        recordmode allowed = true
+            xmlOnlyAllowed = allowed
+skip_getmodtimemaybeupdate = false
+           render_external = false
+
+2003-05-16 15:00:52,987 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageFlowManager
+2003-05-16 15:00:53,012 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageRequestProperties
+2003-05-16 15:00:53,033 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageMap
+2003-05-16 15:00:53,083 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixcore.workflow.NavigationFactory [getNavigation():56]  - ***** Creating Navigation object *******
+2003-05-16 15:00:53,538 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.app.IHandlerContainerManager
+2003-05-16 15:00:53,859 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 1110ms
+2003-05-16 15:00:54,190 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 322ms
+2003-05-16 15:00:54,198 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 15:00:54,202 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 15:00:55,493 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 1291ms
+2003-05-16 15:00:55,622 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 48ms
+2003-05-16 15:00:55,702 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 53ms
+2003-05-16 15:01:04,211 [Thread-2] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 4B0AF024FE18D7026B4C4782ACDCF9E9.foo
+2003-05-16 16:04:18,576 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():112]  - >>>> LOG4J Init OK <<<<
+2003-05-16 16:04:18,688 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [00] class: [de.schlund.util.statuscodes.StatusCodeFactory] <<<<
+2003-05-16 16:04:18,761 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.util.statuscodes.StatusCodeFactory@ac6a45
+2003-05-16 16:04:18,810 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.util.statuscodes.StatusCodeFactory@ac6a45 took 46 ms
+2003-05-16 16:04:18,814 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [01] class: [de.schlund.pfixxml.targets.SPCacheFactory] <<<<
+2003-05-16 16:04:18,838 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.targets.SPCacheFactory@1581593
+2003-05-16 16:04:18,840 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.targets.SPCacheFactory@1581593 took 1 ms
+2003-05-16 16:04:18,842 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [02] class: [de.schlund.pfixcore.editor.EditorUserFactory] <<<<
+2003-05-16 16:04:18,913 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorUserFactory@1113622
+2003-05-16 16:04:18,917 [main] ERROR de.schlund.pfixxml.FactoryInitServlet [init():156]  - de.schlund.pfixxml.XMLException: Userfile /home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/userdata.xml doesn't exist, can't be read or is no ordinary file
+2003-05-16 16:04:18,929 [main] ERROR de.schlund.pfixxml.FactoryInitServlet [init():163]  - ->de.schlund.pfixxml.XMLException: Userfile /home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/userdata.xml doesn't exist, can't be read or is no ordinary file
+->	at de.schlund.pfixcore.editor.EditorUserFactory.readFile(EditorUserFactory.java:125)
+->	at de.schlund.pfixcore.editor.EditorUserFactory.init(EditorUserFactory.java:75)
+->	at de.schlund.pfixxml.FactoryInitServlet.init(FactoryInitServlet.java:149)
+->	at org.apache.catalina.core.StandardWrapper.loadServlet(StandardWrapper.java:918)
+->	at org.apache.catalina.core.StandardWrapper.load(StandardWrapper.java:810)
+->	at org.apache.catalina.core.StandardContext.loadOnStartup(StandardContext.java:3279)
+->	at org.apache.catalina.core.StandardContext.start(StandardContext.java:3421)
+->	at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1123)
+->	at org.apache.catalina.core.StandardHost.start(StandardHost.java:638)
+->	at org.apache.catalina.core.ContainerBase.start(ContainerBase.java:1123)
+->	at org.apache.catalina.core.StandardEngine.start(StandardEngine.java:343)
+->	at org.apache.catalina.core.StandardService.start(StandardService.java:388)
+->	at org.apache.catalina.core.StandardServer.start(StandardServer.java:506)
+->	at org.apache.catalina.startup.Catalina.start(Catalina.java:781)
+->	at org.apache.catalina.startup.Catalina.execute(Catalina.java:681)
+->	at org.apache.catalina.startup.Catalina.process(Catalina.java:179)
+->	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+->	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+->	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+->	at java.lang.reflect.Method.invoke(Method.java:324)
+->	at org.apache.catalina.startup.Bootstrap.main(Bootstrap.java:243)
+
+2003-05-16 16:04:18,934 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():169]  - FactoryInitServlet: class=class de.schlund.pfixxml.XMLException
+2003-05-16 16:04:21,129 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.ServletManager [init():486]  - *** Tomcat-4 detected
+2003-05-16 16:04:21,408 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():145]  - 
+***** CAUTION! ***** loading config /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml...
+2003-05-16 16:04:21,503 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():228]  - 
+=====> Preliminaries took 37ms. Now looping over 38 targets
+2003-05-16 16:04:21,595 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.AuxDependencyManager [<init>():74]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 16:04:21,657 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():239]  - 
+=====> Creating targets took 151ms. Now init pagetree
+2003-05-16 16:04:21,679 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():242]  - 
+=====> Init of Pagetree took 20ms. Ready...
+2003-05-16 16:04:21,837 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [initValues():244]  - 
+AbstractXMLServer properties after initValues(): 
+                targetconf = /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml
+               servletname = pfixcore_project:core_editor_servlet:1
+           editModeAllowed = false
+                   timeout = 10
+        recordmode allowed = true
+            xmlOnlyAllowed = allowed
+skip_getmodtimemaybeupdate = false
+           render_external = false
+
+2003-05-16 16:04:22,348 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageFlowManager
+2003-05-16 16:04:22,371 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageRequestProperties
+2003-05-16 16:04:22,391 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageMap
+2003-05-16 16:04:22,440 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixcore.workflow.NavigationFactory [getNavigation():56]  - ***** Creating Navigation object *******
+2003-05-16 16:04:22,888 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.app.IHandlerContainerManager
+2003-05-16 16:04:23,204 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 1048ms
+2003-05-16 16:04:23,534 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 321ms
+2003-05-16 16:04:23,543 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:04:23,546 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:04:27,283 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 41ms
+2003-05-16 16:04:27,332 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 25ms
+2003-05-16 16:04:27,334 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 3788ms
+2003-05-16 16:04:33,503 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 33ms
+2003-05-16 16:04:33,521 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 16ms
+2003-05-16 16:04:33,523 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:04:33,524 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:04:33,536 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:04:33,537 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:04:33,547 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 10ms
+2003-05-16 16:04:33,643 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 14ms
+2003-05-16 16:04:33,774 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 120ms
+2003-05-16 16:04:43,551 [Thread-2] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 063A6EB412AC4B5245D95F56291BC94C.foo
+2003-05-16 16:05:59,475 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():112]  - >>>> LOG4J Init OK <<<<
+2003-05-16 16:05:59,496 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [00] class: [de.schlund.util.statuscodes.StatusCodeFactory] <<<<
+2003-05-16 16:05:59,519 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.util.statuscodes.StatusCodeFactory@ac6a45
+2003-05-16 16:05:59,552 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.util.statuscodes.StatusCodeFactory@ac6a45 took 31 ms
+2003-05-16 16:05:59,557 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [01] class: [de.schlund.pfixxml.targets.SPCacheFactory] <<<<
+2003-05-16 16:05:59,581 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.targets.SPCacheFactory@1581593
+2003-05-16 16:05:59,583 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.targets.SPCacheFactory@1581593 took 1 ms
+2003-05-16 16:05:59,584 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [02] class: [de.schlund.pfixcore.editor.EditorUserFactory] <<<<
+2003-05-16 16:05:59,618 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorUserFactory@1113622
+2003-05-16 16:05:59,633 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorUserFactory@1113622 took 14 ms
+2003-05-16 16:05:59,634 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [03] class: [de.schlund.pfixcore.editor.EditorProductFactory] <<<<
+2003-05-16 16:05:59,658 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorProductFactory@d73c7a
+2003-05-16 16:05:59,660 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorProductFactory@d73c7a took 0 ms
+2003-05-16 16:05:59,661 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [04] class: [de.schlund.pfixcore.editor.EditorPageUpdater] <<<<
+2003-05-16 16:05:59,670 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorPageUpdater@1e845c2
+2003-05-16 16:05:59,672 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorPageUpdater@1e845c2 took 1 ms
+2003-05-16 16:05:59,673 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [05] class: [de.schlund.pfixcore.editor.EditorCommonsFactory] <<<<
+2003-05-16 16:05:59,689 [main] WARN  de.schlund.pfixcore.editor.EditorCommonsFactory [<init>():57]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 16:05:59,691 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorCommonsFactory@19e8f17
+2003-05-16 16:06:00,209 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorCommonsFactory@19e8f17 took 516 ms
+2003-05-16 16:06:00,215 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [06] class: [de.schlund.pfixxml.exceptionhandler.ExceptionHandler] <<<<
+2003-05-16 16:06:00,308 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.exceptionhandler.ExceptionHandler@19a32e0
+2003-05-16 16:06:00,312 [main] FATAL de.schlund.pfixxml.exceptionhandler.ExceptionHandler [fatal():141]  - Configuration of exceptionhandler failed: File Not Found :/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/exceptionhandler.prop reason: class java.io.FileNotFoundException:/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/exceptionhandler.prop (No such file or directory)
+2003-05-16 16:06:00,314 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.exceptionhandler.ExceptionHandler@19a32e0 took 5 ms
+2003-05-16 16:06:00,316 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [07] class: [de.schlund.pfixxml.loader.AppLoader] <<<<
+2003-05-16 16:06:00,326 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: AppLoader[enabled=false][listener=null][trigger=0][interval=0][policy={}][repository=null][includes=[]]
+2003-05-16 16:06:00,350 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of AppLoader[enabled=false][listener=null][trigger=0][interval=0][policy={}][repository=null][includes=[]] took 23 ms
+2003-05-16 16:06:00,352 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():176]  - ***** INIT of FactoryInitServlet done *****
+2003-05-16 16:06:16,569 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.ServletManager [init():486]  - *** Tomcat-4 detected
+2003-05-16 16:06:16,789 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():145]  - 
+***** CAUTION! ***** loading config /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml...
+2003-05-16 16:06:16,895 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():228]  - 
+=====> Preliminaries took 51ms. Now looping over 38 targets
+2003-05-16 16:06:16,977 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.AuxDependencyManager [<init>():74]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 16:06:17,085 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():239]  - 
+=====> Creating targets took 188ms. Now init pagetree
+2003-05-16 16:06:17,088 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():242]  - 
+=====> Init of Pagetree took 2ms. Ready...
+2003-05-16 16:06:17,257 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [initValues():244]  - 
+AbstractXMLServer properties after initValues(): 
+                targetconf = /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml
+               servletname = pfixcore_project:core_editor_servlet:1
+           editModeAllowed = false
+                   timeout = 10
+        recordmode allowed = true
+            xmlOnlyAllowed = allowed
+skip_getmodtimemaybeupdate = false
+           render_external = false
+
+2003-05-16 16:06:17,710 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageFlowManager
+2003-05-16 16:06:17,736 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageRequestProperties
+2003-05-16 16:06:17,759 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageMap
+2003-05-16 16:06:17,867 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixcore.workflow.NavigationFactory [getNavigation():56]  - ***** Creating Navigation object *******
+2003-05-16 16:06:18,175 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.app.IHandlerContainerManager
+2003-05-16 16:06:18,475 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 896ms
+2003-05-16 16:06:18,820 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 322ms
+2003-05-16 16:06:18,828 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:18,832 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:06:20,194 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 32ms
+2003-05-16 16:06:20,198 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 1366ms
+2003-05-16 16:06:20,230 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 23ms
+2003-05-16 16:06:26,548 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 199ms
+2003-05-16 16:06:26,570 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 7ms
+2003-05-16 16:06:26,572 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:26,574 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:26,575 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:26,578 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: prodselect.xsl ***
+2003-05-16 16:06:28,782 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 2204ms
+2003-05-16 16:06:28,813 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 56ms
+2003-05-16 16:06:28,865 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 78ms
+2003-05-16 16:06:32,216 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 70ms
+2003-05-16 16:06:32,223 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 6ms
+2003-05-16 16:06:32,232 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:32,233 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:32,235 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:32,236 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: home.xsl ***
+2003-05-16 16:06:33,031 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 795ms
+2003-05-16 16:06:33,109 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 18ms
+2003-05-16 16:06:33,162 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 39ms
+2003-05-16 16:06:36,244 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 33ms
+2003-05-16 16:06:36,256 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 10ms
+2003-05-16 16:06:36,258 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:36,260 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:36,261 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:36,263 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:06:36,912 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:06:36,926 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:06:36,941 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 678ms
+2003-05-16 16:06:37,000 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:06:37,024 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 17ms
+2003-05-16 16:06:39,451 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 66ms
+2003-05-16 16:06:39,503 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 51ms
+2003-05-16 16:06:39,505 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:39,506 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:39,517 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:39,518 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: targets.xsl ***
+2003-05-16 16:06:40,241 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 723ms
+2003-05-16 16:06:40,288 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:06:40,302 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:06:40,492 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:06:40,741 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 378ms
+2003-05-16 16:06:42,358 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 20ms
+2003-05-16 16:06:42,368 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 5ms
+2003-05-16 16:06:42,369 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:42,371 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:42,373 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:42,374 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: images.xsl ***
+2003-05-16 16:06:42,976 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 602ms
+2003-05-16 16:06:42,996 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:06:43,006 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:06:43,077 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:06:43,102 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 16ms
+2003-05-16 16:06:44,850 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 55ms
+2003-05-16 16:06:44,859 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 8ms
+2003-05-16 16:06:44,861 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:44,862 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:44,864 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:44,865 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:06:45,389 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:06:45,394 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 529ms
+2003-05-16 16:06:45,406 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 3ms
+2003-05-16 16:06:45,420 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:06:45,509 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 20ms
+2003-05-16 16:06:45,525 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:06:48,862 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 34ms
+2003-05-16 16:06:48,867 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 4ms
+2003-05-16 16:06:48,868 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:48,870 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:48,871 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:48,872 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: home.xsl ***
+2003-05-16 16:06:48,880 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 8ms
+2003-05-16 16:06:49,042 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:06:49,064 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 9ms
+2003-05-16 16:06:56,500 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 16ms
+2003-05-16 16:06:56,508 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 7ms
+2003-05-16 16:06:56,509 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:56,510 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:56,511 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:56,513 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:06:56,519 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:06:56,616 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:06:56,643 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 16ms
+2003-05-16 16:06:56,720 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 9ms
+2003-05-16 16:06:56,734 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:06:58,295 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 16ms
+2003-05-16 16:06:58,306 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 9ms
+2003-05-16 16:06:58,307 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:06:58,316 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:06:58,318 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:06:58,319 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:06:58,326 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:06:58,392 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 13ms
+2003-05-16 16:06:58,876 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 475ms
+2003-05-16 16:07:01,762 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 185ms
+2003-05-16 16:07:01,780 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 16ms
+2003-05-16 16:07:01,783 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:01,784 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:01,785 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:01,786 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:07:01,859 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:07:01,863 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 77ms
+2003-05-16 16:07:01,877 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 3ms
+2003-05-16 16:07:01,897 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:07:01,989 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 14ms
+2003-05-16 16:07:02,032 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 33ms
+2003-05-16 16:07:11,801 [Thread-4] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 429778040C9ABE981BA646127CF00071.foo
+2003-05-16 16:07:25,941 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 531ms
+2003-05-16 16:07:25,962 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 19ms
+2003-05-16 16:07:25,964 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:25,967 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:25,968 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:25,969 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:07:26,058 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 36ms
+2003-05-16 16:07:26,137 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 40ms
+2003-05-16 16:07:26,151 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 182ms
+2003-05-16 16:07:32,386 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 38ms
+2003-05-16 16:07:32,393 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 5ms
+2003-05-16 16:07:32,394 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:32,395 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:32,397 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:32,398 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: prodselect.xsl ***
+2003-05-16 16:07:32,405 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:07:32,513 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:07:32,538 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 14ms
+2003-05-16 16:07:34,065 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 10ms
+2003-05-16 16:07:34,071 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 4ms
+2003-05-16 16:07:34,072 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:34,074 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:34,075 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:34,077 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:07:34,084 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:07:34,175 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:07:34,203 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 14ms
+2003-05-16 16:07:41,136 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 23ms
+2003-05-16 16:07:41,149 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 12ms
+2003-05-16 16:07:41,151 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:41,152 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:41,157 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:41,159 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: prodselect.xsl ***
+2003-05-16 16:07:41,166 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:07:41,234 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:07:41,263 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:07:42,861 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 40ms
+2003-05-16 16:07:42,866 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 4ms
+2003-05-16 16:07:42,868 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:42,869 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:42,877 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:42,879 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: home.xsl ***
+2003-05-16 16:07:42,886 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:07:42,976 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:07:42,991 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:07:52,138 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 7ms
+2003-05-16 16:07:52,146 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 7ms
+2003-05-16 16:07:52,147 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:52,148 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:52,149 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:52,150 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:07:52,162 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:07:52,255 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 11ms
+2003-05-16 16:07:52,270 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:07:52,353 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 11ms
+2003-05-16 16:07:52,367 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:07:53,408 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 22ms
+2003-05-16 16:07:53,417 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 8ms
+2003-05-16 16:07:53,418 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:53,419 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:53,420 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:53,422 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:07:53,428 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:07:53,482 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:07:53,507 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 17ms
+2003-05-16 16:07:56,772 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 124ms
+2003-05-16 16:07:56,789 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 16ms
+2003-05-16 16:07:56,790 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:07:56,791 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:07:56,792 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:07:56,794 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:07:56,804 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 10ms
+2003-05-16 16:07:56,896 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:07:56,909 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:07:56,923 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:07:57,005 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 15ms
+2003-05-16 16:07:57,043 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 30ms
+2003-05-16 16:08:05,794 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 719ms
+2003-05-16 16:08:05,809 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 14ms
+2003-05-16 16:08:05,811 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:05,812 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:05,813 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:05,814 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:05,903 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 54ms
+2003-05-16 16:08:05,919 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 105ms
+2003-05-16 16:08:06,003 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 76ms
+2003-05-16 16:08:10,707 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 72ms
+2003-05-16 16:08:10,717 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 9ms
+2003-05-16 16:08:10,719 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:10,726 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:10,728 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:10,729 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:10,748 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 19ms
+2003-05-16 16:08:10,796 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 15ms
+2003-05-16 16:08:10,815 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 10ms
+2003-05-16 16:08:14,303 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 88ms
+2003-05-16 16:08:14,315 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 11ms
+2003-05-16 16:08:14,317 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:14,318 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:14,319 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:14,320 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:14,402 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 25ms
+2003-05-16 16:08:14,404 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 84ms
+2003-05-16 16:08:14,445 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 23ms
+2003-05-16 16:08:20,155 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 77ms
+2003-05-16 16:08:20,177 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 19ms
+2003-05-16 16:08:20,179 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:20,180 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:20,199 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:20,200 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:20,250 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:08:20,253 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 53ms
+2003-05-16 16:08:20,282 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 20ms
+2003-05-16 16:08:22,151 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 73ms
+2003-05-16 16:08:22,168 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 10ms
+2003-05-16 16:08:22,169 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:22,170 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:22,172 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:22,173 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:22,189 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 16ms
+2003-05-16 16:08:22,228 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 9ms
+2003-05-16 16:08:22,271 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 34ms
+2003-05-16 16:08:24,399 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 74ms
+2003-05-16 16:08:24,418 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 18ms
+2003-05-16 16:08:24,419 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:24,421 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:24,424 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:24,426 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:24,441 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 15ms
+2003-05-16 16:08:24,484 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:08:24,523 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 30ms
+2003-05-16 16:08:27,052 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 71ms
+2003-05-16 16:08:27,070 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 11ms
+2003-05-16 16:08:27,071 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:27,073 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:27,074 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:27,075 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:27,081 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:08:27,137 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 12ms
+2003-05-16 16:08:27,163 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 17ms
+2003-05-16 16:08:30,122 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 112ms
+2003-05-16 16:08:30,135 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 11ms
+2003-05-16 16:08:30,137 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:30,138 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:30,139 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:30,140 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:30,186 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 15ms
+2003-05-16 16:08:30,216 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 21ms
+2003-05-16 16:08:30,218 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 78ms
+2003-05-16 16:08:33,960 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 95ms
+2003-05-16 16:08:33,971 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 10ms
+2003-05-16 16:08:33,973 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:33,974 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:33,975 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:33,976 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:08:33,991 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 15ms
+2003-05-16 16:08:34,030 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 9ms
+2003-05-16 16:08:34,059 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 19ms
+2003-05-16 16:08:36,953 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 395ms
+2003-05-16 16:08:36,959 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 4ms
+2003-05-16 16:08:36,960 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:36,962 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:36,963 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:36,964 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: prodselect.xsl ***
+2003-05-16 16:08:36,969 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:08:37,034 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:08:37,047 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:08:41,746 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 17ms
+2003-05-16 16:08:41,752 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 5ms
+2003-05-16 16:08:41,753 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:08:41,754 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:08:41,755 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:08:41,757 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:08:41,762 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:08:41,850 [Ajp13Processor[8009][196]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:08:41,876 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 11ms
+2003-05-16 16:08:51,771 [Thread-4] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 429778040C9ABE981BA646127CF00071.foo
+2003-05-16 16:52:37,415 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():112]  - >>>> LOG4J Init OK <<<<
+2003-05-16 16:52:37,436 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [00] class: [de.schlund.util.statuscodes.StatusCodeFactory] <<<<
+2003-05-16 16:52:37,462 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.util.statuscodes.StatusCodeFactory@ac6a45
+2003-05-16 16:52:37,499 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.util.statuscodes.StatusCodeFactory@ac6a45 took 31 ms
+2003-05-16 16:52:37,500 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [01] class: [de.schlund.pfixxml.targets.SPCacheFactory] <<<<
+2003-05-16 16:52:37,524 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.targets.SPCacheFactory@1581593
+2003-05-16 16:52:37,526 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.targets.SPCacheFactory@1581593 took 1 ms
+2003-05-16 16:52:37,527 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [02] class: [de.schlund.pfixcore.editor.EditorUserFactory] <<<<
+2003-05-16 16:52:37,561 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorUserFactory@1113622
+2003-05-16 16:52:37,576 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorUserFactory@1113622 took 14 ms
+2003-05-16 16:52:37,577 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [03] class: [de.schlund.pfixcore.editor.EditorProductFactory] <<<<
+2003-05-16 16:52:37,601 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorProductFactory@d73c7a
+2003-05-16 16:52:37,603 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorProductFactory@d73c7a took 0 ms
+2003-05-16 16:52:37,604 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [04] class: [de.schlund.pfixcore.editor.EditorPageUpdater] <<<<
+2003-05-16 16:52:37,613 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorPageUpdater@1e845c2
+2003-05-16 16:52:37,615 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorPageUpdater@1e845c2 took 0 ms
+2003-05-16 16:52:37,617 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [05] class: [de.schlund.pfixcore.editor.EditorCommonsFactory] <<<<
+2003-05-16 16:52:37,633 [main] WARN  de.schlund.pfixcore.editor.EditorCommonsFactory [<init>():57]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 16:52:37,635 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixcore.editor.EditorCommonsFactory@19e8f17
+2003-05-16 16:52:38,187 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixcore.editor.EditorCommonsFactory@19e8f17 took 551 ms
+2003-05-16 16:52:38,193 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [06] class: [de.schlund.pfixxml.exceptionhandler.ExceptionHandler] <<<<
+2003-05-16 16:52:38,290 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: de.schlund.pfixxml.exceptionhandler.ExceptionHandler@19a32e0
+2003-05-16 16:52:38,294 [main] FATAL de.schlund.pfixxml.exceptionhandler.ExceptionHandler [fatal():141]  - Configuration of exceptionhandler failed: File Not Found :/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/exceptionhandler.prop reason: class java.io.FileNotFoundException:/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/exceptionhandler.prop (No such file or directory)
+2003-05-16 16:52:38,296 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of de.schlund.pfixxml.exceptionhandler.ExceptionHandler@19a32e0 took 4 ms
+2003-05-16 16:52:38,298 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():121]  - >>>> Init key: [07] class: [de.schlund.pfixxml.loader.AppLoader] <<<<
+2003-05-16 16:52:38,310 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():146]  -      Object ID: AppLoader[enabled=false][listener=null][trigger=0][interval=0][policy={}][repository=null][includes=[]]
+2003-05-16 16:52:38,363 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():152]  - Init of AppLoader[enabled=false][listener=null][trigger=0][interval=0][policy={}][repository=null][includes=[]] took 51 ms
+2003-05-16 16:52:38,364 [main] DEBUG de.schlund.pfixxml.FactoryInitServlet [init():176]  - ***** INIT of FactoryInitServlet done *****
+2003-05-16 16:52:45,398 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.ServletManager [init():486]  - *** Tomcat-4 detected
+2003-05-16 16:52:45,625 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():145]  - 
+***** CAUTION! ***** loading config /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml...
+2003-05-16 16:52:45,730 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():228]  - 
+=====> Preliminaries took 52ms. Now looping over 38 targets
+2003-05-16 16:52:45,812 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.AuxDependencyManager [<init>():74]  - 
+**** Switching DocumentBuilderFactory to be NS-aware ****
+2003-05-16 16:52:45,849 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():239]  - 
+=====> Creating targets took 117ms. Now init pagetree
+2003-05-16 16:52:45,879 [Ajp13Processor[8009][199]] WARN  de.schlund.pfixxml.targets.TargetGenerator [loadConfig():242]  - 
+=====> Init of Pagetree took 29ms. Ready...
+2003-05-16 16:52:46,052 [Ajp13Processor[8009][199]] INFO  de.schlund.pfixxml.AbstractXMLServer [initValues():244]  - 
+AbstractXMLServer properties after initValues(): 
+                targetconf = /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/conf/depend.xml
+               servletname = pfixcore_project:core_editor_servlet:1
+           editModeAllowed = false
+                   timeout = 10
+        recordmode allowed = true
+            xmlOnlyAllowed = allowed
+skip_getmodtimemaybeupdate = false
+           render_external = false
+
+2003-05-16 16:52:46,519 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageFlowManager
+2003-05-16 16:52:46,543 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageRequestProperties
+2003-05-16 16:52:46,565 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.PageMap
+2003-05-16 16:52:46,672 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixcore.workflow.NavigationFactory [getNavigation():56]  - ***** Creating Navigation object *******
+2003-05-16 16:52:46,960 [Ajp13Processor[8009][198]] WARN  de.schlund.pfixxml.PropertyObjectManager [getPropertyObject():64]  - ******* Creating new PropertyObject de.schlund.pfixcore.workflow.app.IHandlerContainerManager
+2003-05-16 16:52:47,267 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 882ms
+2003-05-16 16:52:47,609 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 321ms
+2003-05-16 16:52:47,617 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:52:47,621 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: editoruserauth.xsl ***
+2003-05-16 16:52:51,298 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 3678ms
+2003-05-16 16:52:51,409 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 21ms
+2003-05-16 16:52:51,434 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 18ms
+2003-05-16 16:52:57,621 [Thread-4] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 0CEF70434FE22CB785543DC66D6C2FD4.foo
+2003-05-16 16:52:59,156 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 172ms
+2003-05-16 16:52:59,182 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 12ms
+2003-05-16 16:52:59,184 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:52:59,185 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:52:59,186 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:52:59,187 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: prodselect.xsl ***
+2003-05-16 16:52:59,950 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 763ms
+2003-05-16 16:52:59,965 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 352ms
+2003-05-16 16:53:00,000 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 13ms
+2003-05-16 16:53:04,399 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 49ms
+2003-05-16 16:53:04,434 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 34ms
+2003-05-16 16:53:04,444 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:53:04,445 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:53:04,446 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:53:04,447 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: home.xsl ***
+2003-05-16 16:53:04,921 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 474ms
+2003-05-16 16:53:04,973 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 17ms
+2003-05-16 16:53:05,000 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:53:06,859 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 19ms
+2003-05-16 16:53:06,868 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 6ms
+2003-05-16 16:53:06,869 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:53:06,870 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:53:06,872 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:53:06,873 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: pages.xsl ***
+2003-05-16 16:53:07,403 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 530ms
+2003-05-16 16:53:07,424 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 7ms
+2003-05-16 16:53:07,437 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:53:07,533 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 26ms
+2003-05-16 16:53:07,547 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:53:09,506 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 62ms
+2003-05-16 16:53:09,549 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 41ms
+2003-05-16 16:53:09,550 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:53:09,552 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:53:09,553 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:53:09,554 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: targets.xsl ***
+2003-05-16 16:53:10,312 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:53:10,326 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:53:10,362 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 808ms
+2003-05-16 16:53:10,500 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 6ms
+2003-05-16 16:53:10,770 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 370ms
+2003-05-16 16:53:11,938 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 26ms
+2003-05-16 16:53:11,945 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 5ms
+2003-05-16 16:53:11,947 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:53:11,948 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:53:11,949 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:53:11,950 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: images.xsl ***
+2003-05-16 16:53:12,459 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:53:12,473 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:53:12,501 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 551ms
+2003-05-16 16:53:12,551 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 14ms
+2003-05-16 16:53:12,577 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 16ms
+2003-05-16 16:53:14,238 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():467]  - >>> Complete getDom(...) took 64ms
+2003-05-16 16:53:14,248 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():480]  - >>> Complete xmlObjectFromDocument(...) took 9ms
+2003-05-16 16:53:14,249 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():60]  - *** Found old TimerTask, trying to cancel... 
+2003-05-16 16:53:14,251 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():63]  - *** DONE. ***
+2003-05-16 16:53:14,252 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.SessionCleaner [storeSPDocument():68]  - *** Create new TimerTask with timeout: 10
+2003-05-16 16:53:14,253 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [handleDocument():524]  -  *** Using stylesheet: includes.xsl ***
+2003-05-16 16:53:15,058 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:53:15,062 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 809ms
+2003-05-16 16:53:15,074 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:53:15,097 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 4ms
+2003-05-16 16:53:15,167 [Ajp13Processor[8009][197]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 22ms
+2003-05-16 16:53:15,185 [Ajp13Processor[8009][198]] INFO  de.schlund.pfixxml.AbstractXMLServer [process():493]  - >>> Complete handleDocument(...) took 5ms
+2003-05-16 16:53:24,271 [Thread-4] INFO  de.schlund.pfixxml.SessionCleaner [run():91]  - *** CALLING TIMERTASK: Removing SPDoc 'pfixcore_project:core_editor_servlet:1_SAVED_DOM' from session 0CEF70434FE22CB785543DC66D6C2FD4.foo
