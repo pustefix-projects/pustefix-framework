@@ -28,39 +28,54 @@ import de.schlund.util.FactoryInit;
  * This class creates an implementation of the <code>AuthManager</code>
  * interface depending on the properties passed by <code>FactoryInit</code>.
  * <br/>
+ * 
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class AuthManagerFactory implements FactoryInit {
-    private static AuthManagerFactory instance = new AuthManagerFactory(); 
+    private static AuthManagerFactory instance = new AuthManagerFactory();
     private static Category CAT = Category.getInstance(AuthManagerFactory.class.getName());
-    
-    AuthManager current = null;
-    
-    private AuthManagerFactory() {
-    }
-    
+
+    private AuthManager current = null;
+    private String pathToPwdFile;
+
+    private AuthManagerFactory() {}
+
     private static final String PROP_UF = "editoruserfactory.userdata";
+   
     /**
-     * @see de.schlund.util.FactoryInit#init(java.util.Properties)
-     */
-    public void init(Properties arg0) throws Exception {
-        if(CAT.isInfoEnabled())
-            CAT.info(this.getClass().getName()+" init start");
-        FileAuthManager auth = new FileAuthManager();
-        auth.setPwdFile(arg0.getProperty(PROP_UF));
-        auth.init();
-        current = auth;
-        if(CAT.isInfoEnabled())
-            CAT.info(this.getClass().getName()+" init end");
+	 * @see de.schlund.util.FactoryInit#init(java.util.Properties)
+	 */
+    public void init(Properties props) throws Exception {
+        if (CAT.isInfoEnabled())
+            CAT.info(this.getClass().getName() + " init start. Doing lazy init...");
+
+        if (!props.containsKey(PROP_UF)) {
+            throw new AuthManagerException("Need property '" + PROP_UF + "' for userdata!");
+        }
+        pathToPwdFile = props.getProperty(PROP_UF);
+
     }
     
     public static AuthManagerFactory getInstance() {
         return instance;
     }
-    
-    public AuthManager getAuthManager() {
-        if(current == null)
-            throw new IllegalStateException("AuthManger implementation is null! Init failed?");
+
+    public synchronized AuthManager getAuthManager() throws AuthManagerException {
+        if (current == null) {
+            long starttime = 0;
+            if (CAT.isInfoEnabled()) {
+                CAT.info(this.getClass().getName() + " init start. Now doing real init!");
+                starttime = System.currentTimeMillis();
+            }
+            FileAuthManager auth = new FileAuthManager();
+            auth.setPwdFile(pathToPwdFile);
+            auth.init();
+            current = auth;
+            if (CAT.isInfoEnabled()) {
+                CAT.info(this.getClass().getName() + " real init done. Duration :"+(System.currentTimeMillis() - starttime));
+            
+            }
+        }
         return current;
     }
 

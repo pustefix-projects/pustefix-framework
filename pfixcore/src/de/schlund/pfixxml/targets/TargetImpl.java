@@ -18,13 +18,15 @@
 */
 package de.schlund.pfixxml.targets;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.XMLException;
 
@@ -209,6 +211,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
      */
     public Object getCurrValue() throws TransformerException {
         Object obj = getValueFromSPCache();
+        // add cache access to cache statistic
+        doCacheStatistic(obj);
         // look if the target exists in memory cache and if the file in disk cache is newer.
         if (obj == null || isDiskCacheNewerThenMemCache()) {
             synchronized (this) {
@@ -292,5 +296,17 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     public void setStoredException(Exception stored) {
         this.storedException = stored;
     }
+    
+    private void doCacheStatistic(Object value) {
+        TargetGenerator tgen = getTargetGenerator();
+        if(value == null) {
+            SPCacheStatistic.getInstance().registerCacheMiss(this);
+        } else {
+            SPCacheStatistic.getInstance().registerCacheHit(this);
+        }
+    }
+    
+    
+    
 
 } // TargetImpl

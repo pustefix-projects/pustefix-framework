@@ -66,7 +66,7 @@ final public class EditorUser {
      * login, otherwise null. 
      * @throws IllegalArgumentException when trying to pass NPs as params.
      */
-    public static synchronized EditorUser logIn(String login, String passwd) throws WrongPasswordException, EditorException, NoSuchUserException {
+    public static synchronized EditorUser logIn(String login, String passwd) throws WrongPasswordException, EditorException, NoSuchUserException, AuthManagerException {
         if(login == null)
             throw new IllegalArgumentException("A NP as login name is not allowed here.");
      
@@ -106,7 +106,7 @@ final public class EditorUser {
      * all user information. Not null.
      * @throws IllegalArgumentException when trying to pass NP as param.
      */
-    public static synchronized void addUser(EditorUserInfo info) throws EditorException {
+    public static synchronized void addUser(EditorUserInfo info) throws EditorException, AuthManagerException {
         if(info == null)
             throw new IllegalArgumentException("A NP as EditorUserInfo is not allowed here.");
         
@@ -131,7 +131,7 @@ final public class EditorUser {
      * all user information. Not null.
      * @throws IllegalArgumentExcption when trying to pass NP as param.
      */
-    public static synchronized void removeUser(EditorUserInfo info) throws EditorException {
+    public static synchronized void removeUser(EditorUserInfo info) throws EditorException, AuthManagerException {
         if(info == null)
             throw new IllegalArgumentException("A NP as EditorUserInfo is not allowed here.");
         
@@ -153,7 +153,7 @@ final public class EditorUser {
      * Retrieve all possible EditorUsers.
      * @return an array of <code>EditorUserInfo</code>.
      */
-    public static EditorUserInfo[] getAllEditorUserInfo() throws EditorException {
+    public static EditorUserInfo[] getAllEditorUserInfo() throws EditorException, AuthManagerException {
         AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
         EditorUserInfo[] infos = null;
         
@@ -194,7 +194,7 @@ final public class EditorUser {
      * @return an <code>EditorUserInfo</code> containing all information.
      * @throws IllegalArgumentException when trying to pass NP as param.   
      */
-    public static synchronized EditorUserInfo getUserInfoByLogin(String login) throws EditorException, NoSuchUserException {
+    public static synchronized EditorUserInfo getUserInfoByLogin(String login) throws EditorException, NoSuchUserException, AuthManagerException {
         if(login == null)
             throw new IllegalArgumentException("A NP as userid is not allowed here.");
         
