@@ -18,36 +18,59 @@
 */
 package de.schlund.pfixxml;
 
+import com.icl.saxon.expr.EmptyNodeSet;
+import com.icl.saxon.expr.NodeSetValue;
+
+import de.schlund.pfixxml.xpath.PFXPathEvaluator;
+
 import java.io.File;
 
 import org.apache.log4j.Category;
-import org.apache.xpath.XPathAPI;
+
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 
 /**
  *  IncludeDocumentExtension.java
  * 
  * 
- *  Created: ?
- * 
  *  @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
+ *  @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a> 
+ * 
  *  This class is responsible to return the requested parts of an {@link IncludeDocument}. 
  *  It provides a static method which is called from XSL via the extension 
- *  mechanism. It gets the requested IncludeDocument from {@link IncludeDocumentFactory}
- *  and processes it via the XPathAPI.  
+ *  mechanism (and from nowhere else!). 
  */
-public class IncludeDocumentExtension {
+public final class IncludeDocumentExtension {
+
+    //~ Instance/static variables ..................................................................
+
     private static Category     CAT      = Category.getInstance(IncludeDocumentExtension.class.getName());
     private static final String DEFAULT  = "default";
     private static final String NOTARGET = "__NONE__";
 
-    public static NodeList get(String path, String part, String product, String docroot, 
-                               String targetgen, String targetkey, String parent_path, 
-                               String parent_part, String parent_product) throws Exception {
-        NodeList        nl      = null;
+    //~ Methods ....................................................................................
+
+    /**
+     * Get the requested IncludeDocument from {@link IncludeDocumentFactory} and retrieve
+     * desired information from it.</br>
+     * Note: The nested document in the Includedocument is immutable, any attempts to modify it
+     * will cause an exception.
+     * @param path the path to the Includedocument in the file system relative to docroot.
+     * @param part the part in the Includedocument.
+     * @param docroot the document root in the file system
+     * @param targetgen
+     * @param targetkey
+     * @param parent_path
+     * @param parent_part
+     * @param parent_product
+     * @return a list of nodes understood by the current transformer(currently saxon)
+     * @throws Exception on all errors
+     */
+    public static final NodeSetValue get(String path, String part, String product, String docroot, 
+                                         String targetgen, String targetkey, String parent_path, 
+                                         String parent_part, String parent_product)
+                                  throws Exception {
         boolean         dolog   = ! targetkey.equals(NOTARGET);
         int             length  = 0;
         File            incfile = new File(path);
@@ -58,40 +81,60 @@ public class IncludeDocumentExtension {
                 DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
-            return null;
+            return new EmptyNodeSet();
         }
-        // here we want an immutable DOM, currently saxons tinytree
-        iDoc   = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
-        doc    = iDoc.getDocument();
-        nl     = XPathAPI.selectNodeList(doc, "/include_parts/part[@name='" + part + "']");
-        length = nl.getLength();
+        // get the includedocument
+        iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+        doc = iDoc.getDocument();
+        
+        // create a new buffer for xpath expressions
+        StringBuffer sb = new StringBuffer(100);
+        
+        // Get the part
+        sb.append("/include_parts/part[@name='").append(part).append("']");
+        NodeSetValue ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+        
+        length = ns.getCount();
         if (length == 0) {
-            CAT.debug("*** Part '" + part + "' is 0 times defined.");
+        	// part not found 
+            sb.delete(0, sb.length());
+            sb.append("*** Part '").append(part).append("' is 0 times defined.");
+            //CAT.debug("*** Part '" + part + "' is 0 times defined.");
+            CAT.debug(sb.toString());
             if (dolog) {
                 DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
-            return null;
-        } else if (nl.getLength() > 1) {
+            return new EmptyNodeSet();
+        } else if (length > 1) {
+        	// too many parts. Error!
             if (dolog) {
                 DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
-            throw new XMLException("*** Part '" + part
-                                   + "' is multiple times defined! Must be exactly 1");
+            sb.delete(0, sb.length());
+            sb.append("*** Part '").append(part).append("' is multiple times defined! Must be exactly 1");
+            throw new XMLException(sb.toString());
         }
-        // OK, we have found the part.
-        nl     = XPathAPI.selectNodeList(doc, 
-                                         "/include_parts/part[@name = '" + part + "']"
-                                         + "/product[@name = '" + product + "']");
-        length = nl.getLength();
+        
+        
+        // OK, we have found the part. Find the specfic product.
+        sb.delete(0, sb.length());
+        sb.append("/include_parts/part[@name = '").append(part).append("']").
+        	append("/product[@name = '").append(product).append("']");
+        ns     = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+        
+        length = ns.getCount();
         if (length == 0) {
             // Didn't find the specific product, trying default:
-            nl = XPathAPI.selectNodeList(doc, 
-                                         "/include_parts/part[@name = '" + part + "']"
-                                         + "/product[@name = '" + DEFAULT + "']");
-            int len = nl.getLength();
+            sb.delete(0, sb.length());
+            sb.append("/include_parts/part[@name = '").append(part).append("']").
+            	append("/product[@name = '").append(DEFAULT).append("']");
+            ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+            
+            int len = ns.getCount();
             if (len == 1 | len == 0) {
+            	// Found one or none default products
                 String retval = "0";
                 if (dolog) {
                     retval = DependencyTracker.log("text", path, part, DEFAULT, parent_path, 
@@ -99,39 +142,50 @@ public class IncludeDocumentExtension {
                                                    targetkey);
                 }
                 if (len == 0) {
-                    CAT.warn("*** Product '" + product + "' is not accessible under part '" + part
-                             + "@" + path + "', and a default product is not defined either.");
-                    return null;
+                	// Specific product and default product not found. Warning!
+                    sb.delete(0, sb.length());
+                    sb.append("*** Product '").append(product).
+                    	append("' is not accessible under part '").append(part).append("@").
+                    	append(path).append("', and a default product is not defined either.");
+                    CAT.warn(sb.toString());
+                    return new EmptyNodeSet();
                 } else {
                     if (retval.equals("0")) {
-                        return nl;
+                        return ns;
                     } else {
-                        return null;
+                        return new EmptyNodeSet();
                     }
                 }
             } else {
-                throw new XMLException("*** Part '" + part
-                                       + "' has multiple default product branches! Must be 1.");
+            	// too many default products found. Error!
+                sb.delete(0, sb.length());
+                sb.append("*** Part '").append(part).
+                	append("' has multiple default product branches! Must be 1.");
+                throw new XMLException(sb.toString());
             }
         } else if (length == 1) {
+        	// specific product found
             String retval = "0";
             if (dolog) {
                 retval = DependencyTracker.log("text", path, part, product, parent_path, 
                                                parent_part, parent_product, targetgen, targetkey);
             }
             if (retval.equals("0")) {
-                return nl;
+                return ns;
             } else {
-                return null;
+                return new EmptyNodeSet();
             }
         } else {
+        	// too many specific products found. Error!
             if (dolog) {
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
-            throw new XMLException("*** Product '" + product
-                                   + "' is defined multiple times under part '" + part + "@" + path
-                                   + "'");
+            sb.delete(0, sb.length());
+            sb.append("*** Product '").append(product).
+            	append("' is defined multiple times under part '").append(part).append("@").
+            	append(path).append("'");
+            throw new XMLException(sb.toString());
         }
     }
-}
+}// end of class IncludeDocumentExtension
