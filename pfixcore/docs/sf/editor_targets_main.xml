@@ -1,11 +1,8 @@
 <div>
 <h1>The Targets page</h1>
 
-  <p>In the left frame all targets and their
-    dependency tree are listed. Select a target from that list
-    and the right frame will appear.</p>
-
-  <p>In the right frame information on the selected target is displayed.</p>
+  <p>In the left frame all targets and their  dependency tree are listed. Select a target from that list
+    to display detailed information on that target in the right frame.</p>
   
   <table>
     <tr valign="top">
