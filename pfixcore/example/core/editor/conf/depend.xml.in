@@ -27,12 +27,15 @@
   <!-- ========= master =============== -->
   <target name="master.xsl" type="xsl">
     <depxml name="core/xsl/master.xsl"/>
-    <depxsl name="core/editor/xsl/custommaster.xsl"/>
+    <depxsl name="core/xsl/customizemaster.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
-    <depaux name="core/xsl/navigation.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
+    <depaux name="core/xsl/navigation.xsl"/>
     <depaux name="core/xsl/forminput.xsl"/>
+    <runtime_stylesheets>core/editor/xsl/runtime.xsl</runtime_stylesheets>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
     <param name="product" value="editor"/>
     <param name="lang"    value="en"/>
   </target>
@@ -41,8 +44,8 @@
   <target name="metatags.xsl" type="xsl">
     <depxml name="core/editor/xsl/metatags.xsl"/>
     <depxsl name="core/xsl/customizestylesheet.xsl"/>
-    <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
     <param name="product" value="editor"/>
     <param name="lang"    value="en"/>

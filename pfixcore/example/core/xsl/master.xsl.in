@@ -54,7 +54,13 @@
   <!-- the copy rule -->
   <xsl:include href="core/xsl/default_copy.xsl"/>
   
-  <xsl:param name="outputmethod">html</xsl:param>
+  <xsl:param name="outputmethod"/>
+  <xsl:param name="outputencoding"/>
+  <xsl:param name="outputdoctype-public"/>
+  <xsl:param name="outputdoctype-system"/>
+
+  <xsl:param name="runtime_stylesheets"/>
+  
   <!-- Needed for includes to work
   Remember to include this in the resulting stylesheet, too!
   The variables are just defaults.-->
@@ -85,9 +91,18 @@
   <xsl:template match="/">
     <ixsl:stylesheet version="1.0" exclude-result-prefixes="pfx cus xsl ixsl">
       <cus:final-output-method>
-        <xsl:attribute name="method">
-          <xsl:value-of select="$outputmethod"/>
-        </xsl:attribute>
+        <xsl:if test="not($outputmethod = '')">
+          <xsl:attribute name="method"><xsl:value-of select="$outputmethod"/></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="not($outputencoding = '')">
+          <xsl:attribute name="encoding"><xsl:value-of select="$outputencoding"/></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="not($outputdoctype-system = '')">
+          <xsl:attribute name="doctype-system"><xsl:value-of select="$outputdoctype-system"/></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="not($outputdoctype-public = '')">
+          <xsl:attribute name="doctype-public"><xsl:value-of select="$outputdoctype-public"/></xsl:attribute>
+        </xsl:if>
       </cus:final-output-method>
       
       <!-- these parameters will always be passed in by the servlet -->
@@ -114,6 +129,9 @@
       <ixsl:include href="core/xsl/default_copy.xsl"/>
 
       <cus:custom_ixsl/>
+      <xsl:call-template name="gen_ixsl_include">
+        <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($runtime_stylesheets)"/></xsl:with-param>
+      </xsl:call-template>
 
       <ixsl:template match="/">
         <xsl:choose>
@@ -157,7 +175,7 @@
    <cus:documentation>
     <responsible>JTL</responsible>
     <description>
-      Allows to comment out blocks without loosing them during the trafo steps
+      Allows to comment out blocks without loosing them during the transformation steps
     </description>
   </cus:documentation>
   </xsl:template>
@@ -165,7 +183,7 @@
   <xsl:template match="pfx:head">
   <cus:documentation>
     <responsible>JTL</responsible>
-      <description>Makes the HTML-Head. The Baselib.js will be included automatically</description>
+      <description>creates the HTML head. The javascript library baselib.js will be included automatically</description>
       <pfx:head>
         <title>PFIXCORE Sample</title>
       </pfx:head>
@@ -195,9 +213,9 @@
   <xsl:template match="pfx:script">
   <cus:documentation>
     <responsible>JTL</responsible>
-      <description>A script block will be inserted. Script-Type is always Java-Script ! When using
-      complex Java-Script, you'll better put a  &lt;[CDATA[-Block around your Script, so that the
-      XML-Document could not be destroyed.
+      <description>A script block will be inserted. The script type is JavaScript if no language attribute is given. When using
+      complex JavaScript, you better put a  &lt;[CDATA[-Block around your Script, so that the
+      XML-Document can not be destroyed.
       </description>
 
        <example>
@@ -235,30 +253,9 @@
   <xsl:template match="pfx:frameset">
   <cus:documentation>
     <responsible>JTL</responsible>
-      <description>Inserts a frameset. Standard Value for Frameborder=0, Framespacing=0, border=0. If you want to change
-        the default settings add the parameters. All parameters will be copied.
+      <description>creates a frameset. Standard value for frameborder=0, framespacing=0, border=0. If you want to change
+        the default settings just add the attributes, as all attributes will be copied to the resulting html framset tag.
       </description>
-
-
-      <param required="0">
-        <name>framborder</name>
-        <values><html default="0"/></values>
-        <description></description>
-      </param>
-
-
-      <param required="0">
-        <name>framespacing</name>
-        <values><html/></values>
-        <description></description>
-      </param>
-
-
-      <param required="0">
-        <name>border</name>
-        <values><html default="0"/></values>
-        <description></description>
-      </param>
 
       <children>
         <name>pfx:frame</name>
@@ -318,26 +315,12 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Always a child of pfx:frameset.
-        Inserts a html-frame. Standard-Value for Scrolling=auto,
-        Marginwidth=1, marginheight=1. If you want to change the default-settings,
-        add the parameters All parameters  will be copied. 
+        Inserts a html frame. Standard value for scrolling=auto,
+        marginwidth=1, marginheight=1. If you want to change the default settings,
+        add the attributes as all attributes will be copied to the resulting frame tag. 
+        Note that you don't use a src attribute with pfx:frame! The frame content will be the child nodes of
+        the pfx:frame tag.
       </description>
-
-
-      <param required="0">
-        <name>scrolling</name>
-        <values><html default="auto"/></values>
-      </param>
-
-      <param required="0">
-        <name>marginwidth</name>
-        <values><html default="1"/></values>
-      </param>
-
-      <param required="0">
-        <name>marginheight</name>
-        <values><html default="1"/></values>
-      </param>
 
       <example>
         <input>
@@ -409,11 +392,36 @@
       </xsl:choose>
     </frame>
   </xsl:template>
-  
+
+
+  <xsl:template name="gen_ixsl_include">
+    <xsl:param name="ssheets"/>
+    <xsl:variable name="first">
+      <xsl:value-of select="normalize-space(substring-before(concat($ssheets, ' '), ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="rest">
+      <xsl:value-of select="normalize-space(substring-after($ssheets, ' '))"/>
+    </xsl:variable>
+    <xsl:if test="$first != ''">
+      <ixsl:include>
+        <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',$first)"/></xsl:attribute>
+      </ixsl:include><xsl:text>
+      </xsl:text>
+    </xsl:if>
+    <xsl:if test="$rest != ''">
+      <xsl:call-template name="gen_ixsl_include">
+        <xsl:with-param name="ssheets">
+          <xsl:value-of select="$rest"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
+
 </xsl:stylesheet>
 
 <!-- 
 Local Variables: 
-mode: xml 
+mode: xsl
 End: 
 --> 

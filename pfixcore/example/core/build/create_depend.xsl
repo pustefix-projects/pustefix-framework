@@ -1,4 +1,4 @@
-<!-- -*- mode: xml -*- -->
+<!-- -*- mode: xsl -*- -->
 <xsl:stylesheet version="1.0"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -53,6 +53,39 @@
     </xsl:copy>
   </xsl:template>
 
+  <xsl:template match="skinning_stylesheets|runtime_stylesheets">
+    <param name="{name()}">
+      <xsl:attribute name="value"><xsl:value-of select="./text()"/></xsl:attribute>
+    </param>
+    <xsl:call-template name="do_depaux_list">
+      <xsl:with-param name="ssheets">
+        <xsl:value-of select="normalize-space(./text())"/>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template name="do_depaux_list">
+    <xsl:param name="ssheets"/>
+    <xsl:variable name="first">
+      <xsl:value-of select="normalize-space(substring-before(concat($ssheets, ' '), ' '))"/>
+    </xsl:variable>
+    <xsl:variable name="rest">
+      <xsl:value-of select="normalize-space(substring-after($ssheets, ' '))"/>
+    </xsl:variable>
+    <xsl:if test="$first != ''">
+      <depaux>
+        <xsl:attribute name="name"><xsl:value-of select="concat($docroot,'/',$first)"/></xsl:attribute>
+      </depaux>
+    </xsl:if>
+    <xsl:if test="$rest != ''">
+      <xsl:call-template name="do_depaux_list">
+        <xsl:with-param name="ssheets">
+          <xsl:value-of select="$rest"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="standardpage">
     <target name="{@name}.xsl" type="xsl">
       <depxml name="{@name}.xml"/>
@@ -65,6 +98,25 @@
       </xsl:if>
       <xsl:if test="@outputmethod">
         <param name="outputmethod" value="{@outputmethod}"/>
+      </xsl:if>
+      <xsl:if test="@outputencoding">
+        <param name="outputencoding" value="{@outputencoding}"/>
+      </xsl:if>
+      <xsl:if test="@outputdoctype-public">
+        <param name="outputdoctype-public" value="{@outputdoctype-public}"/>
+      </xsl:if>
+      <xsl:if test="@outputdoctype-system">
+        <param name="outputdoctype-system" value="{@outputdoctype-system}"/>
+      </xsl:if>
+      <xsl:if test="@runtime_stylesheets">
+        <param name="runtime_stylesheets">
+          <xsl:attribute name="value"><xsl:value-of select="@runtime_stylesheets"/></xsl:attribute>
+        </param>
+        <xsl:call-template name="do_depaux_list">
+          <xsl:with-param name="ssheets">
+            <xsl:value-of select="normalize-space(@runtime_stylesheets)"/>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:if>
     </target>
     
@@ -105,13 +157,6 @@
       </xsl:if>
     </depaux>
   </xsl:template>
-    
-  <!--<xsl:template match="*" name="copy">
-    <xsl:copy>
-      <xsl:copy-of select="./@*"/>
-      <xsl:apply-templates/>
-    </xsl:copy>
-  </xsl:template>-->
-  
+      
 </xsl:stylesheet>
 
