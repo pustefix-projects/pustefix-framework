@@ -70,7 +70,11 @@ public class EditorHelper {
                 if (toplevel == null) {
                     CAT.error("\n **************** Got 'null' target for PageInfo " + pinfo.getName() + "!! *****************");
                 } else {
-                    toplevel.getValue();
+                    try {
+                        toplevel.getValue();
+                    } catch (Exception e) {
+                        CAT.warn("*** CAUTION: Exception on updating of " + toplevel.getTargetKey());
+                    }
                 }
             }
             for (; j.hasNext(); ) {
@@ -114,9 +118,9 @@ public class EditorHelper {
                 }
                 skel.appendChild(root);
                 root.appendChild(skel.createComment("Append include parts here..."));
-                FileWriter    output = new FileWriter(incfile);
-                OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                XMLSerializer ser    = new XMLSerializer(output, outfor);
+                FileOutputStream output = new FileOutputStream(incfile);
+                OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                XMLSerializer    ser    = new XMLSerializer(output, outfor);
                 outfor.setPreserveSpace(true); 
                 outfor.setIndent(0);
                 ser.serialize(skel);
@@ -128,14 +132,14 @@ public class EditorHelper {
     }
     
     private static String constructBackupDir(EditorSessionStatus ess, AuxDependency inc) {
-            String path = inc.getPath();
-            if (inc.getType().equals(DependencyType.TEXT)) {
-                String part = inc.getPart();
-                String prod = inc.getProduct();
-                return ess.getBackupDir() + "/" + path + "/" + part + "/" + prod;
-            } else {
-                return ess.getBackupDir() + "/" + path;
-            }
+        String path = inc.getPath();
+        if (inc.getType().equals(DependencyType.TEXT)) {
+            String part = inc.getPart();
+            String prod = inc.getProduct();
+            return ess.getBackupDir() + "/" + path + "/" + part + "/" + prod;
+        } else {
+            return ess.getBackupDir() + "/" + path;
+        }
     }
 
     private static File constructBackupFile(EditorSessionStatus ess, AuxDependency inc) {
@@ -176,9 +180,9 @@ public class EditorHelper {
         File file = constructBackupFile(ess, inc);
         if (file != null) {
             try {
-                FileWriter    output = new FileWriter(file);
-                OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                XMLSerializer ser    = new XMLSerializer(output, outfor);
+                FileOutputStream output = new FileOutputStream(file);
+                OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                XMLSerializer    ser    = new XMLSerializer(output, outfor);
                 outfor.setPreserveSpace(true); 
                 outfor.setIndent(0);
                 ser.serialize((Element) tosave);

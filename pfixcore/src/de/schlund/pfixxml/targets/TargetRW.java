@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
+import javax.xml.transform.TransformerException;
+
 /**
  *
  *
@@ -29,6 +31,6 @@ interface TargetRW extends Target {
     void   setXSLSource(Target source);
     void   addParam(String key, String val);
     void   addPageInfo(PageInfo info);
-    Object getCurrValue() throws Exception;
+    Object getCurrValue() throws TransformerException;
     void   storeValue(Object obj);  
 }
