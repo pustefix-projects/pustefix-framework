@@ -132,7 +132,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int    XML_ONLY_PROHIBITED                           = 2;
     
     // error handling
-    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl.in";
+    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -586,7 +586,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = createErrorTree(targetex);
                 errordoc = xsltproc.xmlObjectFromDocument(errordoc);
-                Object stvalue = ((Target)TargetFactory.getInstance().getTarget(TargetType.XSL_LEAF, generator, ERROR_STYLESHEET)).getValue();
+                Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
                 xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
                 return;
             }
@@ -646,136 +646,48 @@ public abstract class AbstractXMLServer extends ServletManager {
      */
     private Document createErrorTree(TargetGenerationException targetex) throws ParserConfigurationException, IOException {
         DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = docbuilder.newDocument();
-        Element e0 = doc.createElement("error_message");
-        
-        Element e1 = doc.createElement("title");
-        Text t1 = doc.createTextNode("Error when generating target");
-        e1.appendChild(t1);
-        e0.appendChild(e1);
-       
-        doc.importNode(e0, true);
+        Document        doc        = docbuilder.newDocument();
+        Element         e0         = doc.createElement("error_message");
         doc.appendChild(e0);
         printEx(targetex, doc, e0);
         return doc;
     }
 
-    private void printEx(Throwable e, Document doc, Node e0) {
-        if(e == null) {
-            return;
-        }
-        if(e instanceof SAXParseException) {
-            SAXParseException sex = (SAXParseException) e;
-            Element ee = doc.createElement("break");
-            e0.appendChild(ee);
-             
-            Element e5 = doc.createElement("error");
-            e5.setAttribute("key", "Type:");
-            Text t5 = doc.createTextNode(sex.getClass().getName());
-            e5.appendChild(t5);
-            e0.appendChild(e5);
-            
-            Element e4 = doc.createElement("error");
-            e4.setAttribute("key", "Message:");
-            Text t4 = doc.createTextNode(sex.getMessage());
-            e4.appendChild(t4);
-            e0.appendChild(e4);
-            
-            Element e8 = doc.createElement("error");
-            e8.setAttribute("key", "Id:");
-            Text t8 = doc.createTextNode(sex.getSystemId());
-            e8.appendChild(t8);
-            e0.appendChild(e8);
-                    
-            Element e6 = doc.createElement("error");
-            e6.setAttribute("key", "Line:");
-            Text t6 = doc.createTextNode(""+sex.getLineNumber());
-            e6.appendChild(t6);
-            e0.appendChild(e6);
-                    
-            Element e7 = doc.createElement("error");
-            e7.setAttribute("key", "Column:");
-            Text t7 = doc.createTextNode(""+sex.getColumnNumber());
-            e7.appendChild(t7);
-            e0.appendChild(e7);
-        } else if(e instanceof TargetGenerationException){
-            TargetGenerationException tagex = (TargetGenerationException) e;
-            Element ee = doc.createElement("break");
-            e0.appendChild(ee);
-            
-            Element e1 = doc.createElement("error");
-            e1.setAttribute("key", "Type:");
-            Text t1 = doc.createTextNode(tagex.getClass().getName());
-            e1.appendChild(t1);
-            e0.appendChild(e1);
-            
-            Element e3 = doc.createElement("error");
-            e3.setAttribute("key", "Message:");
-            Text t3 = doc.createTextNode(tagex.getMessage());
-            e3.appendChild(t3);
-            e0.appendChild(e3);
-            
-            Element e2 = doc.createElement("error");
-            e2.setAttribute("key", "Target:");
-            Text t2 = doc.createTextNode(tagex.getTargetkey());
-            e2.appendChild(t2);
-            e0.appendChild(e2);
-            printEx(tagex.getNestedException(), doc, e0);
-        } else if(e instanceof TransformerException) {
-            TransformerException trex = (TransformerException) e;
-            Element e1 = doc.createElement("error");
-            e1.setAttribute("key", "Type:");
-            Text t1 = doc.createTextNode(trex.getClass().getName());
-            e1.appendChild(t1);
-            e0.appendChild(e1);
-           
-            Element e3 = doc.createElement("error");
-            e3.setAttribute("key", "Message:");
-            Text t3 = doc.createTextNode(trex.getMessage());
-            e3.appendChild(t3);
-            e0.appendChild(e3);
-            printEx(trex.getCause(), doc, e0);
-        } else if(e instanceof SAXException) {
-            SAXException saxex = (SAXException) e; 
-            Element ee = doc.createElement("break");
-            e0.appendChild(ee);
-            
-            Element e11 = doc.createElement("error");
-            e11.setAttribute("key", "Type:");
-            Text t11 = doc.createTextNode(saxex.getClass().getName());
-            e11.appendChild(t11);
-            e0.appendChild(e11);
-            
-            Element e12 = doc.createElement("error");
-            e12.setAttribute("key", "Message:");
-            Text t12 = doc.createTextNode(saxex.getMessage());
-            e12.appendChild(t12);
-            e0.appendChild(e12);
-            printEx(saxex.getException(), doc, e0);
-        }
-        else {
-            
-            Element ee = doc.createElement("break");
-            e0.appendChild(ee);
-            
-            Element e11 = doc.createElement("error");
-            e11.setAttribute("key", "Type:");
-            Text t11 = doc.createTextNode(e.getClass().getName());
-            e11.appendChild(t11);
-            e0.appendChild(e11);
-            
-            Element e12 = doc.createElement("error");
-            e12.setAttribute("key", "Message:");
-            Text t12 = doc.createTextNode(e.getMessage());
-            e12.appendChild(t12);
-            e0.appendChild(e12);
-            
-        }
-        
-       
-        //printEx(e.getCause(), doc, e0);
+    private void insertErrInfo(Element error, String key, String value) {
+        Element info = error.getOwnerDocument().createElement("info");
+        info.setAttribute("key", key);
+        info.setAttribute("value", value);
+        error.appendChild(info);
     }
     
+    private void printEx(Throwable e, Document doc, Node root) {
+        if (e == null) {
+            return;
+        }
+
+        Element error = doc.createElement("error");
+        root.appendChild(error);
+        error.setAttribute("type", e.getClass().getName());
+        insertErrInfo(error, "Message", e.getMessage());
+        
+        if (e instanceof SAXParseException) {
+            SAXParseException sex = (SAXParseException) e;
+            insertErrInfo(error, "Id",     sex.getSystemId());
+            insertErrInfo(error, "Line",   "" + sex.getLineNumber());
+            insertErrInfo(error, "Column", "" + sex.getColumnNumber());
+            printEx(sex.getException(), doc, root);
+        } else if (e instanceof TargetGenerationException){
+            TargetGenerationException tagex = (TargetGenerationException) e;
+            insertErrInfo(error, "Key", tagex.getTargetkey());
+            printEx(tagex.getNestedException(), doc, root);
+        } else if (e instanceof TransformerException) {
+            TransformerException trex = (TransformerException) e;
+            printEx(trex.getCause(), doc, root);
+        } else if (e instanceof SAXException) {
+            SAXException saxex = (SAXException) e;
+            printEx(saxex.getException(), doc, root);
+        } 
+    }
 
 
     /**

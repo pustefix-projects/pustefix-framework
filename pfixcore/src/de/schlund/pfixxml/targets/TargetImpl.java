@@ -132,8 +132,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         Object obj = null;
         try {
             obj = getCurrValue();
-        } catch(TransformerException e) {
-            throw new TargetGenerationException("Exception in getCurrValue !", e);
+        } catch (TransformerException e) {
+            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue !", e);
+            tex.setTargetkey(getTargetKey());
+            throw tex;
         }
         return obj;
     }
