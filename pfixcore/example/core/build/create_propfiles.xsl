@@ -50,11 +50,11 @@
 
   <xsl:template match="pagerequest">
     <xsl:param name="name" select="@name"/>
-     <xsl:choose>
+    <xsl:choose>
       <xsl:when test="@copyfrom">
-        <xsl:variable name="copyfrom_name" select="@copyfrom" />
-        <xsl:apply-templates select="//pagerequest[@name= $copyfrom_name]">
-          <xsl:with-param name="name" select="$name" />
+        <xsl:variable name="copyfrom_name" select="@copyfrom"/>
+        <xsl:apply-templates select="//pagerequest[@name = $copyfrom_name]">
+          <xsl:with-param name="name" select="$name"/>
         </xsl:apply-templates>
       </xsl:when>
       <xsl:otherwise>
