@@ -7,7 +7,9 @@
     <page name="java" title="Framework"/>
   </page>
   <page name="download" title="Download"/>
-  <page name="udocs" title="Userdocs"/>
+  <page name="udocs" title="Userdocs">
+    <page name="editor" title="Pustefix Editor"/>
+  </page>
   <page name="misc" title="Misc."/>
   
 </pagedef>

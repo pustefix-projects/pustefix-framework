@@ -21,8 +21,16 @@
   
   <h1>Development news</h1>
 
+  <ul>
+    <li>
+      The next version (released soon) will have rights management for
+      the editor. Admins will be able to restrict users to edit only
+      certain subprojects, while the possible use of one include by
+      different subprojects will be taken care of with respect to the
+      user's rights. More information on this will be available
+      on the <a href="editor.html">editor's documentation page.</a>
+    </li>
+  </ul>
   
   
-  <br/><b><a href="http://sourceforge.net/projects/pustefix/">Coming soon....</a></b>
-
 </div>
