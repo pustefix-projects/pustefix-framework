@@ -1,3 +1,12 @@
+2004-05-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/util/statuscodes/StatusCodeException.java: 
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java: 
+	* src/de/schlund/util/statuscodes/StatusCode.java: 
+	* src/de/schlund/util/FactoryInit.java: new files. Added from util-MINI.jar 
+
+	* lib/util-MINI-1.1.10.jar: REMOVED
+	
 2004-04-07  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: changed creation of symlink from directory
