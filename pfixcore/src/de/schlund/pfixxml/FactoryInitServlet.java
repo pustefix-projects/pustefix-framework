@@ -129,7 +129,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             AppLoader appLoader = AppLoader.getInstance();
                             long      start     = 0;
                             long      stop      = 0;
-                            if (appLoader.isEnabled() && appLoader.isIncludedClass(the_class)) {
+                            if (appLoader.isEnabled() && appLoader.isReloadableClass(the_class)) {
                                 Class       clazz   = appLoader.loadClass(the_class);
                                 FactoryInit factory = (FactoryInit) clazz.getMethod("getInstance",null).invoke(null,null);
                                 CAT.debug("     Object ID: " + factory);

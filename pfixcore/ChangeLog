@@ -1,3 +1,21 @@
+2004-09-09  Martin Leidig <mleidig@schlund.de>
+
+	Added a new AppLoader feature, using the new AppLoader configuration property
+	"apploader.package.exclude" you can specify certain packages which should not
+	be loaded by the AppLoader even though their parent packages are.
+
+	* example/common/conf/apploader.prop.in 
+	* skel/projects/common/conf/apploader.prop.in
+        * src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+
+	Added new method isReloadableClass() to AppLoader class, which is responsible
+	for the new extended class inclusion/exclusion mechanism, updated dependant
+	classes.
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java 
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java 
+	* src/de/schlund/pfixxml/loader/AppLoader.java 
+ 
 2004-09-01  Joerg Haecker <haecker@schlund.de>
 
 	* fixes for rendering errors to screen

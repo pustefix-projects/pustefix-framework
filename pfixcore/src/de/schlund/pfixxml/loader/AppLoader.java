@@ -56,6 +56,7 @@ public class AppLoader implements FactoryInit,Runnable {
     private CommandListener listener;
     private int interval;
     private HashSet incPacks=new HashSet();
+    private HashSet excPacks=new HashSet();
     private HashSet excClasses=new HashSet();
     private ArrayList travExcludes=new ArrayList();
     private HashSet travIncludes=new HashSet();
@@ -122,6 +123,10 @@ public class AppLoader implements FactoryInit,Runnable {
         incPacks.add(pack);
     }
     
+    protected void excludePackage(String pack) {
+        excPacks.add(pack);
+    }
+    
     protected void excludeClass(String clazz) {
         excClasses.add(clazz);
     }
@@ -163,16 +168,35 @@ public class AppLoader implements FactoryInit,Runnable {
         return false;
     }
     
+    protected boolean isExcludedPackage(String packName) {
+        if(excPacks.contains(packName)) return true;
+        int ind=packName.indexOf('.');
+        while(ind>-1) {
+            String pack=packName.substring(0,ind);
+            if(excPacks.contains(pack)) return true;
+            ind=packName.indexOf('.',ind+1);
+        }
+        return false;
+    }
+    
     protected boolean isExcludedClass(String className) {
         if(excClasses.contains(className)) return true;
         return false;
     }
     
-    public boolean isIncludedClass(String className) {
-        String pack=className.substring(0,className.lastIndexOf('.'));
-        return isIncludedPackage(pack);
+    public boolean isReloadableClass(String className) {
+        String pack=getPackageName(className);
+        if(pack==null) return false;
+        if(isIncludedPackage(pack) && !isExcludedPackage(pack) && !isExcludedClass(className)) return true;
+        return false;
     }
-  
+       
+    protected String getPackageName(String className) {
+        int ind=className.lastIndexOf('.');
+        if(ind>0) return className.substring(0,ind);
+        return null;
+    }
+            
     protected void setTrigger(int trigger) {
         int old=this.trigger;
         if(old!=trigger && (trigger==AUTO_TRIGGER || trigger==MANUAL_TRIGGER)) {

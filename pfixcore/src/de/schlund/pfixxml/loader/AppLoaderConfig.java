@@ -144,7 +144,7 @@ public class AppLoaderConfig {
             } else {
                 throw new AppLoaderConfigException("Property '"+name+"' needs existing directory as value: " + val);
             }
-            //package
+            //package (include)
             name="apploader.package.include.";
             enm=props.propertyNames();
             while(enm.hasMoreElements()) {
@@ -154,7 +154,17 @@ public class AppLoaderConfig {
                     loader.includePackage(val);
                 }
             } 
-            //class
+            //package(exclude)
+            name="apploader.package.exclude.";
+            enm=props.propertyNames();
+            while(enm.hasMoreElements()) {
+                String key=(String)enm.nextElement();
+                if(key.startsWith(name)) {
+                    val=getProperty(props, key);
+                    loader.excludePackage(val);
+                }
+            }
+            //class (exclude)
             name="apploader.class.exclude.";
             enm=props.propertyNames();
             while(enm.hasMoreElements()) {

@@ -41,15 +41,16 @@
       <!--directory where reloadable classes are stored-->
       <prop name="apploader.repository">servletconf/tomcat/shared/classes</prop>
       
-      <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
+      <!--add packages which should be reloadable, i.e. loaded by the AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
-      <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
-      <prop name="apploader.package.include.3">de.schlund.pfixcore.editor</prop>
+      <prop name="apploader.package.include.2">de.schlund.pfixcore.editor</prop>
       <prop name="apploader.package.include.3">de.skelexamples</prop>
       
-      <!--add classes which shouldn't be reloadable even though their packages are-->
-      <prop name="apploader.class.exclude.1">de.schlund.pfixschlund.util.addresschecker.ReturnValue</prop>
-      <prop name="apploader.class.exclude.2">de.schlund.pfixschlund.util.addresschecker.soap.ReturnValueSoap</prop>
+      <!--add packages which shouldn't be reloadable (even though their parent packages are)-->
+      <!--<prop name="apploader.package.exclude.1">de.schlund.pfixcore.example.foo</prop>-->
+	  
+      <!--add classes which shouldn't be reloadable (even though their packages are)-->
+      <!--<prop name="apploader.class.exclude.1">de.schlund.pfixcore.example.foo.Bar</prop>-->
       
       <!--add packages which don't have to be traversed for state transfer-->
       <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
