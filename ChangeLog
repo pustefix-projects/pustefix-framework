@@ -1,3 +1,45 @@
+2003-02-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	(handleSubmittedData): add an example for using StatusCodes with arguments.
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamInfo.java: 
+	(getArgsForStatusCode): new method. Return the String[] array holding the arguments
+	for this StatusCode (or null).
+	(addScode): add another parameter (String[] args) for adding scodes with arguments.
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java 
+	(addScode): add another parameter (String[] args) for adding scodes with arguments.
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java 
+	(addErrorCodes): added handling of StatusCodes that have arguments attached.
+
+	* src/de/schlund/pfixxml/ResultForm.java: 
+	(addStatusCode) add another parameter (String[] args) for adding scodes with arguments. 
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixxml/ResultDocument.java: 
+	(createIncludeFromStatusCode) add another parameter (String[] args) 
+	for adding scodes with arguments. Old calling scheme is valid too.
+
+	* example/core/build/iwrapper.xsl: now we add addSCodeWithArgs<PARAMNAME> methods, too, for
+	every parameter of the IWrapper.
+
+	* example/core/xsl/default_copy.xsl: cop $__env through all nodes.
+	This way you can simultate something like a "dynamic binding" by
+	using apply-templates with a paramter "__env" which has a nodeset containing
+	the data bound to it. All templates using apply-templates (or call-templates) should 
+	be restructured to accept and apply this __env parameter. (some may want to set __env 
+	not to a supplied value but to something own).
+
+	* example/core/xsl/include.xsl (<pfx:argref>): new template.
+	(<pfx:include>): now we use any <pfx:arg> subnodes as the __env
+	parameter when using apply-templates on the new included
+	xml-part. $__env is copied through all nodes handled by the
+	default_copy.xsl default rule.
+
 2003-02-26  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: added
