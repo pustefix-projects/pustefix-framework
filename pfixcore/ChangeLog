@@ -1,4 +1,9 @@
 2004-07-21 Michael Hartmier  <mhm@schlund.de>
+	* build.xml
+	* example/core/build/create_serverxml.xsl
+	* skel/build.xml: configureable "trusted ips"
+
+2004-07-21 Michael Hartmier  <mhm@schlund.de>
 	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
 	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java

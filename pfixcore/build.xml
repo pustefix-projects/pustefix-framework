@@ -56,6 +56,7 @@ or delete the DOCTYPE definition -->
   <!-- TODO: use dir.tomcat whereever possible -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
+  <property name="trusted.tomcat"             value="172.17.12.*"/>
 
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
@@ -778,6 +779,7 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
+      <param name="trusted"   expression="${trusted.tomcat}"/>
     </pfx-xslt>
   </target>
 
