@@ -356,7 +356,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @exception Exception Anything that can go wrong when constructing the resulting
      * SPDocument object
      */
-    public abstract SPDocument getDom(PfixServletRequest preq) throws Exception;
+    protected abstract SPDocument getDom(PfixServletRequest preq) throws Exception;
 
     /**
      * This is the method that is called for any servlet that inherits from ServletManager.

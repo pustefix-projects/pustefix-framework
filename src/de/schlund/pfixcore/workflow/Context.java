@@ -297,11 +297,6 @@ public class Context implements AppContext {
     }
 
     public boolean flowBeforeNeedsData() throws Exception {
-        // This is needed when the navigation is built! we don't want to step through the pages of a different workflow every time.
-        // if (currentpagerequest.getStatus() == PageRequestStatus.NAVIGATION) {
-        //     return true;
-        // }
-        
         if (!currentpageflow.containsPageRequest(currentpagerequest)) {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() +
                                        " does not contain current pagerequest " + currentpagerequest);
