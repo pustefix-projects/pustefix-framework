@@ -1,5 +1,8 @@
 2003-05-09  Volker Zaich <zaich@schlund.de>
 
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
+	More ugly Syntax-Hilighting Bux fixed
+
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
 	Close button added		
 	

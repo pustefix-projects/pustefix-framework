@@ -141,7 +141,11 @@ public class PfixHighlight extends DefaultStyledDocument {
         MutableAttributeSet attr = new SimpleAttributeSet();
         if (stati.equals("element")) {
           StyleConstants.setBold (attr, true);    
-        }                
+        }
+        else {
+          StyleConstants.setBold (attr, false);    
+        }
+        
         StyleConstants.setForeground(attr, color);
         textpane.setCharacterAttributes(attr, false);
     }
@@ -152,6 +156,10 @@ public class PfixHighlight extends DefaultStyledDocument {
         if (stati.equals("element")) {
             StyleConstants.setBold (attr, true);
         }
+        else {
+             StyleConstants.setBold (attr, false); 
+        }
+        
         StyleConstants.setForeground(attr, color);
         try {
              textpane.getStyledDocument().setCharacterAttributes(start, end, attr, false);
@@ -167,7 +175,7 @@ public class PfixHighlight extends DefaultStyledDocument {
 
         switch (index) {
         case 0:
-            color = new Color(39,167,244); 
+            color = new Color(0,0,170); 
             break;
 
         
@@ -177,7 +185,7 @@ public class PfixHighlight extends DefaultStyledDocument {
 
             
         case 2:
-            color = new Color(172,4,165);   
+            color = new Color(204,68,170);   
             break;
 
 
@@ -272,9 +280,15 @@ public class PfixHighlight extends DefaultStyledDocument {
         // very ugly, i know
         if (closeIt == currentPos - 2) {
             Character car = new Character(preText.charAt(currentPos - 1));
-            Character car2 = new Character(afterText.charAt(0));
+            Character carStart = new Character('a');
+
+            if (afterText.length() > 0) {
+              carStart = new Character(afterText.charAt(0));   
+            }            
+            
             if (!(car.toString().equals("<"))) {
-                if (!(car2.toString().equals("<"))) {
+                
+                if (!(carStart.toString().equals("<"))) {
                     unsetStyle(closeIt+1, 1);
                     unsetStyle();
                     newStatus="none";  
@@ -337,6 +351,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 for (int j = 0; j < prefixes.length; j++) {
                                 if (prefixes[j].equals(fix)) {                
                                     setPrefixCol(elPos+1, prePos, j);
+                                    setPrefixCol(j);
                                     prefixUnsetter = true;
                                     // this.elemStartUnsetter = false;
                                 
@@ -345,6 +360,7 @@ public class PfixHighlight extends DefaultStyledDocument {
                                 
                                 if (fix.equals(endfix)) {                                    
                                     setPrefixCol(elPos+1, prePos, j);
+                                    setPrefixCol(j);
                                     prefixUnsetter = true;
                                     // this.elemStartUnsetter = false; 
                                 }
@@ -384,13 +400,26 @@ public class PfixHighlight extends DefaultStyledDocument {
                     else {
                       colorizeAll("element", preText.lastIndexOf(">"), 1);   
                     }
-                                                            
+
                     // This is very ugly ! It fixes the Style-Bug after closing a Tag       
-                    int neu = endPos + 1;                
-                    if (currentPos == endPos + 1) {
-                        unsetStyle();
+                    int neu = endPos + 2;
+
+                    if (currentPos == endPos + 2) {
+                        if (afterText.length() > 0) {
+                            Character carNeu = new Character(afterText.charAt(0));
+
+                            // if (!(carNeu.toString().equals("<"))) {
+                                unsetStyle();
+                                unsetStyle(endPos + 1, 1);
+                                // }
+                            
+                             
+                        }
+                        
+                        //                        unsetStyle();
                     }
 
+                    
                     elemStartUnsetter = false;
                     newStatus = "none";
                     this.setInElement(false);
@@ -502,6 +531,7 @@ public class PfixHighlight extends DefaultStyledDocument {
             
         }
 
+        
         unsetStyle(0, text.length());
         this.inComment = false;
         this.inElement = false;
@@ -511,7 +541,9 @@ public class PfixHighlight extends DefaultStyledDocument {
         this.inBlank = false;
         
         for (int i=0; i<text.length(); i++) {
+           
             Character car = new Character(text.charAt(i));
+
 
 
             if (car.toString().equals("<")) {
@@ -564,7 +596,9 @@ public class PfixHighlight extends DefaultStyledDocument {
                     int startPos = i;
 
 
+
                     StringTokenizer str = new StringTokenizer(tagValue);
+                    
 
                     while (str.hasMoreTokens()) {
                         String elString = str.nextToken().toString();
@@ -608,7 +642,8 @@ public class PfixHighlight extends DefaultStyledDocument {
                              unsetStyle();
                              
                              // PrefixChecking
-                             int posPreStart = elString.indexOf(":");                             
+                             int posPreStart = elString.indexOf(":");
+                             // 
 
                              // if Prefix, then colorize
                              if (posPreStart > 0) {
@@ -616,11 +651,13 @@ public class PfixHighlight extends DefaultStyledDocument {
                                  
                                  for (int j=0; j<prefixes.length; j++) {
                                      if (prefixes[j].equals(strPrefix)) {
-                                         setPrefixCol(i+1, posPreStart, j);
+                                         // setPrefixCol(i+1, posPreStart, j);
+                                         setPrefixCol(i+1, elString.length(), j);
                                      }
                                      String closeFix = "/" + prefixes[j];
                                      if (closeFix.equals(strPrefix)) {
-                                         setPrefixCol(i+1, posPreStart, j);
+                                         // setPrefixCol(i+1, posPreStart, j);
+                                         setPrefixCol(i+1, elString.length(), j);
                                           
                                      }
                                      
@@ -631,11 +668,27 @@ public class PfixHighlight extends DefaultStyledDocument {
                          }
                     }
                     colorizeAll("element", i-1, 1);
-                    i=i-1;
+                    i=i-1;;
+
+                    int preEndPos = tagValue.length() - 1;                    
+                    Character preEndCar = new Character(tagValue.charAt(preEndPos));
+
+                    if (preEndCar.toString().equals("/")) {
+                        colorizeAll("element", startPos+preEndPos,  2);
+                        // very ugly here ...
+                        unsetStyle(startPos+preEndPos+2, 3);
+                        i = i - 3;
+                    }
+                    
+
+
+                   
                     unsetStyle();
                 
                 }
-            
+                
+
+          
         }
             else {
                 this.inComment = false;
