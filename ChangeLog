@@ -1,3 +1,7 @@
+2004-04-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: made checkAuthorization() synchronized.
+
 2004-04-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
