@@ -4,8 +4,8 @@
   <part name="adult">
     <product name="default">
       <lang name="default">
-        Are you really older than 18 years?
-      </lang>
+  Are you really older than 18 years?
+</lang>
     </product>
   </part>
 
@@ -157,53 +157,51 @@
 
   <part name="yes">
     <product name="default">
-      <lang name="default">Yes!
-      </lang>
+      <lang name="default">Yes!</lang>
     </product>
   </part>
 
   <part name="no">
     <product name="default">
-      <lang name="default">No!
-</lang>
+      <lang name="default">No!</lang>
     </product>
   </part>
 
   <part name="switch">
     <product name="default">
       <lang name="default">
-        <div style="text-align: left; width: 300px; border: 1px solid black;">
-          <pfx:switch>
-            <pfx:layer_ref name="A"/>
-            <pfx:layer_check name="A" type="checkbox"/>Layer A (Closing A also closes B)</pfx:switch>
-          <br/>
-          <pfx:layer_check disabled="disabled" name="B" type="checkbox"/>Layer B is
-          <pfx:layer_check name="B">
-            <pfx:on>visible</pfx:on>
-            <pfx:off>invisible</pfx:off>
-          </pfx:layer_check>
-          <br/>
-          <pfx:layer_check disabled="disabled" name="YYY" type="radio"/>FOOBAR is shown...
-          <br/>
-          <pfx:layer_check disabled="disabled" name="XXX" type="radio"/>BAZ is shown...
-          <br/>
-          <pfx:switch>
-            <pfx:layer_ref name="C"/>
-            <pfx:layer_check name="C" type="checkbox"/>Layer C</pfx:switch>
-        </div>
-      </lang>
+  <div style="text-align: left; width: 300px; border: 1px solid black;">
+    <pfx:switch>
+      <pfx:layer_ref name="A"/>
+      <pfx:layer_check name="A" type="checkbox"/>Layer A (Closing A also closes B)</pfx:switch>
+    <br/>
+    <pfx:layer_check disabled="disabled" name="B" type="checkbox"/>Layer B is
+    <pfx:layer_check name="B">
+      <pfx:on>visible</pfx:on>
+      <pfx:off>invisible</pfx:off>
+    </pfx:layer_check>
+    <br/>
+    <pfx:layer_check disabled="disabled" name="YYY" type="radio"/>FOOBAR is shown...
+    <br/>
+    <pfx:layer_check disabled="disabled" name="XXX" type="radio"/>BAZ is shown...
+    <br/>
+    <pfx:switch>
+      <pfx:layer_ref name="C"/>
+      <pfx:layer_check name="C" type="checkbox"/>Layer C</pfx:switch>
+  </div>
+</lang>
     </product>
   </part>
   
   <part name="buttons">
     <product name="default">
       <lang name="default">
-        <pfx:elink href="http://www.gimp.org" target="_popup">
-          <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
-          Goto Gimp!</pfx:elink>  
-        <pfx:button page="ssltest">SSL TEST</pfx:button>  
-        <pfx:button page="install">Download INSTALL.ps</pfx:button>
-      </lang>
+  <pfx:elink href="http://www.gimp.org" target="_popup">
+    <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
+    Goto Gimp!</pfx:elink>  
+  <pfx:button page="ssltest">SSL TEST</pfx:button>  
+  <pfx:button page="install">Download INSTALL.ps</pfx:button>
+</lang>
     </product>
   </part>
   

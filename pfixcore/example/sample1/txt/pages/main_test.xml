@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
     <product name="default">
       <lang name="default">
-        <center>
-          <pfx:button pageflow="OrderFlow" startwithflow="true">
-            Next Page From OrderFlow 
-          </pfx:button>
-        </center>
-      </lang>
+  <center>
+    <pfx:button pageflow="OrderFlow" startwithflow="true">
+      Next Page From OrderFlow 
+    </pfx:button>
+  </center>
+</lang>
     </product>
   </part>
 
