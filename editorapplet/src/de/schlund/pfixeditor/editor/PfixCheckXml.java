@@ -45,6 +45,7 @@ public class PfixCheckXml {
 
 
     JTextComponent textpane;
+    String errorMessage;
 
     public PfixCheckXml(JTextComponent pane) {
         textpane = pane;
@@ -61,16 +62,27 @@ public class PfixCheckXml {
         XmlTextProcessor xmlProc=new XmlTextProcessor();
         result=xmlProc.parse("<foo>"+this.textpane.getText()+"</foo>");
         xmlErrors=xmlProc.getXmlErrors();
-        // System.out.println("---");
-        // System.out.println(xErr.getLine());
         if (result) {
             wellformed = true;
         }
         else {
+        Iterator it=xmlErrors.iterator();
+        errorMessage = "";
+                    
+        while (it.hasNext())
+        {
+            xErr=(XmlError) it.next();
+            errorMessage = errorMessage + "Error at line "+xErr.getLine()+", column "+xErr.getColumn()+", offset:"+ xErr.getOffset() +":" + "   " + xErr.getMessage() + "\n";
+
+        }
             wellformed = false;
         }
         return wellformed;
 	
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
     
 }
