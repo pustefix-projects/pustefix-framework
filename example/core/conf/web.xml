@@ -5,6 +5,6 @@
 <web-app xmlns:cus="http://www.schlund.de/pustefix/customize">
   <cus:servlet />
   <cus:servlet-mapping />
-  <cus:error-page />
   <cus:session-config />
+  <cus:error-page />
 </web-app>
