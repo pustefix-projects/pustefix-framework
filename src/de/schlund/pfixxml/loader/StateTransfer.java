@@ -50,7 +50,7 @@ public class StateTransfer {
     private int incType=-1;
 
     private StateTransfer() {
-        //initVersionDeps();
+        initVersionDeps();
         debug=CAT.isDebugEnabled();
     }
 
@@ -95,7 +95,7 @@ public class StateTransfer {
         		Object newObj=getTransferred(oldObj);
         		if(newObj!=null) return newObj;
         		try {
-        			newObj=loader.loadClass(c.getName());
+                    newObj=Class.forName(c.getName(),false,loader.getAppClassLoader());
         		} catch(ClassNotFoundException x) {
 					addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
 						 c.getName(),"Class was removed or renamed."));
@@ -382,10 +382,10 @@ public class StateTransfer {
                 obj=con.newInstance(null);
             }
 //         NOTE: We always add a default constructor via BCEL when loading the class, so all
-//               that native stuff shouldn't be needed any more
-//         } catch(NoSuchMethodException x) {
-//             if(debug) CAT.debug("Class '"+clazz.getName()+"' hasn't empty or default constructor. Allocate object with native method.");
-//             return allocateNewObject(clazz);
+//               that native stuff shouldn't be needed any more 
+        } catch(NoSuchMethodException x) {
+             if(debug) CAT.debug("Class '"+clazz.getName()+"' hasn't empty or default constructor. Allocate object with native method.");
+             return allocateNewObject(clazz);
         } catch(Exception x) {
             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
         }
@@ -394,93 +394,101 @@ public class StateTransfer {
 
     //java vendor/version dependant code for creating instances of classes which don't have a no-arg constructor
     
-//    final int SUN_IBM_1_3=0;
-//    final int SUN_IBM_1_4=1;
-//    int javaVersion;
-//    
-//    protected void initVersionDeps() {
-//        String version=System.getProperty("java.version").toLowerCase();
-//        String vendor=System.getProperty("java.vendor").toLowerCase();
-//        if(!(vendor.startsWith("sun") || vendor.startsWith("ibm"))) {
-//            CAT.warn("StateTransfer doesn't support Java vendor '"+vendor+"'. Try to use settings for 'Sun/IBM'.");
-//            vendor="sun";
-//        }
-//        if(!(version.startsWith("1.3") || version.startsWith("1.4"))) {
-//            CAT.warn("StateTransfer doesn't support Java version '"+version+"'. Try to use settings for '1.4.x'.");
-//            version="1.4";
-//        }
-//        if(version.startsWith("1.3")) {
-//            javaVersion=SUN_IBM_1_3;           
-//        } else if(version.startsWith("1.4")) {
-//            javaVersion=SUN_IBM_1_4;
-//        }
-//        if(javaVersion==SUN_IBM_1_4) {
-//            try { 
-//                Class c=Class.forName(refFacClass);
-//                PrivilegedAction pa=(PrivilegedAction)c.newInstance();
-//                refFac=AccessController.doPrivileged(pa);
-//            } catch(Exception x) {
-//                CAT.error("StateTransfer can't be initialized for Java version '1.4.x' of vendor 'Sun/IBM'. Try to use settings for 'Sun/IBM 1.3.x'.",x);
-//                javaVersion=SUN_IBM_1_3;
-//            }
-//        }
-//    }
-//    
-//     protected Object allocateNewObject(Class clazz) {
-//         if(javaVersion==SUN_IBM_1_3) {
-//             return allocateNewObjectNative(clazz);
-//         } else {
-//             return allocateNewObjectSuper(clazz);
-//         }
-//     }
-//     
-//     //version: 1.3.x
-//     //vendor: Sun, IBM
-//     
-//     protected Object allocateNewObjectNative(Class clazz) {
-//         try {
-//             Class ois=ObjectInputStream.class;
-//             Method meth=ois.getDeclaredMethod("allocateNewObject",new Class[] {Class.class,Class.class});
-//             meth.setAccessible(true);
-//             Object obj=meth.invoke(null,new Object[] {clazz,Object.class});
-//             return obj;
-//         } catch(Exception x) {
-//             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
-//         }
-//         return null;
-//     }
-//     
-//     //version: 1.4.x
-//     //vendor: Sun, IBM
-//     
-//     String refFacClass="sun.reflect.ReflectionFactory$GetReflectionFactoryAction";
-//     Object refFac;
-//     
-//     protected Object allocateNewObjectSuper(Class c) {
-//         try {
-//             Constructor con=getNoArgConstructor(c);
-//             Class params[]=new Class[] {Class.class,Constructor.class};
-//             Method meth=refFac.getClass().getDeclaredMethod("newConstructorForSerialization",params);
-//             Object args[]=new Object[] {c,con};
-//             con=(Constructor)meth.invoke(refFac,args);
-//             if(!con.isAccessible()) con.setAccessible(true);
-//             Object obj=con.newInstance(new Class[0]);
-//             return obj;
-//         } catch(Exception x) {
-//             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,c.getName(),x));
-//         }
-//         return null;
-//     }
-// 
-//     protected Constructor getNoArgConstructor(Class c) {
-//         try {
-//             Constructor con=c.getDeclaredConstructor(new Class[0]);
-//             int mods=con.getModifiers();
-//             if(!Modifier.isPrivate(mods)) return con;
-//         } catch(NoSuchMethodException x) {}
-//         Class sc=c.getSuperclass();
-//         return getNoArgConstructor(sc);
-//     }
+    final int SUN_IBM_1_3=0;
+    final int SUN_IBM_1_4=1;
+    int javaVersion;
+    
+    protected void initVersionDeps() {
+        String version=System.getProperty("java.version").toLowerCase();
+        String vendor=System.getProperty("java.vendor").toLowerCase();
+        if(!(vendor.startsWith("sun") || vendor.startsWith("ibm"))) {
+            CAT.warn("StateTransfer doesn't support Java vendor '"+vendor+"'. Try to use settings for 'Sun/IBM'.");
+            vendor="sun";
+        }
+        if(!(version.startsWith("1.3") || version.startsWith("1.4"))) {
+            CAT.warn("StateTransfer doesn't support Java version '"+version+"'. Try to use settings for '1.4.x'.");
+            version="1.4";
+        }
+        if(version.startsWith("1.3")) {
+            javaVersion=SUN_IBM_1_3;           
+        } else if(version.startsWith("1.4")) {
+            javaVersion=SUN_IBM_1_4;
+        }
+        if(javaVersion==SUN_IBM_1_4) {
+            try { 
+                Class c=Class.forName(refFacClass);
+                PrivilegedAction pa=(PrivilegedAction)c.newInstance();
+                refFac=AccessController.doPrivileged(pa);
+            } catch(Exception x) {
+                CAT.error("StateTransfer can't be initialized for Java version '1.4.x' of vendor 'Sun/IBM'. Try to use settings for 'Sun/IBM 1.3.x'.",x);
+                javaVersion=SUN_IBM_1_3;
+            }
+        }
+    }
+    
+     protected Object allocateNewObject(Class clazz) {
+         if(javaVersion==SUN_IBM_1_3) {
+             return allocateNewObjectNative(clazz);
+         } else {
+             return allocateNewObjectSuper(clazz);
+         }
+     }
+     
+     //version: 1.3.x
+     //vendor: Sun, IBM
+     
+     protected Object allocateNewObjectNative(Class clazz) {
+         try {
+             Class ois=ObjectInputStream.class;
+             Method meth=ois.getDeclaredMethod("allocateNewObject",new Class[] {Class.class,Class.class});
+             meth.setAccessible(true);
+             Object obj=meth.invoke(null,new Object[] {clazz,Object.class});
+             return obj;
+         } catch(Exception x) {
+             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
+         }
+         return null;
+     }
+     
+     //version: 1.4.x
+     //vendor: Sun, IBM
+     
+     String refFacClass="sun.reflect.ReflectionFactory$GetReflectionFactoryAction";
+     Object refFac;
+     
+     protected Object allocateNewObjectSuper(Class c) {
+         try {
+             Constructor con=getNoArgConstructor(c);
+             Class params[]=new Class[] {Class.class,Constructor.class};
+             Method meth=refFac.getClass().getDeclaredMethod("newConstructorForSerialization",params);
+             Object args[]=new Object[] {c,con};
+             con=(Constructor)meth.invoke(refFac,args);
+             if(!con.isAccessible()) con.setAccessible(true);
+             Object obj=con.newInstance(new Object[0]);
+             return obj;
+         } catch(Exception x) {
+             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,c.getName(),x));
+         }
+         return null;
+     }
+ 
+     protected Constructor getNoArgConstructor(Class c) {
+         try {
+             Constructor con=c.getDeclaredConstructor(new Class[0]);
+             int mods=con.getModifiers();
+             if(!Modifier.isPrivate(mods)) return con;
+         } catch(NoSuchMethodException x) {}
+         Class sc=c.getSuperclass();
+         return getNoArgConstructor(sc);
+        
+         /**
+         try {
+             Constructor con=Object.class.getDeclaredConstructor(new Class[0]);
+             return con;
+         } catch(NoSuchMethodException x) {}
+         return null;
+         */
+     }
 
     //exceptions
     

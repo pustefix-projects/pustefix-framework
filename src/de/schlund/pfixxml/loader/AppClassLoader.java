@@ -134,6 +134,8 @@ public class AppClassLoader extends java.lang.ClassLoader {
         File file   = null;
         try {
             String pathName=name.replace('.','/');
+            /**
+            //BCEL
             JavaClass klass    = repository.loadClass(name);
             ClassGen  klassgen = new ClassGen(klass);
             if (klassgen.isInterface()) {
@@ -162,17 +164,30 @@ public class AppClassLoader extends java.lang.ClassLoader {
             }
             klass = klassgen.getJavaClass();
             data = klass.getBytes();
+            */
             file = new File(AppLoader.getInstance().getRepository(),pathName + ".class");
+            FileInputStream fis=new FileInputStream(file);
+            data=new byte[fis.available()];
+            fis.read(data);
             synchronized(modTimes) {
                 modTimes.put(file,new Long(file.lastModified()));
             }
+        } catch(IOException x) {
+            CAT.warn("Can't get IO for file '"+file+"'.");
+            CAT.debug(x);
+        }
+        /**
+        //BCEL
         } catch(ClassNotFoundException x) {
             CAT.warn(x.getMessage());
             CAT.debug("Can't get Class for file '" + file + "'.",x);
         }
+        */
         return data;
     }
 	
+/**
+    //BCEL
     private void createDefaultConstructor(String className,String outerClassName,ClassGen classGen) {
         ConstantPoolGen poolGen=classGen.getConstantPool();
         InstructionFactory factory=new InstructionFactory(classGen,poolGen);
@@ -189,7 +204,8 @@ public class AppClassLoader extends java.lang.ClassLoader {
         classGen.addMethod(method.getMethod());
         insList.dispose();
     }
-
+*/
+    
     public boolean modified() {
         synchronized(modTimes) {
             Iterator it=modTimes.keySet().iterator();
