@@ -33,23 +33,7 @@
   
   <section name="Development news">
   
-  <p><b>Current release: 0.6.6</b></p>
-
-  <p>
-    We replaced the tomcat 4.1.x series with tomcat 5.0.x. Also, we
-    now ship the complete tomcat package as it is released on
-    jakarta. It resides in ./lib/tomcat/jakarta-tomcat-5.0.27.tar.gz
-    and is unpacked during the build process. This makes it much
-    easier to update to a new tomcat version because not all of the
-    expanded tomcat package is in CVS. 
-  </p>
-
-  <p>Currently we ship the tomcat package together with the skeleton
-  package. Probably we will stop doing this with the next version and
-  have the user download a matching tomcat version themselves.
-  </p>
-  
-  <subsection name="Changes">
+  <p><b>Current release: 0.6.7</b></p>
 
   <p>You can see changes with increasing details:</p>
   <ul>  
@@ -58,7 +42,6 @@
      <li><p>Low level: <a href="changelog-report.html">cvs log messages</a></p></li>
   </ul>
 
-  </subsection>
   </section>
 </body>
 </document>
