@@ -57,6 +57,8 @@
       <equals arg1="${makemode}" arg2="test"/>
     </condition>
     <property  name="debug"            value="false"/>
+    <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
+    <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
   </target>
   
   <target name="init" depends="properties">
@@ -65,8 +67,6 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.dist}"/>
-    <exec outputproperty="machine" executable="hostname" os="Linux" />
-    <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
     <pathconvert property="echo.cp.buildpath" refid="cp.buildpath" pathsep="&#013;"/>
     <echo message="using machine=${machine} fqdn=${fqdn} buildpath=${echo.cp.buildpath}" level="verbose"/>
   </target>
