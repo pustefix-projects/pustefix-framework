@@ -1,22 +1,24 @@
 package de.schlund.pfixxml.testenv;
 
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.SPDocument;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.log4j.Category;
+
 import org.apache.xerces.dom.DocumentImpl;
+
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
-
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 
 
 /**
@@ -62,12 +64,12 @@ public final class RecordManager {
      * @throws RecordManagerException on all non-recoverable errors
      */
     public final void doRecord(int count, String logdir, String uri, 
-                               PfixServletRequest pfix_servlet_request, SPDocument result_document, 
-                               String session_id) throws RecordManagerException {
-        
+                               PfixServletRequest pfix_servlet_request, SPDocument result_document)
+                        throws RecordManagerException {
+
         /*String[] req_param_names = pfix_servlet_request.getRequestParamNames();
-		System.out.println("=================" + uri + "==================="); 
-		System.out.println("URI: " + uri);
+        System.out.println("=================" + uri + "==================="); 
+        System.out.println("URI: " + uri);
         System.out.println("Query string : " + pfix_servlet_request.getQueryString());
         System.out.println("Scheme       : " + pfix_servlet_request.getScheme());
         System.out.println("Server name  : " + pfix_servlet_request.getServerName());
@@ -94,14 +96,11 @@ public final class RecordManager {
                                                  null);
             }
         }
-        Node     input_node      = doPFServletRequesttoXML(uri, pfix_servlet_request, 
-                                                            count == 0 ? true : false);
+        Node     input_node      = doPFServletRequesttoXML(uri, pfix_servlet_request);
         Node     output_node     = doSPDocumenttoXML(result_document);
         Node     stylesheet_node = doDefaultStylesheettoXML();
         Document doc             = new DocumentImpl();
         Element  step            = doc.createElement("step");
-        //step.setAttribute("hostname", pfix_servlet_request.getServerName());
-        //step.setAttribute("hostport", "" + pfix_servlet_request.getServerPort());
         doc.appendChild(step);
         Node imp1 = doc.importNode(input_node, true);
         step.appendChild(imp1);
@@ -112,45 +111,35 @@ public final class RecordManager {
         writeDocument(doc, logdir + "/" + "testdata." + count);
     }
 
-	/**
-	 * Generate XML from the PfixServletRequest
-	 * @param uri the URI belonging to the PfixServletRequest
-	 * @param pfreq the PfixServletRequest
-	 * @param first flag determining if this is the first call
-	 * @return a Node containing the generated XML
-	 */
-    private Node doPFServletRequesttoXML(String uri, PfixServletRequest pfreq, boolean first) {
-        Document doc     = new DocumentImpl();
-        Element  ele     = doc.createElement("request");
-        String   new_uri = null;
-        if (first) {
-            new_uri = uri.substring(0, uri.indexOf(';'));
-        } else {
-            new_uri = uri.substring(0, uri.indexOf('=') + 1) + "[SESSION_ID]";
-        }
-        //ele.setAttribute("uri", new_uri);
-        Element ele_uri = doc.createElement("uri");
-        Text text_uri = doc.createTextNode(new_uri);
+    /**
+     * Generate XML from the PfixServletRequest
+     * @param uri the URI belonging to the PfixServletRequest
+     * @param pfreq the PfixServletRequest
+     * @param first flag determining if this is the first call
+     * @return a Node containing the generated XML
+     */
+    private Node doPFServletRequesttoXML(String uri, PfixServletRequest pfreq) {
+        Document doc      = new DocumentImpl();
+        Element  ele      = doc.createElement("request");
+        String   new_uri  = null;
+        new_uri = uri.substring(0, uri.indexOf(';'));
+        Element ele_uri  = doc.createElement("uri");
+        Text    text_uri = doc.createTextNode(new_uri);
         ele_uri.appendChild(text_uri);
         ele.appendChild(ele_uri);
-        
-        Element ele_hostname = doc.createElement("hostname");
-        Text text_hostname = doc.createTextNode(pfreq.getServerName());
+        Element ele_hostname  = doc.createElement("hostname");
+        Text    text_hostname = doc.createTextNode(pfreq.getServerName());
         ele_hostname.appendChild(text_hostname);
         ele.appendChild(ele_hostname);
-        
-        Element ele_port = doc.createElement("port");
-        Text text_port = doc.createTextNode(""+pfreq.getServerPort());
+        Element ele_port  = doc.createElement("port");
+        Text    text_port = doc.createTextNode("" + pfreq.getServerPort());
         ele_port.appendChild(text_port);
         ele.appendChild(ele_port);
-        
-        Element ele_proto = doc.createElement("proto");
-        Text text_proto = doc.createTextNode(pfreq.getScheme());
+        Element ele_proto  = doc.createElement("proto");
+        Text    text_proto = doc.createTextNode(pfreq.getScheme());
         ele_proto.appendChild(text_proto);
         ele.appendChild(ele_proto);
-        
-        Element ele_params = doc.createElement("params");
-        
+        Element  ele_params      = doc.createElement("params");
         String[] req_param_names = pfreq.getRequestParamNames();
         for (int i = 0; i < req_param_names.length; i++) {
             // we don't want to send the record parameter
@@ -166,23 +155,23 @@ public final class RecordManager {
                 ele_params.appendChild(e);
             }
         }
-        
         ele.appendChild(ele_params);
         return ele;
     }
-	/**
-	 * Generate XML from the ResultDocument.
-	 * @param the SPDocument containing the ResultDocument
-	 * @return a Node containing the generated XML
-	 */
+
+    /**
+     * Generate XML from the ResultDocument.
+     * @param the SPDocument containing the ResultDocument
+     * @return a Node containing the generated XML
+     */
     private Node doSPDocumenttoXML(SPDocument doc) {
         return doc.getDocument().getFirstChild();
     }
 
-	/**
-	 * Create XML containing default stylesheet usage
-	 * @return a Node containing the generated XML
-	 */
+    /**
+     * Create XML containing default stylesheet usage
+     * @return a Node containing the generated XML
+     */
     private Node doDefaultStylesheettoXML() {
         Document doc  = new DocumentImpl();
         Element  ele  = doc.createElement("stylesheet");
@@ -190,32 +179,23 @@ public final class RecordManager {
         ele.appendChild(text);
         return ele;
     }
-	
-	/**
-	 * not used
-	 */
-	/*
-    private Node getHostnameNode(String hostname) {
-        Document doc  = new DocumentImpl();
-        Element  ele  = doc.createElement("host");
-        Text     text = doc.createTextNode(hostname);
-        ele.appendChild(text);
-        return ele;
-    }
-	*/
-	
-	/**
-	 * Writes a XML document to a specified filename. Does nothing if the 
-	 * file alreay exists.
-	 * @param the Document to write
-	 * @param the filename
-	 * @throws RecordManagerException on all non-recoverable errors.
-	 */
+
+    /**
+     * Writes a XML document to a specified filename. Does nothing if the 
+     * file alreay exists.
+     * @param the Document to write
+     * @param the filename
+     * @throws RecordManagerException on all non-recoverable errors.
+     */
     private void writeDocument(Document doc, String filename) throws RecordManagerException {
         File file = new File(filename);
-        if (file.exists()) {
-            CAT.error("Trying to overwrite an existing file: " + file.getName()+ ". Returning...");
-            return;
+        int  i = 0;
+        while (file.exists()) {
+            String new_filename = filename + "_" + i++;
+            if (CAT.isInfoEnabled()) {
+                CAT.info(file.getName() + " exists. Trying " + new_filename);
+            }
+            file = new File(new_filename);
         }
         OutputFormat  out_format = new OutputFormat("xml", "ISO-8859-1", true);
         XMLSerializer ser = new XMLSerializer();

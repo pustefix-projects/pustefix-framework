@@ -36,6 +36,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
@@ -115,7 +117,6 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      */
     public final void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, 
                                           OutputStream out) throws Exception {
-        Document    doc   = (Document) xmlobj;
         Templates   xsl   = (Templates) xslobj;
         Transformer trafo = xsl.newTransformer();
         long        start = 0;
@@ -166,12 +167,24 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * Create a stylesheet from a sourcefile in the filesystem
      * @param path the path to the source file in the filesystem
      * @return the created stylesheet(currently saxons PreparedStyleSheet)
-     * @throws Exception on all errors
+     * @throws TransformerConfigurationException on errors
      */
-    public final Object xslObjectFromDisc(String path) throws Exception {
+    public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException  {
         TransformerFactory transFac      = TransformerFactory.newInstance();
         StreamSource       stream_source = new StreamSource("file://" + path);
-        Object             val           = transFac.newTemplates(stream_source);
+        Object             val           = null;
+        try {
+        	val = transFac.newTemplates(stream_source);
+        } catch (TransformerConfigurationException e) {
+        	StringBuffer sb = new StringBuffer();
+			sb.append("TransformerException in xslObjectFromDisc!\n");
+        	sb.append("Path: ").append(path).append("\n");
+        	sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+        	Throwable cause = e.getException();
+        	sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+        	CAT.error(sb.toString());        	
+        	throw e;
+        }
         stream_source = null;
         return val;
     }
@@ -181,16 +194,28 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * the aelfred sax parser shipped with saxon here.
      * @param path the path to the source file in the filesystem
      * @return the created document(currenly saxons TinyDocumentImpl)
-     * @throws Exception on all errors
+     * @throws TransformerException on errors
      */
-    public final Document xmlObjectFromDisc(String path) throws Exception {
+    public final Document xmlObjectFromDisc(String path) throws TransformerException  {
         InputSource  input      = new InputSource("file://" + path);
         // use the com.icl.saxon.aelfred.SAXDriver here 
         XMLReader    xml_reader = new SAXDriver();
         SAXSource    saxsource  = new SAXSource(xml_reader, input);
         Controller   controller = new Controller();
         Builder      builder    = controller.makeBuilder();
-        DocumentInfo dInfo      = builder.build(saxsource);
+        DocumentInfo dInfo      = null;
+        try {
+      		dInfo      = builder.build(saxsource);
+        } catch(TransformerException e) {
+        	StringBuffer sb = new StringBuffer();
+        	sb.append("TransformerException in xmlObjectFromDisc!\n");
+        	sb.append("Path: ").append(path).append("\n");
+        	sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+        	Throwable cause = e.getException();
+        	sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+        	CAT.error(sb.toString());
+        	throw e;
+        }
         saxsource  = null;
         controller = null;
         input      = null;

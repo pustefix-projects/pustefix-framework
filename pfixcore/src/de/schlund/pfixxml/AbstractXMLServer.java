@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml;
 
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -444,10 +443,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             		conutil.setSessionValue(session, "RECORD_COUNTER", new Integer(0));
             	}
             	Integer count = (Integer)conutil.getSessionValue(session, "RECORD_COUNTER");
-            	RecordManager.getInstance().doRecord(count.intValue(), 
-            											recordmodeLogDir +"/"+record_logdir, 
-            											preq.getRequestURI(res), preq, spdoc, 
-            											session.getId());
+            	String dir = recordmodeLogDir +"/"+record_logdir;
+            	String ruri = preq.getRequestURI(res);
+            	RecordManager.getInstance().doRecord(count.intValue(), dir, ruri, preq, spdoc);
             	// Increase counter
             	conutil.setSessionValue(session, "RECORD_COUNTER", new Integer(count.intValue()+1));
             }

@@ -42,7 +42,6 @@ public final class PFXPathEvaluator {
             throw new Exception(sb.toString());
         }
         NodeInfo   cNode   = (NodeInfo) contextNode;
-        ArrayList  list    = new ArrayList();
         Expression exp     = Expression.make(expression, new StandaloneContext());
         Context    context = new Context();
         context.setContextNode(cNode);
