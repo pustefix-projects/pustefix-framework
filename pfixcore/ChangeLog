@@ -1,3 +1,8 @@
+2004-11-18  Jörg Häcker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/util/email/EmailSender.java
+
+
 2004-11-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java: added the ability to
