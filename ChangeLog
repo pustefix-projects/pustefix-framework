@@ -1,5 +1,7 @@
 2003-05-23  Jens Lautenbacher  <jtl@schlund.de>
 
+	* META-INF/pfixcore.version: released 0.3.3
+
 	* example/core/xsl/utils.xsl.in: new features + cleanup for pfX:layer and related:
 		- You can specify what method a switch should call on the layer: on, off, and the default toggle.
 	        - You can specify a class attribute for pfx:on and pfx:off
