@@ -443,31 +443,35 @@
   </xsl:template>
 
   <xsl:template name="generate_coded_input">
-    <xsl:param name="prefix"/>
+    <xsl:variable name="current" select="generate-id(.)"/>
     <xsl:for-each select="./pfx:argument">
-      <input type="hidden" name="__SYNT:{$prefix}:{@name}"><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
+      <input type="hidden">
+        <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:<xsl:value-of select="@name"/></ixsl:attribute>
+      <ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>
     <xsl:for-each select="./pfx:anchor">
-      <input type="hidden" name="__SYNT:{$prefix}:__anchor"><ixsl:attribute name="value"><xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></ixsl:attribute></input>
+      <input type="hidden">
+        <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__anchor</ixsl:attribute>
+      <ixsl:attribute name="value"><xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>    
     <xsl:for-each select="./pfx:command">
-      <input type="hidden"><xsl:attribute name="name">__SYNT:<xsl:value-of select="$prefix"/>:__CMD[<xsl:choose>
-            <xsl:when test="@page">
-              <xsl:value-of select="@page"/>
-            </xsl:when>
-            <xsl:when test="ancestor::pfx:forminput[position() = 1 and @send-to-page != '']">
-              <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$page"/>
-            </xsl:otherwise>
-          </xsl:choose>]:<xsl:value-of select="@name"/></xsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input></xsl:for-each>
+      <input type="hidden"><ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:__CMD[<xsl:choose>
+      <xsl:when test="@page">
+        <xsl:value-of select="@page"/>
+      </xsl:when>
+      <xsl:when test="ancestor::pfx:forminput[position() = 1 and @send-to-page != '']">
+        <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$page"/>
+      </xsl:otherwise>
+    </xsl:choose>]:<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input></xsl:for-each>
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='image']" name="pfx:xinp_image">
     <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
-    <xsl:variable name="genname"><xsl:value-of select="generate-id(.)"/></xsl:variable>
-    <input border="0" name="__SBMT:{$genname}:"> 
+    <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
+    <input border="0"> 
       <xsl:copy-of select="./@*[name()!='name']"/>
       <xsl:attribute name="src">
         <xsl:value-of select="$src"/>
@@ -475,12 +479,11 @@
       <xsl:call-template name="pfx:image_geom_impl">
         <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
       </xsl:call-template>
+      <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
       <xsl:apply-templates/>
     </input>
     <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
-      <xsl:call-template name="generate_coded_input">
-        <xsl:with-param name="prefix"><xsl:value-of select="$genname"/></xsl:with-param>
-      </xsl:call-template>
+      <xsl:call-template name="generate_coded_input"/>
     </xsl:if>
     <cus:documentation>
       <description>Use an image as a submit button. If you want to change the size, set the params width/height
@@ -520,24 +523,24 @@
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='submit']">
-    <xsl:variable name="genname"><xsl:value-of select="generate-id(.)"/></xsl:variable>
-    <input name="__SBMT:{$genname}:">
+    <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
+    <input>
       <xsl:copy-of select="./@*[name()!='name']"/>
       <xsl:choose>
         <xsl:when test="not(@value)">
           <xsl:attribute name="value">
             <xsl:apply-templates/>
           </xsl:attribute>
+          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
         </xsl:when>
         <xsl:otherwise>
+          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
           <xsl:apply-templates/>
         </xsl:otherwise>
       </xsl:choose>
     </input>
     <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
-      <xsl:call-template name="generate_coded_input">
-        <xsl:with-param name="prefix"><xsl:value-of select="$genname"/></xsl:with-param>
-      </xsl:call-template>
+      <xsl:call-template name="generate_coded_input"/>
     </xsl:if>
     <cus:documentation>
       <description>Creates a Submit-Button. A Submit-Button sends all the fields in the correspondent Forumlar.
