@@ -60,7 +60,7 @@
   <p>
     There are a few things you need to have installed prior to using Pustefix. See the 
     table below for references. <i>Note that we changed our skeleton distribution to no longer include Tomcat,
-    you now have to dowload it from <a href="http://jakarta.apache.org/tomcat/index.html">jakarta.apache.org</a>.</i>i>
+    you now have to dowload it from <a href="http://jakarta.apache.org/tomcat/index.html">jakarta.apache.org</a>.</i>
   </p>
   
   <table>
