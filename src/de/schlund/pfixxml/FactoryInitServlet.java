@@ -57,7 +57,8 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     private Object         LOCK       = new Object();
     private Category       CAT        = Category.getInstance(FactoryInitServlet.class.getName());
     private static boolean configured = false;
-    private ArrayList factories;
+    private ArrayList      factories;
+
     //~ Methods ....................................................................................
 
     /**
@@ -89,7 +90,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     public void init(ServletConfig Config) throws ServletException {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());
-        String     confname = Config.getInitParameter("servlet.propfile");
+        String     confname   = Config.getInitParameter("servlet.propfile");
         if (confname != null) {
             try {
                 properties.load(new FileInputStream(confname));
@@ -101,7 +102,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             }
         }
         synchronized (LOCK) {
-            if (! configured) {
+            if (!configured) {
                 if (properties != null) {
                     String log4jconfig = properties.getProperty("pustefix.log4j.config");
                     if (log4jconfig == null & log4jconfig.equals("")) {
@@ -118,39 +119,29 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         String key       = (String) i.next();
                         String the_class = (String) to_init.get(key);
                         try {
-                            CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class
-                                      + "] <<<<");
-                            AppLoader appLoader=AppLoader.getInstance();
-                            long start = 0;
-                            long stop = 0;
-                            if(appLoader.isEnabled() && appLoader.isIncludedClass(the_class)) {
-                                Class clazz=appLoader.loadClass(the_class);
-                                FactoryInit factory=(FactoryInit)clazz.getMethod("getInstance",null).invoke(null,null);
-                                
-                                if(CAT.isDebugEnabled()) { 
-                                    CAT.debug("     Object ID: " + factory);
-                                    start = System.currentTimeMillis();
-                                }
+                            CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class + "] <<<<");
+                            AppLoader appLoader = AppLoader.getInstance();
+                            long      start     = 0;
+                            long      stop      = 0;
+                            if (appLoader.isEnabled() && appLoader.isIncludedClass(the_class)) {
+                                Class       clazz   = appLoader.loadClass(the_class);
+                                FactoryInit factory = (FactoryInit) clazz.getMethod("getInstance",null).invoke(null,null);
+                                CAT.debug("     Object ID: " + factory);
+                                start               = System.currentTimeMillis();
                                 factory.init(properties);
-                                if(CAT.isDebugEnabled()) {
-                                    stop = System.currentTimeMillis();
-                                    CAT.debug("Init of "+factory+" took "+(stop-start)+" ms");
-                                } 
-                                if(factories==null) factories=new ArrayList();
+                                stop                = System.currentTimeMillis();
+                                CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
+                                if (factories == null) {
+                                    factories = new ArrayList();
+                                }
                                 factories.add(factory);
                             } else {
-                                FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod(
-                                                                        "getInstance", null).invoke(
-                                                          null, null);
-                                if(CAT.isDebugEnabled()) { 
-                                    CAT.debug("     Object ID: " + factory);
-                                    start = System.currentTimeMillis();
-                                }
+                                FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod("getInstance", null).invoke(null, null);
+                                CAT.debug("     Object ID: " + factory);
+                                start               = System.currentTimeMillis();
                                 factory.init(properties);
-                                if(CAT.isDebugEnabled()) {
-                                    stop = System.currentTimeMillis();
-                                    CAT.debug("Init of "+factory+" took "+(stop-start)+" ms");
-                                } 
+                                stop                = System.currentTimeMillis();
+                                CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
                             }
                         } catch (Exception e) {
                             CAT.error(e.toString());
@@ -175,23 +166,22 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             configured = true;
             CAT.debug("***** INIT of FactoryInitServlet done *****");
             
-            AppLoader appLoader=AppLoader.getInstance();
-            if(appLoader.isEnabled()) appLoader.addReloader(this);   
+            AppLoader appLoader = AppLoader.getInstance();
+            if (appLoader.isEnabled()) appLoader.addReloader(this);
         }
     }
     
     public void reload() {
-        if(factories!=null) {
-            ArrayList newFacs=new ArrayList();
-            Iterator it=factories.iterator();
+        if (factories!=null) {
+            ArrayList newFacs = new ArrayList();
+            Iterator  it      = factories.iterator();
             while(it.hasNext()) {
-                FactoryInit fac=(FactoryInit)it.next();
-                String className=fac.getClass().getName();
-                FactoryInit facNew=(FactoryInit)StateTransfer.getInstance().transfer(fac);
+                FactoryInit fac       = (FactoryInit)it.next();
+                String      className = fac.getClass().getName();
+                FactoryInit facNew    = (FactoryInit)StateTransfer.getInstance().transfer(fac);
                 newFacs.add(facNew);
             }
-            factories=newFacs;
+            factories = newFacs;
         }
      }
-   
 }

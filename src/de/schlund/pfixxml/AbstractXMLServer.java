@@ -270,17 +270,16 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             if (isDebugEnabled()) {
                 CAT.debug("\nXML only is: "
-                         + (isXMLOnlyAllowed == XML_ONLY_ALLOWED ? "allowed" : "")
-                         + (isXMLOnlyAllowed == XML_ONLY_RESTRICTED ? "restricted" : "")
-                         + (isXMLOnlyAllowed == XML_ONLY_PROHIBITED ? "prohibited" : ""));
+                          + (isXMLOnlyAllowed == XML_ONLY_ALLOWED ? "allowed" : "")
+                          + (isXMLOnlyAllowed == XML_ONLY_RESTRICTED ? "restricted" : "")
+                          + (isXMLOnlyAllowed == XML_ONLY_PROHIBITED ? "prohibited" : ""));
             }
             if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) { // get valid hosts form properties
-                TreeMap map = PropertiesUtils.selectPropertiesSorted(getProperties(), 
-                                                                     PROP_XMLONLY_RESTRICTED_HOSTS_KEY);
+                TreeMap      map  = PropertiesUtils.selectPropertiesSorted(getProperties(), PROP_XMLONLY_RESTRICTED_HOSTS_KEY);
                 xmlOnlyValidHosts = new String[map.entrySet().size()];
                 Iterator     iter = map.keySet().iterator();
-                int          i  = 0;
-                StringBuffer sb = null;
+                int          i    = 0;
+                StringBuffer sb   = null;
                 while (iter.hasNext()) {
                     Object key = iter.next();
                     xmlOnlyValidHosts[i] = map.get(key).toString();
@@ -525,9 +524,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         TreeMap       paramhash  = constructParameters(spdoc, params);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
-            throw new XMLException("Wasn't able to extract any stylesheet specification from page '"+
-                                    spdoc.getPagename()+"' ... bailing out.");
-                                                   
+            throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
+                                   spdoc.getPagename() + "' ... bailing out.");
         }
         if (! doreuse) {
             if (isInfoEnabled()) {
@@ -612,9 +610,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                                                                         new StreamResult(res.getOutputStream()));
         } else {
             Document ext_doc = dbfac.newDocumentBuilder().newDocument();
-            Element  root = ext_doc.createElement("render_external");
+            Element  root    = ext_doc.createElement("render_external");
             ext_doc.appendChild(root);
-            Element ssheet = ext_doc.createElement("stylesheet");
+            Element  ssheet  = ext_doc.createElement("stylesheet");
             root.appendChild(ssheet);
             ssheet.setAttribute("name", generator.getDisccachedir() + stylesheet);
             for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
@@ -717,8 +715,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         String pagename = spdoc.getPagename();
         if (pagename != null) {
             PageTargetTree pagetree = generator.getPageTargetTree();
-            PageInfo       pinfo  = PageInfoFactory.getInstance().getPage(generator, pagename);
-            Target         target = pagetree.getTargetForPageInfo(pinfo);
+            PageInfo       pinfo    = PageInfoFactory.getInstance().getPage(generator, pagename);
+            Target         target   = pagetree.getTargetForPageInfo(pinfo);
             if (target == null) {
                 CAT.warn("\n********************** NO TARGET ******************************");
                 return null;
@@ -756,8 +754,8 @@ public abstract class AbstractXMLServer extends ServletManager {
     private Map createAnchorMap(RequestParam[] anchors) {
         Map map = new HashMap();
         for (int i = 0; i < anchors.length; i++) {
-            String value = anchors[i].getValue();
-            int    pos = value.indexOf("|");
+            String value     = anchors[i].getValue();
+            int    pos       = value.indexOf("|");
             if (pos < 0) pos = value.indexOf(":"); // This is for backwards compatibility, but should not be used anymore!
             if (pos < (value.length() - 1) && pos > 0) {
                 String frame  = value.substring(0, pos);
