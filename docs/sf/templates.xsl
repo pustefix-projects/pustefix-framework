@@ -25,7 +25,8 @@
             .submenuentry:hover  { background-color: #88aa88; color: #ffffff;
                                  border-bottom: solid 1px #88aa88; border-top: solid 1px #88aa88; }
 
-            .selected         { background-color: #88aa88; color: #ffffff; border-bottom: solid 1px black; border-top: solid 1px black; }
+            .selected, .selected:hover  { background-color: #88aa88; color: #ffffff;
+                                          border-bottom: solid 1px black; border-top: solid 1px black; }
             
             #top        { text-align: right; padding-top: 10px; padding-bottom: 5px; padding-right: 5px;
                           color: white; background-color: black; font-size: 18px;}
