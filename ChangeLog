@@ -1,3 +1,20 @@
+2003-10-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
+	(createRestrictedContinueGroup): new method
+	(createAlwaysRetrieveGroup): new method. Refactored the parsing of
+	the two attribtes "continue" and "alwaysretrieve" (which is a new
+	feature)
+
+	(retrieveCurrentStatus): New feature: we call
+	retrieveCurrentStatus() not only for the memebers of the selected
+	wrappers, but also for all members of the always_retrieve
+	IWrapperGroup (that are not members of the selected
+	wrappers...). A wrapper is a member of the always_retrieve group
+	if it has the alwaysretrieve attribute set in the <interface
+	prefix="..." class="..." alwaysretrieve="true"/> part of the
+	config file.
+
 2003-10-06  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/iwrapper.xsl: added support
