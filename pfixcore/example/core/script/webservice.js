@@ -70,7 +70,6 @@ function xmlUtilities() {
 
 xmlUtilities.prototype.getChildrenByName=function(node,name) {
 	if(arguments.length!=2) throw new coreWrongArgNoEx("","xmlUtilities.getChildrenByName");
-	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getChildrenByName");
 	//NOTE: getting child elements via childNodes property and name comparison is much slower
 	var nl=node.getElementsByTagName(name);
 	var nodes=new Array();
@@ -82,7 +81,6 @@ xmlUtilities.prototype.getChildrenByName=function(node,name) {
 
 xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
 	if(arguments.length!=2) throw new coreWrongArgNoEx("","xmlUtilities.getChildrenByNameNS");
-	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getChildrenByNameNS");
 	if(node.childNodes==null || node.childNodes.length==0) return null;
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
