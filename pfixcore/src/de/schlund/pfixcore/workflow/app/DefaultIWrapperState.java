@@ -18,15 +18,13 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import java.util.Properties;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.PropertyObjectManager;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.XMLException;
 
 /**
  * DefaultIWrapperState.java
@@ -41,14 +39,20 @@ import org.w3c.dom.*;
  */
 
 public class DefaultIWrapperState extends StaticState {
-    protected static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
-    protected static String DEF_HDL_CONTAINER = "de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer";
-    protected static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
+    private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
+    private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
+
+    private static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
     
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
-        container.initIHandlers(context);
-        return (container.isPageAccessible() && container.areHandlerActive());
+        String  name = context.getCurrentPageRequest().getName();
+        boolean test = container.isPageAccessible(context) && container.areHandlerActive(context);
+        // CAT.warn("\n============================> " + name + ": Test 1: " + test);
+        // container.initIHandlers(context);
+        // test = container.isPageAccessible() && container.areHandlerActive();
+        CAT.warn("\n============================> " + name + ": Test 2: " + test);
+        return (test);
     }
     
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
@@ -153,22 +157,12 @@ public class DefaultIWrapperState extends StaticState {
         return fin;
     }
 
-    // Remember, this is a flyweight!!!
-    protected IHandlerContainer getIHandlerContainer(Context context) {
-        Properties        props     = context.getPropertiesForCurrentPageRequest();
-        String            classname = props.getProperty(IHandlerSimpleContainer.PROP_CONTAINER);
-
-        if (classname == null) {
-            classname = DEF_HDL_CONTAINER;
-        }
-
-        IHandlerContainer obj = IHandlerContainerFactory.getInstance().getIHandlerContainer(classname, context);
-
-        if (obj == null) {
-	    throw new RuntimeException("No IHandlerContainer found: classname = " + classname);
-        }
-
-        return obj;
+    // Remember, a IHandlerContainer is a flyweight!!!
+    protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
+        Properties                props = context.getProperties();
+    	PropertyObjectManager     pom   = PropertyObjectManager.getInstance();
+        IHandlerContainerManager  ihcm  = (IHandlerContainerManager) pom.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
+        return ihcm.getIHandlerContainer(context);
     }
 
     

@@ -152,7 +152,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                     String            name   = prefix + "." + param.getName(); 
                     if (scodes != null) {
                         for (int k = 0; k < scodes.length; k++) {
-                            resform.addStatusCode(context.getProperties(), scodes[k], name);
+                            StatusCode code = scodes[k];
+                            String[]   args = param.getArgsForStatusCode(code);
+                            resform.addStatusCode(context.getProperties(), code, args, name);
                         }
                     }
                 }

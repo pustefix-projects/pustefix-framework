@@ -41,10 +41,9 @@ import org.apache.log4j.*;
  */
 
 public class IHandlerSimpleContainer implements IHandlerContainer {
-    private HashSet handlers;
-    private HashSet activeset;
-    private Context context;
-    private long    loadindex = -1;
+    private HashSet    handlers;
+    private HashSet    activeset;
+    private String     policy;
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
     private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
@@ -59,48 +58,44 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @param param1 <description>
      * @exception java.lang.Exception <description>
      */
-    public void initIHandlers(Context context) {
-        this.context = context;
-        updateIHandlers();
-    }
+    public void initIHandlers(Properties props) {
+        policy = props.getProperty(PROP_POLICY);
+        if (policy == null) {
+            policy = "ANY";
+        }
 
-    private void updateIHandlers() {
-        long newload = context.getPropertyLoadIndex();
-        if (newload > loadindex) {
-            loadindex = newload;
-            handlers  = new HashSet();
-            activeset = new HashSet();
-            Properties props      = context.getPropertiesForCurrentPageRequest();
-            HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
-            String     ignore     = props.getProperty(PROP_IGNORE);
-            HashSet    skipprefix = new HashSet(); 
-            
-            if (ignore != null && !ignore.equals("")) {
-                StringTokenizer tok = new StringTokenizer(ignore);
-                while (tok.hasMoreElements()) {
-                    skipprefix.add(tok.nextToken());
-                }
+        handlers  = new HashSet();
+        activeset = new HashSet();
+
+        HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
+        String     ignore     = props.getProperty(PROP_IGNORE);
+        HashSet    skipprefix = new HashSet(); 
+        
+        if (ignore != null && !ignore.equals("")) {
+            StringTokenizer tok = new StringTokenizer(ignore);
+            while (tok.hasMoreElements()) {
+                skipprefix.add(tok.nextToken());
             }
-            
-            if (!interfaces.isEmpty()) {
-                for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
-                    String   numprefix = (String) i.next();
-                    String   prefix    = numprefix; 
-                    if (numprefix.indexOf(".") > 0) {
-                        prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
-                    }
-                    String   wrapperclass = (String) interfaces.get(numprefix);
-                    IHandler handler      = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
-                    handlers.add(handler);
-                    if (!skipprefix.contains(prefix)) {
-                        // CAT.debug("~~~~~~~~~~~~~~~~~ Adding " + prefix + " to activeset ~~~~~~~~~~~~~~~");
-                        activeset.add(handler);
-                    }
+        }
+        
+        if (!interfaces.isEmpty()) {
+            for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
+                String   numprefix = (String) i.next();
+                String   prefix    = numprefix; 
+                if (numprefix.indexOf(".") > 0) {
+                    prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
+                }
+                String   wrapperclass = (String) interfaces.get(numprefix);
+                IHandler handler      = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
+                handlers.add(handler);
+                if (!skipprefix.contains(prefix)) {
+                    // CAT.debug("~~~~~~~~~~~~~~~~~ Adding " + prefix + " to activeset ~~~~~~~~~~~~~~~");
+                    activeset.add(handler);
                 }
             }
         }
     }
-    
+
     /**
      * The principal accessibility of a page is deduced as follows:
      * If ANY of all the associated IHandlers returns false on a call to
@@ -109,8 +104,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @exception Exception if an error occurs
      */
     
-    public boolean isPageAccessible() throws Exception {
-        updateIHandlers();
+    public boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {
@@ -136,21 +130,13 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
      */
-    public boolean areHandlerActive() throws Exception {
-        updateIHandlers();
-        if (activeset.isEmpty()) return true; // border case
-        Properties props  = context.getPropertiesForCurrentPageRequest();
-        String     policy = props.getProperty(PROP_POLICY);
-        boolean    retval = true;
-        
-        if (policy == null) {
-            policy = "ANY";
+    public boolean areHandlerActive(Context context) throws Exception {
+        if (activeset.isEmpty() || policy.equals("NONE")) {
+            return true; // border case
         }
-        
-        if (policy.equals("NONE")) {
-            return true;
-        }
-        
+
+        boolean retval = true;
+
         if (policy.equals("ALL")) {
             retval = true;
             synchronized (activeset) {
@@ -186,8 +172,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
      */
-    public boolean needsData() throws Exception {
-        updateIHandlers();
+    public boolean needsData(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {
