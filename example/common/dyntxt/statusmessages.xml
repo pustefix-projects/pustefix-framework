@@ -137,6 +137,7 @@
   <part name="pfixcore.example.home.AGE_MISSING">
     <product name="default">
       <lang name="default">Please tell me if you're old enough.</lang>
+      <lang name="de_*">Bitte geben Sie ihr Alter an</lang>
     </product>
   </part>
   <part name="pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK">

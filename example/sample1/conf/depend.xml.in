@@ -1,5 +1,5 @@
 <make project="sample1"
-      lang="en">
+      lang="en_GB">
 
   <global>
     <!-- <include stylesheet="sample1/xsl/runtime.xsl"/> -->

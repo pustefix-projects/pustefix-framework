@@ -51,6 +51,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
   
   <xsl:template match="pfx:pagemessages">
     <cus:documentation>
@@ -163,8 +164,6 @@
       </span>
     </xsl:if>
   </xsl:template>
-
-
 
   <xsl:template match="pfx:attribute">
     <cus:documentation>
@@ -302,6 +301,7 @@
                 <!-- Have lang nodes as children -->
                 <xsl:choose>
                   <xsl:when test="not($__target_key = '__NONE__')">
+                    <!-- during generation time -->
                     <xsl:choose>
                       <xsl:when test="not($incnodes/lang[not(@name = 'default')])">
                         <xsl:choose>
@@ -320,8 +320,17 @@
                       </xsl:when>
                       <xsl:otherwise>
                         <ixsl:choose>
-                          <xsl:for-each select="$incnodes/lang[not(@name = 'default')]">
+                          <xsl:for-each select="$incnodes/lang[not(@name = 'default') and string-length(@name) > 0 and
+                                                not(substring(@name, string-length(@name)) = '*')]">
                             <ixsl:when test="$lang = '{./@name}'">
+                              <xsl:apply-templates select="./node()">
+                                <xsl:with-param name="__env" select="."/>
+                              </xsl:apply-templates>
+                            </ixsl:when>
+                          </xsl:for-each>
+                          <xsl:for-each select="$incnodes/lang[not(@name = 'default') and string-length(@name) > 1 and
+                                                substring(@name, string-length(@name)) = '*']">
+                            <ixsl:when test="starts-with($lang, '{substring(@name, 0, string-length(@name))}')">
                               <xsl:apply-templates select="./node()">
                                 <xsl:with-param name="__env" select="."/>
                               </xsl:apply-templates>
@@ -347,13 +356,24 @@
                         </ixsl:choose>
                       </xsl:otherwise>
                     </xsl:choose>
+                    <!-- end of during generation phase -->
                   </xsl:when>
                   <xsl:otherwise>
+                    <!-- at runtime -->
+                    <xsl:variable name="commonlangnodes"
+                                  select="$incnodes/lang[string-length(@name) > 1 and
+                                          substring(@name, string-length(@name)) = '*' and
+                                          starts-with($lang, substring(@name, 0, string-length(@name)))]"/>
                     <xsl:variable name="langnodes" select="$incnodes/lang[@name = $lang]"/>
                     <xsl:variable name="deflangnodes" select="$incnodes/lang[@name = 'default']"/>
                     <xsl:choose>
                       <xsl:when test="$langnodes">
                         <xsl:apply-templates select="$langnodes/node()">
+                          <xsl:with-param name="__env" select="."/>
+                        </xsl:apply-templates>
+                      </xsl:when>
+                      <xsl:when test="$commonlangnodes">
+                        <xsl:apply-templates select="$commonlangnodes/node()">
                           <xsl:with-param name="__env" select="."/>
                         </xsl:apply-templates>
                       </xsl:when>
@@ -369,9 +389,10 @@
                         </xsl:call-template>
                       </xsl:when>
                     </xsl:choose>
+                    <!-- end of at runtime -->
                   </xsl:otherwise>
                 </xsl:choose>
-                <!-- End of having lang nodes as children -->
+                <!-- End of have lang nodes as children -->
               </xsl:when>
               <xsl:when test="not($noerror = 'true')">
                 <!-- Have no language nodes as child -->
