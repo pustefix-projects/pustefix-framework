@@ -61,6 +61,7 @@ public abstract class ServletManager extends HttpServlet {
     public  static final String DEF_CONTENT_TYPE   = "text/html; charset=iso-8859-1";
     private static final String SECURE_SESS_COOKIE = "__PFIX_SECURE_SSL_SESS__";
     private static final String TEST_COOKIE        = "__PFIX_TEST__";
+    private static final String SESSID_COOKIE      = "__PFIX_CURRENT_SESS__";
     public  static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private static       String TIMESTAMP_ID       = "";
     private static       int    INC_ID             = 0;
@@ -159,7 +160,7 @@ public abstract class ServletManager extends HttpServlet {
         boolean     force_jump_back_to_ssl   = false;
         boolean     force_reuse_visit_id     = false;
         boolean     does_cookies             = doCookieTest(req, res);
-        if (req.isRequestedSessionIdValid()) {
+        if (req.isRequestedSessionIdValid()) { //  && (!does_cookies || sessionCookieMatches(req.getSession(false)))) {
             session     = req.getSession(false);
             has_session = true;
             CAT.debug("*** Found valid session with ID " + session.getId());
@@ -267,7 +268,33 @@ public abstract class ServletManager extends HttpServlet {
         callProcess(preq, req, res);
     }
 
-    
+
+    // private updateSessionCookie(HttpSession session, HttpServletResponse res, boolean secure) {
+    //     Cookie cookie = new Cookie(SESSID_COOKIE, session.getId());
+    //     cookie.setPath("/");
+    //     cookie.setMaxAge(-1);
+    //     cookie.setSecure(secure);
+    //     res.addCookie(cookie);
+    // }
+    // 
+    // private sessionCookieMatches(HttpSession session) {
+    //     Cookie[] cookies = req.getCookies();
+    //     Cookie   tmp;
+    //     if (cookies != null) {
+    //         for (int i = 0; i < cookies.length; i++) {
+    //             tmp = cookies[i];
+    //             if (tmp.getName().equals(SESSID_COOKIE)) {
+    //                 if (tmp.getValue().equals(session.getId())) {
+    //                     return true;
+    //                 } else {
+    //                     return false;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }
+
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
         String redirect_uri = SessionHelper.getClearedURL(req.getScheme(), req.getServerName(), req, res);
@@ -346,7 +373,6 @@ public abstract class ServletManager extends HttpServlet {
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req, res));
         CAT.debug("*** Setting SECURE flag");
         session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
-        CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         
         Cookie cookie = getSecureSessionCookie(req);
@@ -360,6 +386,7 @@ public abstract class ServletManager extends HttpServlet {
         cookie.setSecure(true);
         res.addCookie(cookie);
         
+        CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req, res);
         relocate(res, redirect_uri);
     }

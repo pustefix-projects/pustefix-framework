@@ -1,3 +1,7 @@
+2003-12-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: start Timer as daemon.
+
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
