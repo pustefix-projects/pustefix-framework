@@ -1,4 +1,8 @@
-2004-03-31  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-04-01  Corinna Herrmann  <ch17@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (readIWrappersConfigFromProperties): add prefix name for debug
+
+2004-03-31  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: make the
 	startLogEntry and endLogEntry mehtods synchronized.
@@ -8,7 +12,7 @@
         * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
         added pagename to mail subject.
 
-2004-03-29  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-03-29  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: 
 	(endLogEntry) bug fix: test if list is really empty
@@ -27,7 +31,7 @@
         make sure no to rethrow TransformerExceptions which wrap a
         'org.apache.catalina.connector.ClientAbortException'(quick fix)
 
-2004-03-24  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-03-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: started 0.5.4-pre
 	
@@ -92,7 +96,7 @@
         throwable.getStackTrace seems not to work with nested exceptions. So
         printStackTrace(PrintWriter) is used.
 
-2004-03-09  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-03-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: added logging of pageflow to TRAIL log (if set)
 
@@ -111,7 +115,7 @@
 	E.g. <prop name="interfacelogging"><cus:docroot/>sample1/log</prop>
 
 
-2004-03-04  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-03-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: you can specify a
 	jumptopageflow without the jumptopage necessarily being a member of it.
@@ -183,7 +187,7 @@
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
 	* src/de/schlund/pfixcore/workflow/PageMap.java: whitespace fixes
 
-2004-02-26  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+2004-02-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: cleanup. moved <cus:documentation> nodes to end of templates to
 	again have valid xsl even in the *.xsl.in
