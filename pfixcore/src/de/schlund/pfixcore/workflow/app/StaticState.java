@@ -19,19 +19,12 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
+import java.util.Properties;
+
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResource;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.StateImpl;
-import de.schlund.pfixxml.PerfEventType;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.XMLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
 /**
  * StaticState.java

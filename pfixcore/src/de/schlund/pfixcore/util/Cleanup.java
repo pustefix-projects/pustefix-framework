@@ -1,20 +1,22 @@
 package de.schlund.pfixcore.util;
 
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import de.schlund.pfixxml.IncludeDocument;
+import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Cleanup.java
