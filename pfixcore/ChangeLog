@@ -1,3 +1,7 @@
+2003-06-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.3.6, started 0.3.7-pre
+
 2003-06-18  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler: cosmetics.
