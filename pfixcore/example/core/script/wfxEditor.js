@@ -981,7 +981,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
     if( linenumber && (linenumber != editor._linenumber)) {
       editor._showLine.value = linenumber;
 
-      editor._colorizeLine( linenumber );
+      //      editor._colorizeLine( linenumber );
       editor._linenumber = linenumber;
     }
 
@@ -1927,7 +1927,7 @@ wfxEditor.prototype.generate = function( target, content ) {
   this._linebarheight = Math.ceil( parseInt(document.getElementById("wfxline01").style.height) / this._linepx );
 
   this.updateLineNumbers(this._content_src, 1);
-  this._colorizeLine( 1 );
+  //  this._colorizeLine( 1 );
 
   //  bench( "...generate()" );
 
@@ -1942,8 +1942,6 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
   this._timerRehighlight = setInterval( function() {
   
-    return;
-
     if( insideRehighlighting ) {
       editor._dbg.value += "insideRehighlighting ==> cancel\n";
       cancelHighlighting = true;
