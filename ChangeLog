@@ -1,3 +1,18 @@
+2004-07-26 Michael Hartmier  <mhm@schlund.de>
+	* .cvsignore
+	* maven.xml
+	* project.properties
+	* project.xml
+	* docs/JavaContext.dia
+	* docs/JavaServlets.dia
+	* docs/PageFlow.dia
+	* docs/overview.sxd
+	* docs/target_uml.zargo
+	* docs/targets.sxd
+	* docs/sf/*
+	* xdocs/* : converted SourceForce documentation to Maven "xdocs". Moved the files
+	from docs to xdocs because this is where maven looks for xdocs)
+
 2004-07-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: commented admin/manager out from editconsole until it

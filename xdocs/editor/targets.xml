@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>The Targets page</title>
+  </properties>
+
+  <body>
+
+  <section name="The Targets page">
+
+  <p>In the left frame all targets and their  dependency tree are listed. Select a target from that list
+    to display detailed information on that target in the right frame.</p>
+  
+  <table>
+    <tr valign="top">
+      <td>
+        <p>The <i>Targets</i> page of the Pustefix editor.</p>
+        <img src="../images/editor_targets.png"/>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td>
+              <b>Box No. 1</b> shows the parents of this target. Every virtual
+              target has a XML and a XSL parent which are both listed here.
+              You can click on one of these parents to have it displayed
+              instead of the current target.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 2</b> lists the parameters for the target which are used
+              for the XSLT transformation.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 3</b> shows all pages which use the current target. Clicking
+              on such a page will display it in the <a href="pages.html">Pages</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 4</b> lists all includes which are used by the current
+              target.  To edit an include click on it and it will be opened in
+              the <a href="includes.html">Includes</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 5</b> shows all images which are used by the current target.
+              To edit an image click on it and it will be opened in the <a
+                href="images.html">Images</a> page.</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 6</b> shows the whole content of the current target.</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  </section>
+</body>
+</document>

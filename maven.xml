@@ -1,9 +1,12 @@
 <project default="jar:jar"
+  xmlns:define="jelly:define"
+  xmlns:ant="jelly:ant"
   xmlns:j="jelly:core"
+  xmlns:jsl="jelly:jsl"
+  xmlns:log="jelly:log"
   xmlns:u="jelly:util"
   xmlns:x="jelly:xml"
-  xmlns:ant="jelly:ant"
-  xmlns:maven="jelly:maven">
+  xmlns:doc="doc">
 
   <goal name="ant">
     <j:choose>
@@ -22,6 +25,22 @@
   <preGoal name="compile">
     <ant:echo>Before compile</ant:echo>
   </preGoal>
+
+  <postGoal name="site">
+    <attainGoal name="pdf"/>
+  </postGoal>
+
+  <goal name="jsl">
+    <x:parse var="doc" xml="file.xml"/>
+    <j:file
+        name="output.html"
+        encoding="ISO-8859-1"
+        omitXmlDeclaration="true"
+        outputMode="html"
+        prettyPrint="false">
+        <j:include uri="file:///home/mhm/src/projects/core-HEAD/xdocs/style/site.jsl"/>
+    </j:file>
+  </goal>
 
 </project>
 

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>IWrappers</title>
+  </properties>
+
+  <body>
+
+  <section name="IWrappers">
+
+  <p>IWrappers are used to store the request data that is used as
+  input for corresponding IHandler classes. IWrappers are not
+  explicitly written by the developer, but are generated from
+  <code>.iwrp</code> files which contain a high level XML description
+  of the parameter types and certain checks that should be applied to
+  them. Each <code>.iwrp</code> file is translated into a
+  <code>.java</code> file with the same name during the build process,
+  and a java class is created. In the corresponding IHandler, you use
+  the IWrapper to access or store data by calling the IWrapper&apos;s
+  get and set methods.
+  </p>
+  
+  <p>
+    The syntax of the <code>.iwrp</code> file
+    is given below.
+  </p>
+  
+  <xmlcode>
+    <interface extends="some.other.iwrapper.class">
+      <xmlnote>
+        <table>
+          <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>extends</td>
+            <td>
+              <b>Optional</b>. You can specify another IWrapper that
+              is to be extended by this definition file. Parameter not
+              already specified in the original class are added, know
+              parameter definitions are overwritten. If the
+              <code>&lt;ihandler&gt;</code> node is not given, the
+              IHandler of the parent IWrapper is used (which is not
+              often a useful thing to do).
+            </td>
+          </tr>
+        </table>
+      </xmlnote>
+      <ihandler class="some.de.schlund.pfixcore.generator.IHandler.class"/>
+      <xmlnote>
+          <p>Unless a <code>extends</code> attribute has been given to
+	  the <code>interface</code> node, this node is
+          <b>mandatory</b>. The <code>class</code> attribute
+          references the associated  <code>IHandler</code> class.</p>
+      </xmlnote>
+      
+      <param name="AName" type="some.java.Type"
+             occurance="optional|mandatory|indexed"
+             frequency="single|multiple"
+             missingscode="some.defined.statuscode">
+        <xmlnote>
+            <p>This node can (and usually will) occur multiple times,
+            one for every parameter that should be part of the
+            interface</p><br/>
+            <table>
+              <tr>
+                <th>Attribute</th>
+                <th>Notes</th>
+              </tr>
+              <tr>
+                <td>name</td>
+                <td>
+                  <b>Mandatory</b>. The name of the parameter. This is used in the
+                  getter and setter methods that are generated. E.g. for the
+                  parameter name <i>Foo</i> there will be - amongst
+                  others - a corresponding java method called <i>getFoo</i>.
+                </td>
+              </tr>
+              <tr>
+                <td>type</td>
+                <td><b>Mandatory</b>. The java type of the
+                parameter. This will determine the return type of the
+                generated getter method.
+                </td>
+              </tr>
+              <tr>
+                <td>occurance</td>
+                <td><b>Optional</b>, default is <i>mandatory</i>. This
+                attribute specifies if the parameter <b>must</b> be given
+                (<i>mandatory</i>), or if it's not considered to be an
+                error if it is omitted (<i>optional</i>). The special
+                value <i>indexed</i> tells the system that it should
+                search for occurances of the parmeter name with a suffix
+                appended of the form
+                <code>AParamName.ASuffix</code>. The suffix string must
+                be unique for every occurance of the parameter named
+                <i>AParamName</i>. Indexed parameters are never mandatory.
+                </td>
+              </tr>
+              <tr>
+                <td>frequency</td>
+                <td><b>Optional</b>, default is <i>single</i>. This
+                attribute specifies if only one parameter of the same
+                name should be accepted or multiple. This determines if the
+                generated getter method's return value is a single object or an
+                array.</td>
+              </tr>
+              <tr>
+                <td>missingscode</td>
+                <td><b>Optional</b>, default is
+                <i>de.schlund.pfixcore.generator.MISSING_PARAM</i>.
+                This attribute applies only to <i>mandatory</i>
+                parameters. It allows to specify a different than the
+                default StatusCode to use when the parameter is not
+                supplied.</td>
+              </tr>
+            </table>
+            <br/>
+            The generated methods for parameter Foo of type Bar for
+            different values of <code>occurance</code> and
+            <code>frequency</code> are:<br/>
+            <b>occurance="mandatory|optional", frequency="single"</b>
+            <pre>
+              Bar  getFoo();
+              void setFoo(Bar value);
+              void setStringValFoo(String str_value);
+              void addSCodeFoo(de.schlund.util.statuscode.StatusCode scode);
+              void addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args);
+            </pre>
+            <b>occurance="mandatory|optional", frequency="multiple"</b>
+            <pre>
+              Bar[] getFoo();
+              void  setFoo(Bar[] value);
+              void  setStringValFoo(String[] str_value);
+              void  addSCodeFoo(de.schlund.util.statuscode.StatusCode scode);
+              void  addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args);
+            </pre>
+            <b>occurance="indexed", frequency="single"</b>
+            <pre>
+              Bar  getFoo(String index);
+              void setFoo(Bar value, String index);
+              void setStringValFoo(String str_value, String index);
+              void addSCodeFoo(de.schlund.util.statuscode.StatusCode scode, String index);
+              void addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args, String index);
+            </pre>
+            <b>occurance="indexed", frequency="multiple"</b>
+            <pre>
+              Bar[] getFoo(String index);
+              void  setFoo(Bar[] value, String index);
+              void  setStringValFoo(String[] str_value, String index);
+              void  addSCodeFoo(de.schlund.util.statuscode.StatusCode scode, String index);
+              void  addSCodeWithArgsFoo(de.schlund.util.statuscode.StatusCode scode, String[] args, String index);
+            </pre>
+        </xmlnote>
+
+        <default value="a_default_value">
+          <xmlnote>
+              The whole node is optional, and can occur multiple
+              times. It allows to specify a default value (or
+              multiple) for a parameter to use, when no value is
+              supplied via the request. Note that this makes the
+              destinction between optional and mandatory parameters
+              nonsensical.
+          </xmlnote>
+        </default>
+        
+        <precheck class="a.prechecker.class">
+          <cparam name="APreCheckerParamName" value="APreCheckerParamValue">
+
+          </cparam>
+        </precheck>
+
+	<caster class="de.caster.class">
+          <xmlnote>
+              Each parameter must be casted from a String to the
+              specific type (unless the type is
+              <code>java.lang.String</code> itself, in this case, no
+              caster need to be supplied). This is done by means of a
+              class implementing <code>de.schlund.pfixcore.generator.IWrapperParamCaster</code>.
+              For the usual simple types you can use a caster from the package
+              <code>de.schlund.pfixcore.generator.casters</code>.
+          </xmlnote>
+          <cparam name="ACasterParamName" value="ACasterParamValue">
+
+          </cparam>
+        </caster>
+
+        <postcheck class="a.postchecker.class">
+          <cparam name="APostCheckerParamName" value="APostCheckerParamValue">
+
+            
+          </cparam>
+        </postcheck>
+      </param>
+    </interface>
+  </xmlcode>
+  </section>
+</body>
+</document>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>The Pustefix Editor</title>
+  </properties>
+
+  <body>
+
+  <section name="The Pustefix Editor">
+
+  <p>The PustefixEditor is a project browser and editor shipped with Pustefix.
+    It allows you to browse the structure of targets, pages and
+    include parts of the projects in your Pustefix
+    environment. Additionally you can create images and include parts
+    and edit them.</p>
+  
+  <p class="important"><b>Note:</b> The source code of the editor is not a good example
+    for writing applications with Pustefix. This is due to the fact
+    that this part of the code is quite old. For an example that should always be up to date with respect to the current
+    features of Pustefix see the <i>sample1</i> application in the CVS checkout.</p>
+
+  <p>
+    Note2: The build system takes care of configuring your environment
+    automatically so that all the editing capabilities are <b>not available</b> when in production mode
+    (<code>MAKE_MODE</code> must not be <i>prod</i>, see <a href="../prop.html#custom">here</a> for more information).</p>
+  
+  <subsection name="Getting started">
+  
+  <p>
+    Most people will start the editor directly from the page where they want to start editing.
+    Another way is to start the editor application directly (by entering <code>cmscore.HOSTNAME.DOMAINNAME</code> in the
+    case of the CVS checkout or <code>cmsskel.HOSTNAME.DOMAINNAME</code> in the case of the skeleton environment). In that case
+    you would start (after a successful login) with the <a href="prodsel.html">project selection</a> page.</p>
+  <p>But for now let's assume  you want to change an include on the first page of the  <i>sample1</i> application.</p>
+  <table>
+    <tr valign="top">
+      <td>
+        <p>The first page of the <i>sample1</i> application.</p>
+        <img src="../images/sample_editconsole1.png"/>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td>
+              <p>
+                In the red box you see the <i>edit console</i> divided
+                into three different sections. Press the button with the
+                pen symbol in <b>section 1</b>.  This button also shows the
+                tooltip <i>Switch edit mode ON</i> when you move the
+                mouse pointer over it. Now, the application will change
+                into <i>edit mode</i> and look like the next image.
+                The button itself changes into a pen with a red
+                cross. Pressing it again switches the edit mode off.
+              </p>
+              <p>
+                Note: The edit mode button only works if you set
+                the <code>editmode</code> property (decribed <a href="../prop.html#editmode">here</a>) to
+                <code>true</code>.  Instead of switching to edit mode by
+                using the edit console, you can alternatively start by
+                appending <code>__editmode=admin</code> or switch off by
+                appending <code>__editmode=0</code> to the URL.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Section 2</b> can be used to show the last DOM response tree from the business logic that
+                was used to render the current page. Note that this DOM tree is only stored for some time
+                in the system which is usually much shorter than the time the session is valid. (The skeleton
+                environment defines this timout to be 10 minutes for test mode, and 20 seconds for production mode - but
+                the whole feature is not available in production mode anyway, so the 20 seconds should be no problem)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Section 3</b> is only visible if you have declared a
+              <code>record_dir</code> <a href="../depend.html#record_dir">here</a>. Also have a look
+              at the <a href="../testclient.html">test client</a> documentation for more information about it.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr valign="top">
+      <td>
+        <p>The same page after the change into <i>edit mode</i>. Note the red brackets surrounding the include parts.</p>
+        <img src="../images/sample_editconsole2.png"/>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td>
+              Now the application is in <i>edit mode.</i>
+              In edit mode every include part is framed by red curly brackets. Remember that include parts
+              can be nested. After each closing curly bracket there is a small box with a
+              pen symbol. Moving with the mouse over it shows the tool tip
+              "<i>Edit include: 'PART' in file 'INCLUDEFILE'</i>". Pressing the box
+              opens the pustefix editor in a new window starting with the <a href="login.html">login</a> page.
+              After successful login the include is automatically opened in 
+              the <a href="includes.html">Includes</a> page and can be edited in the editor applet.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+<!--  
+  <h2>Normal usage</h2>
+  <h3>Login</h3>
+  <h3>Productselection and user management</h3>
+    <ul>
+      <li>Product selection</li>
+      <li>Running session</li>
+      <li>Active locks</li>
+      <li>user data</li>
+    </ul>
+  <h3>Editing products</h3>
+  <h4>Tools</h4>
+    <ul>
+      <li>Updating pages</li>
+      <li>Testcase playback</li>
+    </ul>
+  <h4>Pages</h4>
+    <ul>
+      <li>Page selection</li>
+      <li>Dependency tree</li>
+      <li>Used includes</li>
+      <li>Used images</li>
+    </ul>
+  <h4>Targets</h4>
+    <ul>
+      <li>Target selection</li>
+      <li>Parents</li>
+      <li>Applied parameters</li>
+      <li>Affected pages</li>
+      <li>Used includes</li>
+      <li>Content</li>
+    </ul>
+  <h4>Images</h4>
+    <ul>
+      <li>Image selection</li>
+      <li>Upload</li>
+      <li>Affected pages</li>
+    </ul>
+  <h4>Includes</h4>
+    <ul>
+      <li>Include selection</li>
+      <li>Pfix XML-Editor</li>
+      <li>Branch and backup options</li>
+      <li>Affected pages</li>
+      <li>Used includes</li>
+      <li>Used images</li>
+      <li>Content</li>
+    </ul>
+  <h4>DynIncludes</h4>
+    <ul>
+      <li>Dyn Include selection</li>
+      <li>Pfix XML-Editor</li>
+      <li>Branch and backup options</li>
+      <li>Content</li>
+    </ul>
+  <h4>Search</h4>
+  <h4>Docs</h4>
+    <ul>
+      <li>Tag selection</li>
+      <li>Description</li>
+      <li>Params</li>
+      <li>Example</li>
+    </ul>
+    
+  <h2>Administration</h2>
+  <h2>The PfixEditConsole</h2>
+  -->
+    </subsection>
+  </section>
+</body>
+</document>
