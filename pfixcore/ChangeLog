@@ -1,3 +1,10 @@
+2004-01-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: ignore exceptions that happen when trying to write 
+	the timing info to the outputstream
+
+	* build.xml: finally released 0.4.2.
+
 2004-01-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: after everything has been rendered, add 
