@@ -315,7 +315,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
-            initValues() // this also does generator.tryReinit();
+            initValues(); // this also does generator.tryReinit()
             return true;
         } else {
             try {
