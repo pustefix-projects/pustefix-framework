@@ -286,7 +286,7 @@
               properties that are related to a context resource
               implementation. The resulting property looks like this:
               <p>
-                <code>context.resource.param.AContextResource.AName=AValue</code>
+                <code>context.resourceparameter.AContextResource.AName=AValue</code>
               </p>
             </div>
           </xmlcodeOFF>
