@@ -854,20 +854,20 @@ public class Context implements AppContext {
             Element  formresult = doc.getDocumentElement();
 
             if (formresult != null) {
-                String  incfile      = (String) getProperties().get("statuscodefactory.messagefile");
                 Element messagesElem = doc.createElement("pagemessages");
                 formresult.appendChild(messagesElem);
 
                 Iterator iter = messagesMap.keySet().iterator();
                 while (iter.hasNext()) {
-                    StatusCode scode  = (StatusCode) iter.next();
-                    List levelAndArgs = (List) messagesMap.get(scode);
-
-                    String   level = (String)   levelAndArgs.remove(0);
-                    String[] args  = (String[]) levelAndArgs.toArray(new String[0]);
-                    Element  msg   = ResultDocument.addTextIncludeChild(messagesElem, "message",
-                                                                        incfile, scode.getPart());
+                    StatusCode scode        = (StatusCode) iter.next();
+                    List       levelAndArgs = (List) messagesMap.get(scode);
+                    String     level        = (String)   levelAndArgs.remove(0);
+                    String[]   args         = (String[]) levelAndArgs.toArray(new String[0]);
+                    Element    msg          = doc.createElement("message");
+                    Element    inc          = ResultDocument.createIncludeFromStatusCode(doc, properties, scode, args);
                     msg.setAttribute("level", level);
+                    msg.appendChild(inc);
+                    messagesElem.appendChild(msg);
                     
                     LOG.debug("Added PageMessage for level " + level + " with args " + levelAndArgs);
                 }

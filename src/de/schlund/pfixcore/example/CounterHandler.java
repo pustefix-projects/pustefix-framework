@@ -54,15 +54,6 @@ public class CounterHandler implements IHandler {
             cc.addToCounter(count.intValue());
         }
 
-        // demo of pageMessage feature
-        if ( cc.getCounter() > 5 ) {
-            StatusCodeFactory sfac = new StatusCodeFactory("pfixcore.example.counter");
-            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), "warn");
-        } else if ( cc.getCounter() > 3 ) {
-            StatusCodeFactory sfac = new StatusCodeFactory("pfixcore.example.counter");
-            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), "info", new String[] {"3"});
-        }
-
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {

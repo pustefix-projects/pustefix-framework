@@ -120,12 +120,12 @@
   </part>
   <part name="pfixcore.example.counter.INFO_GREATER_3">
     <product name="default">
-      <lang name="default">The value of counter is already greater 3!</lang>
+      <lang name="default">The value of counter is already greater 3! (Counter value is <pfx:argref pos="1"/>)</lang>
     </product>
   </part>
   <part name="pfixcore.example.counter.WARN_GREATER_5">
     <product name="default">
-      <lang name="default">The value of counter is already greater 5! BEWARE!!!</lang>
+      <lang name="default">The value of counter is already greater 5! Beware! (Counter value is <pfx:argref pos="1"/>)</lang>
     </product>
   </part>
   <part name="pfixcore.example.home.AGE_MISSING">

@@ -90,7 +90,7 @@ public class ResultForm {
     }
 
     public void addStatusCode(Properties props, StatusCode code, String[] args, String field) {
-        Element elem = resdoc.createIncludeFromStatusCode(props, code, args);
+        Element elem = ResultDocument.createIncludeFromStatusCode(doc, props, code, args);
         addErrorNode(field, elem);
     }
 }

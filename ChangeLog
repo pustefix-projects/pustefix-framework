@@ -1,5 +1,10 @@
 2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: implemented the handling of args for pagemessages
+
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: moved pagemessage setting to the CR, as it handles more
+	cases of changing the counter value
+
 	* example/common/dyntxt/statusmessages.xml: removed the "warning" attribute. It no longer makes sense.
 
 	* example/core/txt/styles.xml: 
