@@ -10,14 +10,14 @@
        <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
       
 
-      <b>All results of play-backed testcases:</b><br/><br/>
-      <table class="editor_box">
+      <p align="center"><b>All results of play-backed testcases:</b></p><br/><br/>
+      <table align="center" class="editor_box">
         <tr>
           <td>Note:</td> 
         </tr>
         <tr>
           <td>
-            :-) means no diff between recorded and current output
+            :-) means no diff between recorded and current result
           </td>
         </tr>
         <tr>
@@ -44,8 +44,8 @@
       
        <ixsl:for-each select="/formresult/testcases/test_results/child::*">
        <br/><hr/><br/>
-       <b>Results for test <ixsl:value-of select="@id"/></b><br/>
-       <table border="1" cellspacing="0" cellpadding="0" class="editor_box">
+       <p align="center"><b>Results for test <ixsl:value-of select="@id"/></b></p><br/>
+       <table align="center" border="1" cellspacing="0" cellpadding="0" class="editor_box">
         <ixsl:for-each select="./child::*">
           <tr>
             <th>Step</th>

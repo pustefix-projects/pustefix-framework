@@ -22,15 +22,13 @@ import de.schlund.pfixxml.testenv.TestcasePlaybackResult;
 import de.schlund.pfixxml.testenv.TestcaseStepResult;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Implementation of the <code>CRTestcase</code> interface.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class CRTestcaseImpl implements CRTestcase {
 
+    /** store the selected testcases here */
     private ArrayList selectedTestcases = null;
     private String availableTestcasesDirectory = null;
     private String availableTestcases = null;

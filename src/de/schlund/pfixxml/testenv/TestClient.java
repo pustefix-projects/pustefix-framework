@@ -119,7 +119,9 @@ public class TestClient {
      * @return the result of the testcase
      */
     public TestcasePlaybackResult makeTest() throws TestClientException {
-        CAT.warn("Starting test NOW");
+        if(CAT.isInfoEnabled()) {
+            CAT.info("Starting test NOW");
+        }
         File tmp = new File(tmpDir);
         if (! tmp.exists()) {
             if (CAT.isDebugEnabled()) {
@@ -191,11 +193,7 @@ public class TestClient {
                 }
             }
             if (scode == HttpStatus.SC_OK) {
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("  Transforming recorded and current output document...");
-                } else if (CAT.isInfoEnabled()) {
-                    CAT.info("  Transforming...");
-                }
+                
                 Document tmp_rec       = doTransform(config[j].getRecordedOutput(), 
                                                      config[j].getStyleSheet());
                 Document tmp_out       = doTransform(current_output_tree, config[j].getStyleSheet());
@@ -224,8 +222,9 @@ public class TestClient {
                 return tcresult;
             }
         }
-        CAT.warn("\n*** Resut: ***");
-        CAT.warn(has_diff ? ";-(" : ";-)");
+        if(CAT.isInfoEnabled()) {
+            CAT.warn("\n*** Resut: ***\n"+ (has_diff ? ";-(" : ";-)"));
+        }
         return tcresult;
     }
 
@@ -320,6 +319,10 @@ public class TestClient {
 
     /** do the transformation */
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
+        
+        if (CAT.isInfoEnabled()) {
+            CAT.info("  Removing serial number ...");
+        }
         try {
             removeSerialNumber(in);
         } catch (TransformerException e) {
@@ -330,6 +333,9 @@ public class TestClient {
         String                 path      = styleDir + "/" + stylesheet_name;
         File                   styesheet = new File(path);
         if (styesheet.exists()) {
+            if(CAT.isInfoEnabled()) {
+                CAT.info("  Transforming...");
+            }
             StreamSource stream_source = new StreamSource("file://" + path);
             Templates    templates = null;
             try {
@@ -353,7 +359,9 @@ public class TestClient {
             return (Document) dom_result.getNode();
         } else {
             if (CAT.isDebugEnabled()) {
-                CAT.debug("Stylesheet named " + path + " not found. Transformation skipped!");
+                CAT.debug("  Stylesheet named " + path + " not found. Transformation skipped!");
+            } else if(CAT.isInfoEnabled()) {
+                CAT.info("  No stylesheet given. Skipping transformation...");
             }
         }
         return in;
@@ -564,7 +572,7 @@ public class TestClient {
             }
             CAT.debug(sb.toString());
         } else if (CAT.isInfoEnabled()) {
-            CAT.info("  Executing HTTP POST\n");
+            CAT.info("  Executing HTTP POST");
         }
         post = new PostMethod(uri_session);
         post.setFollowRedirects(true);
@@ -579,7 +587,7 @@ public class TestClient {
         }
         request_count++;
         if (CAT.isInfoEnabled()) {
-            CAT.info("   StatusCode=" + status_code + "\n");
+            CAT.info("   StatusCode=" + status_code);
         }
         if (sessionId == null) { // it's the first request, follow redirect to get a new session
             if (CAT.isDebugEnabled()) {
