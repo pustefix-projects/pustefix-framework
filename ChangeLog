@@ -1,3 +1,15 @@
+2003-06-02  Joerg Haecker <haecker@schlund.de>
+
+	* changed commons-httpclient-2.0-alpha2.jar
+	to lib/commons-pfix_httpclient-2.0-beta1.jar:
+	Cause: Some applications use the webdav library
+	which needs 'commons-httpclient.jar'. To avoid class
+	name conflicts, 'commons-pfix_httpclient-2.0-beta1.jar'
+	is added with different package name.
+
+	* src/de/schlund/pfixxml/testenv/TestClient.java:
+	changes for commons-pfix_httpclient-2.0-beta1.jar.
+
 2003-06-02  Volker Zaich <zaich@schlund.de>
 
 	* example/core/editor/xml/three_frames_applet.xml
