@@ -76,7 +76,7 @@ public class IncludesBranchHandler extends EditorStdHandler {
                     synchronized (LOCK) {
                         EditorHelper.checkForFile(path, prod.getPfixcoreNamespace());
 
-                        Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc, true);
+                        Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc);
                         Node     partnode = EditorHelper.getIncludePart(incdoc, currinc);
                         if (partnode == null) {
                             partnode = EditorHelper.createEmptyPart(incdoc, currinc);
@@ -111,7 +111,7 @@ public class IncludesBranchHandler extends EditorStdHandler {
                 if (currinc.getProduct().equals(prodname)) {
                     Object LOCK = FileLockFactory.getInstance().getLockObj(path);
                     synchronized (LOCK) {
-                        Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc, true);
+                        Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc);
                         if (incdoc != null) {
                             Node partnode = EditorHelper.getIncludePart(incdoc, currinc);
                             if (partnode != null) {

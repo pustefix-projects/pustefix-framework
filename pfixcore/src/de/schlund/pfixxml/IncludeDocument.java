@@ -7,7 +7,6 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -38,7 +37,6 @@ public class IncludeDocument {
 
     private Document                          doc;
     private long                              modTime           = 0;
-    private static final String               INCPATH           = "incpath";
     private static final Category             CAT               = Category.getInstance(IncludeDocument.class.getName());
     
     //~ Constructors ...............................................................................
@@ -74,8 +72,6 @@ public class IncludeDocument {
             throw ex;
         }
         
-        // Element rootElement = doc.getDocumentElement();
-        // rootElement.setAttribute(INCPATH, path.getRelative());
         if (! mutable) {
             doc = Xslt.xmlObjectFromDocument(doc, path.getRelative());
         }

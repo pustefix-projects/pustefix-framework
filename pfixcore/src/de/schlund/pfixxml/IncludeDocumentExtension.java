@@ -31,18 +31,9 @@ import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.targets.*;
 
 import net.sf.saxon.expr.XPathContext;
-import de.schlund.pfixxml.targets.*;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.*;
-import de.schlund.pfixxml.targets.*;
-
 import net.sf.saxon.om.NodeInfo;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.pfixxml.util.Xslt;
 
 /**
  * IncludeDocumentExtension.java
@@ -97,7 +88,7 @@ public final class IncludeDocumentExtension {
         String parent_product  = "";
         
         NodeInfo citem = (NodeInfo) context.getContextItem();
-        if (computed_inc.equals("false") && isCalledFromInclude(citem)) {
+        if (computed_inc.equals("false") && isIncludeDocument(citem)) {
             parent_path_str = ((NodeInfo) context.getContextItem()).getSystemId();
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
@@ -276,7 +267,7 @@ public final class IncludeDocumentExtension {
     }
 
 
-    private static boolean isCalledFromInclude(NodeInfo citem) {
+    public static boolean isIncludeDocument(NodeInfo citem) {
         return ((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts");
     }
 }// end of class IncludeDocumentExtension

@@ -314,7 +314,7 @@ public class EditorHelper {
         CAT.debug("==========> After reset: Modtime for IncludeDocument: " + includeDocument.getModTime());
     }
 
-    public static Document getIncludeDocument(TargetGenerator tgen, AuxDependency include, boolean mutable) throws Exception {
+    public static Document getIncludeDocument(TargetGenerator tgen, AuxDependency include) throws Exception {
         if (include.getType() != DependencyType.TEXT) {
             throw new XMLException("Dependency is not of Type TEXT");
         }
@@ -328,15 +328,8 @@ public class EditorHelper {
         Object LOCK = FileLockFactory.getInstance().getLockObj(path);
         synchronized (LOCK) {
             Document doc = null;
-            if (!mutable) {
-                IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
-                doc = iDoc.getDocument();
-            } else {
-                IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, true);
-                doc = (Document) iDoc.getDocument().cloneNode(true);
-                Element root = doc.getDocumentElement();
-                root.removeAttribute("incpath");
-            }
+            IncludeDocument iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+            doc = iDoc.getDocument();
             return doc;
         }
     }
@@ -348,7 +341,7 @@ public class EditorHelper {
     }
 
     public static Element getIncludePart(TargetGenerator tgen, AuxDependency include) throws Exception {
-        Document doc = getIncludeDocument(tgen, include, true);
+        Document doc = getIncludeDocument(tgen, include);
         if (doc == null) {
             return null;
         } else {

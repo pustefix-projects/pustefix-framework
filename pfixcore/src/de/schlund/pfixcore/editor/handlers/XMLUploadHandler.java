@@ -139,7 +139,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                 synchronized (LOCK) {
                     PfixcoreNamespace[] nspaces = esess.getProduct().getPfixcoreNamespace();
                     EditorHelper.checkForFile(currpath, nspaces);
-                    Document incdoc = EditorHelper.getIncludeDocument(tgen, currinc, true);
+                    Document incdoc = EditorHelper.getIncludeDocument(tgen, currinc);
                     Node newnode;
                     try {
                         newnode = incdoc.importNode(impnode, true);

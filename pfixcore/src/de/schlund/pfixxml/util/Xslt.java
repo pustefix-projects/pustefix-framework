@@ -38,11 +38,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.TransformerFactoryImpl;
-import net.sf.saxon.event.Sender;
-import net.sf.saxon.om.NamePool;
-import net.sf.saxon.tinytree.TinyBuilder;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
 import net.sf.saxon.xpath.XPathException;
 import org.apache.log4j.Category;

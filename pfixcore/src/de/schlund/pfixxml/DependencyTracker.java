@@ -51,7 +51,7 @@ public class DependencyTracker {
         String parent_product = "";
 
         NodeInfo citem = (NodeInfo) context.getContextItem();
-        if (((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts")) {
+        if (IncludeDocumentExtension.isIncludeDocument(citem)) {
             parent_path     = ((NodeInfo) context.getContextItem()).getSystemId();
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
