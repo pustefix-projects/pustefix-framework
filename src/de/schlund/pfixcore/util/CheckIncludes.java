@@ -22,25 +22,38 @@ import org.w3c.dom.*;
  */
 
 public class CheckIncludes {
+    private static       DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private static final String                 XPATH = "/include_parts/part/product";
+
     private HashMap generators       = new HashMap();
     private TreeSet includefilenames = new TreeSet();
+    private TreeSet imagefilenames   = new TreeSet();
+    private TreeSet unavail          = new TreeSet();
     private TreeSet includes;
-    private static final String XPATH = "/include_parts/part/product";
     private String  pwd;
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
+    private String  outfile;
     
-    private void usuage() {
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-    }
-    
-    public CheckIncludes(String pwd, File allprj, File allincs) throws Exception {
-        this.pwd = pwd;
-
-        LineNumberReader input = new LineNumberReader(new FileReader(allprj));
-        String           line;
+    public CheckIncludes(String pwd, String outfile, File allprj, File allincs, File allimgs) throws Exception {
+        this.pwd     = pwd;
+        this.outfile = outfile;
+        String         line;
+        BufferedReader input;
         
+        input = new BufferedReader(new FileReader(allincs));
+        while ((line = input.readLine()) != null) {
+            line = new File(pwd + line).getCanonicalPath();
+            includefilenames.add(line);
+        }
+        input.close();
+
+        input = new BufferedReader(new FileReader(allimgs));
+        while ((line = input.readLine()) != null) {
+            line = new File(pwd + line).getCanonicalPath();
+            imagefilenames.add(line);
+        }
+        input.close();
+        
+        input = new BufferedReader(new FileReader(allprj));
         while ((line = input.readLine()) != null) {
             line = pwd + line;
             TargetGenerator gen = new TargetGenerator(new File(line));
@@ -49,24 +62,42 @@ public class CheckIncludes {
         input.close();
 
         includes = AuxDependencyFactory.getInstance().getAllAuxDependencies();
-
-        // for (Iterator i = includes.iterator(); i.hasNext();) {
-        //      AuxDependency aux = (AuxDependency) i.next();
-        // }
-
-        input = new LineNumberReader(new FileReader(allincs));
-        while ((line = input.readLine()) != null) {
-            line = new File(pwd + line).getCanonicalPath();
-            includefilenames.add(line);
+        for (Iterator i = includes.iterator(); i.hasNext();) {
+            AuxDependency aux = (AuxDependency) i.next();
+            unavail.add(aux);
         }
-        input.close();
     }
 
-    
+    public void doCheck() throws Exception {
+        Document doc         = dbfac.newDocumentBuilder().newDocument();
+        Element  check_root  = doc.createElement("checkresult");
+        Element  files_root  = doc.createElement("includefiles");
+        Element  images_root = doc.createElement("images");
+        Element  prj_root    = doc.createElement("projects");
+        doc.appendChild(check_root);
+        check_root.appendChild(files_root);
+        check_root.appendChild(images_root);
+        check_root.appendChild(prj_root);
+        
+        checkForUnusedIncludes(doc, files_root);
+        checkForUnusedImages(doc, images_root);
+
+        checkForUnavailableIncludes(doc, prj_root);
+        
+        OutputFormat out_format = new OutputFormat("xml", "ISO-8859-1", true);
+        out_format.setIndent(2);
+        out_format.setPreserveSpace(false);
+        FileOutputStream out_stream;
+        out_stream = new FileOutputStream(outfile);
+        XMLSerializer ser = new XMLSerializer(out_stream, out_format);
+        ser.serialize(doc);
+    }
     
     public static void main(String[] args) throws Exception {
-        String allprjarg = args[0];
-        String allincarg = args[1];
+        String output    = args[0];
+        String allprjarg = args[1];
+        String allincarg = args[2];
+        String allimgarg = args[3];
 
         File   dir = new File(".");
 
@@ -74,25 +105,73 @@ public class CheckIncludes {
 
         DOMConfigurator.configure(pwd + "core/conf/generator_quiet.xml");
         
-        CheckIncludes instance = new CheckIncludes(pwd, new File(allprjarg), new File(allincarg));
-
-        Document doc = instance.checkForUnusedIncludes();
-
-        OutputFormat out_format = new OutputFormat("xml", "ISO-8859-1", true);
-        out_format.setIndent(2);
-        out_format.setPreserveSpace(false);
-        FileOutputStream out_stream;
-        out_stream = new FileOutputStream("CheckOutput.xml");
-        XMLSerializer ser = new XMLSerializer(out_stream, out_format);
-        ser.serialize(doc);
+        CheckIncludes instance = new CheckIncludes(pwd, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
+        instance.doCheck();
 
     }
 
-    private Document checkForUnusedIncludes() throws Exception {
+    private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
+        for (Iterator i = generators.keySet().iterator(); i.hasNext();) {
+            String          depend = (String) i.next();
+            TargetGenerator gen    = (TargetGenerator) generators.get(depend);
+            TreeSet         deps   = gen.getDependencyRefCounter().getAllDependencies();
+
+            for (Iterator j = deps.iterator(); j.hasNext();) {
+                AuxDependency aux = (AuxDependency) j.next();
+                if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE)) {
+                    j.remove();
+                }
+            }
+            
+            if (!deps.isEmpty()) {
+                Element prj_elem = result.createElement("project");
+                String  name     = depend.substring(pwd.length());
+                prj_elem.setAttribute("name", name);
+                res_root.appendChild(prj_elem);
+                
+                for (Iterator j = deps.iterator(); j.hasNext(); ) {
+                    AuxDependency aux = (AuxDependency) j.next();
+                    Element elem = result.createElement("MISSING");
+                    prj_elem.appendChild(elem);
+                    elem.setAttribute("type", aux.getType().toString());
+                    String path = aux.getPath();
+                    if (path.length() > pwd.length()) {
+                        path = path.substring(pwd.length());
+                    }
+                    elem.setAttribute("path", path);
+                    if (aux.getType().equals(DependencyType.TEXT)) {
+                        elem.setAttribute("part", aux.getPart());
+                        elem.setAttribute("product", aux.getProduct());
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkForUnusedImages(Document result, Element res_root) throws Exception {
         IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
-        Document result   = dbfac.newDocumentBuilder().newDocument();
-        Element  res_root = result.createElement("checkresult");
-        result.appendChild(res_root);
+        for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
+            String path = (String) i.next();
+            File   img  = new File(path);
+            String fullpath = img.getCanonicalPath();
+
+            Element res_image = result.createElement("image");
+            res_image.setAttribute("name", fullpath);
+            
+            res_root.appendChild(res_image);
+            
+            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.IMAGE, path, null, null);
+            if (!includes.contains(aux)) {
+                res_image.setAttribute("UNUSED", "true");
+                continue;
+            } else {
+                unavail.remove(aux);
+            }
+        }
+    }
+    
+    private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
+        IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
             String path = (String) i.next();
@@ -161,7 +240,10 @@ public class CheckIncludes {
                             if (!includes.contains(aux)) {
                                 res_product.setAttribute("UNUSED", "true");
                                 continue;
+                            } else {
+                                unavail.remove(aux);
                             }
+                            
 
                             NodeList langchilds = productelem.getChildNodes();
                             for (int l = 0; l < langchilds.getLength(); l++) {
@@ -205,8 +287,6 @@ public class CheckIncludes {
                 }
             }
         }
-
-        return result;
     }
     
 } // CheckIncludes
