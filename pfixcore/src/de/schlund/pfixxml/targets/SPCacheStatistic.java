@@ -32,21 +32,22 @@ import de.schlund.util.FactoryInit;
  */
 public class SPCacheStatistic implements FactoryInit {
 
-    private HashMap targetGenStatistic;
+    private TargetGeneratorsStatistic targetGenStatistic;
     private HashMap dependXMLToProductnameMapping;
+    private CacheHitMissPair hitsAndMissesForWholeCache = new CacheHitMissPair();
+    private String productsconf;
+    private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
+    
     private static SPCacheStatistic theInstance = new SPCacheStatistic();
     private static int REGISTER_MISS = 0;
     private static int REGISTER_HIT = 1;
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static String PROP_PRODUCTDATA = "editorproductfactory.productdata";
-    private long allHits = 0;
-    private long allMisses = 0;
-    private String productsconf;
-    private DecimalFormat hitrateFormat = new DecimalFormat("##0.00");
+   
     
 
     private SPCacheStatistic() {
-        targetGenStatistic = new HashMap();
+        targetGenStatistic = new TargetGeneratorsStatistic();
         dependXMLToProductnameMapping = new HashMap();
     }
 
@@ -56,12 +57,12 @@ public class SPCacheStatistic implements FactoryInit {
 
 
     synchronized void registerCacheMiss(Target target) {
-        allMisses++;
+        hitsAndMissesForWholeCache.increaseMisses();
         register(target, REGISTER_MISS);
     }
 
     synchronized void registerCacheHit(Target target) {
-        allHits++;
+        hitsAndMissesForWholeCache.increaseHits();
         register(target, REGISTER_HIT);
     }
 
@@ -80,7 +81,8 @@ public class SPCacheStatistic implements FactoryInit {
         setCacheAttributes(currentcache, ele_currentcache);
         top.appendChild(ele_currentcache);
         
-        TargetsInSPCache targetsincache = getTargetsForTargetGeneratorFromSPCache();
+        TargetsInSPCache targetsincache = new TargetsInSPCache();
+        targetsincache.inspectCache();
 
         Element ele_hitmiss = doc.createElement("products");
         attachTargetGenerators(doc, targetsincache, ele_hitmiss, targetgentoinfomap_clone);
@@ -95,18 +97,17 @@ public class SPCacheStatistic implements FactoryInit {
      public String getCacheStatisticAsString() {
         StringBuffer sb= new StringBuffer(128);
         SPCache currentcache = SPCacheFactory.getInstance().getCache();
-        sb.append("Cache class="+currentcache.getClass().getName()+" capacity="+currentcache.getCapacity()+
-                  " size="+currentcache.getSize()+" hits="+allHits+" misses="+allMisses+
-                  " hitrate="+formatHitrate((double)allHits, (double)allMisses)+"|");
+        sb.append("TOTAL:"+hitsAndMissesForWholeCache.getHits()+","+
+                    hitsAndMissesForWholeCache.getMisses()+","+
+                    formatHitrate((double)hitsAndMissesForWholeCache.getHits(), (double)hitsAndMissesForWholeCache.getMisses()));
         
         HashMap targetgentoinfomap_clone = cloneTargetGeneratorToCacheHitMissInfoMapping();
        
         for(Iterator i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext(); ) {
             TargetGenerator tgen = (TargetGenerator) i.next();
             CacheHitMissPair hitmiss = (CacheHitMissPair) targetgentoinfomap_clone.get(tgen);
-            sb.append("|product name="+getProductnameForTargetGenerator(tgen)+
-                        " hitrate="+formatHitrate((double) hitmiss.hits, (double) hitmiss.misses)+
-                        " hits="+hitmiss.hits+" misses="+hitmiss.misses);
+            sb.append("|"+getProductnameForTargetGenerator(tgen)+":"+hitmiss.getHits()+","+
+                        hitmiss.getMisses()+","+formatHitrate((double) hitmiss.getHits(), (double)hitmiss.getMisses()));
         }
         
         return sb.toString();
@@ -117,7 +118,7 @@ public class SPCacheStatistic implements FactoryInit {
     private HashMap cloneTargetGeneratorToCacheHitMissInfoMapping() {
         HashMap targetgentoinfomap_clone;
         synchronized(this) {
-            targetgentoinfomap_clone = (HashMap) targetGenStatistic.clone();
+            targetgentoinfomap_clone = (HashMap) targetGenStatistic.createMapClone();
         }
         return targetgentoinfomap_clone;
     }
@@ -135,9 +136,9 @@ public class SPCacheStatistic implements FactoryInit {
             
             ele_tg.setAttribute("name", configattr);    
             CacheHitMissPair hitmiss = (CacheHitMissPair) targetgentoinfomap.get(tgen);
-            ele_tg.setAttribute("hitrate", formatHitrate((double) hitmiss.hits, (double) hitmiss.misses));
-            ele_tg.setAttribute("hits", ""+hitmiss.hits);
-            ele_tg.setAttribute("misses", ""+hitmiss.misses);
+            ele_tg.setAttribute("hitrate", formatHitrate((double) hitmiss.getHits(), (double) hitmiss.getMisses())+"%");
+            ele_tg.setAttribute("hits", ""+hitmiss.getHits());
+            ele_tg.setAttribute("misses", ""+hitmiss.getMisses());
         
             attachTargets(doc, targetsincache, tgen, ele_tg);
             ele_hitmiss.appendChild(ele_tg);
@@ -157,22 +158,27 @@ public class SPCacheStatistic implements FactoryInit {
     }
 
     private String formatHitrate(double hits, double misses) {
+        double rate = calcHitrate(hits, misses);
+                
+        return hitrateFormat.format(rate);
+    }
+    
+    private double calcHitrate(double hits, double misses) {
         double rate = 0;
-        if(hits != 0 && misses != 0) {
+        if(hits != 0 && (hits + misses != 0)) {
             rate = (hits / (misses + hits)) * 100;
             if(rate > 100) {
                 rate = 100;
             }
         }
-                
-        return hitrateFormat.format(rate)+"%";
+        return rate;
     }
-    
+
     /* Attach all SharedLeafs */
     private void attachShared(Document doc, TargetsInSPCache targetsincache, Element ele_hitmiss) {
-        if(! targetsincache.sharedTargets.isEmpty()) {
+        if(! targetsincache.getSharedTargets().isEmpty()) {
             Element ele_shared = doc.createElement("shared");
-            for(Iterator i = targetsincache.sharedTargets.iterator(); i.hasNext(); ) {
+            for(Iterator i = targetsincache.getSharedTargets().iterator(); i.hasNext(); ) {
                 Element entry_ele = doc.createElement("sharedtarget");
                 SharedLeaf sleaf = (SharedLeaf) i.next();
                 entry_ele.setAttribute("id", sleaf.getPath());
@@ -184,8 +190,8 @@ public class SPCacheStatistic implements FactoryInit {
 
     /* Attach targets belonging to a TargetGenerator */
     private void attachTargets(Document doc, TargetsInSPCache targetsincache, TargetGenerator tgen, Element ele_tg) {
-        if(targetsincache.targettgenMapping.containsKey(tgen)) {
-            List targets = (List) targetsincache.targettgenMapping.get(tgen);
+        if(targetsincache.containsTargetGenerator(tgen)) {
+            List targets = (List) targetsincache.getTargetsForTargetGenerator(tgen);
             for(Iterator j = targets.iterator(); j.hasNext(); ) {
                 Element entry_ele = doc.createElement("target");
                 Target t = (Target) j.next();
@@ -199,55 +205,33 @@ public class SPCacheStatistic implements FactoryInit {
         ele_currentcache.setAttribute("class", currentcache.getClass().getName());
         ele_currentcache.setAttribute("capacity", ""+currentcache.getCapacity());
         ele_currentcache.setAttribute("size", ""+currentcache.getSize());
-        ele_currentcache.setAttribute("hits", ""+allHits);
-        ele_currentcache.setAttribute("misses", ""+allMisses);
-        ele_currentcache.setAttribute("hitrate", formatHitrate((double)allHits, (double)allMisses));
+        ele_currentcache.setAttribute("hits", ""+hitsAndMissesForWholeCache.getHits());
+        ele_currentcache.setAttribute("misses", ""+hitsAndMissesForWholeCache.getMisses());
+        ele_currentcache.setAttribute("hitrate", formatHitrate((double)hitsAndMissesForWholeCache.getHits(), 
+                                                                (double)hitsAndMissesForWholeCache.getMisses())+"%");
     }
 
     
-    /* Inspect SPCache and collect all Targets belonging to a TargetGenerator
-     * and all Shared Leafs */
-    private TargetsInSPCache getTargetsForTargetGeneratorFromSPCache() {
-        SPCache cache = SPCacheFactory.getInstance().getCache();
-        TargetsInSPCache tincache = new TargetsInSPCache();
-        for(Iterator i = cache.getIterator(); i.hasNext();) {
-            Object obj = i.next();
-            if(obj instanceof Target) { 
-                Target target = (Target) obj;
-                TargetGenerator tgen = target.getTargetGenerator();
-                if(tincache.targettgenMapping.containsKey(tgen)) {
-                    List list = (List)tincache.targettgenMapping.get(tgen);
-                    list.add(target);
-                } else {
-                    ArrayList list = new ArrayList();
-                    list.add(target);
-                    tincache.targettgenMapping.put(tgen, list);    
-                }        
-            } else if(obj instanceof SharedLeaf) {
-                tincache.sharedTargets.add((SharedLeaf)obj);                   
-            }
-        }
-        return tincache;
-    }
+    
 
     /* Register a cache-hit or cache-miss */
     private void register(Target target, int mode) {
         TargetGenerator tgen = target.getTargetGenerator();
-        if(targetGenStatistic.containsKey(tgen)) {
-            CacheHitMissPair hitmiss = (CacheHitMissPair) targetGenStatistic.get(tgen);
+        if(targetGenStatistic.containsHitMissPairForTargetGenerator(tgen)) {
+            CacheHitMissPair hitmiss = targetGenStatistic.getHitMissPairForTargetGenerator(tgen);
             if(mode == REGISTER_HIT) {
-                hitmiss.hits++;
+                hitmiss.increaseHits();
             } else {
-                hitmiss.misses++;
+                hitmiss.increaseMisses();
             }
         } else {
             CacheHitMissPair hitmiss = new CacheHitMissPair();
             if(mode == REGISTER_HIT) {
-                hitmiss.hits++;
+                hitmiss.increaseHits();
             } else {
-                hitmiss.misses++;
+                hitmiss.increaseMisses();
             }
-            targetGenStatistic.put(tgen, hitmiss);
+            targetGenStatistic.setHitMissPairForTargetGenerator(hitmiss, tgen);
         }
     }
 
@@ -273,26 +257,126 @@ public class SPCacheStatistic implements FactoryInit {
     }
     
     public void reset() {
-        allHits = 0;
-        allMisses = 0;
+        hitsAndMissesForWholeCache.resetHits();
+        hitsAndMissesForWholeCache.resetMisses();
         HashMap targetgentoinfomap_clone = cloneTargetGeneratorToCacheHitMissInfoMapping();
         for(Iterator i = targetgentoinfomap_clone.keySet().iterator(); i.hasNext(); ) {
             CacheHitMissPair misshit = (CacheHitMissPair) targetgentoinfomap_clone.get(i.next());
-            misshit.misses = 0;
-            misshit.hits = 0;
+            misshit.resetMisses();
+            misshit.resetHits();
         }
     }
    
 }
 
 final class CacheHitMissPair {
-    long hits = 0;
-    long misses = 0;
+    private long hits = 0;
+    private long misses = 0;
+    
+    void increaseHits() {
+        hits++;
+    }
+    
+    void increaseMisses() {
+        misses++;
+    }
+    
+    long getHits() {
+        return hits;
+    }
+    
+    long getMisses() {
+        return misses;
+    }
+    
+    void resetHits() {
+        hits = 0;
+    }
+    
+    void resetMisses() {
+        misses = 0;
+    }
 }
+
+
+final class TargetGeneratorsStatistic {
+    private HashMap targetGenStatistic = new HashMap();
+    
+    void setHitMissPairForTargetGenerator(CacheHitMissPair hitmiss, TargetGenerator tgen) {
+        targetGenStatistic.put(tgen, hitmiss);
+    }
+    
+    boolean containsHitMissPairForTargetGenerator(TargetGenerator tgen) {
+        return targetGenStatistic.containsKey(tgen);
+    }
+    
+    CacheHitMissPair getHitMissPairForTargetGenerator(TargetGenerator tgen) {
+        return (CacheHitMissPair) targetGenStatistic.get(tgen);
+    }
+
+    HashMap createMapClone() {
+        return (HashMap) targetGenStatistic.clone();
+    }
+}
+
+
+
+
 
 final class TargetsInSPCache {
     /* Maps tgen as key to List with targets as value */
-    HashMap targettgenMapping = new HashMap();
+    private HashMap targettgenMapping = new HashMap();
     /* Includes all SharedLeafs in SPCache */
-    ArrayList sharedTargets = new ArrayList();
+    private ArrayList sharedTargets = new ArrayList();
+    
+    
+    
+    void inspectCache() {
+        getTargetsForTargetGeneratorFromSPCache(); 
+    }
+    
+    List getSharedTargets() {
+       return sharedTargets;
+    }
+    
+    List getTargetsForTargetGenerator(TargetGenerator tgen) {
+        return (List) targettgenMapping.get(tgen);
+    }
+    
+    boolean containsTargetGenerator(TargetGenerator tgen) {
+        return targettgenMapping.containsKey(tgen);
+    }
+    
+    private void addSharedTarget(SharedLeaf leaf) {
+        sharedTargets.add(leaf);
+    }
+    
+    private void setTargetsForTargetGenerator(TargetGenerator tgen, List targets) {
+        targettgenMapping.put(tgen, targets);
+    }
+    
+    
+    /* Inspect SPCache and collect all Targets belonging to a TargetGenerator
+     * and all Shared Leafs */
+    private void getTargetsForTargetGeneratorFromSPCache() {
+        SPCache cache = SPCacheFactory.getInstance().getCache();
+       
+        for(Iterator i = cache.getIterator(); i.hasNext();) {
+            Object obj = i.next();
+            if(obj instanceof Target) { 
+                Target target = (Target) obj;
+                TargetGenerator tgen = target.getTargetGenerator();
+                if(containsTargetGenerator(tgen)) {
+                    List list = (List)getTargetsForTargetGenerator(tgen);
+                    list.add(target);
+                } else {
+                    ArrayList list = new ArrayList();
+                    list.add(target);
+                    setTargetsForTargetGenerator(tgen, list);    
+                }        
+            } else if(obj instanceof SharedLeaf) {
+                addSharedTarget((SharedLeaf)obj);                   
+            }
+        }
+    }
 }
