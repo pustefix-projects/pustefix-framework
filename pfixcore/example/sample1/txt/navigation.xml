@@ -5,20 +5,6 @@
     <product name="default">
       <lang name="default">
         <center><br/>
-<!--         <pfx:button page="order"> -->
-<!--           <pfx:active> -->
-<!--             <pfx:unvisited>active_unvisited</pfx:unvisited>  --> 
-<!--             <pfx:visited>active_visited</pfx:visited> -->
-<!--           </pfx:active> -->
-<!--           <pfx:normal> -->
-<!--             <pfx:unvisited>normal_unvisited</pfx:unvisited> -->
-<!--             <pfx:visited>normal_visited</pfx:visited> -->
-<!--           </pfx:normal> -->
-<!--           <pfx:invisible> -->
-<!--             <pfx:unvisited>invisible_unvisited</pfx:unvisited> -->
-<!--             <pfx:visited>invisible_visited</pfx:visited> -->
-<!--           </pfx:invisible> -->
-<!--         </pfx:button>  -->
         <pfx:button page="home"> <pfx:visited>Home</pfx:visited> <pfx:unvisited>HOME</pfx:unvisited> </pfx:button> 
         <pfx:button page="order"> <pfx:visited>Order</pfx:visited> <pfx:unvisited>ORDER</pfx:unvisited> </pfx:button> 
         <pfx:button page="overview"> <pfx:visited>Overview</pfx:visited> <pfx:unvisited>OVERVIEW</pfx:unvisited> </pfx:button> 

@@ -71,19 +71,18 @@
       <xsl:apply-templates/>
     </ixsl:if>
     <cus:documentation>
-
       <description>The content of the tag will be used if the reference page has not already been visited</description>
       <param required="0">
         <name>page</name>
         <values><string/></values>
         <description>Use the page attribute to reference the page to check for the visited status.
-        If this is empty, the value of a supplied xsl:param "pagename" is used or the current pagename if no
+        If this is empty, the value of a supplied xsl:param "thepagename" is used or the current pagename if no
         parameter is supplied.
         </description>
       </param>
     </cus:documentation>
   </xsl:template>
-
+  
   <xsl:template match="pfx:button">
     <xsl:call-template name="pfx:button_impl">
       <xsl:with-param name="normal">
