@@ -19,6 +19,8 @@
 
 package de.schlund.util.statuscodes;
 
+import javax.xml.transform.TransformerException;
+
 public class StatusCodeFactory {
     private final static StatusCodeFactory instance = new StatusCodeFactory();
 
@@ -49,18 +51,22 @@ public class StatusCodeFactory {
         }
     }
 
-    public StatusCode testStatusCode(String code) {
+    public StatusCode testStatusCode(String code) throws TransformerException {
         return (StatusCode) PartIndex.getInstance().lookup(getPart(code));
     }
 
-    public boolean statusCodeExists(String code) {
+    public boolean statusCodeExists(String code) throws TransformerException {
         return (testStatusCode(code) == null ? false : true);
     }
     
     public StatusCode getStatusCode(String code) throws StatusCodeException {
         StatusCode scode;
-        
-        scode = testStatusCode(code);
+
+        try {
+            scode = testStatusCode(code);
+        } catch (TransformerException e) {
+            throw new StatusCodeException("StatusCodeFactory, statusmessages.xml couldn't be parsed");
+        }
         if (scode == null) {
             throw new StatusCodeException("StatusCodeFactory, StatusCode [" + getPart(code) + "] not defined");
         }
