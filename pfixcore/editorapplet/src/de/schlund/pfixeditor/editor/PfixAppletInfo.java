@@ -31,12 +31,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 /**
- * IncludesFinalizer.java
+ * PfixAppletInfo.java
  *
  *
  * Created: Mon Jul 07 17:30:33 2003
  *
  * @author <a href="mailto:zaich@schlund.de">Volker Zaich</a>
+ *
+ * Part of the Pustefix-Applet. Class reads all Images and Includes
+ * from a project from the XML-Tree
+ *
+ *
+ *
+ *
  *
  *
  */
@@ -93,13 +100,10 @@ public class PfixAppletInfo {
     // Location for Applet Info
     public String parseLocation(String location) {
          String preString = location.substring(0, location.lastIndexOf("/"));
-         String afterString = location.substring(location.lastIndexOf(";"), location.lastIndexOf(".foo")+4);
-
-         System.out.println("Loaaaacioont" + location);
-         System.out.println("AFTER STRING" + afterString);
-         
+         String afterString = location.substring(location.lastIndexOf(";"), location.lastIndexOf(".foo")+4);         
          String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
-         System.out.println("URRRLLLL NEU " + urlLocation);
+         
+         System.out.println("New Location " + urlLocation);
          
          return urlLocation;
 
@@ -119,12 +123,10 @@ public class PfixAppletInfo {
 
             incElements[i] = includeStr;
             
-        }
-
-        
-        return incElements;
-        
+        }        
+        return incElements;        
     }
+    
 
     public String[] getImages() {
         org.w3c.dom.NodeList  nl          = this.doc.getElementsByTagName("image");
@@ -132,7 +134,6 @@ public class PfixAppletInfo {
         
         for (int i = 0; i < nl.getLength(); i++) {
             org.w3c.dom.Element el = (org.w3c.dom.Element) nl.item(i);
-            
             // String part       = el.getAttribute("part");
             String path       = el.getAttribute("path");            
             // String newPath    = path.substring(path.indexOf("example/"), path.length());
@@ -141,8 +142,7 @@ public class PfixAppletInfo {
             incImages[i] = includeStr;
             
         }
-        
-        
+                
         return incImages;
         
     }

@@ -46,30 +46,6 @@ import javax.swing.event.ChangeEvent;
 
 import java.net.*;
 
-
-/*
-import org.apache.commons.pfix_httpclient.HostConfiguration;
-import org.apache.commons.pfix_httpclient.HttpConnection;
-import org.apache.commons.pfix_httpclient.HttpException;
-import org.apache.commons.pfix_httpclient.HttpRecoverableException;
-import org.apache.commons.pfix_httpclient.HttpState;
-import org.apache.commons.pfix_httpclient.HttpStatus;
-
-import org.apache.commons.pfix_httpclient.NameValuePair;
-
-import org.apache.commons.pfix_httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.pfix_httpclient.URIException;
-import org.apache.commons.pfix_httpclient.methods.PostMethod;
-import org.apache.commons.pfix_httpclient.protocol.Protocol;
-import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory; */
-
-
-
-
-
-
-
-
 import javax.swing.*;
 import netscape.javascript.*;
 
@@ -237,29 +213,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         this.createEditMenu();
         this.createIncludeMenu();
 
-        /*
-        JComboBox hallol = new JComboBox();
-        hallol.addItemListener(this);
-        hallol.addItem("Karlsruher SC");
-        hallol.addItem("Manchester United");
-        hallol.addItem("Bayern München");
-        hallol.addItem("Hamburger SV");
-        hallol.addItem("Bayer 04 Leverkusen");
-        hallol.addItem("Real Madrid");
-        hallol.setMaximumRowCount(4);
-        hallol.setEnabled(true);
-        // hallol.setPopupVisible(true);
-        
-        // hallol.addActionListener(this);
-        
-        boxPanel.add(hallol, BorderLayout.NORTH);
-
-        panel.add(boxPanel, BorderLayout.EAST);
-        
-        // hallol.showPopup();
-        // hallol.setPopupVisible(true);
-
-        panel.add(hallol, BorderLayout.EAST);*/
         
         // Layouting Applet
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -270,18 +223,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
        
         // Setting the Frames position
         frame.setLocation(300,100);
-        // frame.pack();
-        // frame.show();
         // Checking visibility of the applet
-        // getDoc();
         frame.pack();
-        // testConnection();
-        doTest();
-        // getDocument();
-
-        // frame.pack();
-        // frame.show();
-
+        checkVisible();
     }
 
 
@@ -312,314 +256,19 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
     }
 
-    public void getDocument() {
-        URL		  url;
-        HttpURLConnection urlConn ;
-        
-        DataOutputStream  printout;
-        InputStream	  input;
-        org.w3c.dom.Document docNeu;
-        
-        try {
-            System.out.println("<------------------------------------------------------------------->");
-            
-            
-            System.out.println("Doc: " + getDocumentBase().toString());
-
-
-
-            String location = getDocumentBase().toString();
-
-            String preString = location.substring(0, location.lastIndexOf("/"));
-            String afterString = location.substring(location.lastIndexOf(";"), location.length());
-
-            System.out.println("STRING: + " + preString + "AppletInfo" + afterString + "&__xmlonly=1&__nostore=1");
-
-             String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
-            // String urlLocation =  preString + "/AppletInfo" + "&__xmlonly=1&__nostore=1";
-            //String urlLocation = location + "&__xmlonly=1";
-            // NameValuePair xmlonly = new  org.apache.commons.pfix_httpclient.NameValuePair("__xmlonly", "1");
-            // PostMethod post = new PostMethod(urlLocation);
-            // post.addParameter(xmlonly);
-            // post.execute(new HttpState(), new HttpConnection("cmscore.zaich.ue.schlund.de", 80));
-
-            // String encoded = URLEncoder.encode(location);
-
-             System.out.println("URL -----> " + urlLocation);
-
-             
-
-             // url = new URL("http://cmscore.zaich.ue.schlund.de/xml/edit/AppletInfo?__xmlonly=1");
-             url = new URL(urlLocation);
-
-
-            System.out.println("Hier I am");
-
-
-            // urlConn.addRequestProperty("Bla", "Lub");
-            // urlConn.setDoInput(true);
-            // urlConn.setDoOutput(true);
-       
-            // urlConn = url.openConnection();
-
-            // urlConn = new HttpURLConnection(url);
-
-            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-            // urlConn.addRequestProperty("Bla", "Lub");
-            // urlConn.setDoInput(true);
-            // urlConn.setDoOutput(true);
-            
-
-
-            
-            input = connection.getInputStream();
-            
-
-            
-            
-            //input = urlConn.getInputStream();
-
-            // System.out.println(input.toString());
-
-
-
-
-            DocumentBuilderFactory docBuilderFactory;
-            DocumentBuilder docBuilder;
-            org.w3c.dom.Document docDo;
-
-            docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setNamespaceAware(true);
-            docBuilderFactory.setValidating(false);
-            docBuilder = docBuilderFactory.newDocumentBuilder();
-            docDo = docBuilder.parse(input);
-
-            org.w3c.dom.Element rootElement = docDo.getDocumentElement();
-
-
-            System.out.println("Element: " + rootElement.toString());
-
-            // NodeList nl = docDo.getElementByTagName("allincludes");
-            org.w3c.dom.NodeList nl = docDo.getElementsByTagName("allincludes");
-            org.w3c.dom.Node node = nl.item(0);
-
-            comboPanel = new JPanel();
-            combox = new JComboBox();
-
-            org.w3c.dom.NodeList nldic = docDo.getElementsByTagName("include");
-            for (int i = 0; i < nldic.getLength(); i++) {
-                System.out.println("Include ---" + i);
-                org.w3c.dom.Element el = (org.w3c.dom.Element) nldic.item(i);
-
-                String part = el.getAttribute("part");
-                String path = el.getAttribute("path");
-
-                String newPath = path.substring(path.indexOf("example/"), path.length());
-                
-
-                String includeStr = "<pfx:include href=\"" + newPath + "\" part=\"" + part + "\">";
-
-                combox.addItem(includeStr);
-
-                
-
-
-                
-            }
-            
-            System.out.println("Und nu ?");
-            
-            System.out.println("NodeList" + nl.toString());
-
-            comboPanel.setLayout(new BorderLayout());
-            comboPanel.add(combox, BorderLayout.NORTH);
-            panel.add(comboPanel, BorderLayout.WEST);
-
-
-            JButton ebutton = new JButton("Hallo");
-            
-            
-            // repaint();
-            
-            
-
-            
-
-            /*
-
-
-            
-            
-
-            System.out.println("Und nu ??");
-            // Document doce = (Document) urlConn.getInputStream();
-            DataInputStream dsinp = new DataInputStream(input);
-
-            System.out.println("Und nu ?? Une");
-            // FileInputStream fileInp = new FileInputStream(getDocumentBase().toString());
-            // Document doce = input.read();
-
-            System.out.println("Und nu ?? Deaux");
-            // ObjectInputStream objIn = new ObjectInputStream(fileInp);
-
-            System.out.println("Und nu ?? Trois");
-            // String neu = (String) objIn.readObject();
-
-
-            */
-
-
-
-            //System.out.println("TEST:   " + doce.getText(1,20));
-
- 
-
-            // syntaxPane.setText(rootElement.toString());
-
-            
-            
-             
-        } catch (Exception ex) {
-            System.out.println("ERROR " + ex.getMessage());
-            ex.printStackTrace();
-            syntaxPane.setText(ex.toString());
-            
-            
-        }
-        
-
-
-
-        
-        
-    }
 
 
     public void paint(Graphics grp)   {
         //drawing the image using the graphic context on the applets surface
         //at location 20, 40
         grp.drawImage(img, 20, 40, this);
-    } 
-
-    
-    
-    private URLConnection getServletConnection()
-        throws MalformedURLException, IOException {
-        
-        // Connection zum Servlet öffnen
-        // URL urlServlet = new URL(getCodeBase()+ "WEB-INF/classes/EchoServlet");
-        URL urlServlet = new URL("http://sample1.zaich.ue.schlund.de/core/script/WEB-INF/classes/EchoServlet.class");
-        URLConnection con = urlServlet.openConnection();
-
-        System.out.println("Still alive");
-        
-        // konfigurieren
-        con.setDoInput(true);
-        con.setDoOutput(true);
-        con.setUseCaches(false);
-        con.setRequestProperty(
-                               "Content-Type",
-                               "application/x-java-serialized-object");
-        
-        // und zurückliefern
-        return con;
-    }
-
-    private void onSendData() {
-            try {
-                // get input data for sending
-                String input = "Holla"; // inputField.getText();
-                
-                // send data to the servlet
-                URLConnection con = getServletConnection();
-
-                System.out.println("ConnectionDone");
-                OutputStream outstream = con.getOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(outstream);
-                System.out.println("Here I am after OutPutStream");
-                oos.writeObject(input);
-                oos.flush();
-                oos.close();
-
-                System.out.println("After flush");
-                
-                // receive result from servlet
-                System.out.println("try recieving");
-               
-                InputStream instr = con.getInputStream();
-                System.out.println("deutx");
-                ObjectInputStream inputFromServlet = new ObjectInputStream(instr);
-                System.out.println("troi");
-                String result = (String) inputFromServlet.readObject();
-                System.out.println("qautre");
-                inputFromServlet.close();
-                instr.close();
-                System.out.println("RECEIVED");
-                
-                // show result
-                syntaxPane.setText(result);
-                
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                System.out.println(ex.toString());
-            }
-    }
-    
+    }             
     
     
 
-    public void testConnection() {
-        try {
-            URL			url;
-            URLConnection	urlConn;
-            DataOutputStream	printout;
-            DataInputStream	input;
-            
-            url = new URL (getCodeBase().toString()+"95.jpg");
-            
-            System.out.println(getCodeBase().toString());
-
-            System.out.println("Doc: " + getDocumentBase().toString());
 
 
-            urlConn = url.openConnection();
-
-            System.out.println("URL Connetcion " + urlConn.toString());
-
-            img = this.getImage(url);
-
-            ImageIcon neuImg = new ImageIcon(url);
-            JButton but = new JButton(neuImg);
-           
-            // panel.add(but, BorderLayout.WEST);
-            // panel.add(img);
-            // repaint();
-
-            urlConn.setDoInput(true);
-            urlConn.setDoOutput(true);
-            urlConn.setUseCaches (false);
-            
-            
-            // input = urlConn.getInputStream();
-            
-
-            
-            
-        } catch (Exception ex) {
-            System.out.println("ERROR ----> " + ex.getMessage());
-            
-        }
-        
-        
-        
-    }
-    
-
-
-    public void doTest() {
-        System.out.println("Im tiefen Föhrenwald da wohnt der Meister");
-        System.out.println("Ich bin do Test");
+    public void checkVisible() {
         boolean checkVisibile = this.checkJSVisibility();
         if (checkVisibile) {
             checkJSUploadField();
