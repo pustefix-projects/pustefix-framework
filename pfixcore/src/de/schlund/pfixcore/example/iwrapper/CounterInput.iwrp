@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface>
+  <ihandler class="de.schlund.pfixcore.example.CounterSetHandler"/>
+  
+  <param name="Set" type="java.lang.Integer" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
+  </param>
+
+</interface> 
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
