@@ -1,5 +1,11 @@
 2003-01-28  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java
+	(PROP_INSERTCR): change from "resdocfinalizer.insert" =>
+	"insertcr" *** CAUTION *** this means that all property files have
+	to be changed accordingly...
+	* example/sample1/conf/config.prop.in: changed accordingly. 
+
 	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer):
 	cosmetics, don't check for contextclassname more often than
 	needed.
