@@ -5,8 +5,18 @@
   xmlns:ant="jelly:ant"
   xmlns:maven="jelly:maven">
 
-  <goal name="hello">
-    <ant:echo>Hello</ant:echo>
+  <goal name="ant">
+    <j:choose>
+      <j:when test="${empty(target)}">
+        <ant:fail>Missing target - please specify -Dtarget=yourTarget</ant:fail>
+      </j:when>
+      <j:otherwise>
+        <ant:echo>ant target: ${target}</ant:echo>
+        <ant:ant dir="${basedir}" antfile="build.xml" target="${target}" inheritAll="false">
+          <ant:property name="makemode" value="${makemode}"/>
+        </ant:ant>
+      </j:otherwise>
+    </j:choose>
   </goal>
   
   <preGoal name="compile">
