@@ -228,10 +228,8 @@
           <xmlcode><pfx:jsbutton name="NameOfButton" omout="NameMouseOutPicture"   omover="NameMouseOverPicture" page="PageName"/></xmlcode>
         </input>
         <output>
+          "User visible part" (some javascript code is also generated)
           <xmlcode>
-            <script language="JavaScript"><!--
-              top.__js_but["NameOfButton"] = new top.__js_button("NameMouseOutPicture","NameMouseOverPicture");
-              //--></script>
             <a target="_parent" class="core_button_normal" onmouseover="top.__js_moveover(document,'NameOfButton'); return true" onmouseout="top.__js_moveout(document,'NameOfButton')" href="/PageName;jsessionid=12345.foo?__frame=_top">
               <img border="0" src="NameMouseOutPicture" name="NameOfButton"/>
             </a>
@@ -262,7 +260,7 @@
     </xsl:param>
     <script language="JavaScript">
       <ixsl:comment>
-        top.__js_but["<xsl:value-of select="@name"/>"] =
+        top.__js_allButtons["<xsl:value-of select="@name"/>"] =
         new top.__js_button("<xsl:value-of select="@omout"/>","<xsl:value-of select="@omover"/>");
         //</ixsl:comment>
     </script>
