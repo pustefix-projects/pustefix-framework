@@ -2,10 +2,9 @@
 # Rules...
 #################################################################
 LANG=C
-
 PROJECT=pfixcore_skel
-JAR=jar
 BUILDDIR=build
+JAR=jar
 PFIXCORE_DATA=$(shell ls -1 lib/pfixcore-data-*.tar.gz)
 
 all:  projects/core check_permissions compile resjar installjars_tc compile_xml 

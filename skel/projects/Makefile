@@ -37,8 +37,6 @@ GENERATOR  = java -Dlog4jconfig=core/conf/generator_quiet.xml -mx100M de.schlund
 # Debugging of TargetGenerator, Level 2: full debugging
 # GENERATOR = java -Dlog4jconfig=core/conf/generator_full.xml  -mx100M de.schlund.pfixxml.targets.TargetGenerator
 
-XALAN      = java -mx120M -Djavax.xml.transform.TransformerFactory=org.apache.xalan.processor.TransformerFactoryImpl  \
-              -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl org.apache.xalan.xslt.Process  -EDUMP
 SAXON      = java -mx120M -Djavax.xml.transform.TransformerFactory=com.icl.saxon.TransformerFactoryImpl \
               -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl com.icl.saxon.StyleSheet
 
@@ -81,7 +79,7 @@ targetdefs:
 zoneprops:
 	java $(TRFBUILD) -x dummy -a zoneprops \
 			 -p docroot=$(DOCROOT) -p fqdn=$(FQDN) -p uid=$(UID) -p machine=$(MACHINE) -p mode=$(MAKE_MODE) \
-			 -p outdir-jserv=$(DOCROOT)/servletconf/jserv \
+			 -p outdir-jserv=/dev/null \
 			 -p outdir-tomcat=$(DOCROOT)/servletconf/tomcat \
 			 -p xslfile-jserv=core/build/create_jservzones.xsl \
 			 -p xslfile-tomcat=core/build/create_tomcatweb.xsl \

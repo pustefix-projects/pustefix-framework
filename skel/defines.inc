@@ -1,5 +1,7 @@
-SRCROOT   = src
-BUILDDIR  = build
-# add path to your projects here e.g. JAVACR = $(SRCROOT)/org/my/projects
-JAVACR    = $(SRCROOT)
-ALLDIRS   = $(JAVACR)
+
+SRCROOT=src
+
+# add all directories containing source code of your projects here
+# e.g. ALLDIRS=$(SRCROOT)/org/my/projectFoo \
+#              $(SRCROOT)/org/my/projectBar
+ALLDIRS=$(SRCROOT)
