@@ -133,6 +133,7 @@
     </jserv>
     <tomcat>
       <maxprocessors>500</maxprocessors>
+      <connectorport>8009</connectorport>
       <debug>0</debug>
       <loglevel>info</loglevel>
       <jkhost><cus:fqdn/></jkhost>

@@ -11,21 +11,22 @@
   <xsl:template match="pfx:label" name="pfx:label">
     <cus:documentation>
        
-     <description>pfx:label is used for the description of textfields
-                   If the user submits a wrong input, an icon indicating an error will be
-                   displayed in front of the label text.</description>
+      <description>pfx:label is used for the description of input fields.
+        These descriptions will normally also be used in the &lt;pfx:errorbox&gt;.
+        If the user submits a wrong input, an icon indicating an error will be
+        displayed in front of the label text.</description>
       <param required="1">
         <name>name</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Must be the same name as the corresponding input-field</description>
+        <description>Must be the same name as the name of the corresponding input field</description>
       </param>
 
       <param required="0">
         <name>type</name>
         <standard></standard>
         <possible_values>hidden</possible_values>
-        <description>Label is hidden (it will not be displayed in the page</description>
+        <description>Label is hidden (it will not be displayed in the page, only the error icon is shown in case of an error)</description>
       </param>
 
       <example>
@@ -33,8 +34,9 @@
           <xmlcode><pfx:label name="shirt.Color">Color-No.</pfx:label></xmlcode>
         </input>
         <output>
-          usually displayed as <xmlcode width="80">Color-No.:</xmlcode>(no error detecdet) <br/><br/>
-          An Error detected <xmlcode><span class="core_errorlabel_text">Color-No.</span></xmlcode>
+          Displayed as <xmlcode width="80">Color-No.:</xmlcode> when no error happened;<br/><br/>
+          if and error has been detected it's displayed as
+          <xmlcode>[Displayed Error icon]<span class="core_errorlabel_text">Color-No.</span></xmlcode>
         </output>
       </example>
     </cus:documentation>  
