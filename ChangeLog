@@ -1,3 +1,14 @@
+2004-10-15  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/schema/wsconfig200401.xsd: Added optional SSL configuration 
+	element to force SSL connections for webservices
+	* example/core/script/webservice.js: SOAP_Stub now automatically sets request
+	protocol to the one used within the calling site
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: Added
+	SSL configuration attribute/accessor methods
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java: Added
+	handling for forcing SSL connections and checking session security
+
 2004-10-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: relased 0.8.0 

@@ -99,6 +99,7 @@
     	</xsd:element>
         <xsd:element ref="encoding" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>
+        <xsd:element ref="ssl" minOccurs="0"/>
         <xsd:element name="context" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="name" type="xsd:string"/>
@@ -119,6 +120,12 @@
   <xsd:element name="session">
     <xsd:complexType>
       <xsd:attribute name="type" type="SessionType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="ssl">
+    <xsd:complexType>
+      <xsd:attribute name="force" type="xsd:boolean" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
