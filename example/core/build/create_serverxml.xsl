@@ -44,11 +44,9 @@
         </ResourceParams>
       </GlobalNamingResources>
 
-      <Service name="Tomcat-Standalone">
-
+      <Service name="Catalina">
         <xsl:call-template name="create-connector"/>
-
-        <Engine name="Standalone">
+        <Engine name="Catalina">
           <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
           <xsl:attribute name="defaultHost">
             <xsl:value-of select="normalize-space($tomcat_defaulthost)"/>
