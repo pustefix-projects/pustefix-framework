@@ -311,9 +311,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // Creating File Menu
         fileMenu = new JMenu("File");
 
-        testMenu = new JMenuItem("Test");
-        fileMenu.add(testMenu);
-        testMenu.addActionListener(this);
+        // testMenu = new JMenuItem("Test");
+        // fileMenu.add(testMenu);
+        // testMenu.addActionListener(this);
 
         
         wellformedMenu = new JMenuItem("Check wellformed...");
@@ -601,10 +601,10 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     public void actionPerformed(ActionEvent e) {
 
 
-        if (e.getSource() == testMenu) {
-            // doTest();
-             
-        }
+        // if (e.getSource() == testMenu) {
+        //     // doTest();
+        //      
+        // }
 
         if (e.getSource() == tagMenu) {
             // onSendData();
