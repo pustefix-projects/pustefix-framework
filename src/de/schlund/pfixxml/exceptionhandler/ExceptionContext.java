@@ -272,14 +272,16 @@ class ExceptionContext {
         StringBuffer err = new StringBuffer();
         SessionAdmin sessadmin = SessionAdmin.getInstance();
         SessionInfoStruct info = sessadmin.getInfo(session.getId());
-        LinkedList trail = info.getTraillog();
-        if (trail != null && trail.size() > 0) {
-            err.append("\n==== Last steps before error occured: ================\n");
-            for (Iterator j = trail.listIterator(); j.hasNext();) {
-                SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) j.next();
-                err.append(
+        if(info != null) {
+        	LinkedList trail = info.getTraillog();
+        	if (trail != null && trail.size() > 0) {
+        		err.append("\n==== Last steps before error occured: ================\n");
+        		for (Iterator j = trail.listIterator(); j.hasNext();) {
+        			SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) j.next();
+        			err.append(
                     "[" + step.getCounter() + "] " + step.getStylesheetname() + " [" + step.getServletname() + "]\n");
-            }
+        		}
+        	}
         }
         if(CAT.isDebugEnabled()) 
             CAT.debug("Create last step information end.");
