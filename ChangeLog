@@ -1,3 +1,15 @@
+2003-07-09  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixIncludeDialog.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+
+	The Includes/Images functionally for the Editor-Applet is finished 
+	and should work now. The Layout of the new Frame(PfixIncludeDialog)
+	will be changed next time. If anyone had a good idea, let me know :)
+
 2003-07-09  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/(Commons|Images|Includes)Handler
