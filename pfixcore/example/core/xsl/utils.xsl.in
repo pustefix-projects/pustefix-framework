@@ -54,8 +54,7 @@
       <xsl:with-param name="href"><xsl:value-of select="$path"/>/<xsl:value-of select="$prefix"/><xsl:value-of select="$page"/><xsl:value-of select="$postfix"/></xsl:with-param>
       <xsl:with-param name="part" select="$part"/>
       <!-- this is tricky to understand --> 
-<!--       <xsl:with-param name="parent_path"></xsl:with-param> -->
-<!--       <xsl:with-param name="parent_part"></xsl:with-param> -->
+      <xsl:with-param name="computed_inc">true</xsl:with-param>
     </xsl:call-template>
    <cus:documentation>
      <responsible>JTL</responsible>

@@ -90,14 +90,14 @@ public final class IncludeDocumentExtension {
      */
     public static final Object get(XPathContext context, String path_str, String part, String product,
                                    String docroot, String targetgen, String targetkey,
-                                   String parent_part_in, String parent_product_in) throws Exception {
+                                   String parent_part_in, String parent_product_in, String computed_inc) throws Exception {
 
         String parent_path_str = "";
         String parent_part     = "";
         String parent_product  = "";
         
-        NodeInfo citem   = (NodeInfo) context.getContextItem();
-        if (((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts")) {
+        NodeInfo citem = (NodeInfo) context.getContextItem();
+        if (computed_inc.equals("false") && isCalledFromInclude(citem)) {
             parent_path_str = ((NodeInfo) context.getContextItem()).getSystemId();
             parent_part     = parent_part_in;
             parent_product  = parent_product_in;
@@ -123,7 +123,8 @@ public final class IncludeDocumentExtension {
             VirtualTarget target = (VirtualTarget) TargetGeneratorFactory.getInstance().createGenerator(Path.create(docroot, targetgen).resolve()).getTarget(targetkey);
             if (!incfile.exists()) {
                 if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 }
                 return EmptySequence.getInstance();
             }
@@ -132,7 +133,8 @@ public final class IncludeDocumentExtension {
                 iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
             } catch (SAXException saxex) {
                 if (dolog)
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 target.setStoredException(saxex);
                 throw saxex;
             }
@@ -146,7 +148,8 @@ public final class IncludeDocumentExtension {
                 ns = XPath.select(doc, sb.toString());
             } catch (TransformerException e) {
                 if (dolog)
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 throw e;
             }
             length = ns.size();
@@ -157,13 +160,15 @@ public final class IncludeDocumentExtension {
                 //CAT.debug("*** Part '" + part + "' is 0 times defined.");
                 CAT.debug(sb.toString());
                 if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 }
                 return EmptySequence.getInstance();
             } else if (length > 1) {
                 // too many parts. Error!
                 if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 }
                 sb.delete(0, sb.length());
                 sb.append("*** Part '").append(part).append("' is multiple times defined! Must be exactly 1");
@@ -178,20 +183,22 @@ public final class IncludeDocumentExtension {
                 ns = XPath.select(doc, sb.toString());
             } catch (TransformerException e) {
                 if (dolog)
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 throw e;
             }
             length = ns.size();
             if (length == 0) {
                 // Didn't find the specific product, trying default:
                 sb.delete(0, sb.length());
-                sb.append(XPPARTNAME).append(part).append(XPNAMEEND).append(XPPRODNAME).append(DEFAULT).append(
-                                                                                                               XPNAMEEND);
+                sb.append(XPPARTNAME).append(part).append(XPNAMEEND).append(XPPRODNAME).
+                    append(DEFAULT).append(XPNAMEEND);
                 try {
                     ns = XPath.select(doc, sb.toString());
                 } catch (TransformerException e) {
                     if (dolog)
-                        DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                        DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                                   parent_path, parent_part, parent_product, target);
                     throw e;
                 }
                 int len = ns.size();
@@ -200,7 +207,8 @@ public final class IncludeDocumentExtension {
                     boolean ok = true;
                     if (dolog) {
                         try {
-                            DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                            DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                                       parent_path, parent_part, parent_product, target);
                         } catch (Exception e) { // TODO
                             ok = false;
                         }
@@ -209,9 +217,9 @@ public final class IncludeDocumentExtension {
                         // Specific product and default product not found.
                         // Warning!
                         sb.delete(0, sb.length());
-                        sb.append("*** Product '").append(product).append("' is not accessible under part '").append(
-                                                                                                                     part).append("@").append(path)
-                            .append("', and a default product is not defined either.");
+                        sb.append("*** Product '").append(product).
+                            append("' is not accessible under part '").append(part).append("@").append(path).
+                            append("', and a default product is not defined either.");
                         CAT.warn(sb.toString());
                         return EmptySequence.getInstance();
                     } else {
@@ -220,7 +228,8 @@ public final class IncludeDocumentExtension {
                 } else {
                     // too many default products found. Error!
                     if (dolog) {
-                        DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                        DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                                   parent_path, parent_part, parent_product, target);
                     }
                     sb.delete(0, sb.length());
                     sb.append("*** Part '").append(part).append("' has multiple default product branches! Must be 1.");
@@ -233,7 +242,8 @@ public final class IncludeDocumentExtension {
                 boolean ok = true;
                 if (dolog) {
                     try {
-                        DependencyTracker.logTyped("text", path, part, product, parent_path, parent_part, parent_product, target);
+                        DependencyTracker.logTyped("text", path, part, product,
+                                                   parent_path, parent_part, parent_product, target);
                     } catch (Exception e) { // TODO
                         ok = false;
                     }
@@ -242,11 +252,12 @@ public final class IncludeDocumentExtension {
             } else {
                 // too many specific products found. Error!
                 if (dolog) {
-                    DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);
+                    DependencyTracker.logTyped("text", path, part, DEFAULT,
+                                               parent_path, parent_part, parent_product, target);
                 }
                 sb.delete(0, sb.length());
-                sb.append("*** Product '").append(product).append("' is defined multiple times under part '").append(
-                                                                                                                     part).append("@").append(path).append("'");
+                sb.append("*** Product '").append(product).append("' is defined multiple times under part '").
+                    append(part).append("@").append(path).append("'");
                 XMLException ex = new XMLException(sb.toString());
                 target.setStoredException(ex);
                 throw ex;
@@ -262,5 +273,10 @@ public final class IncludeDocumentExtension {
             CAT.error(e);
             throw e;
         }
+    }
+
+
+    private static boolean isCalledFromInclude(NodeInfo citem) {
+        return ((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts");
     }
 }// end of class IncludeDocumentExtension
