@@ -5,6 +5,9 @@
     <product name="default">
       <lang name="default">
         <!-- Put application specific CSS here -->
+        &lt;
+        >
+        &amp;
         
         .core_errorbox_table  { border-width: 1px; border-color: #000000; 
                                 border-style: solid; }

@@ -63,6 +63,9 @@
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
+      <xsl:if test="@outputmethod">
+        <param name="outputmethod" value="{@outputmethod}"/>
+      </xsl:if>
     </target>
     
     <target name="{@name}.xml" type="xml">

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+<pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
   <pfx:head>
     <title>PFIXCORE Sample</title>
   </pfx:head>
@@ -7,11 +7,9 @@
     <pfx:frame name="top_navi">
       <html>
         <head>
-          <style type="text/css">
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="common/txt/styles.xml" part="standard"/> 
-            <pfx:include href="sample1/txt/styles.xml" part="standard"/>
-          </style>
+          <link rel="stylesheet" type="text/css">
+            <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
+          </link>
         </head>
         <body>
           <pfx:include href="sample1/txt/navigation.xml" part="top"/>
@@ -21,11 +19,9 @@
     <pfx:frame name="bottom">
       <html>
         <head>
-          <style type="text/css">
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="common/txt/styles.xml" part="standard"/>
-            <pfx:include href="sample1/txt/styles.xml" part="standard"/>
-          </style>
+          <link rel="stylesheet" type="text/css">
+            <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
+          </link>
         </head>
         <body>
           <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>

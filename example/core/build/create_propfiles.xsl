@@ -51,6 +51,15 @@
 
   <xsl:template match="pagerequest">
     <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
+    <xsl:variable name="nostore">
+      <xsl:choose>
+        <xsl:when test="@nostore and @nostore = 'true'">true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$nostore = 'true'">
+      <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+    </xsl:if>
     <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
     <xsl:choose>
       <xsl:when test="./state"><xsl:value-of select="./state/@class"/></xsl:when>

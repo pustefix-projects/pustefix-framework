@@ -38,6 +38,7 @@ public class SPDocument implements NoCopySessionData {
 
     private Document   document;
     private Properties properties;
+    private boolean    nostore     = false;
     private String     pagename    = null;
     private String     xslkey      = null;
     private long       timestamp   = -1;
@@ -58,6 +59,14 @@ public class SPDocument implements NoCopySessionData {
         return pagename;
     }
 
+    public void setNostore(boolean nostore) {
+        this.nostore = nostore;
+    }
+
+    public boolean getNostore() {
+        return nostore;
+    }
+    
     public void setResponseContentType(String type) {
         contenttype = type;
     }

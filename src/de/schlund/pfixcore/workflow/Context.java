@@ -73,6 +73,7 @@ public class Context implements AppContext {
     
     private static Category LOG = Category.getInstance(Context.class.getName());
 
+    private final static String NOSTORE           = "nostore";
     private final static String DEFPROP           = "context.defaultpageflow";
     private final static String NAVPROP           = "xmlserver.depend.xml";
     private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate"; 
@@ -169,15 +170,16 @@ public class Context implements AppContext {
         }
         
         SPDocument  spdoc;
-
+        PageRequest prevpage = getCurrentPageRequest();
+        PageFlow    prevflow = getCurrentPageFlow();
+        
         if (visit_id == null) 
             visit_id = (String) preq.getSession(false).getValue(ServletManager.VISIT_ID);
 
         if (in_adminmode) {
-            PageRequest tmp = getCurrentPageRequest();
             setCurrentPageRequest(admin_pagereq);
             spdoc = documentFromCurrentStep(preq, false);
-            setCurrentPageRequest(tmp);
+            setCurrentPageRequest(prevpage);
             spdoc.setPagename(admin_pagereq.getName());
             return spdoc;
         }
@@ -186,6 +188,8 @@ public class Context implements AppContext {
         spdoc = documentFromFlow(preq);
 
         if (spdoc.getResponseError() != 0) {
+            setCurrentPageRequest(prevpage);
+            setCurrentPageFlow(prevflow);
             return spdoc;
         }
         
@@ -197,9 +201,28 @@ public class Context implements AppContext {
             spdoc.setPagename(getCurrentPageRequest().getName());
         }
 
+        if (pageIsSidestepPage(getCurrentPageRequest())) {
+            LOG.warn("*** Sidestep page: Restoring to page " +  prevpage + " and " + prevflow);
+            setCurrentPageRequest(prevpage);
+            setCurrentPageFlow(prevflow);
+            LOG.warn("*** Sidestep page: Inhibit storing of spdoc");
+            spdoc.setNostore(true);
+        }
+        
         return spdoc;
     }
 
+
+    private boolean pageIsSidestepPage(PageRequest page) {
+        Properties props   = preqprops.getPropertiesForPageRequest(page);
+        String     nostore = props.getProperty(NOSTORE);
+        if (nostore != null && nostore.toLowerCase().equals("true")) {
+            LOG.warn("*** Found sidestep page: " + page);
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     /**
      * <code>getContextResourceManager</code> returns the ContextResourceManager defined in init(Properties properties).

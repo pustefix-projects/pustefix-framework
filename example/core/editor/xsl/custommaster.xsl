@@ -155,9 +155,12 @@
 
 
   <xsl:template match="cus:final-output-method">
-    <ixsl:output method="html" encoding="iso-8859-1" indent="no"
+    <ixsl:output encoding="iso-8859-1" indent="no"
                  doctype-public="-//W3C//DTD HTML 4.01//EN"
-                 doctype-system="http://www.w3.org/TR/html40/strict.dtd"/>
+                 doctype-system="http://www.w3.org/TR/html40/strict.dtd">
+      <!-- Note that the method isn't set here, but in the master styelsheet itself. Below copies the relevant code -->
+      <xsl:copy-of select="./node()"/>
+    </ixsl:output>
   </xsl:template>
   
 

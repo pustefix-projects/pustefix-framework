@@ -35,7 +35,7 @@ public class PageRequest {
     private static final Category          CAT       = Category.getInstance(PageRequest.class.getName());
     private              PageRequestStatus status    = PageRequestStatus.UNDEF;
     private              String            pagename;
-    
+
     /**
      * Describe <code>getName</code> method here.
      *
@@ -71,7 +71,7 @@ public class PageRequest {
     public PageRequestStatus getStatus() {
         return status;
     }
-    
+
     /**
      * Describe <code>equals</code> method here.
      *
