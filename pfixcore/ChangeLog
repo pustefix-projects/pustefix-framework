@@ -1,6 +1,6 @@
 2005-02-24  Daniel Hopp <daniel.hopp@schlund.de>
 
-  * example/core/xsl/util.xsl.in, pfx:maincontent: pass-through @noerror to pfx:include
+	* example/core/xsl/util.xsl.in, pfx:maincontent: pass-through @noerror to pfx:include
 
 2005-02-22  Jens Lautenbacher  <jtl@schlund.de>
 
