@@ -1,12 +1,10 @@
 <!-- -*- mode: xsl -*- -->
-<xsl:stylesheet version="1.0"
-                xmlns:cus="http://www.schlund.de/pustefix/customize"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                exclude-result-prefixes="cus xsl">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                exclude-result-prefixes="xsl">
 
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
-  <xsl:include href="create_lib.xsl"/>
 
+  <xsl:include href="create_lib.xsl"/>
   <xsl:param name="prohibitEdit"/>
 
   <xsl:template match="global"/>
