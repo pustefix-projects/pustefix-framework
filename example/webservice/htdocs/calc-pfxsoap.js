@@ -14,11 +14,11 @@ var wsCalc=new WS_Calculator();
 
 var t1=null;
 
-function pfxsoapCallback(result,exception) {
+function pfxsoapCallback(result,reqID,exception) {
 	var d2=new Date();
    var t2=d2.getTime();
    var t=t2-t1;
-  	if(exception==undefined) pfxsoapPrint(result,t);
+  	if(exception==undefined || exception==null) pfxsoapPrint(result,t);
   	else pfxsoapPrintError(exception.toString(),t);
 }
 
@@ -33,7 +33,7 @@ function pfxsoapCall(method,val1,val2) {
 	var result=null;
 	
 	try {
-		if(method=="add") result=wsCalc.add(param1,param2,pfxsoapCallback);
+		if(method=="add") result=wsCalc.add(param1,param2,pfxsoapCallback,"ADD");
 		else if(method=="subtract") result=wsCalc.subtract(param1,param2);
 		else if(method=="multiply") result=wsCalc.multiply(param1,param2);
 		else if(method=="divide") result=wsCalc.divide(param1,param2);

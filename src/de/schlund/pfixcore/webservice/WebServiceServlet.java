@@ -87,10 +87,6 @@ public class WebServiceServlet extends AxisServlet {
         writer.close();
     }
     
-    
-
-    
-    
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
@@ -104,12 +100,25 @@ public class WebServiceServlet extends AxisServlet {
                 }
             }
         }
-        if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null || req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
+        if(DEBUG) CAT.debug("Process webservice request: "+req.getPathInfo());
+        if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
+            if(DEBUG) CAT.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
             HttpServletResponse response=res;
-            if(req.getParameter("insertpi")!=null) response=new InsertPIResponseWrapper(res);
+            String reqID=req.getParameter(Constants.PARAM_REQUEST_ID);
+            if(DEBUG) if(reqID!=null) CAT.debug("contains requestID parameter: "+reqID);
+            String insPI=req.getParameter("insertpi");
+            if(insPI!=null) response=new InsertPIResponseWrapper(res);
+            if(DEBUG) if(insPI!=null) CAT.debug("contains insertpi parameter");
             super.doPost(new SOAPActionRequestWrapper(req),response);
-        } else {
+        } else if(req.getHeader(Constants.HEADER_SOAP_ACTION)!=null) {
+            if(DEBUG) CAT.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
+            String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
+            if(DEBUG) if(reqID!=null) CAT.debug("contains requestID header: "+reqID);
+            if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
             super.doPost(req,res);
+        } else {
+            if(DEBUG) CAT.debug("no SOAPAction header, no soapmessage parameter -> bad request");
+            sendBadRequest(req,res,res.getWriter());
         }
     }
     

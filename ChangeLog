@@ -1,3 +1,19 @@
+2004-10-15  Martin Leidig  <mleidig@schlund.de>
+
+	* example/common/conf/pfixlog.xml.in: Customized webservice logging
+	* example/core/script/webservice.js: Added requestID support to
+	SOAP_Call and SOAP_Stub, implemented SOAP_Header basics
+	* example/core/script/xmlRequest.js: Added requestID support
+	* src/de/schlund/pfixcore/webservice/Constants.java: Added requestID
+	parameter and header constants
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Added
+	debugging stuff and requestID header handling
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java: Added
+	support for callback/requestID extraction
+	* example/webservice/htdocs/calc-pfxsoap.js: adapted library changes
+	* example/webservice/htdocs/chat-pfxsoap.js: adapted library changes
+
+
 2004-10-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: relased 0.8.0 

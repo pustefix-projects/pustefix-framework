@@ -167,9 +167,8 @@ public class Wsdl2Js {
                        
                         
                         JsBlock jsBlock=jsMethod.getBody();
-                        jsBlock.addStatement(new JsStatement("var cb=this._extractCallback(arguments,"+jsMethod.getParams().length+")"));
                         jsBlock.addStatement(new JsStatement("var call=this._createCall()"));
-                        jsBlock.addStatement(new JsStatement("if(cb!=null) call.setUserCallback(cb)"));
+                        jsBlock.addStatement(new JsStatement("this._extractCallback(call,arguments,"+jsMethod.getParams().length+")"));
                         jsBlock.addStatement(new JsStatement("call.setOperationName(\""+jsMethod.getName()+"\")"));
                         JsParam[] jsParams=jsMethod.getParams();
                         for(int i=0;i<jsParams.length;i++) {

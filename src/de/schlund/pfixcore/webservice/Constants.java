@@ -33,7 +33,9 @@ public class Constants {
     public final static String[] ENCODING_USES={ENCODING_USE_ENCODED,ENCODING_USE_LITERAL};
  
     public static final String HEADER_SOAP_ACTION="SOAPAction";
+    public static final String HEADER_REQUEST_ID="Request-Id";
     public static final String PARAM_SOAP_MESSAGE="soapmessage";
+    public static final String PARAM_REQUEST_ID="PFX_Request_ID";
     
     public static final String CONTENT_TYPE_URLENCODED="application/x-www-form-urlencoded";
     
