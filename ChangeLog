@@ -1,3 +1,22 @@
+2004-12-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	implemented the "false" value for the pfx:command
+	SUGGESTCONT. This will stop the IWrapperContainer from ever
+	suggesting to advance in the pageflow. This is somewhat similar to
+	the forcestop=true attribute, but it only works for
+	DefaultIWrapperStates, while forcestop works regardless of the State. The difference 
+	bvetween the two is, that using SUGGESTCONT=false will still call retrieveCurrentStatus() on 
+	all Handlers in the group of Handlers selected by SELWRP (or all if there's no SELWRP used) 
+	and all Handlers that have alwaysretrieve set to "true" in the property file.
+	
+	* src/de/schlund/pfixcore/workflow/Context.java: starwithflow will
+	now use the pageattribute to stop at that page in any case. That
+	means, if the page is part of the pageflow that's checked, it will
+	not be checked for needsData() past this page, but instead stopped
+	there in any case. If the page is not part of the pageflow, it
+	will be used instead of a possibly given final page.
+	
 2004-12-16  Niels Schelbach <niels@schlund.de>
         * example/core/build/iwrapper.xsl:
         * src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java: Changed generation of

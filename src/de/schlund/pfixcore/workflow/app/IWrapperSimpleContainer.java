@@ -221,9 +221,14 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         if (wrappers.isEmpty()) return false; // border case
 
         String[] suggestcontinue = reqdata.getCommands(SUGGEST_CONT);
-        if (suggestcontinue != null && suggestcontinue.length > 0 && suggestcontinue[0].equals("true")) {
-            CAT.debug("*** Allow continue because SUGGEST_CONT command has been given.");
-            return false;
+        if (suggestcontinue != null && suggestcontinue.length > 0) {
+            if (suggestcontinue[0].equals("true")) {
+                CAT.debug("*** Allow continue because SUGGESTCONT command is 'true'.");
+                return false;
+            } else if (suggestcontinue[0].equals("false")) {
+                CAT.debug("*** Disallow continue because SUGGESTCONT command is 'false'.");
+                return true;
+            }
         }
         
         if (!is_splitted) splitIWrappers();
