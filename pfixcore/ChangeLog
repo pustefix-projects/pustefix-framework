@@ -1,13 +1,13 @@
 2004-07-26 Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/PfixServletRequest.java: removed newline for
-        perf-logging.
-        * src/de/schlund/pfixxml/ServletManager.java(getExceptionConfigForThrowable):
-        log classnotfound-exceptions.
-        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java:
-        ignore all exceptions when calling session-values.toString. This leads
-        to a strange behaviour when having a 'normal' exception and also an
-        exceptions in a toString-method in a contextresource.
+	* src/de/schlund/pfixxml/PfixServletRequest.java: removed newline for
+	perf-logging.
+	* src/de/schlund/pfixxml/ServletManager.java(getExceptionConfigForThrowable):
+	log classnotfound-exceptions.
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java:
+	ignore all exceptions when calling session-values.toString. This leads
+	to a strange behaviour when having a 'normal' exception and also an
+	exceptions in a toString-method in a contextresource.
 
 2004-07-26 Michael Hartmeier  <mhm@schlund.de>
 	* project.properties
@@ -145,30 +145,30 @@
 
 2004-07-19  Benjamin Reitzammer <benjamin@schlund.de>
 
-    * added src/de/schlund/pfixcore/util/XsltCustomWebXmlTask.java
-    * added example/core/conf/web.xml
-    * added example/core/build/create_customtomcatweb.xsl
-    when the XsltCustomWebXmlTask is used instead of the XsltWebXmlTask, it is
-    detected at build time, if a project has a custom web.xml in it's conf folder.
-    If this is the case, this custom web.xml is used as a source document for the
-    transformation with create_customtomcatweb.xsl. If there is no custom web.xml
-    in the project's conf folder, the web.xml file in conf/core will be used as
-    source document.
+	* added src/de/schlund/pfixcore/util/XsltCustomWebXmlTask.java
+	* added example/core/conf/web.xml
+	* added example/core/build/create_customtomcatweb.xsl
+	when the XsltCustomWebXmlTask is used instead of the XsltWebXmlTask, it is
+	detected at build time, if a project has a custom web.xml in it's conf folder.
+	If this is the case, this custom web.xml is used as a source document for the
+	transformation with create_customtomcatweb.xsl. If there is no custom web.xml
+	in the project's conf folder, the web.xml file in conf/core will be used as
+	source document.
 
 2004-07-13  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/PerfEventType.java: removed
-        get/setMessage method. Added get/setPage and
-        get/setHandlingClass instead.
-        * src/de/schlund/pfixxml/PfixServletRequest.java:
-        improved perfstat-logging. see above.
-        * src/de/schlund/pfixxml/ServletManager.java
-        * src/de/schlund/pfixxml/AbstractXMLServer.java
-        * src/de/schlund/pfixcore/workflow/app/StaticState.java
-        * src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java
-        * src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
-        * src/de/schlund/pfixcore/workflow/Context.java:
-        adjusted perflogging-calls to above changes.
+	* src/de/schlund/pfixxml/PerfEventType.java: removed
+	get/setMessage method. Added get/setPage and
+	get/setHandlingClass instead.
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+	improved perfstat-logging. see above.
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/Context.java:
+	adjusted perflogging-calls to above changes.
 
 2004-07-13  Jens Lautenbacher  <jtl@schlund.de>
 

@@ -33,21 +33,20 @@
   
   <section name="Development news">
   
-  <p>Big news: We have replaced the Java applet based editing area
-  with one based completely on JavaScript. Now we finally have a solid
-  foundation to build upon. The new editing area has not many
-  additional features for the time being, but this will change.  For
-  now,</p>
-  <ul>
-    <li>The syntax highlighting should just work.</li>
-    <li>You can indent a line or a selected region by pressing TAB.</li>
-    <li>For reasonably sized include parts, it's much faster.</li>
-  </ul>
+  <p><b>Current release: 0.6.6</b></p>
 
-  <p>Other stuff we were working on was mostly refactoring the code on
-  our way to XSLT 2.0 and trying to move closer to the usual webapp
-  layout of J2EE applications. This is much a work in progress, at the
-  moment we have cut a branch SAXON_8 where all this work currently lives.
+  <p>
+    We replaced the tomcat 4.1.x series with tomcat 5.0.x. Also, we
+    now ship the complete tomcat package as it is released on
+    jakarta. It resides in ./lib/tomcat/jakarta-tomcat-5.0.27.tar.gz
+    and is unpacked during the build process. This makes it much
+    easier to update to a new tomcat version because not all of the
+    expanded tomcat package is in CVS. 
+  </p>
+
+  <p>Currently we ship the tomcat package together with the skeleton
+  package. Probably we will stop doing this with the next version and
+  have the user download a matching tomcat version themselves.
   </p>
   
   <subsection name="Changes">
