@@ -46,14 +46,18 @@ to use them:
 
 <properties>
 
-  <servletinfo>                                               
-    <depend>/path/to/the/depend.xml</depend>                  <!-- mandatory -->
-    <name>A_UNIQUE_NAME_FOR_THE_SERVLET</name>                <!-- mandatory -->
-    <prohibitedit>false</prohibitedit>                        <!-- needs to be set to "false"
+  <servletinfo depend="rel-path/to/the/depend.xml" name="A_UNIQUE_NAME_FOR_THE_SERVLET">
+  <!-- @depend and @name are mandatory!. if @depend starts with a '/' the value is used
+       unchanged, otherwise (which is the normal case) it's interpreted as a path relative
+       to the docroot -->
+    <editmode  allow="true"/>                                 <!-- @allow needs to be set to "true"
                                                                    if you want to be able to use 
-                                                                   the pustefix editor -->
-    <sslneeded>true</sslneeded>                               <!-- must be set to "true" if the 
-                                                                   servlet wants to run under SSL -->
+                                                                   the pustefix editor. The whole node is optional -->
+    <ssl       force="true"/>                                 <!-- @force must be set to "true" if the 
+                                                                   servlet needs to run under SSL. The whole
+                                                                   node is optional -->
+    <adminmode watch="A_NAME" page="A_PAGE"/>                 <!-- @watch and @page must both be given if the (optional)
+                                                                   <adminmode> node is used at all. -->
   </servletinfo>
   
   <context defaultflow="A_FLOW_NAME" class="A_CONTEXT_CLASS authpage="AUTHENTIFICATION_PAGE">

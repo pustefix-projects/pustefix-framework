@@ -1,9 +1,7 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <servletinfo>
-    <depend><cus:docroot/>sample1/conf/depend.xml</depend>
-    <servletname>pfixcore_project:sample1::servlet:config</servletname>
-    <prohibitedit>false</prohibitedit>
+  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
+    <editmode  allow="true"/>
     <adminmode watch="default" page="admin"/>
   </servletinfo>
 
