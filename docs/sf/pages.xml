@@ -24,6 +24,7 @@
     <page name="editor_dynincludes" title="DynIncludes"/>
     <page name="editor_search" title="Search"/>
     <page name="editor_docs" title="Docs"/>
+    <page name="editor_admin" title="Administration"/>
   </page>
   
 </pagedef>

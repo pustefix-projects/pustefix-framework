@@ -9,8 +9,14 @@
           The <i>Search</i> page of the <pustefix/> editor.
         </stdimg>
       </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td></td>
+          </tr>
+        </table>
+      </td> 
     </tr>
-  
   </table>
 
 

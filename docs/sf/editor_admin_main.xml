@@ -1,0 +1,86 @@
+<div>
+  <h1>Administration of the <pustefix/> Editor</h1>
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_prodsel_admin.png">
+          The <i>Products and users</i> page for an administrator.
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              If you are logged in as an administrator you will see that there is an additional box
+              in the lower part of the page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Useradministration is explained in the section below.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Pressing the <i>Prohibit new logins</i> button will prohibit all new login attempts. 
+            </td>
+          </tr>
+        </table> 
+      </td>
+    </tr>
+  </table>
+
+  <h2>Managing users</h2>
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_useradmin.png">
+          The <i>Useradmin</i> page.
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              Here you can create, edit and delete users. 
+            </td>
+          </tr>
+          <tr>
+            <td>
+              To create a new user enter the new userid in the <i>Add new user</i> section 
+              and press the <i>Create new user</i>button.
+              After this the page with user data appears (see below).
+            </td>
+          </tr>
+          <tr>
+            <td>
+              To edit a user press the <i>Edit</i> button in the userlist. After this the page 
+              with user data appears (see below). The page will be already filled in with the current
+              user data.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_useredit.png">
+          The <i>useredit</i> page when editing the standard <i>CMS User</i>.
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              TODO 
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>  
+
+</div>
