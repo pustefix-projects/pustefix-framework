@@ -22,7 +22,6 @@ package de.schlund.pfixxml.jmx;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
-import de.schlund.util.FactoryInit;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ import org.apache.log4j.Category;
 /** 
  * Jmx Server, started via factory.init
  */
-public class JmxServer implements FactoryInit, JmxServerMBean {
+public class JmxServer implements JmxServerMBean {
     private static Category CAT = Category.getInstance(JmxServer.class.getName());
 
     private static JmxServer instance = new JmxServer();

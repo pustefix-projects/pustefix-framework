@@ -21,8 +21,6 @@ package de.schlund.pfixxml.exceptionhandler;
 
 import de.schlund.pfixxml.PfixServletRequest;
 
-import de.schlund.util.FactoryInit;
-
 import java.util.Properties;
 
 
@@ -36,7 +34,7 @@ import java.util.Properties;
  * @author <a href="mailto: jtl@schlund.de">Jens Lautenbacher</a>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
-public class ExceptionHandler implements FactoryInit {
+public class ExceptionHandler {
 
     //~ Instance/static variables ..............................................
 

@@ -44,23 +44,6 @@ or delete the DOCTYPE definition -->
     <ant dir="${dir.jni}" target="dist"/>
   </target>
 
-  <target name="res.jar">
-    <!-- As version might have been updated,
-         delete all *-res.jar files but the current *-res.jar version -->
-    <delete>
-      <fileset
-       dir="${dir.projects}/servletconf/tomcat/shared/lib"
-       includes="*-res.jar"
-       excludes="${project.name}-${project.version}-res.jar"
-       />
-    </delete>
-    <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
-    <jar jarfile="${dir.projects}/servletconf/tomcat/shared/lib/${project.name}-${project.version}-res.jar">
-      <fileset dir="${basedir}" includes="META-INF/**"/>
-      <fileset dir="${dir.res}"/>
-    </jar>
-  </target>
-
   <!-- TODO: always compiles before invoking skel.ant-tasks? -->
   <target name="ant-tasks" depends="ant-tasks-compile, skel.ant-tasks"/>
     
@@ -178,6 +161,7 @@ or delete the DOCTYPE definition -->
     <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
       <tarfileset dir="${dir.projects}/core" prefix="core"/>
+      <tarfileset dir="${dir.projects}/common/" prefix="core/tmp"/>
     </tar>
     <delete file="${dir.projects}/core/${name.cvsautotag}"/>
   </target>
@@ -192,7 +176,6 @@ or delete the DOCTYPE definition -->
         <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>
         <exclude name="de/schlund/pfixcore/example/DemoTextHandler.class"/>
       </fileset>
-      <fileset dir="${dir.res}"/>
       <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
     </jar>
   </target>
@@ -220,7 +203,7 @@ or delete the DOCTYPE definition -->
     <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
     </exec>
   </target>
-
+    
 </project>
 
 <!--

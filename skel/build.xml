@@ -20,7 +20,6 @@ or delete the DOCTYPE definition -->
   <property name="dir.src"                  location="src"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
-  <property name="dir.res"                  location="res"/>
   <property name="dir.skel"                 location="skel"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.metainf"              location="META-INF"/>
@@ -109,7 +108,6 @@ or delete the DOCTYPE definition -->
     <fileset dir="${dir.lib}" includes="*.jar"/>
     <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet-api.jar"/>
     <pathelement location="${dir.build}"/>
-    <pathelement location="${dir.res}"/>
   </path>
 
   <target name="init" depends="properties, init-data">
@@ -172,7 +170,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice, statusmessages_xml"
+          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -204,8 +202,16 @@ or delete the DOCTYPE definition -->
      excludes="${excludes.src}, ${exclude.examples}"
      >
     </javac>
+    <available file="res" type="dir" property="has.resources" />
+    <antcall target="resources"/>
   </target>
 
+  <target name="resources" if="has.resources">
+    <copy todir="${dir.build}">
+      <fileset dir="res"/>
+    </copy>
+  </target>
+    
   <target name="post-compile" depends="compile">
     <!-- general purpose hook for build files importing this build file -->
   </target>
@@ -228,15 +234,6 @@ or delete the DOCTYPE definition -->
     <ant dir="${dir.jni}" target="clean"/>
   </target>
 
-  <target name="res.jar">
-    <!-- don't delete the *-res.jar file here, let it be updated by task jar -->
-    <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
-    <jar jarfile="${dir.projects}/servletconf/tomcat/shared/lib/${project.name}-res.jar">
-      <fileset dir="${basedir}" includes="META-INF/**"/>
-      <fileset dir="${dir.res}"/>
-    </jar>
-  </target>
-
   <target name="installjars" depends="tomcat.dir.opt">
     <!-- Setting absolute links instead of relative to avoid extra property for dir.build
          as ${dir.build} is specified as location it always resolves to an absolute path;
@@ -252,7 +249,6 @@ or delete the DOCTYPE definition -->
       <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
       <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
     </exec>
-    <antcall target="res.jar"/>
     <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
     <exec executable="sh">
       <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
@@ -375,6 +371,13 @@ or delete the DOCTYPE definition -->
     <untar dest="${dir.projects}" compression="gzip" overwrite="true">
       <fileset refid="id.fs.pfixcore_data_tgz"/>
     </untar>
+    <java classname="de.schlund.pfixcore.util.Merge" classpathref="cp.classpath">
+      <arg file="${dir.projects}/common/dyntxt/statusmessages.xml"/>
+      <arg file="${dir.projects}/core/tmp/dyntxt/statusmessages.xml"/>
+      <arg value="/include_parts/nosuchelement"/>
+      <arg value="/include_parts/part/product[@name='default']/lang[@name='default']"/>
+    </java>
+    <delete dir="${dir.projects}/core/tmp"/>
     <touch file="${dir.projects}/core/TIMESTAMP"></touch>
   </target>
 
@@ -524,14 +527,6 @@ or delete the DOCTYPE definition -->
       <param name="machine" expression="${machine}"/>
       <param name="mode"    expression="${makemode}"/>
     </pfx-xslt>
-  </target>
-
-  <target name="statusmessages_xml" depends="compile, propfiles" description="creates common/dyntxt/statusmessages.xml">
-    <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
-      <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
-      <arg value="${dir.projects}/common/dyntxt/statusmessages.xml"/>
-      <classpath refid="cp.classpath"/>
-    </java>
   </target>
 
   <target name="pfixlog_xml" depends="ant-tasks" description="creates common/conf/pfixlog.xml from common/conf/pfixlog.xml.in with core/build/create_log4j_config.xsl">

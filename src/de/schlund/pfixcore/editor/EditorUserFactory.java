@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.editor;
 import java.util.Properties;
 
-import de.schlund.util.FactoryInit;
 
 /**
  * EditorUserFactory.java
@@ -33,7 +32,7 @@ import de.schlund.util.FactoryInit;
  *
  */
 
-public class EditorUserFactory implements FactoryInit {
+public class EditorUserFactory {
     private static EditorUserFactory      instance      = new EditorUserFactory();
 
     public static EditorUserFactory getInstance() {
