@@ -42,6 +42,8 @@ a:hover { background: #ee9999; color: black; }
 
 code {  background-color: #ffffee; font-family: "Anadale Mono", "Courier New", "Courier", monospace, font-size: 11px; }
 
+ul { margin-right: 30px; }
+
 h1 { 
   background-color: #6688bb; color: white; font-family: arial, helvetica;
   font-weight: bold; font-size: 16px; margin-top: 10px; }
@@ -71,7 +73,7 @@ h2 {
 
 .stdimg { margin: 10px; text-align: center; }
 
-.stdimg-img { text-align: left; background-color: white; } 
+.stdimg-img { text-align: center; background-color: white; } 
 .stdimg-txt { background-color: black; color: white; text-align: left; padding: 5px; font-size: 10px; } 
 
 .xmlcodeOFF { text-align: center; border: 1px solid black; }
