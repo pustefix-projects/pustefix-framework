@@ -56,6 +56,7 @@ public class Context implements AppContext {
     private final static String   ADMINMODE         = "context.adminmode";
     private final static String   AUTH_PROP         = "authcontext.authpage";
     private final static String   JUMPPAGE          = "__jumptopage";
+    private final static String   JUMPPAGEFLOW      = "__jumptopageflow";
     
     // from constructor
     private String     name;
@@ -80,8 +81,9 @@ public class Context implements AppContext {
     // the request state
     private PfixServletRequest currentpreq;
     private PageRequest        currentpagerequest;
-    private PageRequest        jumptopagerequest;
     private PageFlow           currentpageflow;
+    private PageRequest        jumptopagerequest;
+    private PageFlow           jumptopageflow;
     private boolean            on_jumptopage;
     
     private HashMap navigation_visible = null;
@@ -121,6 +123,7 @@ public class Context implements AppContext {
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         currentpreq       = preq;
         jumptopagerequest = null;
+        jumptopageflow    = null;
         on_jumptopage     = false;
         
         if (needs_update) {
@@ -227,14 +230,31 @@ public class Context implements AppContext {
             jumptopagerequest = page;
         } else {
             LOG.warn("*** Trying to set jumppage " + pagename + ", but it's not defined ***");
+            jumptopagerequest = null;
         }
-        
     }
     
     public PageRequest getJumpToPageRequest() {
         return jumptopagerequest;
     }
 
+    public void setJumpToPageFlow(String flowname) {
+        if (jumptopagerequest != null) {
+            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname);
+            if (tmp.containsPageRequest(jumptopagerequest)) {
+                jumptopageflow = tmp;
+            } else {
+                jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest);
+            }
+        } else {
+            jumptopageflow = null;
+        }
+    }
+
+    public PageFlow getJumpToPageFlow() {
+        return jumptopageflow;
+    }
+    
     /**
      * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returnes true if the pagerequest has already been jumped to internally after a successful submit.
@@ -507,8 +527,9 @@ public class Context implements AppContext {
         } else if (jumptopagerequest != null) {
             LOG.debug("* [" + currentpagerequest + "] signalled success, jumptopage is set as [" + jumptopagerequest + "].");
             currentpagerequest = jumptopagerequest;
-            currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest);
+            currentpageflow    = jumptopageflow;
             jumptopagerequest  = null; // we don't want to recurse infinitely
+            jumptopageflow     = null; // we don't want to recurse infinitely
             on_jumptopage      = true; // we need this information to supress the interpretation of
                                        // the request as one that submits data. See StateImpl,
                                        // methods isSubmitTrigger & isDirectTrigger  
@@ -519,7 +540,7 @@ public class Context implements AppContext {
             // We need to re-check the authorisation because the just handled submit could have changed the authorisation status.
             document = runPageFlow();
         } else {
-            throw new XMLException("*** ERROR! *** current Stateflow == null!");
+            throw new XMLException("*** ERROR! *** [" + currentpagerequest + "] signalled success, but current PageFlow == null!");
         }
         return document;
     }
@@ -642,7 +663,14 @@ public class Context implements AppContext {
         RequestParam jump = currentpreq.getRequestParam(JUMPPAGE);
         if (jump != null && !jump.getValue().equals("")) {
             setJumpToPageRequest(jump.getValue());
+            RequestParam jumpflow = currentpreq.getRequestParam(JUMPPAGEFLOW);
+            if (jumpflow != null && !jumpflow.getValue().equals("")) {
+                setJumpToPageFlow(jumpflow.getValue());
+            }
         }
+
+        // We already have a jumptopgeflow set here if the jumptopage isn't nil,
+        // but we allow to set a jumptopageflow directly. 
     }
 
     private void addNavigation(Navigation navi, SPDocument spdoc) throws Exception {
