@@ -201,6 +201,8 @@ public abstract class ServletManager extends HttpServlet {
                                 }
                             } else {
                                 CAT.debug("*** Found NO matching cookie at all. ***");
+                                StringBuffer sendcookies = new StringBuffer();
+                                
                                 CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
                                           "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
                                 session.invalidate();
@@ -492,13 +494,18 @@ public abstract class ServletManager extends HttpServlet {
     private boolean doCookieTest(HttpServletRequest req, HttpServletResponse res) {
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
-            return true;
-        } else {
-            Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
-            probe.setPath("/");
-            res.addCookie(probe);
-            return false;
+            for (int i = 0; i < cookies.length ; i++) {
+                Cookie cookie = cookies[i];
+                if (cookie.getName().equals(TEST_COOKIE)) {
+                    return true;
+                }
+            }
+            CAT.debug("*** Client sends cookies, but not our test cookie! ***");
         }
+        Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
+        probe.setPath("/");
+        res.addCookie(probe);
+        return false;
     }
 
     private Cookie getSecureSessionCookie(HttpServletRequest req, String id) {
