@@ -6,6 +6,7 @@
   <page name="overview" title="Overview">
     <page name="xml" title="XML/XSLT"/>
     <page name="java" title="Java framework"/>
+    <page name="context" title="Context &amp; States"/>
   </page>
   <page name="udocs" title="Configuration">
     <page name="project" title="Project definition"/>

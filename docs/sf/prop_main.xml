@@ -270,8 +270,9 @@
                 an <code>authhandler</code> child node.</td>
             </tr>
           </table>
+          <a name="resource"/>
         </xmlcodeOFF>
-        
+
         <resource class="AContextResource">
           <xmlcodeOFF>
             <div class="comment">
@@ -383,7 +384,9 @@
           </table>
         </xmlcodeOFF>
       </pageflow>
-      <xmlcodeOFF/>
+      <xmlcodeOFF>
+        <a name="pagerequest"/>
+      </xmlcodeOFF>
       <pagerequest name="APageName" nostore="true|false">
         <xmlcodeOFF>
           <table class="stdtable">
@@ -672,7 +675,7 @@
             </table>
           </xmlcodeOFF>
         </output>
-              
+        <xmlcodeOFF><a name="param"/></xmlcodeOFF>    
         <param name="APropertyKey">AValue</param>
         <xmlcodeOFF>
           <div class="comment">
