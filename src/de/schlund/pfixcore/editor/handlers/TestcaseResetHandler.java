@@ -11,12 +11,9 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Handler for resetting the ContextResource.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcaseResetHandler implements IHandler {
 

@@ -1,3 +1,32 @@
+2003-04-08 Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml:
+	application specific changes
+
+	* src/de/schlund/pfixxml/testenv/ConsoleTestClient.java
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/RecordManagerException.java
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java
+	* src/de/schlund/pfixxml/testenv/TestClient.java
+	* src/de/schlund/pfixxml/testenv/TestClientException.java
+	* src/de/schlund/pfixxml/testenv/TestcasePlaybackResult.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java:
+	smaller changes, added java-doc
+
+	* example/testenv/log4jconf.xml: added simple log4j config
+	for ConsoleTestClient
+
+	* docs/Pustefix_testing_guide.txt: added and started
+
 2003-04-03 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get): Track the

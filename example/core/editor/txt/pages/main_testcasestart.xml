@@ -5,7 +5,7 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <div class="doc_div"><h3>You have selected to following testcases:</h3></div>
+        <b>You have selected to following testcases:</b>
         <table>
           <ixsl:for-each select="/formresult/testcases/selected/testcase">
           <tr>

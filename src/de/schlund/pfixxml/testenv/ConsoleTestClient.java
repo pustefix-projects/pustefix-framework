@@ -1,36 +1,44 @@
 package de.schlund.pfixxml.testenv;
 
+import java.util.ArrayList;
+
 import gnu.getopt.Getopt;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Console application which plays-back recorded testcases and
+ * prints the result on a console. Uses functionality from class {@link TestClient}.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class ConsoleTestClient {
     private TestClient tc;
+    private String log4j;
+    private String src_dir = null;
+    private String tmp_dir = null;
+    private String style_dir = null;
     private static int  LOOP_COUNT = 1;
-    private static Category CAT = Category.getInstance(TestClient.class.getName());
+    private static Category CAT = Category.getInstance(ConsoleTestClient.class.getName());
+    
     public static void main(String[] args) {
-        CAT.setPriority(Priority.DEBUG);
         ConsoleTestClient ctc = null;
         
         try {
             ctc = new ConsoleTestClient();
             ctc.tc = new TestClient();
-            CAT.info("|====================================================|");
-            CAT.info("|               Pustefix Test TextClient             |");
-            CAT.info("|====================================================|");
             if (! ctc.scanOptions(args)) {
                 ctc.printUsage();
                 return;
             }
+
+            DOMConfigurator.configure(ctc.log4j);
+            ctc.tc.setOptions(ctc.src_dir, ctc.tmp_dir, ctc.style_dir);
+            CAT.info("|====================================================|");
+            CAT.info("|               Pustefix Test ConsoleClient          |");
+            CAT.info("|====================================================|");
+            
             CAT.info("\n Starting test NOW!\n");
             for (int i = 0; i < LOOP_COUNT; i++) {
                 TestcasePlaybackResult result = ctc.tc.makeTest();
@@ -50,17 +58,17 @@ public class ConsoleTestClient {
     }
 
     private void printUsage() {
-        CAT.warn("TestClient -d [recorded dir] -t [temporary dir] -s [stylesheet dir] -q -v");
+        System.out.println("ConsoleTestClient -l [log4jconfig] -d [recorded dir] -t [temporary dir] -s [stylesheet dir]");
     }
     
      private boolean scanOptions(String[] args) throws TestClientException {
-        String src_dir = null;
-        String tmp_dir = null;
-        String style_dir = null;
-        Getopt getopt = new Getopt("TestClient", args, "d:t:s:qv");
+       
+        Getopt getopt = new Getopt("TestClient", args, "l:d:t:s:qv");
         int    c = 0;
         while ((c = getopt.getopt()) != -1) {
             switch (c) {
+                case 'l':
+                    log4j = getopt.getOptarg();
                 case 'd':
                     src_dir = getopt.getOptarg();
                     break;
@@ -70,25 +78,40 @@ public class ConsoleTestClient {
                 case 's':
                     style_dir = getopt.getOptarg();
                     break;
-                case 'q':
+                /*case 'q':
                     CAT.setPriority(Priority.WARN);
                     break;
                 case 'v':
                     CAT.setPriority(Priority.DEBUG);
-                    break;
+                    break;*/
                 default:
             }
         }
         if (src_dir == null || src_dir.equals("") || tmp_dir == null || tmp_dir.equals("")
-            || style_dir == null || style_dir.equals("")) {
+            || style_dir == null || style_dir.equals("") || log4j == null || log4j.equals("")) {
             return false;
         } else {
-            tc.setOptions(src_dir, tmp_dir, style_dir);
             return true;
         }
     }
   
     private void printResult(TestcasePlaybackResult result) {
+        CAT.info("*** Result for testcase: ***");
+        ArrayList steps = result.getStepResults();
+        for(int i=0; i<steps.size(); i++) {
+            TestcaseStepResult step = (TestcaseStepResult) steps.get(i);
+            CAT.info("Step number "+i);
+            CAT.info("  Statuscode : "+step.getStatusCode());
+            String diff = step.getDiffString();
+            if(diff == null) {
+                diff = "NONE";
+            } else if(diff.equals("")) {
+                diff = ":-)";
+            }
+            
+            CAT.info("  Diff       : "+diff);
+            CAT.info("");
+        } 
     }
     
 }

@@ -3,16 +3,14 @@ package de.schlund.pfixxml.testenv;
 import java.util.ArrayList;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Class encapsulating the result of a whole testcase after playback.
+ * Aggregates serveral {@link TestcaseStepResult} objects.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcasePlaybackResult {
     private ArrayList stepResults;
-
+    
     /**
      * Constructor for TestcasePlaybackResult.
      */
@@ -21,13 +19,17 @@ public class TestcasePlaybackResult {
     }
 
     /**
-     * Returns the stepResults.
-     * @return ArrayList
+     * Returns the results for all steps in the testcase.
+     * @return ArrayList containg TestcaseStepResult objects.
      */
     public ArrayList getStepResults() {
         return stepResults;
     }
 
+    /**
+     * Add a TestcaseStepResult object to the Testcase result.
+     * @param the TestcaseStepResult to be added
+     */
     public void addTestcaseStepResult(TestcaseStepResult step) {
         stepResults.add(step);
     }
