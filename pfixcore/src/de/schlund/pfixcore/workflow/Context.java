@@ -377,12 +377,16 @@ public class Context implements AppContext {
         }
     }
 
-    public boolean isCurrentPageRequestInCurrentFlow() {
-        if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
+    private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
+        if (pageflow != null && pageflow.containsPageRequest(page)) {
             return true;
         } else {
             return false;
         }
+    }
+    
+    public boolean isCurrentPageRequestInCurrentFlow() {
+        return isPageRequestInFlow(currentpagerequest, currentpageflow);
     }
 
     public boolean isCurrentPageFlowRequestedByUser() {
@@ -628,19 +632,20 @@ public class Context implements AppContext {
                 document = documentFromFlow();
             } else if (currentpageflow != null) {
                 LOG.debug("* [" + currentpagerequest + "] signalled success, starting page flow process");
-                document = runPageFlow();
+                document = runPageFlow(false);
             } else {
                 throw new XMLException("*** ERROR! *** [" + currentpagerequest + "] signalled success, but current page flow == null!");
             }
         } else {
             LOG.debug("* Page is determined from flow [" + currentpageflow + "], starting page flow process");
-            document = runPageFlow();
+            LOG.debug("* Current page: [" + currentpagerequest + "]");
+            document = runPageFlow(true);
         }
         return document;
     }
 
 
-    private SPDocument runPageFlow() throws Exception {
+    private SPDocument runPageFlow(boolean startwithflow) throws Exception {
         ResultDocument resdoc   = null;
         // We need to re-check the authorisation because the just handled submit could have changed the authorisation status.
         SPDocument     document = checkAuthorization(false);
@@ -655,8 +660,20 @@ public class Context implements AppContext {
             FlowStep    step = workflow[i];
             PageRequest page = step.getPageRequest();
             if (page.equals(saved)) {
-                LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
-                after_current = true;
+                if (startwithflow && checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
+                    LOG.debug("=> [" + page + "]: STARTWITHFLOW: Pageflow must stop here at last.");
+                    currentpagerequest = page;
+                    currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
+                    document = documentFromCurrentStep().getSPDocument();
+                    if (document == null) {
+                        throw new XMLException("*** FATAL: [" + page + "] returns a 'null' SPDocument! ***");
+                    }
+                    LOG.debug("* [" + page + "] returned document => show it.");
+                    break;
+                } else {
+                    LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
+                    after_current = true;
+                }
             } else if (!checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                 LOG.debug("* Skipping step [" + page + "] in page flow (state is not accessible...)");
                 // break;
@@ -666,7 +683,7 @@ public class Context implements AppContext {
                 if (after_current && step.wantsToStopHere()) {
                     LOG.debug("=> [" + page + "]: Page flow wants to stop, getting document now.");
                     currentpagerequest = page;
-                    page.setStatus(PageRequestStatus.WORKFLOW);
+                    currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
                     resdoc             = documentFromCurrentStep();
                     document           = resdoc.getSPDocument();
                     if (document == null) {
@@ -677,7 +694,7 @@ public class Context implements AppContext {
                 } else if (checkNeedsData(page, PageRequestStatus.WORKFLOW)) {
                     LOG.debug("=> [" + page + "]: needsData() returned TRUE, leaving page flow and getting document now.");
                     currentpagerequest = page;
-                    page.setStatus(PageRequestStatus.WORKFLOW);
+                    currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
                     resdoc             = documentFromCurrentStep();
                     document           = resdoc.getSPDocument();
                     if (document == null) {
@@ -692,7 +709,14 @@ public class Context implements AppContext {
             }
         }
         if (document == null) {
-            PageRequest finalpage = currentpageflow.getFinalPage();
+            PageRequest finalpage = null;
+            if (startwithflow) {
+                finalpage = saved;
+                LOG.debug("=> STARTWITHFLOW is active, using original target page [" + saved + "] as final page");
+            } else {
+                finalpage = currentpageflow.getFinalPage();
+                LOG.debug("=> Pageflow [" + currentpageflow + "] defines page [" + finalpage + "] as final page");
+            }
             if (finalpage == null) {
                 throw new XMLException("*** Reached end of page flow '" + currentpageflow.getName() + "' " +
                                        "with neither getting a non-null SPDocument or having a FINAL page defined ***");
