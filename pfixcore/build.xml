@@ -44,6 +44,7 @@
     <property name="name.testskel"          value="testskel"/>
     <property name="dir.testskel"           location="${name.testskel}"/>
     <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
+    <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
     <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
     <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
     <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
@@ -174,7 +175,7 @@
     </target>
 
     <target name="all" 
-        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
+        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, newprjlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
         description="builds all files required to run"
         />    
 
@@ -404,7 +405,7 @@
                     <mapper type="glob" from="*.prop" to="*.prop.in"/>
                 </present>
             </fileset>
-            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
+            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
         </delete>
         <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     </target>
@@ -483,6 +484,8 @@
             <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
             <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
             <tarfileset dir="${basedir}" includes="INSTALL" prefix="skel"/>
+            <tarfileset dir="${basedir}" includes="newproject.sh" prefix="skel"/>
+            <tarfileset dir="${dir.toconf}" includes="newproject.prop.in newprjlog.xml.in" prefix="skel/projects/common/conf"/>
         </tar>
     </target>    
 
@@ -537,7 +540,7 @@
     <target name="check-permissions">
         <apply executable="chmod" os="Linux">
             <arg line="a+x"/>
-            <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
+            <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
         </apply>
     </target>
     
@@ -700,6 +703,18 @@
             <param name="mode"    expression="${makemode}"/>
         </pfx-xslt>
     </target>
+    
+      <target name="newprjlog_xml" depends="ant-tasks" description="creates common/conf/newprjlog.xml from common/conf/newprjlog.xml.in with core/build/create_log4j_config.xsl">
+            <pfx-xslt
+                style="${dir.projects}/core/build/create_log4j_config.xsl"
+                srcdir="${dir.projects}"
+                destdir="${dir.projects}"
+                includes="common/conf/newprjlog.xml.in"
+                extension=""
+                >
+                <param name="docroot" expression="${dir.docroot}"/>
+            </pfx-xslt>
+            </target>
     
     <target name="products_prj" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_products.xsl">
         <pfx-xslt
