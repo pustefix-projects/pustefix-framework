@@ -663,8 +663,6 @@ public abstract class ServletManager extends HttpServlet {
                       exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
                   } else if ( "page".equals(attrName) ) {
                       exConf.setPage(propValue);
-                  } else if ( "jms".equals(attrName) ) {
-                      exConf.setJms(propValue);
                   } else if ( "processor".equals(attrName) ) {
                       Class procClass = Class.forName(propValue);
                       ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();

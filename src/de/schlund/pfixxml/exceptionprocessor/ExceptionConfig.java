@@ -29,7 +29,6 @@ public class ExceptionConfig {
     //~ Instance/static variables ..............................................
 
     private String type = null;
-    private String jms  = null;
     private String page = null;
     private boolean forward  = false;
     private ExceptionProcessor processor = null;
@@ -50,7 +49,6 @@ public class ExceptionConfig {
      *   <li>{@link #type type} is not allowed to be null or an empty String</li>
      *   <li>{@link #page page} is not allowed to be null or an empty String if,
      *       {@link #forward forward} is true</li>
-     *   <li>if {@link #jms jms} is set it's not allowed to be null or an empty String</li>
      * </ul>
      */
      public boolean validate() {
@@ -96,22 +94,7 @@ public class ExceptionConfig {
 		this.processor = processor;
 	}
 
-    /**
-	 * Returns the value of jms.
-	 */
-	public String getJms() {
-		return jms;
-	}
-
-	/**
-	 * Sets the value of jms.
-	 * @param jms The value to assign jms.
-	 */
-	public void setJms(String jms) {
-		this.jms = jms;
-	}
-
-    /**
+  /**
 	 * Returns the value of page.
 	 */
 	public String getPage() {
@@ -127,7 +110,7 @@ public class ExceptionConfig {
 	}
 
 
-    /**
+  /**
 	 * Returns the value of forward.
 	 */
 	public boolean getForward() {
@@ -148,7 +131,6 @@ public class ExceptionConfig {
         sb.append("]\n processor: [").append(processor);
         sb.append("]\n page: [").append(page).append("], forward: ");
         sb.append(forward ? "[true]" : "[false]");
-        sb.append(", jms: [").append(jms).append("]\n");
         return sb.toString();
     }
 
