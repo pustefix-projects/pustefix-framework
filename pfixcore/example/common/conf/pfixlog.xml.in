@@ -67,9 +67,21 @@
     </layout>
   </appender>
  
+  <appender name="LOGGER_EDITOR_PERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-editor-perf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+    </layout>
+  </appender>
+ 
   <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
+  <category name="EDITOR_PERF" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_EDITOR_PERF"/>
+  </category>
   
   <category name="de.schlund.pfixcore.workflow.app.RequestDataImpl" additivity="false">
     <priority value="WARN"/>

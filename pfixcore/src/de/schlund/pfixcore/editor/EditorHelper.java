@@ -30,6 +30,7 @@ import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import de.schlund.pfixxml.testenv.XMLSerializeUtil;
 import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import org.apache.log4j.*;
@@ -52,7 +53,10 @@ import org.w3c.dom.*;
 public class EditorHelper {
     private static Category CAT = Category.getInstance(EditorHelper.class.getName());
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-
+    private static String EDITOR_PERF = "EDITOR_PERF";
+    private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
+    
+    
     public static void doUpdateForAuxDependency(AuxDependency currinc, TargetGenerator tgen) throws Exception {
         //String path = currinc.getPath();
         TreeSet targets = currinc.getAffectedTargets();
@@ -743,45 +747,47 @@ public class EditorHelper {
         }
     }
 
-    public static HashSet getAffectedProductsForInclude(EditorSessionStatus esess, String path, String part)
+    public static HashSet getAffectedProductsForInclude(AuxDependency current_include)
         throws Exception, XMLException, TransformerException {
-        AuxDependency incprod = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, esess.getProduct().getName());
-        TargetGenerator tgen = esess.getProduct().getTargetGenerator();
-        Element ele = EditorHelper.getIncludePart(tgen, incprod);
-        if (ele == null)
-            throw new XMLException("Include part not found!");
-
-        NodeList nl = XPathAPI.selectNodeList(ele, "./product");
+      
+      
+        String include_prod = current_include.getProduct();      
+            
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();     
+        }
+        
+        
         HashSet affedprod = new HashSet();
 
-        // get all products which also use this include
-        for (int i = 0; i < nl.getLength(); i++) {
-            Element tmp = (Element) nl.item(i);
-            String prod = tmp.getAttribute("name");
-            if (prod == null)
-                continue;
 
-            AuxDependency test = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, prod);
+    
+        EditorProduct[] eprods = null;
+        if (include_prod.equals("default")) {
+            eprods = EditorProductFactory.getInstance().getAllEditorProducts();
+        } else {
+            EditorProduct tmpprod = EditorProductFactory.getInstance().getEditorProduct(include_prod);
+            if (tmpprod != null) {
+                eprods = new EditorProduct[] { tmpprod };
+            }
+        }
 
-            EditorProduct[] eprods = null;
-            if (prod.equals("default")) {
-                eprods = EditorProductFactory.getInstance().getAllEditorProducts();
-            } else {
-                EditorProduct tmpprod = EditorProductFactory.getInstance().getEditorProduct(prod);
-                if (tmpprod != null) {
-                    eprods = new EditorProduct[] { tmpprod };
+        if (eprods != null) {
+            PERF_LOGGER.info("1:"+(System.currentTimeMillis() - start_time));
+            for (int j = 0; j < eprods.length; j++) {
+                EditorProduct epr = eprods[j];
+                TreeSet allinc = epr.getTargetGenerator().getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
+                PERF_LOGGER.info("getDependenciesOfType/" + epr.getName() + "=>" + (System.currentTimeMillis() - start_time));
+                if (allinc.contains(current_include)) {
+                    affedprod.add(epr);
                 }
             }
-
-            if (eprods != null) {
-                for (int j = 0; j < eprods.length; j++) {
-                    EditorProduct epr = eprods[j];
-                    TreeSet allinc = epr.getTargetGenerator().getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
-                    if (allinc.contains(test)) {
-                        affedprod.add(epr);
-                    }
-                }
-            }
+        }
+        
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(EditorHelper.class.getName()+"#getAffectedProductsForInclude: "+length);
         }
 
         return affedprod;
@@ -789,6 +795,11 @@ public class EditorHelper {
 
     /** Get all products which use the image specified by its path */
     public static HashSet getAffectedProductsForImage(String path_to_image) throws Exception {
+        
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();
+        }
         HashSet affected_products = new HashSet();
 
         AuxDependency auxdep = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.IMAGE, path_to_image, null, null);
@@ -810,6 +821,12 @@ public class EditorHelper {
                 affected_products.add(all_products[i]);
             }
         }
+        
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(EditorHelper.class.getName()+"#getAffectedProductsForImage: "+length);
+        }
+        
         return affected_products;
     }
 

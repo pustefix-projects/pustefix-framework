@@ -32,6 +32,7 @@ import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
 
+import org.apache.log4j.Category;
 import org.apache.xpath.XPathAPI;
 import org.w3c.dom.*;
 import java.io.*;
@@ -50,8 +51,16 @@ import javax.xml.transform.TransformerException;
  */
 
 public class IncludesFinalizer extends ResdocSimpleFinalizer {
+    private static String EDITOR_PERF = "EDITOR_PERF";
+    private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
 
     protected void renderDefault(IWrapperContainer container) throws Exception {
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();
+            PERF_LOGGER.info(this.getClass().getName()+"#renderDefault starting ");
+        }
+        
         Context                context     = container.getAssociatedContext();
         ContextResourceManager crm         = context.getContextResourceManager();
         EditorSessionStatus    esess       = EditorRes.getEditorSessionStatus(crm);
@@ -81,17 +90,15 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             EditorHelper.renderAllIncludesForNavigation(searchinc, resdoc, root);
         }
         
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#1: "+length);
+        }
+        
         // Render detailed view of currently selected include
         if (currinclude != null) {
             boolean lock    = false;
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
-            if(allowed) {
-                lock = esess.getLock(currinclude);
-            } else {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("User is not allowed to edit this include. No lock required.");
-                }
-            }
+            
             
             long    mod     = currinclude.getModTime();
             String  path    = currinclude.getPath();
@@ -104,6 +111,22 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
             
+            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
+            //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, path, part);
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+            if(allowed) {
+                lock = esess.getLock(currinclude);
+            } else {
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("User is not allowed to edit this include. No lock required.");
+                }
+            }
+                       
+            
+            if(PERF_LOGGER.isInfoEnabled()) {
+                long length = System.currentTimeMillis() - start_time;
+                PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#2: "+length);
+            }
             // <comment>
             // Here we must handle the case that an editoruser references a
             // new include. When he selects it from the list, it is
@@ -117,8 +140,8 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             if(ele != null ) {
                 // render all affected products for current include
                 Element aff_prods = resdoc.createNode("affectedproducts");
-                HashSet set = EditorHelper.getAffectedProductsForInclude(esess, path, part);
-                for(Iterator iter = set.iterator(); iter.hasNext(); ) {
+                
+                for(Iterator iter = affected_products.iterator(); iter.hasNext(); ) {
                     EditorProduct prod = (EditorProduct) iter.next();
                     String name = prod.getName();
                     Element pr = resdoc.createNode("product");
@@ -128,6 +151,11 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
                 root.appendChild(aff_prods);
             }
             //</comment>
+            if(PERF_LOGGER.isInfoEnabled()) {
+                long length = System.currentTimeMillis() - start_time;
+                PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#3: "+length);
+            }
+            
             
             if (!lock) {
                 try {
@@ -159,6 +187,10 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
 
             elem = resdoc.createSubNode(root, "imageinfo");
             EditorHelper.renderImagesFlatRecursive(currinclude, resdoc, elem);
+        }
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(this.getClass().getName()+"#renderDefault ended: "+length); 
         }
     }
 

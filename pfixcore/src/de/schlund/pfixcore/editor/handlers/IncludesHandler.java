@@ -47,8 +47,15 @@ import org.w3c.dom.*;
 
 public class IncludesHandler extends EditorStdHandler {
     private static Category CAT = Category.getInstance(IncludesHandler.class.getName());
-
+    private static String EDITOR_PERF = "EDITOR_PERF";
+    private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
+        
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();
+            PERF_LOGGER.info(this.getClass().getName()+"#handleSubmitted starting");
+        }
         ContextResourceManager crm      = context.getContextResourceManager();
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         Includes               includes = (Includes) wrapper;
@@ -66,7 +73,14 @@ public class IncludesHandler extends EditorStdHandler {
 
         if (allinc.contains(incdef) && !allinc.contains(incprod)) {
             esess.setCurrentInclude(incdef);
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            
+     
+            //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+            //                                esess.getCurrentInclude().getPath(), 
+            //                                esess.getCurrentInclude().getPart());
+            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
+                                            
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
             if(allowed)
                 esess.getLock(incdef);
             else {
@@ -75,7 +89,12 @@ public class IncludesHandler extends EditorStdHandler {
             }
         } else if (!allinc.contains(incdef) && allinc.contains(incprod)) {
             esess.setCurrentInclude(incprod);
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+            //                                            esess.getCurrentInclude().getPath(), 
+            //                                            esess.getCurrentInclude().getPart());
+            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                            
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+            
             if(allowed)
                 esess.getLock(incprod);
             else {
@@ -89,7 +108,11 @@ public class IncludesHandler extends EditorStdHandler {
             synchronized (LOCK) {
                 Node partnode = EditorHelper.getIncludePart(tgen, incprod);
                 esess.setCurrentInclude(incprod);
-                boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+               // HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+               //                                             esess.getCurrentInclude().getPath(), 
+               //                                             esess.getCurrentInclude().getPart());
+                HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                           
+                boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
                 if (partnode == null) {
                     if(allowed)
                         esess.getLock(incdef);
@@ -112,21 +135,39 @@ public class IncludesHandler extends EditorStdHandler {
             StatusCode        scode = sfac.getStatusCode("INCLUDE_UNDEF");
             includes.addSCodePath(scode);
         }
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(this.getClass().getName()+"#handleSubmittedData ended: "+length);
+        }
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+        long start_time = 0;
+        if(PERF_LOGGER.isInfoEnabled()) {
+            start_time = System.currentTimeMillis();
+            PERF_LOGGER.info(this.getClass().getName()+"#retrieveCurrentStatus starting");
+        }
         ContextResourceManager crm      = context.getContextResourceManager();
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         AuxDependency          currinc  = esess.getCurrentInclude();
 
         if (currinc != null) {
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
-            if(allowed)
+            
+           //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+           //                                             esess.getCurrentInclude().getPath(), 
+           //                                             esess.getCurrentInclude().getPart());
+           HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                 
+           boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+           if(allowed)
                 esess.getLock(currinc);
             else {
                 if(CAT.isDebugEnabled())
                     CAT.debug("User is not allowed to edit this include. No lock required.");
             }
+        }
+        if(PERF_LOGGER.isInfoEnabled()) {
+            long length = System.currentTimeMillis() - start_time;
+            PERF_LOGGER.info(this.getClass().getName()+"#retrieveCurrentStatus ended: "+length);
         }
     }
 

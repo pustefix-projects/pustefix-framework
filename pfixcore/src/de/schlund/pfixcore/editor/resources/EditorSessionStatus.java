@@ -19,6 +19,8 @@
 
 package de.schlund.pfixcore.editor.resources;
 
+import java.util.HashSet;
+
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
@@ -65,4 +67,6 @@ public interface EditorSessionStatus extends ContextResource {
     void          setLoginAllowed(boolean status);
     boolean       getLoginAllowed();
     String        getBackupDir();
+    HashSet       getAffectedProductsForCurrentInclude() throws Exception;
+    void          resetAffectedProductsForCurrentInclude();
 }// EditorSessionStatus

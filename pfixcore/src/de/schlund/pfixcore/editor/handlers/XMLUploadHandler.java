@@ -273,7 +273,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
         }
     }
 
-    public abstract void checkAccess(EditorSessionStatus esess) throws XMLException;
+    public abstract void checkAccess(EditorSessionStatus esess) throws Exception;
     public abstract AuxDependency getCurrentInclude(EditorSessionStatus esess);
 
 }

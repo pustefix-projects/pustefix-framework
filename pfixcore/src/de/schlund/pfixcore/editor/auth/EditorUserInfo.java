@@ -305,11 +305,10 @@ final public class EditorUserInfo {
         return ret;
     }
 
-    public boolean isIncludeEditAllowed(EditorSessionStatus esess) throws XMLException {
+    public boolean isIncludeEditAllowed(EditorSessionStatus esess, HashSet affected_products) throws XMLException {
        
         boolean ret = true;
       
-        HashSet affected_products = null;
         // <comment>
         // Here we must handle the case that an editoruser references a
         // new include. When he selects it from the list, it is
@@ -336,7 +335,7 @@ final public class EditorUserInfo {
         }
         //</comment>
         
-        try {
+        /*try {
             affected_products =
                 EditorHelper.getAffectedProductsForInclude(
                     esess,
@@ -344,7 +343,7 @@ final public class EditorUserInfo {
                     esess.getCurrentInclude().getPart());
         } catch (Exception e) {
             throw new XMLException("Error when getting affected products for include! " + e.getMessage());
-        }
+        }*/
 
         for (Iterator iter = affected_products.iterator(); iter.hasNext();) {
             String name = ((EditorProduct) iter.next()).getName();
