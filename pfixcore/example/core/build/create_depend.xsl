@@ -88,6 +88,14 @@
     <target name="{@name}.xml" type="xml">
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
+      <xsl:variable name="allp" select="./param"/>
+      <xsl:for-each select="/make/global/param">
+        <xsl:variable name="pn"><xsl:value-of select="@name"/></xsl:variable>
+        <xsl:if test="not($allp[@name = $pn])">
+          <xsl:apply-templates select="current()"/>
+        </xsl:if>
+      </xsl:for-each>
+      <xsl:apply-templates select="param"/>
       <param name="page" value="{@name}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
@@ -111,12 +119,16 @@
   </xsl:template>
 
   <xsl:template match="target">
+    <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
+    <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
-      <xsl:apply-templates/>
+      <xsl:apply-templates select="*[not(name() = 'param' and (@name='product' or @name='lang'))]"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
+      <param  name="product" value="{$project}"/>
+      <param  name="lang" value="{$lang}"/>
     </xsl:copy>
   </xsl:template>
 
