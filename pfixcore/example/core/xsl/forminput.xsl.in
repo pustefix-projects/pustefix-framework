@@ -58,7 +58,6 @@
       </xsl:if>
     </ixsl:choose>
     <cus:documentation>
-          
       <description>pfx:label is used for the description of input fields.
         These descriptions will normally also be used in the &lt;pfx:errorbox&gt;.
         If the user submits a wrong input, an icon indicating an error will be
@@ -95,8 +94,7 @@
 
   <xsl:template match="pfx:paramref">
     <cus:documentation>
-      
-      <description>Internal</description>
+      <description>Used internally</description>
     </cus:documentation>
   </xsl:template>
   
@@ -146,7 +144,6 @@
       </table>
     </ixsl:if>
     <cus:documentation>
-      
       <description>Creates an errorbox,
         that displays all (or a subset of the) errors that happened on
         form submit. You are encouraged to overwrite this template with
@@ -204,7 +201,6 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      
       <description>Two cases: if the prefix-argument is given, it
         checks if the corresponding Handler is active and if this is
         true, everything under &lt;pfx:active&lt; will be displayed. If the
@@ -263,7 +259,6 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      
       <description>Two cases: if the prefix-argument is given, it
         checks if the corresponding Handler is active and if this is
         true, everything under &lt;pfx:active&lt; will be displayed. If the
@@ -306,8 +301,7 @@
       <xsl:apply-templates/>
     </ixsl:if>
     <cus:documentation>
-     
-     <description>Will only be displayed when /formresult/iwrappergropus/group/@current=true</description>
+     <description>Content will only be displayed when /formresult/iwrappergropus/group/@current = true</description>
       <param required="0">
         <name>name</name>
         <values>
@@ -335,8 +329,7 @@
       <xsl:apply-templates/>
     </ixsl:if>
     <cus:documentation>
-      
-      <description>Will only be displayed when groupdisplay = false</description>
+      <description>Content will only be displayed when groupdisplay = false</description>
     </cus:documentation>  
   </xsl:template> 
 
@@ -416,7 +409,6 @@
       <xsl:apply-templates/>
     </form>
     <cus:documentation>
-      
       <description>Similar to the html tag &lt;form&gt;
         action/method are not required. You'll have to put it around all
         fields that belong to a formular.
@@ -476,7 +468,7 @@
     <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
     <xsl:variable name="genname"><xsl:value-of select="generate-id(.)"/></xsl:variable>
     <input border="0" name="__SBMT:{$genname}:"> 
-      <xsl:copy-of select="./@*"/>
+      <xsl:copy-of select="./@*[name()!='name']"/>
       <xsl:attribute name="src">
         <xsl:value-of select="$src"/>
       </xsl:attribute>
@@ -530,7 +522,7 @@
   <xsl:template match="pfx:xinp[@type='submit']">
     <xsl:variable name="genname"><xsl:value-of select="generate-id(.)"/></xsl:variable>
     <input name="__SBMT:{$genname}:">
-      <xsl:copy-of select="./@*"/>
+      <xsl:copy-of select="./@*[name()!='name']"/>
       <xsl:choose>
         <xsl:when test="not(@value)">
           <xsl:attribute name="value">
@@ -597,7 +589,6 @@
       <xsl:apply-templates/>
     </input>
     <cus:documentation>
-      
       <param required="0">
         <name>position</name>
         <values><oneof><option>auto</option><option>1,2,3..</option></oneof></values>
@@ -620,7 +611,6 @@
       <xsl:apply-templates/>
     </select>
     <cus:documentation>
-      
       <description>creates a select box form element. The options are given via a list of &lt;pfx:option&gt;
         child elements.</description>
       <param required="1">
@@ -691,7 +681,6 @@
       <xsl:apply-templates select="./node()"/>
     </option>
     <cus:documentation>
-      
       <description>Creates an "option" formelement.</description>
       <param required="0">
         <name>name</name>
@@ -737,7 +726,6 @@
       </option>
     </ixsl:for-each>
     <cus:documentation>
-      
       <description>Creates one or more "option" form elements. The options are taken from the result tree,
       where they need to be given below the element designated by the "optionpath" attribute</description>
       <param required="1">
@@ -776,7 +764,6 @@
       <xsl:apply-templates/>
     </input>
     <cus:documentation>
-      
       <description>Creates a html radio button. Every Radio-Button in a group has the same name.
         The attribute &#148;value&#148; should be
         different in each Radio-Button. All params will be copied.
@@ -827,7 +814,6 @@
       <xsl:apply-templates/>
     </input>
     <cus:documentation>
-      
       <description>
         Creates a check box form element. All attributes given  except "type" and "default" will be copied to the final html tag.
       </description>
@@ -889,7 +875,6 @@
       <xsl:apply-templates/>
     </input>
     <cus:documentation>
-      
       <description>
       Creates a text input field. All attributes given will be copied to the final html tag.</description>
       <param required="1">
@@ -943,7 +928,6 @@
       <xsl:apply-templates/>
     </input>
     <cus:documentation>
-      
       <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
       <param required="1">
         <name>name</name>
@@ -993,7 +977,6 @@
       </ixsl:choose>
     </textarea>
     <cus:documentation>
-      
       <description>Creates a html-textarea. All attributes will be copied to the resulting
       &lt;textarea&gt; html tag</description>
       <param required="1">
@@ -1050,7 +1033,6 @@
   <xsl:template match="pfx:xoutp">
     <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
     <cus:documentation>
-      
       <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>  
   </xsl:template>
@@ -1059,7 +1041,6 @@
   <xsl:template match="pfx:xoutperror">
     <ixsl:apply-templates select="/formresult/formerrors/error[@name='{@name}']"/>
     <cus:documentation>
-      
       <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
@@ -1088,7 +1069,6 @@
       </option>
     </xsl:for-each>
     <cus:documentation>
-      
       <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
