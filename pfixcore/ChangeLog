@@ -1,5 +1,7 @@
 2004-10-18  Jens Lautenbacher  <jtl@schlund.de>
 
+	* started 0.8.1-pre
+
 	* build.xml: relased 0.8.0 
 
 	* example/core/xsl/navigation.xsl.in: fixed handling of pfx:active/pfx:normal/pfx:invisible
