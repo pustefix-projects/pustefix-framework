@@ -30,75 +30,97 @@
   
   <h1>Development news</h1>
   
-  Mostly internal stuff and bugfixes (please refer to the ChangeLog or
-  the documentation on this site for more details). But note that
-  <i>you need to update your depend.xml.in files</i> when using this release!
-
+  <p>Big news: We have replaced the Java applet based editing area
+  with one based completely on JavaScript. Now we finally have a solid
+  foundation to build upon. The new editing area has not many
+  additional features for the time being, but this will change.  For
+  now,</p>
   <ul>
-    <li>
-      Removed <code>needsData()</code> as part of the
-      <code>ContextResource</code> interface. This was never really
-      needed anyway.
-    </li>
-
-    <li>
-      implemented a very simple form of "aliasing" for pagerequests in the config files.
-      Many different pagerequests can now share their configuration details.
-    </li>
-
-    <li>
-      Added the possibility to jump into a pageflow without directly
-      specifing the target page. The page that will be used is
-      determined to be the first page needing data from the given pageflow.
-    </li>
-    
-    <li>
-      Added the possiblity to add <code>FlowStepAction</code>s to
-      every step of a pageflow. These actions consist of a list of
-      XPath expressions acting as tests on the generated result DOM
-      which will trigger an associated action (like "jump to another
-      page") when they match. These tests are run whenever the
-      relevant flowstep want's to continue with the pageflow. Using
-      this mechanism it's possible to change the whole pageflow run
-      depending on the state of the application (if this state is
-      reflected in the result DOM).
-    </li>
-
-    <li>
-      Added a new configurable exception handling. The current system will
-      be changed to use this system shortly.
-    </li>
-
-    <li>
-      Simplified and normalised the depend.xml.in file syntax even
-      more. Now also metatags.xsl is a customized version of core
-      stylesheet (much like master.xsl)
-    </li>
-
-    <li>
-      Moved to XSLT 1.1 for the core stylesheets. This will help with
-      the time it still takes for the transition to XSLT 2.0.
-    </li>
-
-    <li>
-      changed the way parameters and commands are associated to a
-      special submit button. They are no longer completely encoded
-      into the name of the button, instead only a prefix is
-      transmitted as the name while the parameters are put into
-      special named hidden input tags.
-    </li>
-
-    <li><b>...and many many bugfixes</b></li>
+    <li>The syntax highlighting should just work.</li>
+    <li>You can indent a line or a selected region by pressing TAB.</li>
+    <li>For reasonably sized include parts, it's much faster.</li>
   </ul>
+
+  <p>Other stuff we were working on was mostly refactoring the code on
+  our way to XSLT 2.0 and trying to move closer to the usual webapp
+  layout of J2EE applications. This is much a work in progress, at the
+  moment we have cut a branch SAXON_8 where all this work currently lives.
+  </p>
+  
   <h2>ChangeLog</h2>
 
   You can see the up to date ChangeLog entries from CVS
   <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pustefix/pfixcore/ChangeLog?rev=HEAD&amp;content-type=text/vnd.viewcvs-markup">
-    here</a>
+  here</a>
 
 
     <h2>Old news</h2>
 
+    <h3>0.5.4</h3>
+
+    <p>
+      Mostly internal stuff and bugfixes (please refer to the ChangeLog or
+      the documentation on this site for more details). But note that
+      <i>you need to update your depend.xml.in files</i> when using this release!
+    </p>
+
+    <ul>
+      <li>
+        Removed <code>needsData()</code> as part of the
+        <code>ContextResource</code> interface. This was never really
+        needed anyway.
+      </li>
+      
+      <li>
+        implemented a very simple form of "aliasing" for pagerequests in the config files.
+        Many different pagerequests can now share their configuration details.
+      </li>
+      
+      <li>
+        Added the possibility to jump into a pageflow without directly
+        specifing the target page. The page that will be used is
+        determined to be the first page needing data from the given pageflow.
+      </li>
+      
+      <li>
+        Added the possiblity to add <code>FlowStepAction</code>s to
+        every step of a pageflow. These actions consist of a list of
+        XPath expressions acting as tests on the generated result DOM
+        which will trigger an associated action (like "jump to another
+        page") when they match. These tests are run whenever the
+        relevant flowstep want's to continue with the pageflow. Using
+        this mechanism it's possible to change the whole pageflow run
+        depending on the state of the application (if this state is
+        reflected in the result DOM).
+      </li>
+      
+      <li>
+        Added a new configurable exception handling. The current system will
+        be changed to use this system shortly.
+      </li>
+      
+      <li>
+        Simplified and normalised the depend.xml.in file syntax even
+        more. Now also metatags.xsl is a customized version of core
+        stylesheet (much like master.xsl)
+      </li>
+      
+      <li>
+        Moved to XSLT 1.1 for the core stylesheets. This will help with
+        the time it still takes for the transition to XSLT 2.0.
+      </li>
+      
+      <li>
+        changed the way parameters and commands are associated to a
+        special submit button. They are no longer completely encoded
+        into the name of the button, instead only a prefix is
+        transmitted as the name while the parameters are put into
+        special named hidden input tags.
+      </li>
+      
+      <li><b>...and many many bugfixes</b></li>
+    </ul>
+    
     <h3>0.5.3</h3>
     <p>
       We added more possibilities for the pageflow handling (See the ChangeLog for more information).
