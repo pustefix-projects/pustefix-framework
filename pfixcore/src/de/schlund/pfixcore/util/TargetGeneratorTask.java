@@ -15,6 +15,13 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
 import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TargetFactory;
+import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.targets.PageInfoFactory;
+import de.schlund.pfixxml.targets.SharedLeafFactory;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
 
 /**
  * @author adam
@@ -36,11 +43,11 @@ public class TargetGeneratorTask extends MatchingTask {
         // code has been taken over from de/schlund/pfixxml/targets/TargetGenerator#main(String[])
         
         File log4jconfigfile = getLog4jconfig();
-        String tmplog4jconfig = (log4jconfigfile == null) ? null : log4jconfigfile.toString();
-        if (tmplog4jconfig == null || tmplog4jconfig.equals("")) {
+        String log4jconfig = (log4jconfigfile == null) ? null : log4jconfigfile.toString();
+        if (log4jconfig == null || log4jconfig.equals("")) {
             throw new BuildException("Need the log4jconfig attribute.");
         }
-        DOMConfigurator.configure(tmplog4jconfig);
+        DOMConfigurator.configure(log4jconfig);
 
         DirectoryScanner scanner = getDirectoryScanner(getDir());
         scanner.scan();
@@ -52,13 +59,22 @@ public class TargetGeneratorTask extends MatchingTask {
                     File confile = new File(getDir(), confignames[i]);
                     if (confile.exists() && confile.canRead() && confile.isFile()) {
                         try {
-                            // cleanup
-                            //gen = TargetGeneratorFactory.getInstance().createGenerator(confile.toString());
                             gen = createTargetGenerator(confile);
                             gen.setIsGetModTimeMaybeUpdateSkipped(false);
                             System.out.println("---------- Doing " + confignames[i] + "...");
                             gen.generateAll();
                             System.out.println("---------- ...done [" + confignames[i] + "]");
+
+                            // cleanup
+                            SPCacheStatistic.reset();
+                            TargetGeneratorFactory.getInstance().reset();
+                            TargetGenerator.resetGenerationReport();
+                            TargetFactory.getInstance().reset();
+                            IncludeDocumentFactory.getInstance().reset();
+                            PageInfoFactory.getInstance().reset();
+                            SharedLeafFactory.getInstance().reset();
+                            AuxDependencyFactory.getInstance().reset();
+                            
                         } catch (Exception e) {
                             throw new BuildException("Oops! TargetGenerator exit!", e);
                         }
@@ -78,15 +94,6 @@ public class TargetGeneratorTask extends MatchingTask {
     protected TargetGenerator createTargetGenerator(File confile) {
         TargetGenerator ret;        
         try {
-              // cleanup
-//            ClassLoader cl = getProject().getCoreLoader();
-//            // delme
-//            System.out.println("cl="+cl);
-//            Class tgClass = cl.loadClass("de.schlund.pfixxml.targets.TargetGenerator");
-//            Class[] signature = { File.class };
-//            Constructor constructor = tgClass.getConstructor(signature);
-//            File[] params = { confile };
-//            ret = (TargetGenerator) constructor.newInstance(params);
             ret = new TargetGenerator(confile);
         } catch (Exception e) {
             throw new BuildException("Can not initialize TargetGenerator",e);
