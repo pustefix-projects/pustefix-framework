@@ -153,7 +153,8 @@ var __js_Cookie = {
     },
 
     erase : function(name) {
-        this.create(name,"",-1);
+    	if(this.read(name)!=null)
+	    this.create(name,"",-1);
     }
 };
 
