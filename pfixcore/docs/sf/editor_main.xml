@@ -3,7 +3,7 @@
   
   <h2>Normal usage</h2>
   <h3>Login</h3>
-  <h3>Productselection and user managment</h3>
+  <h3>Productselection and user management</h3>
     <ul>
       <li>Product selection</li>
       <li>Running session</li>
@@ -36,7 +36,7 @@
     <ul>
       <li>Image selection</li>
       <li>Upload</li>
-      <li>Afftected pages</li>
+      <li>Affected pages</li>
     </ul>
   <h4>Includes</h4>
     <ul>
@@ -59,7 +59,7 @@
   <h4>Docs</h4>
     <ul>
       <li>Tag selection</li>
-      <li>Describtion</li>
+      <li>Description</li>
       <li>Params</li>
       <li>Example</li>
     </ul>
