@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE log4j:configuration
+  SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+   
+   <appender name="LOGGER_CONSOLE" class="org.apache.log4j.ConsoleAppender">
+      <layout class="org.apache.log4j.PatternLayout">
+         <!--<param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>-->
+         <param name="ConversionPattern" value="%m\n"/>
+      </layout>
+   </appender>
+   
+   <category name="de.schlund.pfixxml.testenv.TestClient" additivity="false">
+      <priority value="ERROR"/>
+      <appender-ref ref="LOGGER_CONSOLE"/>
+   </category>
+
+   <category name="de.schlund.pfixxml.testenv.ConsoleTestClient" additivity="false">
+      <priority value="DEBUG"/>
+      <appender-ref ref="LOGGER_CONSOLE"/>
+   </category>
+
+   <category name="org.apache.commons.httpclient" additivity="false">
+      <priority value="ERROR"/>
+      <appender-ref ref="LOGGER_CONSOLE"/>
+   </category>
+	
+
+  
+   <root>
+      <priority value="WARN"/>
+      <appender-ref ref="LOGGER_CONSOLE"/>
+   </root>
+  
+
+</log4j:configuration>

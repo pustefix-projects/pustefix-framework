@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:hlp="http://www.schlund.de/pustefix/onlinehelp" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="adult">
     <product name="default">
       <lang name="default">
-        <pfx:label name="info.Adult">Are you really older than 18 years?
-        </pfx:label>
+        Are you really older than 18 years?
       </lang>
-
     </product>
   </part>
 
@@ -15,31 +13,27 @@
     <product name="default">
       <lang name="default">
         <center>
-          
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>
             <table width="400">
               <tr>
                 <td align="left">
-
-                  <b><big>Confirmations:</big></b>
+                  <b><big>Confirmation:</big></b>
                 </td>
               </tr>
             </table>
             <table bgcolor="#bbccff" class="boxed" width="400">
               <tr valign="top">
                 <td>
-                  <pfx:include part="adult"/>
+                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label>
                 </td>
                 <td>
-                  <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/>
-                  <br/>
+                  <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
                   <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
                 </td>
               </tr>
             </table>
-            <br/>
             <table width="400">
               <tr>
                 <td align="right" nowrap="nowrap">
@@ -48,34 +42,12 @@
               </tr>
             </table>
           </pfx:forminput>
-          <pfx:include part="switch"/>
-          <br/>
-          <br/>
-           <pfx:elink href="http://www.gimp.org" target="_popup">
-            <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
-            Goto Gimp!</pfx:elink>
-          <br/><br/>
-          <pfx:button page="ssltest">SSL TEST</pfx:button>
-          <br/>
-          <br/>
-          
-          <pfx:include part="display"/>
-          <br/>
-          <br/>
-          <pfx:include part="text"/>
+          <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
+          <pfx:include part="display"/><br/><br/>
+          <pfx:include part="sample_layers"/>
         </center>
-
-        <pfx:editconsole/>
-        
-        <pfx:include part="sample_layers"/>
-
-
-        
-
-        
       </lang>
     </product>
-    
   </part>
   
 
@@ -92,16 +64,47 @@
             </pfx:layer_check>
           </pfx:switch>
         </pfx:layer>
+        
         <pfx:layer class="layer" name="B" pos-right="10" pos-top="10" visible="false">
           <b>This is Layer B</b><br/>
+          <pfx:image alt="Good morning" src="/sample1/img/test.gif" title="Good evening"/><br/>
           <pfx:switch>
             <pfx:layer_ref name="C"/>
             Toggle Layer C
           </pfx:switch>
         </pfx:layer>
+        
         <pfx:layer class="layer" name="C" pos-bottom="100" pos-left="50" pos-right="50" visible="false">
           <b>This is Layer C</b><br/>
         </pfx:layer>
+
+        
+        <pfx:switch method="on">
+          <pfx:layer_ref name="FOO"/>
+          <pfx:layer_check name="FOO">
+            <pfx:on class="core_button_invisible">Show it...</pfx:on>
+            <pfx:off>Show it...</pfx:off>
+          </pfx:layer_check>
+        </pfx:switch>
+        <br/>
+        <table cellpadding="5" border="1">
+          <tr>
+            <td colspan="2">You can hide the</td>
+          </tr>
+          <tr>
+            <td>last</td>
+            <pfx:layer store="false" element="td" name="FOO"><b>cell</b></pfx:layer>
+          </tr>
+        </table>
+        <pfx:switch method="off">
+          <pfx:layer_ref name="FOO"/>
+          <pfx:layer_check name="FOO">
+            <pfx:on>Hide it...</pfx:on>
+            <pfx:off class="core_button_invisible">Hide it...</pfx:off>
+          </pfx:layer_check>
+        </pfx:switch>
+        <br/>
+        <br/>
       </lang>
     </product>
   </part>
@@ -123,15 +126,21 @@
   <part name="switch">
     <product name="default">
       <lang name="default">
-        <pfx:switch>
-          <pfx:layer_ref name="A"/>
-          Toggle Layer A
-        </pfx:switch>
-        <br/><br/>
-        <pfx:switch>
-          <pfx:layer_ref name="B"/>
-          Toggle Layer B
-        </pfx:switch>
+        <pfx:switch><pfx:layer_ref name="A"/>Toggle Layer A</pfx:switch>
+          
+        <pfx:switch><pfx:layer_ref name="B"/>Toggle Layer B</pfx:switch>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="buttons">
+    <product name="default">
+      <lang name="default">
+        <pfx:elink arget="_popup" href="http://www.gimp.org">
+          <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
+          Goto Gimp!</pfx:elink>  
+        <pfx:button page="ssltest">SSL TEST</pfx:button>  
+        <pfx:button page="install">Download INSTALL.ps</pfx:button>
       </lang>
     </product>
   </part>
@@ -152,22 +161,11 @@
                   Flat</pfx:button>
               </ixsl:otherwise>
             </ixsl:choose>
-          </b>  (click to toggle)
+          </b> (click to toggle)
       </lang>
     </product>
   </part>
 
-  <part name="text">
-    <product name="default">
-      <lang name="default">
-          <b>Euro sign <font face="arial">€</font> is written
-            &apos;&amp;#128;&apos;!!</b>
-          <br/>
-          <br/>
-          <pfx:image src="/sample1/img/test.gif"/>
-      </lang>
-    </product>
-  </part>
 </include_parts><!--
 Local Variables:
 mode: xml

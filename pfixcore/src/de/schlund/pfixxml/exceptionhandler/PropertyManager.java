@@ -32,6 +32,7 @@ import java.util.Vector;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.log4j.Category;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -60,6 +61,7 @@ class PropertyManager {
     private long mtime_                     =0;
     private Properties properties_          =null;
     private final Hashtable validdimensions = new Hashtable();
+    private static Category CAT = Category.getInstance(PropertyManager.class.getName());
 
     //~ Constructors ...........................................................
 
@@ -140,6 +142,30 @@ class PropertyManager {
         return config;
     }
 
+
+    void printConfig() {
+        if(CAT.isInfoEnabled()) {
+        
+            StringBuffer sb = new StringBuffer(512);
+            sb.append("\nExceptionHandler after init():\n");
+            GeneralConfig gconfig = getGeneralConfig();
+            sb.append("General config: \n"+gconfig.toString());
+        
+            sb.append("Exception config: \n");
+            ExceptionConfig[] econfigs = getExceptionConfig();
+            for(int i=0; i<econfigs.length; i++) {
+                sb.append(econfigs[i].toString());
+            }
+        
+            doMailConfig();
+            sb.append("Mail config: \n");
+            sb.append(MailConfig.getInstance().toString());
+            
+            CAT.info(sb.toString());
+        }
+        
+    }
+
     /**
      * Returns the initialised flag.
      * @return boolean
@@ -153,7 +179,7 @@ class PropertyManager {
      * @return a mailconfig object.
      */
 
-    MailConfig getMailConfig() {
+    void doMailConfig() {
         StringBuffer strerror=new StringBuffer();
         boolean send         =Boolean.valueOf(
                                       (String) properties_.get("rule.mail.send"))
@@ -176,11 +202,11 @@ class PropertyManager {
                 tos[i++]=ele.trim();
             }
             String host      =(String) properties_.getProperty("rule.mail.host");
-            MailConfig config=new MailConfig(tos, from, host, send);
-            return config;
+            MailConfig config = MailConfig.getInstance();
+            config.configure(tos, from, host, send);
         } else {
-            MailConfig config=new MailConfig(null, null, null, false);
-            return config;
+            MailConfig config=MailConfig.getInstance();
+            config.configure(null, null, null, false);
         }
     }
 
@@ -196,7 +222,7 @@ class PropertyManager {
             checkMailProps();
             checkRulesProps();
         } catch(PFConfigurationException e) {
-            throw new PFConfigurationException(e.getMessage(), e.getCause());
+            throw new PFConfigurationException(e.getMessage(), e.getExceptionCause());
         }
         initialised_=true;
     }

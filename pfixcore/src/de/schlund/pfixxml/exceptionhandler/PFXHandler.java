@@ -26,6 +26,11 @@ import java.util.Enumeration;
 import java.util.Timer;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.util.email.EmailSender;
+import de.schlund.pfixcore.util.email.EmailSenderException;
+
 
 /** 
  * This class handles all incoming exceptions. It decides if an exception is delivered directly or 
@@ -43,10 +48,10 @@ class PFXHandler {
     private GeneralConfig gconf_         =null;
     private boolean initialised_         =false;
     private Vector instancecontainerlist_=null;
-    private MailConfig mconf_            =null;
     private PFUtil pfutil_               =null;
     private PropertyManager propman_     =null;
     private Timer timer_                 =null;
+    private static Category CAT = Category.getInstance(PFXHandler.class.getName());
 
     //~ Constructors ...........................................................
 
@@ -166,9 +171,8 @@ class PFXHandler {
                                             gconf_.getStraceObsoleteDim());
             instancecontainerlist_.add(ic);
         }
-        MailConfig mconf=propman_.getMailConfig();
-        pfutil_.setMailConfig(mconf.getTo(), mconf.getFrom(), mconf.getHost(), 
-                              mconf.isSend());
+        propman_.doMailConfig();
+        
         initialised_=true;
     }
 
@@ -198,7 +202,15 @@ class PFXHandler {
         excontext.addComment(
                 "New ExceptionHandler is OFF due to an initialisation error or you do not want to use it!");
         String message=excontext.getMessage();
-        pfutil_.sendMail(subject, message);
+        try {
+            MailConfig mailconfig = MailConfig.getInstance();
+            EmailSender.sendMail(subject, message, 
+                                mailconfig.getTo(), 
+                                mailconfig.getFrom(), 
+                                mailconfig.getHost());
+        } catch(EmailSenderException e) {
+            pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
+        }
     }
 
     /**
@@ -220,9 +232,21 @@ class PFXHandler {
     private void ruleMatch(ExceptionContext excontext) {
         String subject=excontext.getHeader();
         String message=excontext.getMessage();
-        pfutil_.sendMail(subject, message);
+        try {
+            MailConfig mailconfig = MailConfig.getInstance();
+            if(mailconfig.isSend()) {
+                EmailSender.sendMail(subject, message, 
+                                    mailconfig.getTo(), 
+                                    mailconfig.getFrom(), 
+                                    mailconfig.getHost());
+            } else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("MailSending is disabled");  
+            }   
+        } catch (EmailSenderException e) {
+            pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
+        }
     }
-
     /**
      * Action to take if no responsible rule is found.
      * @param e the current Exception.
@@ -234,7 +258,15 @@ class PFXHandler {
         excontext.addComment(
                 "No rule found to match this exception. Please check your configuration!");
         String message=excontext.getMessage();
-        pfutil_.sendMail(subject, message);
+        try {
+            MailConfig mailconfig = MailConfig.getInstance();
+            EmailSender.sendMail(subject, message, 
+                                mailconfig.getTo(), 
+                                mailconfig.getFrom(), 
+                                mailconfig.getHost());
+        } catch (EmailSenderException e) {
+            pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
+        }
     }
 
     /**

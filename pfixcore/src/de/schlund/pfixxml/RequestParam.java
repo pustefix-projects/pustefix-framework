@@ -35,4 +35,6 @@ public interface RequestParam {
     String           getValue();
     String           toString();
     RequestParamType getType();
+    boolean          isSynthetic();
+    void             setSynthetic(boolean synt);
 }// RequestParam

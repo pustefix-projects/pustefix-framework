@@ -2,6 +2,7 @@
 PROJECT = pfixeditorapplet
 PROJECT_ROOT= $(shell pwd)
 PFIXCORE_APPLETPATH=$(PROJECT_ROOT)/../example/core/script
+#PFIXCORE_APPLETPATH=~/try
 
 SRCROOT    = src
 BUILDDIR   = build
@@ -12,29 +13,15 @@ JAVADOCDIR = apidocs
 
 EXTERNAL_JAVADOC =
 
-#JAVADOC_GENERALOPTS= -d $(JAVADOCDIR) \
-#	-version -author \
-#	-windowtitle "de.schlund $(PROJECT)" \
-#	-doctitle "<h3>Last update: $(shell date) </h3>" \
-#	-sourcepath $(SRCROOT):src-jserv:src-tomcat4 \
-#	$(EXTERNAL_JAVADOC) \
-#	$(shell echo $(JAVADOCSUBDIRS) | tr '/' '.' | tr ' ' '\n' | sort -u)
+PACKAGES =  de.schlund.pfixeditor.xml \
+	    com.microstar.xml \
+	    de.schlund.pfixeditor.editor \
+	    de.schlund.pfixeditor.misc
 
-PACKAGES = \
-	de.schlund.pfixeditor.misc \
-	de.schlund.pfixeditor.xml \
-	org.gjt.sp.jedit.textarea \
-	org.gjt.sp.jedit \
-	org.gjt.sp.jedit.gui \
-	org.jext.event \
-	org.jext.search \
-	com.microstar.xml \
-	de.schlund.pfixeditor.view \
-	org.gjt.sp.jedit.syntax \
-	gnu.regexp \
-	de.schlund.pfixeditor
 
 SUBDIRS = $(subst .,/,$(PACKAGES))
+
+
 
 ################################################################
 # normally, there's no need to change anything below this line #
@@ -50,7 +37,7 @@ export JAR        = ${JDK_HOME}/bin/jar
 #export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar
+BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:./lib/java40.jar
 
 JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
 SRCDIRS        =$(patsubst %, $(SRCROOT)/%,$(SUBDIRS))
@@ -75,8 +62,14 @@ compile:
 	@(cd $(PROJECT_ROOT)/$(SRCROOT))
 	@echo
 	@echo "*** Building all *.java-files..."
-	@${JAVAC} -classpath ${BUILDPATH} \
+	@echo ${JAVAC}
+	@echo ${BUILDPATH}
+	@ ${JAVAC} -classpath ${BUILDPATH} \
                   -d $(PROJECT_ROOT)/${BUILDDIR} -sourcepath $(PROJECT_ROOT)/${SRCROOT} $(ALLJAVA)
+
+
+                  
+
 	@echo "*** ...Done!"
 
 jar:

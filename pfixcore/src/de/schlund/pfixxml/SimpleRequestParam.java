@@ -31,8 +31,17 @@ package de.schlund.pfixxml;
  */
 
 public class SimpleRequestParam implements RequestParam {
-    String           value = null;
-    RequestParamType type  = RequestParamType.SIMPLE;
+    private String           value = null;
+    private RequestParamType type  = RequestParamType.SIMPLE;
+    private boolean          synthetic = false;
+
+    public boolean isSynthetic() {
+        return synthetic;
+    }
+
+    public void setSynthetic(boolean synthetic) {
+        this.synthetic = synthetic;
+    }
     
     public SimpleRequestParam(String value) {
         this.value = value;

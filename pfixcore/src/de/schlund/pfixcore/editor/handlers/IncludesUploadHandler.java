@@ -72,14 +72,6 @@ public class IncludesUploadHandler extends EditorStdHandler {
     public AuxDependency getCurrentInclude(EditorSessionStatus esess) {
         return esess.getCurrentInclude();
     }
-        
-    private String decodeAppletText(String txt){
-        return URLDecoder.decode(txt);
-    }    
-    private String encodeAppletText(String txt){
-        return URLEncoder.encode(txt);
-    }
-    
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm     = context.getContextResourceManager();
@@ -112,11 +104,8 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                         text = text.trim();
                         
-                        // encode the text for the editor applet (passed as <PARAM>)                     
-                        text = encodeAppletText(text);                        
                     } else {
-                        //text = DEF_TEXT;
-                        text=DEF_TEXT_APPLET;
+                        text = DEF_TEXT_APPLET;
                     }
                     upl.setStringValContent(text);
                     if (SERIALIZER.isDebugEnabled())
@@ -162,11 +151,10 @@ public class IncludesUploadHandler extends EditorStdHandler {
                     ns = ns + "xmlns:" + nsp.getPrefix() + "=\"" + nsp.getUri() + "\" ";
                 }
                 
-                //The text which comes from the editor applet is encoded, so decode it here
-                content = this.decodeAppletText(upl.getContent());
-                //System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
+                content = upl.getContent();
                 
-                content = "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
+                content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+                    "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
                 DocumentBuilder domp = dbfac.newDocumentBuilder();
                 try {
                     impnode = (Node) domp.parse(new InputSource(new StringReader(content))).getDocumentElement();
@@ -231,9 +219,9 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
 
-                    FileWriter    output = new FileWriter(currpath);
-                    OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                    XMLSerializer ser    = new XMLSerializer(output, outfor);
+                    FileOutputStream output = new FileOutputStream(currpath);
+                    OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                    XMLSerializer    ser    = new XMLSerializer(output, outfor);
                     outfor.setIndent(0);
                     outfor.setPreserveSpace(true);
                     ser.serialize(incdoc);                    

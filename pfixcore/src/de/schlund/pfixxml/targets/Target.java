@@ -19,13 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.lang.*;
-import java.util.*;
-import java.io.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import javax.xml.parsers.*;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
@@ -44,7 +39,17 @@ public interface Target {
 
     TreeMap getParams();
     TreeSet getPageInfos();
-    Object  getValue() throws Exception;
+   
+    /**
+     * Get the value of the target. Depending on the 
+     * circumstances this will trigger a recursive 
+     * generation of the target.</br> 
+     * @return the value of this target.
+     * @throws TargetGenerationException on 
+     * known errors which can occur on target 
+     * generation. 
+     */
+    Object  getValue() throws TargetGenerationException;
     
     boolean needsUpdate() throws Exception;
     long    getModTime();
