@@ -83,6 +83,12 @@ class PFXHandler {
         }
         // everything to log file
         pfutil_.error(excontext.getMessage());
+        if(!MailConfig.getInstance().isSend()) {
+            if(CAT.isInfoEnabled()) {
+                CAT.info("MailSending is disabled! ExceptionHandling done.");
+                return;
+            }
+        }
         if (propman_.isInitialised() && gconf_.isUseme()) {
             for (Enumeration enum = instancecontainerlist_.elements(); enum.hasMoreElements();) {
                 InstanceCheckerContainer checker = (InstanceCheckerContainer) enum.nextElement();
@@ -220,12 +226,8 @@ class PFXHandler {
         String message = excontext.getMessage();
         try {
             MailConfig mailconfig = MailConfig.getInstance();
-            if (mailconfig.isSend()) {
-                EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
-            } else {
-                if (CAT.isDebugEnabled())
-                    CAT.debug("MailSending is disabled");
-            }
+            EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
+            
         } catch (EmailSenderException e) {
             pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
         }
@@ -242,12 +244,8 @@ class PFXHandler {
         String message = excontext.getMessage();
         try {
             MailConfig mailconfig = MailConfig.getInstance();
-            if(mailconfig.isSend()) {
-                EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
-            } else {
-                if(CAT.isDebugEnabled()) 
-                    CAT.debug("MailSending is disabled");
-            }
+            EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
+            
         } catch (EmailSenderException e) {
             pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
         }

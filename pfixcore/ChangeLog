@@ -1,3 +1,12 @@
+2003-08-13  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	(TargetGenerationReport.addError): bugfix for serious bug.
+	Lost exceptions when adding for the first time. Quite clumsy.
+
+	* src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java(xhandle):
+	if mail sending is disabled, only log to file and return.
+
 2003-08-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (isDebugEnabled): 

@@ -517,6 +517,7 @@ class TargetGenerationReport {
     void addError(Exception e, String key) {
         if(hash.get(key) == null) {
             ArrayList list = new ArrayList();
+            list.add(e);
             hash.put(key, list);
         } else {
             ((ArrayList) hash.get(key)).add(e);
