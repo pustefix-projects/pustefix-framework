@@ -60,7 +60,7 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
         TreeSet commons = EditorCommonsFactory.getInstance().getAllCommons();
         Element root    = resdoc.createNode("allcommons"); 
         root.setAttribute("allshown", "" + showincs);
-        EditorHelper.renderAllIncludesForNavigation(commons, resdoc, root, currcomm, showincs);
+        EditorHelper.renderAllIncludesForNavigation(commons, resdoc, root, currcomm, true);
 
         TreeSet searchcom = esearch.getDynResultSet();
         if (searchcom != null && searchcom.size() > 0) {
