@@ -7,7 +7,7 @@
     <page name="java" title="Java framework"/>
   </page>
   <page name="download" title="Download"/>
-  <page name="udocs" title="Userdocs">
+  <page name="udocs" title="Configuration">
     <page name="project" title="Project definition"/>
     <page name="prop" title="Servlet definition"/>
     <page name="depend" title="Page definition"/>
