@@ -121,7 +121,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
 
     public void resetParams() {
-        params = null;
+        if (params != null) {
+            params.clear();
+        }
     }
     
     /**
