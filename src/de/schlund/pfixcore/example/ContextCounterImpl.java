@@ -60,7 +60,6 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
     
     public void setShowCounter(Boolean showcounter) {
         this.showcounter = showcounter;
-        checkValue();
     }
 
     public void setCounter(int count) {
@@ -68,6 +67,11 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
         checkValue();
     }
 
+    public void addToCounter(int count) {
+        counter += count;
+        checkValue();
+    }
+    
     private void checkValue() {
         // demo of pageMessage feature
         if (counter > 5 ) {
@@ -77,10 +81,6 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
         }
     }
 
-    public void addToCounter(int count) {
-        counter += count;
-    }
-    
     public boolean needsData() {
         return false;
     }
