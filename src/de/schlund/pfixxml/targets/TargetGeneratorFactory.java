@@ -41,8 +41,7 @@ public class TargetGeneratorFactory {
 
     public synchronized TargetGenerator createGenerator(File cfile) throws Exception {
         if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
-            String key;
-            key = cfile.getCanonicalPath();
+            String key = genKey(cfile);
             TargetGenerator generator = (TargetGenerator) generatormap.get(key);
             if (generator == null) {
                 CAT.debug("-- Init TargetGenerator --");
@@ -58,7 +57,11 @@ public class TargetGeneratorFactory {
         }
     }
 
-    public void clearMap() {
-        generatormap.clear();
+    public void remove(File genfile) {
+        generatormap.remove(genKey(genfile));
+    }
+
+    private String genKey(File genfile) {
+        return genfile.getAbsolutePath();
     }
 }
