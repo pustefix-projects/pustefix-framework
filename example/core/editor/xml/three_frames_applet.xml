@@ -4,6 +4,11 @@
   <pfx:head>
     <title>Pustefix Content Management und Editor</title>
   </pfx:head>
+  <pfx:script>
+    // Variable controlls if the Applet-Frames is loaded
+    appLoad = false;
+  </pfx:script>
+  
   <pfx:frameset rows="37,*,1">
     <pfx:frame name="top_navi">
       <html>
@@ -52,7 +57,7 @@
                 <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
               </style>
             </head>
-	    <body onload="test()">
+	    <body>
               
               <div style="padding-left: 10px; padding-right: 10px;">
                 <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="content"/>
@@ -67,6 +72,12 @@
         <head>
           <pfx:script>                        
 
+
+
+            function __setAppletLoad() {
+              parent.frames.appLoad = true;            
+            }
+            
             function showApplet() {
                window.document.applets["xmlEditor"].showApplet();
             }
@@ -89,7 +100,7 @@
 
         </pfx:script>  
         </head>
-        <body onunload="__destroyApplet()">
+        <body onunload="__destroyApplet()" onload="test()">
           <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true"/>
         </body>
       </html>
