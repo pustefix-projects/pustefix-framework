@@ -1,3 +1,12 @@
+2004-02-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetRW.java:  (resetParams) new method.
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: implement it
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: reset
+	params in targets when loading config (because it may be a reload
+	of already exsting targets)
+
 2004-02-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
@@ -5,6 +14,96 @@
 	<fileset>, because <javadoc> does not work with many files.
 	Changed location for javadoc from apidocs to docs/api to more conform
 	to java conventions.
+
+2004-02-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Quite some hefty
+	restructuring. First of all, the new State method needsData() is
+	used during a pageflow run to determine if the current page under
+	consideration wants to generate output. This helps with methods
+	like flowBeforeNeedsData() that no longer need to generate a DOM
+	tree just to signal that they would be shown when a pagflow runs,
+	now a boolean return value is all that's needed. In the course of
+	repairing this long standing malfunktion, I streamlined the use of
+	the PageResuestStatus that can be used and set them more
+	consequently to sane values.
+
+	(getInitialPageRequest)
+	(getCurrentPageFlow)
+	(flowIsStopped) have been removed as they shouldn't have been
+	available from the bginning anyway, and were only introduced to
+	fix other ill-designed features of the context's pageflow
+	handling. Hope every current app can be ported without having to
+	reintroduce them.
+
+	In the process of cleaning up the class, I merged in the functionality of the 
+	former AuthContext. It has been shown that the auth stuff works, so this 
+	can be inplemented by the Context itself now without any problems and need for a 
+	stupidly deriving class.
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java:
+	Implement the new needsData() method. Simplify getDocument() while doing so.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	implemented the new needsData() method by delegating to
+	IHanderContainer.needsData().  Added all the logic into the
+	getDocument() method needed to decide if the pageflow process
+	should be startet.  Use the new setContinue() method of the
+	ResultDocument to signal the start of a pageflow process.
+
+	* src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java:
+	completely simplified the default ResdocFinalizer: no longer any
+	logic to decide if we should start a pageflow run or stay on the
+	current page. All this is handled now by DefaultIWrapperState or
+	descendants. It is also assured that onSuccess() will be called in
+	everytime a data submitting request has been handled without an
+	error, onWorkError will be called erverytime an error happened and
+	onRetrieveStatus will be only called when a request to show the
+	current status of the page has been handled.
+ 	
+	* src/de/schlund/pfixxml/ResultDocument.java: (setContinue)
+	(wantsContinue): new methods, used to signal the Context that the
+	State wants to start a pageflow run. Note that up to now, the
+	SPDocument in the ResultDocument was set to "null" to start the
+	pageflow process. This is no longer allowed!
+
+	* src/de/schlund/pfixcore/workflow/State.java: new method in
+	interface: boolean needsData(Context, PfixServletRequest). This
+	represents a long standing change in the way the context, workflow
+	and state work together. This method is called during a pageflow
+	cycle to test if the page wants to show itself.  Up to now, the
+	called method was just getDocument, and the State had to make sure
+	that it returned a "null" SPDocument to signal that it doesn't
+	want to be shown. Now the process is two-fold: first, check the
+	needsData method, and in case it returns true, use the getDocument
+	method to retrieve the DOM tree.  WITH OTHER WORDS: getDocument is
+	expected to ALWAYS return a ResultDocument with a non-null
+	SPDocument now! This and the fact that the workflow stuff is no
+	longer handled inside the getDocument method is a mostly
+	incompatible change that needs serious consideration of every self
+	written State. Of course StaticState and
+	Default(Auth)IWrapperState are already ported, so most people
+	shouuld have a mostly pain free transition.
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: (needsData)
+	implemented it, defaults to "true"
+
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java: clean
+	up of pagerequest status: Now we only have types NAVIGATION,
+	WORKFLOW, DIRECT, FINAL, AUTH (and UNDEF, which should not happen
+	normally). Note that WORKFLOW_STOP and AUTH_WORKFLOW have been
+	killed.
+
+	* src/de/schlund/pfixcore/workflow/AuthContext.java: this now is only a dummy. 
+	All the functionality has been moved to Context.java. The class will be removed soon.
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: no longer needed to check the instance of the Context
+	to be AuthContext (see above).
+
+	* example/common/conf/pfixlog.xml.in: some changes personalized for uid=jtl
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java: small cosmetic changes
 
 2004-02-02  Adam Habermann  <adam.habermann@schlund.de>
 
