@@ -13,16 +13,6 @@ JAVADOCDIR = apidocs
 
 EXTERNAL_JAVADOC =
 
-#JAVADOC_GENERALOPTS= -d $(JAVADOCDIR) \
-#	-version -author \
-#	-windowtitle "de.schlund $(PROJECT)" \
-#	-doctitle "<h3>Last update: $(shell date) </h3>" \
-#	-sourcepath $(SRCROOT):src-jserv:src-tomcat4 \
-#	$(EXTERNAL_JAVADOC) \
-#	$(shell echo $(JAVADOCSUBDIRS) | tr '/' '.' | tr ' ' '\n' | sort -u)
-
-
-
 PACKAGES =  de.schlund.pfixeditor.xml \
 	    com.microstar.xml \
 	    de.schlund.pfixeditor.editor \
@@ -47,7 +37,7 @@ export JAR        = ${JDK_HOME}/bin/jar
 #export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:./src/java40.jar
+BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:./lib/java40.jar
 
 JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
 SRCDIRS        =$(patsubst %, $(SRCROOT)/%,$(SUBDIRS))
