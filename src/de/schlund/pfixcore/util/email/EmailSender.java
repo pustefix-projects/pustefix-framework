@@ -60,6 +60,12 @@ public class EmailSender {
         if(to == null)
             throw new IllegalArgumentException("EmailSender: A NP as recipient-list is not allowed!");      
       
+        for(int i=0; i<to.length; i++) {
+        	if(to[i] == null  || to[i].equals("")) {
+        		throw new IllegalArgumentException("EmailSender: To address["+i+"] not valid: '"+to[i]+"'");
+        	}
+        }
+        
         if(from == null)
             throw new IllegalArgumentException("EmailSender: A NP as from address is not allowed!");
 
