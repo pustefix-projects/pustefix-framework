@@ -1,3 +1,21 @@
+2003-05-05  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/test/LineNumber.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixAppletNeu.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixCheckXml.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixHighlight.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixTextPane.java
+	Classes for the new Applet. The directory has to be renamed ! Test is ugly ..
+
+	* example/core/editor/xml/three_frames_applet.xml
+	* example/core/editor/xsl/metatags.xsl
+	For new Applet
+
+	* example/core/script/xmlEditorApplet.jar
+	The New Aplett jar-File
+
+	
+	
 2003-04-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/editor/xsl/metatags.xsl: removed editor applet stuff. This is work in progress for
