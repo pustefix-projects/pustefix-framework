@@ -26,7 +26,6 @@
     <property name="dir.dist"               location="dist"/>
     <property name="dir.skel"               location="skel"/>
     <property name="dir.javadoc"            location="docs/api"/>
-    <property name="dir.anttasks"           location="anttasks"/>
     <property name="dir.jni"                location="jni"/>
     <property name="dir.metainf"            location="META-INF"/>
     <property name="dir.projects"           location="example"/>
@@ -282,40 +281,13 @@
         <exec executable="sh">
             <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
         </exec>
-    </target>
+     </target>
     
-
-
-
-
-
-
-
-
-    <target name="dist-ant-tasks" depends="properties">
-    	<mkdir dir="${dir.anttasks}/build"/>
-        <javac 
-            srcdir="${dir.anttasks}/src"
-            destdir="${dir.anttasks}/build"
-            debug="${debug}"
-            sourcepath="${dir.anttasks}/src"
-            includeantruntime="true"
-            >
-            <classpath>
-           		<pathelement location="${dir.src}"/>
-           		<fileset dir="${dir.lib}" includes="*log*4*j*.jar"/>
-            </classpath>
-        </javac>
-    </target>
-    
-    
-    
-
     <target name="init-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
         <javac 
             srcdir="${dir.src}"
             destdir="${dir.build}"
-            includes="de/schlund/pfixcore/ant/Xslt*.java, de/schlund/pfixcore/ant/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
+            includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
             debug="${debug}"
             classpathref="cp.classpath"
             sourcepath="${dir.src}"
@@ -326,28 +298,28 @@
     <target name="ant-tasks" depends="init, init-compile" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
         <taskdef
             name="pfx-xslt"
-            classname="de.schlund.pfixcore.ant.XsltGenericTask"
+            classname="de.schlund.pfixcore.util.XsltGenericTask"
             classpathref="cp.classpath"
             loaderref="pfx-loader"
             description="Performs generic XSLT transformations"
             />
         <taskdef 
             name="pfx-iwrp"
-            classname="de.schlund.pfixcore.ant.XsltIWrapperTask"
+            classname="de.schlund.pfixcore.util.XsltIWrapperTask"
             classpathref="cp.classpath"
             loaderref="pfx-loader"
             description="Generates .java files out of .iwrp (Interface Wrapper) files"
             />
         <taskdef
             name="pfx-webxml"
-            classname="de.schlund.pfixcore.ant.XsltWebXmlTask"
+            classname="de.schlund.pfixcore.util.XsltWebXmlTask"
             classpathref="cp.classpath"
             loaderref="pfx-loader"
             description="Creates WEB-INF/web.xml config files for each project"
             />
         <taskdef
             name="pfx-generate"
-            classname="de.schlund.pfixcore.ant.TargetGeneratorTask"
+            classname="de.schlund.pfixcore.util.TargetGeneratorTask"
             classpathref="cp.classpath"
             loaderref="pfx-loader"
             description="Creates dependencies in ${dir.projects}/.cache"
