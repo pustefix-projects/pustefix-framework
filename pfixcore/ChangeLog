@@ -1,3 +1,8 @@
+2004-06-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): 
+	fixed stupid bug.
+
 2004-06-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData):
