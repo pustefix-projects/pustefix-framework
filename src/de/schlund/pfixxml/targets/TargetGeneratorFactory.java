@@ -64,4 +64,9 @@ public class TargetGeneratorFactory {
     private String genKey(File genfile) {
         return genfile.getAbsolutePath();
     }
+    
+    public void reset() {
+        generatormap = new HashMap(); 
+    }
+    
 }

@@ -1,3 +1,11 @@
+2004-06-01  Niels Schelbach    <niels@schlund.de>
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+	- Adding reset methods to these factories, for better memory performance during ant generate
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java:
+	- Calling above described reset methods, after generation of each project 
+
 2004-05-28  Niels Schelbach    <niels@schlund.de>
 	* src/de/schlund/pfixxml/IncludeDocumentFactory.java
 	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
