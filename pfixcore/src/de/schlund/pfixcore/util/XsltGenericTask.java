@@ -42,6 +42,11 @@ public class XsltGenericTask extends MatchingTask {
     public static String ATTR_INFILE = "infile";
     public static String ATTR_OUTFILE = "outfile";
     public static String ATTR_CATALOGFILE = "catalogfile";
+    public static String ATTR_VALIDATE = "validate";
+    
+    // --- Attribute values ---
+    public static String VAL_VALIDATE_TRUE = "true"; 
+    public static String VAL_VALIDATE_DYNAMIC = "dynamic";
     
     // --- Attributes ---
 
@@ -67,7 +72,7 @@ public class XsltGenericTask extends MatchingTask {
     //protected Path classpath = null;
     
     /** XML Schema Validation. Default: false. */
-    protected boolean validate = false;
+    protected String validate = "false";
     
     /** Catalog file compliant to http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd - optional */
     protected String catalogfile = null;
@@ -320,8 +325,8 @@ public class XsltGenericTask extends MatchingTask {
         if ( transformer == null ) {
             transformer = new XsltTransformer(getProject());
             transformer.setValidate(isValidate());
-            //transformer.setValidateDynamic(false); // Xerces-Default: false
-            //transformer.setNamespaceAware(true);   // Xerces-Default: true
+            transformer.setValidateDynamic(isValidateDynamic()); // Xerces-Default: false
+            //transformer.setNamespaceAware(true);               // Xerces-Default: true
         }
         if ( pfixResolver == null ) {
             if ( getCatalogfile() != null ) {
@@ -427,10 +432,20 @@ public class XsltGenericTask extends MatchingTask {
     }
     
     public boolean isValidate() {
+        return getValidate().equals(VAL_VALIDATE_TRUE) ||
+               getValidate().equals(VAL_VALIDATE_DYNAMIC);
+    }
+    public boolean isValidateDynamic() {
+        return getValidate().equals(VAL_VALIDATE_DYNAMIC);
+    }
+    public String getValidate() {
         return validate;
     }
-    public void setValidate(boolean validate) {
-        if ( this.validate != validate ) {
+    public void setValidate(String validate) {
+        if (validate == null) {
+            throw new IllegalArgumentException("attribute "+ATTR_VALIDATE+" is null; has to be specified as "+VAL_VALIDATE_TRUE+"|false|"+VAL_VALIDATE_DYNAMIC);
+        }
+        if ( this.validate.equals(validate) == false) {
             invalidateTransformer();
         }
         this.validate = validate;

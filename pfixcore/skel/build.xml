@@ -26,7 +26,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.projects"             location="projects"/>
   <property name="dir.docroot"              location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
   <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
-  <property name="validate"                 value="true"/>
+  <property name="validate"                 value="dynamic"/>
   <property name="catalogfile"              location="${dir.projects}/core/schema/catalog.xml"/>
   <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
   <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
@@ -448,6 +448,8 @@ or delete the DOCTYPE definition -->
      destdir="${dir.projects}"
      includes="**/*.prop.in"
      extension=""
+     validate="${validate}"
+     catalogfile="${catalogfile}"
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="fqdn"    expression="${fqdn}"/>
@@ -804,11 +806,14 @@ or delete the DOCTYPE definition -->
     mandatory:   no
 
     -Dvalidate=
-    value:       true, false
+    value:       true, false, dynamic
     Indicates whether certain xslt transformations perform validation of input
     documents. 
+    If true, perform validation, fail if no schema could be found.
+    If false, do not perform validation
+    If dynamic, perform validation if there is a schema, do not fail otherwise.
     environment: -
-    default:     true
+    default:     dynamic
     mandatory:   no
 
     -Ddebugopts=

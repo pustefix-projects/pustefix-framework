@@ -6,7 +6,18 @@
   <xsl:param name="classname"/>
   <xsl:param name="package"/>
   
+  <!--
+  // TODO 2004-12-06 adam corrected spelling of occurence (was occurance).
+  changed schema example/core/schema/interfacewrapper200401.xsd
+  to allow both, correct: "occurence" old one with typo "occurence" 
+  remove the "occurance" stuff herein, once it can be expected anyone has updated its files
+  to the new spelling. Mind to update schema file.
+  -->
+  
   <xsl:template match="iwrp:interface" ><xsl:param name="extends">
+  <xsl:if test="iwrp:interface/iwrp:param/@occurance">
+    <xsl:message>The use of attribute occurance (with 'a')is deprecated, use occurence (with 'e') instead.</xsl:message>
+  </xsl:if>
       <xsl:choose>
         <xsl:when test="@extends">
           <xsl:value-of select="@extends"/>
@@ -63,16 +74,18 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         IWrapperParamPreCheck  pre;
         IWrapperParamPostCheck post;
     <xsl:for-each select="/iwrp:interface/iwrp:param">
-      <xsl:variable name="occurance">
+      <xsl:variable name="occurence">
         <xsl:choose>
           <xsl:when test="@occurance = 'optional'">true</xsl:when>
           <xsl:when test="@occurance = 'indexed'">indexed</xsl:when>
+          <xsl:when test="@occurence = 'optional'">true</xsl:when>
+          <xsl:when test="@occurence = 'indexed'">indexed</xsl:when>
           <xsl:otherwise>false</xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
       <xsl:variable name="pname" select="@name"/>
       <xsl:choose>
-        <xsl:when test="$occurance = 'indexed'">
+        <xsl:when test="$occurence = 'indexed'">
         // <xsl:value-of select="$pname"/>
         pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>");
         idxprms.put("<xsl:value-of select="$pname"/>", pindx);
@@ -98,7 +111,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
 
         <xsl:otherwise>
         // <xsl:value-of select="$pname"/>
-        pinfo  = new IWrapperParamInfo("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurance"/><xsl:text>, </xsl:text>
+        pinfo  = new IWrapperParamInfo("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurence"/><xsl:text>, </xsl:text>
           <xsl:choose>
             <xsl:when test="./iwrp:default">
               <xsl:text>new de.schlund.pfixxml.RequestParam[] {</xsl:text>
@@ -112,7 +125,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
             </xsl:when>
             <xsl:otherwise>null</xsl:otherwise>
           </xsl:choose>);
-          <xsl:if test="@missingscode and $occurance = 'false'">
+          <xsl:if test="@missingscode and $occurence = 'false'">
         pinfo.setCustomSCode("<xsl:value-of select="@missingscode"/>");
           </xsl:if>
         params.put("<xsl:value-of select="$pname"/>", pinfo);
@@ -140,9 +153,11 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     </xsl:for-each>
     }
     <xsl:for-each select="/iwrp:interface/iwrp:param">
-      <xsl:variable name="occurance">
+      <xsl:variable name="occurence">
         <xsl:choose>
+          <xsl:when test="@occurence = 'optional'">true</xsl:when>
           <xsl:when test="@occurance = 'optional'">true</xsl:when>
+          <xsl:when test="@occurence = 'indexed'">indexed</xsl:when>
           <xsl:when test="@occurance = 'indexed'">indexed</xsl:when>
           <xsl:otherwise>false</xsl:otherwise>
         </xsl:choose>
@@ -156,7 +171,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
       <xsl:variable name="pname" select="@name"/>
       <xsl:variable name="ptype" select="@type"/>
       <xsl:choose>
-        <xsl:when test="$occurance = 'indexed'">
+        <xsl:when test="$occurence = 'indexed'">
     // <xsl:value-of select="$pname"/>
     public <xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> get<xsl:value-of select="$pname"/>(String index) {
         return (<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/>) gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamInfoForIndex(index).getValue<xsl:if test="not(string($freq) = '')">Arr</xsl:if>();

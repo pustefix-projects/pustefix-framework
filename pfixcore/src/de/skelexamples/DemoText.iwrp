@@ -20,7 +20,7 @@
 <!--
 	Below you'll see an example using an Integer
 	
-  <param name="Zahl" type="java.lang.Integer" occurance="optional" frequency="multiple">
+  <param name="Zahl" type="java.lang.Integer" occurence="optional" frequency="multiple">
     <caster class="de.schlund.pfixcore.generator.casters.ToInteger"/>
     <postcheck class="de.schlund.pfixcore.generator.postchecks.IntegerRange">
       <cparam name="range" value="0:10"/>
