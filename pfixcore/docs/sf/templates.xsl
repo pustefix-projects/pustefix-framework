@@ -4,10 +4,6 @@
 
   <xsl:output method="html"/>
 
-  <xsl:template match="pustefix">
-    <i><b>Pustefix</b></i>
-  </xsl:template>
-  
   <xsl:template match="page">
     <xsl:message>*** Generating <xsl:value-of select="@name"/> </xsl:message>
     <saxon:output href="gen/{@name}.html">
@@ -32,10 +28,14 @@
             .mainbody       { background-color: #ffeedd; padding-left: 10px;}
             .navibody       { width: 120px; background-color:#aaccff; border-right: solid black 1px; }
             
-            h1 { background-color: #6688bb; color: #eeeeee; font-family: arial, helvetica; font-weight: bold; }
+            h1 { background-color: #6688bb; color: #eeeeee; font-family: arial, helvetica; font-weight: bold; font-size: 16px; }
             h1:before { content: url("img/triangle.gif") }
 
-            .stdtable       { border-spacing: 0px; margin-right: 40px; margin-left: 40px; background: #ccbbbb; }
+            h2 { color: #6688bb; font-family: arial, helvetica; font-weight: bold; font-size: 14px; }
+
+            .mainbody > div > p { padding-left: 10px; padding-right: 10px; }
+            
+            .stdtable       { border-spacing: 0px; margin-right: 40px; margin-left: 40px; background: #ddcccc; }
             .stdtable tr    { vertical-align: top; }
             .stdtable tr td { padding: 4px; border-bottom: 1px black solid; }
             
@@ -57,16 +57,14 @@
                 </xsl:call-template>
               </td>
               <td class="mainbody">
-                <div style="padding-right: 5px;">
-                  <xsl:apply-templates select="document(concat(@name, '_main.xml'))">
-                    <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param></xsl:apply-templates>
-                </div>
-                <br/>
+                <xsl:apply-templates select="document(concat(@name, '_main.xml'))">
+                  <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param></xsl:apply-templates>
               </td>
             </tr>
             <tr>
               <td class="navibody">&#160;</td>
               <td colspan="2" align="right" class="mainbody">
+                <br/>
                 <a href="http://sourceforge.net">
                   <img src="http://sourceforge.net/sflogo.php?group_id=72089&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/>
                 </a>
@@ -79,6 +77,10 @@
     <xsl:apply-templates/>
   </xsl:template>
 
+  <xsl:template match="pustefix">
+    <i><b>Pustefix</b></i>
+  </xsl:template>
+  
   <xsl:template match="*">
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
@@ -102,12 +104,6 @@
               <xsl:value-of select="$class"/>
               <xsl:if test="@name = $thepage"> selected</xsl:if>
             </xsl:attribute>
-<!--             <xsl:if test="not(preceding-sibling::page) and $depth = 0"> -->
-<!--               <xsl:attribute name="style">border-top: 1px black solid;</xsl:attribute> -->
-<!--             </xsl:if> -->
-<!--             <xsl:if test="not(following-sibling::page) and $depth = 0"> -->
-<!--               <xsl:attribute name="style">border-bottom: 1px black solid;</xsl:attribute> -->
-<!--             </xsl:if> -->
             <xsl:value-of select="@title"/>
           </div>
         </a>
