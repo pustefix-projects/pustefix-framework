@@ -79,8 +79,7 @@ public class AppClassLoader extends java.lang.ClassLoader {
 
         //load from repository
         if(debug) CAT.debug("Try to load with AppClassLoader: "+name);
-        String pack=getPackageName(name);
-        if(loader.isIncludedPackage(pack) && !loader.isExcludedClass(name)) {
+        if(loader.isReloadableClass(name)) {
             byte[] data=getClassData(name);
             if(data==null) {
                 if(debug) CAT.debug("AppClassLoader didn't find class: "+name);
@@ -92,7 +91,7 @@ public class AppClassLoader extends java.lang.ClassLoader {
                 return c;
             }
         } else {
-            if(debug) CAT.debug("No inclusion found for package: "+pack);
+            if(debug) CAT.debug("No inclusion found for class: "+name);
         }
 
         //load from parent
@@ -210,14 +209,6 @@ public class AppClassLoader extends java.lang.ClassLoader {
             }
             return false;
         }
-    }
-    
-    protected String getPackageName(String className) {
-        int ind=className.lastIndexOf('.');
-        if(ind>0) {
-            return className.substring(0,ind);
-        } 
-        return "";
     }
 
     public URL getResource(String name) {
