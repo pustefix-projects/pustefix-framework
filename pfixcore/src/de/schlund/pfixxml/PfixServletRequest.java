@@ -77,7 +77,6 @@ public class PfixServletRequest {
     public void initPerfLog() {
         perflog   = new LinkedList();
         perfstack = new LinkedList();
-        starttime = System.currentTimeMillis();
     }
 
     public void startLogEntry() {
@@ -161,6 +160,7 @@ public class PfixServletRequest {
      * @param cUtil
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
+        starttime   = System.currentTimeMillis();
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();
@@ -173,6 +173,10 @@ public class PfixServletRequest {
 
     //~ Methods ....................................................................................
 
+    public long getCreationTimestamp() {
+        return starttime;
+    }
+    
     /**
      * Retrieve the server name form the orginal request
      * @return the name
