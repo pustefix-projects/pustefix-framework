@@ -22,6 +22,10 @@
 	areHandlerActive, isPageAccessible, needsData):
          -adjusted perf-logging with typed perf-events.
 
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+	prevent logging by doing nothing if not PFXPERF.isDebugEnabled 
+	in initPerfLog, startLogEntry, endLogEntry, printLog
+
 2004-06-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): 

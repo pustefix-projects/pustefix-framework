@@ -72,6 +72,9 @@ public class PfixServletRequest {
     private long                  starttime        = 0;
 
     public synchronized void initPerfLog() {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
         if (perflog == null) {
             perflog   = new LinkedList();
         }
@@ -81,6 +84,10 @@ public class PfixServletRequest {
     }
 
     public synchronized void startLogEntry() {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
+        
         if (perflog != null) {
             long now   = System.currentTimeMillis();
 
@@ -91,6 +98,10 @@ public class PfixServletRequest {
     }
 
     public synchronized void endLogEntry(String info, long delay) {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
+        
         if (perflog != null) {
             long      now   = System.currentTimeMillis();
             PerfEvent start = null;
@@ -113,6 +124,10 @@ public class PfixServletRequest {
     }
     
     public synchronized void endLogEntry(PerfEventType p) {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
+        
         if (perflog != null) {
             long      now   = System.currentTimeMillis();
             PerfEvent start = null;
@@ -140,6 +155,9 @@ public class PfixServletRequest {
     }
 
     public void printLog2() {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
         if (session != null && perflog != null) {
             int depth  = 0;
             for (int i = 0; i < perflog.size(); i++) {
@@ -164,6 +182,9 @@ public class PfixServletRequest {
     }
     
     public void printLog() {
+        if(!PFXPERF.isDebugEnabled()) {
+            return;
+        }
         StringBuffer sb = new StringBuffer(255);
         int depth = 0;
         for(int i=0; i<perflog.size(); i++) {
