@@ -51,7 +51,7 @@ public class IHandlerContainerManager implements PropertyObject {
             PageRequest       page   = context.getCurrentPageRequest();
             IHandlerContainer retval = (IHandlerContainer) known.get(page); 
             if (retval == null) {
-                LOG.debug("----- cachemiss for IHandlerContainer on page " + page.getName());
+                // LOG.debug("----- cachemiss for IHandlerContainer on page " + page.getName());
                 try {
                     
                     classname = props.getProperty(IHandlerSimpleContainer.PROP_CONTAINER);
@@ -65,13 +65,13 @@ public class IHandlerContainerManager implements PropertyObject {
                 } catch (IllegalAccessException e) {
                     LOG.error("unable access class [" + classname + "]", e);
                 } catch (ClassNotFoundException e) {
-                    LOG.error("unable to find class [" + classname + "]", e);
+                     LOG.error("unable to find class [" + classname + "]", e);
                 } catch (ClassCastException e) {
                     LOG.error("class [" + classname + "] does not implement the interface IHandlerContainer", e);
                 }
                 known.put(page, retval);
             } else {
-                LOG.debug("+++++ cachehit for IHandlerContainer on page " + page.getName());
+                // LOG.debug("+++++ cachehit for IHandlerContainer on page " + page.getName());
             }
             return retval;
         }
