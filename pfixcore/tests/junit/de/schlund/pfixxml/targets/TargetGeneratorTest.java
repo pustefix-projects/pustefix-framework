@@ -29,7 +29,6 @@ public class TargetGeneratorTest extends TestCase {
         assertEquals("foo", gen.getName());
         assertEquals("bar", gen.getLanguage());
         assertNotNull(gen.getDisccachedir().getRelative());
-        assertNotNull(gen.getRecorddir().getRelative());
     }
 
     public void testTarget() throws Exception {
