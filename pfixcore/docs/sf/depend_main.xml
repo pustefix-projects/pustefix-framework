@@ -1,0 +1,71 @@
+<div>
+  <h1>The depend.xml.in file</h1>
+
+  <p>
+    The <code>depend.xml</code> configuration file serves two
+    purposes: First, it is used to create the <i>hierarchical page
+    structure</i> of the project by defining a <i>tree of pages</i>.
+    Then, it is used to define the internal structure of the pages by
+    defining for every single page, the <i>tree of transformations</i>
+    that need to be applied to certain files to get the final
+    stylesheet (which is the representation of the page in
+    <pustefix/>). For an overview over the transformation aspect of
+    the whole framework, please go <a href="xml.html">here</a>.
+  </p>
+
+  <p>To make life a little easier, you never edit the <code>depend.xml</code> file directly,
+    but instead a <code>depend.xml.in</code> file which is used to
+    produce the <code>depend.xml</code> file (this is done
+    automatically by the build system of the skeleton package and the
+    CVS checkout).
+  </p>
+  
+  <p>The structure of the config file is show below:
+  </p>
+  
+  <xmlcode>
+    <make cachedir="..." recorddir="...">
+      <xmlcodeOFF>
+        <br/><br/>
+        <table class="stdtable">
+          <tr>
+            <th>Attribute</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>cachedir</td>
+            <td>
+              <p>This attribute designates a directory where the generated stylesheets are saved to.</p>
+              <p>NOTE: The attribute is <b>mandatory</b>; you must give a path relative to the <b>docroot</b> here!</p>
+            </td>
+          </tr>
+          <tr>
+            <td>record_dir</td>
+            <td>
+              <p>This attribute designates the directory that is used
+              to save recorded trails to (see the documentation for
+              the <a href="testclient.html">testclient</a> to learn
+              more about the use of this attribute).</p> <p>NOTE: The
+              attribute is <b>optional</b>, if given, it must be
+              either an absolute path name or a relative path which is
+              interpreted as being relative to the <b>docroot</b></p>
+            </td>
+          </tr>
+        </table>
+      </xmlcodeOFF>
+      <navigation>
+        <page name="foo" handler="/xml/static">
+          <page name="sub_foo1" handler="/xml/static"/>
+          <page name="sub_foo2" handler="/xml/static"/>
+          ...
+        </page>
+        <page name="bar" handler="/xml/config">
+          ...
+        </page>
+        ...
+      </navigation>
+    </make>
+  </xmlcode>
+</div>
+
+  
