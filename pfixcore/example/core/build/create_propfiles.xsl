@@ -224,7 +224,7 @@
       </xsl:for-each>
     </xsl:for-each>
   </xsl:template>
-  
+
   <xsl:template match="context">
     <xsl:text>context.class=</xsl:text>
     <xsl:choose>
@@ -294,6 +294,28 @@
     <xsl:text>context.adminmode.page=</xsl:text>
     <xsl:value-of select="./@page"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
+
+  <xsl:template match="exceptions">
+    <xsl:for-each select="exception">
+      <xsl:variable name="processor">
+        <xsl:choose>
+          <xsl:when test="@processor"><xsl:value-of select="@processor" /></xsl:when>
+          <xsl:otherwise>de.schlund.pfixxml.exceptionprocessor.SimpleExceptionProcessor</xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.type=</xsl:text>
+      <xsl:value-of select="@type"/><xsl:text>&#xa;</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.forward=</xsl:text>
+      <xsl:value-of select="@forward"/><xsl:text>&#xa;</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.page=</xsl:text>
+      <xsl:value-of select="@page"/><xsl:text>&#xa;</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.jms=</xsl:text>
+      <xsl:value-of select="@jms"/><xsl:text>&#xa;</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.processor=</xsl:text>
+      <xsl:value-of select="$processor"/><xsl:text>&#xa;</xsl:text>
+    </xsl:for-each>
+  </xsl:template>
+
 
 </xsl:stylesheet>
 
