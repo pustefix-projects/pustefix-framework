@@ -75,15 +75,50 @@
   </dependencies>
 
   <developers>
+    <!-- sorted by "id" -->
+
     <developer>
-      <name>Jens Lautenbacher</name>
-      <id>jenstl</id>
-      <email>jenstl@users.sourceforge.net</email>
+      <name>Andreas Kurth</name>
+      <id>akurth</id>
+      <email>akurth@users.sourceforge.net</email>
       <organization>Schlund + Partner</organization>
       <roles>
         <role>Unix Development</role>
       </roles>
-      <url>http://sourceforge.net/users/jenstl/</url>
+      <url>http://sourceforge.net/users/akurth/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Corinna Herrmann</name>
+      <id>ch17</id>
+      <email>ch17@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/ch17/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Andreas Ecker</name>
+      <id>ecker</id>
+      <email>ecker@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/ecker/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Benjamin Reitzammer</name>
+      <id>firstbman</id>
+      <email>firstbman@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/firstbman/</url>
       <timezone>+1</timezone>
     </developer>
     <developer>
@@ -109,6 +144,28 @@
       <timezone>+1</timezone>
     </developer>
     <developer>
+      <name>Jens Lautenbacher</name>
+      <id>jenstl</id>
+      <email>jenstl@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/jenstl/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Marcus Knappe</name>
+      <id>marcusatschlund</id>
+      <email>marcusatschlund@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/marcusatschlund/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
       <email>mlhartme@users.sourceforge.net</email>
@@ -131,14 +188,135 @@
       <timezone>+1</timezone>
     </developer>
     <developer>
-      <name>Andreas Ecker</name>
-      <id>ecker</id>
-      <email>ecker@users.sourceforge.net</email>
+      <name>Ralf Rapude</name>
+      <id>rrapude</id>
+      <email>rrapude@users.sourceforge.net</email>
       <organization>Schlund + Partner</organization>
       <roles>
         <role>Unix Development</role>
       </roles>
-      <url>http://sourceforge.net/users/ecker/</url>
+      <url>http://sourceforge.net/users/rrapude/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Niels Schelbach</name>
+      <id>schelby</id>
+      <email>schelby@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/schelby/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Tim Schuppener</name>
+      <id>schuppi</id>
+      <email>schuppi@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/schuppi/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Tanjev Stuhr</name>
+      <id>tanjev</id>
+      <email>tanjev@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/tanjev/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Tobias Fehrenbach</name>
+      <id>tfehrenbach</id>
+      <email>tfehrenbach@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/tfehrenbach/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Tobias Kraft</name>
+      <id>tobik74</id>
+      <email>tobik74@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/tobik74/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Thomas Braun</name>
+      <id>tombraun</id>
+      <email>tombraun@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/tombraun/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Thomas Stieler</name>
+      <id>tstieler</id>
+      <email>tstieler@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/tstieler/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Ute Platzer</name>
+      <id>uplatze</id>
+      <email>uplatze@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/uplatze/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Sebastian Werner</name>
+      <id>wpbasti</id>
+      <email>wpbasti@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/wpbasti/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Sonja Pieper</name>
+      <id>yashima</id>
+      <email>yashima@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/yashima/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Volker Zaich</name>
+      <id>zaich</id>
+      <email>zaich@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/zaich/</url>
       <timezone>+1</timezone>
     </developer>
   </developers>
