@@ -9,7 +9,9 @@
         Switched from Tomcat 4.1.30 to 5.0.27.
       </action>
       <action dev="mlhartme" type="update">
-        Convert documentation to xdoc and configure a maven build.
+        Convert documentation to xdoc and configure a maven build. 
+        The <code>docs</code> directory is gone, all documentation resides in 
+        <code>xdocs</code> now.
       </action>
     </release>
     <release version="0.6.5" date="2004-07-11">
