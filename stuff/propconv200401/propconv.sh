@@ -25,9 +25,10 @@ usage: $AH_BN [options]
   -c, --copy          copies all .prop.in to non-existing .prop.in.orig (see --remove)
   -C, --convert       converts all .prop.in.orig to .prop.in (overwriting existing)
   -d, --docroot=DDIR
-  -D, --dump          show all files that would be processed
+      --debug         enable debug output (no debug output yet)
       --diff          diffs all .prop.orig to .prop files
       --diffsort      sorts and diffs all .prop.orig.sorted to .prop.sorted files
+  -D, --dump          show all files that would be processed
       --pattern=PAT   egreps PAT against filenames of docroot relative .prop.in filenames
                       which are "./" prefixed. E.g.: ./someapp/conf/help.prop.in
                       Performs operations only on matching filenames
@@ -52,7 +53,7 @@ fi
 # Note that we use `"$@"' to let each command-line parameter expand to a
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
-TEMP=`getopt -o hcCd:Dp:rRs:t --long help,copy,convert,docroot:,dump,diff,diffsort,pattern:,project:,propconv:,remove,suffix:,restore,todo,c-long:: \
+TEMP=`getopt -o hcCd:Dp:rRs:t --long help,copy,convert,docroot:,debug,diff,diffsort,dump,pattern:,project:,propconv:,remove,suffix:,restore,todo,c-long:: \
      -n "$AH_BN" -- "$@"`
 RET=$?
 #echo TEMP=">>>"$TEMP"<<<"
@@ -67,9 +68,10 @@ while true ; do
         -c|--copy)      copy="true" ; shift ;;
         -C|--convert)   convert="true" ; shift ;;
         -d|--docroot)   d="$2" ; docroot="$d" ; shift 2 ;;
-        -D|--dump)      dump="true" ; shift ;;
            --diff)      diff="true" ; shift ;;
            --diffsort)  diffsort="true" ; shift ;;
+        -D|--dump)      dump="true" ; shift ;;
+           --debug)     debug="1" ; shift ;;
         -p|--propconv)  p="$2" ; propconv="$p" ; shift 2 ;;
            --pattern)   pattern="true"; pat="$2" ; shift 2 ;;
            --project)   project="true"; projectver="$2" ; shift 2 ;;
