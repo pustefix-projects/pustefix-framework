@@ -235,7 +235,7 @@
             <tr>
               <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
               <td nowrap="nowrap" style="padding: 5px">
-                <ixsl:value-of select="substring-after(@auxpath, '{$docroot}/')"/>
+                <ixsl:value-of select="@auxpath"/>
                 <ixsl:if test="@type = '[text]'">@<ixsl:value-of select="@auxpart"/>@<ixsl:value-of select="@auxproduct"/></ixsl:if>
               </td> 
               <td style="padding: 5px">
@@ -285,7 +285,7 @@
       <ixsl:for-each select="/formresult/allimages/directory">
         <tr>
           <td class="editor_sidebar_box" nowrap="nowrap">
-            Directory: <b><ixsl:value-of select="substring-after(@name, '{$docroot}/')"/></b>
+            Directory: <b><ixsl:value-of select="@name"/></b>
           </td>
         </tr>
         <ixsl:for-each select="./image">
@@ -328,7 +328,7 @@
       <ixsl:for-each select="{$path}/directory">
         <tr>
           <td class="editor_sidebar_box"  nowrap="nowrap">
-            Directory: <b><ixsl:value-of select="substring-after(@name, '{$docroot}/')"/></b>
+            Directory: <b><ixsl:value-of select="@name"/></b>
           </td>
         </tr>
         <ixsl:for-each select="./path">
@@ -389,7 +389,7 @@
       <ixsl:for-each select="{$path}/directory">
         <tr>
           <td class="editor_sidebar_box"  nowrap="nowrap">
-            Directory: <b><ixsl:value-of select="substring-after(@name, '{$docroot}/')"/></b>
+            Directory: <b><ixsl:value-of select="@name"/></b>
           </td>
         </tr>
         <ixsl:for-each select="./path">
@@ -444,7 +444,7 @@
       <ixsl:for-each select="{$path}/directory">
         <tr>
           <td colspan="2" class="editor_sidebar_box"  nowrap="nowrap">
-            Directory: <b><ixsl:value-of select="substring-after(@name, '{$docroot}/')"/></b>
+            Directory: <b><ixsl:value-of select="@name"/></b>
           </td>
         </tr>
         <ixsl:for-each select="./path">
@@ -764,7 +764,7 @@
           <tr>
             <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
             <td nowrap="nowrap">
-              <ixsl:value-of select="substring-after(@path, '{$docroot}/')"/>
+              <ixsl:value-of select="@path"/>
             </td>
           </tr>
         </ixsl:for-each>
@@ -806,7 +806,7 @@
               </pfx:button>
             </td>
             <td>
-              <ixsl:value-of select="substring-after(@path, '{$docroot}/')"/>
+              <ixsl:value-of select="@path"/>
             </td>
           </tr>
         </ixsl:for-each>
@@ -837,7 +837,7 @@
                 <pfx:argument name="imgsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
                 <pfx:argument name="imgsel.Modtime"><ixsl:value-of select="@modtime"/></pfx:argument>
                 <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
-                <ixsl:value-of select="substring-after(@path, '{$docroot}/' )"/>
+                <ixsl:value-of select="@path"/>
               </pfx:button>
             </td>
             <td width="50%">
@@ -848,7 +848,7 @@
                 <ixsl:otherwise>
                   <img border="0">
                     <ixsl:attribute name="src">
-                      <ixsl:value-of select="substring-after(@path, '{$docroot}')"/>?<ixsl:value-of select="@modtime"/>
+                      <ixsl:value-of select="@path"/>?<ixsl:value-of select="@modtime"/>
                     </ixsl:attribute>
                   </img>
                 </ixsl:otherwise>
@@ -1246,7 +1246,7 @@
         <td class="editor_main_emph">Current include:
           <ixsl:value-of select="/formresult/current{$type}info/@part"/>
           <span style="color: #9999cc">@</span>
-          <ixsl:value-of select="substring-after(/formresult/current{$type}info/@path, '{$docroot}/')"/>
+          <ixsl:value-of select="/formresult/current{$type}info/@path"/>
           (Product: <ixsl:value-of select="/formresult/current{$type}info/@product"/>)
         </td>
       </tr>
@@ -1359,7 +1359,7 @@
         </pfx:xinp>
         <table width="100%">
           <tr>
-            <td nowrap="nowrap" class="editor_main_emph">Current image: <ixsl:value-of select="substring-after(/formresult/currentimageinfo/@path, '{$docroot}')"/>
+            <td nowrap="nowrap" class="editor_main_emph">Current image: <ixsl:value-of select="/formresult/currentimageinfo/@path"/>
             </td>
           </tr>
         </table>
@@ -1391,7 +1391,7 @@
                         <ixsl:otherwise>
                           <img border="0">
                             <ixsl:attribute name="src">
-                              <ixsl:value-of select="substring-after(/formresult/currentimageinfo/@path, '{$docroot}')"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/>
+                              <ixsl:value-of select="/formresult/currentimageinfo/@path"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/>
                             </ixsl:attribute>
                           </img>
                         </ixsl:otherwise>

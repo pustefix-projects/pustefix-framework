@@ -21,6 +21,8 @@ package de.schlund.pfixxml.targets;
 import java.lang.reflect.*;
 import java.util.*;
 
+import de.schlund.util.*;
+
 /**
  * AuxDependencyFactory.java
  *
@@ -41,8 +43,8 @@ public class AuxDependencyFactory {
         return instance;
     }
 
-    public synchronized AuxDependency getAuxDependency(DependencyType type, String path, String part, String product) {
-        String        key = type.getTag() + "@" + path + "@" + part + "@" + product;
+    public synchronized AuxDependency getAuxDependency(DependencyType type, Path path, String part, String product) {
+        String        key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         AuxDependency ret = (AuxDependency) includeparts.get(key);
         if (ret == null) {
             ret = createAuxDependencyForType(type, path, part, product);
@@ -51,17 +53,14 @@ public class AuxDependencyFactory {
         return ret;
     }
 
-    private AuxDependency createAuxDependencyForType(DependencyType type, String path, String part, String product) {
-        AuxDependency aux;
+    private AuxDependency createAuxDependencyForType(DependencyType type, Path path, String part, String product) {
+        Class theclass = type.getAuxDependencyClass();
         try {
-            Class       theclass    = type.getAuxDependencyClass();
-            Class       string      = path.getClass();
-            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), string, string, string});
-            aux = (AuxDependency) constructor.newInstance(new Object[]{type, path, part, product});
+            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), path.getClass(), String.class, String.class});
+            return (AuxDependency) constructor.newInstance(new Object[]{type, path, part, product});
         } catch (Exception e) {
-            throw new RuntimeException(e.toString());
+            throw new RuntimeException("cannot instantiate " + theclass.getName(), e);
         }
-        return aux;
     }
 
     public TreeSet getAllAuxDependencies() {

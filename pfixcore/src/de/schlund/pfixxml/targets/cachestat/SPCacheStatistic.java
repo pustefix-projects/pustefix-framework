@@ -328,15 +328,12 @@ public class SPCacheStatistic implements FactoryInit {
      */
     private String getProductnameForTargetGenerator(TargetGenerator tgen) {
         String dependxml = tgen.getConfigname();
-        String configattr;
         if (dependXMLToProductnameMapping.containsKey(dependxml)) {
-            configattr = (String) dependXMLToProductnameMapping.get(dependxml);
+            return (String) dependXMLToProductnameMapping.get(dependxml);
         } else {
-            String configname = tgen.getConfigname();
-            configattr = configname.substring(tgen.getConfigname().indexOf(tgen.getDocroot()), configname.length());
-            if(CAT.isDebugEnabled()) CAT.debug("No productname found !"+configname+"-->"+configattr);
+            if(CAT.isDebugEnabled()) CAT.debug("No productname found !"+dependxml);
+            return dependxml;
         }
-        return configattr;
     }
 
     private String formatHitrate(double hits, double misses) {

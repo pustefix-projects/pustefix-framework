@@ -116,16 +116,11 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
             AuxDependency curr = (AuxDependency) i.next();
             String docroot = tgen.getDocroot();
             String dir  = curr.getDir();
-            String path = curr.getPath();
-            String name = path.substring(path.lastIndexOf("/") + 1);
-
+            Path path = curr.getPath();
+            String name = path.getName();
             try {
-                String newPath = path.substring(docroot.length(), path.length());
-
-
-                
                 Element img = resdoc.createSubNode(root, "image");
-                img.setAttribute("path", newPath);
+                img.setAttribute("path", path.getRelative());
                 img.setAttribute("name", name);
                 if (curr.getModTime() == 0) {
                     img.setAttribute("missing", "true");

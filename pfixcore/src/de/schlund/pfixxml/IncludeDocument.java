@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 
 
@@ -73,12 +74,12 @@ public class IncludeDocument {
      * @param mutable determine if the document is mutable or not. Any attempts
      * to modify an immutable document will cause an exception.
      */
-    public void createDocument(String path, boolean mutable) throws SAXException, IOException, TransformerException {
-        File tmp = new File(path);
+    public void createDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException {
+        File tmp = path.resolve();
         modTime = tmp.lastModified();
         
         try {
-            doc = docBuilder.parse(path);
+            doc = docBuilder.parse(tmp);
         } catch (SAXParseException ex) {
             if (ex instanceof SAXParseException) {
                 SAXParseException saxpex = (SAXParseException) ex;
@@ -93,7 +94,7 @@ public class IncludeDocument {
             throw ex;
         }
         Element rootElement = doc.getDocumentElement();
-        rootElement.setAttribute(INCPATH, path);
+        rootElement.setAttribute(INCPATH, path.getRelative());
         if (! mutable)
             doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
     }

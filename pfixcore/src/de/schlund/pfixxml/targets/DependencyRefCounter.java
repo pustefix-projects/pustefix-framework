@@ -67,7 +67,7 @@ public class DependencyRefCounter {
             }
             HashSet tmp  = (HashSet) alldeps.get(aux);
             CAT.debug("+++ Refing for target " + target.getTargetKey() + " aux " +
-                     aux.getType() + " " + aux.getPath() + "@" + aux.getPart());
+                     aux.getType() + " " + aux.getPath().getRelative() + "@" + aux.getPart());
             tmp.add(target);
             HashSet tmp2 = (HashSet) alltargets.get(target);
             tmp2.add(aux);
@@ -81,7 +81,7 @@ public class DependencyRefCounter {
                 for (Iterator i = affaux.iterator(); i.hasNext(); ) {
                     AuxDependency aux = (AuxDependency) i.next();
                     if (aux.isDynamic()) {
-                        CAT.debug("--- Unrefing aux " + aux.getType() + " " + aux.getPath() + "@" + aux.getPart());
+                        CAT.debug("--- Unrefing aux " + aux.getType() + " " + aux.getPath().getRelative() + "@" + aux.getPart());
                         HashSet targets = (HashSet) alldeps.get(aux);
                         targets.remove(target);
                         if (targets.size() == 0) {

@@ -18,20 +18,24 @@
 */
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
-
+import javax.xml.transform.Source;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
@@ -43,6 +47,8 @@ import com.icl.saxon.aelfred.SAXDriver;
 import com.icl.saxon.om.Builder;
 import com.icl.saxon.om.DocumentInfo;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
+
+import de.schlund.util.*;
 
 
 /**
@@ -163,7 +169,11 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @return the created stylesheet(currently saxons PreparedStyleSheet)
      * @throws TransformerConfigurationException on errors
      */
-    public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException {
+    public final Object xslObjectFromDisc(String docroot, String path) throws TransformerConfigurationException {
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("absolute path expected: " + path);
+            // otherwise, I'd construct an wrong uri
+        }
         // TransformerFactory.newInstance() does not work with ant, since the Factory
         // does not seem to pick the correct classloader with saxon in its classpath.
         // Simple instantiation or classloading works, since the current classloader is defined
@@ -172,8 +182,9 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         TransformerFactory transFac      = new com.icl.saxon.TransformerFactoryImpl();
         
         transFac.setErrorListener(new PFErrorListener());
-        StreamSource       stream_source = new StreamSource("file://" + path);
-        Object             val           = null;
+        transFac.setURIResolver(new FileResolver(new File(docroot)));
+        StreamSource stream_source = new StreamSource("file://" + path);
+        Templates    val           = null;
         try {
             val = transFac.newTemplates(stream_source);
         } catch (TransformerConfigurationException e) {
@@ -201,6 +212,10 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @throws TransformerException on errors
      */
     public final Document xmlObjectFromDisc(String path) throws TransformerException {
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("absolute path expected: " + path);
+            // otherwise, I'd construct an wrong uri
+        }
         InputSource input = new InputSource("file://" + path);
         // use the com.icl.saxon.aelfred.SAXDriver here
         XMLReader    xml_reader = new SAXDriver();
@@ -220,10 +235,6 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
             CAT.error(sb.toString());
             throw e;
         }
-        saxsource  = null;
-        controller = null;
-        input      = null;
-        xml_reader = null;
         return (Document) dInfo;
     }
 
@@ -264,11 +275,45 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         controller = null;
         return tiny;
     }
-    
-    
 }
 
-
+class FileResolver implements URIResolver {
+	private static final String SEP = File.separator; 
+    
+    // always with tailing /
+    private final String root;
+    
+    public FileResolver(File root) {
+        this.root = root.getAbsolutePath() + "/";
+    }
+    
+    /**
+     * Resolve file url relative to root. 
+     * @param base ignored, always relative to root 
+     * */
+    public Source resolve(String href, String base) throws TransformerException {
+        URI uri;
+        String path;
+        File file;
+        
+        try {
+            uri = new URI(href);
+        } catch (URISyntaxException e) {
+        	return new StreamSource(href);
+        }
+        if (uri.getScheme() != null) {
+            // we don't handle uris with an explicit scheme
+        	return new StreamSource(href);
+        }
+      	path = 	uri.getPath();
+       	try {
+       	    file = Path.create(root, path).resolve();
+       	} catch (IllegalArgumentException e) {
+       	    throw new TransformerException("cannot resolve " + href, e);
+       	}
+       	return new StreamSource(file);
+    }
+}
 
 /**
  * Implementation of ErrorListener interface.

@@ -31,6 +31,6 @@ import org.w3c.dom.*;
  */
 
 interface PustefixXSLTProcessor extends PublicXSLTProcessor {
-    Object   xslObjectFromDisc(String path) throws TransformerConfigurationException;
+    Object   xslObjectFromDisc(String docroot, String path) throws TransformerConfigurationException;
     Document xmlObjectFromDisc(String path) throws TransformerException;
 }

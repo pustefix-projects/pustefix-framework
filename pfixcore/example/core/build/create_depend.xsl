@@ -51,12 +51,12 @@
     <target name="master.xsl" type="xsl">
       <depxml name="core/xsl/master.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
-      <depaux name="{$docroot}/core/xsl/default_copy.xsl"/>
-      <depaux name="{$docroot}/core/xsl/include.xsl"/>
-      <depaux name="{$docroot}/core/xsl/utils.xsl"/>
-      <depaux name="{$docroot}/core/xsl/navigation.xsl"/>
-      <depaux name="{$docroot}/core/xsl/forminput.xsl"/>
-      <depaux name="{$docroot}/{$project}/conf/depend.xml"/>
+      <depaux name="core/xsl/default_copy.xsl"/>
+      <depaux name="core/xsl/include.xsl"/>
+      <depaux name="core/xsl/utils.xsl"/>
+      <depaux name="core/xsl/navigation.xsl"/>
+      <depaux name="core/xsl/forminput.xsl"/>
+      <depaux name="{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
@@ -72,10 +72,10 @@
     <target name="metatags.xsl" type="xsl">
       <depxml name="core/xsl/metatags.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
-      <depaux name="{$docroot}/core/xsl/default_copy.xsl"/>
-      <depaux name="{$docroot}/core/xsl/include.xsl"/>
-      <depaux name="{$docroot}/core/xsl/utils.xsl"/>
-      <depaux name="{$docroot}/{$project}/conf/depend.xml"/>
+      <depaux name="core/xsl/default_copy.xsl"/>
+      <depaux name="core/xsl/include.xsl"/>
+      <depaux name="core/xsl/utils.xsl"/>
+      <depaux name="{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
@@ -91,10 +91,10 @@
       <depxsl name="master.xsl"/>
       <xsl:if test="./include or /make/global/include">
         <xsl:for-each select="./include">
-          <depaux name="{$docroot}/{@stylesheet}"/>
+          <depaux name="{@stylesheet}"/>
         </xsl:for-each>
         <xsl:for-each select="/make/global/include">
-          <depaux name="{$docroot}/{@stylesheet}"/>
+          <depaux name="{@stylesheet}"/>
         </xsl:for-each>
         <param name="stylesheets_to_include">
           <xsl:attribute name="value">
@@ -136,7 +136,7 @@
   <xsl:template name="render_include_ssheets">
     <xsl:if test="./include">
       <xsl:for-each select="include">
-        <depaux name="{$docroot}/{@stylesheet}"/>
+        <depaux name="{@stylesheet}"/>
       </xsl:for-each>
       <param name="stylesheets_to_include">
         <xsl:attribute name="value">
@@ -174,7 +174,7 @@
   </xsl:template>
 
   <xsl:template match="depaux">
-    <depaux name="{$docroot}/{@name}">
+    <depaux name="{@name}">
       <xsl:if test="@type">
         <xsl:copy-of  select="@type"/>
       </xsl:if>

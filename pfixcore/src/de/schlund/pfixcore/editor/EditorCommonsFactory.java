@@ -38,6 +38,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.util.FactoryInit;
 
 /**
@@ -77,95 +78,93 @@ public class EditorCommonsFactory implements FactoryInit {
     }
     
     public synchronized void init(Properties properties) throws Exception {
-        commonfiles = new HashSet(PropertiesUtils.selectProperties(properties, "editorcommonsfactory.includefile").values());
+        commonfiles = new HashSet(PropertiesUtils.selectProperties(properties,
+                "editorcommonsfactory.includefile").values());
     }
-
     private synchronized void realInit() throws Exception {
         if (!inited) {
-            for (Iterator iter = commonfiles.iterator(); iter.hasNext(); ) {
-                String filename = (String) iter.next();
-                readFile(filename);
+            for (Iterator iter = commonfiles.iterator(); iter.hasNext();) {
+                readFile((Path) iter.next());
             }
             inited = true;
         }
     }
 
 
-    private void readFile(String filename) throws Exception {
-        File comfile = new File(filename); 
+    private void readFile(Path path) throws Exception {
+        File comfile = path.resolve();
         if (comfile.exists() && comfile.canRead() && comfile.isFile()) {
-            Object LOCK = FileLockFactory.getInstance().getLockObj(filename);
+            Object LOCK = FileLockFactory.getInstance().getLockObj(path);
             synchronized (LOCK) {
-                CAT.debug("****** Adding file " + filename + " to common includefiles *******");
+                CAT.debug("****** Adding file " + path.getRelative()
+                        + " to common includefiles *******");
                 Long modtime = new Long(comfile.lastModified());
-                incfiles.put(filename, modtime);
+                incfiles.put(path, modtime);
                 DocumentBuilder domp = dbfac.newDocumentBuilder();
-                Document        doc  = domp.parse(filename);
-                NodeList        nl   = XPathAPI.selectNodeList(doc, "/include_parts/part");
+                Document doc = domp.parse(comfile);
+                NodeList nl = XPathAPI.selectNodeList(doc,
+                        "/include_parts/part");
                 for (int i = 0; i < nl.getLength(); i++) {
-                    Element  part     = (Element) nl.item(i);
-                    String   partname = part.getAttribute("name");
+                    Element part = (Element) nl.item(i);
+                    String partname = part.getAttribute("name");
                     CAT.debug("     * Found part " + partname);
-                    NodeList prodlist = XPathAPI.selectNodeList(part, "./product");
+                    NodeList prodlist = XPathAPI.selectNodeList(part,
+                            "./product");
                     for (int j = 0; j < prodlist.getLength(); j++) {
-                        Element product  = (Element) prodlist.item(j);
-                        String  prodname = product.getAttribute("name");
+                        Element product = (Element) prodlist.item(j);
+                        String prodname = product.getAttribute("name");
                         if (partname != null && prodname != null) {
-                            AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, filename, partname, prodname);
+                            AuxDependency aux = AuxDependencyFactory
+                                    .getInstance().getAuxDependency(
+                                            DependencyType.TEXT, path,
+                                            partname, prodname);
                             allincs.add(aux);
                         }
                     }
                 }
             }
         } else {
-            CAT.warn(" ****** CAUTION! Can't read dynamic include file " + filename);
-        } 
+            CAT.warn(" ****** CAUTION! Can't read dynamic include file "
+                    + path.getRelative());
+        }
     }
-    
     private void update() throws Exception {
-        for (Iterator iter = incfiles.keySet().iterator(); iter.hasNext(); ) {
-            String filename = (String) iter.next();
-            File   file     = new File(filename);
-            long   oldmod   = ((Long) incfiles.get(filename)).longValue();
-            long   newmod   = file.lastModified();
-
+        for (Iterator iter = incfiles.keySet().iterator(); iter.hasNext();) {
+            Path path = (Path) iter.next();
+            File file = path.resolve();
+            long oldmod = ((Long) incfiles.get(path)).longValue();
+            long newmod = file.lastModified();
             if (newmod > oldmod) {
                 // remove all incs matching the current path
                 HashSet tmp = new HashSet(allincs);
-                for (Iterator i = tmp.iterator(); i.hasNext(); ) {
+                for (Iterator i = tmp.iterator(); i.hasNext();) {
                     AuxDependency aux = (AuxDependency) i.next();
-                    if (aux.getPath().equals(filename)) {
+                    if (aux.getPath().equals(path)) {
                         allincs.remove(aux);
                     }
                 }
                 // reread the current file
-                readFile(filename);
+                readFile(path);
             }
         }
     }
-
-
-    public boolean isPathAllowed(String path) throws Exception {
+    public boolean isPathAllowed(Path path) throws Exception {
         if (!inited) {
             realInit();
         }
-        
         if (incfiles.get(path) != null) {
             return true;
         } else {
             return false;
         }
     }
-    
     public TreeSet getAllCommons() throws Exception {
         if (!inited) {
             realInit();
         }
-        
-        synchronized(allincs) {
+        synchronized (allincs) {
             update();
             return (TreeSet) allincs.clone();
         }
     }
-
 }

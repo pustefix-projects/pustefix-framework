@@ -47,7 +47,7 @@
                 </td>
               </tr>
             </table>
-            <pfx:button target="_top" page="test">STARTWITHFLOW test</pfx:button>
+            <pfx:button page="test" target="_top">STARTWITHFLOW test</pfx:button>
           </pfx:forminput>
           
           <pfx:include part="buttons"/>

@@ -603,7 +603,7 @@ public abstract class ServletManager extends HttpServlet {
         } catch (Throwable e) {
             xhandler.handle(e, preq, properties);
             processException(preq, req, res, e);
-            throw(new ServletException(e.toString()));
+            throw new ServletException("callProcess failed", e);
         }
     }
 

@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
+import de.schlund.util.*;
+
 /**
  *
  *
@@ -31,7 +33,7 @@ public interface AuxDependency extends DependencyParent {
     long   getModTime();
 
     String getDir();
-    String getPath();
+    Path getPath();
     String getPart();
     String getProduct();
     

@@ -19,7 +19,9 @@
 
 package de.schlund.pfixcore.editor;
 
+import de.schlund.pfixxml.targets.*;
 import de.schlund.util.*;
+
 import java.util.*;
 import java.io.*;
 
@@ -37,12 +39,12 @@ public class FileLockFactory {
         return instance;
     }
     
-    public Object getLockObj(String filename) {
+    public Object getLockObj(Path path) {
         synchronized (filelocks) {
-            if (filelocks.get(filename) == null) {
-                filelocks.put(filename, new Object());
+            if (filelocks.get(path) == null) {
+                filelocks.put(path, new Object());
             }
-            return filelocks.get(filename);
+            return filelocks.get(path);
         }
     }
 

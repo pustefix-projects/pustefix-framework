@@ -3,6 +3,8 @@ import com.icl.saxon.expr.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.xpath.*;
+import de.schlund.util.*;
+
 import java.io.*;
 import java.util.*;
 import javax.xml.parsers.*;
@@ -142,11 +144,8 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
-                    String path = aux.getPath();
-                    if (path.length() > pwd.length()) {
-                        path = path.substring(pwd.length());
-                    }
-                    elem.setAttribute("path", path);
+                    Path path = aux.getPath();
+                    elem.setAttribute("path", path.getRelative());
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         elem.setAttribute("part", aux.getPart());
                         elem.setAttribute("product", aux.getProduct());
@@ -159,8 +158,8 @@ public class CheckIncludes {
     private void checkForUnusedImages(Document result, Element res_root) throws Exception {
         IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         for (Iterator i = imagefilenames.iterator(); i.hasNext();) {
-            String path = (String) i.next();
-            File   img  = new File(path);
+            Path path = (Path) i.next();
+            File img  = path.resolve();
             String fullpath = img.getCanonicalPath();
 
             Element res_image = result.createElement("image");
@@ -182,19 +181,18 @@ public class CheckIncludes {
         // IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
-            String path = (String) i.next();
-            String simplepath = path.substring(pwd.length());
+            Path path = (Path) i.next();
             Document doc;
 
             Element res_incfile = result.createElement("incfile");
             res_root.appendChild(res_incfile);
-            res_incfile.setAttribute("name", path);
+            res_incfile.setAttribute("name", path.getRelative());
             
             try {
                 // IncludeDocument incdoc = incfac.getIncludeDocument(path, true);
                 // doc    = incdoc.getDocument();
                 DocumentBuilder incdoc = dbfac.newDocumentBuilder();
-                doc = incdoc.parse(path);
+                doc = incdoc.parse(path.resolve());
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);
@@ -218,7 +216,7 @@ public class CheckIncludes {
                     if (!partelem.getNodeName().equals("part")) {
                         Element error = result.createElement("ERROR");
                         res_incfile.appendChild(error);
-                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + simplepath + "/" + partelem.getNodeName());
+                        error.setAttribute("cause", "invalid node in include file (child of root != part): " + path.getRelative() + "/" + partelem.getNodeName());
                         continue;
                     }
 
@@ -234,7 +232,7 @@ public class CheckIncludes {
                                 Element error = result.createElement("ERROR");
                                 res_part.appendChild(error);
                                 error.setAttribute("cause", "invalid node in part (child of part != product): " +
-                                                   simplepath + "/" + partelem.getNodeName() + "/" + productelem.getNodeName());
+                                                   path.getRelative() + "/" + partelem.getNodeName() + "/" + productelem.getNodeName());
                                 continue;
                             }
 
@@ -263,7 +261,7 @@ public class CheckIncludes {
                                         Element error = result.createElement("ERROR");
                                         res_product.appendChild(error);
                                         error.setAttribute("cause", "invalid node in product (child of product != lang): " +
-                                                           simplepath + "/" + partelem.getNodeName() + "/" +
+                                                           path.getRelative() + "/" + partelem.getNodeName() + "/" +
                                                            productelem.getNodeName() + "/" + langelem.getNodeName());
                                         continue;
                                     }

@@ -50,7 +50,7 @@ public class XSLLeafTarget extends LeafTarget {
         File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object                retval   = xsltproc.xslObjectFromDisc(thefile.getPath()); 
+            Object                retval   = xsltproc.xslObjectFromDisc(generator.getDocroot(), thefile.getPath()); 
             return retval;
         } else {
             return null;

@@ -101,11 +101,11 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             
             
             long    mod     = currinclude.getModTime();
-            String  path    = currinclude.getPath();
+            Path    path    = currinclude.getPath();
             String  part    = currinclude.getPart();
             String  product = currinclude.getProduct();
             root = resdoc.createNode("currentincludeinfo");
-            root.setAttribute("path",    path);
+            root.setAttribute("path",    path.getRelative());
             root.setAttribute("part",    part);
             root.setAttribute("product", product);
             root.setAttribute("modtime", "" + mod);

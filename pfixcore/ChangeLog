@@ -1,3 +1,9 @@
+2004-05-17  Michael Hartmeier <mhm@schlund.de>
+
+	* all paths in .cache are relative now, and file:// has been stripped
+	* relative paths are represented by instances of de.schlund.pfixxml.targets.Path 
+	* use chained exceptions to improve error messages (e.g in AbstractXMLServer)
+
 2004-05-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: released 0.5.4
@@ -354,7 +360,7 @@
 	* src/de/schlund/pfixxml/PfixServletRequest.java: make the
 	startLogEntry and endLogEntry mehtods synchronized.
 
-2004-03-30  Jörg Häcker <haecker@schlund.de>
+2004-03-30  Jï¿½rg Hï¿½cker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
 	added pagename to mail subject.

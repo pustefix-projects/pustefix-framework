@@ -52,6 +52,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
@@ -90,7 +91,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
         AuxDependency currinc = getCurrentInclude(esess);
         String currpart = currinc.getPart();
         String currprod = currinc.getProduct();
-        String currpath = currinc.getPath();
+        Path currpath = currinc.getPath();
         Boolean doupl = upl.getHaveUpload();
         Boolean backup = upl.getHaveBackup();
         String backfile = upl.getBackup();
@@ -186,13 +187,13 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
 
-                    FileOutputStream output = new FileOutputStream(currpath);
+                    FileOutputStream output = new FileOutputStream(currpath.resolve());
                     OutputFormat outfor = new OutputFormat("xml", "ISO-8859-1", true);
                     XMLSerializer ser = new XMLSerializer(output, outfor);
                     outfor.setIndent(0);
                     outfor.setPreserveSpace(true);
                     ser.serialize(incdoc);
-                    EDITOR.warn("TXT: " + esess.getUser().getId() + ": " + currpart + "@" + currpath + " [" + currprod + "]");
+                    EDITOR.warn("TXT: " + esess.getUser().getId() + ": " + currpart + "@" + currpath.getRelative() + " [" + currprod + "]");
                     // We need to make sure that the modtime will be different
                     // FIXME !! FIXME !! We need this! But why:-)
                     EditorHelper.resetIncludeDocumentTarget(tgen, currinc);
@@ -246,7 +247,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                                 + euser.getUserInfo().getName()
                                 + "\n"
                                 + "| Path@Part >>> "
-                                + currinc.getPath()
+                                + currinc.getPath().getRelative()
                                 + "@"
                                 + currinc.getPart()
                                 + "\n"

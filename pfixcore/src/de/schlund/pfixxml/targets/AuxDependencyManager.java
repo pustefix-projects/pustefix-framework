@@ -24,6 +24,9 @@ import java.util.*;
 import org.apache.log4j.*;
 import org.w3c.dom.*;
 import org.apache.xml.serialize.*;
+
+import de.schlund.util.*;
+
 import javax.xml.parsers.*;
 
 /**
@@ -88,12 +91,13 @@ public class AuxDependencyManager implements DependencyParent {
             Document        doc     = domp.parse(auxpath);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
+                String docroot = target.getTargetGenerator().getDocroot();
                 for (int j = 0; j < auxdeps.getLength(); j++) {
                     String type            = ((Element) auxdeps.item(j)).getAttribute("type");
-                    String path            = ((Element) auxdeps.item(j)).getAttribute("path");
+                    Path path              = Path.create(docroot, ((Element) auxdeps.item(j)).getAttribute("path"));
                     String part            = ((Element) auxdeps.item(j)).getAttribute("part");
                     String product         = ((Element) auxdeps.item(j)).getAttribute("product");
-                    String parent_path     = ((Element) auxdeps.item(j)).getAttribute("parent_path");
+                    Path parent_path       = Path.createOpt(docroot, ((Element) auxdeps.item(j)).getAttribute("parent_path"));
                     String parent_part     = ((Element) auxdeps.item(j)).getAttribute("parent_part");
                     String parent_product  = ((Element) auxdeps.item(j)).getAttribute("parent_product");
                     DependencyType thetype = DependencyType.getByTag(type);
@@ -120,19 +124,21 @@ public class AuxDependencyManager implements DependencyParent {
         ser.serialize(auxdoc);
     }
 
-    public synchronized void addDependency(DependencyType type, String path, String part, String product,
-                                           String parent_path, String parent_part, String parent_product) {
+    public synchronized void addDependency(DependencyType type, Path path, String part, String product,
+                                           Path parent_path, String parent_part, String parent_product) {
+        if (path == null) {
+            throw new IllegalArgumentException("path null: part=" + part + " product=" + product);
+        }
         AuxDependency    aux    = null;
         DependencyParent parent = null;
 
         if (part != null && part.equals("")) part = null;
         if (product != null && product.equals("")) product = null;
-        if (parent_path != null && parent_path.equals("")) parent_path = null;
         if (parent_part != null && parent_part.equals("")) parent_part = null;
         if (parent_product != null && parent_product.equals("")) parent_product = null;
         CAT.info("Adding Dependency of type '" + type + "' to Target '" + target.getTargetKey() + "':");
-        CAT.info("*** [" + path + "][" + part + "][" + product + "][" +
-                 parent_path + "][" + parent_part + "][" + parent_product + "]");
+        CAT.info("*** [" + path.getRelative() + "][" + part + "][" + product + "][" +
+                 ((parent_path == null)? "null" : parent_path.getRelative()) + "][" + parent_part + "][" + parent_product + "]");
 
         aux = AuxDependencyFactory.getInstance().getAuxDependency(type, path, part, product);
         
@@ -210,7 +216,7 @@ public class AuxDependencyManager implements DependencyParent {
     }
 
     private void saveIt(String name, Document doc, Element root, Set in, AuxDependency parent) {
-        String parent_path    = null;
+        Path parent_path    = null;
         String parent_part    = null;
         String parent_product = null;
 
@@ -229,13 +235,13 @@ public class AuxDependencyManager implements DependencyParent {
                 type = aux.getType().getTag();
                 root.appendChild(depaux);
                 depaux.setAttribute("type", type);
-                depaux.setAttribute("path", aux.getPath());
+                depaux.setAttribute("path", aux.getPath().getRelative());
                 if (aux.getPart() != null)
                     depaux.setAttribute("part", aux.getPart());
                 if (aux.getProduct() != null)  
                     depaux.setAttribute("product", aux.getProduct());
                 if (parent_path != null) 
-                    depaux.setAttribute("parent_path", parent_path);
+                    depaux.setAttribute("parent_path", parent_path.getRelative());
                 if (parent_part != null) 
                     depaux.setAttribute("parent_part", parent_part);
                 if (parent_product != null) 

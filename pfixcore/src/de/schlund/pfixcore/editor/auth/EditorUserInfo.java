@@ -32,6 +32,7 @@ import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.Path;
 /**
  * Class encapsulating user-information of the Pustefix CMS.
  * <br/>
@@ -245,7 +246,7 @@ final public class EditorUserInfo {
      * @param path_to_image the path to the image
      * @return true if edit allowed, else false
      */
-    public boolean isImageEditAllowed(String path_to_image) throws XMLException {
+    public boolean isImageEditAllowed(Path path_to_image) throws XMLException {
       
         HashSet affected_products = null;
         boolean ret = true;
@@ -314,7 +315,7 @@ final public class EditorUserInfo {
         // new include. When he selects it from the list, it is
         // not written yet. So we must NOT call EditorHelper.getAffectedProductsForInclude!!!
         String part = esess.getCurrentInclude().getPart();
-        String path = esess.getCurrentInclude().getPath();
+        Path path = esess.getCurrentInclude().getPath();
         Element ele = null;
         
         // Test if part already exists
