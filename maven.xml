@@ -83,9 +83,7 @@
         <ant:exclude name="src/**"/>
       </ant:fileset>
     </ant:copy>
-    <!-- TODO: 'Major hack.' Stolen from the Latka plugin.jelly. All of this could be avoided by putting
-         xalan into $MAVEN_HOME/lib/endorsed directory in the distribution, but never mind -->
-    ${systemScope.setProperty('javax.xml.transform.TransformerFactory','org.apache.xalan.processor.TransformerFactoryImpl')}
+    <attainGoal name="xslt.init"/>
     <ant:xslt basedir="${pfix.docs.src}" destdir="${maven.docs.src}" includes="**/*.xml" 
               extension=".xml" style="${pfix.docs.src}/style/customtags.xsl"/>
   </goal>
@@ -93,5 +91,11 @@
   <postGoal name="site">
     <attainGoal name="pdf"/>
   </postGoal>
+
+  <goal name="xslt.init">
+    <!-- TODO: 'Major hack.' Stolen from the Latka plugin.jelly. All of this could be avoided by putting
+         xalan into $MAVEN_HOME/lib/endorsed directory in the distribution, but never mind -->
+    ${systemScope.setProperty('javax.xml.transform.TransformerFactory','org.apache.xalan.processor.TransformerFactoryImpl')}
+  </goal>
 </project>
 
