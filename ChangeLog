@@ -1,3 +1,12 @@
+2003-10-17 Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/SPCacheStatistic.java:
+	added methods for reseting and retrieving textual statistic.
+	Now lists product specific info. Implements FactoryInit now.
+	* example/common/conf/factory.prop.in: added SPCacheStatistic.
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java: added params
+	to use above functionality.
+
 2003-10-15  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/auth/AuthManagerFactory.java:
