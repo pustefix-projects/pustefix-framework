@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+                     xmlns:cus="http://www.schlund.de/pustefix/customize" debug="false">
+                     
+   <!-- A time/date based rolling appender -->
+    <appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-newproject.log</param>
+    <param name="MaxFileSize" value="1MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <cus:choose>
+        <cus:test uid="jtl">
+          <param name="ConversionPattern" value="%-5p %c [%M():%L] %m\n"/>
+        </cus:test>
+        <cus:test>
+          <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+        </cus:test>
+      </cus:choose>
+    </layout>
+  </appender>
+
+  
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out"/>
+    <param name="Threshold" value="DEBUG"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <!-- The default pattern: Date Priority [Category] Message\n -->
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+    </layout>
+  </appender>
+  
+ 
+  <!-- Categories -->
+
+  <!-- make some classes quiet by default --> 
+  <category name="de.schlund.pfixcore.util.basicapp">
+    <priority value="OFF"/>
+  </category>
+  
+
+  <root>
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+  </root>
+  
+</log4j:configuration>
