@@ -19,7 +19,7 @@
       <jvmroute>foo</jvmroute>
     </tomcat>
     <apache>
-      <apachelogdir><cus:docroot/>servletconf/logs</apachelogdir>
+      <apachelogdir><cus:docroot/>servletconf/log</apachelogdir>
       <!-- For all of the directories there will be an alias for direct handling by apache in ALL projects. -->
       <!-- This is needed because every project can potentially use images from every other projects "img" directory  -->
       <passthrough>common/img</passthrough>
