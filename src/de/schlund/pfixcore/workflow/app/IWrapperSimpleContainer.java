@@ -59,7 +59,6 @@ import de.schlund.pfixxml.loader.*;
 
 public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private   HashMap            wrappers           = new HashMap();
-    private   HashMap            prefixmap          = new HashMap();
 
     // depends on request
     private   ArrayList          activegroups       = new ArrayList();
@@ -446,14 +445,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         String[]      selwrappers = reqdata.getCommands(SELECT_WRAPPER);
         if (selwrappers != null) {
             for (int i = 0; i < selwrappers.length; i++) {
-                String prefix = selwrappers[i];
+                String   prefix  = selwrappers[i];
                 CAT.debug("  >> Restricted to Wrapper: " + prefix);
-                String iface  = (String) prefixmap.get(prefix);
-                if (iface == null) {
-                    CAT.warn(" *** No interface found for prefix " + prefix + "! ignoring");
-                    continue;
-                }
-                IWrapper selwrap = (IWrapper) wrappers.get(iface); 
+                IWrapper selwrap = (IWrapper) wrappers.get(prefix);
                 if (selwrap == null) {
                     CAT.warn(" *** No wrapper found for prefix " + prefix + "! ignoring");
                     continue;
@@ -544,8 +538,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 if (order > -1) {
                     wrapper.defineOrder(order);
                 }
-                prefixmap.put(realprefix, iface);
-                wrappers.put(iface, wrapper);
+                wrappers.put(realprefix, wrapper);
                 wrapper.init(realprefix);
                 
                 AppLoader appLoader = AppLoader.getInstance();
@@ -555,21 +548,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void createAlwaysRetrieveGroup() {
-        Properties props = context.getPropertiesForCurrentPageRequest();
-        always_retrieve = new IWrapperGroup();
-        String retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
+        Properties props    = context.getPropertiesForCurrentPageRequest();
+        always_retrieve     = new IWrapperGroup();
+        String     retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
+
         if (retrieve != null && !retrieve.equals("")) {
             StringTokenizer tok = new StringTokenizer(retrieve);
             for (; tok.hasMoreTokens(); ) {
-                String prefix = tok.nextToken();
-                String iface  = (String) prefixmap.get(prefix);
-                if (iface == null) {
+                String   prefix  = tok.nextToken();
+                IWrapper wrapper = (IWrapper) wrappers.get(prefix);
+                if (wrapper == null) {
                     CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
                 } else {
-                    if (CAT.isDebugEnabled()) {
-                        CAT.debug("*** Adding interface '" + iface + "' to the always_retrieve group...");
-                    }
-                    IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                    CAT.debug("*** Adding interface '" + prefix + "' to the always_retrieve group...");
                     always_retrieve.addIWrapper(wrapper);
                 }
             }
@@ -577,19 +568,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void createRestrictedContinueGroup() {
-        Properties props = context.getPropertiesForCurrentPageRequest();
-        contwrappers    = new IWrapperGroup();
-        String restricted = props.getProperty(PROP_RESTRICED);
+        Properties props      = context.getPropertiesForCurrentPageRequest();
+        contwrappers          = new IWrapperGroup();
+        String     restricted = props.getProperty(PROP_RESTRICED);
+        
         if (restricted != null && !restricted.equals("")) {
             StringTokenizer tok = new StringTokenizer(restricted);
             for (; tok.hasMoreTokens(); ) {
-                String prefix = tok.nextToken();
-                String iface  = (String) prefixmap.get(prefix);
-                if (iface == null) {
+                String   prefix  = tok.nextToken();
+                IWrapper wrapper = (IWrapper) wrappers.get(prefix);
+                if (wrapper == null) {
                     CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
                 } else {
-                    CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
-                    IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                    CAT.debug("*** Adding interface '" + prefix + "' to the restricted_continue group...");
                     contwrappers.addIWrapper(wrapper);
                 }
             }
@@ -599,24 +590,22 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private void readIWrapperGroupsConfigFromProperties() throws Exception {
         Properties props = context.getPropertiesForCurrentPageRequest();
         TreeMap    pmap  = PropertiesUtils.selectPropertiesSorted(props, GROUP_PROP);
+        
         for (Iterator i = pmap.keySet().iterator(); i.hasNext(); ) {
             String        page  = (String) i.next();
             String        spec  = (String) pmap.get(page);
             IWrapperGroup group = new IWrapperGroup();
-
             group.setName(page);
-            
             if (spec == null || spec.equals("")) {
                 throw new XMLException("Specification for group '" + page + "' must be given.");
             }
             StringTokenizer tok = new StringTokenizer(spec);
             for ( ; tok.hasMoreTokens(); ) {
-                String token = tok.nextToken();
-                String iface = (String) prefixmap.get(token);
-                if (iface == null || iface.equals("")) {
-                    throw new XMLException("No matching interface for specification token '" + token + "'");
+                String   prefix  = tok.nextToken();
+                IWrapper wrapper = (IWrapper) wrappers.get(prefix);
+                if (wrapper == null) {
+                    throw new XMLException("No matching interface for specification token '" + prefix + "'");
                 }
-                IWrapper wrapper = (IWrapper) wrappers.get(iface);
                 group.addIWrapper(wrapper);
             }
             if (checkGroupActivity(group)) {
@@ -766,9 +755,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         HashMap  wrappersNew = new HashMap();
         Iterator it = wrappers.keySet().iterator();
         while(it.hasNext()) {
-            String   str       = (String)it.next();
+            String   str       = (String) it.next();
             IWrapper iwOld     = (IWrapper) wrappers.get(str);
-            IWrapper iwNew     = (IWrapper)  StateTransfer.getInstance().transfer(iwOld);
+            IWrapper iwNew     = (IWrapper) StateTransfer.getInstance().transfer(iwOld);
             String   className = iwOld.getClass().getName();
             wrappersNew.put(str,iwNew);
         }

@@ -1,3 +1,19 @@
+2004-01-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: after everything has been rendered, add 
+	the time for getDom() and handleDocument() as a html comment to the outputstream 
+	(only if content type is text/html) 
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	added the ability to have two instances of the same wrapper on one
+	page by always using the unique prefix to reference them. removed the stupid 
+	prefix->interface => interface->instance mapping
+
+	* src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java:
+	Simplified onSuccess(), moved most of it as seen below
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: (getDocument) 
+	took onSuccess() handling from ResdocSimpleFinalizer and do it here.
+
 2004-01-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java: 
