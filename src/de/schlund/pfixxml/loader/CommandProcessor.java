@@ -35,7 +35,7 @@ public class CommandProcessor {
 
     public String process(String cmd) throws IllegalCommandException {
 	   AppLoader loader=AppLoader.getInstance();
-	   cmd=cmd.trim().toLowerCase();
+	   //cmd=cmd.trim().toLowerCase();
 	   StringTokenizer st=new StringTokenizer(cmd," ");
 	   if(st.countTokens()==0) throw new IllegalCommandException(IllegalCommandException.NO_CMD,cmd);
 	   if(st.countTokens()>2) throw new IllegalCommandException(IllegalCommandException.ARG_NO,cmd);
@@ -85,6 +85,15 @@ public class CommandProcessor {
 	       } catch(NumberFormatException x) {
 		      throw new IllegalCommandException(IllegalCommandException.ILL_ARG,cmd);
 	       }
+       } else if(cmdStr.equals("typecheck")) {
+           Profiler profiler=new Profiler();
+           profiler.doTypeCheck();
+           return profiler.getTypeCheckInfo();
+       } else if(cmdStr.equals("classinfo")) {
+           if(!st.hasMoreTokens()) throw new IllegalCommandException(IllegalCommandException.ARG_NO,cmd);
+           String argStr=st.nextToken();
+           Profiler profiler=new Profiler();
+           return profiler.getClassInfo(argStr);
 	   } else {
 	        throw new IllegalCommandException(IllegalCommandException.INV_CMD,cmd);
 	   }
