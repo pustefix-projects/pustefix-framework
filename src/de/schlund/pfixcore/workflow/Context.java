@@ -39,7 +39,6 @@ import org.w3c.dom.Element;
  *
  *
  */
-
 public class Context implements AppContext {
     private final static Category LOG                 = Category.getInstance(Context.class.getName());
     private final static String   NOSTORE             = "nostore";
