@@ -1,4 +1,5 @@
 <div>
+  <h1>Recursive Transformations</h1>
   <p>
     The XML/XSLT System of <pustefix/> is responsible for generating the
     final stylesheet that represents the static content of a page.  This
@@ -23,8 +24,82 @@
     Typical transformation steps used to generate a single page.
   </stdimg>
 
-  <stdtable>
-    
 
-  </stdtable>
+  <h1>Targets</h1>
+  <p>
+    A <b>target</b> is everything that is the result of a XSLT
+    transformation as seen in the figure above. It is also obvious
+    that a target can be used to create new targets. For the sake of
+    completeness, the initial XML or XSL files that are used in
+    transformations are called targets, too.
+  </p>
+  <p>
+    The <pustefix/> system knows four different types of tragets:
+  </p>
+
+  <table class="stdtable">
+    <tr>
+      <th>Main Category</th>
+      <th>Type</th>
+      <th>Example</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td rowspan="2" nowrap="nowrap">Leaf targets</td>
+      <td>XML</td>
+      <td>
+        <code>FooBase.xml</code>
+      </td>
+      <td rowspan="2">
+        Leaf targets are targets that are not the result of a XSL
+        transformation, but are read directly from files.  You only
+        edit leaf targets, never virtual targets. The distinction
+        between XML/XSL is made depending on the purpose the target
+        serves. A XML target is read into the system without doing any
+        special processing, while a XSL target is compiled into a
+        <code>templates</code> object that is able to transform XML
+        input.
+      </td>
+    </tr>
+    <tr>
+      <td>XSL</td>
+      <td>
+        <code>metatags.xsl</code>, <code>master.xsl</code>
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="2" nowrap="nowrap">Virtual targets</td>
+      <td>XML</td>
+      <td>
+        <code>BazPage.xml</code>
+      </td>
+      <td rowspan="2">
+        Virtual targets are the result of a XSL transformation. They
+        don't exist as files (in fact they do, but only to cache the
+        result on the harddisk. These cache files must never be edited
+        by hand). The distinction between the XML/XSL type is analog
+        to the leaf targets</td>
+    </tr>
+    <tr>
+      <td>XSL</td>
+      <td><code>BazPage.xsl</code>
+      </td>
+    </tr>
+  </table>
+
+  <p>
+    <b>Please Note</b> that the table uses the slightly simplified example from above. As noted there, <code>master.xsl</code>
+    and <code>metatags.xsl</code> are no leaf targets, but in fact virtual targets. The complete truth is that
+    the transformations look like this:</p>
+  <center>
+    <code>core/xsl/master.xsl</code> (<b>XML</b>/Leaf) + <code>YOUR_PROJECT/xsl/custommaster.xsl</code> (XSL/Leaf) =>
+    <code>master.xsl</code> (XSL/Virtual)
+    <br/>and<br/>
+    <code>YOUR_PROJECT/xsl/metatags.xsl</code> (<b>XML</b>/Leaf) + <code>core/xsl/customizestylesheet.xsl</code> (XSL/Leaf) =>
+    <code>metatags.xsl</code> (XSL/Virtual)
+  </center>
+  <p>
+    In almost all cases, you can just forget about this added
+    complexity when reading the documentation. We will explicitely make it clear where you can't.</p>
+  
 </div>

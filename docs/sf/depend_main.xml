@@ -6,7 +6,7 @@
     purposes: First, it is used to create the <i>hierarchical page
     structure</i> of the project by defining a <i>tree of pages</i>.
     Then, it is used to define the internal structure of the pages by
-    defining for every single page, the <i>tree of transformations</i>
+    defining, for every single page, the <i>tree of transformations</i>
     that need to be applied to certain files to get the final
     stylesheet (which is the representation of the page in
     <pustefix/>). For an overview over the transformation aspect of
@@ -137,9 +137,7 @@
     </make>
   </xmlcode>
 
-  <h2>Targets and their definition</h2>
-
-  coming soon...
+  
 </div>
 
   
