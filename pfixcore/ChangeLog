@@ -1,5 +1,8 @@
 2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): made static as I need it from Context where I have
+	no ResultDocument instance... a bit hackish. fixed all instances where it's used.
+
 	* src/de/schlund/pfixcore/workflow/Context.java: implemented the handling of args for pagemessages
 
 	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: moved pagemessage setting to the CR, as it handles more
