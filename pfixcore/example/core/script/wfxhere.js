@@ -6,11 +6,11 @@ var wfxed, wfxtb;
 
 function wfxinit() {
 
-	if( document.getElementById("wfxedit01") == null || 
-		document.getElementById("wfxtb01") == null ||
-		document.getElementById("wfxta01") == null ) {
-		return;
-	}
+  if( document.getElementById("wfxedit01") == null || 
+      document.getElementById("wfxtb01")   == null ||
+      document.getElementById("wfxta01")   == null ) {
+    return;
+  }
 
   //--------
   // editor
@@ -38,13 +38,22 @@ function wfxinit() {
   wfxtb.generate("wfxtb01");
   //---------------------------------------------------------------------------
 
+//  wfxed.syntaxrehighlighting = document.getElementById("wfxtoolbar__el__syntaxrehighlighting");
+//
+//  if( wfxed.syntaxrehighlighting ) {
+//    wfxed.syntaxrehighlighting.style.backgroundColor = "#00ff00";
+//    wfxed.syntaxrehighlighting.style.border = "1px solid red";
+//    wfxed.syntaxrehighlighting.checked = "checked";
+//  }
+
   function setFocus() {
     try {
-    document.getElementById("wfxedit01").contentWindow.focus();
-    wfxed.startIntervalRehighlighting();
+      document.getElementById("wfxedit01").contentWindow.focus();
+      
+      wfxed.startIntervalRehighlighting();
     } catch(e) {
     }
-  }
+  };
   setTimeout( setFocus, 1000 );
 }
 

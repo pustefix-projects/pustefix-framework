@@ -28,7 +28,6 @@ function wfxEditor( config ) {
   this.cancelRehighlighting = false;
   this.insideRehighlighting = false;
 
-
   this.countRangeMarkers = 0;
 
   this._showLine   = document.getElementById("wfxed_line");
@@ -64,6 +63,39 @@ function wfxEditor( config ) {
 //#
 //#****************************************************************************
 wfxEditor.Config = function () {
+
+  this.maxLines = 3333;   // max lines for Moz.
+
+  this.doctype = '<' + '?xml version="1.0" encoding="UTF-8"?>\n' + 
+    '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+  this.html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">';
+  this.head = '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" /><title></title>';
+
+  this.style_linenumbers = '<style type="text/css">' + 
+    'body,pre { font-family: monospace; font-size: 13px !important; margin:0px !important; background-color:#eeeeee; cursor:default }\n' + 
+    'pre { text-align:right; }\n' +
+    '</style>';
+
+  this.style_source = '<style type="text/css">' + 
+    'body,pre { font-family: monospace; font-size: 13px !important; margin:0px !important}\n' + 
+    'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
+    '.string      { color:#118800; font-weight:normal }\n' + 
+    '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
+    '.htmltagname { color:#ffaa44; font-weight:bold }\n' + 
+    '.htmlendtag  { color:#0000ff; font-weight:normal }\n' + 
+    '.pfxtag      { color:#0000ff; font-weight:normal }\n' + 
+    '.pfxtagname  { color:#0000aa; font-weight:bold }\n' + 
+    '.pfxendtag   { color:#0000ff; font-weight:normal }\n' + 
+    '.xsltag      { color:#0000ff; font-weight:normal }\n' + 
+    '.xsltagname  { color:#dd0000; font-weight:bold }\n' + 
+    '.xslendtag   { color:#0000ff; font-weight:normal }\n' + 
+    '.ixsltag     { color:#0000ff; font-weight:normal }\n' + 
+    '.ixsltagname { color:#cc44aa; font-weight:bold }\n' + 
+    '.ixslendtag  { color:#0000ff; font-weight:normal }\n' + 
+    '.entity      { color:#cc0000; font-weight:normal }\n' + 
+    '.comment     { color:#aaaaaa; font-weight:normal }\n' + 
+    '.cdata       { color:#009999; font-weight:normal }\n' + 
+    '</style>';
 
   this.width = "auto";
   this.height = "auto";
@@ -374,46 +406,56 @@ wfxEditor.prototype.isWellFormedXML = function( xml, err ) {
 //#****************************************************************************
 wfxEditor.prototype.initLineNumbers = function() {
 
-  bench( null, 1 );
+  var body = '<body id="bodynode" onload="setUnselectable()">\n';
 
-  var doctype =  '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n';
-  var html_header1 = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n<head>\n' + 
-    '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
-  var style_source = '<style>\n' + 
-    'body,pre { font-family: monospace; font-size: 13px !important; margin:0px !important; background-color:#eeeeee; cursor:default }\n' + 
-    'pre { text-align:right; }\n' + 
-    'td {text-align:right; font-weight:bold }\n' + 
-    '</style>\n';
-
-  var html_script = '<script type="text/javascript" src="/core/script/wfxUnselectable.js"></script>';
-
-  var html_header2 = '</head>\n<body id="bodynode" onload="unselectable()">\n<pre>';
-  var html_footer  = '</pre>\n</body>\n</html>\n';
-  
-  var content = "";
-//  content = "<pre>"
+  var content = "<pre>"
   var maxLines;
   if( wfx.is_ie ) {
     maxLines = this._linebarheight;
   } else {
-    maxLines = 3333;
+    maxLines = this.config.maxLines;
   }
   for( var i=1; i<maxLines; i++ ) {
     content += i + "&nbsp;\n";
   }
-//  content += "</pre>";
-  content = doctype + html_header1 + html_script + style_source +  html_header2 + content + html_footer;
+  content += "</pre>";
+
+  var script = 
+    '<script type="text/javascript">' + 
+    'function stopEvent(ev) {' +
+    '  if( typeof ev.preventDefault != "undefined" ) {' + 
+    '    ev.preventDefault();' + 
+    '    ev.stopPropagation();' + 
+    '  } else {' + 
+    '    ev.cancelBubble = true;' + 
+    '    ev.returnValue = false;' + 
+    '  }' + 
+    '}' + 
+    'function setUnselectable(win) {' + 
+    '  if(window.document.attachEvent) {' +
+    '	window.document.attachEvent( "onmousedown", stopEvent);' + 
+    '	window.document.attachEvent( "onkeypress",  stopEvent);' + 
+    '	window.document.body.attachEvent( "onclick",  stopEvent);' + 
+    '	window.document.body.attachEvent( "onkeypress",  stopEvent);' + 
+    '	window.document.body.attachEvent( "onfocus",     stopEvent);' + 
+    '  }' + 
+    '  if( window.addEventListener ) {' + 
+    '	window.addEventListener( "mousedown", stopEvent, true);' + 
+    '	window.addEventListener( "keypress",  stopEvent, true);' + 
+    '	window.addEventListener( "focus",     stopEvent, true);' + 
+    '  }' + 
+    '}' + 
+    '</script>';
+
+  content = this.config.doctype + this.config.html + '<head>' + this.config.head + this.config.style_linenumbers + 
+    script + '</head>' +  body + content + '</body></html>';
 
   var doc = this._linebar.document;
 
   doc.open();
   doc.writeln(content);
   doc.close();
-
-  bench( "...initLineNumbers", null, 1 );
-  document.forms[0].dbg.value += benchMsg;
-
-}
+};
 
 //#****************************************************************************
 //#
@@ -618,38 +660,15 @@ wfxEditor.prototype.src2col = function( buf ) {
     //    var arr = buf.match( rule_argval );
     if( arr instanceof Array ) {
 
-      //      alert( arr.join("\n***\n"));
-
       var oldexp, newexp, myexp;
-      //      alert(arr.length);
       for( var i=0; i<arr.length; i++ ) {
-
-	//	alert( "current tag:\n" + arr[i]);
 
 	if( buf.indexOf(arr[i]) != -1 ) {
 	  // only if not yet replaced (redundancy!)
 
-	  //	  alert("not yet replaced");
-
-//	  var hits = arr[i].match(rule_argval);
-//	  if( hits instanceof Array ) {
-//	    hits = hits.length;
-//	  } else {
-//	    hits = 0
-//	  }
-//	  if( hits ) {
-	    
 	  if( rule_argval_nonglobal.test(arr[i]) ) {
 	    
-	    //	    alert("rule_argval");
-
 	    newexp = arr[i].replace( rule_argval, '$1<span class="string">$2</span>');
-
-//	      pos = -(21+arr[i].length+7);
-//	      while( (pos = buf.indexOf(arr[i], pos+21+arr[i].length+7)) != -1 ) {
-//		buf = buf.substr( 0, pos ) + newexp + buf.substr( pos + arr[i].length );
-//	      }
-	    
 //	    if(newexp != arr[i]) {
 //	    //   quotemeta
 	    arr[i] = arr[i].replace( /(\W)/g, '\\$1' );
@@ -681,23 +700,6 @@ wfxEditor.prototype.src2col = function( buf ) {
   //  buf = buf.replace( /<span class="htmltag">(&lt;\w+\:\w+.*?&gt;)<\/span>/g, "$1");
 
   dbg_bench && bench( "  html", null, 6);
-
-  if(0) {
-    //    bench( null, 6 );
-    //    buf = buf.replace( rule_pfxTag,     '<span class="pfxtag">&lt;$1&gt;</span>' );
-    //    buf = buf.replace( rule_pfxTagName, '&lt;<span class="pfxtagName">$1</span>$2&gt;' );
-    //    buf = buf.replace( rule_pfxEndTag,  '<span class="pfxendtag">&lt;$1&gt;</span>' );
-    //    
-    //    buf = buf.replace( rule_xslTag,     '<span class="xsltag">&lt;$1&gt;</span>' );
-    //    buf = buf.replace( rule_xslTagName, '&lt;<span class="xsltagName">$1</span>$2&gt;' );
-    //    buf = buf.replace( rule_xslEndTag,  '<span class="xslendtag">&lt;$1&gt;</span>' );
-    //    
-    //    buf = buf.replace( rule_ixslTag,     '<span class="ixsltag">&lt;$1&gt;</span>' );
-    //    buf = buf.replace( rule_ixslTagName, '&lt;<span class="ixsltagName">$1</span>$2&gt;' );
-    //    buf = buf.replace( rule_ixslEndTag,  '<span class="ixslendtag">&lt;$1&gt;</span>' );
-    //    bench( "  pfx|xsl|ixsl", null, 6);
-  } else {
-  }
 
   dbg_bench && bench( null, 6 );
   buf = buf.replace( rule_entity,     '<span class="entity">$1</span>' );
@@ -738,8 +740,6 @@ wfxEditor.prototype.src2col = function( buf ) {
   dbg_bench && bench( "  argvalcondition2", null, 6);
 
   dbg_bench && bench( "src2col(intern)", null, 10);
-
-  //  alert(wfxEditor.str2chr(buf));
 
   return buf;
 }
@@ -1709,7 +1709,7 @@ wfxEditor.prototype.getHTML = function(dbg) {
       html = html.replace( rule_emptyspans, "" );
     }
     if( i>0 ) {
-      alert("emptyspans:" + i );
+      //      alert("emptyspans:" + i );
     }
 
     html = html.replace( /<\/pre><pre>/g , "<br />" );
@@ -2218,68 +2218,24 @@ wfxEditor.prototype.generate = function( target, content ) {
     content = content.value;
   }
   
-  //  alert("content:" + wfxEditor.str2chr(content));    
   this._content_tag = content;
 
   content = this.tag2src( content );
-  //alert("content( after tag2src):" + wfxEditor.str2chr(content));    
   this._content_src  = content;
   this._ta_src.value = content;
 
   content = this.src2col( content );
-  //alert("content( after src2col):" + wfxEditor.str2chr(content));    
   this._content_col  = content;
   this._ta_col.value = content;
 
-  var doctype =  '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n';
-  var html_header1 = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n<head>\n' + 
-    '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
-  var html_header2 = '</head>\n<body id="bodynode">\n';
+  var body = '<body id="bodynode">\n';
   // Moz: \n after body tag is required to prevent exception in rng.setStart
-  
-  var html_footer  = '</body>\n</html>\n';
-  //  var style_source = '<style>\n' + 
-  //  '@import url("wfxSource.css")\n' +
-  //  '</style>\n';
-  //  var style_source = '<link rel="stylesheet" type="text/css" href="wfxSource.css" />\n';
-  var style_source = '<style>\n' + 
-    'body,pre { font-family: monospace; font-size: 13px !important; margin:0px !important}\n' + 
-    'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
-    '.string      { color:#118800; font-weight:normal }\n' + 
-    '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
-    '.htmltagname { color:#ffaa44; font-weight:normal }\n' + 
-    '.htmlendtag  { color:#0000ff; font-weight:normal }\n' + 
-    '.pfxtag      { color:#0000ff; font-weight:normal }\n' + 
-    '.pfxtagname  { color:#0000aa; font-weight:normal }\n' + 
-    '.pfxendtag   { color:#0000ff; font-weight:normal }\n' + 
-    '.xsltag      { color:#0000ff; font-weight:normal }\n' + 
-    '.xsltagname  { color:#dd0000; font-weight:normal }\n' + 
-    '.xslendtag   { color:#0000ff; font-weight:normal }\n' + 
-    '.ixsltag     { color:#0000ff; font-weight:normal }\n' + 
-    '.ixsltagname { color:#cc44aa; font-weight:normal }\n' + 
-    '.ixslendtag  { color:#0000ff; font-weight:normal }\n' + 
-    '.entity      { color:#cc0000; font-weight:normal }\n' + 
-    '.comment     { color:#aaaaaa; font-weight:normal }\n' + 
-    '.cdata       { color:#009999; font-weight:normal }\n' + 
-    '</style>\n';
 
-  //  '.string      { color:#0000ff; font-weight:normal }\n' + 
-  //  '.htmltag     { color:#990099; font-weight:normal }\n' + 
-  //  '.htmlendtag  { color:#990099; font-weight:normal }\n' + 
-  //  '.pfxtag      { color:#0000aa; font-weight:normal }\n' + 
-  //  '.pfxendtag   { color:#0000aa; font-weight:normal }\n' + 
-  //  '.xsltag      { color:#dd0000; font-weight:normal }\n' + 
-  //  '.xslendtag   { color:#dd0000; font-weight:normal }\n' + 
-  //  '.ixsltag     { color:#cc44aa; font-weight:normal }\n' + 
-  //  '.ixslendtag  { color:#cc44aa; font-weight:normal }\n' + 
-  //  '.entity      { color:#ff0000; font-weight:normal }\n' + 
-  //  '.comment     { color:#00aa00; font-weight:normal; font-style:italic }\n' + 
-
-    
   content = this.prepareContent( content );
   content = '<pre>' + content + '</pre>';    
   
-  content = doctype + html_header1 + style_source + html_header2 + content + html_footer;
+  //  content = doctype + html_header1 + style_source + html_header2 + content + html_footer;
+  content = this.config.doctype + this.config.html + '<head>' + this.config.head + this.config.style_source + '</head>' + body + content + '</body></html>';
 
   this._editor = target.contentWindow;;
   wfxEditor._editor = this._editor;
