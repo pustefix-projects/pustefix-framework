@@ -1,3 +1,10 @@
+2005-03-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_webxml.xsl: allow in the common
+	section, and in the section of each servlet to define <init-param>
+	tags the same as in the web.xml (where all in the common section
+	will of course be added into all servlets)
+
 2005-03-09  Tanjev Stuhr  <tanjev.stuhr@schlund.de>
 
         * src/de/schlund/pfixcore/generator/casters/ToDouble.java: added new caster.
