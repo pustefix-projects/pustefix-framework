@@ -1,3 +1,18 @@
+2003-11-05  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfexditor/editor/PfixDebug.java
+	A Small Class that helps debugging the applet
+
+	* editorapplet/src/de/schlund/pfexditor/editor/PfixHighlight.java
+	* editorapplet/src/de/schlund/pfexditor/editor/PfixCheckXml.java
+	Debug-Modus implemented
+
+	* editorapplet/src/de/schlund/pfexditor/editor/PfixTextPane.java
+	Real-Time tabbing (after pressing the return key) implemented. Tabbing
+	a single Row or the whole document will be added soon, after fixing
+	a few bugs. I will put those functions in a TabSetting Class later.
+	
+
 2003-11-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml, jni/build.xml:
