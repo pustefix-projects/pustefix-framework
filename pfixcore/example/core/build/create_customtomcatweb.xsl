@@ -6,7 +6,7 @@
                 exclude-result-prefixes="cus pfx">
 
   <xsl:param name="prjname"/>
-  <xsl:param name="projectsxmluri"/>
+  <xsl:param name="projectsxmlfile"/>
 
   <xsl:variable name="project" select="document(concat('file://', $projectsxmlfile))/projects/project[@name=$prjname]" />
   <xsl:variable name="common" select="document(concat('file://', $projectsxmlfile))/projects/common" />
