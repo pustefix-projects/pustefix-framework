@@ -537,7 +537,15 @@
 	* src/de/schlund/pfixxml/PfixServletRequest.java: make the
 	startLogEntry and endLogEntry mehtods synchronized.
 
+<<<<<<< ChangeLog
+<<<<<<< ChangeLog
+2004-03-30  Joerg Haecker <haecker@schlund.de>
+=======
+2004-03-30  Jörg Häcker <haecker@schlund.de>
+>>>>>>> 1.376
+=======
 2004-03-30  Jï¿½rg Hï¿½cker <haecker@schlund.de>
+>>>>>>> 1.378
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java(createMailSubject):
 	added pagename to mail subject.
