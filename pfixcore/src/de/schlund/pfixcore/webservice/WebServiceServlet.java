@@ -5,7 +5,9 @@ package de.schlund.pfixcore.webservice;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.WeakHashMap;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,9 +31,6 @@ public class WebServiceServlet extends AxisServlet {
     private boolean DEBUG=CAT.isDebugEnabled();
     
     
-    private boolean MONITOR=true;
-    private WeakHashMap monitorMap=new WeakHashMap();
-    
     private WebServiceContext wsc;
     
     
@@ -48,8 +47,11 @@ public class WebServiceServlet extends AxisServlet {
             ConfigProperties cfgProps=new ConfigProperties(propFiles);
             ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
             wsc=new WebServiceContext(srvConf);
-            getServletContext().setAttribute(Constants.WEBSERVICE_CONTEXT,wsc);
-           
+            getServletContext().setAttribute(wsc.getClass().getName(),wsc);
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().monitoringEnabled()) {
+                MonitoringCache cache=new MonitoringCache();
+                wsc.setAttribute(cache.getClass().getName(),cache);
+            }
         } catch(Exception x) {
             throw new ServletException("Can't get web service configuration",x);
         }
@@ -77,46 +79,53 @@ public class WebServiceServlet extends AxisServlet {
     }
     
     protected void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        res.setStatus(HttpURLConnection.HTTP_OK);
+        res.setContentType("text/html");
+        writer.println("<html><head><title>Web service monitor</title>"+getCSS()+"</head><body>");
+        writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
         HttpSession session=req.getSession(false);
         if(session!=null) {
-            MonitorMessage msg=(MonitorMessage)monitorMap.get(session);
-            if(msg!=null) {
-                res.setContentType("text/html");
-                writer.println("<html><head><title>Web service monitor</title></head><body>");
-                writer.println("<h2>Web service monitor</h2>");
-                writer.println("<h3>"+msg.getURI()+"</h3>");
-                writer.println("<table><tr>");
-                writer.println("<td><b>Request:</b><br/><textarea name=\"request\" cols=\"70\" rows=\"20\">");
-                writer.println(new String(msg.getRequestBody()));
-                writer.println("</textarea></td>");
-                writer.println("<td><b>Response:</b><br/><textarea name=\"request\" cols=\"70\" rows=\"20\">");
-                writer.println(new String(msg.getResponseBody()));
-                writer.println("</textarea></td>");
-                writer.println("</tr></table>");
-                writer.println("</body></html>");
-                writer.close();
-            }
-        } else sendForbidden(req,res,writer);
+            MonitoringCache cache=(MonitoringCache)wsc.getAttribute(MonitoringCache.class.getName());
+            MonitoringCacheEntry entry=cache.getLastEntry(session);
+            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+            writer.println("<table border=\"2\">");
+            writer.println("<tr><td align=\"left\">Start:</td><td>"+format.format(new Date(entry.getStart()))+"</td></tr>");
+            writer.println("<tr><td align=\"left\">Time:</td><td>"+entry.getTime()+" ms</td></tr>");
+            writer.println("<tr><td align=\"left\">Service:</td><td>"+entry.getTarget()+"</td></tr>");
+            writer.println("</table>");
+            writer.println("<div name=\"detail_entry\">");
+            writer.println("<table width=\"100%\">");
+            writer.println("<tr>");
+            writer.println("<td width=\"50%\"><b>Request:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
+            writer.println(entry.getRequest());
+            writer.println("</textarea></td>");
+            writer.println("<td width=\"50%\"><b>Response:</b><br/><textarea style=\"width:100%\" rows=\"25\">");
+            writer.println(entry.getResponse());
+            writer.println("</textarea></td>");
+            writer.println("</tr>");
+            writer.println("</table>");
+            writer.println("</div");
+        }
+        writer.println("</div></body></html>");
+        writer.close();
+    }
+    
+    private String getCSS() {
+        String css=
+            "<style type=\"text/css\">" +
+            "   body {margin:0pt;border:0pt;background-color:#b6cfe4}" +
+            "   div.content {padding:5pt;}" +
+            "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
+            "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
+            "   table.overview tr {cursor:pointer;}" +
+            "</style>";
+        return css;
     }
     
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        if(MONITOR) {
-            MonitorRequestWrapper reqWrapper=new MonitorRequestWrapper(req);
-            MonitorMessage monMsg=new MonitorMessage(req.getRequestURI());
-            monMsg.setRequestBody(reqWrapper.getBytes());
-            MonitorResponseWrapper resWrapper=new MonitorResponseWrapper(res);
-            super.doPost(reqWrapper,resWrapper);
-            monMsg.setResponseBody(resWrapper.getBytes());
-            HttpSession session=req.getSession(false);
-            if(session!=null) {
-                monitorMap.put(session,monMsg);
-            }
-            OutputStream out=res.getOutputStream();
-            out.write(resWrapper.getBytes());
-            out.close();
-        } else {
+       
             super.doPost(req,res);
-        }
+        
     }
     
     
@@ -174,7 +183,10 @@ public class WebServiceServlet extends AxisServlet {
                 } else sendError(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            sendMonitor(req,res,writer);
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().monitoringEnabled()) {
+                if(session!=null) sendMonitor(req,res,writer);
+                else sendForbidden(req,res,writer);
+            }
         } else if(qs.equalsIgnoreCase("admin")) {
             
         } else sendBadRequest(req,res,writer);

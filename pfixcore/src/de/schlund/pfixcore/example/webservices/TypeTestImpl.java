@@ -4,6 +4,8 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Date;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
 
 /**
  * TypeTestImpl.java 
@@ -54,5 +56,16 @@ public class TypeTestImpl implements TypeTest {
         return strs;
     }
     
-
+    public Element getElement() throws Exception {
+        DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+        DocumentBuilder db=dbf.newDocumentBuilder();
+        Document doc=db.newDocument();
+        Element elem=doc.createElement("test");
+        elem.setAttribute("id","1");
+        Element subElem=doc.createElement("foo");
+        elem.appendChild(subElem);
+        subElem.appendChild(doc.createTextNode("fasdfasdfasdf"));
+        return elem;
+    }
+    
 }

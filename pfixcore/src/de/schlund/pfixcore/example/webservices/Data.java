@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.example.DataBean;
 //import de.schlund.pfixcore.example.ComplexData;
 
@@ -25,5 +27,7 @@ public interface Data {
     //public String[] getDataArraySid(String sid) throws Exception;
     //public DataBean getDataBeanSid(String sid) throws Exception;
     //public DataBean echoDataBeanSid(String sid,DataBean data) throws Exception;
+    
+    public Element getElement() throws Exception;
     
 }

@@ -5,6 +5,8 @@ package de.schlund.pfixcore.example.webservices;
 
 import java.util.Date;
 
+import org.w3c.dom.Element;
+
 /**
  * TypeTest.java 
  * 
@@ -33,5 +35,7 @@ public interface TypeTest {
     public String echo(String str);
     
     public String[] echo(String[] strs);
+    
+    public Element getElement() throws Exception;
     
 }

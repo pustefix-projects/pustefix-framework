@@ -25,6 +25,7 @@ public class ServiceGlobalConfig {
     private final static String PROP_WSDLREPOSITORY=PROP_PREFIX+"wsdlsupport.repository";
     private final static String PROP_MONITORING=PROP_PREFIX+"monitoring.enabled";
     private final static String PROP_MONITORSCOPE=PROP_PREFIX+"monitoring.scope";
+    private final static String PROP_LOGGING=PROP_PREFIX+"logging.enabled";
 
     ConfigProperties props;
     String reqPath;
@@ -32,6 +33,7 @@ public class ServiceGlobalConfig {
     String wsdlRepo;
     boolean monitoring;
     int monitorScope;
+    boolean logging;
     
     public ServiceGlobalConfig(ConfigProperties props) throws ServiceConfigurationException {
         this.props=props;
@@ -51,6 +53,8 @@ public class ServiceGlobalConfig {
         if(props.getProperty(PROP_MONITORSCOPE).equalsIgnoreCase("session")) monitorScope=Constants.MONITOR_SCOPE_SESSION;
         else if(props.getProperty(PROP_MONITORSCOPE).equalsIgnoreCase("ip")) monitorScope=Constants.MONITOR_SCOPE_IP;
         else throw new ServiceConfigurationException(ServiceConfigurationException.ILLEGAL_PROPERTY_VALUE,PROP_MONITORSCOPE,props.getProperty(PROP_MONITORSCOPE));
+        if(props.getProperty(PROP_LOGGING)==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_LOGGING);
+        logging=new Boolean(props.getProperty(PROP_LOGGING)).booleanValue();
     }
     
     public void reload() throws ServiceConfigurationException {
@@ -77,9 +81,13 @@ public class ServiceGlobalConfig {
         return monitorScope;
     }
     
+    public boolean loggingEnabled() {
+        return logging;
+    }
+    
     public String toString() {
         return "[webservice-global[reqpath="+reqPath+"][wsdlsupport="+wsdlSupport+"][wsdlrepository="+wsdlRepo+"][monitoring="+monitoring+
-        "][monitorscope="+monitorScope+"]]";
+        "][monitorscope="+monitorScope+"][logging="+logging+"]]";
     }
     
     public boolean changed(ServiceGlobalConfig sgc) {
@@ -88,6 +96,7 @@ public class ServiceGlobalConfig {
         if(!equals(getWSDLRepository(),sgc.getWSDLRepository())) return true;
         if(monitoringEnabled()!=sgc.monitoringEnabled()) return true;
         if(getMonitoringScope()!=sgc.getMonitoringScope()) return true;
+        if(loggingEnabled()!=sgc.loggingEnabled()) return true;
         return false;
     }
     

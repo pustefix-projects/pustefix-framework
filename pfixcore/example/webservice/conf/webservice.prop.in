@@ -4,7 +4,7 @@
 		<requestpath>/xml/webservice</requestpath>
 		<wsdlsupport enabled="true" repository="/wsdl"/>
 		<monitoring enabled="true" scope="session"/>
-		<logging enabled="true"/>
+		<logging enabled="false"/>
 	</webservice-global>
 	
 	<webservice name="Calculator">
@@ -25,6 +25,13 @@
 	<webservice name="Data">
 		<interface name="de.schlund.pfixcore.example.webservices.Data"/>
 		<implementation name="de.schlund.pfixcore.example.webservices.DataImpl"/>
+		<context name="pfixcore_project:webservice::servlet:config"/>
+		<session type="servlet"/>
+	</webservice>
+	
+	<webservice name="TypeTest">
+		<interface name="de.schlund.pfixcore.example.webservices.TypeTest"/>
+		<implementation name="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
 		<context name="pfixcore_project:webservice::servlet:config"/>
 		<session type="servlet"/>
 	</webservice>

@@ -18,6 +18,7 @@
 					<td><input type="button" onclick="soapCall('getDataArray',null,document.forms[0].sid.value);" value="get data array"/></td>
 					<td><input type="button" onclick="soapCall('getDataBean',null,document.forms[0].sid.value);" value="get data bean"/></td>
 					<td><input type="button" onclick="soapCall('echoDataBean',0,document.forms[0].sid.value);" value="echo data bean"/></td>
+					<td><input type="button" onclick="soapCall('getElement',null,document.forms[0].sid.value);" value="get XML element"/></td>
 				</tr>
 			</table>	
 		</form>

@@ -2,7 +2,6 @@ package de.schlund.pfixcore.webservice;
 
 public class Constants {
     
-    public final static String WEBSERVICE_CONTEXT="WEBSERVICE_CONTEXT";
     public final static String SESSION_PREFIX=";jsessionid=";
     
     public final static String PROP_COMMON_FILE="servlet.commonpropfile";
@@ -19,8 +18,8 @@ public class Constants {
     public final static int MONITOR_SCOPE_SESSION=0;
     public final static int MONITOR_SCOPE_IP=1;
     
-    public final  static String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
-    
-   
+    public static final String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
+    public static final String MSGCTX_PROP_MONITORSTART="PFX_MONITORSTART";
+    public static final String MSGCTX_PROP_MONITORENTRY="PFX_MONITORENTRY";
     
 }

@@ -3,6 +3,12 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.webservice.*;
 import de.schlund.pfixcore.example.ContextData;
 import de.schlund.pfixcore.example.DataBean;
@@ -65,6 +71,18 @@ public class DataImpl extends AbstractService implements Data {
     
     public DataBean echoDataBeanSid(String sid,DataBean data) throws Exception {
         return data;
+    }
+    
+    public Element getElement() throws Exception {
+        DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+        DocumentBuilder db=dbf.newDocumentBuilder();
+        Document doc=db.newDocument();
+        Element elem=doc.createElement("test");
+        elem.setAttribute("id","1");
+        Element subElem=doc.createElement("foo");
+        elem.appendChild(subElem);
+        subElem.appendChild(doc.createTextNode("fasdfasdfasdf"));
+        return elem;
     }
 
 }

@@ -114,13 +114,21 @@ public class WebServiceTask extends Task {
                     
                     WSDDRequestFlow reqFlow=null;
                     WSDDResponseFlow resFlow=null;
-                    if(globConf.monitoringEnabled()) {
-                        WSDDHandler monitorHandler=new WSDDHandler();
-                        monitorHandler.setType(new QName("MonitorHandler"));
+                    if(globConf.loggingEnabled() || globConf.monitoringEnabled()) {
                         reqFlow=new WSDDRequestFlow();
-                        reqFlow.addHandler(monitorHandler);
                         resFlow=new WSDDResponseFlow();
-                        resFlow.addHandler(monitorHandler);
+                        if(globConf.loggingEnabled()) {
+                            WSDDHandler loggingHandler=new WSDDHandler();
+                            loggingHandler.setType(new QName("LoggingHandler"));
+                            reqFlow.addHandler(loggingHandler);
+                            resFlow.addHandler(loggingHandler);
+                        }
+                        if(globConf.monitoringEnabled()) {
+                            WSDDHandler monitorHandler=new WSDDHandler();
+                            monitorHandler.setType(new QName("MonitoringHandler"));
+                            reqFlow.addHandler(monitorHandler);
+                            resFlow.addHandler(monitorHandler);
+                        }
                     }
                     
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
@@ -194,7 +202,10 @@ public class WebServiceTask extends Task {
                                 //Change automatically generated name of implementation class to configured name
                                 wsddServices[j].setParameter("className",wsImpl);
                                 
-                                if(globConf.monitoringEnabled()) wsddServices[j].setRequestFlow(reqFlow);
+                                if(globConf.monitoringEnabled()||globConf.loggingEnabled()) {
+                                    wsddServices[j].setRequestFlow(reqFlow);
+                                    wsddServices[j].setResponseFlow(resFlow);
+                                }
                                 
                                 //Update server deployment descriptor
                                 srvWsdd.getDeployment().deployService(wsddServices[j]);
