@@ -1,4 +1,7 @@
 2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* started 0.5.2-pre
+
 	* released 0.5.1 
 	
 	* example/core/build/create_propfiles.xsl: Eeeeeeek. the last fix
