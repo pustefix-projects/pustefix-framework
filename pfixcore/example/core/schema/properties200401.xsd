@@ -5,6 +5,10 @@
   >
   
   <!--
+  CVS Revision: $Revision$
+  -->
+  
+  <!--
   TODO: 
   * make ihandler and authhandler mutually exclusive
   -->
@@ -347,8 +351,7 @@
   <xs:element name="test" type="prop:testType"/>
   <xs:complexType name="testType">
     <xs:sequence>
-      <xs:element ref="prop:prop" maxOccurs="unbounded"/>
-      <!--<xs:element name="param" maxOccurs="unbounded"/>-->
+      <xs:element ref="prop:prop" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="mode" type="xs:token"/>
     <xs:attribute name="machine" type="xs:token"/>
