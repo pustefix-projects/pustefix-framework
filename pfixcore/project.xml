@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project>
+
+  <pomVersion>3</pomVersion>
+  <id>pfixcore</id>
+  <name>Pustefix Core</name>
+  <groupId>schlund</groupId>
+  <currentVersion>1.0</currentVersion>
+  <organization>
+    <name>Schlund + Partner</name>
+    <url>http://www.schlund.de</url>
+    <logo>http://sourceforge.net/sflogo.php?group_id=61626&amp;type=5</logo>
+  </organization>
+  <description>Pustefix is a framework that helps you to develop web based applications.</description>
+  <shortDescription>Web application framework</shortDescription>
+  
+  <url>http://pustefix.sourceforge.net</url>
+  <inceptionYear>2002,2003,2004</inceptionYear>
+  <package>de.schlund</package>
+  <logo>http://sourceforge.net/sflogo.php?group_id=61626&amp;type=5</logo>
+
+  <issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl>
+  <siteAddress>pustefix.sourceforge.net</siteAddress>
+
+  <repository>
+    <!--connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</connection-->
+    <developerConnection>scm:cvs:ext:mlhartme@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</developerConnection>
+    <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore</url>
+  </repository>
+
+  <mailingLists>
+  </mailingLists>
+
+  <dependencies>
+    <dependency>
+      <groupId>schlund</groupId>
+      <artifactId>getopt</artifactId>
+      <version>1.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>schlund</groupId>
+      <artifactId>rmiobj</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>schlund</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>2.0-beta1-schlund</version>
+    </dependency>
+    <dependency>
+      <groupId>schlund</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.6</version>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>6.5.3</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.8</version>
+    </dependency>
+    <dependency>
+      <groupId>servletapi</groupId>
+      <artifactId>servletapi</artifactId>
+      <version>2.3</version>
+    </dependency>
+  </dependencies>
+
+  <developers>
+    <developer>
+      <name>Jens Lautenbacher</name>
+      <id>jenstl</id>
+      <email>jenstl@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/jenstl/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Adam Habermann</name>
+      <id>habermann</id>
+      <email>habermann@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/habermann/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Jörg Häcker</name>
+      <id>haexel</id>
+      <email>haexel@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/haexel/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Michael Hartmeier</name>
+      <id>mlhartme</id>
+      <email>mlhartme@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/mlhartme/</url>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <build>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+  </build>
+  <reports>
+    <!-- default reports in maven 1.0 rc 4 -->
+	<report>maven-changelog-plugin</report>
+    <report>maven-changes-plugin</report>
+	<report>maven-checkstyle-plugin</report>
+	<report>maven-developer-activity-plugin</report>
+	<report>maven-file-activity-plugin</report>
+	<report>maven-javadoc-plugin</report>
+	<report>maven-jdepend-plugin</report>
+	<report>maven-junit-report-plugin</report>
+	<report>maven-jxr-plugin</report>
+	<!-- we don't have a LICENSE.txt file:
+	     report>maven-license-plugin</report -->
+	<report>maven-linkcheck-plugin</report>
+	<report>maven-pmd-plugin</report>
+	<!-- we don't use javadoc @todo tags: 
+	     report>maven-tasklist-plugin</report -->
+
+
+    <!-- additional reports -->
+
+    <!-- TODO: stat-cvs -->    	
+  </reports>
+</project>
+
