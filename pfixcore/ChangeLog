@@ -1,3 +1,16 @@
+2003-09-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: (pfx:layer_ref): add autoclose
+	parameter (default is now "false"), only close referenced layers
+	now when the containing layer closes when autoclose == true.
+	(pfx:layer_check): add type attribute (radio|checkbox) and attributes class, style, disabled.
+	Now you can use a radio or checkbox input element as a view of the state of a referenced layer.
+	See documentation for more info.
+
+	* example/core/script/baselib.js (__js_Layer): add another array to hold input elements (radio/checkboxes) as 
+	switches that should be changed.
+	(layer.addInputElem): new method to add input elements to the array.
+
 2003-09-17 Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java

@@ -46,7 +46,11 @@
           </pfx:forminput>
           
           
-          <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
+          <pfx:include part="buttons"/>
+          <br/><br/><br/>
+          <pfx:include part="switch"/>
+          <br/>
+          <br/>
           <pfx:include part="display"/><br/><br/>
           <pfx:include part="sample_layers"/>
         </center>
@@ -61,7 +65,7 @@
         <pfx:layer class="layer" name="A" pos-left="10" pos-top="10" visible="false">
           <b>This is Layer A</b><br/>
           <pfx:switch>
-            <pfx:layer_ref name="B"/>
+            <pfx:layer_ref name="B" autoclose="true"/>
             <pfx:layer_check name="B">
               <pfx:on>Switch Layer B OFF</pfx:on>
               <pfx:off>Switch Layer B ON</pfx:off>
@@ -115,13 +119,10 @@
               <pfx:switch>
                 <pfx:layer_ref method="on" name="XXX"/>
                 <pfx:layer_ref method="off" name="YYY"/>
+                <pfx:layer_check name="XXX" type="radio"/>
                 <pfx:layer_check name="YYY">
-                  <pfx:on>
-                    <tt>[ ]</tt> Show &quot;BAZ&quot;
-                  </pfx:on>
-                  <pfx:off class="core_button_invisible">
-                    <tt>[X]</tt> Show &quot;BAZ&quot;
-                  </pfx:off>
+                  <pfx:on>Show BAZ</pfx:on>
+                  <pfx:off class="core_button_invisible">Show BAZ</pfx:off>
                 </pfx:layer_check>
               </pfx:switch>
             </td>
@@ -131,24 +132,23 @@
               <pfx:switch>
                 <pfx:layer_ref method="off" name="XXX"/>
                 <pfx:layer_ref method="on" name="YYY"/>
-                <pfx:layer_check name="YYY">
-                  <pfx:on class="core_button_invisible">
-                    <tt>[X]</tt> Show &quot;FOOBAR&quot;
-                  </pfx:on>
-                  <pfx:off>
-                    <tt>[ ]</tt> Show &quot;FOOBAR&quot;
-                  </pfx:off>
+                <pfx:layer_check name="YYY" type="radio"/>
+                <pfx:layer_check name="XXX">
+                  <pfx:on>Show FOOBAR</pfx:on>
+                  <pfx:off class="core_button_invisible">Show FOOBAR</pfx:off>
                 </pfx:layer_check>
               </pfx:switch>
             </td>
           </tr>
         </table>
         <br/>
-        <pfx:layer element="span" name="XXX" visible="true">
-          BAZ
+        <pfx:layer element="div" name="XXX" visible="true"
+          style="border: 1px solid black; padding: 2px; width: 100px; background-color: black; color: #ff7755;">
+          <b>BAZ</b>
         </pfx:layer>
-        <pfx:layer element="span" name="YYY" visible="false">
-          FOOBAR
+        <pfx:layer element="div" name="YYY" visible="false"
+          style="border: 1px solid black; padding: 2px; width: 100px; background-color: #ff7755; color: black;">
+          <b>FOOBAR</b>
         </pfx:layer>
       </lang>
     </product>
@@ -171,9 +171,25 @@
   <part name="switch">
     <product name="default">
       <lang name="default">
-        <pfx:switch><pfx:layer_ref name="A"/>Toggle Layer a</pfx:switch>
-          
-        <pfx:switch><pfx:layer_ref name="B"/>Toggle Layer b</pfx:switch>
+        <div style="text-align: left; width: 300px; border: 1px solid black;">
+          <pfx:switch>
+            <pfx:layer_ref name="A"/>
+            <pfx:layer_check name="A" type="checkbox"/>Layer A (Closing A also closes B)</pfx:switch>
+          <br/>
+          <pfx:layer_check name="B" type="checkbox" disabled="disabled"/>Layer B is
+          <pfx:layer_check name="B">
+            <pfx:on>visible</pfx:on>
+            <pfx:off>invisible</pfx:off>
+          </pfx:layer_check>
+          <br/>
+          <pfx:layer_check name="YYY" type="radio" disabled="disabled"/>FOOBAR is shown...
+          <br/>
+          <pfx:layer_check name="XXX" type="radio" disabled="disabled"/>BAZ is shown...
+          <br/>
+          <pfx:switch>
+            <pfx:layer_ref name="C"/>
+            <pfx:layer_check name="C" type="checkbox"/>Layer C</pfx:switch>
+        </div>
       </lang>
     </product>
   </part>

@@ -127,6 +127,7 @@ function __js_Layer(layer_id) {
     this.children    = new Array(); 
     this.switch_on   = new Array();
     this.switch_off  = new Array();
+    this.input       = new Array();
     this.visible     = true;
     this.frame       = null;
     this.store       = null;
@@ -169,8 +170,9 @@ function __js_Layer(layer_id) {
     this.addChild    = function (child) { this.children[this.children.length] = child; };
     this.addParent   = function (parent) { this.parents[this.parents.length] = parent; };
 
-    this.show     = function () { this.__change(true, '', 'none'); };
-    this.hide     = function () { this.__change(false, 'none', ''); };
+    this.show     = function () { this.__change(true, '',      'none'); };
+    this.hide     = function () { this.__change(false, 'none', ''    ); };
+
     this.__change = function (cookievis, elemvis, switchoffvis) {
         if (navigator.cookieEnabled == true && this.store != "false") {
             document.cookie = "LR_" + this.getId() + "=" + cookievis + "; path=/";
@@ -187,6 +189,12 @@ function __js_Layer(layer_id) {
             for (var i = 0; i < this.switch_on.length; i++) {
                 var temp = this.switch_on[i];
                 temp.style.display = elemvis;
+            }
+        }
+        if (this.input != null && this.input.length > 0) {
+            for (var i = 0; i < this.input.length; i++) {
+                var temp = this.input[i];
+                temp.checked = cookievis;
             }
         }
     };
@@ -208,10 +216,17 @@ function __js_Layer(layer_id) {
         }
     };
 
-    this.addSwitchOff = function (switchoff) {
+    this.addSwitchOff = function (switchoff) { 
         this.switch_off[this.switch_off.length] = switchoff;
         if (this.initialized && this.visible) {
             switchoff.style.display = 'none';
+        }
+    };
+
+    this.addInputElem  = function (inputelem) {
+        this.input[this.input.length] = inputelem;
+        if (this.initialized && !this.visible) {
+            inputelem.checked = 'false';
         }
     };
 
