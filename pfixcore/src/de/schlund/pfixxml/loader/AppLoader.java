@@ -54,6 +54,8 @@ public class AppLoader implements FactoryInit,Runnable {
     private CommandListener listener;
     private int interval;
     private HashSet incPacks=new HashSet();
+    private ArrayList travExcludes=new ArrayList();
+    private HashSet travIncludes=new HashSet();
     private HashMap policies=new HashMap();
     private File repository;
     private Thread modThread;
@@ -107,6 +109,25 @@ public class AppLoader implements FactoryInit,Runnable {
 
     protected void includePackage(String pack) {
         incPacks.add(pack);
+    }
+  
+    protected void excludeTraversePackage(String pack) {
+        travExcludes.add(pack);
+    }
+    
+    protected boolean needToTraverse(Class clazz) {
+        String cn=clazz.getName();
+        for(int i=0;i<travExcludes.size();i++) {
+            if(cn.startsWith((String)(travExcludes.get(i)))) {
+                if(travIncludes.contains(cn)) return true;
+                return false;   
+            }
+        }
+        return true;
+    }
+    
+    protected void includeTraverseClass(String clazz) {
+        travIncludes.add(clazz);;
     }
   
     protected void setPolicy(int type,int action) {
@@ -176,6 +197,10 @@ public class AppLoader implements FactoryInit,Runnable {
     
     public void removeReloader(Reloader reloader) {
         reloaders.remove(reloader);
+    }
+    
+    public Iterator getReloaders() {
+        return reloaders.keySet().iterator();
     }
     
     protected boolean restart() {

@@ -83,14 +83,14 @@ public class StateTransfer {
 
     public Object transfer(Object oldObj) {
         if(oldObj==null) return null;
-	Class oldClass=oldObj.getClass();
+        Class oldClass=oldObj.getClass();
         ClassLoader oldCL=oldClass.getClassLoader();
+        AppLoader loader=AppLoader.getInstance();
         if(oldCL instanceof AppClassLoader) {
             Object newObj=getTransferred(oldObj);
             if(newObj!=null) {return newObj;}
             if(debug) CAT.debug("Transfer instance of class '"+oldClass.getName()+"'."); 
             if(isObjectArray(oldClass)) {Object obj=transferArray(oldObj);return obj;} 
-            AppLoader loader=AppLoader.getInstance();
             Class newClass=null;
             try {
                 newClass=loader.loadClass(oldClass.getName());
@@ -110,7 +110,9 @@ public class StateTransfer {
                             if(!fields[i].isAccessible()) fields[i].setAccessible(true);
                             //get field value
                             Object value=fields[i].get(oldObj);
-                            if(debug) CAT.debug("Transfer field '"+name+"'.");
+                            if(debug) {
+                                CAT.debug("Transfer field '"+name+"' ('"+value+"') of class '"+oldClass.getName()+"'.");
+                            } 
                             //check if field value defined
                             if(value!=null) {value=transfer(value);} 
                             if(!field.isAccessible()) field.setAccessible(true);     
@@ -149,7 +151,7 @@ public class StateTransfer {
                 }
             } catch(ClassNotFoundException x) {
                 addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
-                    newClass.getName(),"Class was removed or renamed."));
+                    oldClass.getName(),"Class was removed or renamed."));
             }
             return newObj;
         } else {
@@ -197,14 +199,13 @@ public class StateTransfer {
                         if(!fields[i].isAccessible()) fields[i].setAccessible(true);
                         //get field value
                         Object value=fields[i].get(oldObj);
-                        //__log("Transfer field '"+name+"' ("+value+").");
                         if(debug) CAT.debug("Transfer field '"+name+"'.");
-                        //if(value!=null && (!value.getClass().getName().startsWith("java.") || value.getClass().getName().equals("java.langObject") || value.getClass().getName().startsWith("java.util."))) {
-                        if(value!=null && (!value.getClass().getName().startsWith("java.lang") || value.getClass().getName().equals("java.lang.Object"))) {
-                        //if(value!=null && !value.getClass().isPrimitive()) {
-                            Object newValue=transfer(value);
-                            if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
-                                fields[i].set(oldObj,newValue);
+                        if(value!=null) {
+                            if(loader.needToTraverse(value.getClass())) {
+                                Object newValue=transfer(value);
+                                if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
+                                    fields[i].set(oldObj,newValue);
+                                }
                             }
                         }
                     } catch(IllegalAccessException x) {

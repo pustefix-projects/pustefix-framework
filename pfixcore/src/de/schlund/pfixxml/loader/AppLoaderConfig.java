@@ -188,6 +188,23 @@ public class AppLoaderConfig {
                     }
                 }
             } 
+            //traverse
+            String exName="apploader.traverse.excludepackage";
+            String inName="apploader.traverse.includeclass";
+            enum=props.propertyNames();
+            while(enum.hasMoreElements()) {
+                String key=(String)enum.nextElement();
+                if(key.startsWith(exName) || key.startsWith(inName)) {
+                    val=props.getProperty(key);
+                    if(val!=null && !val.equals("")) {
+                        if(key.startsWith(exName)) {
+                            loader.excludeTraversePackage(val);
+                        } else if(key.startsWith(inName)) {
+                            loader.includeTraverseClass(val); 
+                        }
+                    }
+                }
+            }
         } catch(AppLoaderConfigException x) {
             CAT.error("Error while reading AppLoader configuration.",x);
             loader.setEnabled(false);
