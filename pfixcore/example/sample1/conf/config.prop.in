@@ -38,7 +38,7 @@
       <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
     </ihandler>
   </pagerequest>
-  
+
   <pagerequest name="order">
     <ihandler>
       <interface prefix="shirt"   class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
@@ -68,6 +68,10 @@
     </output>
   </pagerequest>
   
+  <pagerequest name="gencss" nostore="true">
+    <state class="de.schlund.pfixcore.util.CssState"/>
+  </pagerequest>
+
   <!-- *** some additional properties needed for this application *** -->
 
   <prop name="contexttshirt.feature.0">Waterproof</prop>

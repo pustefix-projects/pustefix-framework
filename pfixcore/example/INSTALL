@@ -2,8 +2,8 @@ This file describes how to get the example package up and running.
 
 Prerequisites:
 
-        * A Java installation. You need version 1.3.x as pustefix doesn't work
-          with 1.4 yet. The environment variable JDK_HOME must be set to the 
+        * A Java installation. You need version 1.4.x. 
+          The environment variable JDK_HOME must be set to the 
           location of your java installation.
 
         * jikes if you want to compile out-of-the-box.  Compilation

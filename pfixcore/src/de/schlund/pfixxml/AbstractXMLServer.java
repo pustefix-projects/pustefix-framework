@@ -479,10 +479,15 @@ public abstract class AbstractXMLServer extends ServletManager {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
             }
-            RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
-            if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                SessionCleaner.getInstance().storeSPDocument(spdoc, session,
-                                                             servletname + SUFFIX_SAVEDDOM, scleanertimeout);
+
+            if (!spdoc.getNostore()) {
+                RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
+                if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
+                    SessionCleaner.getInstance().storeSPDocument(spdoc, session,
+                                                                 servletname + SUFFIX_SAVEDDOM, scleanertimeout);
+                }
+            } else {
+                CAT.warn("*** Got NOSTORE from SPDocument! ****");
             }
         }
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());

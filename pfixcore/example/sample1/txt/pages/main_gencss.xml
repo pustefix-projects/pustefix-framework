@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:hlp="http://www.schlund.de/pustefix/onlinehelp" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <pfx:include href="core/txt/styles.xml"    part="standard"/>
+        <pfx:include href="common/txt/styles.xml"  part="standard"/> 
+        <pfx:include href="sample1/txt/styles.xml" part="standard"/>
+      </lang>
+    </product>
+  </part>
+
+</include_parts>

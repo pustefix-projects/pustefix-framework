@@ -26,7 +26,9 @@
   </xsl:template>
 
   <xsl:template match="cus:final-output-method">
-    <ixsl:output method="html" encoding="iso-8859-1" indent="no"/>
+    <ixsl:output encoding="iso-8859-1" indent="no">
+      <xsl:copy-of select="./node()"/>
+    </ixsl:output>
   </xsl:template>
   
 

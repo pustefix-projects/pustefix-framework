@@ -7,6 +7,8 @@
     <page name="order"    handler="/xml/config" accesskey="O"/>
     <page name="overview" handler="/xml/config" accesskey="S"/>
     <page name="admin"    handler="/xml/config"/>
+    <page name="gencss"   handler="/xml/config"/>
+
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>
   </navigation>
@@ -37,13 +39,11 @@
     <param name="lang" value="en"/>
   </target>
 
-  <standardpage name="home" xml="sample1/xml/two_frames.xml"/>
-
-  <standardpage name="order" xml="sample1/xml/two_frames.xml"/>
-
+  <standardpage name="home"     xml="sample1/xml/two_frames.xml"/>
+  <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>
   <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
-
-  <standardpage name="admin" xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="admin"    xml="sample1/xml/one_frame.xml"/>
+  <standardpage name="gencss"   xml="sample1/xml/styles.xml" outputmethod="text"/>
 
   <standardpage name="ssltest" xml="sample1/xml/one_frame.xml"/>
 

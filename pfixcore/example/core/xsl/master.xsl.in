@@ -54,6 +54,7 @@
   <!-- the copy rule -->
   <xsl:include href="core/xsl/default_copy.xsl"/>
   
+  <xsl:param name="outputmethod">html</xsl:param>
   <!-- Needed for includes to work
   Remember to include this in the resulting stylesheet, too!
   The variables are just defaults.-->
@@ -83,8 +84,12 @@
 
   <xsl:template match="/">
     <ixsl:stylesheet version="1.0">
-      <cus:final-output-method/>
-
+      <cus:final-output-method>
+        <xsl:attribute name="method">
+          <xsl:value-of select="$outputmethod"/>
+        </xsl:attribute>
+      </cus:final-output-method>
+      
       <!-- these parameters will always be passed in by the servlet -->
       <!-- e.g. /xml/static/FOOBAR;jsessionid=1E668C65F42697962A31177EB5319D8B.foo -->
       <ixsl:param name="__uri"/>

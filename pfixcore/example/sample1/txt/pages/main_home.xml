@@ -45,8 +45,6 @@
           <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
           <pfx:include part="sample_layers"/>
-
-
         </center>
       </lang>
     </product>
