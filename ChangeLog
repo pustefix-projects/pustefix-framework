@@ -1,5 +1,7 @@
 2003-01-30  Jens Lautenbacher  <jtl@schlund.de>
 
+	* META-INF/pfixcore.version: released 0.2.4
+
 	* example/core/xsl/utils.xsl.in: (pfx:layer_check) use pfx:on/node() instead of pfx:on, same for pfx:off.
 
 2003-01-29  Jens Lautenbacher  <jtl@schlund.de>
