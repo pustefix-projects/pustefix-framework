@@ -53,6 +53,6 @@ public class XsltTest extends TestCase {
     }
     
 	public static NodeInfo toDocumentExtension(String str) throws TransformerException {
-	    return (NodeInfo) Xml.parse(str);
+	    return (NodeInfo) Xml.parseString(str);
 	}
 }

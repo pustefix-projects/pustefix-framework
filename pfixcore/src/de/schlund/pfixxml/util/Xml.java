@@ -83,6 +83,11 @@ public final class Xml {
     
     //-- parse immutable
     
+    public static Document parseString(String str) throws TransformerException {
+        SAXSource src = new SAXSource(createXMLReader(), new InputSource(new StringReader(str)));
+        return parse(src);
+    }
+
     /**
      * Convert the document implementation which is used for write-access 
      * by {@link SPDocument} to the document implementation which is used 
@@ -115,11 +120,6 @@ public final class Xml {
     public static Document parse(File file) throws TransformerException {
         String path = file.getAbsolutePath();
         SAXSource src = new SAXSource(createXMLReader(), new InputSource("file://" + path));
-        return parse(src);
-    }
-
-    public static Document parse(String str) throws TransformerException {
-        SAXSource src = new SAXSource(createXMLReader(), new InputSource(new StringReader(str)));
         return parse(src);
     }
 
