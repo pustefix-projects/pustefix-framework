@@ -22,15 +22,23 @@ public class TestcasePlaybackResult {
      * Returns the results for all steps in the testcase.
      * @return ArrayList containg TestcaseStepResult objects.
      */
-    public ArrayList getStepResults() {
-        return stepResults;
+    public TestcaseStepResult getStepResult(int index) {
+        return (TestcaseStepResult) stepResults.get(index);
     }
+    
+    public int getNumStepResult() {
+        return stepResults.size();
+    }
+   
 
     /**
      * Add a TestcaseStepResult object to the Testcase result.
      * @param the TestcaseStepResult to be added
      */
     public void addTestcaseStepResult(TestcaseStepResult step) {
+        if(step == null) {
+            throw new IllegalArgumentException("A NP as step is not allowed here!");
+        }
         stepResults.add(step);
     }
     

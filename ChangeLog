@@ -1,3 +1,15 @@
+2003-08-11  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/* : Refactored.
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java,
+	src/de/schlund/pfixcore/editor/resources/CRTestcase.java,
+	src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
+	example/testenv/log4jconf.xml, example/testenv/default.xsl: adjusted
+	to above changes.
+	
+	* src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java: better
+	debug messages.
+
 2003-08-08  Martin Leidig  <mleidig@schlund.de>
 
 	Made major AppLoader changes. Now native code is used to set final

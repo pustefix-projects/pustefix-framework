@@ -5,7 +5,7 @@
     <xsl:apply-templates />
   </xsl:template>
 
-  <xsl:template match="/formresult/@serial"/>
+<!--  <xsl:template match="/formresult/@serial"/>-->
 
   <xsl:template match="*|@*">
    <xsl:copy>

@@ -25,6 +25,7 @@ import de.schlund.pfixxml.testenv.TestClientException;
 import de.schlund.pfixxml.testenv.TestcasePlaybackResult;
 import de.schlund.pfixxml.testenv.TestcaseStepResult;
 
+
 /**
  * Implementation of the <code>CRTestcase</code> interface.
  * <br/>
@@ -93,16 +94,17 @@ public class CRTestcaseImpl implements CRTestcase {
                     TestClientException ex = playresult.getException();
                     el3.appendChild(el3.getOwnerDocument().importNode(ex.toXMLRepresentation().getFirstChild(), true));
                 } else {   
-                    ArrayList steps = playresult.getStepResults();
-                    for(int j=0; j<steps.size(); j++) {
-                        String str = ((TestcaseStepResult)steps.get(j)).getDiffString();
+                 
+                    for(int j=0; j<playresult.getNumStepResult(); j++) {
+                        TestcaseStepResult stepres = playresult.getStepResult(j);
+                        String str = stepres.getDiffString();
                         Perl5Util perl = new Perl5Util();
                         ArrayList lines = new ArrayList();
                         if(str != null)
                             perl.split(lines, "/\n/", str);
                         Element elem3 = resdoc.createNode("step");
                         elem3.setAttribute("id", ""+j);
-                        elem3.setAttribute("statuscode", ""+((TestcaseStepResult)steps.get(j)).getStatusCode());
+                        elem3.setAttribute("statuscode", ""+stepres.getStatuscode());
                         for(int k=0; k<lines.size(); k++) {
                             //skip emtpy lines
                             if(((String) lines.get(k)).equals("")) continue;
@@ -187,7 +189,7 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#executeTest()
      */
-    public HashMap executeTest() throws TestClientException  {
+    public HashMap executeTest() throws Exception  {
         hasStartedTestcases = true;
         testOutput = new HashMap();
         for(int i=0; i<selectedTestcases.size(); i++) {

@@ -70,7 +70,7 @@ public interface CRTestcase extends ContextResource {
      * as value.
      * @throws Exception on all errors
      */
-    public HashMap executeTest() throws TestClientException;
+    public HashMap executeTest() throws Exception;
     
     /**
      * @see public HashMap executeTest() throws Exception;

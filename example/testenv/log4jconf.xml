@@ -11,7 +11,7 @@
       </layout>
    </appender>
    
-   <category name="de.schlund.pfixxml.testenv.TestClient" additivity="false">
+<!--   <category name="de.schlund.pfixxml.testenv.TestClient" additivity="false">
       <priority value="ERROR"/>
       <appender-ref ref="LOGGER_CONSOLE"/>
    </category>
@@ -20,12 +20,16 @@
       <priority value="DEBUG"/>
       <appender-ref ref="LOGGER_CONSOLE"/>
    </category>
-
+-->
    <category name="org.apache.commons.httpclient" additivity="false">
       <priority value="ERROR"/>
       <appender-ref ref="LOGGER_CONSOLE"/>
    </category>
 	
+   <category name="de.schlund.pfixxml.testenv" additivity="false">
+      <priority value="DEBUG"/>
+      <appender-ref ref="LOGGER_CONSOLE"/>
+   </category>
 
   
    <root>
