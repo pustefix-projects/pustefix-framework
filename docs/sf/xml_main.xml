@@ -71,7 +71,7 @@
     structural xml files is typically quite small, as many pages share the same layout).
   </p>
   
-  <p><span style="background-color: #99ccff; border: black solid 1px;">blue discs</span> represent <b>include parts</b>.
+  <p><span style="-moz-border-radius: 2em; background-color: #99ccff; padding-right:2px; padding-left:2px; border: black solid 1px;">blue discs</span> represent <b>include parts</b>.
     These are little snippets of XML code that make up the actual
     content of the page. As can be seen from the diagram, they can
     include themselves recursively. Include parts have a <i>name</i>
