@@ -120,8 +120,14 @@ public final class Xml {
      * @throws TransformerException on errors
      */
     public static Document parse(File file) throws TransformerException {
-        String path = file.getAbsolutePath();
-        SAXSource src = new SAXSource(createXMLReader(), new InputSource("file://" + path));
+        String path;
+        
+        try {
+            path = file.toURL().toString();
+        } catch (IOException e) {
+            throw new TransformerException("invalid file name: " + file.getPath(), e);
+        }
+        SAXSource src = new SAXSource(createXMLReader(), new InputSource(path));
         return parse(src);
     }
 
@@ -154,11 +160,11 @@ public final class Xml {
     }
     
     public static Document parseMutable(File file) throws IOException, SAXException {
-        return parseMutable(file.getPath());
+        return parseMutable(new InputSource(file.toURL().toString()));
     }
     
     public static Document parseMutable(String filename) throws IOException, SAXException {
-        return parseMutable(new InputSource(filename));
+        return parseMutable(new File(filename));
     }
     
     public static Document parseMutable(InputStream src) throws IOException, SAXException {
