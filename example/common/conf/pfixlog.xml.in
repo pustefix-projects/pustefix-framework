@@ -126,7 +126,7 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.exceptionhandler.ExceptionHandler" additivity="false">
+  <category name="de.schlund.pfixxml.exceptionhandler" additivity="false">
     <priority value="INFO"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
