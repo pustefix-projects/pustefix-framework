@@ -29,15 +29,15 @@
       <td>
         <p>
           This tar file contains a skeleton directory structure with
-          all the things you need to start a new pustefix project.
+          all the things you need to start a new pustefix environment.
           The pfixcore.jar and pfixcore-data.tar.gz files mentioned
           below are already contained in the tar file in the version
           indicated by the VERSION string.</p>
         <p>
-          <b>If you don't already have a running pustefix project, start by
+          <b>If you don't already have a running pustefix environment, start by
             downloading this file.</b> For further updates, it's
           sufficiant to download new pfixcore.jar and
-          pfixcore-data.tar.gz files to replace the ones you have currently in your project.
+          pfixcore-data.tar.gz files to replace the ones you have currently in your environment.
         </p>
       </td>
     </tr>
@@ -48,7 +48,7 @@
       <td>
         This jar file contains all java classes that the core system
         needs. Download this file (and the corresponding
-        pfixcore-data.tar.gz file) if you want to update an already running <pustefix/> project.
+        pfixcore-data.tar.gz file) if you want to update an already running <pustefix/> environment.
       </td>
     </tr>
     <tr>
@@ -57,7 +57,7 @@
       </td>
       <td>
         This tar file contains all the XML/XSLT files that are needed by the core system. Download this file (and the corresponding
-        pfixcore.jar file) if you want to update an already running <pustefix/> project.
+        pfixcore.jar file) if you want to update an already running <pustefix/> environment.
       </td>
     </tr>
   </table>
