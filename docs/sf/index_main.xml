@@ -31,7 +31,8 @@
   <h1>Development news</h1>
   
   Mostly internal stuff and bugfixes (please refer to the ChangeLog or
-  the documentation on this site for more details):
+  the documentation on this site for more details). But note that
+  <i>you need to update your depend.xml.in files</i> when using this release!
 
   <ul>
     <li>
