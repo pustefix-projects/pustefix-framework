@@ -30,18 +30,33 @@
   
   <h1>Development news</h1>
 
-  <p><b>The <code>State</code> interface has changed to incorporate a new
-    method <code>boolean needsData(Context,
-      PfixServletRequest)</code></b>. This change makes it necessary to port
-    your own States to the new system. If you only have States that
-    inherit from <code>StateImpl</code>, your code may still compile
-    (because StateImpl has a default implementation), but you
-    have to check your <code>getDocument()</code> method if it is
-    still "correct". Please refer to the mailing list and/or the
-    ChangeLog for in-depth information on how the semantic of States
-    has changed.
+  <p>
+    We added more possibilities for the pageflow handling.
+    <ul>
+      <li>
+         You can now set a pageflow even if the current page is no
+         member of that pageflow. This allows to enter into any
+         pageflow after the submit to the current page returns
+         successfully.
+      </li>
+      <li>
+        The request parameters <code>__jumptopage</code> and
+        <code>__jumptopageflow</code> are similar to the common
+        <code>__page</code> and <code>__pageflow</code> parameters,
+        but they specify a page (and the associated pageflow) the
+        system hould jumpt to unconditianlly after a successful
+        submit. In other words: If there is a
+        <code>__jumptopage</code> set, the system won't start the
+        usual pageflow process, but instead jump to the specified page
+        (selecting, if it exists, the value of <code>__jumptopageflow</code> as the
+        new pageflow)
+      </li>
+    </ul>
+    See the ChangeLog for more information on this.
   </p>
-    
+  <p>
+    We upgraded our embedded tomcat to version 4.1.30
+  </p>
   
   <h2>ChangeLog</h2>
 
