@@ -31,9 +31,10 @@
             #top        { text-align: right; padding-top: 10px; padding-bottom: 5px; padding-right: 5px;
                           color: white; background-color: black; font-size: 18px;}
             .mainbody       { background-color: #ffeedd; padding-left: 10px;}
-            .navibody       { width: 120px; background-color:#aaccff; border-right: solid black 1px; }
+            .navibody       { width: 126px; background-color:#aaccff; border-right: solid black 1px; }
             
-            h1 { background-color: #6688bb; color: white; font-family: arial, helvetica; font-weight: bold; font-size: 16px; }
+            h1 { background-color: #6688bb; color: white; font-family: arial, helvetica;
+                 font-weight: bold; font-size: 16px; padding-top: 10px; }
             h1:before { content: url("img/triangle.gif") }
 
             h2 { color: #6688bb; font-family: arial, helvetica; font-weight: bold; font-size: 14px; }
@@ -53,8 +54,8 @@
         <body>
           <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
             <tr>
-              <td colspan="3">
-                <div id="top">The Pustefix Framework</div>
+              <td colspan="2" id="top">
+                The Pustefix Framework
               </td>
             </tr>
             <tr valign="top" height="100%">
@@ -69,14 +70,13 @@
                   <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param></xsl:apply-templates>
               </td>
             </tr>
-            <tr>
-              <td class="navibody">&#160;</td>
-              <td colspan="2" align="right" class="mainbody">
-                <br/>
-                <a href="http://sourceforge.net">
-                  <img src="http://sourceforge.net/sflogo.php?group_id=72089&amp;type=5" width="210" height="62" border="0" alt="SourceForge.net Logo"/>
-                </a>
+            <tr valign="bottom">
+              <td class="navibody">
+                <div style="position: fixed; bottom: 0%; left: 0px">
+                  <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=72089&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+                </div>
               </td>
+              <td class="mainbody"/>
             </tr>
           </table>
         </body>
