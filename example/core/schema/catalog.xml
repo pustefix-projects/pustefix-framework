@@ -5,6 +5,7 @@
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"
          prefer="system">
    <system systemId="http://pustefix.sourceforge.net/interfacewrapper200401.xsd" uri="interfacewrapper200401.xsd"/>
+   <system systemId="http://pustefix.sourceforge.net/wsconfig200401.xsd" uri="wsconfig200401.xsd"/>
   <!--
    <system systemId="http://pustefix.sourceforge.net/interfacewrapper200401.xsd" uri="file:///home/adam/workspace/pfixcore/example/core/schema/interfacewrapper200401.xsd"/>
    <uri name="http://pustefix.sourceforge.net/interfacewrapper200401" uri="file:///home/adam/workspace/pfixcore/example/core/schema/interfacewrapper200401.xsd"/>

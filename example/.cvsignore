@@ -1,4 +1,5 @@
 .cache
+.webservice
 tmp
 local
 .ALLIMAGES
