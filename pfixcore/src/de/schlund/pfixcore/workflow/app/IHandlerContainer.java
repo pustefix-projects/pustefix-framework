@@ -16,24 +16,28 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.generator.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import de.schlund.pfixxml.*;
+
+import java.util.Properties;
+
+import de.schlund.pfixcore.workflow.Context;
+
 
 /**
- *
- *
+ * All classes which want to act as a container for classes
+ * which implement the {@link IHandler} interface must
+ * implement this interface. A IHandlerContainer contains
+ * all IHandlers belonging to a single page.
  */
-
 public interface IHandlerContainer {
-    void    initIHandlers(Properties props);
+
+    //~ Methods ....................................................................................
+    
+    void initIHandlers(Properties props);
+
     boolean isPageAccessible(Context context) throws Exception;
+
     boolean areHandlerActive(Context context) throws Exception;
+
     boolean needsData(Context context) throws Exception;
 }

@@ -46,13 +46,11 @@ public class DefaultIWrapperState extends StaticState {
     
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
-        String  name = context.getCurrentPageRequest().getName();
         boolean test = container.isPageAccessible(context) && container.areHandlerActive(context);
         return test;
     }
     
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
-        Properties        props      = context.getPropertiesForCurrentPageRequest();
         IWrapperContainer container  = getIWrapperContainer(context);
         ResdocFinalizer   rfinal     = getResdocFinalizer(context);
         ResultDocument    resdoc     = new ResultDocument();

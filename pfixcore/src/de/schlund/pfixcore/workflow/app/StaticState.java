@@ -18,13 +18,18 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.util.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.StateImpl;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.XMLException;
 
 /**
  * StaticState.java

@@ -18,15 +18,24 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.statuscodes.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperParamInfo;
+import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.StateImpl;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.ResultForm;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * DefaultAuthIWrapperState.java
@@ -114,7 +123,6 @@ public class DefaultAuthIWrapperState extends StateImpl {
         if (isSubmitAuthTrigger(context, preq)) {
         CAT.debug("================> Handling AUTHDATA SUBMIT");
             user.load(rdata);
-            boolean error = false;
             if (user.errorHappened()) { // during loading of the wrapper...
                 userhandler.retrieveCurrentStatus(context, user);
                 CAT.debug("================> Error during loading of wrapper data");

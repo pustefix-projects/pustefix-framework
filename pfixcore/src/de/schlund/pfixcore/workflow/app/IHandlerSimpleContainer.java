@@ -19,30 +19,37 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.pfixxml.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IHandlerFactory;
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Context;
 
 
 /**
- * IHandlerSimpleContainer.java
- *
+ * This class is a default implementation of the <code>IHandlerContainer</code> interface.
+ * <br/>
  *
  * Created: Thu Apr 18 13:49:36 2002
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
  *
  *
  */
 
 public class IHandlerSimpleContainer implements IHandlerContainer {
+    /** Store all created handlers here*/
     private HashSet    handlers;
+    /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
     private HashSet    activeset;
+    /** The policy currently used for the page */
     private String     policy;
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
@@ -54,9 +61,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     // implementation of de.schlund.pfixcore.workflow.app.IHandlerContainer interface
 
     /**
-     *
-     * @param param1 <description>
-     * @exception java.lang.Exception <description>
+     * Initialize the IHandlers. Get the handlers from {@link IHandlerFactory}
+     * and store them.
+     * @param props the properties
+     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#initIHandlers(Properties)
      */
     public void initIHandlers(Properties props) {
         policy = props.getProperty(PROP_POLICY);
@@ -100,8 +108,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * The principal accessibility of a page is deduced as follows:
      * If ANY of all the associated IHandlers returns false on a call to
      * prerequisitesMet(context), the page is NOT accessible.
-     * @return a <code>boolean</code> value
+     * @param context the current context
+     * @return true if page is accesible, else false
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#isPageAccessible(Context)
      */
     
     public boolean isPageAccessible(Context context) throws Exception {
@@ -127,10 +137,12 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * this method requires either all (ALL), at least one (ANY) or none (NONE) of the
      * handlers to be active to return a value of <code>true</code>
      * If no wrapper/handler is defined, it returns true, too.
-     * @return a <code>boolean</code> value
+     * @param context the current context
+     * @return true if handlers are active, else false
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#areHandlerActive(Context)
      */
-    public boolean areHandlerActive(Context context) throws Exception {
+    public boolean areHandlerActive(Context context) throws Exception  {
         if (activeset.isEmpty() || policy.equals("NONE")) {
             return true; // border case
         }
@@ -167,12 +179,14 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     }
 
     /**
-     * The method <code>needsData</code> tells if any of the IHandlers this instance aggregates still needs Data.
-     *
-     * @return a <code>boolean</code> value
+     * The method <code>needsData</code> tells if any of the IHandlers this instance 
+     * aggregates still needs data.
+     * @param context the current context
+     * @return true if data is needed, else false
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#needsData(Context)
      */
-    public boolean needsData(Context context) throws Exception {
+    public boolean needsData(Context context) throws Exception  {
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {

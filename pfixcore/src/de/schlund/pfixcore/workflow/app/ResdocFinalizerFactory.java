@@ -18,10 +18,9 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import java.util.*;
-import org.apache.log4j.*;
-import de.schlund.util.*;
+import java.util.HashMap;
+
+import org.apache.log4j.Category;
 
 /**
  * ResdocFinalizerFactory.java
