@@ -161,7 +161,7 @@
     </ul>
   </p>
 
-  <h2>The Contract between States and Context</h2>
+  <h2>The contract between States and Context</h2>
   In this section we will describe in detail how the Context selects
   the State to call and what a state is expected to return in which
   situation.
