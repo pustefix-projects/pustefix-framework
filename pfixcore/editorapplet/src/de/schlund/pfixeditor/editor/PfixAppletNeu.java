@@ -1,3 +1,23 @@
+/*
+* This file is part of PFIXCORE.
+*
+* PFIXCORE is free software; you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* PFIXCORE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with PFIXCORE; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*/
+
+
 package de.schlund.pfixeditor.editor;
 
 import javax.swing.event.*; 
@@ -435,7 +455,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         km.addActionForKeyStroke(ksFind, actFind);
 
-        KeyStroke ksReplace = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
+        KeyStroke ksReplace = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
         Action actReplace = new TextAction("Ctrl-R") {
                 public void actionPerformed(ActionEvent e) {
                     find();
@@ -445,8 +465,12 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         km.addActionForKeyStroke(ksReplace, actReplace);
 
         KeyStroke ksUndo = KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK);
-       
         km.addActionForKeyStroke(ksUndo, undoAction);
+
+        KeyStroke ksRedo = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
+        km.addActionForKeyStroke(ksUndo, undoAction);
+
+        
 
         KeyStroke ksTest = KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK);
         TextAction actTest = new TextAction("h") {
@@ -514,7 +538,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
     public void keyReleased(KeyEvent keyEvent) {
+        
         syntaxPane.realtimeHilight();
+      
     }
 
     public void keyTyped(KeyEvent keyEvent) {
@@ -629,16 +655,29 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                         setEnabled(false);
                 }
                 public void actionPerformed(ActionEvent e) {
+                    // for (int i = 0;i<3; i++) {
+                    // do {
+                        System.out.println("Undo:"+ undo.getUndoPresentationName() );
+                        System.out.println("Avent: " + e.ACTION_PERFORMED);
                         try {
+                                
                                 undo.undo();
+                                System.out.println("Undo " + undo.toString());
                          } 
                          catch (CannotUndoException ex) {
                                 System.out.println("Unable to undo: " + ex);
                                 ex.printStackTrace();
                         }
+
+                        // }
+         //  while (!undo.getPresentationName().equals("Rückgängig Hinzufügen"));
+                        
                         updateUndoState();
                         redoAction.updateRedoState();
-                }
+                         
+          }
+                    
+
           
                 protected void updateUndoState() {
                         if (undo.canUndo()) {
@@ -659,15 +698,21 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                 }
 
                 public void actionPerformed(ActionEvent e) {
-                         try {
+                    for (int i=0; i<3; i++) {
+                                                 try {
                         undo.redo();
                         } 
                         catch (CannotRedoException ex) {
                         System.out.println("Unable to redo: " + ex);
                         ex.printStackTrace();
                         }
+
+                         
+                    }
                         updateRedoState();
                         undoAction.updateUndoState();
+                    
+
                 }
 
                 protected void updateRedoState() {

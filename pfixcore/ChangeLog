@@ -1,3 +1,17 @@
+2003-05-07  Volker Zaich <zaich@schlund.de>
+	
+	* editorapplet/src/de/schlund/pfixeditor/test/LineNumber.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixAppletNeu.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixCheckXml.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixHighlight.java
+	* editorapplet/src/de/schlund/pfixeditor/test/PfixTextPane.java
+	- Copyright License added
+	- Search/Replace added
+	- Shortcutz for undo/redo added
+
+	* example/core/script/xmlEditorApplet.jar
+	
+	
 2003-05-05  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/test/LineNumber.java
