@@ -134,7 +134,7 @@ public final class RecordManager {
                     int count = ((Integer)session.getAttribute(SESS_RECORD_COUNTER)).intValue();
                     count++;
                     session.setAttribute(SESS_RECORD_COUNTER, new Integer(count));
-                    doRecord(count, recordBaseDir, dir, preq.getRequestURI(resp), preq, resdoc);
+                    doRecord(count, recordBaseDir, dir, preq.getRequestURI(), preq, resdoc);
                 } else {
                     if (CAT.isDebugEnabled()) {
                         CAT.debug("Request has nothing to do with recording");

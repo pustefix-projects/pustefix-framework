@@ -1,3 +1,24 @@
+2004-02-20  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/serverutil/SessionHelper.java
+        (saveSessionData, copySessionData, stripUriSessionId): added 
+        a CAT.warn when catching NullPointerException(!)
+        * src/de/schlund/pfixxml/serverutil/SessionHelper.java:
+        (getClearedURI, getClearedURL, getURLSessionId, encodeURI,
+        encodeURL): removed useless param HttpServletResponse.
+        * src/de/schlund/pfixxml/ServletManager.java: adjusted all
+        calls to SessionHelper
+        * src/de/schlund/pfixxml/PfixServletRequest.java(getRequestURI):
+        removed useless param HttpServletResponse
+        * src/de/schlund/pfixxml/AbstractXMLServer.java: adjusted all
+        calls to PfixServletRequest
+        * src/de/schlund/pfixxml/DerefServer.java: adjusted all
+        calls to SessionHelper
+        * src/de/schlund/pfixxml/testenv/RecordManager.java: adjusted calls
+        to PfixServletRequest
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
+        adjusted calls to PfixServletRequest.
+
 2004-02-18  Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/testenv/*: Added support for retrieving timing information.
