@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
   <cus:choose>
+    <cus:test mode="prod">
+      <prop name="rule.mail.send">true</prop>
+      <prop name="rule.mail.to">pfix-core@schlund.de,pfix-app@schlund.de</prop>
+    </cus:test>
     <cus:test uid="jtl">
       <prop name="rule.mail.send">true</prop>
       <prop name="rule.mail.to">jtl@schlund.de</prop>
