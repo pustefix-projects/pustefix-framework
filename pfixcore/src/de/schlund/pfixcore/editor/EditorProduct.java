@@ -39,14 +39,15 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 
 public class EditorProduct {
     private static Category               CAT   = Category.getInstance(EditorProduct.class.getName());
-    private        String                 name;
-    private        String                 comment;
-    private        String                 depend;
-    private        TargetGenerator        generator;
-    private        Navigation             navigation;
-    private        PfixcoreServlet[]      servlets;
-    private        PfixcoreNamespace[]    nspaces;
-    private        EditorDocumentation    editdoku;
+    
+    private final String                 name;
+    private final String                 comment;
+    private final String                 depend;
+    private final TargetGenerator        generator;
+    private final Navigation             navigation;
+    private final PfixcoreServlet[]      servlets;
+    private final PfixcoreNamespace[]    nspaces;
+    private final EditorDocumentation    editdoku;
     
     public EditorProduct (String name, String comment, String depend, TargetGenerator generator,
                           Navigation navigation, PfixcoreServlet[] servlets, PfixcoreNamespace[] nspaces, 

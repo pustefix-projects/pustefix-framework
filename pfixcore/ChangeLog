@@ -1,3 +1,12 @@
+2004-06-28  Michael Hartmier  <mhm@schlund.de>
+	- simplified AppLoader init
+	- minor cleanup
+	* example/common/conf/apploader.prop.in
+	* src/de/schlund/pfixcore/editor/EditorProduct.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
 	- adjust project generate to new depend.xml and saxon 8
 	* affected files:

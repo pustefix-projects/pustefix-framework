@@ -63,7 +63,7 @@ public class EditorProductFactory implements FactoryInit {
     private static String                 productfile   = null;
     private static boolean                already_read  = false;
     private static final String           PROP_DELAY    = "editorproductfactory.delayinit";
-    private static final String           PROP_PF       = "editorproductfactory.productdata";
+    public static final String            PROP_PF       = "editorproductfactory.productdata";
     private static final String           IXSL_PFIX     = "ixsl";
     private static final String           IXSL_URI      = "http://www.w3.org/1999/XSL/Transform";
     private static final String           PFX_PFIX      = "pfx";
