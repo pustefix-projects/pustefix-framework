@@ -77,7 +77,7 @@ public class AuxDependencyManager implements DependencyParent {
             Document        doc     = Xml.parse(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
             if (auxdeps.getLength() > 0) {
-                String docroot = target.getTargetGenerator().getDocroot();
+                File docroot = target.getTargetGenerator().getDocroot();
                 for (int j = 0; j < auxdeps.getLength(); j++) {
                     String type            = ((Element) auxdeps.item(j)).getAttribute("type");
                     Path path              = Path.create(docroot, ((Element) auxdeps.item(j)).getAttribute("path"));

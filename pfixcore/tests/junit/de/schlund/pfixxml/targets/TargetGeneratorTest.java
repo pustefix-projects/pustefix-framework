@@ -18,8 +18,8 @@ public class TargetGeneratorTest extends TestCase {
         
         gen = create("<make docroot='.' cachedir='.' record_dir='.'/>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals(gen.getDocroot(), "./");  // TODO: tailing /
-        assertEquals(gen.getDisccachedir(), "./");  // TODO: tailing /
+        assertEquals(gen.getDocroot(), ".");
+        assertEquals(gen.getDisccachedir(), ".");
     }
 
     public void testTarget() throws Exception {

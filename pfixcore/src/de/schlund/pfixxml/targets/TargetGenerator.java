@@ -63,9 +63,9 @@ public class TargetGenerator {
     private long                          config_mtime                   = 0;
     private final String                  configname;
     private final File                    confile;
+    private File                          docroot;
     private String                        disccachedir;
-    private File                          recorddir;
-    private String                        docroot;
+    private File                          recorddir; // may be null
     
     /* All registered TargetGenerationListener */
     private Set listeners = new HashSet();
@@ -98,7 +98,7 @@ public class TargetGenerator {
     public File getRecorddir() {
         return recorddir;
     }
-    public String getDocroot() { // TODO: return file
+    public File getDocroot() {
         return docroot;
     }
 
@@ -176,7 +176,7 @@ public class TargetGenerator {
         Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
-        recorddir = getFileAttribute(makenode, "record_dir");
+        recorddir = getFileAttributeOpt(makenode, "record_dir");
         File cache = getFileAttribute(makenode, "cachedir");
         disccachedir = cache.getPath() + "/";
         CAT.debug("* Set CacheDir to " + disccachedir);
@@ -186,7 +186,7 @@ public class TargetGenerator {
             throw new XMLException("Directory " + disccachedir + " is not writeable,readeable or is no directory");
         }
 
-        docroot = getFileAttribute(makenode, "docroot").getPath() + "/";
+        docroot = getFileAttribute(makenode, "docroot");
         CAT.debug("* Set docroot to " + docroot);
 
         HashSet depxmls = new HashSet();
@@ -242,7 +242,7 @@ public class TargetGenerator {
                 String  value   = par.getAttribute("value");
                 params.put(parname, value);
             }
-            params.put("docroot", docroot);
+            params.put("docroot", docroot.getAbsolutePath());
             struct.setParams(params);
             allstructs.put(name, struct);
         }
@@ -603,7 +603,28 @@ public class TargetGenerator {
         return new File(getAttribute(node, name));
     }
 
+    private static File getFileAttributeOpt(Element node, String name) throws XMLException {
+        String value;
+        
+        value = getAttributeOpt(node, name);
+        if (value == null) {
+            return null;
+        } else {
+            return new File(value);
+        }
+    }
+
     private static String getAttribute(Element node, String name) throws XMLException {
+        String value;
+        
+        value = getAttributeOpt(node, name);
+        if (value == null) {
+            throw new XMLException("missing attribute: " + name);
+        }
+        return value;
+    }
+
+    private static String getAttributeOpt(Element node, String name) {
         Attr attr;
         
         attr = node.getAttributeNode(name);

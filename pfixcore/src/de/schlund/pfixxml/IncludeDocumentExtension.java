@@ -80,9 +80,10 @@ public final class IncludeDocumentExtension {
      *                 on all errors
      */
     public static final Object get(XPathContext context, String path_str, String part, String product,
-                                   String docroot, String targetgen, String targetkey,
+                                   String docroot_str, String targetgen, String targetkey,
                                    String parent_part_in, String parent_product_in, String computed_inc) throws Exception {
 
+        File docroot = new File(docroot_str);
         String parent_path_str = "";
         String parent_part     = "";
         String parent_product  = "";

@@ -139,14 +139,14 @@ public class Xslt {
         return factory.newTransformer(new StreamSource(file));
     }
     
-    public static synchronized Transformer loadTransformer(String docroot, String path) throws TransformerConfigurationException {
+    public static synchronized Transformer loadTransformer(File docroot, String path) throws TransformerConfigurationException {
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException("absolute path expected: " + path);
             // otherwise, I'd construct an wrong uri
         }
         Source src;
         src = Xslt.createSaxSource(new InputSource("file://" + path));
-        factory.setURIResolver(new FileResolver(new File(docroot)));
+        factory.setURIResolver(new FileResolver(docroot));
         try {
             return factory.newTransformer(src);
         } catch (TransformerConfigurationException e) {
@@ -217,10 +217,10 @@ public class Xslt {
     	private static final String SEP = File.separator; 
         
         // always with tailing /
-        private final String root;
+        private final File root;
         
         public FileResolver(File root) {
-            this.root = root.getAbsolutePath() + "/";
+            this.root = root;
         }
         
         /**

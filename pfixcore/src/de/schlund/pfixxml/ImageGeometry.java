@@ -70,7 +70,7 @@ public class ImageGeometry {
 
     private static ImageGeometryData getImageGeometryData(String docroot, String path) {
         synchronized (imageinfo) {
-            File img = Path.create(docroot, path).resolve();
+            File img = Path.create(new File(docroot), path).resolve();
             if (img.exists() && img.canRead() && img.isFile()) {
                 long              mtime = img.lastModified();
                 ImageGeometryData tmp = (ImageGeometryData) imageinfo.get(path);

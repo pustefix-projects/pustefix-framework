@@ -35,7 +35,7 @@ public class DependencyTracker {
     
     /** xslt extension */
     public static String log(XPathContext context, String type,
-                             String path, String part, String product, String docroot,
+                             String path, String part, String product, String docroot_str,
                              String parent_part_in, String parent_product_in,
                              String targetGen, String targetKey) throws Exception {
 
@@ -43,6 +43,7 @@ public class DependencyTracker {
             return "0";
         }
 
+        File docroot = new File(docroot_str);
         String parent_path    = "";
         String parent_part    = "";
         String parent_product = "";
@@ -79,7 +80,7 @@ public class DependencyTracker {
         }
     }
     
-    private static Path relative(String docroot, String path) {
+    private static Path relative(File docroot, String path) {
         if (path.startsWith(File.separator)) {
             path = path.substring(1); // TODO: kind of ugly - fix gif src attributes instead!!
         } 

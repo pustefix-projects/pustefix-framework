@@ -736,16 +736,12 @@ public abstract class AbstractXMLServer extends ServletManager {
     }
 
     // TODO: kind of a hack because - better make sure the map always contains docroot ...
-    public static void addDocroot(Map map, String value) {
+    public static void addDocroot(Map map, File value) {
         final String NAME = "docroot";
 
-        if (!value.endsWith(File.separator)) {
-            throw new IllegalArgumentException("docroot value without tailing slash: " + value);
-        }
         if (map.get(NAME) == null) {
-            map.put(NAME, value);
+            map.put(NAME, value.getAbsolutePath() + File.separator);
         }
-
     }
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set

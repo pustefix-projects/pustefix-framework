@@ -27,23 +27,27 @@ import java.io.File;
 public class Path implements Comparable {
 	private static final String SEP = File.separator; 
 	
+	private static final File ROOT = new File(SEP);
+	private static final File USER = new File(System.getProperty("user.dir"));
+	
 	public static Path create(String path) {
 	    if (path.startsWith(SEP)) {
-		    return create(SEP, path.substring(SEP.length()));
+		    return create(ROOT, path.substring(SEP.length()));
 	    } else {
-	        return create(System.getProperty("user.dir"), path);
+	        return create(USER, path);
 	    }
 	}
 
-	public static Path create(String base, String relative) {
+	public static Path create(File base, String relative) {
         if (relative.startsWith(SEP)) {
+            // TODO: move this check "up"
             relative = relative.substring(1);
             // TODO: throw new IllegalArgumentException("relative path expected: " + path);
         }
-        return new Path(base, relative);
+        return new Path(base.getAbsolutePath(), relative);
     }
 
-	public static Path createOpt(String base, String relative) {
+	public static Path createOpt(File base, String relative) {
 	    if (relative.length() == 0) {
 	        return null;
 	    } else {
@@ -51,12 +55,10 @@ public class Path implements Comparable {
 	    }
 	}
 	
-	public static String getRelativeString(String base, String absolute) {
-	    if (!base.endsWith(SEP)) {
-	        base = base + SEP;
-	    }
-	    if (absolute.startsWith(base)) {
-	        return absolute.substring(base.length());
+	public static String getRelativeString(File base, String absolute) {
+	    String prefix = base.getAbsolutePath() + SEP;
+	    if (absolute.startsWith(prefix)) {
+	        return absolute.substring(prefix.length());
 	    } else {
 	        return null;
 	    }

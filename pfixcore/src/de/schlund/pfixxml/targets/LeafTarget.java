@@ -69,7 +69,7 @@ public abstract class LeafTarget extends TargetImpl {
     public boolean needsUpdate() throws Exception  {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            File doc       = new File(getTargetGenerator().getDocroot() + getTargetKey());
+            File doc       = new File(getTargetGenerator().getDocroot(), getTargetKey());
             if (doc.lastModified() > mymodtime) {
                 return true;
             }
@@ -105,7 +105,7 @@ public abstract class LeafTarget extends TargetImpl {
 
     protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
         long mymodtime  = getModTime(); 
-        long maxmodtime = new File(getTargetGenerator().getDocroot() + getTargetKey()).lastModified(); 
+        long maxmodtime = new File(getTargetGenerator().getDocroot(), getTargetKey()).lastModified(); 
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
         

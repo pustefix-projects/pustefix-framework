@@ -41,14 +41,14 @@ public class XMLLeafTarget extends LeafTarget {
         this.type       = type;
         this.generator  = gen;
         this.targetkey  = key;
-        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + key);
+        this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(gen.getDocroot() + File.separator + key);
     }
 
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        File thefile = new File(getTargetGenerator().getDocroot() + getTargetKey());
+        File thefile = new File(getTargetGenerator().getDocroot(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             return Xslt.xmlObjectFromDisc(thefile);
         } else {

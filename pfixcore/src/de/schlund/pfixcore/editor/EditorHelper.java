@@ -407,18 +407,18 @@ public class EditorHelper {
     public static void renderTargetContent(Target target, ResultDocument resdoc, Element root) {
         String key = target.getTargetKey();
         String cache = target.getTargetGenerator().getDisccachedir();
-        String path = target.getTargetGenerator().getDocroot();
+        File docroot = target.getTargetGenerator().getDocroot();
         TargetType type = target.getType();
-        String filename;
+        File file;
 
         if (type == TargetType.XML_LEAF || type == TargetType.XSL_LEAF) {
-            filename = path + key;
+            file = new File(docroot, key);
         } else {
-            filename = cache + key;
+            file = new File(cache, key);
         }
 
         try {
-            Document cdoc = Xml.parse(filename);
+            Document cdoc = Xml.parse(file);
             Node cinfo = resdoc.getSPDocument().getDocument().importNode(cdoc.getDocumentElement(), true);
             root.appendChild(cinfo);
         } catch (Exception e) {
