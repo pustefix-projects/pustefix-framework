@@ -493,7 +493,33 @@ public class PfixServletRequest {
             }
             parameters.put(key, params);
         }
+        //for (Iterator i = allnames.iterator(); i.hasNext();) {
+        //    String         key    = (String) i.next();
+        //    RequestParam[] params = (RequestParam[]) parameters.get(key);
+        //    System.out.print("Param: " + key);
+        //    if (params != null) {
+        //        for (int j = 0;  j < params.length; j++) {
+        //            System.out.print("[" + params[j].toString() + "] ");
+        //        }
+        //        System.out.println("");
+        //    } else {
+        //        System.out.println(" RequestParam[] is NULL! ");
+        //    } 
+        //}
         generateSynthetics(req,allnames);
+        // for (Iterator i = parameters.keySet().iterator(); i.hasNext();) {
+        //     String         key    = (String) i.next();
+        //     RequestParam[] params = (RequestParam[]) parameters.get(key);
+        //     System.out.print("Final: " + key + "=>");
+        //     if (params != null) {
+        //         for (int j = 0;  j < params.length; j++) {
+        //             System.out.print("[" + params[j].toString() + "] ");
+        //         }
+        //         System.out.println("");
+        //     } else {
+        //         System.out.println(" RequestParam[] is NULL! ");
+        //     } 
+        // }
     }
 
     private HashSet handleMulti(HttpServletRequest req, Properties properties) {
@@ -550,14 +576,14 @@ public class PfixServletRequest {
             for (Iterator j = allnames.iterator(); j.hasNext();) {
                 String name = (String) j.next();
                 if (name.startsWith(prefix) && (name.length() > prefix.length())) {
-                    String   key    = name.substring(prefix.length());
-                    String[] values = req.getParameterValues(name);
+                    String         key    = name.substring(prefix.length());
+                    RequestParam[] values = (RequestParam[]) parameters.get(name);
                     CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
                     if (values != null && values.length > 0) {
                         RequestParam[] newvals = new RequestParam[values.length];
                         for (int k = 0; k < values.length ; k++) {
-                            CAT.debug("         Adding value: " + values[k]);
-                            newvals[k] = new SimpleRequestParam(values[k]);
+                            CAT.debug("         Adding value: " + values[k].getValue());
+                            newvals[k] = new SimpleRequestParam(values[k].getValue());
                             newvals[k].setSynthetic(true);
                         }
                         // Eeeek, how to concatenate arrays in an elegant way?
