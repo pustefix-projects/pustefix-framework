@@ -33,22 +33,9 @@ import org.apache.oro.util.CacheLRU;
 
 public class LRUCache implements SPCache {
     private static       Category CAT          = Category.getInstance(LRUCache.class.getName());
-    public static final int      DEFAULT_SIZE = 30;
-    //private static final String   PROP_SIZE    = "spcachefactory.lrucache.size";
+    public  static final int      DEFAULT_SIZE = 30;
 
     private CacheLRU cache;
-    
-    
-    /*  public LRUCache(Properties props) {
-        System.out.println("LRU1");
-        if ((props != null) && (props.getProperty(PROP_SIZE) != null)) {
-            String cap = props.getProperty(PROP_SIZE);
-            cache = new CacheLRU(new Integer(cap).intValue());
-        } else {
-            cache = new CacheLRU(DEFAULT_SIZE);
-        }
-    }*/
-    
     
     public LRUCache() {
         // nothing to do
@@ -58,7 +45,6 @@ public class LRUCache implements SPCache {
     public void createCache(int capacity) {
         if(capacity <= 0 )
             capacity= DEFAULT_SIZE;
-            
         cache= new CacheLRU(capacity);
     }
     

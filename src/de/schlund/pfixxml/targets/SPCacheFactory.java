@@ -70,7 +70,7 @@ public class SPCacheFactory implements FactoryInit {
                 targetCache= tmp;
             }
         }
-
+        
         synchronized (documentCache) {
             documentCache.createCache(LRUCache.DEFAULT_SIZE);
             SPCache tmp= getConfiguredCache(props, PROP_DOCUMENT_CACHE_CLASS, PROP_DOCUMENT_CACHE_SIZE);
