@@ -185,6 +185,16 @@
       <lang name="default" warning="NEVER CHANGE THIS NODE!">The entered value is too small.</lang>
     </product>
   </part>
+  <part name="pfixcore.generator.postcheck.STRING_TOO_LONG">
+    <product name="default">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">The entered string is too long.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.generator.postcheck.STRING_TOO_SHORT">
+    <product name="default">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">The entered string is too short.</lang>
+    </product>
+  </part>
   <part name="pfixcore.generator.precheck.REGEXP_NO_MATCH">
     <product name="default">
       <lang name="default" warning="NEVER CHANGE THIS NODE!">The entered value contains invalid characters or is otherwise invalid.</lang>

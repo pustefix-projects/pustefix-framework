@@ -51,9 +51,10 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     
-    private static final String SESS_LANG                = "__SELECTED_LANGUAGE__";
-    private static final String SESS_RECORDMODE          = "__RECORDMODE__";
-    private static final String XML_CONTENT_TYPE         = "text/xml; charset=iso-8859-1";
+    private static final String SESS_LANG        = "__SELECTED_LANGUAGE__";
+    private static final String SESS_RECORDMODE  = "__RECORDMODE__";
+    private static final String XML_CONTENT_TYPE = "text/xml; charset=iso-8859-1";
+    private static final String FONTIFY_SSHEET   = "core/xsl/xmlfontify.xsl";
     private static final String PARAM_XMLONLY            = "__xmlonly";
     public  static final String PARAM_ANCHOR             = "__anchor";
     private static final String PARAM_EDITMODE           = "__editmode";
@@ -603,19 +604,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean plain_xml = false;
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
-            Object stylevalue = null;
-            
-          //  try {
-                stylevalue = generator.getTarget(stylesheet).getValue();
-           // } catch (TargetGenerationException targetex) {
-                //CAT.error("AbstractXMLServer caught Exception!", targetex);
-             //   Document errordoc = targetex.toXMLRepresentation();
-              //  errordoc = xsltproc.xmlObjectFromDocument(errordoc);
-              //  Object   stvalue = generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-              //  xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
-             //   return;
-           // }
+            TraxXSLTProcessor xsltproc   = TraxXSLTProcessor.getInstance();
+            Object            stylevalue = generator.getTarget(stylesheet).getValue();
             try {
                 xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
                                              stylevalue, paramhash, 
@@ -626,15 +616,22 @@ public abstract class AbstractXMLServer extends ServletManager {
                     if (isInfoEnabled()) {
                         CAT.info("[Ignored TransformerException]", e);
                     }
-            	}	else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                		CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                	} 	else 
-                			throw e;
+                } else if(e.getException() != null &&
+                          e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                    CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                } else 
+                    throw e;
             }
         } else if (plain_xml) {
-            res.setContentType(XML_CONTENT_TYPE);
-            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(spdoc.getDocument()), 
-                                                                        new StreamResult(res.getOutputStream()));
+            TraxXSLTProcessor xsltproc   = TraxXSLTProcessor.getInstance();
+            Object            stylevalue = generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
+            try {
+                xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
+                                             stylevalue, null, 
+                                             res.getOutputStream());
+            }  catch (TransformerException e) {
+                CAT.warn("*** Ignored exception when trying to render XML tree ***");
+            }
         } else {
             Document ext_doc = dbfac.newDocumentBuilder().newDocument();
             Element  root    = ext_doc.createElement("render_external");
