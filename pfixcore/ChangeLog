@@ -1,3 +1,8 @@
+2003-01-27  Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: removed almost
+	all xalan supporting code. Documentation added. Small improvement.
+
 2003-01-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (getName): return the supplied name.
