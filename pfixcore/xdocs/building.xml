@@ -77,7 +77,7 @@
             <li><p>In pfixcore: Run
                 <source>ant dist -Dmakemode=test</source>
               (or <code>ant notag -Dmakemode=test</code>) to build a distribution.</p></li>
-            <li><p>Make your that your environment contains current versions of <code>pfixcore/lib/*.jar</code>
+            <li><p>Make sure that your environment contains a current versions of <code>pfixcore/lib/*.jar</code>
               and <code>pfixcore/lib/tomcat/*</code>.</p></li>
             <li><p>Update the build file:
                 <source>cp pfixcore/skel/build.xml yourenv/build.xml</source>
