@@ -11,7 +11,6 @@
   <xsl:param name="machine"/>
   <xsl:param name="fqdn"/>
   <xsl:param name="mode"/>
-  <xsl:param name="container">tomcat</xsl:param>
 
   <xsl:template match="*">
     <xsl:element name="{name()}" namespace="{namespace-uri()}">
@@ -22,7 +21,6 @@
   <xsl:template match="cus:docroot"><xsl:value-of select="$docroot"/><xsl:text>/</xsl:text></xsl:template>
 
   <xsl:template match="cus:uid"><xsl:value-of select="$uid"/></xsl:template>
-  <xsl:template match="cus:container"><xsl:value-of select="$container"/></xsl:template>
   <xsl:template match="cus:machine"><xsl:value-of select="$machine"/></xsl:template>
   <xsl:template match="cus:fqdn"><xsl:value-of select="$fqdn"/></xsl:template>
 
@@ -61,17 +59,15 @@
     <xsl:choose> 
       <xsl:when test="$thenode/@bool = 'or'">
       <!-- or -->
-        <xsl:if test="$thenode/@container = $container or $thenode/@uid = $uid
+        <xsl:if test="$thenode/@uid = $uid
                 or $thenode/@machine = $machine or $thenode/@mode = $mode">true</xsl:if>
       </xsl:when>
       <xsl:otherwise>
         <!-- and -->
         <xsl:if test="($thenode/@uid = $uid or not($thenode/@uid))
-                and ($thenode/@container = $container or not($thenode/@container))
                 and ($thenode/@machine = $machine or not($thenode/@machine))
                 and ($thenode/@mode = $mode or not($thenode/@mode))">true</xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
 </xsl:stylesheet>

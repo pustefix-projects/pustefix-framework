@@ -1,3 +1,62 @@
+2004-07-20 Michael Hartmier  <mhm@schlund.de>
+	- switched to tomcat 5:
+	  the 'example/servletconf/tomcat' directory is not longer checked-in, 
+          instead it's generated automatically from lib/tomcat/jakarta-tomcat-*.tgz. 
+	  Thus, we can upgrade to a new version by replacing the tgz file.
+        - tomcat configuration changes:
+	  - http and https connectors are configured: you can run a standalone tomcat without apache
+          - tomcat manager is configured and can be accessed from web apps via a console button 
+          - server.xml is generated with relative paths
+        - examples/core/build/ changes: 
+          - the xsl "container" parmeter has been removed
+          - the defpath declaration is used for apache.conf and server.xml generation now
+	- fix redirect code for ports != 80/443
+	- affected files:
+	* .classpath
+	* ChangeLog
+	* build.xml
+	* example/core/build/create_apacheconf.xsl
+	* example/core/build/create_lib.xsl
+	* example/core/build/create_serverxml.xsl
+	* example/core/img/manager.gif
+	* example/core/xsl/include.xsl.in
+	* example/servletconf/.cvsignore
+	* example/servletconf/tomcat/.cvsignore
+	* example/servletconf/tomcat/bin/bootstrap.jar
+	* example/servletconf/tomcat/bin/catalina.sh
+	* example/servletconf/tomcat/bin/setclasspath.sh
+	* example/servletconf/tomcat/common/lib/commons-collections.jar
+	* example/servletconf/tomcat/common/lib/jndi.jar
+	* example/servletconf/tomcat/common/lib/naming-common.jar
+	* example/servletconf/tomcat/common/lib/naming-resources.jar
+	* example/servletconf/tomcat/common/lib/servlet.jar
+	* example/servletconf/tomcat/conf/.cvsignore
+	* example/servletconf/tomcat/logs/.cvsignore
+	* example/servletconf/tomcat/server/lib/catalina.jar
+	* example/servletconf/tomcat/server/lib/commons-beanutils.jar
+	* example/servletconf/tomcat/server/lib/commons-digester.jar
+	* example/servletconf/tomcat/server/lib/commons-logging.jar
+	* example/servletconf/tomcat/server/lib/jakarta-regexp-1.3.jar
+	* example/servletconf/tomcat/server/lib/servlets-common.jar
+	* example/servletconf/tomcat/server/lib/servlets-default.jar
+	* example/servletconf/tomcat/server/lib/servlets-invoker.jar
+	* example/servletconf/tomcat/server/lib/servlets-manager.jar
+	* example/servletconf/tomcat/server/lib/servlets-webdav.jar
+	* example/servletconf/tomcat/server/lib/tomcat-http11.jar
+	* example/servletconf/tomcat/server/lib/tomcat-jk.jar
+	* example/servletconf/tomcat/server/lib/tomcat-util.jar
+	* example/servletconf/tomcat/shared/.cvsignore
+	* example/servletconf/tomcat/shared/classes/.cvsignore
+	* example/servletconf/tomcat/shared/lib/.cvsignore
+	* lib/tomcat/jakarta-tomcat-5.0.27.tar.gz
+	* lib/tomcat/jndi.jar
+	* skel/build.xml
+	* src/de/schlund/pfixcore/util/XsltTransformer.java
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+	* src/de/schlund/pfixxml/testenv/Testcase.java
+
 2004-07-19  Benjamin Reitzammer <benjamin@schlund.de>
 
     * added src/de/schlund/pfixcore/util/XsltCustomWebXmlTask.java

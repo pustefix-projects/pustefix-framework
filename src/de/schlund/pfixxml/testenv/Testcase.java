@@ -35,6 +35,7 @@ import com.sun.net.ssl.KeyManager;
 import com.sun.net.ssl.SSLContext;
 import com.sun.net.ssl.TrustManager;
 import com.sun.net.ssl.X509TrustManager;
+import de.schlund.pfixxml.ServletManager;
 
 /**
  * Class for playback of a testcase.
@@ -246,7 +247,7 @@ public class Testcase {
     /** initialize the HTTP-connection */
     private void initHttpConnection(String hostname, int port, String proto) throws TestClientException {
         HostConfiguration config = new HostConfiguration();
-        if(port == 443 || proto.toLowerCase().equals("https")) {
+        if(ServletManager.isSslPort(port) || proto.toLowerCase().equals("https")) {
             if(sslNeedsInit) {
                 if(CAT.isDebugEnabled()) {
                     CAT.debug("Initialising SSL");
@@ -312,7 +313,7 @@ public class Testcase {
         }
         SSLSocketFactory ssl_fac = sslContext.getSocketFactory();
         MySSLSocketfactory myssl = new MySSLSocketfactory(ssl_fac);
-        Protocol myHTTPS = new Protocol("https", myssl, 443);
+        Protocol myHTTPS = new Protocol("https", myssl, ServletManager.APACHE_SSL_PORT); // TODO: tomcat ssl port?
         Protocol.registerProtocol("https", myHTTPS);
     }
 }
