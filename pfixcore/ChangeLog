@@ -9,7 +9,7 @@
 	* skel/build.xml
 	Copied in target "checkfiles" from build.xml
 	* jni/build.xml
-	Replaces jni/Makefile* (not yet removed from repository)
+	Replaces jni/Makefile* (not yet removed from repository), Requires >= ant-1.5.4 for javah task
 	* .cvsignore
 	Added .classpath, .project and ant.dtd
 	* jni/.cvsignore
