@@ -200,7 +200,7 @@
   <part name="buttons">
     <product name="default">
       <lang name="default">
-        <pfx:elink arget="_popup" href="http://www.gimp.org">
+        <pfx:elink target="_popup" href="http://www.gimp.org">
           <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
           Goto Gimp!</pfx:elink>  
         <pfx:button page="ssltest">SSL TEST</pfx:button>  

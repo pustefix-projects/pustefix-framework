@@ -1,5 +1,9 @@
 2004-01-15  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java: (currentPageNeedsSSL) guard against null properties
+
+	* src/de/schlund/pfixxml/DerefServer.java: use the OutputStream, not the PrintWriter.
+
 	* example/core/xsl/utils.xsl.in: changed the layer stuff so that a
 	layer name that contains a "/" is not treated as page local --
 	with other word, you have some crude way to use "namespaces" for
