@@ -2,9 +2,9 @@
 
 <!DOCTYPE projects
   PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
-<web-app xmlns:pfx="http://www.schlund.de/pustefix/core">
-  <pfx:servlet />
-  <pfx:servlet-mapping />
-  <pfx:error-page />
-  <pfx:session-config />
+<web-app xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <cus:servlet />
+  <cus:servlet-mapping />
+  <cus:error-page />
+  <cus:session-config />
 </web-app>

@@ -2,8 +2,7 @@
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
-                xmlns:pfx="http://www.schlund.de/pustefix/core"
-                exclude-result-prefixes="cus pfx">
+                exclude-result-prefixes="cus">
 
   <xsl:param name="prjname"/>
   <xsl:param name="projectsxmlfile"/>
@@ -17,7 +16,7 @@
 
   <xsl:include href="create_lib.xsl"/>
 
-  <xsl:template match="pfx:servlet-mapping">
+  <xsl:template match="cus:servlet-mapping">
     <xsl:for-each select="$project/servlet">
       <xsl:variable name="active_node">
         <xsl:apply-templates select="./active/node()"/>
@@ -35,7 +34,7 @@
     </xsl:for-each>
   </xsl:template>
 
-  <xsl:template match="pfx:servlet">
+  <xsl:template match="cus:servlet">
     <xsl:for-each select="$project/servlet">
       <xsl:variable name="active_node">
         <xsl:apply-templates select="./active/node()"/>
@@ -70,7 +69,7 @@
     </xsl:for-each>
   </xsl:template>
 
-  <xsl:template match="pfx:error-page">
+  <xsl:template match="cus:error-page">
     <xsl:for-each select="$project/tomcat/error-page">
       <error-page>
         <xsl:choose>
@@ -92,7 +91,7 @@
     </xsl:for-each>
   </xsl:template>
 
-  <xsl:template match="pfx:session-config">
+  <xsl:template match="cus:session-config">
     <!-- if a 'sessiontimeout'-node exists use it, else use default -->
     <xsl:choose>
       <xsl:when test="./sessiontimeout">
