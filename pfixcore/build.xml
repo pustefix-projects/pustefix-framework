@@ -181,7 +181,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="all"
-          depends="compile, installjars, propfiles, webservice, targetdefs, web_xml, stylesheets, pfixlog_xml, newprjlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
+          depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, newprjlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, webservice, statusmessages_xml, check-permissions"
           description="builds all files required to run"
           />
 
