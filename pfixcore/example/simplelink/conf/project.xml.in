@@ -13,7 +13,7 @@
   <!-- The simplepage application -->
   
   <active>true</active>
-  <comment>Just one page in order to make a real simple pustefix example available</comment>
+  <comment>Just two links</comment>
   <depend><cus:docroot/>simplelink/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>simplelink.<cus:fqdn/></servername>
