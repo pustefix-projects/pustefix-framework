@@ -5,30 +5,43 @@
   <xsl:output method="html"/>
 
   <xsl:template match="page">
-    <xsl:message>*** Generating <xsl:value-of select="@name"/></xsl:message>
+    <xsl:message>*** Generating <xsl:value-of select="@name"/> </xsl:message>
     <saxon:output href="gen/{@name}.html">
       <html>
         <head>
           <title>Pustefix: <xsl:value-of select="@title"/></title>
           <link rel="stylesheet" href="styles.css"/>
         </head>
+        
         <body>
-          <div style="position: absolute; bottom: 0%; left: 0px; z-index: 2;">
-            <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=72089&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
-          </div>
-          <div class="topframe">
-            The Pustefix Framework
-          </div>
-          <div class="navibody">
-            <xsl:call-template name="gen_navi">
-              <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param>
-              <xsl:with-param name="parent" select="/pagedef"/>
-            </xsl:call-template>
-          </div>
-          <div class="mainbody">
-            <xsl:apply-templates select="document(concat(@name, '_main.xml'))">
-              <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param></xsl:apply-templates>
-          </div>
+          <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+            <tr>
+              <td colspan="2" id="top">
+                The Pustefix Framework
+              </td>
+            </tr>
+            <tr valign="top" height="100%">
+              <td class="navibody">
+                <xsl:call-template name="gen_navi">
+                  <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param>
+                  <xsl:with-param name="parent" select="/pagedef"/>
+                </xsl:call-template>
+                <img border="0" src="img/blank.gif" width="125" height="1" alt="" title=""/>
+              </td>
+              <td class="mainbody">
+                <xsl:apply-templates select="document(concat(@name, '_main.xml'))">
+                  <xsl:with-param name="thepage"><xsl:value-of select="@name"/></xsl:with-param></xsl:apply-templates>
+              </td>
+            </tr>
+            <tr valign="bottom">
+              <td class="navibody">
+                <div style="position: fixed; bottom: 0%; left: 0px">
+                  <a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=72089&amp;type=4" width="125" height="37" border="0" alt="SourceForge.net Logo" /></a>
+                </div>
+              </td>
+              <td class="mainbody"/>
+            </tr>
+          </table>
         </body>
       </html>
     </saxon:output>
