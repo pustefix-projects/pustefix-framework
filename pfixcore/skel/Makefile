@@ -53,7 +53,7 @@ clean:
 	@echo 
 	@echo cleaning up!
 	make -f Makefile.iwrp clean 
-	make -f Makefile.generated clean
+	make -f Makefile.jni clean 
 	make -f Makefile.classes clean
 	cd projects && make -f Makefile clean 
 	@(rm -rf dist)
