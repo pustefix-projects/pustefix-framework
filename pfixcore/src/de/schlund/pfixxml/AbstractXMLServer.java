@@ -31,7 +31,7 @@ import java.net.SocketException;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.transform.Transformer;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -605,15 +605,15 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean plain_xml = false;
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            Transformer stylevalue;
+            Templates stylevalue;
             
             try {
-                stylevalue = (Transformer) generator.getTarget(stylesheet).getValue();
+                stylevalue = (Templates) generator.getTarget(stylesheet).getValue();
             } catch (TargetGenerationException targetex) {
                 CAT.error("AbstractXMLServer caught Exception!", targetex);
                 Document errordoc = targetex.toXMLRepresentation();
                 errordoc = Xml.parse(errordoc);
-                Transformer stvalue = (Transformer) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+                Templates stvalue = (Templates) generator.createXSLLeafTarget(ERROR_STYLESHEET).getValue();
                 Xslt.transform(errordoc, stvalue, null, res.getOutputStream());
                 return;
             }

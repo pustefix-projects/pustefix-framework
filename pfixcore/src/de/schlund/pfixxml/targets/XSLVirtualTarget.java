@@ -51,7 +51,7 @@ public class XSLVirtualTarget extends VirtualTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTransformer(generator.getDocroot(), thefile.getPath());
+            return Xslt.loadTemplates(generator.getDocroot(), thefile.getPath());
         } else {
             return null;
         }

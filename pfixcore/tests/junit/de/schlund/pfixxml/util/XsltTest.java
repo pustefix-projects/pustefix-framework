@@ -7,7 +7,7 @@
 package de.schlund.pfixxml.util;
 
 import java.io.File;
-import javax.xml.transform.Transformer;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import net.sf.saxon.om.AbstractNode;
@@ -43,11 +43,11 @@ public class XsltTest extends TestCase {
     private static Document transform(String xml, String xsl) throws Exception {
         final String PREFIX = "tests/junit/de/schlund/pfixxml/util/"; // TODO: windows
         Document doc;
-        Transformer trafo;
+        Templates trafo;
         DOMResult result;
         
         doc = Xml.parse(new File(PREFIX + xml));
-        trafo = Xslt.loadTransformer(new File(PREFIX + xsl));
+        trafo = Xslt.loadTemplates(new File(PREFIX + xsl));
         result = new DOMResult();
         return Xslt.transform(doc, trafo);
     }

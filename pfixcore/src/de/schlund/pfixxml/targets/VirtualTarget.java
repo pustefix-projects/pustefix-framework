@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.xml.transform.Transformer;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.NDC;
@@ -45,9 +45,9 @@ import de.schlund.pfixxml.util.Xslt;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long modtime = 0l;
-    protected TreeSet pageinfos = new TreeSet();
-    protected AuxDependencyManager auxdepmanager   = null;
+    protected long                 modtime       = 0l;
+    protected TreeSet              pageinfos     = new TreeSet();
+    protected AuxDependencyManager auxdepmanager = null;
     
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager; 
@@ -188,14 +188,9 @@ public abstract class VirtualTarget extends TargetImpl {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
                     } catch (TransformerException e) {
-                        CAT.error(
-                            "Error when generating: "
-                                + getTargetKey()
-                                + " from "
-                                + getXMLSource().getTargetKey()
-                                + " and "
-                                + getXSLSource().getTargetKey(),
-                            e);
+                        CAT.error("Error when generating: " + getTargetKey() + " from "
+                                  + getXMLSource().getTargetKey() + " and "
+                                  + getXSLSource().getTargetKey(), e);
                         // Now we invalidate the mem- and disc cache to force
                         // a complete rebuild of this target the next try
                         storeValue(null);
@@ -204,12 +199,11 @@ public abstract class VirtualTarget extends TargetImpl {
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
-
+                        
                         TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
-                            targetex =
-                                new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
+                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
                         } else {
                             targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
                         }
@@ -226,15 +220,14 @@ public abstract class VirtualTarget extends TargetImpl {
     }
 
     private void generateValue() throws XMLException, TransformerException, IOException {
-        String key = getTargetKey();
+        String key          = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        File cachefile = new File(getTargetGenerator().getDisccachedir(), key);
+        File   cachefile    = new File(getTargetGenerator().getDisccachedir(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
         }
-
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
         getAuxDependencyManager().reset();
         // as the file will be rebuild in the disc cache, we need to make sure that we will load it again
@@ -244,17 +237,15 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Document xmlobj = (Document) ((TargetRW) tmpxmlsource).getCurrValue();
-        Transformer trafo = (Transformer) ((TargetRW) tmpxslsource).getCurrValue();
+        Document  xmlobj = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
+        Templates templ  = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
             throw new XMLException("**** xml source " + tmpxmlsource.getTargetKey() + tmpxmlsource.getType() + " doesn't have a value!");
-        if (trafo == null) 
+        if (templ == null) 
             throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
         TreeMap tmpparams = getParams();
         AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
-
-        //FIXME!!! Do we want to do this right HERE????
-        Xslt.transform(xmlobj, trafo, tmpparams, new FileOutputStream(cachefile));
+        Xslt.transform(xmlobj, templ, tmpparams, new FileOutputStream(cachefile));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

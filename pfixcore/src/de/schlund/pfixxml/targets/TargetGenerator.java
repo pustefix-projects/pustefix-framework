@@ -321,11 +321,11 @@ public class TargetGenerator {
             // we want to remove already defined params (needed when we do a reload)
             virtual.resetParams();
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
-                String name = (String) i.next();
-                String value = (String) params.get(name);
-                CAT.debug("* Adding Param " + name + " with value " + value);
-                virtual.addParam(name, value);
-                if (name.equals("page")) {
+                String pname = (String) i.next();
+                String value = (String) params.get(pname);
+                CAT.debug("* Adding Param " + pname + " with value " + value);
+                virtual.addParam(pname, value);
+                if (pname.equals("page")) {
                     pageparam = value;
                 }
             }

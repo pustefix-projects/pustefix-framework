@@ -18,31 +18,19 @@
 */
 package de.schlund.pfixxml.util;
 
-import java.io.File;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Iterator;
-import java.util.Map;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.*;
 import net.sf.saxon.TransformerFactoryImpl;
 import net.sf.saxon.tinytree.TinyDocumentImpl;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import de.schlund.pfixxml.util.Path;
 
 public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class.getName());
@@ -52,86 +40,80 @@ public class Xslt {
     // Simple instantiation or classloading works, since the current classloader is defined
     // by ant and therefore has saxon in its classpath.
     // TODO_AH check if object creation is really necessary here
-    private static final TransformerFactoryImpl factory;
-    private static final URIResolver stdResolver;
+    private static final TransformerFactoryImpl uri_factory = new TransformerFactoryImpl();
+    private static final TransformerFactoryImpl rel_factory = new TransformerFactoryImpl();
     
     static {
-        factory = new TransformerFactoryImpl();
-        stdResolver = factory.getURIResolver();
-        factory.setErrorListener(new PFErrorListener());
+        uri_factory.setErrorListener(new PFErrorListener());
+        rel_factory.setErrorListener(new PFErrorListener());
     }
 
-    public static SAXSource createSaxSource(InputSource input) {
-        return new SAXSource(Xml.createXMLReader(), input);
-    }
-     
     //-- load documents
     
-    public static synchronized Transformer loadTransformer() {
+    public static synchronized Transformer createTransformer() {
         try {
-            return factory.newTransformer();
+            return uri_factory.newTransformer();
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static synchronized Transformer loadTransformer(File file) throws TransformerConfigurationException {
-        factory.setURIResolver(stdResolver);
-        return factory.newTransformer(new StreamSource(file));
-    }
-    
-    public static synchronized Transformer loadTransformer(File docroot, String path) throws TransformerConfigurationException {
-        if (!path.startsWith("/")) {
-            throw new IllegalArgumentException("absolute path expected: " + path);
-            // otherwise, I'd construct an wrong uri
-        }
-        Source src;
-        src = Xslt.createSaxSource(new InputSource("file://" + path));
-        factory.setURIResolver(new FileResolver(docroot));
+    public static synchronized Templates loadTemplates(File file) throws TransformerConfigurationException {
+        Source src = new StreamSource(file);
         try {
-            return factory.newTransformer(src);
+            return uri_factory.newTemplates(src);
         } catch (TransformerConfigurationException e) {
             StringBuffer sb = new StringBuffer();
-            sb.append("TransformerConfigurationException in xslObjectFromDisc!\n");
+            sb.append("TransformerConfigurationException in loadTemplates(file)!\n");
+            sb.append("File: ").append(file.getPath()).append("\n");
+            sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+            Throwable cause = e.getException();
+            if (cause == null) cause = e.getCause();
+            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+            CAT.error(sb.toString());
+            throw e;
+        }
+    }
+    
+    public static synchronized Templates loadTemplates(File docroot, String path) throws TransformerConfigurationException {
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("absolute path expected: " + path);
+        }
+        Source src = new SAXSource(Xml.createXMLReader(), new InputSource("file://" + path));
+        try {
+            // FIXME FIXME This is ugly as hell.
+            rel_factory.setURIResolver(new FileResolver(docroot));
+            return rel_factory.newTemplates(src);
+        } catch (TransformerConfigurationException e) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("TransformerConfigurationException in doLoadTemplates!\n");
             sb.append("Path: ").append(path).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
             Throwable cause = e.getException();
-            if (cause == null) {
-                cause = e.getCause();
-            }
+            if (cause == null) cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
             CAT.error(sb.toString());
             throw e;
         }
     }
 
-    
     //-- apply transformation
 
-    public static Document transform(Document doc, Transformer trafo) throws TransformerException {
-        DOMSource src = new DOMSource(doc);
-        DOMResult result = new DOMResult();
+    public static Document transform(Document doc, Templates templates) throws TransformerException {
+        Transformer trafo  = templates.newTransformer();
+        DOMSource   src    = new DOMSource(doc);
+        DOMResult   result = new DOMResult();
         trafo.transform(src, result);
         return (Document) result.getNode();
     }
 
-    /**
-     * Do a transformation with a given source document, a stylesheet, parameters for
-     * the transformator and write the result to a given outputstream.
-     * @param xmlobj the source document. Note: Currently an instance of saxons
-     * TinyDocumentImpl must be passed.  
-     * @param xslobj the stylesheet. Note: Currently an instance of saxons
-     * PerparedStyleSheet must be passed.
-     * @param params parameters for the transformator
-     * @param out the outputstream where the result is written to
-     * @throws exception on all errors
-     */
-    public static void transform(Document xml, Transformer trafo, Map params, OutputStream out) throws TransformerException {
-        transform(xml, trafo, params, new StreamResult(out));
+    public static void transform(Document xml, Templates templates, Map params, OutputStream out) throws TransformerException {
+        transform(xml, templates, params, new StreamResult(out));
     }
 
-    public static synchronized void transform(Document xml, Transformer trafo, Map params, Result result) throws TransformerException {
-        long start = 0;
+    public static void transform(Document xml, Templates templates, Map params, Result result) throws TransformerException {
+        Transformer trafo = templates.newTransformer();
+        long        start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
                 String name  = (String) e.next();
@@ -143,12 +125,10 @@ public class Xslt {
         }
         if (CAT.isDebugEnabled())
             start = System.currentTimeMillis();
-        // do the transformation
         trafo.transform((TinyDocumentImpl) xml, result);
         if (CAT.isDebugEnabled()) {
             long stop = System.currentTimeMillis();
-            CAT.debug("      ===========> Transforming and serializing took " + (stop - start)
-                      + " ms.");
+            CAT.debug("      ===========> Transforming and serializing took " + (stop - start)  + " ms.");
         }
     }
     
@@ -169,9 +149,9 @@ public class Xslt {
          * @param base ignored, always relative to root 
          * */
         public Source resolve(String href, String base) throws TransformerException {
-            URI uri;
+            URI    uri;
             String path;
-            File file;
+            File   file;
             
             try {
                 uri = new URI(href);

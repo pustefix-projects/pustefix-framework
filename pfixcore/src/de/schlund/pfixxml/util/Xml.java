@@ -87,7 +87,7 @@ public final class Xml {
      * Convert the document implementation which is used for write-access 
      * by {@link SPDocument} to the document implementation which is used 
      * by the XSLTProcessor. Note: Currently we convert here from a mutable
-     * DOM implementation to an immutable NodeInfo implementation(saxon).
+     * DOM implementation to an imutable TinyTree(saxon).
      * @param doc the document as source for conversion(mostly a Node implementation
      * when using xerces)
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
@@ -99,7 +99,7 @@ public final class Xml {
         } else {
             DOMSource domsrc = new DOMSource(doc);
             try {
-                return Xml.parse(domsrc);
+                return parse(domsrc);
             } catch (TransformerException e) {
                 throw new RuntimeException("a dom tree is always well-formed xml", e);
             }
@@ -114,18 +114,18 @@ public final class Xml {
      */
     public static Document parse(File file) throws TransformerException {
         String path = file.getAbsolutePath();
-        SAXSource src = Xslt.createSaxSource(new InputSource("file://" + path));
-        return Xml.parse(src);
+        SAXSource src = new SAXSource(createXMLReader(), new InputSource("file://" + path));
+        return parse(src);
     }
 
     public static Document parse(String str) throws TransformerException {
-        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
-        return Xml.parse(src);
+        SAXSource src = new SAXSource(createXMLReader(), new InputSource(new StringReader(str)));
+        return parse(src);
     }
 
     public static Document parse(Source input) throws  TransformerException, TransformerConfigurationException {
         try {
-            Transformer trans  = Xslt.loadTransformer();
+            Transformer trans  = Xslt.createTransformer();
             DOMResult   result = new DOMResult();
             trans.transform(input, result);
             return (TinyDocumentImpl) result.getNode();

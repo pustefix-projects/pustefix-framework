@@ -99,7 +99,7 @@ public class XsltTransformer {
                     reload = reload || (stylesheet.equals(stylesheetOld) == false);
                     reload = reload || (lastModified > stylesheetOldLastModified);
                     if (reload) {
-                        transformer = Xslt.loadTransformer(stylesheet);
+                        transformer = Xslt.loadTemplates(stylesheet).newTransformer();
                         stylesheetOld = stylesheet;
                         stylesheetOldLastModified = lastModified;
                         isValidStylesheet = true;

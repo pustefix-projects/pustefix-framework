@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.xml.transform.Transformer;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -185,9 +185,9 @@ public class TestcaseStepResult {
             if (CAT.isInfoEnabled()) {
                 CAT.info("  Transforming using stylesheet :"+path);
             }
-            Transformer trafo;
+            Templates trafo;
             try {
-                trafo = Xslt.loadTransformer(stylesheetFile);
+                trafo = Xslt.loadTemplates(stylesheetFile);
             } catch (TransformerConfigurationException e) {
                 e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);

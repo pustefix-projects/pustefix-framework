@@ -50,7 +50,7 @@ public class XSLLeafTarget extends LeafTarget {
     protected Object getValueFromDiscCache() throws TransformerException {
         File thefile = new File(getTargetGenerator().getDocroot(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTransformer(generator.getDocroot(), thefile.getPath()); 
+            return Xslt.loadTemplates(generator.getDocroot(), thefile.getPath()); 
         } else {
             return null;
         }
