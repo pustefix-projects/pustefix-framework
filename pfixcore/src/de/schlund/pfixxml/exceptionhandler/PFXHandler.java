@@ -26,6 +26,8 @@ import java.util.Enumeration;
 import java.util.Timer;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+
 import de.schlund.pfixcore.util.email.EmailSender;
 import de.schlund.pfixcore.util.email.EmailSenderException;
 
@@ -49,6 +51,7 @@ class PFXHandler {
     private PFUtil pfutil_               =null;
     private PropertyManager propman_     =null;
     private Timer timer_                 =null;
+    private static Category CAT = Category.getInstance(PFXHandler.class.getName());
 
     //~ Constructors ...........................................................
 
@@ -231,15 +234,19 @@ class PFXHandler {
         String message=excontext.getMessage();
         try {
             MailConfig mailconfig = MailConfig.getInstance();
-            EmailSender.sendMail(subject, message, 
-                                mailconfig.getTo(), 
-                                mailconfig.getFrom(), 
-                                mailconfig.getHost());
+            if(mailconfig.isSend()) {
+                EmailSender.sendMail(subject, message, 
+                                    mailconfig.getTo(), 
+                                    mailconfig.getFrom(), 
+                                    mailconfig.getHost());
+            } else {
+                if(CAT.isDebugEnabled())
+                    CAT.debug("MailSending is disabled");  
+            }   
         } catch (EmailSenderException e) {
             pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
         }
     }
-
     /**
      * Action to take if no responsible rule is found.
      * @param e the current Exception.
