@@ -385,7 +385,7 @@ wfxEditor.prototype.initLineNumbers = function() {
     'td {text-align:right; font-weight:bold }\n' + 
     '</style>\n';
 
-  var html_script = '<script type="text/javascript" src="wfxUnselectable.js"></script>';
+  var html_script = '<script type="text/javascript" src="/core/script/wfxUnselectable.js"></script>';
 
   var html_header2 = '</head>\n<body id="bodynode" onload="unselectable()">\n<pre>';
   var html_footer  = '</pre>\n</body>\n</html>\n';
