@@ -6,28 +6,17 @@
  */
 package de.schlund.pfixcore.util;
 
-import java.awt.List;
 import java.io.File;
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.transform.TransformerFactory;
 
-import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectComponent;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.util.FileUtils;
-
-import sun.security.action.GetPropertyAction;
-import sun.util.logging.resources.logging;
 
 import com.icl.saxon.TransformerFactoryImpl;
 
