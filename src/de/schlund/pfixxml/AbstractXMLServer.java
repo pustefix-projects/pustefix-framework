@@ -381,7 +381,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             } else {
                 CAT.info("*** Got NOSTORE from SPDocument! ****");
             }
-            // this will remain at -1 when we don't have to enter the businesslogic codepath
+            // this will remain at -1 when we don't have to enter the businesslogic codepathv
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
         }
@@ -594,6 +594,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             ext.insertBefore(ext.createProcessingInstruction("modxslt-param", "name=\"" + key + "\" value=\"" + val + "\""),
                              ext.getDocumentElement());
         }
+        res.setContentType("text/xml");
         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext),
                                                                     new StreamResult(res.getOutputStream()));
     }
