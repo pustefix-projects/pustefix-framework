@@ -6,32 +6,33 @@
 
     <property file="build.properties"/>
     <property environment="env"/>
-    <property name="pfixcore.version"          value="0.4.0"                                                description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
-    <property name="uid"                       value="${env.USER}"/>
-    <property name="javahome"                   value="${env.JAVA_HOME}"/>
-    <property name="build.compiler"               value="jikes"/>
-    <property name="name.jnipkg"                value="jni.tar.gz"/>
-    <property name="name.cvsautotag"            value="CVS_AUTOTAG"/>
-    <property name="debugopts"                   value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
-    <property name="dir.src"                 location="src"/>
-    <property name="dir.build"               location="build"/>
-    <property name="dir.lib"                 location="lib"/>
-    <property name="dir.res"                 location="res"/>
+    <property name="uid"                      value="${env.USER}"/>
+    <property name="javahome"                 value="${env.JAVA_HOME}"/>
+    <property name="build.compiler"           value="jikes"/>
+    <property name="name.jnipkg"              value="jni.tar.gz"/>
+    <property name="name.cvsautotag"          value="CVS_AUTOTAG"/>
+    <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
+    <property name="dir.src"                  location="src"/>
+    <property name="dir.build"                location="build"/>
+    <property name="dir.lib"                  location="lib"/>
+    <property name="dir.res"                  location="res"/>
     <property name="dir.dist"                 location="dist"/>
     <property name="dir.skel"                 location="skel"/>
-    <property name="dir.javadoc"             location="apidocs"/>
-    <property name="dir.jni"                 location="${dir.lib}/jni"/>
-    <property name="dir.metainf"            location="META-INF"/>
+    <property name="dir.javadoc"              location="apidocs"/>
+    <property name="dir.jni"                  location="${dir.lib}/jni"/>
+    <property name="dir.metainf"              location="META-INF"/>
     <property name="dir.projects"             location="projects"/>
-    <property name="dir.docroot"            location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
+    <property name="dir.docroot"              location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
     <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
-    <property name="genlog"                          value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
-    <property name="file.log4jconfig"        location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
-    <property name="name.pfixcore_jar"           value="pfixcore-${pfixcore.version}.jar"/>
-    <property name="file.pfixcore_jar"        location="${dir.lib}/${name.pfixcore_jar}"/>
-    <property name="name.pfixcore_data_tgz"    value="pfixcore-data-${pfixcore.version}.tar.gz"/>
-    <property name="file.pfixcore_data_tgz" location="${dir.lib}/${name.pfixcore_data_tgz}"/>
+    <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
+    <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
 
+    <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
+    <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
+    <property name="pat.pfixcore_data_tgz"    value="pfixcore-data-*.tar.gz"/>
+    <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
+    
+    
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
              - ant commandline via the '-Dparam=value' option
@@ -54,7 +55,7 @@
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
         <property       name="debug"        value="false"/>
-        <exec outputproperty="machine" executable="hostname" os="Linux" />
+        <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
         <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
     </target>
 
@@ -140,7 +141,8 @@
     </target>
     
     <target name="jni">
-        <unjar src="${file.pfixcore_jar}" dest="${dir.lib}" overwrite="true">
+        <unjar dest="${dir.lib}" overwrite="true">
+        	<fileset refid="id.fs.pfixcore_jar"/>
             <patternset>
                 <include name="${name.jnipkg}" />
             </patternset>
@@ -190,9 +192,9 @@
     </target>
     
     <target name="core-data">
-        <!-- extract if file ${file.pfixcore_data_tgz} is newer than dir ${dir.projects}/core -->
+        <!-- extract if pfixcore-data is newer than dir ${dir.projects}/core -->
         <uptodate property="core-data.uptodate">
-            <srcfiles dir="${dir.lib}" includes="${name.pfixcore_data_tgz}"></srcfiles>
+            <srcfiles dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"></srcfiles>
             <mapper type="merge" to="${dir.projects}/core"></mapper>
         </uptodate>
         <delete>
@@ -200,7 +202,8 @@
                 <include name="core/**/*" unless="core-data.uptodate"/>
             </fileset>
         </delete>
-        <untar src="${file.pfixcore_data_tgz}" dest="${dir.projects}/core" compression="gzip" overwrite="true">
+        <untar dest="${dir.projects}/core" compression="gzip" overwrite="true">
+            <fileset refid="id.fs.pfixcore_data_tgz"/>
             <patternset>
                 <exclude name="**/*" if="core-data.uptodate"/>
             </patternset>
