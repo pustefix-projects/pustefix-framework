@@ -265,9 +265,17 @@ public class PfixHighlight extends DefaultStyledDocument {
 
         // very ugly, i know
         if (closeIt == currentPos - 2) {
-            unsetStyle(closeIt, 2);
-            unsetStyle();
-            newStatus="none";                         
+            Character car = new Character(preText.charAt(currentPos - 1));
+            Character car2 = new Character(afterText.charAt(0));
+            if (!(car.toString().equals("<"))) {
+                if (!(car2.toString().equals("<"))) {
+                    unsetStyle(closeIt+1, 1);
+                    unsetStyle();
+                    newStatus="none";  
+                }
+                                     
+            }
+            
         }
         
         

@@ -300,7 +300,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
                    window.call("doSub",null);
            }
            else {
-               JOptionPane.showMessageDialog (null,"Code is full of Errors" ,"Pustefix Message",JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog (null,xmlChecker.getErrorMessage() ,"Pustefix Message",JOptionPane.ERROR_MESSAGE);
            }
                                                                
         } catch (Exception err ) {
@@ -505,7 +505,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
               	JOptionPane.showMessageDialog (null,"Code is wellformed" ,"Pustefix Message",JOptionPane.INFORMATION_MESSAGE);
               }
             else {
-                JOptionPane.showMessageDialog (null,"Code is full of Errors" ,"Pustefix Message",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog (null,xmlChecker.getErrorMessage() ,"Pustefix Message",JOptionPane.ERROR_MESSAGE);
             }
 		
 		
