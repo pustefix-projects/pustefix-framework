@@ -1,35 +1,35 @@
 2004-03-12  Joerg Haecker <haecker@schlund.de>
 
-        * Integrated tomcat 4.1.30 into pfixcore(but not skel yet)
-        
-        * example/servletconf/tomcat/common/lib/:
-        Replaced jndi.jar, naming-common.jar, naming-resources.jar, servlet.jar
-        with new libs from tomcat dist.
-        Added commons-collections.jar from tomcat dist.
-
-        * example/servletconf/tomcat/bin/:
-        Replaced bootstrap.jar, catalina.sh, setclasspath.sh
-        with new libs from tomcat dist.
-
-        * example/servletconf/tomcat/server/lib:
-        Replaced catalina.jar, commons-logging.jar, servlets-common.jar,
-        servlets-default.jar, servlets-invoker.jar, servlets-manager.jar,
-        servlets-webdav.jar,tomcat-http11.jar, tomcat-util.jar with 
-        new libs from tomcat dist.
-        Replaced jakarta-regexp-1.2.jar with jakarta-regexp-1.3.jar from
-        tomcat dist.
-        Replaced tomcat-ajp.jar with tomcat-jk.jar from tomcat dist.
-        Added commons-beanutils.jar, commons-digester.jar from tomcat dist.
-
-        * build.xml: Now we use 'tomcat/shared/classes' and
-        'tomcat/shared/lib' for webapp-shared classes. Replaced
-        'tomcat/classes' by 'tomcat/shared/classes' and 'tomcat/libs'
-        by 'tomcat/shared/libs'.
-
-        * lib/saxon6_5_3.jar: Currently tomcat does not like the
-        services/javax.xml.parsers.SAXParserFactory property
-        which points to com.icl.saxon.aelfred.SAXParserFactoryImpl.
-        Removing this property from lib/saxon6_5_3.jar made it work.
+	* Integrated tomcat 4.1.30 into pfixcore(but not skel yet)
+	
+	* example/servletconf/tomcat/common/lib/:
+	Replaced jndi.jar, naming-common.jar, naming-resources.jar, servlet.jar
+	with new libs from tomcat dist.
+	Added commons-collections.jar from tomcat dist.
+	
+	* example/servletconf/tomcat/bin/:
+	Replaced bootstrap.jar, catalina.sh, setclasspath.sh
+	with new libs from tomcat dist.
+	
+	* example/servletconf/tomcat/server/lib:
+	Replaced catalina.jar, commons-logging.jar, servlets-common.jar,
+	servlets-default.jar, servlets-invoker.jar, servlets-manager.jar,
+	servlets-webdav.jar,tomcat-http11.jar, tomcat-util.jar with 
+	new libs from tomcat dist.
+	Replaced jakarta-regexp-1.2.jar with jakarta-regexp-1.3.jar from
+	tomcat dist.
+	Replaced tomcat-ajp.jar with tomcat-jk.jar from tomcat dist.
+	Added commons-beanutils.jar, commons-digester.jar from tomcat dist.
+	
+	* build.xml: Now we use 'tomcat/shared/classes' and
+	'tomcat/shared/lib' for webapp-shared classes. Replaced
+	'tomcat/classes' by 'tomcat/shared/classes' and 'tomcat/libs'
+	by 'tomcat/shared/libs'.
+	
+	* lib/saxon6_5_3.jar: Currently tomcat does not like the
+	services/javax.xml.parsers.SAXParserFactory property
+	which points to com.icl.saxon.aelfred.SAXParserFactoryImpl.
+	Removing this property from lib/saxon6_5_3.jar made it work.
 
 
 2004-03-12  Joerg Haecker <haecker@schlund.de>
