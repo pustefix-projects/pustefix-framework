@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>types</title>
+<script type="text/javascript" src="/core/script/types.js">
+</script>
+<script type="text/javascript">
+var count = 0;
+</script>
+<style type="text/css">
+input { width:200px }
+</style>
+</head>
+<body>
+<form>
+<input type="text" name="src" /><br />
+<input type="button" value="Boolean" onclick="res=new EngBoolean(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<input type="button" value="Number" onclick="res=new EngNumber(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<input type="button" value="Integer" onclick="res=new EngInteger(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<input type="button" value="Float" onclick="res=new EngFloat(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<input type="button" value="String" onclick="res=new EngString(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<input type="button" value="Date" onclick="res=new EngDate(document.forms[0].src.value); document.forms[0].dbg.value=res.get() +' ['+ res.type + ']'" /><br />
+<textarea id="dbg" cols="80" rows="20"></textarea>
+</form>
+</html>
