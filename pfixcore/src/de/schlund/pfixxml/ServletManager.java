@@ -171,11 +171,11 @@ public abstract class ServletManager extends HttpServlet {
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
                 if (need_cookies != null && need_cookies.booleanValue()) {
                     if (cookie_security_not_enforced) {
-                        CAT.debug("    ... during the session cookies were ENABLED, but will continue because of cookie_security_not_enforced " +
-                                  session.getId());
+                        CAT.debug("    ... during the session cookies were ENABLED, " +
+                                  "but will continue because of cookie_security_not_enforced " + session.getId());
                     } else {
-                        CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " +
-                                  session.getId());
+                        CAT.debug("    ... but during the session cookies were already ENABLED: " +
+                                  "Will invalidate the session " + session.getId());
                         session.invalidate();
                         has_session = false;
                     }
@@ -327,7 +327,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         if (!has_session && needsSession() && allowSessionCreate() && !needsSSL(preq)) {
             CAT.debug("=> V");
-            redirectToSession(preq, req, res);
+            redirectToSession(preq, req, res, mark_session_as_no_cookies);
             return;
             // End of request cycle.
         }
@@ -511,10 +511,16 @@ public abstract class ServletManager extends HttpServlet {
         relocate(res, redirect_uri);
     }
 
-    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res, String msanc) {
         HttpSession session = req.getSession(true);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
-        registerSession(req, session);
+        if (msanc == null) {
+            registerSession(req, session);
+        } else {
+            session.setAttribute(VISIT_ID, msanc);
+            session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
+            SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
+        }
         CAT.debug("===> Redirecting to URL with session (Id: " + session.getId() + ")");
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
