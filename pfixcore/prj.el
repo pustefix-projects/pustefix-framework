@@ -5,4 +5,4 @@
  '(jde-global-classpath (quote ("./src" "./src-jserv" "./build" "./res" "./lib" "./lib/jserv/jsdk.jar")))
  '(jde-run-working-directory "./")
  '(jde-compile-option-directory "./build")
- '(jde-built-class-path (quote ("./build"))))
+ '(jde-built-class-path (quote ("/home/jtl/projects/pfixcore/build"))))
