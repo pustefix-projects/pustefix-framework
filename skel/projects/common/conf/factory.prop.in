@@ -17,13 +17,19 @@
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
   <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
   <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
-  <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
-
+  <cus:choose>
+    <cus:test mode="prod"></cus:test>
+    <cus:test>
+      <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
+    </cus:test>
+  </cus:choose>
+  
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.2">de/schlund/pfixcore/example/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.3">de/schlund/pfixcore/editor/StatusCodes.prop</prop>
 
+  <!-- JMX Server -->
   <prop name="jmx.server.port">9334</prop>
   
   <!-- SPCacheFactory -->
@@ -32,12 +38,11 @@
   <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="includecache.cachecapacity">50</prop>
 
-
   <!--SPCacheStatistic-->
   <prop name="cachestatistic.queuesize">60</prop>
   <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
 
-  <!-- EditorUserFactory -->
+  <!-- AuthManagerFactory -->
   <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
 
   <!-- EditorProductFactory -->
