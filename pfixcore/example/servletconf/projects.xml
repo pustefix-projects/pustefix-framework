@@ -8,7 +8,6 @@
     <active>true</active>
     <comment>Sample1 Application For Pfixcore</comment>
     <depend><cus:docroot/>sample1/conf/depend.xml</depend>
-    <!-- <namespace prefix="foo" uri="http://bar.foobaz"/> -->
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>sample1.<cus:fqdn/></servername>
     <serveralias>sample1.<cus:machine/></serveralias>
@@ -30,10 +29,9 @@
         <sslcrt><cus:docroot/>sample1/conf/server.crt</sslcrt>
       </port>
     </ports>
-
     <!-- Use useineditor="true" for every servlet that handles pages belonging directly to the project -->
-    <!-- (That means for example not the servlet that starts up the editor, as the pages coming -->
-    <!-- from this servlet belong to the editor project) -->
+    <!-- (That means for example not the servlet that starts up the editor, as the pages delivered -->
+    <!-- by this servlet belong to the editor project) -->
     <servlet name="config" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
@@ -59,13 +57,9 @@
       <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
     </servlet>
     <documentation>
-      <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/forminput.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
-      <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
       <doc_file><cus:docroot/>sample1/xsl/metatags.xsl.in</doc_file>
     </documentation>  
+    <!-- <namespace prefix="foo" uri="http://bar.foobaz"/> -->
   </project>
 
   <!-- Don't change the two projects below, they are needed to make the whole system work -->
@@ -77,7 +71,6 @@
     <active>true</active>
     <comment>CMS for Pfixcore</comment>
     <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
-
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>cmscore.<cus:fqdn/></servername>
     <serveralias>cmscore.<cus:machine/></serveralias>
@@ -86,7 +79,6 @@
     <ports>
       <port number="80"/>
     </ports>
-
     <servlet name="edit" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
@@ -104,7 +96,6 @@
   <project name="admcore">
     <active>true</active>
     <comment>Adminzone For Pfixcore</comment>
-    
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>admcore.<cus:fqdn/></servername>
     <serveralias>admcore.<cus:machine/></serveralias>
@@ -123,6 +114,13 @@
   <!-- some common definitions that are shared between all projects -->
   
   <common>
+    <documentation>
+      <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/forminput.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
+      <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
+    </documentation>  
     <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
     <tomcat>
       <minprocessors>100</minprocessors>
