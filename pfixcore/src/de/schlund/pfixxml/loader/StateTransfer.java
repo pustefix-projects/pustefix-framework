@@ -38,8 +38,12 @@ public class StateTransfer {
     private Category CAT=Category.getInstance(getClass().getName());
 	private static StateTransfer instance=new StateTransfer();
 
+    //cache transferred AppLoader type objects (old -> new)
     private HashMap transferred=new HashMap();
+    
+    //cache scanned non AppLoader type objects
     private HashSet refs=new HashSet();
+    
     private ArrayList exceptions=new ArrayList();
     private int incType=-1;
 
@@ -87,7 +91,7 @@ public class StateTransfer {
                 newClass=loader.loadClass(oldClass.getName());
                 newObj=createInstance(newClass);
                 addTransferred(oldObj,newObj);
-                refs.add(newObj);
+                //refs.add(newObj);
                 while(oldClass!=null) {
                     Field[] fields=oldClass.getDeclaredFields();
                     //iterate over fields
@@ -263,30 +267,42 @@ public class StateTransfer {
     public Object transferArray(Object oldArray) {
         String className=oldArray.getClass().getName();
         CAT.debug("Transfer array of type '"+className+"'.");
-        String compName=oldArray.getClass().getComponentType().getName();
         Class comp=oldArray.getClass().getComponentType();
-        Class newClass=null;
-        try {
-            AppLoader loader=AppLoader.getInstance();
-            newClass=loader.loadClass(compName);
-            int len=Array.getLength(oldArray);
-            Object newArray=Array.newInstance(newClass,len);
+        String compName=comp.getName();
+        
+        if(comp.getClassLoader() instanceof AppClassLoader) {
+            Class newClass=null;
+            try {
+                AppLoader loader=AppLoader.getInstance();
+                newClass=loader.loadClass(compName);
+                int len=Array.getLength(oldArray);        
+                Object newArray=Array.newInstance(newClass,len);
+                for(int k=0;k<len;k++) {
+                    Object val=Array.get(oldArray,k);
+                    if(val!=null) {
+                        Object newVal=transfer(val);
+                        Array.set(newArray,k,newVal);
+                    }
+                }
+                addTransferred(oldArray,newArray);
+                return newArray;
+            } catch(ClassNotFoundException x) {
+                addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
+                newClass.getName(),"Class was removed or renamed."));
+            } catch(Exception x) {
+                addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,oldArray.getClass().getName(),x));
+            }
+        } else {
+            int len=Array.getLength(oldArray);        
             for(int k=0;k<len;k++) {
                 Object val=Array.get(oldArray,k);
                 if(val!=null) {
                     Object newVal=transfer(val);
-                    if(!val.equals(newVal)) val=newVal;
-                    Array.set(newArray,k,val);
+                    if(val.hashCode()!=newVal.hashCode()) Array.set(oldArray,k,val);
                 }
             }
-            addTransferred(oldArray,newArray);
-            refs.add(newArray);
-            return newArray;
-        } catch(ClassNotFoundException x) {
-            addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
-                newClass.getName(),"Class was removed or renamed."));
-        } catch(Exception x) {
-            addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,oldArray.getClass().getName(),x));
+            refs.add(oldArray);
+            return oldArray;
         }
         return oldArray;
     }
