@@ -219,6 +219,7 @@ public abstract class ServletManager extends HttpServlet {
             preq = new PfixServletRequest(req, properties);
         }
 
+        FactoryInitServlet.tryReloadLog4j();
         tryReloadProperties(preq);
 
         // End of initialization. Now we handle all cases where we need to redirect.
@@ -543,7 +544,7 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             return false;
         }
-
+        
     }
 
     private long loadPropertyfile(Properties props, File propfile) throws ServletException {
@@ -611,26 +612,6 @@ public abstract class ServletManager extends HttpServlet {
         return null;
     }
     
-    /**
-     *
-     */
-    /*private void processException(ExceptionProcessor proc, PfixServletRequest preq, HttpServletRequest req,
-                                  HttpServletResponse res, Throwable exception)
-                           throws ServletException, IOException {
-        // make sure, that if the current request is already the result of a
-        // forwarded request, that no more forwarding takes place in order
-        // to prevent an infinite loop
-
-        if ( preq.getLastException() != null )
-            return;
-
-        ExceptionConfig conf = 
-        proc.processException(exception, exConfig, preq,
-                                       getServletConfig().getServletContext(),
-                                       req, res);
-        
-    }*/
-
     /**
      * This method uses all properties prefixed with 'exception' to build ExceptionConfig
      * objects, which are then stored in the exConfig-Map, keyed by the type attribute
