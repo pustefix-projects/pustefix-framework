@@ -138,7 +138,7 @@ public final class ProjectXmlDom {
         Element servletClass       = domDoc.createElement(AppValues.PROJECTTAG_CLASS);
         Text classValue            = domDoc.createTextNode(AppValues.PROJECTVALUE_CLASS);
         Element newServletPropfile = domDoc.createElement(AppValues.PROJECTTAG_PROPFILE);
-        Element newDocRootNode     = domDoc.createElement(AppValues.PROJECTTAG_DOCROOT);
+        // Element newDocRootNode     = domDoc.createElement(AppValues.PROJECTTAG_DOCROOT);
         Element rootNode           = domDoc.getDocumentElement();
         Text afterDocRootNode      = domDoc.createTextNode(projectName + AppValues.CONFFOLDER + 
                 curServletName + AppValues.CFGFILESUFF);
@@ -165,7 +165,7 @@ public final class ProjectXmlDom {
         
         // prepare the propfile tag
         newServletPropfile.appendChild(afterDocRootNode);
-        newServletPropfile.insertBefore(newDocRootNode,afterDocRootNode);
+        // newServletPropfile.insertBefore(newDocRootNode,afterDocRootNode);
         Text myPropfileReturn = domDoc.createTextNode("\n");
         Text myPropfileIndent = domDoc.createTextNode("    ");
         myNewServlet.appendChild(newServletPropfile);
