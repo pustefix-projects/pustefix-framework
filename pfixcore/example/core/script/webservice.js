@@ -411,6 +411,7 @@ function Call() {
 	this.params=new Array();
 	this.retXmlType=null;
 	this.retJsType=null;
+  this.callback=null;
 }
 
 //setTargetEndpointAddress(address)
@@ -473,7 +474,10 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
-	document.getElementById('request').value=writer.xml;
+  //  alert("writer.xml:\n" + writer.xml);
+  	document.getElementById('request').value=writer.xml;
+
+  return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
 }
 
 
@@ -631,7 +635,7 @@ function SOAPFault(faultCode,faultString) {
 function test() {
 	
 	var call=new Call();
-	call.setTargetEndpointAddress("http://webservice.zap.ue.schlund.de/xml/webservice/Calculator");
+	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
 	call.setOperationName(new QName("add"));
 	call.addParameter("value1",xmltype.XSD_INT,"IN");
 	//call.addParameter("value2",xmltype.XSD_INT,"IN");
@@ -645,3 +649,4 @@ function test() {
 	//}
 	
 }
+
