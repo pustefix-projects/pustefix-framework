@@ -44,6 +44,7 @@ import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.ResultForm;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.pfixxml.loader.*;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -56,7 +57,7 @@ import de.schlund.util.statuscodes.StatusCode;
  *
  */
 
-public class IWrapperSimpleContainer implements IWrapperContainer {
+public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     private   HashMap            wrappers           = new HashMap();
     private   HashMap            prefixmap          = new HashMap();
     private   ArrayList          activegroups       = new ArrayList();
@@ -537,8 +538,13 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                 Class thewrapper = null;
                 IWrapper wrapper = null;
                 try {
-                    thewrapper = Class.forName(iface);
-                    wrapper    = (IWrapper) thewrapper.newInstance();
+                    AppLoader appLoader=AppLoader.getInstance();
+                    if(appLoader.isEnabled()) {
+                        wrapper=(IWrapper)appLoader.loadClass(iface).newInstance();
+                    } else {
+                        thewrapper = Class.forName(iface);
+                        wrapper    = (IWrapper) thewrapper.newInstance();
+                    }
                 } catch (ClassNotFoundException e) {
                     throw new XMLException("unable to find class [" + iface + "] :" + e.getMessage());
                 } catch (InstantiationException e) {
@@ -556,6 +562,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
                 prefixmap.put(realprefix, iface);
                 wrappers.put(iface, wrapper);
                 wrapper.init(realprefix);
+                
+                AppLoader appLoader=AppLoader.getInstance();
+                if(appLoader.isEnabled()) appLoader.addReloader(this);
             }
         }
     }
@@ -753,6 +762,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
             }
         }
     }// IWrapperGroup
+
+    public void reload() {
+          HashMap wrappersNew=new HashMap();
+          Iterator it=wrappers.keySet().iterator();
+          while(it.hasNext()) {
+              String str=(String)it.next();
+              IWrapper iwOld=(IWrapper)wrappers.get(str);
+              IWrapper iwNew=(IWrapper)StateTransfer.getInstance().transfer(iwOld);
+              String className=iwOld.getClass().getName();
+              wrappersNew.put(str,iwNew);
+          }
+          wrappers=wrappersNew;
+    }
 
     
 }// IWrapperSimpleContainer

@@ -24,8 +24,9 @@ import java.util.*;
 import org.apache.log4j.*;
 import de.schlund.pfixxml.PropertyObject;
 import de.schlund.pfixxml.PropertyObjectManager;
+import de.schlund.pfixxml.loader.*;
 
-public class PageMap implements PropertyObject {
+public class PageMap implements PropertyObject, Reloader {
     protected            HashMap  pagemap     = new HashMap();
     public  final static String CLASSNAMEPROP = "classname";
     private final static Category CAT         = Category.getInstance(PageMap.class.getName());
@@ -50,6 +51,10 @@ public class PageMap implements PropertyObject {
                 pagemap.put(page, state);
             }
         }
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            appLoader.addReloader(this);
+        }
     }
 
     public State getState(PageRequest page) {
@@ -66,5 +71,17 @@ public class PageMap implements PropertyObject {
 	    ret += k + " -> " + ((State) pagemap.get(k)).getClass().getName();
 	}
 	return ret;
+    }
+    
+    public void reload() {
+        HashMap pageNew=new HashMap();
+        Iterator it=pagemap.keySet().iterator();
+        while(it.hasNext()) {
+            PageRequest page=(PageRequest)it.next();
+            State stOld=(State)pagemap.get(page);
+            State stNew=(State)StateTransfer.getInstance().transfer(stOld);
+            pageNew.put(page,stNew);
+        }
+        pagemap=pageNew;
     }
 }

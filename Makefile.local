@@ -28,6 +28,7 @@ SUBDIRS = \
         $(JAVACR)/pfixxml/xpath \
         $(JAVACR)/pfixxml/testenv \
         $(JAVACR)/pfixxml/exceptionhandler \
+        $(JAVACR)/pfixxml/loader \
 	$(JAVACR)/pfixcore/generator \
 	$(JAVACR)/pfixcore/generator/casters \
 	$(JAVACR)/pfixcore/generator/prechecks \

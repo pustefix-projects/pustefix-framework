@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.loader.*;
 import de.schlund.pfixcore.util.*;
 import java.lang.*;
 import java.lang.reflect.*;
@@ -36,10 +37,9 @@ import org.apache.log4j.*;
  *
  */
 
-public class ContextResourceManager {
+public class ContextResourceManager implements Reloader {
     private Category CAT = Category.getInstance(ContextResourceManager.class.getName());
     private HashMap  resources = new HashMap();
-
     private final static String PROP_RESOURCE = "context.resource";
     private final static String SEPERATOR     = ", ";
     
@@ -108,7 +108,12 @@ public class ContextResourceManager {
 		// Now create an object of the requested class 
 		try {
 		    CAT.debug("Creating object with name [" + classname + "]");
-		    cr = (ContextResource) Class.forName(classname).newInstance();
+            AppLoader appLoader=AppLoader.getInstance();
+            if(appLoader.isEnabled()) {
+                cr=(ContextResource)appLoader.loadClass(classname).newInstance();
+            } else {
+                cr=(ContextResource)Class.forName(classname).newInstance();
+            }
 		} catch (Exception e) {
 		    throw new ServletException("Exception while creating object " +
 					       classname + ":" + e);
@@ -136,7 +141,8 @@ public class ContextResourceManager {
 	} else {
 	    CAT.debug("No Properties with prefix " + PROP_RESOURCE + " found! ");
 	}
-        
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) appLoader.addReloader(this);   
     }
 
     /**
@@ -159,8 +165,13 @@ public class ContextResourceManager {
 	// Get the class of the requested interface and get all
 	// implemented interfaces of the object
 	try {
-	    wantedinterface       = Class.forName(interfacename) ;
-	    implementedinterfaces = obj.getClass().getInterfaces();
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            wantedinterface=appLoader.loadClass(interfacename);
+        } else {
+            wantedinterface       = Class.forName(interfacename) ;
+        }
+        implementedinterfaces = obj.getClass().getInterfaces();
 	} catch (ClassNotFoundException e) {
 	    throw new ServletException("Got ClassNotFoundException for classname " +  interfacename +
 				       "while checking for interface");
@@ -207,4 +218,17 @@ public class ContextResourceManager {
     protected Iterator getResourceIterator() {
 	return  resources.values().iterator();
     }
+    
+    public void reload() {
+        HashMap resNew=new HashMap();
+        Iterator it=resources.keySet().iterator();
+        while(it.hasNext()) {
+            String str=(String)it.next();
+            ContextResource crOld=(ContextResource)resources.get(str);
+            ContextResource crNew=(ContextResource)StateTransfer.getInstance().transfer(crOld);
+            resNew.put(str,crNew);
+        }
+        resources=resNew;
+    }
+    
 }
