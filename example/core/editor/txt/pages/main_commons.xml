@@ -18,32 +18,32 @@
   <part name="content">
     <product name="default">
       <lang name="default">
+  <ixsl:choose>
+    <ixsl:when test="/formresult/currentcommoninfo">
+      <displaycurrentcommon/><br/>
+      <displaycommondetails/>
+      <div>
+        <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
         <ixsl:choose>
-          <ixsl:when test="/formresult/currentcommoninfo">
-            <displaycurrentcommon/><br/>
-            <displaycommondetails/>
-            <div>
-              <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
-              <ixsl:choose>
-                <ixsl:when test="/formresult/currentcommoninfo/content/node()">
-                  <staticdisplay path="/formresult/currentcommoninfo/content/node()"/>
-                </ixsl:when>
-                <ixsl:otherwise>
-                  <div class="editor_box editor_warn">Part is not yet defined!</div>
-                </ixsl:otherwise>
-              </ixsl:choose>
-            </div>
+          <ixsl:when test="/formresult/currentcommoninfo/content/node()">
+            <staticdisplay path="/formresult/currentcommoninfo/content/node()"/>
           </ixsl:when>
           <ixsl:otherwise>
-            <center>
-              <br/>
-              <div class="editor_main_emph">
-                Please select a dynamic include from the list on the left
-              </div>
-            </center>
+            <div class="editor_box editor_warn">Part is not yet defined!</div>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
+      </div>
+    </ixsl:when>
+    <ixsl:otherwise>
+      <center>
+        <br/>
+        <div class="editor_main_emph">
+          Please select a dynamic include from the list on the left
+        </div>
+      </center>
+    </ixsl:otherwise>
+  </ixsl:choose>
+</lang>
     </product>
   </part>
 

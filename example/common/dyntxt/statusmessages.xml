@@ -34,6 +34,9 @@
     <product name="default">
       <lang name="default" warning="NEVER CHANGE THIS NODE!">You must upload a image file (GIF or JPG).</lang>
     </product>
+    <product name="sample1">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">You must upload a image file (GIF or JPG).</lang>
+    </product>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPE">
     <product name="default">

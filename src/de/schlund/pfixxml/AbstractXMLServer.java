@@ -477,7 +477,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 recorder.tryRecord(preq, res, spdoc, session);
             }
             if (isDebugEnabled()) {
-                CAT.debug("* Document for XMLServer is" + spdoc);
+                CAT.debug("* Generated document:" + spdoc);
             }
             if (isInfoEnabled()) {
                 CAT.info(">>> Complete getDom(...) took " + getdomtime + "ms");

@@ -21,12 +21,12 @@
     <page name="testcaseselect"    handler="/xml/edit"/>
     <page name="testcasestart"     handler="/xml/edit"/>
     <page name="testcaseoverview"  handler="/xml/edit"/>
-    <page name="AppletInfo"        handler="/xml/edit"/>
   </navigation>
 
   <global>
     <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
     <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>
+    <param name="outputencoding" value="UTF-8"/>
   </global>
 
   <standardmaster/>
@@ -34,16 +34,6 @@
   <standardmetatags>
     <include stylesheet="core/editor/xsl/metatags.xsl"/>
   </standardmetatags>
-
-  <standardpage name="images"            xml="core/editor/xml/three_frames.xml">
-    <include stylesheet="core/editor/xsl/runtime.xsl"/>
-  </standardpage>
-  <standardpage name="includes"          xml="core/editor/xml/three_frames_applet.xml">
-    <include stylesheet="core/editor/xsl/runtime.xsl"/>
-  </standardpage>
-  <standardpage name="commons"           xml="core/editor/xml/three_frames_applet.xml">
-    <include stylesheet="core/editor/xsl/runtime.xsl"/>
-  </standardpage>
     
   <standardpage name="editoruserauth"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="prodselect"        xml="core/editor/xml/two_frames_deaktiv.xml"/>
@@ -51,15 +41,26 @@
   <standardpage name="sessionmanager"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="editoruserdata"    xml="core/editor/xml/two_frames_deaktiv.xml"/>
   <standardpage name="editorusermanager" xml="core/editor/xml/two_frames_deaktiv.xml"/>
+  <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
+  <standardpage name="testcasestart"     xml="core/editor/xml/two_frames.xml"/>
+  <standardpage name="testcaseoverview"  xml="core/editor/xml/two_frames.xml"/>
+
   <standardpage name="home"              xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="pages"             xml="core/editor/xml/three_frames_wide.xml"/>
   <standardpage name="targets"           xml="core/editor/xml/three_frames_wide.xml"/>
-  <standardpage name="AppletInfo"        xml="core/editor/xml/three_frames_applet.xml"/>
+
+  <standardpage name="images"            xml="core/editor/xml/three_frames.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="includes"          xml="core/editor/xml/three_frames_editor.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="commons"           xml="core/editor/xml/three_frames_editor.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
+
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="documentation"     xml="core/editor/xml/three_frames_doku.xml"/>
-  <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
-  <standardpage name="testcasestart"     xml="core/editor/xml/two_frames.xml"/>
-  <standardpage name="testcaseoverview"     xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="logout"            xml="core/editor/xml/empty.xml"/>
 
 </make>

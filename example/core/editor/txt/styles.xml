@@ -293,7 +293,6 @@ div.topbar a:visited{
 
 }
 
-.editor_textarea,
 .editor_input_pwd,
 .editor_input{
   border: 1px solid;
@@ -301,12 +300,16 @@ div.topbar a:visited{
   padding: 2px 4px 2px 4px;
 }
 
-.editor_textarea:focus,
 .editor_input_pwd:focus,
 .editor_input:focus{
   border: 1px solid;
   border-color: #002276 #4A5F9A #4A5F9A #002276;
   background-color: #EBF5FF;
+}
+
+.editor_textarea {
+  border: 1px black solid;
+  width: 100%;
 }
 
 div.info{
