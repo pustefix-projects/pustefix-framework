@@ -50,7 +50,7 @@
             <pfx:button target="_top" page="test">STARTWITHFLOW test</pfx:button>
           </pfx:forminput>
           
-          <pfx:include part="buttons"/>
+          <pfx:include part="buttons" noedit="true"/>
           <br/><br/><br/>
           <pfx:include part="switch"/>
           <br/>

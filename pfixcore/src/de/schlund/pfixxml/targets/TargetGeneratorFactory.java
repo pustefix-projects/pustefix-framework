@@ -68,4 +68,8 @@ public class TargetGeneratorFactory {
         }
     }
     
+    public void reset() {
+        generatormap = new HashMap(); 
+    }
+    
 }
