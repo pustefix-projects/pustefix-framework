@@ -269,10 +269,11 @@
   </xmlcode>
   
   <h2>Standard page definition</h2>
+  <a name="stdpage"/>
   The <code>standardpage</code> tag is a convenience tag that encapsulates the typical definition of
   a complete page in the <pustefix/> system.
   <xmlcode>
-    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml">
+    <standardpage name="BazPage"  xml="MyProject/xml/FooBase.xml">
       <xmlcodeOFF>
         <table class="stdtable">
           <tr>
@@ -291,8 +292,7 @@
         </table>
         <br/>
       </xmlcodeOFF>
-      <include stylesheet="foo/xsl/ssheet.xsl"/>
-      <include stylesheet="foo/xsl/ssheet2.xsl"/>
+      <include stylesheet="MyProject/xsl/runtime.xsl"/>
       <param name="outputmethod"         value="html"/>
       <param name="outputencoding"       value="iso-8859-1"/>
       <param name="outputdoctype-public" value="PubID"/>
@@ -304,13 +304,13 @@
       </xmlcodeOFF>
     </standardpage>
   </xmlcode>
-  <p>after performing the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
+  <p>after performing the transformation <code>depend.xml.in</code> =&gt;  <code>depend.xml</code>
     (automatically done by the build system in the skeleton package and the CVS checkout) this becomes</p>
   <xmlcode>
-    <target name="home.xsl" type="xsl">
-      <depxml name="home.xml"/>
+    <target name="BazPage.xsl" type="xsl">
+      <depxml name="BazPage.xml"/>
       <depxsl name="master.xsl"/>
-      <param name="page" value="home"/>
+      <param name="page" value="BazPage"/>
       <xmlcodeOFF>
         <div class="comment">
           For every target that is only used in the generation of one single page (if you look at the example given
@@ -320,10 +320,10 @@
           structures you define yourself.
         </div>
       </xmlcodeOFF>
-      <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
+      <param name="docroot" value="/path/to/pustefix/projects"/>
       <xmlcodeOFF>
         <div class="comment">
-          As mentioned above, the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
+          As mentioned above, the transformation <code>depend.xml.in</code> =&gt; <code>depend.xml</code>
           inserts a <code>param</code> called <code>docroot</code>.
         </div>
       </xmlcodeOFF>
@@ -333,27 +333,88 @@
       <param name="outputdoctype-system" value="SysID"/>
       <xmlcodeOFF>
         <div class="comment">
-          parameters given to the standardpage tag are suuplied to the first of the two transformations. 
+          parameters given to the standardpage tag are supplied to the first of the two
+          transformations. The parameters given above have predefined meaning. 
         </div>
       </xmlcodeOFF>
-      <param name="stylesheets_to_include" value="foo/xsl/ssheet.xsl foo/xsl/ssheet.xsl2"/>
-      <depaux name="/absolute/path/to/foo/xsl/ssheet.xsl"/>
-      <depaux name="/absolute/path/to/foo/xsl/ssheet2.xsl"/>
+      <param name="stylesheets_to_include" value="MyProject/xsl/runtime.xsl"/>
+      <depaux name="/path/to/pustefix/projects/MyProject/xsl/runtime.xsl"/>
       <xmlcodeOFF>
         <div class="comment">
           All include tags given are runtime stylesheets, given to the transformation via the
-          parameter <code>stylesheets_to_include</code>. Note that automatically the
-          needed <code>depaux</code> nodes are inserted.
+          parameter <code>stylesheets_to_include</code> (as a space separated list if multiple
+          include tags are given). Note that the needed <code>depaux</code> nodes are inserted
+          automatically.
         </div>
       </xmlcodeOFF>
     </target><xmlcodeOFF/>
-    <target name="home.xml" type="xml">
-      <depxml name="MyProject/xml/SampleLayout.xml"/>
+    <target name="BazPage.xml" type="xml">
+      <depxml name="MyProject/xml/FooBase.xml"/>
       <depxsl name="metatags.xsl"/>
-      <param name="page" value="home"/>
-      <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
+      <param name="page" value="BazPage"/>
+      <param name="docroot" value="/path/to/pustefix/projects"/>
     </target>
   </xmlcode>
+
+  <h2>Standard master target definition</h2>
+  <p>
+    The <code>standardmaster</code> tag is a convenience tag that encapsulates the typical
+    target definition of the <code>master.xsl</code> <a href="xml.html">stylesheet</a>. 
+    <xmlcode>
+      <standardmaster>
+        <include stylesheet="MyProject/xsl/skin.xsl"/>
+        <param name="AName" value="AValue"/>
+      </standardmaster>
+    </xmlcode>
+    <p>after performing the transformation <code>depend.xml.in</code> =&gt; <code>depend.xml</code>
+      this becomes</p>
+    <xmlcode>
+      <target name="master.xsl" type="xsl">
+        <depxml name="core/xsl/master.xsl"/>
+        <depxsl name="core/xsl/customizemaster.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/navigation.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/forminput.xsl"/>
+        <depaux name="/path/to/pustefix/projects/sample1/conf/depend.xml"/>
+        <param name="AName" value="AValue"/>
+        <param name="docroot" value="/path/to/pustefix/projects"/>
+        <param name="product" value="MyProject"/>
+        <param name="lang" value="en"/>
+      </target>
+    </xmlcode>
+  </p>
+
+  <h2>Standard metatags target definition</h2>
+  <p>
+    The <code>standardmetatags</code> tag is a convenience tag that encapsulates the typical
+    target definition of the <code>metatags.xsl</code> <a href="xml.html">stylesheet</a>. 
+    <xmlcode>
+      <standardmetatags>
+        <include stylesheet="MyProject/xsl/metatags.xsl"/>
+        <param name="AName" value="AValue"/>
+      </standardmetatags>
+    </xmlcode>
+    <p>after performing the transformation <code>depend.xml.in</code> =&gt; <code>depend.xml</code>
+      this becomes</p>
+    <xmlcode>
+      <target name="metatags.xsl" type="xsl">
+        <depxml name="core/xsl/metatags.xsl"/>
+        <depxsl name="core/xsl/customizemaster.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/default_copy.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/include.xsl"/>
+        <depaux name="/path/to/pustefix/projects/core/xsl/utils.xsl"/>
+        <depaux name="/path/to/pustefix/projects/MyProject/conf/depend.xml"/>
+        <depaux name="/path/to/pustefix/projects/MyProject/xsl/metatags.xsl"/>
+        <param name="stylesheets_to_include" value="MyProject/xsl/metatags.xsl "/>
+        <param name="AName" value="AValue"/>
+        <param name="docroot" value="/path/to/pustefix/projects"/>
+        <param name="product" value="MyProject"/>
+        <param name="lang" value="en"/>
+      </target>
+    </xmlcode>
+  </p>
 
 </div>
 
