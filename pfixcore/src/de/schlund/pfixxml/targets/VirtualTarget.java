@@ -1,21 +1,21 @@
 /*
-* This file is part of PFIXCORE.
-*
-* PFIXCORE is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* PFIXCORE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with PFIXCORE; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*
-*/
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
@@ -43,7 +43,7 @@ import de.schlund.pfixxml.XMLException;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long modtime = 0l;
+    protected long modtime = 0;
     protected TreeSet pageinfos = new TreeSet();
     protected AuxDependencyManager auxdepmanager   = null;
     
@@ -95,9 +95,9 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.Target#getModTime()
      */
     public long getModTime() {
-        if (modtime == 0l) {
+        if (modtime == 0) {
             synchronized (this) {
-                if (modtime == 0l) {
+                if (modtime == 0) {
                     File doc = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
@@ -168,7 +168,7 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
     protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
-        long maxmodtime = 0l;
+        long maxmodtime = 0;
         long tmpmodtime;
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());

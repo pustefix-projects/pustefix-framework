@@ -23,7 +23,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.skelexamples.ContextDemoText;
 
 /**
  * A class handling the request sent by the action of the form. This class is

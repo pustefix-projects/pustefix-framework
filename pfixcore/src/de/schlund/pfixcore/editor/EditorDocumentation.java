@@ -1,3 +1,21 @@
+/*
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 package de.schlund.pfixcore.editor;
 
 import java.io.File;
@@ -37,13 +55,13 @@ public class EditorDocumentation {
     
     
     // Constructer called with an array of the xsl.in files
-    public EditorDocumentation(String args[]) throws Exception{
+    public EditorDocumentation(String[] args) throws Exception{
         this.allFiles = args;
         this.generateDocumentation(args);
 
     }
     
-    public void generateDocumentation(String args[]) throws Exception {
+    public void generateDocumentation(String[] args) throws Exception {
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             try {
@@ -195,7 +213,7 @@ public class EditorDocumentation {
         
         TreeMap treemap = new TreeMap (this.hashmap);
     
-        String id[] = new String[this.hashmap.size()];
+        String[] id = new String[this.hashmap.size()];
 
         Collection menge = treemap.keySet();
 
@@ -299,16 +317,11 @@ public class EditorDocumentation {
     
     // Returns array of the Documentation Ids
     public String[] getDocumentationIds() throws Exception{
-            
-        
         this.checkFile();
         
-        
         TreeMap treemap = new TreeMap (this.hashmap);                
-        String id[] = new String[this.hashmap.size()];
-        
+        String[] id = new String[this.hashmap.size()];
         Collection menge = treemap.keySet();
-        
 
         int i = 0;
         for (Iterator it = menge.iterator(); it.hasNext();) {
@@ -317,11 +330,5 @@ public class EditorDocumentation {
         }
 
         return id;
-
     }
-    
-    
-    
-    
-
 }
