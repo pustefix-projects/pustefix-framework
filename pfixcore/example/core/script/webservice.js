@@ -306,9 +306,9 @@ SimpleTypeSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
 	writer.endElement(name);
 }
 
-//deserialize(value,name,typeInfo,writer)
-SimpleTypeSerializer.prototype.deserialize=function(value,name,typeInfo,writer) {
-	
+//deserialize(typeInfo,element)
+SimpleTypeSerializer.prototype.deserialize=function(typeInfo,element) {
+	return element.firstChild.nodeValue;
 }
 
 
@@ -416,9 +416,10 @@ var typeMapping=new TypeMapping();
 //*********************************
 // RPCSerializer(QName opName,ArrayOfParameter params,values,...)
 //*********************************
-function RPCSerializer(opName,params) {
+function RPCSerializer(opName,params,retTypeInfo) {
 	this.opName=opName;
 	this.params=params;
+	this.retTypeInfo=retTypeInfo;
 }
 
 RPCSerializer.prototype.serialize=function(writer) {
@@ -431,19 +432,10 @@ RPCSerializer.prototype.serialize=function(writer) {
 	writer.endElement(this.opName);
 }
 
-
-//*********************************
-// RPCDeserializer(String opName,QName xmlType,String jsType)
-//*********************************
-function RPCDeserializer(opName,xmlType,jsType) {
-	this.opName=opName;
-	this.xmlType=xmlType;
-	this.jsType=jsType;
-}
-
-RPCDeserializer.prototype.deserialize=function(bodyElem) {
-	
-	return "foo";
+RPCSerializer.prototype.deserialize=function(element) {
+	var serializer=typeMapping.getSerializer(this.retTypeInfo);
+	var res=serializer.deserialize(this.retTypeInfo,element.getElementsByTagName(this.opName+"Return")[0]);
+	return res;
 }
 
 
@@ -503,17 +495,19 @@ Call.prototype.invoke=function() {
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
-	var rpc=new RPCSerializer(this.opName,this.params);
+	var rpc=new RPCSerializer(this.opName,this.params,this.retTypeInfo);
 	
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
   //  alert("writer.xml:\n" + writer.xml);
   	document.getElementById('request').value=writer.xml;
+  	
 
-	var resDoc=sendTest(writer.xml);
-	rpc=new RPCDeserializer(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
-	return rpc.deserialize(this.opName,this.retXmlType,this.retJsType);
+	var resDoc=sendTest(writer.xml,this.endpoint);
+
+	
+	return rpc.deserialize(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
 	
   //return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
 
@@ -699,16 +693,27 @@ function BeanInfo(xmlType,arrayType,propToInfo) {
 
 function test() {
 	
+	
 	var call=new Call();
-	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
+	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
+	//call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
 	
 	
+	call.setOperationName(new QName("add"));
+	call.addParameter("val1",new TypeInfo(xmltypes.XSD_INT),"IN");
+	call.addParameter("val2",new TypeInfo(xmltypes.XSD_INT),"IN");
+	call.setReturnType(new TypeInfo(xmltypes.XSD_INT));
+	var res=call.invoke(2,3);
+	alert("Result: "+res);
+	alert(res+9);
+	
+	/*
 	call.setOperationName(new QName("echoString"));
 	call.addParameter("val",new TypeInfo(xmltypes.XSD_STRING),"IN");
 	call.setReturnType(new TypeInfo(xmltypes.XSD_STRING));
-	call.invoke("testtext");
-	
-	
+	var res=call.invoke("testtext");
+	alert("Result: "+res);
+	*/
 	/*
 	call.setOperationName(new QName("echoStringArray"));
 	var info=new ArrayInfo(new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_string"),xmltypes.XSD_STRING,1);
@@ -727,7 +732,7 @@ function test() {
 	
 }
 
-function sendTest(msg) {
+function sendTest(msg,url) {
 	var req;
 	if (window.XMLHttpRequest) {
 		req=new XMLHttpRequest();
@@ -736,8 +741,7 @@ function sendTest(msg) {
 	} else {
 		alert("XMLHttpRequest not supported");
 	}
-	var ws = window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest";
-	req.open("POST", ws, false);
+	req.open("POST", url, false);
 	req.setRequestHeader("SOAPAction",'""');
 	req.send(msg);
 	return req.responseXML;
