@@ -28,7 +28,7 @@ public class Java2Wsdl {
                 emitter.setNamespaceMap(namespaceMap);
             }
             emitter.setCls(className);
-            emitter.setDefaultTypeMapping(DefaultSOAPEncodingTypeMappingImpl.create());
+            //emitter.setDefaultTypeMapping(DefaultSOAPEncodingTypeMappingImpl.create());
             emitter.setIntfNamespace(namespace);
             emitter.setImplCls(implClassName);
             //emitter.setImplNamespace(namespaceImpl); 

@@ -3,15 +3,8 @@
  */
 package de.schlund.pfixcore.example.webservices;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import de.schlund.pfixcore.webservice.*;
 import de.schlund.pfixcore.example.ContextData;
-
 
 /**
  * DataImpl.java 
@@ -22,66 +15,14 @@ import de.schlund.pfixcore.example.ContextData;
  */
 public class DataImpl extends AbstractService implements Data {
     
-    public String getData() throws Exception {
-        ContextData data=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
-        return data.getData();
+    public String exchangeData(String data,int strSize) throws Exception {
+        ContextData ctx=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
+        return ctx.exchangeData(data,strSize);
     }
     
-    public String[] getDataArray() throws Exception {
-        ContextData data=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
-        return data.getDataArray();
-    }
-    
-    public DataBean getDataBean() throws Exception {
-        ContextData data=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
-        return data.getDataBean();
-    }
-    
-    public DataBean echoDataBean(DataBean data) throws Exception {
-        return data;
-    }
-    
-    /**
-    public DataBean getComplexData() throws Exception {
-        ContextData data=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
-        return data.getComplexData();
-    }
-    
-    public DataBean echoComplexData(DataBean data) throws Exception {
-        return data;
-    }
-    */
-    
-    /**
-    public String getDataSid(String sid) throws Exception {
-        ContextData data=(ContextData)getContextResource(sid,ContextData.class.getName());
-        return data.getData();
-    }
-    
-    public String[] getDataArraySid(String sid) throws Exception {
-        ContextData data=(ContextData)getContextResource(sid,ContextData.class.getName());
-        return data.getDataArray();
-    }
-    
-    public DataBean getDataBeanSid(String sid) throws Exception {
-        ContextData data=(ContextData)getContextResource(sid,ContextData.class.getName());
-        return data.getDataBean();
-    }*/
-    
-    public DataBean echoDataBeanSid(String sid,DataBean data) throws Exception {
-        return data;
-    }
-    
-    public Element getElement() throws Exception {
-        DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
-        DocumentBuilder db=dbf.newDocumentBuilder();
-        Document doc=db.newDocument();
-        Element elem=doc.createElement("test");
-        elem.setAttribute("id","1");
-        Element subElem=doc.createElement("foo");
-        elem.appendChild(subElem);
-        subElem.appendChild(doc.createTextNode("fasdfasdfasdf"));
-        return elem;
+    public String[] exchangeDataArray(String[] data,int arrSize,int strSize) throws Exception {
+        ContextData ctx=(ContextData)getContextResourceManager().getResource(ContextData.class.getName());
+        return ctx.exchangeDataArray(data,arrSize,strSize);
     }
 
 }

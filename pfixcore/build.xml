@@ -223,6 +223,10 @@ or delete the DOCTYPE definition -->
     />
   </target>
 	
+  <target name="clean-webservice">
+  	<delete dir="${dir.projects}/.webservice"/>
+  </target>
+	
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
     <javac
      srcdir="${dir.src}"
@@ -377,7 +381,7 @@ or delete the DOCTYPE definition -->
     <delete file="ant.dtd"/>
   </target>
 
-  <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
+  <target name="clean" depends="clean-project,clean-webservice" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
     <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
     <delete dir="${dir.build}"/>
     <delete dir="${dir.dist}"/>

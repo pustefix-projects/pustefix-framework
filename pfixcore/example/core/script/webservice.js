@@ -71,6 +71,18 @@ function xmlUtilities() {
 xmlUtilities.prototype.getChildrenByName=function(node,name) {
 	if(arguments.length!=2) throw new coreWrongArgNoEx("","xmlUtilities.getChildrenByName");
 	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getChildrenByName");
+	//NOTE: getting child elements via childNodes property and name comparison is much slower
+	var nl=node.getElementsByTagName(name);
+	var nodes=new Array();
+	for(var i=0;i<nl.length;i++) {
+		if(nl[i].parentNode==node) nodes.push(nl[i]);
+	}
+	return nodes;
+}
+
+xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
+	if(arguments.length!=2) throw new coreWrongArgNoEx("","xmlUtilities.getChildrenByNameNS");
+	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getChildrenByNameNS");
 	if(node.childNodes==null || node.childNodes.length==0) return null;
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
@@ -623,8 +635,8 @@ soapArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
 		var items=xmlUtils.getChildrenByName(element,"item");
 		var array=new Array();
 		if(items!=null) {
-			for(var i=0;i<items.length;i++) {
-				var deserializer=typeMapping.getSerializerByInfo(typeInfo.arrayType);
+			var deserializer=typeMapping.getSerializerByInfo(typeInfo.arrayType);
+			for(var i=0;i<items.length;i++) {	
 				var val=deserializer.deserialize(typeInfo.arrayType,items[i]);
 				array.push(val);
 			}
@@ -831,6 +843,7 @@ Call.prototype.setReturnType=function(retTypeInfo) {
 //invoke(values,...)
 //invoke(QName operationName,values,...)
 Call.prototype.invoke=function() {
+	
 	var writer=new XMLWriter();
 	var soapMsg=new SOAPMessage();
 	
@@ -850,13 +863,15 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
+	
+	
 //alert(writer.xml);
   var resDoc;
   if( !this.userCallback ) {
     // sync
     this.request=new xmlRequest('POST',this.endpoint);
     resDoc=this.request.start(writer.xml); 
-    
+   
     //resDoc = new xmlRequest( 'ePOST', this.endpoint ).start( writer.xml );
     return this.callback(resDoc);
   } else {
@@ -919,7 +934,7 @@ function SOAPPart() {
 	if(arguments.length==0) {
 		this.envelope=new SOAPEnvelope();
 	} else if(arguments.length==1) {
-		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Envelope")[0];
+		var e=xmlUtils.getChildrenByNameNS(arguments[0],"soapenv:Envelope")[0];
 		if(e==null) throw new soapException("NO SOAP MESSAGE","SOAPPart");
 		this.envelope=new SOAPEnvelope(e);
 	} else throw new coreWrongArgNoEx("","SOAPPart");
@@ -946,10 +961,10 @@ function SOAPEnvelope() {
 		this.body=new SOAPBody();
 		this.element=null;
 	} else if(arguments.length==1) {
-		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Header")[0];
+		var e=xmlUtils.getChildrenByNameNS(arguments[0],"soapenv:Header")[0];
 		if(e!=null) this.header=new SOAPHeader(e);
 		else this.header=new SOAPHeader();
-		e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Body")[0];
+		e=xmlUtils.getChildrenByNameNS(arguments[0],"soapenv:Body")[0];
 		if(e!=null) this.body=new SOAPBody(e);
 		else throw new soapException("NO MESSAGE BODY","SOAPEnvelope");
 		this.element=arguments[0];
@@ -997,7 +1012,7 @@ function SOAPBody() {
 		this.bodyElems=new Array();
 		this.element=null;
 	} else if(arguments.length==1) {
-		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Fault")[0];
+		var e=xmlUtils.getChildrenByNameNS(arguments[0],"soapenv:Fault")[0];
 		if(e!=null) this.fault=new SOAPFault(e);
 		this.element=arguments[0];
 	} else throw new coreWrongArgNoEx("","SOAPEnvelope");

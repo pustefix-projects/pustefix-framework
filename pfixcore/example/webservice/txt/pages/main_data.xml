@@ -13,12 +13,19 @@
 			<table cellpadding="5" bgcolor="#b6cfe4">
 				<tr>
 					<td>Data:</td>
-					<td><textarea id="pfxsoap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
-					<td><input type="button" onclick="pfxsoapCall('getData');" value="get data"/></td>
-					<td><input type="button" onclick="pfxsoapCall('getDataArray');" value="get data array"/></td>
-					<td><input type="button" onclick="pfxsoapCall('getDataBean');" value="get data bean"/></td>
-					<td><input type="button" onclick="pfxsoapCall('echoDataBean');" value="echo data bean"/></td>
-					<td><input type="button" onclick="pfxsoapCall('getElement');" value="get XML element"/></td>
+					<td><textarea id="pfxsoap_result" readonly="readonly" rows="5" cols="40" wrap="soft"></textarea></td>
+					<td>
+						<input type="button" onclick="pfxsoapCall('exchangeData',document.pfxsoap.reqStrSize.value,document.pfxsoap.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="pfxsoapCall('exchangeDataArray',document.pfxsoap.arrReqArrSize.value,document.pfxsoap.arrReqStrSize.value,document.pfxsoap.arrResArrSize.value,document.pfxsoap.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>
+					</td>
+					
 				</tr>
 			</table>	
 		</form>
@@ -32,11 +39,17 @@
 				<tr>
 					<td>Data:</td>
 					<td><textarea id="soap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
-					<td><input type="button" onclick="soapCall('getData',null,document.mozsoap.sid.value);" value="get data"/></td>
-					<td><input type="button" onclick="soapCall('getDataArray',null,document.mozsoap.sid.value);" value="get data array"/></td>
-					<td><input type="button" onclick="soapCall('getDataBean',null,document.mozsoap.sid.value);" value="get data bean"/></td>
-					<td><input type="button" onclick="soapCall('echoDataBean',0,document.mozsoap.sid.value);" value="echo data bean"/></td>
-					<td><input type="button" onclick="soapCall('getElement',null,document.mozsoap.sid.value);" value="get XML element"/></td>
+					<td>
+						<input type="button" onclick="soapCall('exchangeData',document.mozsoap.sid.value,document.mozsoap.reqStrSize.value,document.mozsoap.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="soapCall('exchangeDataArray',document.mozsoap.sid.value,document.mozsoap.arrReqArrSize.value,document.mozsoap.arrReqStrSize.value,document.mozsoap.arrResArrSize.value,document.mozsoap.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>					
+					</td>
 				</tr>
 			</table>	
 		</form>
@@ -44,16 +57,23 @@
 		<h2>Mozilla WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
 		<p><span class="error" id="wsdl_error"></span></p>
-		<form action="">
-			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
+		<form name="mozwsdl" action="">
+			<input type="hidden" name="sid" value="{$__sessid}"/>
 			<table cellpadding="5" bgcolor="#b6cfe4"> 
 				<tr>
 					<td>Data:</td>
 					<td><textarea id="wsdl_result" readonly="readonly" rows="5" cols="40"></textarea></td>
-					<td><input type="button" onclick="wsdlCall('getData',null,document.forms[1].sid.value);" value="get data"/></td>
-					<td><input type="button" onclick="wsdlCall('getDataArray',null,document.forms[1].sid.value);" value="get data array"/></td>
-					<td><input type="button" onclick="wsdlCall('getDataBean',null,document.forms[1].sid.value);" value="get data bean"/></td>
-					<td><input type="button" onclick="wsdlCall('echoDataBean',null,document.forms[1].sid.value);" value="echo data bean"/></td>
+					<td>
+						<input type="button" onclick="wsdlCall('exchangeData',document.mozwsdl.sid.value,document.mozwsdl.reqStrSize.value,document.mozwsdl.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="wsdlCall('exchangeDataArray',document.mozwsdl.sid.value,document.mozwsdl.arrReqArrSize.value,document.mozwsdl.arrReqStrSize.value,document.mozwsdl.arrResArrSize.value,document.mozwsdl.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>	
+					</td>
 				</tr>
 			</table>	
 		</form>

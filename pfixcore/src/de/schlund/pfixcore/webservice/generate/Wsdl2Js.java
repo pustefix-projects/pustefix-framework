@@ -214,7 +214,6 @@ public class Wsdl2Js {
     
     
     private String createJsTypeInfo(QName type) {
-        System.out.println(type);
         String ret=(String)typeInfoMap.get(type);
         if(ret==null) {
             int ind=typeInfoList.size();
