@@ -27,8 +27,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 /**
+ * Every <code>ExceptionProcessor</code> that is configured to process exceptions
+ * via the <code>processor</code>-attribute in the <code>exception</code>-tag of the
+ * pustefix servlet-configuration file, must implement this interface.
+ * <br />
  * Classes that implement this interface <b>must</b> provide a no-args constructor,
  * and the {@link #processException processException}-method should be thread-safe.
+ * <br />
+ * Look at the
+ * {@link processException(Throwable,ExceptionConfig,PfixServletRequest,ServletContext,HttpServletRequest,HttpServletResponse res) processException}-method
+ * for further details how to implement this interface.
  *
  * @author <a href="mailto:benjamin@schlund.de">Benjamin Reitzammer</a>
  * @version $Id$
@@ -41,6 +49,17 @@ public interface ExceptionProcessor {
      * {@link de.schlund.pfixxml.PfixServletRequest#setLastException(Throwable) PfixServletRequest.setLastException()}.
      * This is needed, so that {@link de.schlund.pfixxml.ServletManager ServletManager}
      * can prevent infinite forwarding loops.
+     *
+     * @param exception is not allowed to be <code>null</code>
+     * @param exConfig the {@link ExceptionConfig ExceptionConfig}-instance that
+     * corresponds to the type of the <code>exception</code>-param that should
+     * be handled by this <code>SimpleExceptionProcessor</code>-object
+     * @param pfixReq the pustefix-specific request object of the current request, during
+     * which the exception occurred
+     * @param servletContext the {@link javax.servlet.ServletContext ServletContext}-instance
+     * in which the request is answered
+     * @param req the {@link javax.servlet.http.HttpServletRequest HttpServletRequest} of the current request
+     * @param res the {@link javax.servlet.http.HttpServletResponse HttpServletResponse} of the current request
      */
     public void processException(Throwable exception,
                                  ExceptionConfig exConfig,
