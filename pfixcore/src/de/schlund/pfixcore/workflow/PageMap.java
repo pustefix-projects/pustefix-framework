@@ -22,20 +22,20 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.util.*;
 import java.util.*;
 import org.apache.log4j.*;
+import de.schlund.pfixxml.PropertyObject;
+import de.schlund.pfixxml.PropertyObjectManager;
 
-/**
- *
- *
- */
-
-
-public class PageMap {
+public class PageMap implements PropertyObject {
     protected            HashMap  pagemap     = new HashMap();
-    public final static String CLASSNAMEPROP = "classname";
+    public  final static String CLASSNAMEPROP = "classname";
     private final static Category CAT         = Category.getInstance(PageMap.class.getName());
+    
+    public void init(Properties properties) throws Exception {
 
-    public PageMap(PageRequestProperties preqprops) {
-
+        //Get PageRequestProperties object from PropertyObjectManager 
+        PageRequestProperties preqprops = (PageRequestProperties)PropertyObjectManager.getInstance().
+            getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+        
         PageRequest[] pages = preqprops.getAllDefinedPageRequests();
         
         for (int i = 0; i < pages.length; i++) {
@@ -49,7 +49,6 @@ public class PageMap {
             } else {
                 pagemap.put(page, state);
             }
-            
         }
     }
 

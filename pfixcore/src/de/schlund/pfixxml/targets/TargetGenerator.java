@@ -96,7 +96,7 @@ public class TargetGenerator {
         Meminfo.print("TG: after loading targets for " + confile.getPath());
     }
 
-    public synchronized void tryReinit() throws Exception {
+    public synchronized boolean tryReinit() throws Exception {
         if (confile.lastModified() > config_mtime) {
             CAT.warn("\n\n###############################\n" +
                      "#### Reloading depend file: " + confile.getAbsoluteFile() + "\n" +
@@ -106,6 +106,9 @@ public class TargetGenerator {
             alltargets   = new HashMap();
             config_mtime = confile.lastModified();
             loadConfig();
+            return true;
+        } else {
+            return false;
         }
     }
     

@@ -44,7 +44,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     private HashSet handlers;
     private HashSet activeset;
     private Context context;
-    private long    loadindex = -1;
     
     public  static final String   PROP_CONTAINER = "ihandlercontainer";
     private static final String   PROP_POLICY    = PROP_CONTAINER + ".policy";
@@ -65,37 +64,33 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
     }
 
     private void updateIHandlers() {
-        long newload = context.getPropertyLoadIndex();
-        if (newload > loadindex) {
-            loadindex = newload;
-            handlers  = new HashSet();
-            activeset = new HashSet();
-            Properties props      = context.getPropertiesForCurrentPageRequest();
-            HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
-            String     ignore     = props.getProperty(PROP_IGNORE);
-            HashSet    skipprefix = new HashSet(); 
-            
-            if (ignore != null && !ignore.equals("")) {
-                StringTokenizer tok = new StringTokenizer(ignore);
-                while (tok.hasMoreElements()) {
-                    skipprefix.add(tok.nextToken());
-                }
+        handlers  = new HashSet();
+        activeset = new HashSet();
+        Properties props      = context.getPropertiesForCurrentPageRequest();
+        HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
+        String     ignore     = props.getProperty(PROP_IGNORE);
+        HashSet    skipprefix = new HashSet(); 
+        
+        if (ignore != null && !ignore.equals("")) {
+            StringTokenizer tok = new StringTokenizer(ignore);
+            while (tok.hasMoreElements()) {
+                skipprefix.add(tok.nextToken());
             }
-            
-            if (!interfaces.isEmpty()) {
-                for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
-                    String   numprefix = (String) i.next();
-                    String   prefix    = numprefix; 
-                    if (numprefix.indexOf(".") > 0) {
-                        prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
-                    }
-                    String   wrapperclass = (String) interfaces.get(numprefix);
-                    IHandler handler      = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
-                    handlers.add(handler);
-                    if (!skipprefix.contains(prefix)) {
-                        // CAT.debug("~~~~~~~~~~~~~~~~~ Adding " + prefix + " to activeset ~~~~~~~~~~~~~~~");
-                        activeset.add(handler);
-                    }
+        }
+        
+        if (!interfaces.isEmpty()) {
+            for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
+                String   numprefix = (String) i.next();
+                String   prefix    = numprefix; 
+                if (numprefix.indexOf(".") > 0) {
+                    prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
+                }
+                String   wrapperclass = (String) interfaces.get(numprefix);
+                IHandler handler      = IHandlerFactory.getInstance().getIHandlerForWrapperClass(wrapperclass);
+                handlers.add(handler);
+                if (!skipprefix.contains(prefix)) {
+                    // CAT.debug("~~~~~~~~~~~~~~~~~ Adding " + prefix + " to activeset ~~~~~~~~~~~~~~~");
+                    activeset.add(handler);
                 }
             }
         }
@@ -110,7 +105,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      */
     
     public boolean isPageAccessible() throws Exception {
-        updateIHandlers();
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {
@@ -137,7 +131,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @exception Exception if an error occurs
      */
     public boolean areHandlerActive() throws Exception {
-        updateIHandlers();
         if (activeset.isEmpty()) return true; // border case
         Properties props  = context.getPropertiesForCurrentPageRequest();
         String     policy = props.getProperty(PROP_POLICY);
@@ -187,7 +180,6 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
      * @exception Exception if an error occurs
      */
     public boolean needsData() throws Exception {
-        updateIHandlers();
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {

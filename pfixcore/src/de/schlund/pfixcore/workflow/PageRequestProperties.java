@@ -37,66 +37,56 @@ import org.apache.log4j.*;
  *
  */
 
-public class PageRequestProperties {
-    private static final String PREFIX = "pagerequest";
+public class PageRequestProperties implements PropertyObject {
+    public static final String PREFIX = "pagerequest";
 
     private Properties properties;
     private HashSet    preqs     = new HashSet();
     private HashMap    preqprops = new HashMap();
     private Category   CAT       = Category.getInstance(this.getClass());
     
-    public PageRequestProperties(Properties properties) throws Exception {
+    public void init(Properties properties) throws Exception {
         this.properties = properties;
 
-        Map map = PropertiesUtils.selectProperties(properties, PREFIX);
+        Map     map = PropertiesUtils.selectProperties(properties, PREFIX);
         HashSet set = new HashSet();
 
         for (Iterator i = map.keySet().iterator(); i.hasNext();) {
             String key = (String) i.next();
             key = key.substring(0, key.indexOf("."));
-
-            if (properties.getProperty(PREFIX + "." + key + "." + PageMap.CLASSNAMEPROP)
-                == null) {
-                throw new XMLException(
-                    "No 'classname' property found for " + "PageRequest '" + key + "'");
+            
+            if (properties.getProperty(PREFIX + "." + key + "." + PageMap.CLASSNAMEPROP) == null) {
+                throw new XMLException("No 'classname' property found for " + "PageRequest '" + key + "'");
             }
-
             set.add(key);
         }
-
+        
         for (Iterator i = set.iterator(); i.hasNext();) {
             PageRequest preq = new PageRequest((String) i.next());
             preqs.add(preq);
+            
+            HashMap nmap =PropertiesUtils.selectProperties(properties, PREFIX + "." + preq.getName());
+            if (nmap != null) {
+            	Properties props=new Properties();
+                for (Iterator it = nmap.keySet().iterator(); it.hasNext();) {
+                    String key = (String) it.next();
+                    props.setProperty(key, (String) nmap.get(key));
+                }
+                preqprops.put(preq.getName(), props);
+            }
         }
     }
 
     public Properties getPropertiesForPageRequest(PageRequest preq) {
-        Properties props = null;
-        if (pageRequestIsDefined(preq)) {
-            synchronized(preqprops) {
-                props = (Properties) preqprops.get(preq.getName());
-                if (props == null) {
-                    HashMap map =
-                        PropertiesUtils.selectProperties(properties, PREFIX + "." + preq.getName());
-                    if (map != null) {
-                        props = new Properties();
-                        for (Iterator i = map.keySet().iterator(); i.hasNext();) {
-                            String key = (String) i.next();
-                            props.setProperty(key, (String) map.get(key));
-                        }
-                        preqprops.put(preq.getName(), props);
-                    }
-                }
-            }
-        }
-        return props;
+    	return (Properties) preqprops.get(preq.getName());
     }
-
+    
     public boolean pageRequestIsDefined(PageRequest preq) {
         return (preqs.contains(preq));
     }
-
+    
     public PageRequest[] getAllDefinedPageRequests() {
         return (PageRequest[]) preqs.toArray(new PageRequest[] {});
     }
+    
 } // PageRequestProperties
