@@ -46,11 +46,35 @@
         </table>
       </td>
     </tr>
-    <tr>
+    <tr valign="top">
       <td>
         <stdimg src="img/editor_applet_includes.png">
           The <i>EditorApplet</i> of the <pustefix/> editor
         </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              This is the <i>EditorApplet</i>. It opens immediately with the right frame after 
+              you have selected an include in the left frame and lets you edit and upload
+              this include. 
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Pressing the <i>Submit</i>-button will upload all changes you made in the
+              <i>EditorApplet</i>. After upload you changes will be visible in the
+              affected page(s). 
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Pressing the <i>Close</i>-button will close the <i>EditorApplet</i> and
+              discard are changes.
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>

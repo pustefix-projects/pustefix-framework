@@ -1,6 +1,9 @@
 <div>
   <h1>The Pustefix Editor</h1>
-  
+  <p>The PustefixEditor is the content management system
+  shipped with <pustefix/>. It is designed for editing
+  static content.</p>
+<!--  
   <h2>Normal usage</h2>
   <h3>Login</h3>
   <h3>Productselection and user management</h3>
@@ -66,4 +69,5 @@
     
   <h2>Administration</h2>
   <h2>The PfixEditConsole</h2>
+  -->
 </div>
