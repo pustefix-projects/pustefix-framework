@@ -719,7 +719,7 @@ public class Context implements AppContext {
                     flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                     pageflow_requested_by_user = false;
                 }
-            } else {
+             } else {
                 flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                 pageflow_requested_by_user = false;
             }

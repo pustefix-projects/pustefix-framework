@@ -4,6 +4,6 @@ export CLASSPATH=`ls \`pwd\`/../lib/*.jar | xargs echo | sed -e 's/ /:/g'`:`pwd`
 export LANG=C
 
 
-java -mx384M de.schlund.pfixcore.util.Cleanup 
+java -mx500M de.schlund.pfixcore.util.Cleanup 
 
 
