@@ -1,3 +1,17 @@
+2003-11-04  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml, jni/build.xml:
+	Added target "force". When called before other targets this one sets a property
+	for skipping the usual uptodate checks.
+	* build.xml, skel/build.xml:
+	Removed copying of ant.dtd to skel dir, added as tarfileset to target "skeleton" instead.
+	Fixed target "projects_xml" to handle multiple projects correctly.
+	* skel/build.xml:
+	Changed handling of projects/core directroy from dependent patternset exclusion
+	to target *-check logic.
+	* jni/build.xml:
+	Added target "all" to unify style of build files. Added target descriptions.
+
 2003-11-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/customizemaster.xsl: new file. used intstead of preject specific custommaster.xsl files.
@@ -15,6 +29,7 @@
 	* example/core/script/baselib.js: Added another better handling algorithmus to store cookies
 
 2003-10-31  Adam Habermann  <adam.habermann@schlund.de>
+
 	* build.xml, skel/build.xml:
 	Removed DOCTYPE declaration, as it causes problems if ant.dtd does not (yet) exist
 	Changed creation and extraction of pfixcore-data.jar for compatibility with make;

@@ -12,6 +12,7 @@
     <property name="javahome"               value="${env.JAVA_HOME}"/>
     <property name="build.compiler"         value="jikes"/>
     <property name="build.compiler.emacs"   value="true"/>
+    <property name="javac.source"           value="1.4"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
     <property name="dir.src"                location="src"/>
@@ -141,12 +142,12 @@
 
     <target name="compile" depends="generate-src, jni" description="compiles all .java files">
         <javac
-            failonerror="true"
             srcdir="${dir.src}"
             destdir="${dir.build}"
             debug="${debug}"
             classpathref="cp.classpath"
             excludes="${excludes.src}"
+            source="${javac.source}"
             >
         </javac>
     </target>
@@ -249,15 +250,15 @@
     </target>
 
     <target name="dtd" depends="dtd-check" unless="upd.dtd" description="Creates a DTD for this build file.">
-    	<!-- DTD generated does not describe this build file thorough. It can't be used
-    	     for validation though it may be nice for auto competion within IDEs. The Element
-    	     not generated is the nested type "param" used within the custom ant-tasks -->
+        <!-- DTD generated does not describe this build file thorough. It can't be used
+             for validation though it may be nice for auto competion within IDEs. The Element
+             not generated is the nested type "param" used within the custom ant-tasks -->
         <echo message="Creating ant.dtd" level="info"/>
         <antstructure output="ant.dtd"/>
     </target>
     
-    <target name="dtd-check">
-    	<uptodate property="upd.dtd" srcfile="build.xml" targetfile="ant.dtd"/>
+    <target name="dtd-check" unless="pfx.force">
+        <uptodate property="upd.dtd" srcfile="build.xml" targetfile="ant.dtd"/>
     </target>
     
     <target name="clean-dtd">
@@ -328,7 +329,7 @@
         <fixcrlf srcdir="${basedir}" includes="build.xml, skel/build.xml, jni/build.xml" tab="remove" tablength="4"/>
     </target>
 
-    <target name="skeleton" depends="fixtabs, compile, jar, data">
+    <target name="skeleton" depends="ant-tasks, fixtabs, compile, jar, data">
         <echo message="Building ${name.pfixcore_skel_tgz} in dist directory"/>
         <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
             <tarfileset dir="${dir.skel}" prefix="skel"/>
@@ -337,6 +338,7 @@
             <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
             <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
             <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
+            <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
         </tar>
     </target>    
 
@@ -380,6 +382,13 @@
         </exec>
     </target>
 
+    <target name="force" description="disables uptodate checks">
+        <!-- All targets *-check that have set the attribute unless="pfx.force"
+             will be skipped, so the uptodate properties (upd.*), the execution of the actual tasks
+             depends on, do not get set and in turn the actual tasks get executed. -->
+        <property name="pfx.force" value="true"/>
+    </target>
+    
     <target name="checkfiles">
         <!-- find the input files and write them to line separated files -->
         <pathconvert property="checkfiles.ALLPROJECTS" pathsep="&#10;">
@@ -456,7 +465,7 @@
     
     <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
         <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
-        <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep=" ">
+        <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
             <map from="${dir.projects}/" to=""/>
         </pathconvert>
         <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
