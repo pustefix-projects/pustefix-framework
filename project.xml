@@ -23,9 +23,7 @@
 
   <siteAddress>pustefix.sourceforge.net</siteAddress>
   
-  <!-- TODO: we rename this (to $pom.siteDirectory/../htdocs) in a postGoal because maven doesn't properly 
-       replace existing directories -->
-  <siteDirectory>/home/groups/p/pu/pustefix/htdocs-new</siteDirectory>
+  <siteDirectory>/home/groups/p/pu/pustefix/htdocs/maven</siteDirectory>
 
   <repository>
     <!-- TODO: using the devel connection avoids sourceforge's 3+ hours delay -->

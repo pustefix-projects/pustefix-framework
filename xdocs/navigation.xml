@@ -5,48 +5,7 @@
   <body>
     <links>
       <item name="Sourceforge" href="http://sourceforge.net/projects/pustefix"/>
-      <item name="PDF Documentation" href="/pfixcore.pdf" img="/images/pdf.gif"/>
     </links>
-    
-    <menu name="Quick Links">
-      <item name="News" href="/index.html"/>
-      <item name="Changes" href="/changes-report.html"/>
-      <item name="Download" href="/download.html"/>
-      <item name="Getting started" href="/start.html"/>
-    </menu>
-    <menu name="Architecture">
-      <item name="Overview" href="/overview.html"/>
-      <item name="XML/XSLT" href="/xml.html"/>
-      <item name="Java framework" href="/java.html"/>
-      <item name="Context &amp; States" href="/context.html"/>
-    </menu>
-    <menu name="Reference">
-      <item name="Overview" href="/udocs.html"/>
-      <item name="Project definition" href="/proj.html"/>
-      <item name="Servlet definition" href="/prop.html"/>
-      <item name="Page definition" href="/depend.html"/>
-      <item name="IWrapper" href="/iwrapper.html"/>
-      <item name="Structural xml format" href="/structural.html"/>
-    </menu>
-    <menu name="Editor">
-      <item name="Overview" href="/editor/overview.html"/>
-      <item name="Login" href="/editor/login.html"/>
-      <item name="Administration" href="/editor/prodsel.html"/>
-      <item name="Tools" href="/editor/tools.html"/>
-      <item name="Pages" href="/editor/pages.html"/>
-      <item name="Targets" href="/editor/targets.html"/>
-      <item name="Images" href="/editor/images.html"/>
-      <item name="Includes" href="/editor/includes.html"/>
-      <item name="DynIncludes" href="/editor/dynincludes.html"/>
-      <item name="Search" href="/editor/search.html"/>
-    </menu>
-    <menu name="Miscellaneous">
-      <item name="AppLoader" href="/apploader.html"/>
-      <item name="Building" href="/building.html"/>
-      <item name="Glossary" href="/glossary.html"/>
-    </menu>
-
-    <search/>
   </body>
 </project>
   
