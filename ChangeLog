@@ -1,3 +1,13 @@
+2003-06-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java (retrieveCurrentStatus): add a boolean var
+	to specify (if true) that only wrappers with errorHappened() == false should be used for 
+	calling handler.retrieveCurrentStatus(context, wrapper).
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (retrieveCurrentStatus):  implement it.
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(getDocument): changed accordingly, but no new functionality
+	yet. Need to think further about the ramifications.
+
 2003-06-20  Volker Zaich <zaich@schlund.de>
 	
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java:

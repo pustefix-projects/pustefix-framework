@@ -32,7 +32,7 @@ import de.schlund.pfixxml.ResultDocument;
 public interface IWrapperContainer {
     void               initIWrappers(Context context, PfixServletRequest preq, ResultDocument resdoc) throws Exception;
     void               handleSubmittedData() throws Exception;
-    void               retrieveCurrentStatus() throws Exception;
+    void               retrieveCurrentStatus(boolean error_free_only) throws Exception;
     void               addErrorCodes() throws Exception;
     void               addStringValues() throws Exception;
     void               addIWrapperStatus() throws Exception;
