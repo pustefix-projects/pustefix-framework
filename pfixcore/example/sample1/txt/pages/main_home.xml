@@ -13,13 +13,6 @@
     <product name="default">
       <lang name="default">
         <center>
-          <div style="border: 1px solid black">
-            <ixsl:call-template name="pfx:include">
-              <ixsl:with-param name="href">sample1/txt/navigation.xml</ixsl:with-param>
-              <ixsl:with-param name="part">toppp</ixsl:with-param>
-              <ixsl:with-param name="noerror">true</ixsl:with-param>
-            </ixsl:call-template>
-          </div>
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>
