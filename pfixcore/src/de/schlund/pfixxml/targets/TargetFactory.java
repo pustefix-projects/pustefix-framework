@@ -80,5 +80,10 @@ public class TargetFactory {
         }
         return target;
     }
+    
+    public void reset() {
+        targetmap.clear();
+    }
+    
 
 }// TargetFactory
