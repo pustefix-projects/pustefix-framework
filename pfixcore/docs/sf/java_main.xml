@@ -80,5 +80,45 @@
       stylesheet to transform the DOM with.
       </p>
     </li>
+    <li>
+      <code>de.schlund.pfixxml.DirectOutputServlet</code>
+      <p>In contrast to AbstractXMLServer and descendants, this
+      servlet does not produce it's output by transforming XML with a
+      XSLT stylesheet into HTML. There are situations where you need
+      to stream some other format like pdf or images like PNG or GIF
+      instead. The <a href="prop.html#DOS"> DirectOutputServlet</a> is
+      used for exactly this purpose, because it delegates request
+      processing to <code>DirectOutputState</code> objects which are
+      allowed to write directly to the HttpServletResponse's
+      OutputStream.</p>
+    </li>
+    <li>
+      <code>de.schlund.pfixxml.ContextXMLServer</code>
+      <p>This is the main servlet that handles almost all pages in a
+      typical <pustefix/> application - everything that produces HTML
+      to be precise. The servlet doesn't do much on it's own, it
+      delegates the request processing to a
+      <code>de.schlund.pfixcore.workflow.Context</code> object. This
+      Context is created by the ContextXMLServer once for every
+      session, stored into the <code>HttpSession</code> and
+      reused for all later requests. See below for more info about
+      the Context, which is the central building block for the whole
+      backend logic of <pustefix/>.
+      </p>
+      <p>A <pustefix/> application usually consists of one
+      ContextXMLServer servlets. It's possible to use more than one
+      ContextXMLServer, but most often it's the best thing to only use
+      one, because exchanging data between the different associated
+      Context objects is cumbersome. Using an additional
+      <code>DirectOutputServlet</code> is no problem, because
+      DirectOutputServlets don't have an Context of their own, but use
+      the data of the Context of a "foreign" ContextXMLServer</p>
+    </li>
   </ul>
+
+  <stdimg src="img/java_context.png">
+    The <pustefix/> backend system
+  </stdimg>
+
+
 </div>

@@ -253,6 +253,7 @@
                   <div class="comment">
                   Space separated list of stylesheets to use as a template library for the generated stylesheet
                   on runtime.
+                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
                   </div>
                 </xmlcodeOFF>
                 <param name="outputmethod" value="html"/>
@@ -262,7 +263,6 @@
                   <div class="comment">
                   These pre-defined <code>param</code>s are used to specify the output parameters for the runtime
                   transformation.
-                  The tag takes care of inserting the corresponding <code>depaux</code> statements itself.
                 </div>
                 <br/>
                 </xmlcodeOFF>
