@@ -39,38 +39,45 @@ public class MonitorServlet extends HttpServlet {
             MonitorHistory hist=monitor.getMonitorHistory(ip);
             HttpRequest[] requests=hist.getEntries();
             SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            out.println("<html><head><title>HTTP Monitor</title>"+getJS()+"</head><body>");
-            out.println("<h2>HTTP Monitor</h2>");
-            out.println("<table width=\"100%\">");
+            out.println("<html><head><title>HTTP Monitor</title>"+getJS()+getCSS()+"</head><body>");
+            out.println("<div class=\"title\">HTTP Monitor</div><div class=\"content\">");
+            out.println("<table class=\"overview\">");
             out.println("<tr>");
             out.println("<th align=\"left\">Start</th>");
             out.println("<th align=\"left\">Time (in ms)</th>");
             out.println("<th align=\"left\">Method</th>");
             out.println("<th align=\"left\">URI</th>");
-            out.println("<th></th");
             out.println("</tr>");
             for(int i=0;i<requests.length;i++) {
-            	HttpRequest request=requests[i];
+            	 HttpRequest request=requests[i];
                 HttpResponse response=request.getResponse();
-                out.println("<tr>");
+                String id="entry"+i;
+                out.println("<tr name=\"row_entry\" onclick=\"toggleDetails(this,'"+id+"')\">");
                 out.println("<td align=\"left\">"+format.format(request.getDate())+"</td>");
                 out.println("<td align=\"right\">"+request.getTime()+"</td>");
                 out.println("<td align=\"left\">"+request.getMethod()+"</td>");
                 out.println("<td align=\"left\">"+request.getURI()+"</td>");
-                String id="entry"+i;
-                out.println("<td align=\"left\"><a href=\"javascript:toggleDetails('"+id+"')\">Details</a></td>");
-                out.println("</tr>");
-                out.println("<tr>");
-                out.println("<td id=\""+id+"\" colspan=\"5\" style=\"display:none\"><nobr><textarea cols=\"70\" rows=\"10\">");
-                out.println(request.toString());
-                out.println("</textarea>");
-                out.println("<textarea cols=\"70\" rows=\"10\">");
-                out.println(charToEntity(response.toString()));
-                out.println("</textarea></nobr></td>");
                 out.println("</tr>");
             }
-            out.println("</table>");
-            out.println("</body></html>");
+            out.println("</table");
+            for(int i=0;i<requests.length;i++) {
+                HttpRequest request=requests[i];
+                HttpResponse response=request.getResponse();   
+                String id="entry"+i;
+                out.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:none\">");
+                out.println("<table>");
+                out.println("<tr>");
+                out.println("<td><b>Request:</b><br/><textarea cols=\"70\" rows=\"25\">");
+                out.println(request.toString());
+                out.println("</textarea></td>");
+                out.println("<td><b>Response:</b><br/><textarea cols=\"70\" rows=\"25\">");
+                out.println(charToEntity(response.toString()));
+                out.println("</textarea></td>");
+                out.println("</tr>");
+                out.println("</table>");
+                out.println("</div");
+            }
+            out.println("</div></body></html>");
         } else sendError(out,"Monitor is disabled");
         out.close();
     }
@@ -78,7 +85,16 @@ public class MonitorServlet extends HttpServlet {
     private String getJS() {
         String js=
             "<script type=\"text/javascript\">" +
-            "function toggleDetails(id) {" +
+            "function toggleDetails(src,id) {" +
+            "   var elems=document.getElementsByName('row_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].style.color='black';" +
+            "   }" +
+            "   src.style.color='#666666';" +
+            "   elems=document.getElementsByName('detail_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].style.display='none';" +
+            "   }" +
             "   var elem=document.getElementById(id);" +
             "   if(elem.style.display=='none') {" +
             "       elem.style.display='block';" +
@@ -88,6 +104,18 @@ public class MonitorServlet extends HttpServlet {
             "}" +
             "</script>";
         return js;
+    }
+    
+    private String getCSS() {
+        String css=
+            "<style type=\"text/css\">" +
+            "   body {margin:0pt;border:0pt;background-color:#b6cfe4}" +
+            "   div.content {padding:5pt;}" +
+            "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
+            "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
+            "   table.overview tr {cursor:pointer;}" +
+            "</style>";
+        return css;
     }
     
     private void sendError(ServletOutputStream out,String msg) throws IOException {
@@ -111,7 +139,6 @@ public class MonitorServlet extends HttpServlet {
                 }
         }
         return sb.toString();
-}
+    }
 
-    
 }
