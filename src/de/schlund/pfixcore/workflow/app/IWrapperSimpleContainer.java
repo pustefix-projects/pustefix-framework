@@ -21,18 +21,38 @@ package de.schlund.pfixcore.workflow.app;
 
 
 
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.loader.*;
-import de.schlund.util.statuscodes.StatusCode;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
 import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
-import java.lang.reflect.Array;
+
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.generator.IWrapperParamInfo;
+import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.ResultForm;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
