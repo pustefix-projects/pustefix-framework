@@ -1,22 +1,6 @@
 package de.schlund.pfixxml.testenv;
 
-import com.icl.saxon.Controller;
-import com.icl.saxon.TransformerFactoryImpl;
-import com.icl.saxon.expr.NodeSetValue;
-import com.icl.saxon.om.NodeEnumeration;
-
-import com.sun.net.ssl.KeyManager;
-import com.sun.net.ssl.SSLContext;
-import com.sun.net.ssl.TrustManager;
-import com.sun.net.ssl.X509TrustManager;
-import com.sun.net.ssl.internal.ssl.SSLServerSocketFactoryImpl;
-import com.sun.net.ssl.internal.ssl.SSLSocketFactoryImpl;
-
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
-import de.schlund.pfixxml.xpath.PFXPathEvaluator;
-
 import gnu.getopt.Getopt;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,25 +8,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
-
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
-
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -59,32 +35,29 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpRecoverableException;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
-
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.apache.xpath.XPathAPI;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.traversal.NodeIterator;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import com.icl.saxon.TransformerFactoryImpl;
+import com.sun.net.ssl.KeyManager;
+import com.sun.net.ssl.SSLContext;
+import com.sun.net.ssl.TrustManager;
+import com.sun.net.ssl.X509TrustManager;
 
 
 /**
@@ -527,7 +500,7 @@ public class TestClient {
         uri_session = uri;
         if (sessionId != null) {
             //It not the first request, we already have a session
-            uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
+            uri_session = uri_session + ";jsessionid=" + sessionId;
         }
         StringBuffer sb = null;
         if(!modeQuiet) {
@@ -560,6 +533,9 @@ public class TestClient {
 	        sb.append("   StatusCode=").append(status_code).append("\n");
         }
         if (sessionId == null) { // it's the first request, follow redirect to get a new session
+            if(modeVerbose) {
+            	System.out.println("No session yet. Will follow redirect to get one.");
+            }
             try {
                 uri = post.getURI().toString();
             } catch (URIException e) {

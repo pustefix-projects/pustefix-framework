@@ -146,7 +146,7 @@
       <!--       <xsl:apply-templates select="./sslneeded/node()"> -->
       <!--         <xsl:with-param name="doit" select="'yes'"/> -->
       <!--       </xsl:apply-templates> -->
-      <xsl:value-of select="@force"/>
+      <xsl:value-of select="./ssl/@force"/>
       <xsl:text>&#xa;</xsl:text>
     </xsl:if>
     <xsl:text>xmlserver.depend.xml=</xsl:text>

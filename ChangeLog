@@ -1,3 +1,19 @@
+2003-02-28  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: bugfix
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java: small changes
+	and improvements.
+	* src/de/schlund/pfixxml/testenv/TestClient.java: conformed to above
+	changes.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: conformed to above
+	changes.
+
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: code cleanup
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java(x[s|m]ObjectFromDisc):
+	more information on errors.
+
 2003-02-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/example/TShirtHandler.java
