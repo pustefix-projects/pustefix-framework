@@ -36,31 +36,32 @@ import de.schlund.pfixxml.ResultDocument;
  */
 
 public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
-    private Boolean    adult     = null;
-    private boolean    beenthere = false;
+    private Boolean adult = null;
     Category CAT = Category.getInstance(this.getClass().getName());
     
     public void init(Context context) {}
    
     public void reset() {
-        adult     = null;
-        beenthere = false;
+        adult = null;
     }
 
     public Boolean getAdult() { return adult; }
 
     public void setAdult(Boolean adult) {
         this.adult = adult;
-        beenthere  = true;
     }
 
     public boolean needsData() {
-        return !beenthere;
+        if (adult == null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String toString() {
         CAT.debug("Doing ContextAdultInfo...");
-        return "[Beenthere?: " + beenthere + "][Adult?: " + adult + "]";
+        return "[Adult?: " + adult + "]";
     }
 
     public void insertStatus(ResultDocument resdoc, Element node) throws Exception{

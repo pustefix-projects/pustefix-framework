@@ -59,6 +59,7 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -89,7 +90,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String   PARAM_EDITMODE          = "__editmode";
     private static final String   PARAM_LANG              = "__language";
     private static final String   PARAM_FRAME             = "__frame";
-    private static final String   PARAM_NOSTORE           = "__nostore";
+    // private static final String   PARAM_NOSTORE           = "__nostore";
     private static final String   PARAM_REUSE             = "__reuse"; // internally used
     private static final String   XSLPARAM_LANG           = "lang";
     private static final String   XSLPARAM_SESSID         = "__sessid";
@@ -108,17 +109,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
     protected static final String PROP_RENDER_EXT         = "xmlserver.output.externalrenderer";
     protected static final String PROP_CLEANER_TO         = "sessioncleaner.timeout";
-                                 
-    // skip stat on all targets
-    private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = "targetgenerator.skip_getmodtimemaybeupdate";
-    private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE = "true";
-
-    private static final int XML_ONLY_ALLOWED    = 0;
-    private static final int XML_ONLY_RESTRICTED = 1;
-    private static final int XML_ONLY_PROHIBITED = 2;
-
-    private static final String PROP_PROHIBITDEBUG = "xmlserver.prohibitdebug";
-    private static final String PROP_PROHIBITINFO  = "xmlserver.prohibitinfo";
+    protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
+    protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
+    protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -135,13 +128,14 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private Path            targetconf        = null;
-    private boolean         render_external   = false;
-    private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
-    private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
-    private boolean         editmodeAllowed   = false;
-
-    private int scleanertimeout = 300;
+    private Path    targetconf                 = null;
+    private boolean render_external            = false;
+    private boolean editmodeAllowed            = false;
+    private boolean skip_getmodtimemaybeupdate = false;
+    private int     scleanertimeout            = 300;
+    
+    private static Category LOGGER_TRAIL    = Category.getInstance("LOGGER_TRAIL");
+    private static Category CAT             = Category.getInstance(AbstractXMLServer.class.getName());
 
     private boolean allowInfo  = true;
     private boolean allowDebug = true;
@@ -179,19 +173,34 @@ public abstract class AbstractXMLServer extends ServletManager {
     private void initValues() throws ServletException {
         targetconf  = PathFactory.getInstance().createPath(getProperty(PROP_DEPEND));
         servletname = getProperty(PROP_NAME);
-        
-        String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
-        if (prohibitDebug != null && (prohibitDebug.equals("true") || prohibitDebug.equals("1")))
-            allowDebug = false;
-        
-        String prohibitInfo  = getProperties().getProperty(PROP_PROHIBITINFO);
-        if (prohibitInfo != null && (prohibitInfo.equals("true") || prohibitInfo.equals("1")))
-            allowInfo = false;
-        
-        String noedit = getProperties().getProperty(PROP_NOEDIT);
-        editmodeAllowed = (noedit != null && (noedit.equals("false") || noedit.equals("0")));
 
-		String timeout;
+        try {
+            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
+        } catch (Exception e) {
+            CAT.error("Error: ", e);
+            throw new ServletException("Couldn't get TargetGenerator", e);
+        }
+
+        String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
+        allowDebug           = (prohibitDebug != null && (prohibitDebug.equals("true") ||
+                                                          prohibitDebug.equals("1"))) ? false : true;
+        
+        String prohibitInfo = getProperties().getProperty(PROP_PROHIBITINFO);
+        allowInfo           = (prohibitInfo != null && (prohibitInfo.equals("true") ||
+                                                        prohibitInfo.equals("1"))) ? false : true;
+        
+        String noeditmode_prop = getProperties().getProperty(PROP_NOEDIT);
+        editmodeAllowed        = (noeditmode_prop != null && (noeditmode_prop.equals("false") ||
+                                                              noeditmode_prop.equals("0")));
+
+        String render_external_prop = getProperties().getProperty(PROP_RENDER_EXT);
+        render_external             = ((render_external_prop != null) && render_external_prop.equals("true"));
+        
+        String skip_gmmu_prop      = getProperties().getProperty(PROP_SKIP_GETMODTIME_MU);
+        skip_getmodtimemaybeupdate = ((skip_gmmu_prop != null) && skip_gmmu_prop.equals("true"));
+
+        generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
+        String timeout;
         if ((timeout = getProperties().getProperty(PROP_CLEANER_TO)) != null) {
             try {
                 scleanertimeout = new Integer(timeout).intValue();
@@ -200,20 +209,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
-        boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
         
-        try {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
-        } catch (Exception e) {
-            CAT.error("Error: ", e);
-            throw new ServletException("Couldn't get TargetGenerator", e);
-        }
-        // tell targetgenerator to skip getModTimeMaybeUpdate or not
-        generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
-        String render_external_prop = getProperties().getProperty(PROP_RENDER_EXT);
-        if ((render_external_prop != null) && render_external_prop.equals("true")) {
-            render_external = true;
-        }
         if (isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
@@ -225,28 +221,6 @@ public abstract class AbstractXMLServer extends ServletManager {
             sb.append("           render_external = ").append(render_external).append("\n");
             CAT.info(sb.toString());
         }
-    }
-
-    /**
-     * Handle the properties concerning if the targetgenerator should skip
-     * the check for modfied dependencies of targets (and the update of the respective target).
-     * @return true if enabled, else false
-     * @throws ServletException if the properties can not be found.
-     */
-    private boolean handleSkipGetModTimeMaybeUpdateProps() throws ServletException {
-        boolean skip_getmodtimemaybeupdate = false;
-        if (getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY) == null) {
-            String msg = "Need property '" + PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY + "'";
-            CAT.fatal(msg);
-            throw new ServletException(msg);
-        } else {
-            String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
-            skip_getmodtimemaybeupdate = tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? true : false;
-            if (isDebugEnabled()) {
-                CAT.debug("SKIP_GETMODTIMEMAYBEUPDATE: " + skip_getmodtimemaybeupdate);
-            }
-        }
-        return skip_getmodtimemaybeupdate;
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
@@ -400,10 +374,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
 
             if (!spdoc.getNostore()) {
-                RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
-                if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                    SessionCleaner.getInstance().storeSPDocument(spdoc, session,
-                                                                 servletname + SUFFIX_SAVEDDOM, scleanertimeout);
+                // RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
+                // if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
+                    SessionCleaner.getInstance().storeSPDocument(spdoc, session, servletname + SUFFIX_SAVEDDOM, scleanertimeout);
                 }
             } else {
                 CAT.info("*** Got NOSTORE from SPDocument! ****");
@@ -534,23 +507,23 @@ public abstract class AbstractXMLServer extends ServletManager {
         et.setPage(spdoc.getPagename());
         preq.endLogEntry(et);
     }
-
+    
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
         switch (rendering) {
-            case RENDER_NORMAL:
-                renderNormal(spdoc, res, paramhash, stylesheet);
-                break;
-            case RENDER_FONTIFY:
-                renderFontify(spdoc, res);
-                break;
-        	case RENDER_EXTERNAL:
-        	    renderExternal(spdoc, res, paramhash, stylesheet);
-        	    break;
-        	case RENDER_XMLONLY:
-        	    renderXmlonly(spdoc, res);
-        	    break;
-        	default:
-        	    throw new IllegalArgumentException("unkown rendering: " + rendering);
+        case RENDER_NORMAL:
+            renderNormal(spdoc, res, paramhash, stylesheet);
+            break;
+        case RENDER_FONTIFY:
+            renderFontify(spdoc, res);
+            break;
+        case RENDER_EXTERNAL:
+            renderExternal(spdoc, res, paramhash, stylesheet);
+            break;
+        case RENDER_XMLONLY:
+            renderXmlonly(spdoc, res);
+            break;
+        default:
+            throw new IllegalArgumentException("unkown rendering: " + rendering);
         }
     }
 
@@ -582,27 +555,49 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
-    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
-        Document ext_doc = Xml.createDocument();
-        Element  root    = ext_doc.createElement("render_external");
-        ext_doc.appendChild(root);
-        Element  ssheet  = ext_doc.createElement("stylesheet");
-        root.appendChild(ssheet);
-        ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
-        for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
-            String  key   = (String) i.next();
-            String  val   = (String) paramhash.get(key);
-            Element param = ext_doc.createElement("param");
-            param.setAttribute("key", key);
-            param.setAttribute("value", val);
-            root.appendChild(param);
-        }
-        Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
-        root.appendChild(imported);
-        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc),
-                                                                new StreamResult(res.getOutputStream()));
-    }
+//     private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
+//         Document ext_doc = Xml.createDocument();
+//         Element  root    = ext_doc.createElement("render_external");
+//         ext_doc.appendChild(root);
+//         Element  ssheet  = ext_doc.createElement("stylesheet");
+//         root.appendChild(ssheet);
+//         ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
+//         for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
+//             String  key   = (String) i.next();
+//             String  val   = (String) paramhash.get(key);
+//             Element param = ext_doc.createElement("param");
+//             param.setAttribute("key", key);
+//             param.setAttribute("value", val);
+//             root.appendChild(param);
+//         }
+//         Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
+//         root.appendChild(imported);
+//         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc),
+//                                                                     new StreamResult(res.getOutputStream()));
+//     }
 
+    private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
+        TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
+        Document doc  = spdoc.getDocument();
+        Document ext  = doc;
+        if (!spdoc.getNostore()) {
+            ext = Xml.createDocument();
+            ext.appendChild(ext.importNode(doc.getDocumentElement(), true));
+        }
+
+        ext.insertBefore(ext.createProcessingInstruction("xml-stylesheet", "type=\"text/xsl\" media=\"all\" href=\"file: //"
+                                                         + generator.getName() + "/" + stylesheet + "\""),
+                         ext.getDocumentElement()); 
+        for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
+            String key = (String) i.next();
+            String val = (String) paramhash.get(key);
+            ext.insertBefore(ext.createProcessingInstruction("modxslt-param", "name=\"" + key + "\" value=\"" + val + "\""),
+                             ext.getDocumentElement());
+        }
+        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext),
+                                                                    new StreamResult(res.getOutputStream()));
+    }
+    
     private void renderFontify(SPDocument spdoc, HttpServletResponse res) throws TargetGenerationException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
         try {
