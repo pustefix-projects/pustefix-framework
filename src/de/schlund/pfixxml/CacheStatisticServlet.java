@@ -49,10 +49,8 @@ public class CacheStatisticServlet extends HttpServlet {
             }
         }
         
-        //////////////////
-        if(reset) {
-            SPCacheStatistic.getInstance().reset();
-        }
+      
+        
         String output;
         
         if(outmode == OUTPUTXML) {
@@ -66,12 +64,16 @@ public class CacheStatisticServlet extends HttpServlet {
             output = XMLSerializeUtil.getInstance().serializeToString(doc);
         } else if(outmode == OUTPUTTEXT) {
             output = SPCacheStatistic.getInstance().getCacheStatisticAsString(); 
-            res.setContentType("text/text");
+            res.setContentType("text/plain");
         } else {
             throw new ServletException("No outputmode set.");
         }
         ServletOutputStream ostream = res.getOutputStream();
         ostream.println(output);
+        
+        if(reset) {
+            SPCacheStatistic.getInstance().reset();
+        }
     }
 
     /**

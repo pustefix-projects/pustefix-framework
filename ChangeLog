@@ -1,3 +1,10 @@
+2003-10-20  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java:
+	if doreset=true, print infos first, then reset.
+	* src/de/schlund/pfixxml/targets/SPCacheStatistic.java:
+	code cleanup.
+
 2003-10-17 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/SPCacheStatistic.java:
