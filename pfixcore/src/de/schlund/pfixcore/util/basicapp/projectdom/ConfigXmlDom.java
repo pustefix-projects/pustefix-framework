@@ -26,7 +26,7 @@ import de.schlund.pfixcore.util.basicapp.objects.Project;
 
 
 /**
- * A class just for initializing a new project
+ * Represents the dom of config.prop.in
  * 
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude</a>
  * @version $Id$

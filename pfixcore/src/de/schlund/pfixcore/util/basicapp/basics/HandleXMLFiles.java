@@ -44,8 +44,8 @@ import de.schlund.pfixcore.util.basicapp.projectdom.ProjectXmlDom;
 
 /**
  * A class responsible for handling all xml files.
- * This means that editing and also to copy a a template
- * will be made here.
+ * This means that editing and also to copy a template
+ * will start here.
  * 
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude</a>
  * @version $Id$
