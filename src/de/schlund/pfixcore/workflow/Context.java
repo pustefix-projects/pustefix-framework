@@ -122,9 +122,14 @@ public class Context implements AppContext {
     }
     
     private void reset_internal(boolean reload_navi) throws Exception {
-        pageflowmanager = new PageFlowManager(properties); 
-        preqprops       = new PageRequestProperties(properties);
-        pagemap         = new PageMap(preqprops);
+    
+    	//Get PropertyObjects from PropertyObjectManager
+    	PropertyObjectManager pom=PropertyObjectManager.getInstance();
+       
+		pageflowmanager=(PageFlowManager)pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
+        preqprops=(PageRequestProperties)pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+        pagemap=(PageMap)pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
+        	
         loadindex       = new Long(properties.getProperty(ServletManager.PROP_LOADINDEX)).longValue();
         
         if (properties.getProperty(NAVPROP) != null) {
