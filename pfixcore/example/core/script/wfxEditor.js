@@ -212,9 +212,7 @@ wfxEditor.prototype.rehighlight = function() {
     // set content (innerHTML)
     //-------------------------
     
-    if(wfx.is_ie) {
-      content = content.replace( /<br \/>/g, '\r\n' );
-    }
+    content = this.prepareContent( content );
     
     this._doc.body.innerHTML = '<pre>' + content + '</pre>';
   } catch(e) {
@@ -589,7 +587,24 @@ wfxEditor.prototype.col2tag = function( buf ) {
   buf = buf.replace( /([^\r\n])[\r\n]*$/g, "$1");
   
   return buf;
-}
+};
+
+//#****************************************************************************
+//#
+//#****************************************************************************
+wfxEditor.prototype.prepareContent = function( content ) {
+
+  if(wfx.is_ie) {
+    content = content.replace( /<br \/>/g, '\r\n' );
+    // insert &lrm; to ensure correct line numbering for empty lines
+    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span>\r\n' );
+  } else {
+    // insert &lrm; to ensure correct line height for some monospace fonts
+    //    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span><br />' );
+  }
+
+  return content;
+};
 
 // the execCommand function (intercepts some commands and replaces them with
 // our own implementation)
@@ -637,8 +652,8 @@ wfxEditor.prototype._editorEvent = function(ev) {
     switch (ev.keyCode) {
     case 13: // KEY enter
 //      if (wfx.is_ie) {
-//	this.insertHTML("<br />");
-//	wfxEditor._stopEvent(ev);
+//	this.insertHTML("&lrm;");
+//	//	wfxEditor._stopEvent(ev);
 //      }
 
       this.skipRehighlighting = true;
@@ -788,11 +803,8 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	  //-------------------------
 	  // set content (innerHTML)
 	  //-------------------------
-    
-	  if(wfx.is_ie) {
-	    content = content.replace( /<br \/>/g, '\r\n' );
-	  }
-    
+
+	  content = this.prepareContent( content );
 	  //	  alert(content);
 
 	  if( optiTab ) {
@@ -842,7 +854,6 @@ wfxEditor.prototype._editorEvent = function(ev) {
   //-----------
   // scrolling
   //-----------
-
   
   setTimeout( function() {
     var scrollTop;
@@ -864,7 +875,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	editor._linebar.scroll( 0, scrollTop );
       }
     }
-  }, 50);
+  }, 50);   // Moz needs some delay to detect current scrolling
   //---------------------------------------------------------------------------
 
   // update the toolbar state after some time
@@ -891,7 +902,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	var className = rng.parentElement().className;
 	var content;
       
-	if( parNode == "BODY" ) {
+	if( parNode == "BODY" || parNode == "PRE" ) {
 
 	  // expand to the left till ">"
 	  while( rng.moveStart( "character", -1 ) &&
@@ -905,7 +916,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	  }
 	  rng.moveEnd( "character", -1 );
 
-	  content = rng.text + "[BODY]";
+	  content = rng.text + "[" + parNode + "]";
 	
 	} else if( className == "htmltag" ||
 		   className == "pfxtag"  ||
@@ -1010,8 +1021,7 @@ wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber )
 
   linenumber = linenumber || this._linenumber;
 
-
-  //  alert( wfxEditor.str2chr(content));
+  //  alert( "content:\n" + wfxEditor.str2chr(content));
 
   if( wfx.is_ie ) {
     newline = '\r\n';
@@ -1030,7 +1040,7 @@ wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber )
     if(count<linenumber-1) {
       posprev = pos;
     }
-    //	  alert("posprev:"+ posprev + "\npos:" + pos);
+    //    alert("posprev:"+ posprev + "\npos:" + pos);
   }
   //	alert("count:" + count);
 
@@ -1053,7 +1063,7 @@ wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber )
     prevline = this.col2tag(prevline);
   }
 
-  //alert("prevline:\n" + wfxEditor.str2chr(prevline));
+  //  alert("prevline:\n" + wfxEditor.str2chr(prevline));
 
   var rule_htmlTag        = /<([\w\:\-]+\b.*?)>/g;
   var rule_htmlEndTag     = /<(\/[\w\:\-]+)>/g;
@@ -1143,8 +1153,12 @@ wfxEditor.prototype.indentCurrentLine = function( content, optiTab, linenumber )
   if( posStart != -1 ) {
     if( posStart <= indent ) {
       posStart = indentnew;
+      posEnd   = -1;
     } else {
       posStart = indentnew + (posStart - indent);
+      if( posEnd != -1 ) {
+	posEnd = indentnew + (posEnd - indent);
+      }
     }
   }
   //	alert("new posStart:" + posStart);
@@ -1199,6 +1213,13 @@ wfxEditor.prototype._linenumberFromRange = function( rng2 ) {
   if (wfx.is_ie) {
     rng = rng2.duplicate();
     rng.moveStart( "textedit", -1 );
+//    var str = "";
+//    while( rng.moveStart( "character", -1) == -1 ) {
+//      str += wfxEditor.str2chr(rng.htmlText) + "\n";
+//    }
+//    //    rng.moveStart( "character", -1 );
+//
+//    alert(str);
     // needed to include the previous newline if at the very beginning of 
     // a line
     rng.moveEnd( "character", 1);
@@ -1217,6 +1238,11 @@ wfxEditor.prototype._linenumberFromRange = function( rng2 ) {
   var html = null;
   if (wfx.is_ie) {
     html = rng.htmlText;
+
+//    html = html.replace( /<(\/?)PRE>/g, '<$1pre>' );
+//    html = html.replace( /&nbsp;<\/pre>/g, '</pre>' );
+//    html = html.replace( /<\/pre><pre>/g , "\r\n" );
+
   } else {
     html = wfxEditor.getHTML(rng.cloneContents(), false);
   }
@@ -1258,7 +1284,7 @@ wfxEditor.prototype._linenumberFromHTML = function( html ) {
 
     return count;
   }
-}
+};
 
 // focuses the iframe window.  returns a reference to the editor document.
 wfxEditor.prototype.focusEditor = function() {
@@ -1316,6 +1342,8 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     html = html.replace( /<br>/g, '<br />' );
   }
+  
+  html = html.replace( /\u200E/g, '' );   // &#8206; == &lrm;
 
   //  alert( "getHTML():\n" + wfxEditor.str2chr(html));
   bench( "getHTML", null, 3 );
@@ -1863,9 +1891,8 @@ wfxEditor.prototype.generate = function( target, content ) {
 //  '.entity      { color:#ff0000; font-weight:normal }\n' + 
 //  '.comment     { color:#00aa00; font-weight:normal; font-style:italic }\n' + 
 
-  if( wfx.is_ie ) {
-    content = content.replace( /<br \/>/g, '\r\n' );
-  }
+    
+  content = this.prepareContent( content );
   content = '<pre>' + content + '</pre>';    
   
   content = doctype + html_header1 + style_source + html_header2 + content + html_footer;
@@ -2095,9 +2122,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
       // set content (innerHTML)
       //-------------------------
   
-      if(wfx.is_ie) {
-	content = content.replace( /<br \/>/g, '\r\n' );
-      }
+      content = editor.prepareContent( content );
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c8\n";
