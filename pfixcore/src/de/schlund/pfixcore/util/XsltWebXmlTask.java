@@ -20,23 +20,46 @@ package de.schlund.pfixcore.util;
 
 import java.io.File;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import de.schlund.pfixxml.util.Xml;
 
 /**
- * @author adam
  *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * the following attributes have to be set when calling this task:
+ * <ul>
+ * <li>projects: relative (to ${dir.projects}) path to the projects.xml file </li>
+ * <li>corewebxml: relative (to ${dir.projects}) path to the core web.xml file,
+ *   which defines a minimum web.xml file</li>
+ * </ul>
+ *
+ * @author <a href="mailto:benjamin@schlund.de">Benjamin Reitzammer</a>
+ * @version $Id$
  */
 public class XsltWebXmlTask extends XsltGenericTask {
-    
+
+    protected DocumentBuilderFactory dbFactory;
+
+    /** contains the location of projects.xml file, relative to srcdirResolved
+     */
+    protected String projects;
+
+    /** contains the location of core web.xml template, which is used, when a
+     * project has no custom web.xml specified, relative to srcdirResolved
+     */
+    protected String corewebxml;
+
     public void init() throws BuildException {
         super.init();
+
+        this.dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setNamespaceAware(true);
+        dbFactory.setValidating(false);
     }
 
     protected void doTransformations() {
@@ -47,42 +70,55 @@ public class XsltWebXmlTask extends XsltGenericTask {
             if ( infile != null || outfile != null ) {
                 throw new BuildException("don't use "+ATTR_INFILE+"/"+ATTR_OUTFILE+", use "+ATTR_SRCDIR+"/"+ATTR_DESTDIR+" etc. instead");
             }
-            
-            
-            scanner = getDirectoryScanner(srcdirResolved);
-            infilenames = scanner.getIncludedFiles();
+            if ( projects == null || "".equals(projects) || corewebxml == null || "".equals(corewebxml) ) {
+                throw new BuildException("Attributes 'projects' and 'corewebxml' are not allowed to be null or empty");
+            }
+
+            File coreWebXml = new File(srcdirResolved, corewebxml);
+            if ( !coreWebXml.exists() || !coreWebXml.canRead() ) {
+                throw new BuildException("File '"+corewebxml+"' can't be found or can't be read");
+            }
+
+            DocumentBuilder domp;
+            Document        doc;
+            File projectsFile = new File(srcdirResolved, projects);
+            try {
+                log("Parsing "+projectsFile, Project.MSG_DEBUG);
+                domp = dbFactory.newDocumentBuilder();
+                doc = domp.parse(projectsFile);
+            } catch (Exception e) {
+                throw new BuildException("Could not parse file "+projectsFile, e);
+            }
+
             int count;
+            NodeList nl = doc.getElementsByTagName("project");
+            for (int i = 0; i < nl.getLength(); i++) {
+                Element currproject  = (Element) nl.item(i);
+                String  name = currproject.getAttribute("name");
+                log("found project "+name+" in "+projectsFile, Project.MSG_DEBUG);
 
-            // There should be only one in: projects.xml
-            for (int i = 0; i < infilenames.length; i++) {
-
-                inname = infilenames[i];
-                in = new File(srcdirResolved, inname);
-                Document        doc;
-                try {
-                    doc = Xml.parseMutable(in);
-                } catch (Exception e) {
-                    throw new BuildException("Could not parse file "+in, e);
+                File cusWebXml = new File(srcdirResolved+"/"+name+"/conf", "web.xml");
+                if ( cusWebXml.exists() && cusWebXml.canRead() ) {
+                    in = cusWebXml;
+                } else {
+                    in = coreWebXml;
                 }
-                NodeList        nl        = doc.getElementsByTagName("project");
-                for (int j = 0; j < nl.getLength(); j++) {
-                    Element currproject  = (Element) nl.item(j);
-                    String  name = currproject.getAttribute("name");
-                    log("found project "+name+" in "+in, Project.MSG_DEBUG);
-                    getTransformer().setParameter(new XsltParam("prjname", name));
-                    String outdir = "webapps/" + name + "/WEB-INF";
-                    File webinfdir = new File(getDestdir(), outdir);
-                    webinfdir.mkdirs();
-                    outname = "web.xml";
-                    out = new File(webinfdir,outname);
-                    count = doTransformationMaybe();
-                    if ( count > 0 ) {
-                        if ( created > 0 ) {
-                            tmp.append(", ");
-                        }
-                        tmp.append(name);
-                        created = created + count;
+
+                log("Using "+in+" as sourcefile for web.xml transformation", Project.MSG_DEBUG);
+                getTransformer().setParameter(new XsltParam("prjname", name));
+                getTransformer().setParameter(new XsltParam("projectsxmlfile", projectsFile.getPath()));
+                String outdir = "webapps/" + name + "/WEB-INF";
+                File webinfdir = new File(getDestdir(), outdir);
+                webinfdir.mkdirs();
+                outname = "web.xml";
+                out = new File(webinfdir,outname);
+                count = doTransformationMaybe();
+                if ( count > 0 ) {
+                    if ( created > 0 ) {
+                        tmp.append(", ");
                     }
+                    tmp.append(name);
+                    created = created + count;
                 }
             }
         } finally {
@@ -90,7 +126,6 @@ public class XsltWebXmlTask extends XsltGenericTask {
                 log(tmp.toString(), Project.MSG_INFO);
             }
             scanner = null;
-            infilenames = null; /* input filenames relative to srcdirResolved */
             inname = null; /* filename relative to srcdirResolved */
             infilenameNoExt = null; /* filename relative to srcdirResolved without extension */
             outname = null; /* filename relative to srcdirResolved */
@@ -101,5 +136,22 @@ public class XsltWebXmlTask extends XsltGenericTask {
             styleLastModified = 0;
         }
     }
+
+    public String getProjects() {
+      return projects;
+    }
+
+    public void setProjects(String newProjects) {
+      this.projects = newProjects;
+    }
+
+    public String getCorewebxml() {
+      return corewebxml;
+    }
+
+    public void setCorewebxml(String newCorewebxml) {
+      this.corewebxml = newCorewebxml;
+    }
+
 
 }
