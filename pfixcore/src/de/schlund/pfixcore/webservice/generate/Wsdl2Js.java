@@ -3,6 +3,8 @@
  */
 package de.schlund.pfixcore.webservice.generate;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.wsdl.*;
@@ -10,10 +12,24 @@ import javax.wsdl.factory.*;
 import javax.wsdl.xml.*;
 
 import javax.wsdl.extensions.ExtensibilityElement;
+import javax.wsdl.extensions.UnknownExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 
+import javax.xml.namespace.QName;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
 import de.schlund.pfixcore.webservice.generate.js.*;
+import de.schlund.pfixcore.webservice.Constants;
+
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import org.exolab.castor.xml.schema.Schema;
+import org.exolab.castor.xml.schema.ComplexType;
+import org.exolab.castor.xml.schema.reader.SchemaReader;
 
 /**
  * Wsdl2Js.java 
@@ -52,6 +68,41 @@ public class Wsdl2Js {
         return null;
     }
     
+    private Schema buildSchemaModel(Document doc) throws Exception {
+        try {
+            TransformerFactory tf=TransformerFactory.newInstance();
+            Transformer t=tf.newTransformer();
+            ByteArrayOutputStream baos=new ByteArrayOutputStream();
+            t.transform(new DOMSource(doc),new StreamResult(baos));
+            baos.close();
+            ByteArrayInputStream bais=new ByteArrayInputStream(baos.toByteArray());
+            SchemaReader sr=new SchemaReader(new InputSource(bais));       
+            Schema s=sr.read();
+            bais.close();
+            return s;
+        } catch(Exception x) {
+            throw new Exception("Error while building schema model",x);
+        }
+    }
+    
+    private Document extractSchemaDoc(Element elem) throws Exception {
+        try {
+            DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+            DocumentBuilder db=dbf.newDocumentBuilder();
+            Document doc=db.newDocument();
+            Element docElem=(Element)doc.importNode(elem,true);
+            docElem.setAttribute("xmlns:soapenc",Constants.XMLNS_SOAPENC);
+            NodeList nl=docElem.getElementsByTagName("import");
+            //for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation",Constants.XMLNS_SOAPENC);
+            //ignore soapenc import
+            for(int i=0;i<nl.getLength();i++) docElem.removeChild(nl.item(i));
+            doc.appendChild(docElem);
+            return doc;
+        } catch(Exception x) {
+            throw new Exception("Error while extracting schema element",x);
+        }
+    }
+    
     public void test() {
         try {
             WSDLFactory wf=WSDLFactory.newInstance();
@@ -59,6 +110,21 @@ public class Wsdl2Js {
             wr.setFeature("javax.wsdl.verbose",true);
             wr.setFeature("javax.wsdl.importDocuments",true);
             Definition def=wr.readWSDL(null,"/home/mleidig/workspace/pfixcore_ws/example/servletconf/tomcat/webapps/webservice/wsdl/Calculator.wsdl");
+            
+            //get schema types from wsdl definitions
+            ArrayList schemas=new ArrayList();
+            if(def.getTypes()!=null) {
+                Iterator xsdIt=def.getTypes().getExtensibilityElements().iterator();
+                while(xsdIt.hasNext()) {
+                    ExtensibilityElement exElem=(ExtensibilityElement)xsdIt.next();
+                    if(exElem instanceof UnknownExtensibilityElement) {
+                        Element elem=((UnknownExtensibilityElement)exElem).getElement();
+                        Schema schema=buildSchemaModel(extractSchemaDoc(elem));
+                        schemas.add(schema);
+                    }
+                }
+            }
+            
             Iterator srvIt=def.getServices().values().iterator();
             while(srvIt.hasNext()) {
                 Service service=(Service)srvIt.next();
@@ -81,19 +147,27 @@ public class Wsdl2Js {
                        
                         Input input=op.getInput();
                         Message inputMsg=input.getMessage();
+                      
                         Iterator partIt=inputMsg.getOrderedParts(op.getParameterOrdering()).iterator();
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
                             JsParam jsParam=new JsParam(part.getName());
                             jsMethod.addParam(jsParam);
                             //System.out.println(part.getName());
-                            //System.out.println(part.getTypeName());
+                            System.out.println(part.getTypeName());
+                            
                         }   
                         JsBlock jsBlock=jsMethod.getBody();
                         jsBlock.addStatement(new JsStatement("var call=new Call()"));
                         JsParam[] jsParams=jsMethod.getParams();
                         for(int i=0;i<jsParams.length;i++) {
-                            jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\")"));
+                            Part part=inputMsg.getPart(jsParams[i].getName());
+                            QName type=part.getTypeName();
+                            String str="";
+                            if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
+                                str="new TypeInfo(new QName(\""+type.getNamespaceURI()+"\",\""+type.getLocalPart()+"\"))";
+                            }
+                            jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\","+str+")"));
                         }
                     }
                     jsClass.printCode(System.out);

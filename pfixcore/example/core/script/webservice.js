@@ -101,6 +101,8 @@ function JSType() {
 	this.JS_DATE="date";
 	this.JS_FLOAT="float";
 	this.JS_INTEGER="integer";
+	this.JS_NUMBER="number";
+	this.JS_OBJECT="object";
 	this.JS_STRING="string";
 	
 }
