@@ -1,1 +1,12 @@
-<div>Includes!</div>
+<div>
+  <h1>The Includes page</h1>
+  <center>
+    <table border="1">
+      <tr>
+        <td colspan="2">
+          <img alt="editor includes page" src="img/editor_includes.png"/>
+        </td>
+      </tr>
+    </table>
+  </center>
+</div>
