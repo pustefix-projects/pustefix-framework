@@ -1,3 +1,15 @@
+2003-12-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: handle the "stophere" attribute of flowsteps and the "stopnext" of the 
+	pageflow the same (see below)
+
+	* src/de/schlund/pfixcore/workflow/PageFlow.java: remember all steps with stophere="true" as clearing points.
+	Removed special handling of stopnext attribute for the whole flow (see below)
+
+	* src/de/schlund/pfixcore/workflow/Context.java: now check if the current page is a "clearing point" in
+	the current pageflow (it has the "stophere" attribute set), if yes, set the PageRequestStatus to WORKFLOW_STOP.
+	The handling of "stopnext" for the whole flow has been implemented in terms of "stophere" for all steps.
+
 2003-12-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: start Timer as daemon.
