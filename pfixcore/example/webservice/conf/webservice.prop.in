@@ -3,6 +3,7 @@
 	<webservice-global>
 		<requestpath>/xml/webservice</requestpath>
 		<wsdlsupport enabled="true" repository="/wsdl"/>
+		<stubgeneration enabled="true" repository="/wsscript"/>
 		<encoding style="rpc" use="encoded"/>
         <cus:choose>
             <cus:test mode="prod">

@@ -99,6 +99,7 @@ public class WebServiceTask extends Task {
                     File webInfDir=new File(appDir,"WEB-INF");
                     if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
                     
+                    //Setup WSDL repository
                     File wsdlDir=tmpDir;
                     if(globConf.getWSDLSupportEnabled()) {
                         String wsdlRepo=globConf.getWSDLRepository();
@@ -107,6 +108,18 @@ public class WebServiceTask extends Task {
                         if(!wsdlDir.exists()) {
                             boolean ok=wsdlDir.mkdir();
                             if(!ok) throw new BuildException("Can't create WSDL directory "+wsdlDir.getAbsolutePath());
+                        }
+                    }
+                    
+                    //Setup javascript stub repository
+                    File stubDir=tmpDir;
+                    if(globConf.getStubGenerationEnabled()) {
+                        String stubRepo=globConf.getStubRepository();
+                        if(stubRepo.startsWith("/")) stubRepo.substring(1);
+                        stubDir=new File(appDir,stubRepo);
+                        if(!stubDir.exists()) {
+                            boolean ok=stubDir.mkdir();
+                            if(!ok) throw new BuildException("Can't create webservice stub directory "+stubDir.getAbsolutePath());
                         }
                     }
                     
@@ -153,6 +166,7 @@ public class WebServiceTask extends Task {
                     //iterate over services
                     int srvCnt=0;
                     int wsdlCnt=0;
+                    int stubCnt=0;
                     int wsddCnt=0;
                     while(it.hasNext()) {
                         
@@ -175,6 +189,7 @@ public class WebServiceTask extends Task {
                         if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
                         File wsdlFile=new File(wsdlDir,wsName+".wsdl");
                         
+                        //Generate WSDL
                         if(!wsdlFile.exists() || wsdlFile.lastModified()<wsItfFile.lastModified() || !confPropsFile.exists() || 
                                 propsChanged || conf.doesDiff(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
                             
@@ -198,6 +213,19 @@ public class WebServiceTask extends Task {
                                 conf.saveProperties(new File(tmpDir,wsName+".props"));
                         }                
                      
+                        //Generate javascript stubs            
+                        if(globConf.getStubGenerationEnabled()) {
+                            File stubFile=new File(stubDir,wsName+".js");
+                            if(!stubFile.exists() || stubFile.lastModified()<wsdlFile.lastModified()) {
+                                Wsdl2Js task=new Wsdl2Js();
+                                task.setInputFile(wsdlFile);
+                                task.setOutputFile(stubFile);
+                                task.generate();
+                                stubCnt++;
+                            }
+                        }
+                        
+                        //Generate WSDD
                         File wsddPath=null;
                         if(shortNamespaces) {
                             wsddPath=new File(tmpDir,wsName+"_pkg");
@@ -269,7 +297,9 @@ public class WebServiceTask extends Task {
                     //Store current global webservice properties
                     globConf.saveProperties(globPropsFile);
                     
-                    if(wsdlCnt!=0 || wsddCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s) and "+wsddCnt+" (of "+srvCnt+") WSDD file(s)");
+                    if(wsdlCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s)");
+                    if(wsddCnt!=0) log("Generated "+wsddCnt+"(of "+srvCnt+") WSDD file(s)");
+                    if(stubCnt!=0) log("Generated "+stubCnt+"(of "+srvCnt+") WS stub file(s)");
                     if(wsddChanged) log("Generated server WSDD file");
                     
                     

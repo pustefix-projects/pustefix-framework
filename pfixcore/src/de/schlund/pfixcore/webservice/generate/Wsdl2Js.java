@@ -42,9 +42,8 @@ public class Wsdl2Js {
     
     public static final String JSPREFIX_WS="ws";
     
-    public Wsdl2Js() {
-        test();
-    }
+    private File outputFile;
+    private File inputFile;
     
     private SOAPAddress getSOAPAddress(Port port) {
         Iterator it=port.getExtensibilityElements().iterator();
@@ -105,13 +104,18 @@ public class Wsdl2Js {
         }
     }
     
-    public void test() {
-        try {
+    public void generate() throws Exception {
+        
             WSDLFactory wf=WSDLFactory.newInstance();
             WSDLReader wr=wf.newWSDLReader();
             wr.setFeature("javax.wsdl.verbose",true);
             wr.setFeature("javax.wsdl.importDocuments",true);
-            Definition def=wr.readWSDL(null,"/home/mleidig/workspace/pfixcore_ws/example/servletconf/tomcat/webapps/webservice/wsdl/Calculator.wsdl");
+            
+            if(inputFile==null) throw new Exception("No WSDL input file specified");
+            if(outputFile==null) throw new Exception("No JS output file specified");
+            if(!inputFile.exists()) throw new Exception("WSDL input file doesn't exist");
+            InputSource inSrc=new InputSource(new FileInputStream(inputFile));
+            Definition def=wr.readWSDL(null,inSrc);
             
             //get schema types from wsdl definitions
             ArrayList schemas=new ArrayList();
@@ -203,34 +207,21 @@ public class Wsdl2Js {
                         
                         
                     }
-                    jsClass.printCode(System.out);
+                    
+                    jsClass.printCode(new FileOutputStream(outputFile));
                     
                 }
                 
-             
-                 /**   
-                    Iterator oit=binding.getBindingOperations().iterator();
-                    while(oit.hasNext()) {
-                        BindingOperation bop=(BindingOperation)oit.next();
-                        createMethod(bop);
-                    }
-                }
-                */
             }
-        } catch(Exception x) {
-            x.printStackTrace();
-        }
+        
     }
     
-    
-    
-    
-      
-   
- 
-    
-    public static void main(String args[]) {
-        new Wsdl2Js();
+    public void setInputFile(File inputFile) {
+        this.inputFile=inputFile;
     }
-
+    
+    public void setOutputFile(File outputFile) {
+        this.outputFile=outputFile;
+    }
+    
 }

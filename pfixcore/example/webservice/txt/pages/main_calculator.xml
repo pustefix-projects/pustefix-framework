@@ -5,10 +5,11 @@
     <product name="default">
       <lang name="default">
 		<h1>Calculator service</h1>
-		<h2>Mozilla low-level SOAP</h2>
-		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
-		<p><span class="error" id="soap_error"></span></p>
-		<form action="">
+		
+		<h2>Pustefix SOAP</h2>
+		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
+		<p><span class="error" id="pfxsoap_error"></span></p>
+		<form name="pfxsoap" action="">
 			<table cellpadding="5" bgcolor="#b6cfe4">
 				<tr>
 					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
@@ -18,10 +19,35 @@
 				</tr>
 				<tr>
 					<td colspan="2" align="center">
-						<input type="button"  onclick="soapCall('add',document.forms[0].i1.value,document.forms[0].i2.value);" value=" + "/>
-						<input type="button"  onclick="soapCall('subtract',document.forms[0].i1.value,document.forms[0].i2.value);" value=" - "/>
-						<input type="button"  onclick="soapCall('multiply',document.forms[0].i1.value,document.forms[0].i2.value);" value=" * "/>
-						<input type="button"  onclick="soapCall('divide',document.forms[0].i1.value,document.forms[0].i2.value);" value=" / "/>
+						<input type="button"  onclick="pfxsoapCall('add',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" + "/>
+						<input type="button"  onclick="pfxsoapCall('subtract',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" - "/>
+						<input type="button"  onclick="pfxsoapCall('multiply',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" * "/>
+						<input type="button"  onclick="pfxsoapCall('divide',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" / "/>
+					</td>
+				</tr>
+				<tr>
+					<td>Result:</td><td><input type="text" id="pfxsoap_result" readonly="readonly" size="8"/></td>
+				</tr>
+			</table>	
+		</form>
+		
+		<h2>Mozilla low-level SOAP</h2>
+		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
+		<p><span class="error" id="soap_error"></span></p>
+		<form name="mozsoap" action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+				</tr>
+				<tr>
+					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="button"  onclick="soapCall('add',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" + "/>
+						<input type="button"  onclick="soapCall('subtract',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" - "/>
+						<input type="button"  onclick="soapCall('multiply',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" * "/>
+						<input type="button"  onclick="soapCall('divide',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" / "/>
 					</td>
 				</tr>
 				<tr>
@@ -29,10 +55,11 @@
 				</tr>
 			</table>	
 		</form>
+		
 		<h2>Mozilla WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
 		<p><span class="error" id="wsdl_error"></span></p>
-		<form action="">
+		<form name="mozproxy" action="">
 			<table cellpadding="5" bgcolor="#b6cfe4">
 				<tr>
 					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
@@ -42,10 +69,10 @@
 				</tr>
 				<tr>
 					<td colspan="2" align="center">
-						<input type="button"  onclick="wsdlCall('add',document.forms[1].i1.value,document.forms[1].i2.value);" value=" + "/>
-						<input type="button"  onclick="wsdlCall('subtract',document.forms[1].i1.value,document.forms[1].i2.value);" value=" - "/>
-						<input type="button"  onclick="wsdlCall('multiply',document.forms[1].i1.value,document.forms[1].i2.value);" value=" * "/>
-						<input type="button"  onclick="wsdlCall('divide',document.forms[1].i1.value,document.forms[1].i2.value);" value=" / "/>
+						<input type="button"  onclick="wsdlCall('add',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" + "/>
+						<input type="button"  onclick="wsdlCall('subtract',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" - "/>
+						<input type="button"  onclick="wsdlCall('multiply',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" * "/>
+						<input type="button"  onclick="wsdlCall('divide',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" / "/>
 					</td>
 				</tr>
 				<tr>
@@ -53,6 +80,7 @@
 				</tr>
 			</table>	
 		</form>
+		
 		<h2>Raw mySOAP over XMLHttpReqeuest</h2>
 		<p>Soap call took <span id="mysoap_time">0</span> ms.</p>
 		<textarea style="font-style:monospace;font-size:8pt" id="mysoap_request" cols="80" rows="10">
@@ -79,36 +107,7 @@
 			<a href="javascript:mysoapCall()">Send SOAP request</a>
 		</p>
 		
-		<h2>mySOAP stub</h2>
-		<p>mySOAP stub call took <span id="stub_time">0</span> ms.</p>
-		<p><span class="error" id="stub_error"></span></p>
-		<form action="">
-			<table cellpadding="5" bgcolor="#b6cfe4">
-				<tr>
-					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
-				</tr>
-				<tr>
-					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
-				</tr>
-				<tr>
-					<td colspan="2" align="center">
-						<input type="button"  onclick="document.getElementById('stub_result').value=calculator.add(document.forms[2].i1.value,document.forms[2].i2.value);" value=" + "/>
-						<input type="button"  onclick="soapCall('subtract',document.forms[0].i1.value,document.forms[0].i2.value);" value=" - "/>
-						<input type="button"  onclick="soapCall('multiply',document.forms[0].i1.value,document.forms[0].i2.value);" value=" * "/>
-						<input type="button"  onclick="soapCall('divide',document.forms[0].i1.value,document.forms[0].i2.value);" value=" / "/>
-					</td>
-				</tr>
-				<tr>
-					<td>Result:</td><td><input type="text" id="stub_result" readonly="readonly" size="8"/></td>
-				</tr>
-			</table>	
-		</form>
 		
-		
-		<form action="/xml/webservice/Calculator" method="post" target="_top">
-			<textarea name="soapmessage">gwfgsffffffffffffffffffffffffffffffffffdfsdffffffdfgsdfg</textarea>
-			<input type="submit" value="submit"/>
-		</form>
 		
 		
       </lang>
