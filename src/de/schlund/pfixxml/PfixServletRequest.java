@@ -91,8 +91,11 @@ public class PfixServletRequest {
 
     public void endLogEntry(String info, long delay) {
         if (perflog != null) {
-            long       now   = System.currentTimeMillis();
-            PerfEvent start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
+            long      now   = System.currentTimeMillis();
+            PerfEvent start = null;
+            if (!perfstack.isEmpty()) {
+                start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
+            }
             if (start != null) {
                 long stime = start.getTime();
                 if (now - stime >= delay) {
