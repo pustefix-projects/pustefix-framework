@@ -1,3 +1,11 @@
+2004-12-20  Martin Leidig  <mleidig@schlund.de>
+	
+	* src/de/schlund/pfixxml/multipart/FileData.java: Associated temporary files now are 
+	deleted when object gets finalized.
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java: Temporary files exceeding the
+	size limit now are deleted immediately.
+
+
 2004-12-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:

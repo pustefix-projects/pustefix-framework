@@ -388,6 +388,8 @@ public class MultipartHandler {
 
             addParameterPart(fileP);
         } else {
+            //delete file resulting from part exceeding the size limit
+            if(localFile!=null && localFile.exists()) localFile.delete();
             ex.setFieldName(fieldName);
             failedParts.add(ex);
         }
