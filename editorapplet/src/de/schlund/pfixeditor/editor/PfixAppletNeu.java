@@ -227,7 +227,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
         editMenu.addSeparator();
 
-        System.out.println("Hier bin ich");
+        // System.out.println("Hier bin ich");
         action = new DefaultEditorKit.CutAction();
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         action.putValue(Action.NAME, new String("Cut"));
@@ -252,15 +252,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         editMenu.addSeparator();
 
-        // action = getActionByName(DefaultEditorKit.selectAllAction);
-        // if (action == null) {
-        //     System.out.println("Action Errror -------------------------");
-        // }
-        
-        // action = new DefaultEditorKit.selectAllAction();
-        // action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
-        // action.putValue(Action.NAME, "Select all");
-        // editMenu.add(action);
         editMenu.add(new SelectAllAction());
 
 
