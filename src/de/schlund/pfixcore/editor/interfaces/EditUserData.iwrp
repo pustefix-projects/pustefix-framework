@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<interface>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
   <ihandler class="de.schlund.pfixcore.editor.handlers.EditUserDataHandler"/>
-  <param name="Name"  type="String"/>
+  <param name="Name" type="String"/>
   <!--<param name="Group" type="String"/>-->
-  <param name="Sect"  type="String"/>
+  <param name="Sect" type="String"/>
   <param name="Phone" type="String"/>
   <param name="Pass1" type="String" occurance="optional"/>
   <param name="Pass2" type="String" occurance="optional"/>
   <param name="Admin" type="java.lang.Boolean" occurance="optional">
-    <default value="false"/>
+    <default>
+      <value>false</value>
+    </default>
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
   <param name="DynInclDef" type="java.lang.Boolean" occurance="optional">
-    <default value="false"/>
+    <default>
+      <value>false</value>
+    </default>
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
   <param name="editincl" type="String" occurance="indexed"/>
   <param name="editimg" type="String" occurance="indexed"/>
   <param name="editcom" type="String" occurance="indexed"/>
-</interface> 
+</interface>
 
 <!--
 Local Variables:

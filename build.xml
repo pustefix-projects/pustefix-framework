@@ -36,6 +36,8 @@ or delete the DOCTYPE definition -->
   <property name="name.exampleform"       value="simpleform"/>
   <property name="dir.docroot"            location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
   <property name="file.projects_xml"      location="${dir.projects}/servletconf/projects.xml"/>
+  <property name="validate"               value="true"/>
+  <property name="catalogfile"            location="${dir.projects}/core/schema/catalog.xml"/>
   <property name="genlog"                 value="quiet" description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
   <property name="file.log4jconfig"       location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
   <property name="name.jnipkg"            value="jni.tar.gz"/>
@@ -208,7 +210,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
-    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
+    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
@@ -241,7 +243,7 @@ or delete the DOCTYPE definition -->
     <ant dir="${dir.jni}" target="dist"/>
   </target>
 
-  <target name="installjars">
+  <target name="installjars" depends="tomcat.dir.opt">
     <!-- Setting absolute links instead of relative to avoid extra property for dir.build
          as ${dir.build} is specified as location it always resolves to an absolute path;
          does not work for filenames containing spaces -->
@@ -907,6 +909,14 @@ or delete the DOCTYPE definition -->
     see http://ant.apache.org/manual/CoreTasks/javac.html
     environment: -
     default:     false
+    mandatory:   no
+
+    -Dvalidate=
+    value:       true, false
+    Indicates whether certain xslt transformations perform validation of input
+    documents. 
+    environment: -
+    default:     true
     mandatory:   no
 
     -Ddebugopts=
