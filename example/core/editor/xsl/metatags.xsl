@@ -963,54 +963,46 @@
         <pfx:checkactive prefix="{$upload}">
           <tr>
 
-<!-- CONVERTER VERSION 1.1 -->
-<script>
-  function getAppletText() {
-     if (!document.applets["xmlEditor"].isValid()) {
-	alert("xml code is not wellformed");
-	return false;
-     } else {
-        text=document.applets["xmlEditor"].getText();
-        window.document.getElementById('hallo').value=text;
-        // alert('value:'+window.document.getElementById('hallo').value);
-	return true; 
-     }
-  }
-</script>
+            <!-- CONVERTER VERSION 1.1 -->
+<!--             <script> -->
+<!--               function getAppletText() { -->
+<!--                 if (!document.applets["xmlEditor"].isValid()) { -->
+<!--                   alert("xml code is not wellformed"); -->
+<!--                   return false; -->
+<!--                 } else { -->
+<!--                   text=document.applets["xmlEditor"].getText(); -->
+<!--                   window.document.getElementById('hallo').value=text; -->
+<!--                   // alert('value:'+window.document.getElementById('hallo').value); -->
+<!--                   return true;  -->
+<!--                 } -->
+<!--               } -->
+<!--             </script> -->
 
-        
-                <applet code="de/schlund/pfixeditor/XmlEditorApplet"
-                        codebase="/core/script"
-                        name="xmlEditor"
-                        archive="xmlEditorApplet.jar"
-                        width="100%" height="550">               
-         
-	         <ixsl:element name="param">
-			<ixsl:attribute name="name">text</ixsl:attribute>
-			<ixsl:attribute name="value">
-				<ixsl:value-of select="/formresult/formvalues/param[@name='{$upload}.Content']/text()"/>
-			</ixsl:attribute>
-		 </ixsl:element>
-                        <param name="log" value="off"/>
-
-	       </applet>
-	      <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" cols="0" rows="0" style="width: 100%; visibility:hidden; display:none "/>
-              <!--<pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" cols="0" rows="0" style="width: 100%; visibility:hidden; "/>-->
-              <!--<pfx:xinp id="hallo" class="editor_textarea" type="hidden" name="{$upload}.Content"/>-->
-	   
-           <!-- </td> -->
+            
+<!--             <applet code="de/schlund/pfixeditor/XmlEditorApplet" -->
+<!--                     codebase="/core/script" -->
+<!--                     name="xmlEditor" -->
+<!--                     archive="xmlEditorApplet.jar" -->
+<!--                     width="100%" height="550"> -->
+              
+<!--               <ixsl:element name="param"> -->
+<!--                 <ixsl:attribute name="name">text</ixsl:attribute> -->
+<!--                 <ixsl:attribute name="value"> -->
+<!--                   <ixsl:value-of select="/formresult/formvalues/param[@name='{$upload}.Content']/text()"/> -->
+<!--                 </ixsl:attribute> -->
+<!--               </ixsl:element> -->
+<!--               <param name="log" value="off"/> -->
+              
+<!--             </applet> -->
+<!--             <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" cols="0" rows="0" style="width: 100%; visibility:hidden; display:none "/> -->
+            <td colspan="2">
+              <pfx:xinp id="hallo" class="editor_textarea" type="area" name="{$upload}.Content" style="height: 400px; width: 100%"/>
+            </td>
           </tr>
-<!-- 	  <tr> -->
-<!--               <span style="font-size:125%; color:#FFFFEE"> -->
-<!--                 <p align="center"> -->
-<!--                   Please see the <pfx:button activeclass="editor_box" normalclass="editor_submit" page="home" target="_top" frame="_top">release notes</pfx:button>,  -->
-<!--                   if the applet doesn't appear -->
-<!--                 </p> -->
-<!--               </span> -->
-<!-- 	  </tr> -->
           <tr valign="middle">
             <td>
-                <pfx:xinp class="editor_submit" type="submit" value="Upload Data" onclick="return getAppletText()">
+<!--               <pfx:xinp class="editor_submit" type="submit" value="Upload Data" onclick="return getAppletText()"> -->
+              <pfx:xinp class="editor_submit" type="submit" value="Upload Data">
                 <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
                 <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
               </pfx:xinp>
@@ -1031,7 +1023,7 @@
               <tr>
                 <td colspan="2">
                   <b>This is the default branch of the include.</b><br/>
-                    Do you want to create and edit a product specific branch of this part?
+                  Do you want to create and edit a product specific branch of this part?
                 </td>
               </tr>
               <tr>
@@ -1096,7 +1088,7 @@
           </ixsl:choose>
         </pfx:checkactive>
       </table>
-    
+      
     </pfx:forminput>
   </xsl:template>
   

@@ -73,12 +73,12 @@ public class IncludesUploadHandler extends EditorStdHandler {
         return esess.getCurrentInclude();
     }
         
-    private String decodeAppletText(String txt){
-        return URLDecoder.decode(txt);
-    }    
-    private String encodeAppletText(String txt){
-        return URLEncoder.encode(txt);
-    }
+    // NO LONGER DONE private String decodeAppletText(String txt){
+    // NO LONGER DONE     return URLDecoder.decode(txt);
+    // NO LONGER DONE }    
+    // NO LONGER DONE private String encodeAppletText(String txt){
+    // NO LONGER DONE     return URLEncoder.encode(txt);
+    // NO LONGER DONE }
     
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
@@ -112,8 +112,9 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                         text = text.trim();
                         
-                        // encode the text for the editor applet (passed as <PARAM>)                     
-                        text = encodeAppletText(text);                        
+                        // NO LONGER DONE 
+                        // NO LONGER DONE // encode the text for the editor applet (passed as <PARAM>)                     
+                        // NO LONGER DONE text = encodeAppletText(text);                        
                     } else {
                         //text = DEF_TEXT;
                         text=DEF_TEXT_APPLET;
@@ -162,9 +163,10 @@ public class IncludesUploadHandler extends EditorStdHandler {
                     ns = ns + "xmlns:" + nsp.getPrefix() + "=\"" + nsp.getUri() + "\" ";
                 }
                 
-                //The text which comes from the editor applet is encoded, so decode it here
-                content = this.decodeAppletText(upl.getContent());
-                //System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
+                // NO LONGER DONE//The text which comes from the editor applet is encoded, so decode it here
+                // NO LONGER DONEcontent = this.decodeAppletText(upl.getContent());
+                // NO LONGER DONE//System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
+                content = upl.getContent();
                 
                 content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
                     "<product " + ns + " name=\"" + currprod + "\">\n      " + content + "\n    </product>";
