@@ -76,7 +76,6 @@ public class IncludeDocument {
                 buf.append("  SystemID : ").append(saxpex.getSystemId()).append("\n");
                 buf.append("  Line     : ").append(saxpex.getLineNumber()).append("\n");
                 buf.append("  Column   : ").append(saxpex.getColumnNumber()).append("\n");
-                System.out.println(buf.toString());
                 CAT.error(buf.toString());
             }
             throw ex;

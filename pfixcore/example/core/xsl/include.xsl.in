@@ -96,7 +96,31 @@
       <xsl:otherwise><b>[?]</b></xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+ 
+  <xsl:template name="include_error">
+    <cus:documentation>
+      <description>This template will be executed if exceptions occur
+      in class de.schlund.pfixxml.IncludeDocumentExtension. 
+      </description>
+    </cus:documentation>
+    <xsl:param name="errors"/>
+    <table border="1">
+      <th colspan="2">Exception when getting part '<xsl:value-of select="$errors/@part"/>'!</th>
+      <tr><td>Type:</td><td><xsl:value-of select="$errors/@type"/></td></tr>
+      <tr><td>Message:</td><td><xsl:value-of select="$errors/@msg"/></td></tr>
+      <xsl:if test="$errors/@id">
+        <tr><td>SystemId:</td><td><xsl:value-of select="$errors/@id"/></td></tr>
+      </xsl:if>
+      <xsl:if test="$errors/@line">
+        <tr><td>Line:</td><td><xsl:value-of select="$errors/@line"/></td></tr>
+      </xsl:if>
+      <xsl:if test="$errors/@column">
+        <tr><td>Column:</td><td><xsl:value-of select="$errors/@column"/></td></tr>
+      </xsl:if>
+    </table>
+  </xsl:template>
+
+ 
   <xsl:template name="pfx:missinc">
     <cus:documentation>
       <description>Called by &lt;pfx:include&gt;. This template will be executed
@@ -188,6 +212,12 @@
         </xsl:choose>
         <!-- -->
         <xsl:choose>
+          <xsl:when test="$incnodes and $incnodes[name() = 'include_error']">
+            <!-- Exception occured in extension function -->
+            <xsl:call-template name="include_error">
+              <xsl:with-param name="errors" select="$incnodes"/>
+            </xsl:call-template>
+          </xsl:when>
           <xsl:when test="$incnodes and $incnodes[name() = 'product']">
             <xsl:choose>
               <xsl:when test="$incnodes/lang">

@@ -22,13 +22,21 @@ import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.XPathException;
 
+import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Category;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -92,7 +100,7 @@ public final class IncludeDocumentExtension {
         } catch(Exception e) {
             if(dolog)
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
-            throw e;
+            return handleError(part, e);
         }
         doc = iDoc.getDocument();
         
@@ -235,5 +243,26 @@ public final class IncludeDocumentExtension {
             	append(path).append("'");
             throw new XMLException(sb.toString());
         }
+    }
+
+    private static NodeSetValue handleError(String part, Exception e)
+        throws ParserConfigurationException, Exception, IOException {
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document d = builder.newDocument();
+        Element ele1 = d.createElement("include_error");
+        ele1.setAttribute("part", part);
+        ele1.setAttribute("type", e.getClass().getName());
+        ele1.setAttribute("msg", e.getMessage());
+        if(e instanceof SAXParseException) {
+            SAXParseException saxex = (SAXParseException) e;
+            ele1.setAttribute("id", saxex.getSystemId());
+            ele1.setAttribute("line", ""+saxex.getLineNumber());
+            ele1.setAttribute("column", ""+saxex.getColumnNumber());
+        }
+        d.importNode(ele1, true);
+        d.appendChild(ele1);
+        TraxXSLTProcessor trax = new TraxXSLTProcessor();
+        d = trax.xmlObjectFromDocument(d);
+        return PFXPathEvaluator.evaluateAsNodeSetValue("/*", d);
     }
 }// end of class IncludeDocumentExtension
