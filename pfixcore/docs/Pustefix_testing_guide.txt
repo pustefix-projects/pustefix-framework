@@ -1,0 +1,81 @@
+The Pustefix testing guide
+--------------------------
+
+This guide intends to make you familiar with the capabilities of testing subsystem
+of Pustefix.
+
+First I will give a brief summary on the following chapters:
+
+1) The basics.
+2) Using the RecordManager to record reference data.
+3) Using the TestClient to play-back recorded data.
+
+
+1)Today development of web applications went quite fast moving. Mostly
+one software release is tested intensively, but after some weeks or even days 
+with code changes, nobody can tell reliably if the current development
+has the same functionality and quality as the well tested initial release.
+
+Cause of these facts a testing subsystem for the Pustefix system has been 
+developed.
+
+Imagine that at time point T1 your application works well. Now its
+time to record this. After a some week of development at time point T2
+you want to know if your application still works well. To do this, the
+requests from T1 are sent against your application at T2. The idea is
+that the output of T2 must not differ against the output of T1. If these
+outputs differ, the difference will be displayed.
+
+
+2)Prerequisite is that the 'make' node in the 'depend.xml.in' file for
+your project must have a 'record_dir' attribute. The 'record_dir' attribute 
+is the directory where recorded testcases will be written. Specify it relative 
+to document root.
+
+After restarting Pustefix the EditConsole will be appear expanded. On the right
+next to the 'EditMode'- and the 'XMLTree Switch' there is an input field
+with an arrow on the right. In the input field the name of the testcase
+is specified. After you entered a name, press the arrow button, the it changes 
+to a red blinking one. This means that every request and every response will be 
+recorded. When you want to stop recording, press the blinking button and it 
+will become the arrow again. Now recording is disabled.
+
+For the name of your testcase a directory where all requests and responses 
+are written to will be created. The path to this directory will be:
+[THE_RECORD_DIR_FROM_DEPEND_XML]/[TESTCASE_NAME]/
+
+If the name of your recording session already exists it will be replaced with 
+something [YOUR_NAME]_N, where N is a positive Integer.
+
+
+Alternatively you can enable recording by appending __recordmode=[TESTCASE_NAME]
+to the URL and stop it by appending __recordmode=0.
+
+3)There are two possibilities to play-back the recorded data. One is embedded into 
+the CMS of Pustefix  which is a simple web application. Its user interface should 
+be self-explaining.
+The other is a application that runs in textual mode on a console. This application
+can be found at 'de.schlund.pfixxml.testenv.ConsoleTestClient'. If you start it 
+without any parameters you will receive following output:
+ 
+ ConsoleTestClient -d testcase [-l log4jconfig] [-t temporary dir] -s [stylesheet dir] [-q] [-v]
+ 
+These 4 parameters will be explained now (a '*' means that the parameter is mandantory):
+
+-d(*) specify the directory containing recorded data. It might be 
+    [THE_RECORD_DIR_FROM_DEPEND_XML]/[TESTCASE_NAME]/
+-l specify a log4j configuration. A example configuration can be found at 
+    'example/testenv/log4jconf.xml'. If this parameter is not used a default
+    configuration will be used.
+-t specify a directory where temporary files will be written. If this parameter 
+    is not used default values will be used.
+-d specify a directory containing stylesheets. If you do not want to use a stylessheet
+    specify any directory. If this parameter is not used all used stylesheets must exist
+    in the directory given with the -d parameter.
+-q Enables quit mode. If there are no diffs in the result, nothing will be printed.
+-v Enables verbose mode. Prints additional information.
+
+After specifying the correct parameter the ConsoleTestClient will play-back
+the recorded data and displays the differences between the current result and
+the recorded result.
+

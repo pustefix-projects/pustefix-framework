@@ -22,16 +22,9 @@
  */
 package de.schlund.pfixxml.exceptionhandler;
 
-import java.util.Date;
 import java.util.Hashtable;
-import java.util.Properties;
 
-import javax.mail.*;
-import javax.mail.internet.*;
-
-import org.apache.log4j.*;
-import org.apache.oro.text.perl.MalformedPerl5PatternException;
-import org.apache.oro.text.perl.Perl5Util;
+import org.apache.log4j.Category;
 
 
 /**
@@ -51,11 +44,9 @@ class PFUtil {
     private static PFUtil instance_       =null;
     private String appendername_          =null;
     private boolean domail_               =false;
-    private InternetAddress fromaddress_  =null;
-    private Session mailsession_          =null;
     private Hashtable rates_              =null;
     private String smtphost_              =null;
-    private InternetAddress[] toaddresses_=null;
+ 
 
     //~ Constructors ...........................................................
 
@@ -80,7 +71,7 @@ class PFUtil {
         return instance_;
     }
 
-    void setMailConfig(String[] to, String from, String host, boolean doit) {
+    /*void setMailConfig(String[] to, String from, String host, boolean doit) {
         domail_=doit;
         if(! domail_)
             return;
@@ -108,7 +99,7 @@ class PFUtil {
         mailsession_=Session.getDefaultInstance(props, null);
         if(error)
             CAT_.fatal(strerror);  
-    }
+    }*/
 
     /**
      * Get util data.
@@ -157,7 +148,7 @@ class PFUtil {
      * @param subject A String specifieing the mail subject.
      * @param text The text the mail should contain.
      */
-    synchronized void sendMail(String subject, String text) {
+ /*   synchronized void sendMail(String subject, String text) {
         if(! domail_)
             return;
         boolean error        =false;
@@ -228,7 +219,7 @@ class PFUtil {
         }
         if(error)
             fatal(strerror.toString());
-    }
+    }*/
 
     /**
      * Get String representation for status codes. 

@@ -38,7 +38,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 
 // Uuugh, you wouldn't want to do this in a normal C-Res.
 // Inheritance from one C-Res to another is asking for trouble.
-// But for this exsample it helps keeping the code small.
+// But for this example it helps keeping the code small.
 public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrouser{
     private Category CAT = Category.getInstance(this.getClass().getName());
     
@@ -58,7 +58,7 @@ public class ContextTrouserImpl extends ContextTShirtImpl implements ContextTrou
                 for (int i = 0; i < trouserfeatures.length; i++) {
                     Integer feat = trouserfeatures[i];
                     resdoc.addTextChild(elem, "feature", (String) featmap.get(feat.toString()));
-                }
+                } 
             }
         }
     }

@@ -142,9 +142,9 @@ public class IncludesBranchHandler extends EditorStdHandler {
     }
 
     private void doSerialize(Document incdoc, String path) throws Exception {
-        FileWriter    output = new FileWriter(path);
-        OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-        XMLSerializer ser    = new XMLSerializer(output, outfor);
+        FileOutputStream output = new FileOutputStream(path);
+        OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+        XMLSerializer    ser    = new XMLSerializer(output, outfor);
         outfor.setIndent(0);
         outfor.setPreserveSpace(true);
         ser.serialize(incdoc);

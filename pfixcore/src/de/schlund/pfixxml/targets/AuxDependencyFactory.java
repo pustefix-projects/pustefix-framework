@@ -18,8 +18,8 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.TreeMap;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * AuxDependencyFactory.java
@@ -62,6 +62,17 @@ public class AuxDependencyFactory {
             throw new RuntimeException(e.toString());
         }
         return aux;
+    }
+
+    public TreeSet getAllAuxDependencies() {
+        TreeSet retval =  new TreeSet();
+        synchronized (includeparts) {
+            for (Iterator i = includeparts.values().iterator(); i.hasNext();) {
+                AuxDependency aux = (AuxDependency) i.next();
+                retval.add(aux);
+            }
+        }
+        return retval;
     }
     
 }// AuxDependencyFactory

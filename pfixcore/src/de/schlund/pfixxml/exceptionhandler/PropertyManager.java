@@ -153,7 +153,7 @@ class PropertyManager {
      * @return a mailconfig object.
      */
 
-    MailConfig getMailConfig() {
+    void doMailConfig() {
         StringBuffer strerror=new StringBuffer();
         boolean send         =Boolean.valueOf(
                                       (String) properties_.get("rule.mail.send"))
@@ -176,11 +176,11 @@ class PropertyManager {
                 tos[i++]=ele.trim();
             }
             String host      =(String) properties_.getProperty("rule.mail.host");
-            MailConfig config=new MailConfig(tos, from, host, send);
-            return config;
+            MailConfig config = MailConfig.getInstance();
+            config.configure(tos, from, host, send);
         } else {
-            MailConfig config=new MailConfig(null, null, null, false);
-            return config;
+            MailConfig config=MailConfig.getInstance();
+            config.configure(null, null, null, false);
         }
     }
 
@@ -196,7 +196,7 @@ class PropertyManager {
             checkMailProps();
             checkRulesProps();
         } catch(PFConfigurationException e) {
-            throw new PFConfigurationException(e.getMessage(), e.getCause());
+            throw new PFConfigurationException(e.getMessage(), e.getExceptionCause());
         }
         initialised_=true;
     }

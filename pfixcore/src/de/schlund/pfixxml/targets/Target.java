@@ -19,13 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.lang.*;
-import java.util.*;
-import java.io.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import javax.xml.parsers.*;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *

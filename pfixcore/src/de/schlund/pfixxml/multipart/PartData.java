@@ -33,7 +33,16 @@ public abstract class PartData implements RequestParam {
     protected String fieldname   = null;
     protected String value       = null;
     protected RequestParamType type;
+    private   boolean synthetic = false;
 
+    public boolean isSynthetic() {
+        return synthetic;
+    }
+
+    public void setSynthetic(boolean synthetic) {
+        this.synthetic = synthetic;
+    }
+    
     /**
      * Constructor for PartData.
      */
