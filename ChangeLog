@@ -1,3 +1,8 @@
+2004-08-06 Michael Hartmeier  <mhm@schlund.de>
+	* configure and enable "checkstyle" report for website generation
+	* fix problems reported by checkstyle 
+          (most important: missing copyrights and tabs in java sources)
+
 2004-08-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* lib/tomcat/README: new file to tell people about the purpose of

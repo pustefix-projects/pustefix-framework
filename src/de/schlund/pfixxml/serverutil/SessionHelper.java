@@ -1,5 +1,4 @@
 /*
- *
  * This file is part of PFIXCORE.
  *
  * PFIXCORE is free software; you can redistribute it and/or modify
@@ -21,8 +20,6 @@
 package de.schlund.pfixxml.serverutil;
 
 import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.NoCopySessionData;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
 import java.util.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;

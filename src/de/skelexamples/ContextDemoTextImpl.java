@@ -22,7 +22,6 @@ package de.skelexamples;
 import org.w3c.dom.Element;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
-import de.skelexamples.ContextDemoText;
 
 /**
  * A class representing our ContextResource. It has been createdto store the
