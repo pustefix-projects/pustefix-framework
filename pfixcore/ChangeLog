@@ -1,3 +1,11 @@
+2004-07-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/xmlfontify.xsl.in: new file to fontify the xml-only output,
+	as not all browsers seem to be able to display a DOM tree view.
+	
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: really render the
+	saved DOM, not only serializing to text/xml
+
 2004-07-02  Michael Hartmier  <mhm@schlund.de>
 	* project.properties, project.xml: maven build files
 

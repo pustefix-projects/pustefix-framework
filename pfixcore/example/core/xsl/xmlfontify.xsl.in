@@ -34,7 +34,8 @@
     </xsl:variable>
     <xsl:variable name="error">
       <xsl:choose>
-        <xsl:when test="ancestor-or-self::formerrors">true</xsl:when>
+        <xsl:when test="name() = 'formerrors' and count(./node()) > 0" >true</xsl:when>
+        <xsl:when test="ancestor::formerrors">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
