@@ -1418,7 +1418,7 @@
                       </ixsl:choose>
                     </td>
                   </tr>
-                  <tr>
+                  <tr class="editor_odd_row">
                     <td>
                       <xsl:call-template name="show_image_upload"/>
                     </td>
@@ -1439,7 +1439,6 @@
 
   <xsl:template name="show_image_upload">
     <pfx:checkactive prefix="upload">
-      <table>
         <tr valign="center" class="editor_odd_row">
           <td align="right">
             <pfx:label name="upload.HaveUpload">New Image:</pfx:label>
@@ -1466,7 +1465,6 @@
             </td>
           </tr>
         </ixsl:if>
-      </table>
     </pfx:checkactive>
   </xsl:template>
 
