@@ -1,4 +1,11 @@
 2004-10-06  Martin Leidig  <mleidig@schlund.de>
+
+	* example/common/conf/server-config.wsdd: Removed setting of
+	attachments.Directory, so WEB-INF/attachments should be taken
+	as default
+
+	* skel/projects/common/conf/server-config.wsdd: Added server
+	skeleton to skel
 	
 	Improved SOAP error display handling for all examples:
 	* example/webservice/htdocs/calc-pfxsoap.js
