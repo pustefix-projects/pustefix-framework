@@ -62,6 +62,7 @@
     <xs:complexContent>
       <xs:extension base="prop:servletinfoType">
         <xs:sequence>
+        	<xs:element ref="prop:encoding" minOccurs="0"/>
           <xs:element ref="prop:editmode" minOccurs="0"/>
           <xs:element ref="prop:ssl" minOccurs="0"/>
         </xs:sequence>
@@ -93,6 +94,13 @@
     <xs:attribute name="modes" type="xs:normalizedString"/>
   </xs:complexType>
 
+	<xs:element name="encoding" type="prop:encodingType"/>
+	<xs:simpleType name="encodingType">
+		<xs:restriction base="xs:normalizedString">
+			<xs:minLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
   <xs:element name="adminmode" type="prop:adminmodeType"/>
   <xs:complexType name="adminmodeType">
     <xs:attribute name="watch" use="required"/>

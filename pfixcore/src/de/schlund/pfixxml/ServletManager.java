@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,7 +55,7 @@ public abstract class ServletManager extends HttpServlet {
     public    static final String VISIT_ID                      = "__VISIT_ID__";
     public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     public    static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
-    protected static final String DEF_CONTENT_TYPE              = "text/html; charset=iso-8859-1";
+    protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
     private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
     private   static final String SECURE_SESS_COOKIE            = "__PFIX_SEC_";
@@ -65,6 +66,8 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
+    private   static final String SERVLET_ENCODING = "servlet.encoding";
+    private   static final String DEFAULT_ENCODING = "UTF-8";
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 
@@ -80,6 +83,7 @@ public abstract class ServletManager extends HttpServlet {
     private Properties       properties;
     private File             commonpropfile;
     private File             servletpropfile;
+    private String          servletEncoding;
 
     protected Properties getProperties() {
         return properties;
@@ -115,6 +119,8 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        req.setCharacterEncoding(servletEncoding);
+        res.setCharacterEncoding(servletEncoding);
         if (CAT.isDebugEnabled()) {
             CAT.debug("\n ------------------- Start of new Request ---------------");
             CAT.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort());
@@ -634,6 +640,7 @@ public abstract class ServletManager extends HttpServlet {
         properties.setProperty(PROP_LOADINDEX, "" + loadindex);
         initCookieSec();
         initExceptionConfigs();
+        initServletEncoding();
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
@@ -830,7 +837,34 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
 
-
+    /**
+     * Sets the servlet's encoding, which is used as character encoding for decoding/encoding 
+     * requests/responses. Be aware that this setting only applies to the appropriate Readers, 
+     * Writers and body request parameters. It has no effect on the byte streams or the URI
+     * encoding (which is set on Tomcat connector level and can't be changed here).
+     */
+    private void initServletEncoding() {
+      //Try to get servlet encoding from properties:
+      String encoding=properties.getProperty(SERVLET_ENCODING);
+      if(encoding==null || encoding.trim().equals("")) CAT.warn("No servlet encoding property set");
+      else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
+      else servletEncoding=encoding;
+      //Try to get servlet encoding from init parameters:
+      if(servletEncoding==null) {
+          encoding=getServletConfig().getInitParameter(SERVLET_ENCODING);
+          if(encoding==null || encoding.trim().equals("")) CAT.warn("No servlet encoding init parameter set");
+          else if(!Charset.isSupported(encoding)) CAT.error("Servlet encoding '"+encoding+"' is not supported.");
+          else servletEncoding=encoding;
+      }
+      //Use default servlet encoding:
+      if(servletEncoding==null) {
+          servletEncoding=DEFAULT_ENCODING;
+          CAT.warn("Using default servlet encoding: "+DEFAULT_ENCODING);
+      }
+      CAT.debug("Servlet encoding was set to '"+servletEncoding+"'.");  
+    }
+    
+    
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
     // TODO: replace constants - ask tomcat 

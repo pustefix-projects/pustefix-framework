@@ -30,10 +30,16 @@
     <resource class="de.schlund.pfixcore.example.ContextTogglePicImpl">
       <implements class="de.schlund.pfixcore.example.ContextTogglePic"/>
     </resource>
+    
+     <resource class="de.schlund.pfixcore.example.ContextEncodingTestImpl">
+      <implements class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    </resource>
+    
   </context>
   
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow">
+  
     <flowstep name="home"/>
     <flowstep name="order">
       <oncontinue applyall="true">
@@ -59,6 +65,8 @@
     <input>
       <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
     </input>
+    
+    
   </pagerequest>
   
   <pagerequest name="order">
@@ -109,6 +117,20 @@
       </choose>
     </properties>
   </pagerequest>
+
+	<pagerequest name="encoding">
+    <state class="de.schlund.pfixcore.example.EncodingTestState"/>
+    <input>
+      <interface prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest"/>
+    </input>
+    <output>
+      <resource node="text" class="de.schlund.pfixcore.example.ContextEncodingTest"/>
+    </output>
+    <!--
+      <properties>
+      <prop name="mimetype">text/html; charset=utf-8</prop>
+      </properties>-->
+	</pagerequest>
 
   <properties>
     <!-- *** some additional properties needed for this application *** -->

@@ -6,6 +6,26 @@
 
   <xsl:include href="create_lib.xsl"/>
   <xsl:param name="prohibitEdit"/>
+	<xsl:param name="projectsFile"/>
+
+	<xsl:variable name="defaultEncoding">UTF-8</xsl:variable>
+	<xsl:variable name="projectEncoding" select="normalize-space(document($projectsFile)/projects/project[@name=current()/make/@project]/encoding/text())"/>
+	<xsl:variable name="encoding">
+		<xsl:choose>
+			<xsl:when test="$projectEncoding and string-length($projectEncoding) &gt; 0">
+				<xsl:value-of select="$projectEncoding"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$defaultEncoding"/>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+
+  <xsl:template name="encoding">
+  	<xsl:if test="not(/make/global/param[@name='outputencoding'] or ./param[@name='outputencoding'])">
+  		<param name="outputencoding" value="{$encoding}"/>
+  	</xsl:if>
+  </xsl:template>
 
   <xsl:template match="global"/>
 
@@ -91,6 +111,7 @@
           </xsl:attribute>
         </param>
       </xsl:if>
+      <xsl:call-template name="encoding"/>
       <xsl:variable name="allp" select="./param[not(@name = 'page')]"/>
       <xsl:for-each select="/make/global/param[not(@name = 'page')]">
         <xsl:variable name="pn"><xsl:value-of select="@name"/></xsl:variable>
@@ -115,6 +136,7 @@
       </xsl:call-template>
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
+      <xsl:call-template name="encoding"/>
       <xsl:variable name="allp" select="./param[not(@name = 'page')]"/>
       <xsl:for-each select="/make/global/param[not(@name = 'page')]">
         <xsl:variable name="pn"><xsl:value-of select="@name"/></xsl:variable>
