@@ -52,9 +52,10 @@ public class CommonsHandler extends EditorStdHandler {
         Path                   path     = Path.create(prod.getTargetGenerator().getDocroot(), includes.getPath());
         String                 part     = includes.getPart();
         String                 realprod = prod.getName();
-        TreeSet                allcoms  = EditorCommonsFactory.getInstance().getAllCommons();
+        EditorCommonsFactory   ecf      = EditorCommonsFactory.getInstance();
+        TreeSet                allcoms  = ecf.getAllCommons();
 
-        if (EditorCommonsFactory.getInstance().isPathAllowed(path)) {
+        if (ecf.isPathAllowed(path)) {
             AuxDependency incdef  =
                 AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, "default");
             AuxDependency incprod =

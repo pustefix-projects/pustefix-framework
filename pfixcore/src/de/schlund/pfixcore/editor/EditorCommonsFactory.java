@@ -54,9 +54,9 @@ import de.schlund.util.FactoryInit;
  */
 
 public class EditorCommonsFactory implements FactoryInit {
-    private static DocumentBuilderFactory dbfac    = DocumentBuilderFactory.newInstance();
-    private static Category               CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
-    private static EditorCommonsFactory   instance = new EditorCommonsFactory();
+    private static final DocumentBuilderFactory dbfac    = DocumentBuilderFactory.newInstance();
+    private static final Category               CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
+    private static final EditorCommonsFactory   instance = new EditorCommonsFactory();
     private        TreeSet                allincs  = new TreeSet();
     private        HashMap                incfiles = new HashMap();
     private        HashSet                commonfiles;
@@ -72,7 +72,9 @@ public class EditorCommonsFactory implements FactoryInit {
             dbfac.setValidating(false);
         }
     }
-    
+
+    /** TODO: passing docroot is ugly because it's not needed in most cases: get rid 
+        of the singleton ... */
     public static EditorCommonsFactory getInstance() {
         return instance;
     }
@@ -82,9 +84,12 @@ public class EditorCommonsFactory implements FactoryInit {
                 "editorcommonsfactory.includefile").values());
     }
     private synchronized void realInit() throws Exception {
+        String str;
+        
         if (!inited) {
             for (Iterator iter = commonfiles.iterator(); iter.hasNext();) {
-                readFile((Path) iter.next());
+                str = (String) iter.next();
+                readFile(Path.create(str));
             }
             inited = true;
         }
@@ -149,9 +154,7 @@ public class EditorCommonsFactory implements FactoryInit {
         }
     }
     public boolean isPathAllowed(Path path) throws Exception {
-        if (!inited) {
-            realInit();
-        }
+        realInit();
         if (incfiles.get(path) != null) {
             return true;
         } else {
@@ -159,9 +162,7 @@ public class EditorCommonsFactory implements FactoryInit {
         }
     }
     public TreeSet getAllCommons() throws Exception {
-        if (!inited) {
-            realInit();
-        }
+        realInit();
         synchronized (allincs) {
             update();
             return (TreeSet) allincs.clone();
