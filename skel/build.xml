@@ -492,7 +492,7 @@ or delete the DOCTYPE definition -->
   <target name="web_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
     <!-- old target name in Makefile was "zoneprops" -->
     <pfx-webxml
-      style="${dir.projects}/core/build/create_customtomcatweb.xsl"
+      style="${dir.projects}/core/build/create_webxml.xsl"
       srcdir="${dir.projects}"
       destdir="${dir.tomcat}"
       extension=".xml"
