@@ -1,3 +1,9 @@
+2003-12-15  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/targets/cachestat/AdvanceCacheStatistic.java
+        (AdvanceCacheStatistic): bugfix. If queuesize and queueticks are not
+        given, use sensible default values to make 'make generate' work.
+
 2003-12-12  Sebastian Werner  <sw@schlund.de>
 	* example/core/script/baselib.js: fixed small typo in js
 
