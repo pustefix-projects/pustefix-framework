@@ -216,24 +216,23 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                 if (nl.size() > 0) {
                     String text = "";
                     for (int i = 0; i < nl.size(); i++) {
-                        text = Xml.serialize((Node) nl.get(i), false, false);
+                        text += Xml.serialize((Node) nl.get(i), false, false);
                     }
                     text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                     text = text.trim();
                     upl.setStringValContent(text);
                     if (SERIALIZER.isDebugEnabled())
-                        SERIALIZER.debug(
-                            "\n==========================================================\n"
-                                + "| User      >>> "
-                                + euser.getUserInfo().getName()
-                                + "\n"
-                                + "| Path@Part >>> "
-                                + currinc.getPath().getRelative()
-                                + "@"
-                                + currinc.getPart()
-                                + "\n"
-                                + text
-                                + "\n");
+                        SERIALIZER.debug("\n==========================================================\n"
+                                         + "| User      >>> "
+                                         + euser.getUserInfo().getName()
+                                         + "\n"
+                                         + "| Path@Part >>> "
+                                         + currinc.getPath().getRelative()
+                                         + "@"
+                                         + currinc.getPart()
+                                         + "\n"
+                                         + text
+                                         + "\n");
                 } else {
                     upl.setStringValContent(DEF_TEXT);
                 }
