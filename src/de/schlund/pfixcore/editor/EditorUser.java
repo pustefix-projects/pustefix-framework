@@ -110,12 +110,17 @@ final public class EditorUser {
         if(info == null)
             throw new IllegalArgumentException("A NP as EditorUserInfo is not allowed here.");
         
+        if(CAT.isDebugEnabled())
+            CAT.debug("Trying to add user '"+info.getId()+"'.");
+        
         AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
         try {
             auth.addEditorUser(info);
         } catch (AuthManagerException e) {
             throw new EditorException("Caught AuthManagerException when trying to add user '"+info.getId()+"'.", e);
         }
+        if(CAT.isDebugEnabled())
+            CAT.debug("User '"+info.getId()+"' added successfully.");
     }
     
     
@@ -130,6 +135,9 @@ final public class EditorUser {
         if(info == null)
             throw new IllegalArgumentException("A NP as EditorUserInfo is not allowed here.");
         
+        if(CAT.isDebugEnabled())
+            CAT.debug("Trying to remove user '"+info.getId()+"'.");
+        
         AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
        
         try {
@@ -137,6 +145,8 @@ final public class EditorUser {
         } catch (AuthManagerException e) {
             throw new EditorException("Caught AuthManagerException when trying to remove user '"+info.getId()+"'.",e);
         }
+        if(CAT.isDebugEnabled())
+            CAT.debug("User '"+info.getId()+"' removed successfully.");
     }
      
     /**
@@ -146,12 +156,19 @@ final public class EditorUser {
     public static EditorUserInfo[] getAllEditorUserInfo() throws EditorException {
         AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
         EditorUserInfo[] infos = null;
+        
+        if(CAT.isDebugEnabled())
+            CAT.debug("Trying to retrieve all EditorUserInfo.");
+                
         try {
             infos = auth.getAllEditorUserInfo();
         } catch (AuthManagerException e) {
             throw new EditorException("Caught AuthManagerException when trying to get all user information.",e);
         }
-        //CAT.debug("---------->Infos ="+infos+"---->auth"+auth.getClass().getName());
+        
+        if(CAT.isDebugEnabled())
+            CAT.debug(infos.length+" EditorUserInfos retrieved successfully.");
+        
         return infos;
     }
 
@@ -181,11 +198,16 @@ final public class EditorUser {
         if(login == null)
             throw new IllegalArgumentException("A NP as userid is not allowed here.");
         
+        if(CAT.isDebugEnabled())
+            CAT.debug("Trying to retrieve EditorUserInfo by id '"+login+"'.");
+        
         AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
         EditorUserInfo info = null;
        
         info = auth.getEditorUserInfoById(login);
        
+        if(CAT.isDebugEnabled())
+            CAT.debug("Retrievement of EditorUserInfo for id '"+login+"' sucessfully.");
         return info;
     }
 
