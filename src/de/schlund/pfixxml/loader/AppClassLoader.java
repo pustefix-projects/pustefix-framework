@@ -34,62 +34,64 @@ import org.apache.log4j.Category;
 public class AppClassLoader extends ClassLoader {
 
     private Category CAT=Category.getInstance(getClass().getName());
+    private boolean debug;
     private ClassLoader parent;
     private HashMap modTimes=new HashMap();
     
     public AppClassLoader(ClassLoader parent) {
         super(parent);
 	    this.parent=parent;
+        debug=CAT.isDebugEnabled();
     }
 
     public synchronized Class loadClass(String name) throws ClassNotFoundException {
 
         AppLoader loader=AppLoader.getInstance();
         //load from cache
-        CAT.debug("Try to load from cache: "+name);
+        if(debug) CAT.debug("Try to load from cache: "+name);
 	    Class c=findLoadedClass(name);
 	    if(c!=null) {
-	       CAT.debug("Cache contains class: "+name);
+	       if(debug) CAT.debug("Cache contains class: "+name);
 	       return c;
 	    } else {
-	       CAT.debug("Cache doesn't contain class: "+name);
+	       if(debug) CAT.debug("Cache doesn't contain class: "+name);
         }
 
         //load from system
         try {
-	       CAT.debug("Try to load with system classloader: "+name);
+	       if(debug) CAT.debug("Try to load with system classloader: "+name);
 	       c=findSystemClass(name);
-	       CAT.debug("System classloader found class: "+name);
+	       if(debug) CAT.debug("System classloader found class: "+name);
 	       return c;
         } catch(ClassNotFoundException x) {
-	       CAT.debug("System classloader didn't find class: "+name);
+	       if(debug) CAT.debug("System classloader didn't find class: "+name);
         }
 
         //load from repository
-        CAT.debug("Try to load with AppClassLoader: "+name);
+        if(debug) CAT.debug("Try to load with AppClassLoader: "+name);
         String pack=getPackageName(name);
         if(loader.isIncludedPackage(pack)) {
             byte[] data=getClassData(name);
             if(data==null) {
-                CAT.debug("AppClassLoader didn't find class: "+name);
+                if(debug) CAT.debug("AppClassLoader didn't find class: "+name);
 	        } else {	
-                CAT.debug("AppClassLoader found class: "+name);
+                if(debug) CAT.debug("AppClassLoader found class: "+name);
                 definePackage(name);
                 return defineClass(name,data,0,data.length);
 	        }
         } else {
-            CAT.debug("No inclusion found for package: "+pack);
+            if(debug) CAT.debug("No inclusion found for package: "+pack);
         }
 
         //load from parent
 	    if(parent!=null) {
             try {
-                CAT.debug("Try to load with parent classloader: "+name);
+                if(debug) CAT.debug("Try to load with parent classloader: "+name);
 		        c=parent.loadClass(name);
-		        CAT.debug("Parent classloader found class: "+name);
+		        if(debug) CAT.debug("Parent classloader found class: "+name);
 		        return c;
             } catch(ClassNotFoundException x) {
-                CAT.debug("Parent classloader didn't find class: "+name);
+                if(debug) CAT.debug("Parent classloader didn't find class: "+name);
             }
         }
 	
