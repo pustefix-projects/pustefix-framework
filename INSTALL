@@ -50,8 +50,10 @@ Prerequisites:
           should have a "* entry" for your machine in DNS (This means that 
           a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
           matter what NAME is). If you don't have DNS configured like this you can 
-          still supply the names 
+          still supply the names (if you use the skelelton distribution) 
                  "cmsskel.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" 
+          or, in case you work with the cvs checkout
+                 "cmscore.HOSTNAME.DOMAIN" and "admcore.HOSTNAME.DOMAIN"
           via your /etc/hosts file.
 
           Note that you may be able to work around this last point by tweaking the
@@ -86,11 +88,13 @@ Prerequisites:
         # virtual hosts for tomcat:
         include <your path to this directory>/projects/servletconf/tomcat/apache.conf
 
-    into your httpd.conf. Don't forget to restart apache.
+    into your httpd.conf. Don't forget to restart apache. Modern apache installations often have a
+    httpd.conf.d directory where to put links to config files that should be included automatically. 
+    In this case you can link the two files there instead of including them via your http.conf
 
 4)  start Tomcat with the following command:
 
-        ./startTomcat.sh 
+        ./startTomcat.sh
 
     Note: For stopping Tomcat, just press Control-C to interrupt the script.
 
@@ -111,10 +115,10 @@ Prerequisites:
 FINAL NOTE:
 
 You could now start building your own applications, but unfortunately
-there is still no documentation about how to achieve this. In the
+there is still not much  documentation about how to achieve this. In the
 future it is planned to provide an application that will help with
-creating new projects, a sample application that serves as a tutorial
-and the needed documentation to understand the whole system.
+creating new projects and will serve as a tutorial
+and provide the needed documentation to understand the whole system.
 I hope this will happen soon :-/
 
 For now, I suggest you refer to the mailing list (see pustefix.sf.net).
@@ -122,6 +126,6 @@ For now, I suggest you refer to the mailing list (see pustefix.sf.net).
 Just one warning for people trying to use the editor app as an example
 for their own application: The editor works, but is quite old and in a
 lot of ways can't be considered anymore a good example on how to
-program a pustefix application. Of course we should rewrite the editor
+write a pustefix application. Of course we should rewrite the editor
 to better conform to the pustefix programming model, but this will take
 time.

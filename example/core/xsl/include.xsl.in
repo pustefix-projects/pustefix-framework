@@ -31,7 +31,7 @@
       <form target="_top">
         <table cellpadding="0" cellspacing="0" border="0">
           <tr>
-            <td>
+            <td width="1%">
               <ixsl:choose>
                 <ixsl:when test="$__editmode='admin'">
                   <a target="_top">
@@ -49,7 +49,7 @@
                 </ixsl:otherwise>
               </ixsl:choose>
             </td>
-            <td>
+            <td width="1%">
               <a target="__xml_source__">
                 <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
@@ -60,7 +60,7 @@
                 <td nowrap="nowrap" style="border: black solid 1px; background-color: #999999;">
                   <ixsl:choose>
                     <ixsl:when test="$__recordmode and $__recordmode!='0'">
-                      <input style="font-family: Arial,Helvetica,Sans; margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
+                      <input style="font-family: Verdana,Sans; margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
                         readonly="readonly" align="center" name="__recordmode" type="text" size="4">
                         <ixsl:attribute name="value"><ixsl:value-of select="$__recordmode"/></ixsl:attribute>
                       </input>
@@ -69,7 +69,7 @@
                       </pfx:xinp>
                     </ixsl:when>
                     <ixsl:otherwise>
-                      <pfx:xinp type="text" style="font-family: Arial,Helvetica,Sans; margin-left:3px; margin-right:1px; border: black solid 1px;"
+                      <pfx:xinp type="text" style="font-family: Verdana,Sans; margin-left:3px; margin-right:1px; border: black solid 1px;"
                         name="__recordmode" size="4" maxlength="20"/>
                       <pfx:xinp type="image" align="center" src="/core/img/record_start.gif" title="Switch record mode ON"/>
                     </ixsl:otherwise>
@@ -82,12 +82,12 @@
             </ixsl:choose>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="3" style="font-size: 8px; background-color: black; color: white; padding-left: 5px;">
+            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8x; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               P: <ixsl:value-of select="$page"/>
             </td>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="3" style="font-size: 8px; background-color: black; color: white; padding-left: 5px;">
+            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               F: <ixsl:value-of select="$pageflow"/>
             </td>
           </tr>
