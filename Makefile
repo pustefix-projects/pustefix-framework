@@ -155,7 +155,7 @@ skeleton:
 	@cp -a lib/*.jar skel/lib/
 	@cp dist/$(PROJECT)-${VERSION}.jar dist/$(PROJECT)-data-$(VERSION).tar.gz skel/lib
 	@rm -f dist/$(PROJECT)-skel-*.tar.gz
-	@tar cvzf dist/$(PROJECT)-skel-$(VERSION).tar.gz skel/
+	@tar cvzf dist/$(PROJECT)-skel-$(VERSION).tar.gz  `find skel -type f | grep -v CVS`
 	@rm -f skel/lib/*.jar
 	@rm -f skel/lib/$(PROJECT)-data-$(VERSION).tar.gz
 
