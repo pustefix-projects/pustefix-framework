@@ -30,7 +30,6 @@
                   <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/></td>
               </tr>
             </table>
-            <br/>
             <table width="400">
               <tr>
                 <td align="right" nowrap="nowrap"><pfx:xinp type="submit" value="Go!"/></td>
