@@ -330,11 +330,11 @@ wfxToolbar.Config = function () {
 	 */
 
 	this.toolbar = [
-			[ "syntaxrehighlighting", "undo", "redo" ],
+			[ "undo", "redo" ],
 			];
 
 	this.btnList = {
-	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
+	  //	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
 	  undo: [ "Undo", "images/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
 	  redo: [ "Redo", "images/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
 	};
