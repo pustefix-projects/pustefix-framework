@@ -1,3 +1,22 @@
+2003-06-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: once again we change the way
+	<select> and <option> tags are handled --maybe the last time? only
+	time will tell...  
+
+	pfx:xinp[@type="dynselect"] is now DEPRECATED. pfx:xinp[@type="select"] can now do everything the old
+	dyselect stuff did, too.
+
+	pfx:xinp[@type="select"] changed how the actual options are
+	rendered; previously, the xinp tag itself selected its pfx:option
+	children and rendered them. Now it only calls apply-templates.
+
+	<pfx:option>: a new template that now provides for the rendering
+	of the <option> tag 
+	
+	<pfx:dynoptions optionspath="...">: a new template that provides
+	for the rendering of <option> tags supplied via the result tree
+	
 2003-06-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java (checkParameterNameForEmbeddedData): Eeek. 

@@ -223,6 +223,13 @@
         <description>Visibility</description>
       </param>
       
+      <param required="0">
+        <name>store</name>
+        <standard>true</standard>
+        <possible_values>true|false</possible_values>
+        <description>If the status of the layer should be stored over different invocations of the page</description>
+      </param>
+
       <children>
         <name>pfx:switch</name>
         <description>see pfx:switch</description>        
