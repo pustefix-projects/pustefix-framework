@@ -91,89 +91,7 @@ public class WebServiceServlet extends AxisServlet {
     }
     
     
-    public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        Monitor monitor=(Monitor)wsc.getAttribute(Monitor.class.getName());
-        if(monitor!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
-            res.setStatus(HttpURLConnection.HTTP_OK);
-            res.setContentType("text/html");
-            String ip=req.getRemoteAddr();
-            MonitorHistory history=monitor.getMonitorHistory(ip);
-            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-            writer.println("<html><head><title>Web service monitor</title>"+getJS()+getCSS()+"</head><body>");
-            writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
-            writer.println("<table class=\"overview\">");
-            writer.println("<tr>");
-            writer.println("<th align=\"left\">Start</th>");
-            writer.println("<th align=\"left\">Time (in ms)</th>");
-            writer.println("<th align=\"left\">Service</th>");
-            writer.println("</tr>");
-            MonitorRecord[] records=history.getRecords();
-            for(int i=0;i<records.length;i++) {
-            	MonitorRecord record=records[i];
-                String id="entry"+i;
-                writer.println("<tr name=\"row_entry\" onclick=\"toggleDetails(this,'"+id+"')\">");
-                writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
-                writer.println("<td align=\"right\">"+record.getTime()+"</td>");
-                writer.println("<td align=\"left\">"+record.getTarget()+"</td>");
-                writer.println("</tr>");
-            }
-            writer.println("</table");
-            for(int i=0;i<records.length;i++) {
-                MonitorRecord record=records[i];
-                String id="entry"+i;
-                writer.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:none\">");
-                writer.println("<table>");
-                writer.println("<tr>");
-                writer.println("<td><b>Request:</b><br/><textarea cols=\"70\" rows=\"25\">");
-                writer.println(record.getRequest());
-                writer.println("</textarea></td>");
-                writer.println("<td><b>Response:</b><br/><textarea cols=\"70\" rows=\"25\">");
-                writer.println(record.getResponse());
-                writer.println("</textarea></td>");
-                writer.println("</tr>");
-                writer.println("</table>");
-                writer.println("</div");
-            }
-            writer.println("</div></body></html>");
-            writer.close();
-        } else sendForbidden(req,res,writer);
-    }
-    
-    private String getJS() {
-        String js=
-            "<script type=\"text/javascript\">" +
-            "function toggleDetails(src,id) {" +
-            "   var elems=document.getElementsByName('row_entry');"+
-            "   for(var i=0;i<elems.length;i++) {" +
-            "       elems[i].style.color='black';" +
-            "   }" +
-            "   src.style.color='#666666';" +
-            "   elems=document.getElementsByName('detail_entry');"+
-            "   for(var i=0;i<elems.length;i++) {" +
-            "       elems[i].style.display='none';" +
-            "   }" +
-            "   var elem=document.getElementById(id);" +
-            "   if(elem.style.display=='none') {" +
-            "       elem.style.display='block';" +
-            "   } else {" +
-            "       elem.style.display='none';" +
-            "   }" +
-            "}" +
-            "</script>";
-        return js;
-    }
-    
-    private String getCSS() {
-        String css=
-            "<style type=\"text/css\">" +
-            "   body {margin:0pt;border:0pt;background-color:#b6cfe4}" +
-            "   div.content {padding:5pt;}" +
-            "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
-            "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
-            "   table.overview tr {cursor:pointer;}" +
-            "</style>";
-        return css;
-    }
+
     
     
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
@@ -265,6 +183,102 @@ public class WebServiceServlet extends AxisServlet {
         } else sendBadRequest(req,res,writer);
     }
     
-  
+    public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        //TODO: source out html
+        
+    }
+    
+    public void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        //TODO: source out html
+        Monitor monitor=(Monitor)wsc.getAttribute(Monitor.class.getName());
+        if(monitor!=null && wsc.getConfiguration().getGlobalServiceConfig().getMonitoringEnabled()) {
+            res.setStatus(HttpURLConnection.HTTP_OK);
+            res.setContentType("text/html");
+            String ip=req.getRemoteAddr();
+            MonitorHistory history=monitor.getMonitorHistory(ip);
+            SimpleDateFormat format=new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+            writer.println("<html><head><title>Web service monitor</title>"+getJS()+getCSS()+"</head><body>");
+            writer.println("<div class=\"title\">Web service monitor</div><div class=\"content\">");
+            writer.println("<table class=\"overview\">");
+            writer.println("<tr>");
+            writer.println("<th align=\"left\">Start</th>");
+            writer.println("<th align=\"left\">Time (in ms)</th>");
+            writer.println("<th align=\"left\">Service</th>");
+            writer.println("</tr>");
+            MonitorRecord[] records=history.getRecords();
+            for(int i=0;i<records.length;i++) {
+                MonitorRecord record=records[i];
+                String id="entry"+i;
+                String styleClass="nosel";
+                if(i==records.length-1) styleClass="sel";
+                writer.println("<tr name=\"row_entry\" class=\""+styleClass+"\" onclick=\"toggleDetails(this,'"+id+"')\">");
+                writer.println("<td align=\"left\">"+format.format(new Date(record.getStartTime()))+"</td>");
+                writer.println("<td align=\"right\">"+record.getTime()+"</td>");
+                writer.println("<td align=\"left\">"+record.getTarget()+"</td>");
+                writer.println("</tr>");
+            }
+            writer.println("</table");
+            for(int i=0;i<records.length;i++) {
+                MonitorRecord record=records[i];
+                String id="entry"+i;
+                String display="none";
+                if(i==records.length-1) display="block";
+                writer.println("<div name=\"detail_entry\" id=\""+id+"\" style=\"display:"+display+"\">");
+                writer.println("<table width=\"100%\">");
+                writer.println("<tr>");
+                writer.println("<td><b>Request:</b><br/><textarea class=\"xml\">");
+                writer.println(record.getRequest());
+                writer.println("</textarea></td>");
+                writer.println("<td><b>Response:</b><br/><textarea class=\"xml\">");
+                writer.println(record.getResponse());
+                writer.println("</textarea></td>");
+                writer.println("</tr>");
+                writer.println("</table>");
+                writer.println("</div");
+            }
+            writer.println("</div></body></html>");
+            writer.close();
+        } else sendForbidden(req,res,writer);
+    }
+    
+    private String getJS() {
+        //TODO: source out js
+        String js=
+            "<script type=\"text/javascript\">" +
+            "function toggleDetails(src,id) {" +
+            "   var elems=document.getElementsByName('row_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].className='nosel';" +
+            "   }" +
+            "   src.className='sel';" +
+            "   elems=document.getElementsByName('detail_entry');"+
+            "   for(var i=0;i<elems.length;i++) {" +
+            "       elems[i].style.display='none';" +
+            "   }" +
+            "   var elem=document.getElementById(id);" +
+            "   if(elem.style.display=='none') {" +
+            "       elem.style.display='block';" +
+            "   } else {" +
+            "       elem.style.display='none';" +
+            "   }" +
+            "}" +
+            "</script>";
+        return js;
+    }
+    
+    private String getCSS() {
+        //TODO: source out css
+        String css=
+            "<style type=\"text/css\">" +
+            "   body {margin:0pt;border:0pt;background-color:#b6cfe4}" +
+            "   div.content {padding:5pt;}" +
+            "   div.title {padding:5pt;font-size:18pt;width:100%;background-color:black;color:white}" +
+            "   table.overview td,th {padding-bottom:5pt;padding-right:15pt}" +
+            "   table.overview tr.nosel {cursor:pointer;color:#000000;}" +
+            "   table.overview tr.sel {cursor:pointer;color:#666666;}" +
+            "   textarea.xml {width:100%;height:400px}" +
+            "</style>";
+        return css;
+    }
     
 }
