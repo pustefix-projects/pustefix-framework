@@ -579,7 +579,7 @@ function SOAP_ArraySerializer(xmlType) {
 }
 SOAP_ArraySerializer.extend(SOAP_SimpleSerializer);
 SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer,ctx) {
-  if(dim>0 && value instanceof Array) {
+  if(dim>0 && (value instanceof Array || (typeof value=="object" && typeof value.slice!="undefined")) ) {
     writer.startElement(name);
     if(dim==typeInfo.dimension) {
       var prefix=writer.getPrefix(XML_Types.SOAP_ARRAY.namespaceUri);
@@ -610,6 +610,7 @@ SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,wri
 }
 
 SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx) {
+  //  alert("typeof value: " + typeof value + ", instance: " + (value instanceof Array) + ", constructor: " + (value.constructor==Array) + ", length: " + value.length + ", value[0]: " + value[0]);
   this.serializeSub(value,name,typeInfo,typeInfo.dimension,writer,ctx);
 }
 
