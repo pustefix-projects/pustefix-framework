@@ -47,15 +47,6 @@
     
   </part>
 
-  <part name="navi">
-    <product name="default">
-      <lang name="default">
-        .sample_navi_norm { font-size: 11px; }
-        .sample_navi_sel  { background-color: #992222; color: #ffffff; font-size: 11px; }
-      </lang>
-    </product>
-  </part>
-  
 </include_parts><!--
 Local Variables:
 mode: xml
