@@ -51,10 +51,10 @@
   <standardpage name="images"            xml="core/editor/xml/three_frames.xml">
     <include stylesheet="core/editor/xsl/runtime.xsl"/>
   </standardpage>
-  <standardpage name="includes"          xml="core/editor/xml/three_frames.xml">
+  <standardpage name="includes"          xml="core/editor/xml/three_frames_editor.xml">
     <include stylesheet="core/editor/xsl/runtime.xsl"/>
   </standardpage>
-  <standardpage name="commons"           xml="core/editor/xml/three_frames.xml">
+  <standardpage name="commons"           xml="core/editor/xml/three_frames_editor.xml">
     <include stylesheet="core/editor/xsl/runtime.xsl"/>
   </standardpage>
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
