@@ -25,8 +25,6 @@ import de.schlund.util.FactoryInit;
 
 import java.util.Properties;
 
-import javax.servlet.http.*;
-
 
 /**
  * The main class handling all exceptions occuring during work
@@ -42,12 +40,12 @@ public class ExceptionHandler implements FactoryInit {
 
     //~ Instance/static variables ..............................................
 
-    private static ExceptionHandler instance_=null;
-    private final String PROP_FILE_          ="exceptionhandler.propertyfile";
-    private Cubbyhole cubbyhole_             =null;
-    private String propfile_                 =null;
-    private PropertyManager propman_         =null;
-    private PFXThreadedHandler xhandler_     =null;
+    private static ExceptionHandler instance_ = null;
+    private final String PROP_FILE_  = "exceptionhandler.propertyfile";
+    private Cubbyhole cubbyhole_  = null;
+    private String propfile_  = null;
+    private PropertyManager propman_  = null;
+    private PFXThreadedHandler xhandler_  = null;
 
     //~ Constructors ...........................................................
 
@@ -82,14 +80,12 @@ public class ExceptionHandler implements FactoryInit {
      * @param req the responsible request.
      * @param properties the current properties.
      */
-    synchronized public void handle(Throwable t, PfixServletRequest req, 
-                                    Properties properties, 
-                                    HttpServletResponse res) {
+    synchronized public void handle(Throwable t, PfixServletRequest req, Properties properties) {
         PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
         // This is called from various threads, so everyone needs its own context !
-        ExceptionContext excontext=new ExceptionContext(t, req, res, properties);
+        ExceptionContext excontext=new ExceptionContext(t, req, properties);
         PFUtil.getInstance().debug("Initialising exception context.");
         excontext.init();
         PFUtil.getInstance().debug("Looking if properties have changed.");
@@ -126,7 +122,7 @@ public class ExceptionHandler implements FactoryInit {
     public void init(Properties properties) {
         PFUtil.getInstance().debug(
                 "ExceptionHandler.init called from FactoryInit.");
-        propfile_=(String) properties.getProperty(PROP_FILE_, "");
+        propfile_= properties.getProperty(PROP_FILE_, "");
         try {
             propman_.init(propfile_);
             propman_.checkProperties();

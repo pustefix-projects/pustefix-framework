@@ -39,7 +39,6 @@ class PFXHandler {
 
     //~ Instance/static variables ..............................................
 
-    private ExceptionConfig[] econf_ = null;
     private boolean errorflag_ = false;
     private GeneralConfig gconf_ = null;
     private boolean initialised_ = false;
@@ -103,7 +102,8 @@ class PFXHandler {
                     break;
                 }
                 if (result == PFUtil.FULL) {
-                    ruleFull(excontext);
+                    // nop
+                    //ruleFull(excontext);
                     break;
                 }
             }
@@ -179,13 +179,13 @@ class PFXHandler {
      * Utility method to handle internal errors.
      * @param message a String containing a message.
      */
-    private void internalError(String message) {
+  /*  private void internalError(String message) {
         StringBuffer buf = new StringBuffer();
         buf.append("Message: ");
         buf.append(message + "\n");
         buf.append("Useme flag=" + new Boolean(gconf_.isUseme()).toString() + "\n");
         pfutil_.error("Internal Error during ExceptionHandling!!!\n" + buf.toString());
-    }
+    }*/
 
     /**
      * Action to take if rules are not initialized properly or you do not use them.
@@ -211,10 +211,10 @@ class PFXHandler {
      * @param req the current <see>PfixServletRequest</see>.
      * @param properties the current properties.
      */
-    private void ruleFull(ExceptionContext excontext) {
+  /*  private void ruleFull(ExceptionContext excontext) {
         //nop
     }
-
+*/
     /**
      * Action to take if responsible rule sayed 'match'.
      * @param e the current Exception.

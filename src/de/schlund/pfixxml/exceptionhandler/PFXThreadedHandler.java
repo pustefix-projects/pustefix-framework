@@ -54,7 +54,7 @@ class PFXThreadedHandler extends PFXHandler implements Runnable {
             try {
                 excontext=(ExceptionContext) cubbyhole_.take();
                 super.xhandle(excontext);
-                Thread.currentThread().sleep(1);
+                Thread.sleep(1);
             } catch(InterruptedException ex) {
             }
         }

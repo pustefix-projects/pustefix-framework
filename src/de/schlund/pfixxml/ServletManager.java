@@ -595,7 +595,7 @@ public abstract class ServletManager extends HttpServlet {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
-            xhandler.handle(e, preq, properties, res);
+            xhandler.handle(e, preq, properties);
             throw(new ServletException(e.toString()));
         }
     }
