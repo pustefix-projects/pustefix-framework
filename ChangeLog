@@ -1,5 +1,7 @@
 2003-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/include.xsl.in: added pfx:attribute to define dynamic attributes for tags
+
 	* src/de/schlund/pfixcore/workflow/Context.java (pageIsSidestepPage): bugfix, dont bug out 
 	but print a warning to the log when the properties are null
 

@@ -83,6 +83,30 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template match="pfx:attribute">
+    <cus:documentation>
+      <description>This template allows you to create dynamic attributes  
+        for every tag that does an apply-templates of it's body.
+      </description>
+      <param required="1">
+        <name>name</name>
+        <description>The name of the attribute</description>
+      </param>
+      <example>
+        <input>
+          <xmlcode><foo><pfx:attribute name="bar"><ixsl:value-of select="/baz"/></pfx:attribute></foo></xmlcode>
+        </input>
+        <output>
+          This results in the following code in the final stylesheet:<br/>
+          <xmlcode><foo><ixsl:attribute name="bar"><ixsl:value-of select="/baz"/></ixsl:attribute></foo></xmlcode>
+        </output>
+      </example>
+    </cus:documentation>
+    <ixsl:attribute name="{@name}">
+      <xsl:apply-templates/>
+    </ixsl:attribute>
+  </xsl:template>
+
   <xsl:template match="pfx:argref">
     <xsl:param name="__env"/>
     <xsl:variable name="pos">
@@ -377,9 +401,9 @@
       <example>
         <input>
           <xmlcode><pfx:image src="/sample1/img/test.gif"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><img border="0" alt="" src="/sample1/img/test.gif" width="120" height="82"/></xmlcode>
+        </input> <output>
+          <xmlcode><img border="0" alt="" src="/sample1/img/test.gif"
+          width="120" height="82"/></xmlcode>
         </output>
       </example>
     </cus:documentation>
