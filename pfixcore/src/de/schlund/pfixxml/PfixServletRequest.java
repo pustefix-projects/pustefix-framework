@@ -600,6 +600,9 @@ public class PfixServletRequest {
                         }
                         parameters.put(key, finvals);
                     }
+                    // maybe we should remove the "original" encoded parameter from the
+                    // parameter array?
+                    // parameters.remove(name);
                 }
             }
         }

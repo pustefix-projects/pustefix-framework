@@ -1,3 +1,7 @@
+2004-05-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: removed the adding of ports again...
+
 2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java
