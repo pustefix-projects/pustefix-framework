@@ -382,6 +382,7 @@
               can force the servlet as a whole to run only under SSL
               by  <a href="#ssl">specifying the <code>ssl</code> subnode of the 
                 <code>servletinfo</code> node</a>.
+            </p>
           </div>
         </xmlcodeOFF>
         <state class="AClassName"/>                              
