@@ -70,28 +70,16 @@ public class Context implements AppContext {
 
     private Element                navigation_element  = null;
     private String                 visit_id            = null;
+    private boolean                needs_update;
     
     private static Category LOG = Category.getInstance(Context.class.getName());
 
-    /**
-     * <code>DEFPROP</code> references the property to set the default Pageflow.
-     * The properties name is "context.defaultpageflow"
-     */
-    protected final static String   DEFPROP = "context.defaultpageflow";
-
-    /**
-     * <code>NAVPROP</code> references the property to set the navigation xml file.
-     * The properties name is "context.navigation". This property is named
-     * "xmlserver.depend.xml", that means it's the same file as the one containing
-     * the target definitions 
-     */
-    protected final static String   NAVPROP   = "xmlserver.depend.xml";
-
-    private   static final String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate"; 
-    
-    protected final static String   WATCHMODE = "context.adminmode.watch";
-    protected final static String   ADMINPAGE = "context.adminmode.page";
-    protected final static String   ADMINMODE = "context.adminmode";
+    private final static String DEFPROP           = "context.defaultpageflow";
+    private final static String NAVPROP           = "xmlserver.depend.xml";
+    private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate"; 
+    private final static String WATCHMODE         = "context.adminmode.watch";
+    private final static String ADMINPAGE         = "context.adminmode.page";
+    private final static String ADMINMODE         = "context.adminmode";
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -103,10 +91,10 @@ public class Context implements AppContext {
         this.conutil    = conutil;
 	this.properties = properties;
         this.name       = name;
-
+        
 	rmanager = new ContextResourceManager();
 	rmanager.init(this);
-
+        
         reset();
     }
 
@@ -114,7 +102,11 @@ public class Context implements AppContext {
         navigation_element = null;
     }
     
-    public synchronized void reset() throws Exception {
+    public void reset() {
+        needs_update = true;
+    }
+    
+    private void do_update() throws Exception {
     	// get PropertyObjects from PropertyObjectManager
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
         
@@ -133,6 +125,8 @@ public class Context implements AppContext {
         
         checkForAdminMode();
         checkForNavigationReuse();
+
+        needs_update = false;
     }
 
     private void checkForNavigationReuse() {
@@ -140,7 +134,7 @@ public class Context implements AppContext {
         if (navi_autoinv != null && navi_autoinv.equals("false")) {
             autoinvalidate_navi = false;
             LOG.warn("\n**** CAUTION **** Setting autoinvalidate of navigation to FALSE!!!! \n" +
-                    "**** You need to call context.invalidateNavigation() to update the navigation.");
+                     "**** You need to call context.invalidateNavigation() to update the navigation.");
         } else {
             autoinvalidate_navi = true;
         }
@@ -171,6 +165,10 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
+        if (needs_update) {
+            do_update();
+        }
+        
         SPDocument  spdoc;
 
         if (visit_id == null) 

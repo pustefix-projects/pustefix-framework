@@ -38,20 +38,20 @@ import org.apache.log4j.*;
 
 public class ContextResourceManager {
     private Category CAT = Category.getInstance(ContextResourceManager.class.getName());
-    private HashMap resources = new HashMap();
+    private HashMap  resources = new HashMap();
 
     private final static String PROP_RESOURCE = "context.resource";
     private final static String SEPERATOR     = ", ";
     
     /**
-     * Instanciates the objects and register the interfaces, which
+     * Instanciates the objects and registers the interfaces which
      * should be used from each.
      *
      * In general such an object implements a number of interfaces extending
      * the ContextResource interface. You are able to specify the classes
      * you want to instanciate and to specify which interfaces you want to
      * use from such an object.
-     *     
+     * 
      * The configuration is done by passing properties, each object you want
      * to use must be specified in a single property.
      * <br>

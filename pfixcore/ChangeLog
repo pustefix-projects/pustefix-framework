@@ -1,3 +1,15 @@
+2003-01-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer):
+	cosmetics, don't check for contextclassname more often than
+	needed.
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (ContextResourceManager): cosmetics
+
+	* src/de/schlund/pfixcore/workflow/Context.java (do_update): new method (was the reset method)
+	(reset): don't do the work anymore, just register a needs_update status.
+	(handleRequest): check if do_update needs to be called.
+
 2003-01-28  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/ContextXMLServer.java: added attributes
@@ -6,7 +18,8 @@
 	(tryReloadProperties): set contextClassName, compare old to new and
 	then iterate over Contexts and reset them resp. remove Contexts from 
 	contextMap
-	(getContext): removed reset parameter, now creates new context and adds 	it to contextMap, if context value is null or if contextclass has 
+	(getContext): removed reset parameter, now creates new context and adds
+ 	it to contextMap, if context value is null or if contextclass has 
 	changed (getContext)
 
 	* src/de/schlund/pfixcore/workflow/Context.java: made reset method

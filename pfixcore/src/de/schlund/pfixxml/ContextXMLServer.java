@@ -38,12 +38,15 @@ public class ContextXMLServer extends AbstractXMLServer {
     private final static String   CONTEXT_SUFFIX = "__CONTEXT__";
     private final static String   CONTEXT_CLASS  = "context.class";
     
-    private WeakHashMap contextMap=new WeakHashMap();
-    private String contextClassName;
+    private WeakHashMap contextMap = new WeakHashMap();
+    private String      contextclassnname;
     
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        contextClassName=getProperties().getProperty(CONTEXT_CLASS);
+        contextclassnname = getProperties().getProperty(CONTEXT_CLASS);
+        if (contextclassnname == null) {
+            throw (new ServletException("Need name for context class from context.class property"));
+        }
     }
 
     protected boolean needsSession() {
@@ -61,16 +64,16 @@ public class ContextXMLServer extends AbstractXMLServer {
             //Reset Contexts
             synchronized (contextMap) {
                 //Set name of Context class, compare with old name
-                String oldClassName=contextClassName;
-                contextClassName=getProperties().getProperty(CONTEXT_CLASS);
-                if(contextClassName.equals(oldClassName)) {
+                String oldClassName = contextclassnname;
+                contextclassnname = getProperties().getProperty(CONTEXT_CLASS);
+                if (contextclassnname.equals(oldClassName)) {
                     //Iterate over Contexts and reset them
-                    Iterator it=contextMap.keySet().iterator();
-                    while(it.hasNext()) {
+                    Iterator it = contextMap.keySet().iterator();
+                    while (it.hasNext()) {
                         try {
-                            AppContext appCon=(AppContext)it.next();
+                            AppContext appCon = (AppContext) it.next();
                             appCon.reset();
-                        } catch(Exception e) {
+                        } catch (Exception e) {
                             throw new ServletException("Error while resetting context.");
                         }
                     }
@@ -78,7 +81,7 @@ public class ContextXMLServer extends AbstractXMLServer {
                     //Remove deprecated Contexts from contextMap
                     contextMap.clear();
                 }
-            } 
+            }
             return true;
         } else {
             return false;
@@ -99,8 +102,8 @@ public class ContextXMLServer extends AbstractXMLServer {
             throw new XMLException("No valid session found! Aborting...");
         }
         AppContext context = (AppContext) conutil.getSessionValue(session, contextname);
-        //Create new context and add it to contextMap, if context is null or contextClass has changed
-        if ((context==null) || (!contextClassName.equals(context.getClass().getName()))) {
+        // Create new context and add it to contextMap, if context is null or contextClass has changed
+        if ((context == null) || (!contextclassnname.equals(context.getClass().getName()))) {
             context = createContext();
             conutil.setSessionValue(session, contextname, context);
             synchronized (contextMap) {
@@ -115,11 +118,7 @@ public class ContextXMLServer extends AbstractXMLServer {
     }
     
     private AppContext createContext() throws Exception {
-        String contextclass = getProperties().getProperty(CONTEXT_CLASS);
-        if (contextclass == null) {
-            throw (new XMLException("Need name for context class from context.class property"));
-        }
-        AppContext context = (AppContext) Class.forName(contextclass).newInstance();
+        AppContext context = (AppContext) Class.forName(contextclassnname).newInstance();
         context.init(getProperties(), getContainerUtil(), makeContextName());
         return context;
     }
