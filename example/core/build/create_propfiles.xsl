@@ -76,7 +76,7 @@
       <xsl:value-of select="$prefix"/>.ihandlercontainer.policy=<xsl:value-of select="@policy"/><xsl:text>&#xa;</xsl:text>
     </xsl:if>
     <xsl:if test="./interface[@activeignore = 'true']">
-      <xsl:value-of select="$prefix"/><xsl:text>.ignoreforactive=</xsl:text>
+      <xsl:value-of select="$prefix"/><xsl:text>.ihandlercontainer.ignoreforactive=</xsl:text>
       <xsl:for-each select="./interface[@activeignore = 'true']">
         <xsl:value-of select="@prefix"/><xsl:text> </xsl:text>
       </xsl:for-each><xsl:text>&#xa;</xsl:text>
@@ -113,7 +113,14 @@
 
   <xsl:template match="param">
     <xsl:param name="prefix"/>
-    <xsl:value-of select="$prefix"/>.<xsl:value-of select="@name"/>
+    <xsl:choose>
+      <xsl:when test="not($prefix)">
+        <xsl:value-of select="concat('pagerequest.',ancestor::pagerequest/@name,'.',@name)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$prefix"/>.<xsl:value-of select="@name"/>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:text>=</xsl:text><xsl:apply-templates>
       <xsl:with-param name="doit">yes</xsl:with-param>
     </xsl:apply-templates><xsl:text>&#xa;</xsl:text>
@@ -145,23 +152,15 @@
     </xsl:if>
     <xsl:for-each select="./resource">
       <xsl:text>context.resource.</xsl:text>
-      <xsl:value-of select="position()"/>.<xsl:value-of select="./@class"/><xsl:text>=</xsl:text>
+      <xsl:value-of select="format-number(position(),'00')"/>.<xsl:value-of select="./@class"/><xsl:text>=</xsl:text>
       <xsl:for-each select="./implements">
-        <xsl:value-of select="./@class"/><xsl:text> </xsl:text>
+        <xsl:value-of select="./@class"/><xsl:if test="following-sibling::implements"><xsl:text>, </xsl:text></xsl:if>
       </xsl:for-each>
       <xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="servletinfo">
-    <xsl:if test="./ssl">
-      <xsl:text>servlet.needsSSL=</xsl:text>
-      <!--       <xsl:apply-templates select="./sslneeded/node()"> -->
-      <!--         <xsl:with-param name="doit" select="'yes'"/> -->
-      <!--       </xsl:apply-templates> -->
-      <xsl:value-of select="./ssl/@force"/>
-      <xsl:text>&#xa;</xsl:text>
-    </xsl:if>
     <xsl:text>xmlserver.depend.xml=</xsl:text>
     <!--     <xsl:apply-templates select="./depend/node()"> -->
     <!--       <xsl:with-param name="doit" select="'yes'"/> -->
@@ -177,25 +176,37 @@
     <!--     </xsl:apply-templates> -->
     <xsl:value-of select="@name"/>
     <xsl:text>&#xa;</xsl:text>
-    <xsl:if test="./editmode">
-      <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
-      <!--     <xsl:apply-templates select="./prohibitedit/node()"> -->
-      <!--       <xsl:with-param name="doit" select="'yes'"/> -->
-      <!--     </xsl:apply-templates> -->
-      <xsl:choose>
-        <xsl:when test="./editmode[@allow = 'true']">false</xsl:when>
-        <xsl:otherwise>true</xsl:otherwise>
-      </xsl:choose>
+    <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="ssl">
+    <xsl:text>servlet.needsSSL=</xsl:text>
+      <!--       <xsl:apply-templates select="./sslneeded/node()"> -->
+      <!--         <xsl:with-param name="doit" select="'yes'"/> -->
+      <!--       </xsl:apply-templates> -->
+      <xsl:value-of select="./@force"/>
       <xsl:text>&#xa;</xsl:text>
-    </xsl:if>
-    <xsl:if test="./adminmode">
-      <xsl:text>context.adminmode.watch=</xsl:text>
-      <xsl:value-of select="./adminmode/@watch"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>context.adminmode.page=</xsl:text>
-      <xsl:value-of select="./adminmode/@page"/><xsl:text>&#xa;</xsl:text>
-    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="editmode">
+    <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
+    <!--     <xsl:apply-templates select="./prohibitedit/node()"> -->
+    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
+    <!--     </xsl:apply-templates> -->
+    <xsl:choose>
+      <xsl:when test="@allow = 'true'">false</xsl:when>
+      <xsl:otherwise>true</xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#xa;</xsl:text>
   </xsl:template>
   
+  <xsl:template match="adminmode">
+    <xsl:text>context.adminmode.watch=</xsl:text>
+    <xsl:value-of select="./@watch"/><xsl:text>&#xa;</xsl:text>
+    <xsl:text>context.adminmode.page=</xsl:text>
+    <xsl:value-of select="./@page"/><xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+
 </xsl:stylesheet>
 
 <!--
