@@ -34,7 +34,7 @@ TC4_ALLJAVA = $(shell find $(TC4_SUBDIRS) -maxdepth 1 -name "*.java")
 
 .PHONY : java-common java-tomcat java-jserv clean doc docpriv cleandoc dist notag clean-rebuild example
 
-all: compile example jar
+all: compile example dev
 	@echo "Install jars in tomcat-lib directory!"
 	@rm -f example/servletconf/tomcat/lib/*.jar
 	@(cp dist/*.jar example/servletconf/tomcat/lib/)
@@ -161,3 +161,14 @@ jar:
 	@${JAR} cf dist/$(PROJECT)-$(VERSION).jar `find META-INF -type f | grep -v "CVS/"`
 	@(cd $(BUILDDIR); ${JAR} uf ../dist/$(PROJECT)-${VERSION}.jar *)
 	@(cd res; ${JAR} uf ../dist/$(PROJECT)-${VERSION}.jar `find . -type f | grep -v "CVS/"`)
+
+dev:
+	@echo "Setting link to $(BUILDDIR)/de in example/servletconf/tomcat/classes."
+	@(cd example/servletconf/tomcat/; if ! test -d classes; then mkdir classes; fi)
+	@(cd example/servletconf/tomcat/classes; if ! test -h de; then ln -s ../../../../$(BUILDDIR)/de; fi)
+	@echo "Building $(PROJECT)-res.jar in directory dist."
+	@(if ! test -d dist; then mkdir dist; fi)
+	@(rm -f dist/*.jar)
+	@${JAR} cf dist/$(PROJECT)-$(VERSION)-res.jar `find META-INF -type f | grep -v "CVS/"`
+	@(cd res; ${JAR} uf ../dist/$(PROJECT)-${VERSION}-res.jar `find . -type f | grep -v "CVS/"`)
+	

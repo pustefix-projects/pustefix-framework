@@ -114,9 +114,9 @@ public class EditorHelper {
                 }
                 skel.appendChild(root);
                 root.appendChild(skel.createComment("Append include parts here..."));
-                FileWriter    output = new FileWriter(incfile);
-                OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                XMLSerializer ser    = new XMLSerializer(output, outfor);
+                FileOutputStream output = new FileOutputStream(incfile);
+                OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                XMLSerializer    ser    = new XMLSerializer(output, outfor);
                 outfor.setPreserveSpace(true); 
                 outfor.setIndent(0);
                 ser.serialize(skel);
@@ -176,9 +176,9 @@ public class EditorHelper {
         File file = constructBackupFile(ess, inc);
         if (file != null) {
             try {
-                FileWriter    output = new FileWriter(file);
-                OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                XMLSerializer ser    = new XMLSerializer(output, outfor);
+                FileOutputStream output = new FileOutputStream(file);
+                OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                XMLSerializer    ser    = new XMLSerializer(output, outfor);
                 outfor.setPreserveSpace(true); 
                 outfor.setIndent(0);
                 ser.serialize((Element) tosave);

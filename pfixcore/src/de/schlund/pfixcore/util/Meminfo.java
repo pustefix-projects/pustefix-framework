@@ -16,42 +16,56 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixcore.util;
 
 import org.apache.log4j.*;
 
-public class Meminfo {
-    private static long     last_used = -1l;
+
+public final class Meminfo {
+
+    //~ Instance/static variables ..................................................................
+
+    private static long last_used = -1l;
     private static Category CAT = Category.getInstance(Meminfo.class.getName());
 
-    public static synchronized void print (String info) {
-        long free, total, used_new_bg, used_new_ag;
+    //~ Methods ....................................................................................
+
+    public final static synchronized void print(String info) {
+        long    free;
+        long    total;
+        long    used_new_bg;
+        long    used_new_ag;
         Runtime run = Runtime.getRuntime();
         free        = run.freeMemory();
         total       = run.totalMemory();
         used_new_bg = total - free;
-        
-        CAT.debug(",---------------------------------------------------------------");
+        StringBuffer debugString = new StringBuffer(512);
+        debugString.append("\n,---------------------------------------------------------------\n");
         if (info != null) {
-            CAT.debug("| "+info);
+            debugString.append("|").append(info).append("\n");
         }
-        CAT.debug("| Meminfo (before GC): "+ free +" free, "+ total +" total => " + used_new_bg +" used.");
+        debugString.append("| Meminfo (before GC): ").append(free).append(" free, ").append(total).
+        	append(" total => ").append(used_new_bg).append(" used.").append("\n");
         run.gc();
         free        = run.freeMemory();
         total       = run.totalMemory();
         used_new_ag = total - free;
-        CAT.debug("| Meminfo (after  GC): "+ free +" free, "+ total +" total => " + used_new_ag +" used.");
+        debugString.append("| Meminfo (after  GC): ").append(free).append(" free, ").append(total).
+        	append(" total => ").append(used_new_ag).append(" used.").append("\n");
         long freed = (used_new_bg - used_new_ag);
         if (freed > 0) {
-            CAT.debug("|       => "+ freed +" freed by GC.");
+            debugString.append("|       => ").append(freed).append(" freed by GC.").append("\n");
         } else if (freed < 0) {
-            CAT.debug("| ????  => GC did COST "+ -freed +" ????");
+            debugString.append("| ????  => GC did COST ").append(-freed).append(" ????").
+            	append("\n");
         }
         if (last_used != -1) {
-            CAT.debug("|       => "+ (used_new_ag - last_used) +" difference to last run.");
+            debugString.append("|       => ").append(used_new_ag - last_used).
+            	append(" difference to last run.").append("\n");
         }
-        CAT.debug("`---------------------------------------------------------------\n");
+        debugString.append("`---------------------------------------------------------------\n");
         last_used = used_new_ag;
+        CAT.debug(debugString.toString());
+        debugString = null;
     }
 }
