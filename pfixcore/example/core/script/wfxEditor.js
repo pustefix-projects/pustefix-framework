@@ -172,7 +172,7 @@ wfxEditor.prototype.rehighlight = function() {
  
   content = this.col2tag(this.getHTML());
 
-  alert(wfxEditor.str2chr(content));
+  //  alert(wfxEditor.str2chr(content));
 
   //------------
   // getOffsets
@@ -422,6 +422,8 @@ wfxEditor.prototype.src2col = function( buf ) {
 
   var rule_entity  = /(&amp;.+?;)/g;
   var rule_comment = /(&lt;!--[^\0]*?--&gt;)/g;
+  var rule_cdata   = /(&lt;!\[CDATA\[[^\0]*?\]\]&gt;)/g;
+
   bench( "\n------------------------\n  rules", null, 6);
 
   //-------------------------
@@ -432,10 +434,21 @@ wfxEditor.prototype.src2col = function( buf ) {
   var comments = buf.match( rule_comment );
   if( comments instanceof Array ) {
     for( var i=0; i<comments.length; i++ ) {
-      buf = buf.replace( new RegExp(comments[i]), '&lt;!-- '+i+' --&gt;' );
+      // XXX: $$
+      buf = buf.replace( new RegExp(comments[i].replace(/(\W)/g,'\\$1')), '&lt;!-- '+i+' --&gt;' );
     }
   }
   bench( "  comments1", null, 6);
+
+  bench( null, 6 );
+  var cdatas = buf.match( rule_cdata );
+  if( cdatas instanceof Array ) {
+    for( var i=0; i<cdatas.length; i++ ) {
+      // XXX: $$
+      buf = buf.replace( new RegExp(cdatas[i].replace(/(\W)/g,'\\$1')), '&lt;!\[CDATA\[ '+i+' \]\]&gt;' );
+    }
+  }
+  bench( "  cdatas1", null, 6);
   //---------------------------------------------------------------------------
 
   //------
@@ -518,6 +531,15 @@ wfxEditor.prototype.src2col = function( buf ) {
     }
   }
   bench( "  comments2", null, 6);
+
+  bench( null, 6);
+  if( cdatas instanceof Array ) {
+    for( var i=0; i<cdatas.length; i++ ) {
+
+      buf = buf.replace( new RegExp('&lt;!\\[CDATA\\[ '+i+' \\]\\]&gt;'), '<span class="cdata">'+cdatas[i]+'</span>' );
+    }
+  }
+  bench( "  cdatas2", null, 6);
 
   bench( "  src2col(intern)", null, 10);
 
@@ -987,7 +1009,7 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
   var pos, posprev, count;
   var posEnd, posEndprev;
 
-  //  alert( "content:\n" + wfxEditor.str2chr(content));
+  //  alert( "indentCurrentRange():\ncontent:\n" + wfxEditor.str2chr(content));
 
   if( wfx.is_ie ) {
     newline = '\r\n';
@@ -1053,13 +1075,13 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
   contentTrailing = content.substr(    posEnd );
   content         = content.substring( posprev, posEnd );
 
-//  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
-//	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
-//	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
+  //  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
+  //	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
+  //	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
 
   pos     -= contentLeading.length;
   posprev -= contentLeading.length;
-  //  alert("posprev:"+ posprev + "\npos:" + pos);
+  //alert("posprev:"+ posprev + "\npos:" + pos);
   //---------------------------------------------------------------------------
 
   //  content = this.indentCurrentLineInternal( content, posprev, pos, optiTab );
@@ -1504,6 +1526,9 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     html = html.replace( /\r\n/g , "<br />" );
 
+    // untabify
+    html = html.replace( /&nbsp;/g, "  ");
+
   } else {
     //    totalGetHTML = 1;
     //    html = wfxEditor.getHTML(this._doc.body, false, dbg);
@@ -1516,7 +1541,11 @@ wfxEditor.prototype.getHTML = function(dbg) {
     // ==> bring leading and trailing range markers inside <pre>
     html = html.replace( /^(.+?)\n<pre>/, "<pre>$1");
     html = html.replace( /<\/pre>\n(.+?)$/, "$1</pre>");
+
+    // untabify
+    html = html.replace( /\x09/g, "  ");
   }
+
   
   html = html.replace( /\u200E/g, '' );   // &#8206; == &lrm;
 
@@ -1742,7 +1771,8 @@ wfxEditor.str2chr = function( str ) {
     res += str.charAt(i)+"("+str.charCodeAt(i)+")";
   }
 
-  return str + "\n---------------------------------------\n" + res;
+  //  return str + "\n---------------------------------------\n" + res;
+  return "\n---------------------------------------\n" + res;
 }
 
 //*****************************************************************************
@@ -2057,6 +2087,7 @@ wfxEditor.prototype.generate = function( target, content ) {
   '.ixslendtag  { color:#0000ff; font-weight:normal }\n' + 
   '.entity      { color:#cc0000; font-weight:normal }\n' + 
   '.comment     { color:#aaaaaa; font-weight:normal }\n' + 
+  '.cdata       { color:#009999; font-weight:normal }\n' + 
   '</style>\n';
 
 //  '.string      { color:#0000ff; font-weight:normal }\n' + 
