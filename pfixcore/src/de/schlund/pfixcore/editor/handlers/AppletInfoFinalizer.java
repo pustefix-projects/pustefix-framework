@@ -68,7 +68,7 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
             PfixcoreNamespace[]    nspaces     = esess.getProduct().getPfixcoreNamespace();
             TreeSet images = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.IMAGE);
             Element iroot   = resdoc.createNode("allimages"); 
-            renderAllImages(images, resdoc, iroot);
+            renderAllImages(tgen, images, resdoc, iroot);
                                                                       
             for (int i = 0; i < nspaces.length; i++) {              
                     PfixcoreNamespace nsp = nspaces[i];
@@ -81,7 +81,7 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
             // Render all includes
             TreeSet includes = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
             Element root     = resdoc.createNode("allincludes"); 
-            EditorHelper.renderIncludesForAppletInfo(includes, resdoc, root);                                        
+            EditorHelper.renderIncludesForAppletInfo(tgen, includes, resdoc, root);                                        
 
 	}
 
@@ -94,17 +94,22 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
 
 
 
-    private void renderAllImages(TreeSet images, ResultDocument resdoc, Element root) {
+    private void renderAllImages(TargetGenerator tgen, TreeSet images, ResultDocument resdoc, Element root) {
         String  olddir  = "";
         Element elem    = null;
         for (Iterator i = images.iterator(); i.hasNext(); ) {
             AuxDependency curr = (AuxDependency) i.next();
+            String docroot = tgen.getDocroot();
             String dir  = curr.getDir();
             String path = curr.getPath();
             String name = path.substring(path.lastIndexOf("/") + 1);
 
+            System.out.println("DOOOOOOOOOOOCROOOOOOT" + docroot);
+
+            String newPath = path.substring(docroot.length(), path.length());
+
             Element img = resdoc.createSubNode(root, "image");
-            img.setAttribute("path", path);
+            img.setAttribute("path", newPath);
             img.setAttribute("name", name);
             if (curr.getModTime() == 0) {
                 img.setAttribute("missing", "true");

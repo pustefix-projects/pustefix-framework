@@ -55,6 +55,7 @@ public class PfixAppletInfo {
         try {
             url = new URL(parseLocation(location));            
             HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            System.out.println("Hallo --->" + url.toString());
             
             input = connection.getInputStream();            
             buildDom();
@@ -95,7 +96,8 @@ public class PfixAppletInfo {
          String afterString = location.substring(location.lastIndexOf(";"), location.length());
          
          String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
-
+         System.out.println("URRRLLLL NEU " + urlLocation);
+         
          return urlLocation;
 
     }
@@ -110,8 +112,7 @@ public class PfixAppletInfo {
             
             String part       = el.getAttribute("part");
             String path       = el.getAttribute("path");            
-            String newPath    = path.substring(path.indexOf("example/"), path.length());
-            String includeStr = "<pfx:include href=\"" + newPath + "\" part=\"" + part + "\"/>";
+            String includeStr = "<pfx:include href=\"" + path + "\" part=\"" + part + "\"/>";
 
             incElements[i] = includeStr;
             
@@ -131,8 +132,8 @@ public class PfixAppletInfo {
             
             // String part       = el.getAttribute("part");
             String path       = el.getAttribute("path");            
-            String newPath    = path.substring(path.indexOf("example/"), path.length());
-            String includeStr = "<pfx:imgage href=\"" + newPath + "\" />";
+            // String newPath    = path.substring(path.indexOf("example/"), path.length());
+            String includeStr = "<pfx:imgage href=\"" + path + "\" />";
             
             incImages[i] = includeStr;
             

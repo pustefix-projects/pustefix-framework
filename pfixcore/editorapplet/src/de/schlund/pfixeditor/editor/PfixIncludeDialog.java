@@ -52,8 +52,13 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     JPanel incTextPanel;
     JPanel selPanel;
     JPanel butPanel;
+    JPanel imgbutPanel;
+
+    JButton imgbutton;
     JButton button;
 
+    ImageIcon neuImg;    
+    JButton but;
 
     
     JLabel label;
@@ -68,11 +73,17 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     JComboBox imbox;
 
 
+
+
+    
+
     String [] incElements;
     String [] incImages;
 
     String documentBase;
     PfixTextPane syntaxPane;
+
+    String actInclude = "";
     
 
 
@@ -84,7 +95,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         panel = new JPanel();
         setContentPane( panel );
         panel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        panel.setPreferredSize(new Dimension(700,800));
+        // panel.setPreferredSize(new Dimension(500,200));
         panel.setLayout(new BorderLayout());
         
 
@@ -137,7 +148,9 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         butPanel = new JPanel();
         System.out.println("Here bin ich");
         incPanel.setLayout(new BorderLayout());
-        selPanel.setPreferredSize(new Dimension(550,300));
+        // selPanel.setPreferredSize(new Dimension(400,200));
+        // incPanel.setPreferredSize(new Dimension(100,70));
+        // butPanel.setPreferredSize(new Dimension(75,20));
 
 
         incTextPanel = new JPanel();
@@ -146,11 +159,13 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         
         incText = new JLabel("Choosen Include");
         incTextField = new JTextField();
+        // incTextField.setPreferredSize(new Dimension(180,10));
 
         incTextPanel.add(incText, BorderLayout.WEST);
         incTextPanel.add(incTextField, BorderLayout.CENTER);
 
         button = new JButton("Choose");
+        // button.setPreferredSize(new Dimension(50,19));
         button.addActionListener(this);
 
         getDocument();
@@ -166,6 +181,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         
         incPanel.add(selPanel, BorderLayout.NORTH);
         incPanel.add(incTextPanel, BorderLayout.CENTER);
+        System.out.println("Mach den Button hin ");
         incPanel.add(butPanel, BorderLayout.SOUTH);
         
         
@@ -182,6 +198,16 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         imgPanel.setLayout(new BorderLayout());
         getImages();
         imgPanel.add(imbox, BorderLayout.NORTH);
+
+        imgbutton = new JButton("Choose");
+        imgbutton.addActionListener(this);
+        imgbutPanel = new JPanel();
+
+        imgbutPanel.setLayout(new BorderLayout());
+        imgbutPanel.add(imgbutton, BorderLayout.CENTER);
+        imgPanel.add(imgbutPanel, BorderLayout.SOUTH);
+
+        
         
     }
 
@@ -205,7 +231,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         
         combox.setMaximumRowCount(4);
         combox.setEnabled(true);
-        combox.setPreferredSize(new Dimension(200,250));
+        // combox.setPreferredSize(new Dimension(200,250));
         // combox.setEditable(true);
         
         
@@ -225,6 +251,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
         for (int i=0; i<incImages.length; i++) {
             // System.out.println("Inc " + incElements[i]);
+            // String cutString = incImages[i].substring(path.indexOf("/"), path.length());
             imbox.addItem(incImages[i]);             
         }
 
@@ -238,15 +265,13 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
     
     public void itemStateChanged(ItemEvent e) {
-        if (e.getItem().equals("Hamburger SV")) {
-            syntaxPane.setText("Hamburch iss goil");
-            
-        }
+
         
         
         for (int i=0; i<incElements.length; i++) {
             if (e.getItem().equals(incElements[i])) {
-                incTextField.setText("Included " + incElements[i]);
+                incTextField.setText(incElements[i]);
+                actInclude = incElements[i];
                 break;
             }
             
@@ -258,27 +283,65 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
             for (int j=0; j<incImages.length; j++) {
                 if (e.getItem().equals(incImages[j])) {
                     // incTextField.setText("Included " + incElements[i]);
-                    
+
                     String path = incImages[j];
+                    
                     
                     System.out.println("PATH " + path);
                     
-                    String addPath = path.substring(path.indexOf("/"), path.lastIndexOf("\""));
+                    String addPath = path.substring(path.indexOf("\"")+1, path.lastIndexOf("\""));
                     
-                    String url = "http://sample1.zaich.ue.schlund.de" + addPath;
+                    // String url = "http://sample1.zaich.ue.schlund.de" + addPath;
+
+
+                    String base = documentBase;
+                    int pos = 0;
+                    System.out.println("BAAASE" + base);
+                    
+                    for (int k = 0; k < 3; k++) {
+                        System.out.println("Count + " + k);
+                        int neupos = base.indexOf("/");
+                        System.out.println("NeuPos " + neupos);
+                        String temp = base.substring(0, base.indexOf("/"));
+                        System.out.println("Temp: " + temp);
+                        pos = pos + base.indexOf("/") + 1;
+                        base = base.substring(neupos + 1, base.length());
+                        System.out.println("base neu " + base);
+                        
+                        
+                         
+                    }
+
+                    String host = documentBase.substring(0, pos);
+
+                    System.out.println("HOOOST " + host);
+                    String url = host + addPath;
+
+
+                   
 
                     try {
-                        URL			urli;
+                        URL		urli;
                         URLConnection	urlConn;
                         
                         urli = new URL(url);
                         urlConn = urli.openConnection();
                         
                         System.out.println(url);
+
+                        actInclude = path;
                         
-                        ImageIcon neuImg = new ImageIcon(urli);
-                        JButton but = new JButton(neuImg);
-                        imgPanel.add(but, BorderLayout.CENTER);
+                        neuImg = new ImageIcon(urli);
+
+                        if ((but == null)) {
+                             but = new JButton(neuImg);
+                             imgPanel.add(but, BorderLayout.CENTER);
+                        }
+                        else {
+                            but.setIcon(neuImg);
+                        }
+                        
+                        
                         break;
                         
                     } catch (Exception es) {
@@ -309,9 +372,16 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == "button") {
-            syntaxPane.setText(incTextField.getText());
+        if (e.getSource() == button) {
+            // System.out.println("Here bin ich geklickt");
+            syntaxPane.insertTag(actInclude);
              
+        }
+
+        if (e.getSource() == imgbutton) {
+            // System.out.println("Here bin ich geklickt");
+            syntaxPane.insertTag(actInclude);
+            
         }
         
     }
