@@ -121,7 +121,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     public boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
-        synchronized (handlers) {
+        // synchronized (handlers) {
             for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
                 context.startLogEntry();
@@ -135,7 +135,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     return false;
                 }
             }
-        }
+        // }
         return true;
     }
 
@@ -214,7 +214,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     public boolean needsData(Context context) throws Exception  {
         if (handlers.isEmpty()) return true; // border case
         
-        synchronized (handlers) {
+        // synchronized (handlers) {
             for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
                 if (handler.isActive(context)) {
@@ -229,7 +229,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     }
                 }
             }
-        }
+        // }
         return false;
     }
     
