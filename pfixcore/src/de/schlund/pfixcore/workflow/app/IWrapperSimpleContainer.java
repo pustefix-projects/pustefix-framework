@@ -500,7 +500,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                     order      = Integer.parseInt(prefix.substring(0, index)); 
                     realprefix = prefix.substring(index + 1);
                 } else {
-                    throw new XMLException("You need to give a order for the interfaces to be called!");
+                    throw new XMLException("You need to give an order for the interfaces to be called (" + prefix + ")!");
                 }
 
                 if (wrappers.get(realprefix) != null) {
