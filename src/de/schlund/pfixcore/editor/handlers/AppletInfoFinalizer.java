@@ -66,6 +66,9 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
             TargetGenerator        tgen        = esess.getProduct().getTargetGenerator();
             AuxDependency          currinclude = esess.getCurrentInclude();
             PfixcoreNamespace[]    nspaces     = esess.getProduct().getPfixcoreNamespace();
+            TreeSet images = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.IMAGE);
+            Element iroot   = resdoc.createNode("allimages"); 
+            renderAllImages(images, resdoc, iroot);
                                                                       
             for (int i = 0; i < nspaces.length; i++) {              
                     PfixcoreNamespace nsp = nspaces[i];
@@ -89,6 +92,27 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
 		renderDefault(container);
 	}
 
+
+
+    private void renderAllImages(TreeSet images, ResultDocument resdoc, Element root) {
+        String  olddir  = "";
+        Element elem    = null;
+        for (Iterator i = images.iterator(); i.hasNext(); ) {
+            AuxDependency curr = (AuxDependency) i.next();
+            String dir  = curr.getDir();
+            String path = curr.getPath();
+            String name = path.substring(path.lastIndexOf("/") + 1);
+
+            Element img = resdoc.createSubNode(root, "image");
+            img.setAttribute("path", path);
+            img.setAttribute("name", name);
+            if (curr.getModTime() == 0) {
+                img.setAttribute("missing", "true");
+            }
+        }
+        }
+
+    
 
     
 }
