@@ -178,10 +178,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw (new ServletException("Need property '" + PROP_NAME + "'"));
         }
         String noedit = getProperties().getProperty(PROP_NOEDIT);
-        if ((noedit == null) || noedit.equals("0") || noedit.equals("false") || noedit.equals("")) {
-            editmodeAllowed = false;
-        } else {
+        if (noedit != null && (noedit.equals("false") || noedit.equals("0"))) {
             editmodeAllowed = true;
+        } else {
+            editmodeAllowed = false;
         }
 
         handleRecordModeProps();
@@ -471,7 +471,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
             if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil, servletname + SUFFIX_SAVEDDOM, editmodeAllowed);
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil, servletname + SUFFIX_SAVEDDOM, !editmodeAllowed);
             }
         }
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
