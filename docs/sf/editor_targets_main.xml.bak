@@ -1,0 +1,42 @@
+<div>
+<h1>The Targets page</h1>
+<center>
+<table border="1">
+  <tr>
+    <td colspan="2">
+      <img alt="editor targets page" src="img/editor_targets.png"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <p>In the left frame all targets and their
+        dependency tree are listed. Select a target from that list
+        and the right frame will apear.</p>
+    </td>
+    <td>
+      <p>In the right frame all information on the selected target
+        is listed.</p>
+      <p>Box No. 1 shows the parents of this target. As you probably
+      know a target has a XML and a XSL parent which are both listed here.
+      You can click on one of these parents to navigate through the
+      dependency tree.
+      </p>  
+      <p>Box No. 2 lists the parameters for the target which are used
+      during XSLT transformation.</p>
+      <p>Box No. 3 shows all pages which use the current target. With
+      a click on such a page you will see it in the 
+      <a href="editor_pages.html">Pages</a> page.</p>
+      <p>Box No. 4 lists all includes which are used by the current target.
+      To edit an include click on it and it will be opened in the 
+      <a href="editor_includes">Includes</a> page.</p>
+      <p>Box No. 5 shows all images which are used by the current target.
+      To edit an image click on it and it will be opened in the
+      <a href="editor_images">Images</a> page.</p>
+      <p>Box No. 6 shows the whole content of the current target. It does
+      not provide any interactivity.</p>
+    </td>
+  </tr>
+</table>
+</center>
+
+</div>
