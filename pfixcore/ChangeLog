@@ -1,3 +1,8 @@
+2004-10-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	Bug fix to make interface logging work again.
+
 2004-10-08  Martin Leidig  <mleidig@schlund.de>
 
 	Added version info to jar files (used by webservice implementation):
