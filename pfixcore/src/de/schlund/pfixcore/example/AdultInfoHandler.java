@@ -49,7 +49,6 @@ public class AdultInfoHandler implements IHandler {
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         AdultInfo              info = (AdultInfo) wrapper;
         ContextAdultInfo       cai  = SampleRes.getContextAdultInfo(context);
-
         if (!cai.needsData()) {
             info.setStringValAdult(cai.getAdult().toString());
         } 
