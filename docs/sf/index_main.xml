@@ -30,15 +30,15 @@
   
   <h1>Development news</h1>
 
+  <p>There has been no release for a long time, sorry about that. I
+    try to do that more often, but if there is no recent release, the
+    best you can do is using the CVS tree and create the needed files yourself (just type <code>ant notag</code>).
+    We try hard to have the CVS tree compilable at all times, although we can't make any guarantees, of course.</p>
   <ul>
-    <li>
-      Finally the apploader should work as advertised. After some trial and error we finally
-      settled on using an external C-library to create the new objects in the VM without any initialisation.
-      We hope that this solved most of the remaining issues. Also some
-      <a href="apploader.html">documentation has been written.</a> 
-    </li>
-    <li>Some other small fixes. Refer to the ChangeLog for more detailed news.</li>
-    <li>We have started to move the build process from make to ant. Nothing yet in CVS, but stay tuned.</li>
+    <li>The transition to ant is complete. You need to have at least ant 1.5.4.</li>
+    <li>because of the long time without a stable release, there are numerous changes to many to list them here.
+      I tried to report on any bigger change to the mailing list, plese look there (there are not that many postings). For a
+      better overview, please look into the ChangeLog file.</li>
   </ul>
   
   <h2>ChangeLog</h2>
