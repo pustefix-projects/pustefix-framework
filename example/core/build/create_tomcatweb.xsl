@@ -103,12 +103,6 @@
 	</error-page>
       </xsl:for-each>
 
-      <!--
-      <xsl:if test="includeexternalwebxml/@include = 'true'">
-        <xsl:copy-of select="document(concat('file://', $docroot, '/', $prjname, '/', 'conf/web.xml'))/web-app/*[not(name()='servlet')]" />
-      </xsl:if>
-      -->
-
     </web-app>
   </xsl:template>
 

@@ -19,9 +19,6 @@
 
 package de.schlund.pfixxml.testenv;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
@@ -29,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import de.schlund.pfixxml.util.Xml;
 
 
 /**
@@ -72,14 +70,12 @@ public class TestClientException extends Exception {
         return errorMessage == null ? "" : errorMessage;
     }
     
-    public Document toXMLRepresentation() throws ParserConfigurationException {
+    public Document toXMLRepresentation() {
         return createErrorTree(this);
     }
     
-    private Document createErrorTree(TestClientException targetex)
-            throws ParserConfigurationException {
-            DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = docbuilder.newDocument();
+    private Document createErrorTree(TestClientException targetex) {
+            Document doc = Xml.createDocument();
             Element e0 = doc.createElement("error_message");
             doc.appendChild(e0);
             printEx(targetex, doc, e0);

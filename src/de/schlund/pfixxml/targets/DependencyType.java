@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.targets;
 
+import de.schlund.pfixxml.util.Path;
+
 /**
  * DependencyType.java
  *

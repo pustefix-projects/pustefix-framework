@@ -18,12 +18,13 @@
  */
 
 package de.schlund.pfixxml.targets;
-import java.io.File;
-import java.util.HashMap;
 
-import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Path;
+import java.io.File;
+import java.util.HashMap;
+import org.apache.log4j.Category;
 
 /**
  *
@@ -39,25 +40,27 @@ public class TargetGeneratorFactory {
         return instance;
     }
 
-    public synchronized TargetGenerator createGenerator(File cfile) throws Exception {
+    public synchronized TargetGenerator createGenerator(Path cfilepath) throws Exception {
+        File cfile = cfilepath.resolve();
         if (cfile.exists() && cfile.isFile() && cfile.canRead()) {
             String key = genKey(cfile);
             TargetGenerator generator = (TargetGenerator) generatormap.get(key);
             if (generator == null) {
                 CAT.debug("-- Init TargetGenerator --");
-                generator = new TargetGenerator(cfile);
+                generator = new TargetGenerator(cfilepath);
                 generatormap.put(key, generator);
             } else {
-                generator.tryReinit();
+                generator.tryReinit(cfilepath);
             }
             return generator;
         } else {
-            throw (new XMLException("\nConfigfile '" + cfile.getPath() +
-                                    "' isn't a file, can't be read or doesn't exist"));
+            throw new XMLException("\nConfigfile '" + cfilepath.getRelative() +
+                                    "' isn't a file, can't be read or doesn't exist");
         }
     }
 
-    public void remove(File genfile) {
+    public void remove(Path genfilepath) {
+        File genfile = genfilepath.resolve();
         generatormap.remove(genKey(genfile));
     }
 

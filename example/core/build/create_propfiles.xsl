@@ -2,12 +2,6 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <!--  <xsl:param name="docroot"/>
-  <xsl:param name="uid"/>
-  <xsl:param name="machine"/>
-  <xsl:param name="fqdn"/>
-  <xsl:param name="mode"/>-->
-
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
   <xsl:include href="create_lib.xsl"/>
 
@@ -255,10 +249,7 @@
 
   <xsl:template match="servletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
-    <xsl:choose>
-      <xsl:when test="starts-with(@depend, '/')"><xsl:value-of select="@depend"/></xsl:when>
-      <xsl:otherwise><xsl:value-of select="$docroot"/>/<xsl:value-of select="@depend"/></xsl:otherwise>
-    </xsl:choose>
+    <xsl:value-of select="@depend"/>
     <xsl:text>&#xa;</xsl:text>
     <xsl:text>xmlserver.servlet.name=</xsl:text>
     <xsl:value-of select="@name"/>

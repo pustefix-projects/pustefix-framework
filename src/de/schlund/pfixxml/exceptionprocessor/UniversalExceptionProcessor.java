@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml.exceptionprocessor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -27,12 +26,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValue;
 import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValueHelper;
@@ -40,8 +41,8 @@ import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
 import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
-import de.schlund.pfixxml.testenv.XMLSerializeUtil;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.pfixxml.util.Xslt;
 
 /**
  * @author jh
@@ -65,12 +66,8 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         
         if(exception instanceof TargetGenerationException) {
             TargetGenerationException tex = (TargetGenerationException) exception;
-            try {
-                doc = tex.toXMLRepresentation();
-                text = tex.toStringRepresentation();
-            } catch (ParserConfigurationException e) {
-                throw new ServletException(e);
-            }
+            doc = tex.toXMLRepresentation();
+            text = tex.toStringRepresentation();
         } else {
             ExceptionDataValue data = ExceptionDataValueHelper.createExceptionDataValue(exception, pfixReq);
             XMLCreatorVisitor xv = new XMLCreatorVisitor();
@@ -84,29 +81,26 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
         LOG.error(text);
 	
         if(LOG.isDebugEnabled()) {
-            LOG.debug("Got following DOM for error-representation: "+
-                      XMLSerializeUtil.getInstance().serializeToString(doc));
+            LOG.debug("Got following DOM for error-representation: " + Xml.serialize(doc, true, false));
         }
         
-        try {
-            doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
-        } catch (TransformerException e) {
-            throw new ServletException(e);
-        }
+        doc = Xml.parse(doc);
 	
-        Object stvalue = null;
+        Templates stvalue;
         
         String depxml = props.getProperty("xmlserver.depend.xml");
         if(depxml == null) {
             throw new IllegalArgumentException("Need property xmlserver.depend.xml");
         }
+
         try {
-            stvalue = TargetGeneratorFactory.getInstance().createGenerator(new File(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+            stvalue = (Templates) TargetGeneratorFactory.getInstance().createGenerator(
+                    PathFactory.getInstance().createPath(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
         } catch (Exception e) {
             throw new ServletException(e);
         }
         try {
-            TraxXSLTProcessor.getInstance().applyTrafoForOutput(doc, stvalue, null, res.getOutputStream());
+            Xslt.transform(doc, stvalue, null, new StreamResult(res.getOutputStream()));
         } catch (TransformerException e) {
             throw new ServletException(e);
         } catch (IOException e) {

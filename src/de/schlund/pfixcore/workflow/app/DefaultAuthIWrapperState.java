@@ -20,7 +20,7 @@
 package de.schlund.pfixcore.workflow.app;
 
 import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.util.*;
+import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.loader.*;

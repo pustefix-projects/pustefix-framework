@@ -27,12 +27,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
-import de.schlund.pfixxml.testenv.XMLSerializeUtil;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * @author Joerg Haecker <haecker@schlund.de>
@@ -63,13 +62,9 @@ public class CacheStatisticServlet extends HttpServlet {
         
         if(outmode == OUTPUTXML) {
             Document doc;
-            try {
-                doc = SPCacheStatistic.getInstance().getCacheStatisticAsXML();
-            } catch (ParserConfigurationException e) {
-                throw new ServletException(e);
-            }
+            doc = SPCacheStatistic.getInstance().getCacheStatisticAsXML();
             res.setContentType("text/xml");
-            output = XMLSerializeUtil.getInstance().serializeToString(doc);
+            output = Xml.serialize(doc, true, true);
         } else if(outmode == OUTPUTTEXT) {
             output = SPCacheStatistic.getInstance().getCacheStatisticAsString(); 
             res.setContentType("text/plain");

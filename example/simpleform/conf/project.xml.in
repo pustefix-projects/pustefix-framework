@@ -14,7 +14,7 @@
   
   <active>true</active>
   <comment>How a form request will be handled by pustefix</comment>
-  <depend><cus:docroot/>simplepage/conf/depend.xml</depend>
+  <depend>simplepage/conf/depend.xml</depend>
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>simpleform.<cus:fqdn/></servername>
   <serveralias>simpleform.<cus:machine/></serveralias>

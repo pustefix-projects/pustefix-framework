@@ -34,7 +34,7 @@ import java.util.TreeMap;
 public class SharedLeafFactory {
 
     private static SharedLeafFactory instance     = new SharedLeafFactory();
-    private TreeMap            sharedleaves = new TreeMap();
+    private TreeMap                  sharedleaves = new TreeMap();
     
     private SharedLeafFactory() {}
     

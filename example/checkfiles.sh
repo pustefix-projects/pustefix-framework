@@ -8,6 +8,3 @@ find . -type f | grep "/img/" | grep "\.\(gif\|jpg\|jpeg\|JPG\|JPEG\)$"  > .ALLI
 find . -type f | grep "depend.xml$"  > .ALLPROJECTS
 
 java de.schlund.pfixcore.util.CheckIncludes CHECKOUTPUT.xml .ALLPROJECTS .ALLINCFILES .ALLIMAGES
-
-#java com.icl.saxon.StyleSheet  CHECKOUTPUT.xml core/build/unused.xsl > UnusedInfo.txt
-

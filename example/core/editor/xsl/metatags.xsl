@@ -928,7 +928,6 @@
       
       <xsl:call-template name="showcurrentinclude">
         <xsl:with-param name="type" select="$type"/>
-        <xsl:with-param name="docroot" select="$docroot"/>
       </xsl:call-template>
       
       <ixsl:choose>
@@ -1291,7 +1290,6 @@
  
   <xsl:template name="showcurrentinclude">
     <xsl:param name="type"/>
-    <xsl:param name="docroot"/>
     <table width="100%">
       <tr>
         <td class="editor_main_emph">Current include:

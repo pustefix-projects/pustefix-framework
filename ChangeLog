@@ -1,3 +1,310 @@
+2004-09-09  Michael Hartmeier  <mhm@schlund.de>
+	* .classpath
+	* lib/saxon-8.0.mhm.jar
+	* lib/saxon6_5_3.jar
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/util/XPath.java
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java:
+	switch back to saxon 6
+
+2004-09-09  Michael Hartmeier  <mhm@schlund.de>
+	* tests/junit/de/schlund/pfixxml/util/html.xml
+	* tests/junit/de/schlund/pfixxml/util/html.xsl
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java: add test for url encoding
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	expect relative path name for log directory.
+
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: expect relative path name  
+
+	* example/sample1/conf/direct.prop.in: removed docroot
+	* example/sample1/conf/config.prop.in: removed docroot
+
+	* example/core/build/create_propfiles.xsl: code cleanup
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	no longer set docroot in the parameter hash.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	remove getDocroot() method.
+	
+	* example/core/xsl/metatags.xsl.in: 
+	* example/core/xsl/master.xsl.in: remove $docroot. 
+
+	* example/core/xsl/customizestylesheet.xsl: *
+	example/core/xsl/customizemaster.xsl: no longer handle
+	docroot. remove cus:docroot. no more special handling of xsl:include or xsl:import.
+
+	* example/core/editor/xsl/metatags.xsl: remove last dead instances of $docroot.  
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PathFactory.java: remove the
+	init(Properties) method, no longer implement FactoryInit
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: init PathFactory already here...
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+	* build.xml
+	* example/common/conf/factory.prop.in
+	* example/common/conf/pustefix.prop.in
+	* example/core/build/create_propfiles.xsl
+	* example/core/editor/conf/config.prop.in
+	* example/core/xsl/include.xsl.in
+	* example/sample1/conf/project.xml.in
+	* example/sample1/txt/pages/main_home.xml
+	* example/servletconf/projects.xml.in
+	* example/simpleform/conf/project.xml.in
+	* example/simplelink/conf/project.xml.in
+	* example/simplepage/conf/project.xml.in
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/EditorProduct.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/auth/FileAuthManager.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixcore/workflow/Navigation.java
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/FactoryInitServlet.java
+	* src/de/schlund/pfixxml/ImageGeometry.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java
+	* src/de/schlund/pfixxml/loader/AppLoader.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* src/de/schlund/pfixxml/targets/TargetImpl.java
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java
+	* tests/junit/de/schlund/pfixcore/editor/EditorProductFactoryTest.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+	The big docroot cleanup. Not completely done, need to rethink what to do with config files
+	for apache that really needs absolute file names.  Other than that, the editor seems to work,
+	but the editor APPLET is broked. Which is no big problem, as we want to kill it anyway soon.
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	* src/de/schlund/pfixxml/util/Xml.java: support Text node serialization
+	* src/de/schlund/pfixxml/targets/SPCacheFactory.java: fix java 1.5 warning
+	- dump common/projects.prj, servletconf/projects.xml is used instead:
+	* build.xml
+	* docs/sf/project_main.xml
+	* example/common/conf/.cvsignore
+	* example/common/conf/factory.prop.in
+	* example/core/build/create_products.xsl
+	* example/core/build/create_projects.xsl
+	* example/core/build/create_propfiles.xsl
+	* skel/build.xml
+	* skel/projects/common/conf/factory.prop.in
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/PfixcoreServlet.java
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
+	* tests/junit/de/schlund/pfixcore/editor/EditorProductFactoryTest.java
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/Path.java (create(File file)): new method,
+	this will use the parent dir of the file argument as the Path base.
+
+	* src/de/schlund/pfixxml/util/Xslt.java: only one interface to the
+	load Templates objects remains. For every "base directory"
+	(usually one currently) there will be a new factory created with
+	it's own FileResolver. The class uses the Path class more consitently.
+	
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java:
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java:
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java:
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: only use the new
+	interface of Xslt.java
+
+	* src/de/schlund/pfixcore/util/XsltTransformer.java: reenabled a
+	private factory and transformation for now. We need to check how
+	to rewrite it again to use the new, smaller interface of Xslt.java
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	- simplified AppLoader init
+	- minor cleanup
+	* example/common/conf/apploader.prop.in
+	* src/de/schlund/pfixcore/editor/EditorProduct.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	- adjust project generate to new depend.xml and saxon 8
+	* affected files:
+	* newproject.sh
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/DependXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/ProjectXmlDom.java
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	- use more File objects
+	- simplify project name computation
+	- affected files:
+	* example/sample1/conf/project.xml.in
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	- TargetGenerator cleanup
+	- ant target for unit tests
+	- affected files:
+	* ChangeLog
+	* build.xml
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: small cleanup
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	- simplified depend.xml:
+          o the following attributes have been dumped
+	    o docroot
+	    o cachedir
+	    o record_dir
+	  o removed "docroot" from explicit target parameters
+     	- improved error message from "ant generate"
+	- move Path into util packages
+	- some API cleanup
+	- unit tests for TargetGenerator
+	- use more File objects
+	- Affected files:
+	* example/core/build/create_depend.xsl
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocument.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+	* example/core/build/create_depend.xsl
+	* example/core/editor/conf/depend.xml.in
+	* example/core/prjtemplates/depend.tmpl
+	* example/sample1/conf/depend.xml.in
+	* example/simpleform/conf/depend.xml.in
+	* example/simplelink/conf/depend.xml.in
+	* example/simplepage/conf/depend.xml.in
+
+2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: cleanup
+	* src/de/schlund/pfixxml/util/Xslt.java: cleanup
+
+2004-08-09  Michael Hartmier  <mhm@schlund.de>
+	* example/checkfiles.sh
+	* example/core/xsl/master.xsl.in
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/EditorPageUpdater.java
+	* src/de/schlund/pfixcore/editor/EditorProduct.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/EditorUserFactory.java
+	* src/de/schlund/pfixcore/editor/auth/FileAuthManager.java
+	* src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesBranchHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* src/de/schlund/pfixcore/editor/resources/EditorSearchImpl.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java
+	* src/de/schlund/pfixcore/util/MultiTransform.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java
+	* src/de/schlund/pfixcore/util/XsltTransformer.java
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java
+	* src/de/schlund/pfixcore/util/basicapp/basics/HandleXMLFiles.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	* src/de/schlund/pfixcore/workflow/FlowStep.java
+	* src/de/schlund/pfixcore/workflow/Navigation.java
+	* src/de/schlund/pfixcore/workflow/PageFlow.java
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocument.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/ResultDocument.java
+	* src/de/schlund/pfixxml/SPDocument.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/PublicXSLTProcessor.java
+	* src/de/schlund/pfixxml/targets/PustefixXSLTProcessor.java
+	* src/de/schlund/pfixxml/targets/TargetGenerationException.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetImpl.java
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java
+	* src/de/schlund/pfixxml/testenv/TestClientException.java
+	* src/de/schlund/pfixxml/testenv/Testcase.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStep.java
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java
+	* src/de/schlund/pfixxml/testenv/XMLSerializeUtil.java
+	* src/de/schlund/pfixxml/util/XPath.java
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java
+	* tests/junit/de/schlund/pfixxml/util/XPathTest.java
+	* tests/junit/de/schlund/pfixxml/util/XmlTest.java
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java
+	* tests/junit/de/schlund/pfixxml/util/extension.xml
+	* tests/junit/de/schlund/pfixxml/util/extension.xsl
+	* tests/junit/de/schlund/pfixxml/util/incorrectnsprefix.xml
+	* tests/junit/de/schlund/pfixxml/util/incorrectnsprefix.xsl
+	Upgrade to saxon 8.0 (with manual fixes for #962737);
+	Upgrade to xerces 2.6.2
+	concentrate xml dependencies in de.schlund.pfixxml.util:
+	   Xml    performs xml parsing and serialization
+           XPath  performs xpath processing
+           Xslt   performs xslt processing
+	add junit 3.8.1 and tests for Xml, Xslt and XPath
+	use saxon for xpath computations - all dependencies on org.apache.xpath 
+	(aka jdk 1.4's Xalan) have been eliminated; as a side-effect, pfixcore 
+	compiles with jdk 1.5 now
+
+end of saxon_8 merge
+
 2004-08-06 Michael Hartmeier  <mhm@schlund.de>
 
 	* configure and enable "checkstyle" report for website generation
