@@ -1,3 +1,7 @@
+2004-05-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: released 0.5.4
+
 2004-05-12  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: fixed deletion of classes symlink in target
@@ -369,7 +373,7 @@
 
 2004-03-25  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
         make sure no to rethrow TransformerExceptions which wrap a
         'org.apache.catalina.connector.ClientAbortException'(quick fix)
 
