@@ -63,13 +63,13 @@ public class PageForwardingExceptionProcessor implements ExceptionProcessor {
         if ( !exConfig.getForward() || exConfig.getPage() == null )
             throw new ServletException("Can't process Exception, due to wrong configuration: "+exConfig);
 
-        CAT.info("Processing Exception of type: "+ exception.getClass());
-        CAT.info("Trying to forward to page: "+forwardPage);
-
         String forwardPage = exConfig.getPage();
         pfixReq.setLastException(exception);
         if ( !forwardPage.startsWith("/") )
             forwardPage = "/"+forwardPage;
+
+        CAT.info("Processing Exception of type: "+ exception.getClass());
+        CAT.info("Trying to forward to page: "+forwardPage);
 
         RequestDispatcher dispatcher = context.getRequestDispatcher(forwardPage);
         if ( dispatcher == null ) {
