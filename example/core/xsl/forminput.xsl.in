@@ -623,6 +623,21 @@
   </xsl:template>
 
   <xsl:template match="pfx:option">
+    <cus:documentation>
+      <description>Creates an "option" formelement.</description>
+      <param required="0">
+        <name>name</name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description>name attribute of the option</description>
+      </param>
+      <param required="0">
+        <name>value</name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description>value attribute of the option tag.</description>
+      </param>
+    </cus:documentation>  
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <xsl:variable name="value">
       <xsl:choose>
@@ -644,6 +659,15 @@
   </xsl:template>
 
   <xsl:template match="pfx:dynoptions">
+    <cus:documentation>
+      <description>Creates one or more "option" form elements. The options are taken from the result tree,
+      where they need to be given below the elment designated by the "optionpath" attribute</description>
+      <param required="1">
+        <name>optionpath</name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description>...</description>
+      </param>
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <ixsl:for-each select="{@optionpath}/option">
       <ixsl:variable name="value">
@@ -793,7 +817,8 @@
   
   <xsl:template match="pfx:xinp[@type='area']">
     <cus:documentation>
-      <description>Creates a html-textarea. All params will be copied</description>
+      <description>Creates a html-textarea. All attributes will be copied to the resulting
+        &lt;textarea&gt; html tag</description>
       <param required="1">
         <name>name</name>
         <standard></standard>
@@ -881,7 +906,9 @@
   <!-- DEPRECATED -->
   <xsl:template name="renderoptions">
     <cus:documentation> 
-      <description>Called by pfx:xinp[@type='dynselect']. This renders the html formelement &lt;option&gt;</description>
+      <description>Called by pfx:xinp[@type='dynselect'] (which
+      shouldn't be used anymore, see there). This template renders the
+      html formelement &lt;option&gt;</description>
     </cus:documentation>
     <xsl:param name="options"/>
     <xsl:param name="name"/>
@@ -909,8 +936,8 @@
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xinp[@type='dynselect']">
     <cus:documentation>
-      <description>Creates a select box with options taken from the
-        result XML tree. THIS ELEMENT IS DEPRECATED! Use the &lt;pfx:xinp @type="dynselect"&gt; tag instead with the
+      <description>THIS ELEMENT IS DEPRECATED! Creates a select box with options taken from the
+        result XML tree. Don't use this tag, ese the &lt;pfx:xinp @type="dynselect"&gt; tag instead with the
         &lt;pfx:dynoptions optionpath="/foo/bar/baz"&gt; tag as a child.</description>
       <param required="1">
         <name>name</name>
