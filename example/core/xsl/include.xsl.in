@@ -188,16 +188,16 @@
       </xsl:if>
     </xsl:param>
     <xsl:param name="realpath">
-      <xsl:if test="not($__target_key = '__NONE__')">
+<!--       <xsl:if test="not($__target_key = '__NONE__')"> -->
         <xsl:choose>
           <xsl:when test="not(string($href) = '')">
             <xsl:value-of select="string($href)"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:value-of select="include:makeSystemIdRelative('dummy')"/>
+            <xsl:value-of select="include:makeSystemIdRelative()"/>
           </xsl:otherwise>
         </xsl:choose>
-      </xsl:if>
+<!--       </xsl:if> -->
     </xsl:param>
     <xsl:choose>
       <xsl:when test="string($part) = ''">
@@ -205,7 +205,7 @@
       </xsl:when>
       <xsl:otherwise>
         <xsl:variable name="incnodes"
-                      select="include:get(string($href), string($part), string($product),
+                      select="include:get(string($realpath), string($part), string($product),
                       string($__target_gen), string($__target_key),
                       string($parent_part), string($parent_product), $computed_inc)"/>
         <!-- Start image of edited region -->

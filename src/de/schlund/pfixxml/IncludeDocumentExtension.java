@@ -91,12 +91,9 @@ public final class IncludeDocumentExtension {
         }
 
         if (path_str == null || path_str.equals("")) {
-            if (!parent_path_str.equals("")) {
-                path_str = parent_path_str;
-            } else {
-                throw new XMLException("Need href attribute for pfx:include or path of parent part");
-            }
+            throw new XMLException("Need href attribute for pfx:include or path of parent part must be deducible");
         }
+
         
         try {
             Path            path        = pf.createPath(path_str);
