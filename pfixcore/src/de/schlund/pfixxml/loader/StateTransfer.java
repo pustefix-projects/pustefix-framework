@@ -83,9 +83,25 @@ public class StateTransfer {
 
     public Object transfer(Object oldObj) {
         if(oldObj==null) return null;
+		AppLoader loader=AppLoader.getInstance();
+        if(oldObj instanceof Class) {
+        	Class c=(Class)oldObj;
+        	if(c.getClassLoader() instanceof AppClassLoader) {
+        		if(debug) CAT.debug("Transfer java.lang.Class instance of class '"+c.getName()+"'.");
+        		Object newObj=getTransferred(oldObj);
+        		if(newObj!=null) return newObj;
+        		try {
+        			newObj=loader.loadClass(c.getName());
+        		} catch(ClassNotFoundException x) {
+					addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
+						 c.getName(),"Class was removed or renamed."));
+        		};
+        		return newObj;
+        	}
+        	return oldObj;
+        }
         Class oldClass=oldObj.getClass();
         ClassLoader oldCL=oldClass.getClassLoader();
-        AppLoader loader=AppLoader.getInstance();
         if(oldCL instanceof AppClassLoader) {
             Object newObj=getTransferred(oldObj);
             if(newObj!=null) {return newObj;}
@@ -113,14 +129,9 @@ public class StateTransfer {
                             if(debug) {
                                 CAT.debug("Transfer field '"+name+"' of class '"+oldClass.getName()+"'.");
                             } 
-                            //check if field value defined
-                            if(value!=null) {
-                                if(loader.needToTraverse(value.getClass())) {
-                                    value=transfer(value);
-                                }
-                                if(!field.isAccessible()) field.setAccessible(true);     
-                                field.set(newObj,value);
-                            }
+                           	value=transfer(value);
+                            if(!field.isAccessible()) field.setAccessible(true);     
+                            field.set(newObj,value);
                         } catch(NoSuchFieldException x) {
                             addException(new StateTransferException(StateTransferException.MEMBER_REMOVED,
                                 oldClass.getName(),"Member '"+fields[i].getName()+"' was removed or renamed."));
@@ -159,6 +170,7 @@ public class StateTransfer {
             }
             return newObj;
         } else {
+			if(!loader.needToTraverse(oldClass)) return oldObj;
             try {
                 if(isReferenced(oldObj)) {return oldObj;} 
             } catch(NullPointerException x) {
@@ -205,11 +217,9 @@ public class StateTransfer {
                         Object value=fields[i].get(oldObj);
                         if(debug) CAT.debug("Transfer field '"+name+"'.");
                         if(value!=null) {
-                            if(loader.needToTraverse(value.getClass())) {
-                                Object newValue=transfer(value);
-                                if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
-                                    fields[i].set(oldObj,newValue);
-                                }
+                        	Object newValue=transfer(value);
+                            if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
+                            	fields[i].set(oldObj,newValue);
                             }
                         }
                     } catch(IllegalAccessException x) {

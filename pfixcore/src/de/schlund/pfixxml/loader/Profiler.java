@@ -62,9 +62,15 @@ public class Profiler {
     }
     
     protected void doTypeCheck(Object obj) {
+    	boolean isClass=obj instanceof Class;
         if(isReferenced(obj)) return;
 	    addReferenced(obj);
         Class clazz=obj.getClass();
+		String clazzName=clazz.getName();
+		if(isClass) {
+			clazz=(Class)obj;
+			clazzName="(java.lang.Class)"+clazz.getName();
+		}
         ClassLoader classLoader=clazz.getClassLoader();
 	    HashMap classes=(HashMap)classLoaders.get(classLoader);
 	    Integer count=null;
@@ -73,15 +79,16 @@ public class Profiler {
 		    classLoaders.put(classLoader,classes);
 		    count=new Integer(1);
         } else {
-		    count=(Integer)classes.get(clazz.getName());
+		    count=(Integer)classes.get(clazzName);
 		    if(count==null) {
 			    count=new Integer(1);
 		    } else {
 			    count=new Integer(count.intValue()+1);
 		    }
         }
-	    classes.put(clazz.getName(),count);
-        if(clazz.getName().startsWith("java.lang") && !(clazz.getName().equals("java.lang.Object")||clazz.getName().equals("java.langThread"))) return;
+	    classes.put(clazzName,count);
+	    if(isClass) return;
+        if(clazzName.startsWith("java.lang") && !(clazzName.equals("java.lang.Object")||clazzName.equals("java.langThread"))) return;
         if(isObjectArray(clazz)) {
 	        int len=Array.getLength(obj);
 	        for(int i=0;i<len;i++) {

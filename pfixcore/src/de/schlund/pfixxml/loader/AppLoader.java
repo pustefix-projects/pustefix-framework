@@ -22,6 +22,7 @@ package de.schlund.pfixxml.loader;
 import de.schlund.util.FactoryInit;
 import de.schlund.pfixxml.serverutil.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
@@ -38,6 +39,8 @@ public class AppLoader implements FactoryInit,Runnable {
     private Category CAT=Category.getInstance(getClass().getName());
     private static AppLoader instance=new AppLoader();
     private AppClassLoader loader;
+    private ArrayList loaderHistory=new ArrayList();
+	private static SimpleDateFormat dateFormat=new SimpleDateFormat();
     private WeakHashMap reloaders=new WeakHashMap();
     //private ArrayList reloaders=new ArrayList();
     
@@ -206,6 +209,7 @@ public class AppLoader implements FactoryInit,Runnable {
     
     protected boolean restart() {
         loadingStarted();
+		addToHistory(this,"Restart");
         boolean reloaded=reload();
         ArrayList sessions=new ArrayList();
         SessionAdmin admin=SessionAdmin.getInstance();
@@ -241,6 +245,7 @@ public class AppLoader implements FactoryInit,Runnable {
         CAT.debug("Look for modified classes.");
         boolean modified=loader.modified();
         if(modified) {
+			addToHistory(this,"Reload");
             CAT.debug("Found modified classes.");
             forceReload();
             loadingEnded();
@@ -292,6 +297,52 @@ public class AppLoader implements FactoryInit,Runnable {
         sb.append("[policy="+policies+"][repository="+repository+"][includes="+incPacks+"]");
         sb.append("[excludepackages="+travExcludes+"][includeclasses="+travIncludes+"]");
         return sb.toString();
+    }
+    
+    protected void addToHistory(Object source,String event) {
+    	loaderHistory.add(new HistoryEntry(source,event));
+    }
+    
+    protected String getHistory() {
+    	StringBuffer sb=new StringBuffer();
+   		Iterator it=loaderHistory.iterator();
+   		while(it.hasNext()) {
+   			HistoryEntry entry=(HistoryEntry)it.next();
+   			sb.append(entry.toString()+"\n");
+   		}
+   		return sb.toString();
+    }
+    
+    class HistoryEntry {
+    	
+    	String srcClassName;
+    	int srcHash;
+    	String event;
+    	long time;
+    	
+    	HistoryEntry(Object source,String event) {
+    		srcClassName=source.getClass().getName();
+    		srcHash=source.hashCode();
+    		this.event=event;
+    		this.time=System.currentTimeMillis();
+    	}
+    	
+    	public String getSource() {
+    		return srcClassName+"@"+String.valueOf(srcHash);
+    	}
+    	
+    	public String getEvent() {
+    		return event;
+    	}
+    	
+    	public long getTime() {
+    		return time;
+    	}
+    	
+    	public String toString() {
+    		return dateFormat.format(new Date(getTime()))+"  ["+getSource()+"]  "+getEvent();
+    	}
+    	
     }
     
 }
