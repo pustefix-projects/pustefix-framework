@@ -1,5 +1,15 @@
 2004-07-05  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
+	expect relative path name for log directory.
+
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: expect relative path name  
+
+	* example/sample1/conf/direct.prop.in: 
+	* example/sample1/conf/config.prop.in: removed docroot
+
+	* example/core/build/create_propfiles.xsl: code cleanup
+
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
 	no longer set docroot in the parameter hash.
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
