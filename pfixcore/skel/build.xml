@@ -372,7 +372,6 @@ or delete the DOCTYPE definition -->
       </fileset>
       <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop"/>
     </delete>
-    <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
   </target>
   
@@ -664,6 +663,8 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.jndi"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
+    <available file="lib/tomcat/jmx.jar" property="jmx.found"/>
+    <antcall target="tomcat.jmx"/>
   </target>
 
   <target name="tomcat.extract">
@@ -688,6 +689,9 @@ or delete the DOCTYPE definition -->
     <move todir="${dir.tomcat}">
       <fileset dir="${tmp.tomcat}" />
     </move>
+    
+    <!-- cvs would remove this dir, event though we cvs-ignore it! -->
+    <touch file="${dir.tomcat}/logs/dontpruneme"/>
   </target>
     
   <target name="tomcat.strip">
@@ -730,6 +734,12 @@ or delete the DOCTYPE definition -->
       </dname>
     </genkey>
   </target>
+    
+  <target name="tomcat.jmx" if="jmx.found">
+    <!-- work-around bug 29056 -->
+    <copy file="lib/tomcat/jmx.jar" todir="${dir.tomcat}/bin" overwrite="true"/>
+  </target> 
+
   <description>
     Targets
     -------
