@@ -4,12 +4,12 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-  <center>
-    <pfx:button pageflow="OrderFlow" startwithflow="true">
-      Next Page From OrderFlow 
-    </pfx:button>
-  </center>
-</lang>
+        <center>
+          <pfx:button pageflow="OrderFlow" startwithflow="true">
+            Next Page From OrderFlow 
+          </pfx:button>
+        </center>
+      </lang>
     </product>
   </part>
 
