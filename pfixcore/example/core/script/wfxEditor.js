@@ -80,6 +80,7 @@ wfxEditor.Config = function () {
   this.style_source = '<style type="text/css">' + 
     'body,pre { font-family: monospace; font-size: 13px !important; margin:0px !important}\n' + 
     'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
+    'a { text-decoration: none }\n' + 
     '.string      { color:#118800; font-weight:normal }\n' + 
     '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
     '.htmltagname { color:#ffaa44; font-weight:bold }\n' + 
@@ -966,6 +967,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
       // TAB
       //-----
 
+      this.cancelRehighlighting = true;
       this.skipRehighlighting = true;
 
       var cursor = this._doc.body.style.cursor;
@@ -1097,6 +1099,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 
       // Moz
       wfxEditor._stopEvent(ev);
+      this.cancelRehighlighting = false;
       return;
       break;
 
@@ -1688,10 +1691,22 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     html = html.replace( /<\/pre><pre>/g , "<br />" );
     
-    //    html = html.replace( /<p \/>/g, "<br />" );
-    //    html = html.replace( /<\/p>((<br \/>)*)<p>/g, "<br />$1" );
-    //    html = html.replace( /<p>/g, "" );
-    //    html = html.replace( /<\/p>/g, "" );
+    // after paste from other applications (Word, ...)
+    html = html.replace( /<P\b[^>]*>/g, "<p>");
+    html = html.replace( /<\/?[A-Z][^>]*>/g, "");
+    html = html.replace( /<\?[^>]*>/, "");
+    html = html.replace( /<\/?o:p>/g, "");
+    html = html.replace( /<\/span><p>/g, "<br />");
+
+    //    alert( wfxEditor.str2chr(html));
+
+    // after paste from other applications (WordPad, ...)
+    html = html.replace( /<P>&nbsp;<\/P>((<P>&nbsp;<\/P>){0,})/g, function($0,$1) { if($1 == "") return "<br /><br />"; var res=""; for( var i=0; i<$1.match(/n/g).length+2; i++) res+="<br />"; return res; } );
+
+    html = html.replace( /<P \/>/g, "<br />" );
+    html = html.replace( /<\/P>((<br \/>)*)<P>/g, "<br />$1" );
+    //    html = html.replace( /<P>/g, "" );
+    //    html = html.replace( /<\/P>/g, "" );
 
     //    alert("getHTML() postprocessed:\n" + wfxEditor.str2chr(html));
 
@@ -1833,8 +1848,12 @@ wfxEditor.str2chr = function( str ) {
   //*****************************************************************************
   var res = "";
   
-  for( var i=0; i<str.length; i++) {
-    res += str.charAt(i)+"("+str.charCodeAt(i)+")";
+  if( str == null ) {
+    res = "[null]";
+  } else {
+    for( var i=0; i<str.length; i++) {
+      res += str.charAt(i)+"("+str.charCodeAt(i)+")";
+    }
   }
 
   return str + "\n---------------------------------------\n" + res;
@@ -2141,7 +2160,10 @@ wfxEditor.prototype.submitContent = function( textarea, submit) {
   }
 
   var content = this.col2tag(this.getHTML());
-  
+
+  // make sure there are no markers left (==bug)
+  content = this.removeChangedRangeMarker( content );
+
   //--------------------
   // XML wellformedness
   //--------------------
@@ -2150,7 +2172,8 @@ wfxEditor.prototype.submitContent = function( textarea, submit) {
   if( !this.isWellFormedXML( content, err) ) {
     
     if( err instanceof Array ) {
-      alert("errReason:" + err["Reason"] + "\n" + 
+      alert("Sorry, this is not well-formed XML.\n\n" +
+	    "errReason:" + err["Reason"] + "\n" + 
 	    "errLine:"   + err["Line"]   + "(???)\n" +
 	    "errSource:" + err["Source"] + "\n");
     }
@@ -2707,7 +2730,6 @@ wfxEditor.prototype.getOffsets = function( content, ret ) {
   
     // truncate buffer after marker position
     var buf = content.substr( 0, posStart );
-    //    alert(wfxEditor.str2chr(buf));
 
     var newlines;
 
