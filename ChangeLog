@@ -1,3 +1,8 @@
+2003-10-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: Eeek. All the default value stuff somehow disappeared during
+	a merge not long after it made it into CVS...and nobody missed it :-( It's now restored again. 
+
 2003-09-23  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/iwrapper.xsl: added generation of toString
