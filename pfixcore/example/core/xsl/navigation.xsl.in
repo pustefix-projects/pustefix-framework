@@ -10,6 +10,8 @@
 
   <!-- needed for the template below to work... ughh, bloody hack. -->
   <xsl:template match="pfx:invisible"></xsl:template>
+  <xsl:template match="pfx:active"></xsl:template>
+  <xsl:template match="pfx:normal"></xsl:template>
   <xsl:template match="pfx:argument"></xsl:template>
   <xsl:template match="pfx:command"></xsl:template>
   <xsl:template match="pfx:anchor"></xsl:template>
@@ -101,7 +103,14 @@
       <xsl:with-param name="active">
         <xsl:choose>
           <xsl:when test="./pfx:active">
-            <xsl:apply-templates select="./pfx:active/node()"/>
+            <xsl:apply-templates select="./pfx:active/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="./pfx:normal">
+            <xsl:apply-templates select="./pfx:normal/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
             <xsl:apply-templates select="./node()">
@@ -114,6 +123,11 @@
         <xsl:choose>
           <xsl:when test="./pfx:invisible">
             <xsl:apply-templates select="./pfx:invisible/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:when test="./pfx:normal">
+            <xsl:apply-templates select="./pfx:normal/node()">
               <xsl:with-param name="thepagename" select="@page"/>
             </xsl:apply-templates>
           </xsl:when>
