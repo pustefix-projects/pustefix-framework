@@ -420,6 +420,7 @@
       <xsl:with-param name="urlonly" select="'true'" />
       <xsl:with-param name="args" select="./pfx:argument"/>
       <xsl:with-param name="cmds" select="./pfx:command"/>
+      <xsl:with-param name="anchors" select="./pfx:anchor"/>
       <xsl:with-param name="pageflow" select="@pageflow"/>
       <xsl:with-param name="startwithflow" select="@startwithflow"/>
       <xsl:with-param name="nodata" select="@nodata"/>
