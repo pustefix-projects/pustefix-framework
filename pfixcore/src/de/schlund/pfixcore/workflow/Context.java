@@ -77,6 +77,7 @@ public class Context implements AppContext {
     private final static String DEFPROP           = "context.defaultpageflow";
     private final static String NAVPROP           = "xmlserver.depend.xml";
     private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate"; 
+    private final static String PROP_NEEDS_SSL    = "FORCE_SSL"; 
     private final static String WATCHMODE         = "context.adminmode.watch";
     private final static String ADMINPAGE         = "context.adminmode.page";
     private final static String ADMINMODE         = "context.adminmode";
@@ -158,6 +159,21 @@ public class Context implements AppContext {
                 in_adminmode  = true;
             }
         }
+    }
+
+    public boolean currentPageNeedsSSL(PfixServletRequest preq) throws Exception {
+        PageRequest page = new PageRequest(preq); 
+        if (page.isEmpty() && getCurrentPageRequest() != null) {
+            page = getCurrentPageRequest();
+        }
+        if (!page.isEmpty()) {
+            Properties props = preqprops.getPropertiesForPageRequest(page);
+            String needssl = props.getProperty(PROP_NEEDS_SSL);
+            if (needssl != null && needssl.equals("true")) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

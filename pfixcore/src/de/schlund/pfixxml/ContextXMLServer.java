@@ -39,6 +39,7 @@ public class ContextXMLServer extends AbstractXMLServer {
     private              Category CAT            = Category.getInstance(ContextXMLServer.class.getName());
     public  final static String   CONTEXT_SUFFIX = "__CONTEXT__";
     private final static String   CONTEXT_CLASS  = "context.class";
+    private final static String   ALREADY_SSL    = "__CONTEXT_ALREADY_SSL__";
     
     private WeakHashMap contextMap = new WeakHashMap();
     private String      contextclassnname;
@@ -51,6 +52,34 @@ public class ContextXMLServer extends AbstractXMLServer {
         }
     }
 
+    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
+        if (super.needsSSL(preq)) {
+            return true;
+        } else {
+            if (preq.getSession(false) != null && preq.isRequestedSessionIdValid()) {
+                String      contextname = makeContextName();
+                HttpSession session     = preq.getSession(false);
+                String      already_ssl = (String) session.getAttribute(ALREADY_SSL);
+                if (already_ssl != null && already_ssl.equals("true")) {
+                    return true;
+                } else {
+                    try {
+                        AppContext context = (AppContext) session.getAttribute(contextname);
+                        if (context != null) {
+                            boolean retval = context.currentPageNeedsSSL(preq);
+                            if (retval == true) {
+                                session.setAttribute(ALREADY_SSL, "true");
+                            }
+                            return retval;
+                        }
+                    } catch (Exception exp) { throw new ServletException(exp); }
+                }
+            }
+        }
+        return false;
+    }
+
+    
     protected boolean needsSession() {
         return true;
     }
@@ -102,7 +131,7 @@ public class ContextXMLServer extends AbstractXMLServer {
         if (session == null) {
             throw new XMLException("No valid session found! Aborting...");
         }
-        AppContext context = (AppContext)session.getAttribute(contextname);
+        AppContext context = (AppContext) session.getAttribute(contextname);
         // Create new context and add it to contextMap, if context is null or contextClass has changed
         if ((context == null) || (!contextclassnname.equals(context.getClass().getName()))) {
             context = createContext();

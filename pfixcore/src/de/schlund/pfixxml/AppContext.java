@@ -20,6 +20,7 @@
 package de.schlund.pfixxml;
 
 import java.util.Properties;
+import javax.servlet.ServletException;
 
 /**
  *
@@ -30,4 +31,5 @@ public interface AppContext {
     void       init(Properties props, String name) throws Exception;
     SPDocument handleRequest(PfixServletRequest preq) throws Exception;
     void       reset() throws Exception;
+    boolean    currentPageNeedsSSL(PfixServletRequest preq) throws Exception;
 }
