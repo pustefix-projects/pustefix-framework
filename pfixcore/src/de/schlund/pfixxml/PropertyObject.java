@@ -19,17 +19,18 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixcore.util.*;
-import java.util.*;
+import java.util.Properties;
 
 /**
- *
- *
+ * Classes which will get managed by the PropertyObjectManager have to implement
+ * this interface. They should provide an empty constructor and the opportunity
+ * to get initialized by a Properties object.
+ * 
+ * @author mleidig
  */
+public interface PropertyObject {
 
-public interface AppContext {
-    void       init(Properties props, ContainerUtil conutil, String name) throws Exception;
-    SPDocument handleRequest(PfixServletRequest preq) throws Exception;
-    void       reset() throws Exception;
+    /**Initialize newly created instance with Properties object.*/
+    public void init(Properties props) throws Exception;	
+
 }

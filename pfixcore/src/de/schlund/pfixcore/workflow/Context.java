@@ -45,25 +45,31 @@ import org.w3c.dom.*;
  */
 
 public class Context implements AppContext {
-
+    // from constructor
+    private String                 name;
     private ContainerUtil          conutil;
     private Properties             properties;
-    private ContextResourceManager rmanager;
+    
+    // shared between all instances that have the same properties
     private PageFlowManager        pageflowmanager;
     private PageRequestProperties  preqprops;
     private PageMap                pagemap;
     
+    // new instance for every Context
+    private ContextResourceManager rmanager;
+    private Navigation             navigation = null;
+    
+    // values read from properties
+    private boolean                autoinvalidate_navi = true;
+    private boolean                in_adminmode        = false;
+    private PageRequest            admin_pagereq;
+
+    // the request state
     private PageRequest            currentpagerequest;
     private PageFlow               currentpageflow;
 
-    private Navigation             navigation          = null;
-    private boolean                autoinvalidate_navi = true;
     private Element                navigation_element  = null;
-
-    private boolean                in_adminmode        = false;
     private String                 visit_id            = null;
-    private PageRequest            admin_pagereq;
-    private long                   loadindex = 0;
     
     private static Category LOG = Category.getInstance(Context.class.getName());
 
@@ -93,42 +99,33 @@ public class Context implements AppContext {
      * @param properties a <code>Properties</code> value
      * @exception Exception if an error occurs
      */
-    public void init(Properties properties, ContainerUtil conutil) throws Exception {
+    public void init(Properties properties, ContainerUtil conutil, String name) throws Exception {
         this.conutil    = conutil;
 	this.properties = properties;
+        this.name       = name;
 
-	rmanager        = new ContextResourceManager();
+	rmanager = new ContextResourceManager();
 	rmanager.init(this);
 
-        reset_internal(false);
-    }
-
-    /**
-     * <code>reset</code> resets the Context with the originally supplied Properties.
-     *
-     * @exception Exception if an error occurs
-     */
-
-    public void reset() throws Exception {
-        reset_internal(true);
-    }
-    
-    public long getPropertyLoadIndex() {
-        return loadindex;
+        reset();
     }
 
     public void invalidateNavigation() {
         navigation_element = null;
     }
     
-    private void reset_internal(boolean reload_navi) throws Exception {
-        pageflowmanager = new PageFlowManager(properties); 
-        preqprops       = new PageRequestProperties(properties);
-        pagemap         = new PageMap(preqprops);
-        loadindex       = new Long(properties.getProperty(ServletManager.PROP_LOADINDEX)).longValue();
+    public void reset() throws Exception {
+    	// get PropertyObjects from PropertyObjectManager
+    	PropertyObjectManager pom = PropertyObjectManager.getInstance();
         
+        pageflowmanager = (PageFlowManager) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
+        preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
+        pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
+        
+        // The navigation is possibly shared across more than one context, i.e. more than one properties object.
+        // So we can't let it be handled by the PropertyObjectManager.
         if (properties.getProperty(NAVPROP) != null) {
-            navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP), reload_navi);
+            navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP));
         }
 
         currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
@@ -175,11 +172,10 @@ public class Context implements AppContext {
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         SPDocument  spdoc;
-        PageRequest adminpr = null;
-    	if (visit_id == null) {
+
+        if (visit_id == null) 
             visit_id = (String) preq.getSession(false).getValue(ServletManager.VISIT_ID);
-        }
-	
+
         if (in_adminmode) {
             PageRequest tmp = getCurrentPageRequest();
             setCurrentPageRequest(admin_pagereq);
@@ -488,7 +484,8 @@ public class Context implements AppContext {
             if (skip_on_inaccessible) {
                 return null;
             } else {
-                LOG.warn("State for page " + getCurrentPageRequest().getName() + " is not accessible! Trying first page of default flow.");
+                LOG.warn("State for page " + getCurrentPageRequest().getName() +
+                         " is not accessible! Trying first page of default flow.");
                 setCurrentPageFlow(pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP)));
                 setCurrentPageRequest(currentpageflow.getFirstStep());
                 state = getPageMap().getState(getCurrentPageRequest());
@@ -554,6 +551,6 @@ public class Context implements AppContext {
     }
 
     public String getName() {
-        return properties.getProperty(AbstractXMLServer.PROP_NAME) + ContextXMLServer.CONTEXT_SUFFIX;
+        return name;
     }
 }
