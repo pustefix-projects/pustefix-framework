@@ -95,11 +95,6 @@ public class DefaultIWrapperState extends StateImpl {
                 context.prohibitContinue();
             } else {
                 CAT.debug("    => No error happened during work ...");
-//                 if (context.getJumpToPageRequest() != null) {
-//                     CAT.debug("... Context has a jumppage set: [" + context.getJumpToPageRequest() + "]");
-//                     CAT.debug("    => continue there...");
-//                     // container.getAssociatedResultDocument().setContinue(true);
-//                 } else 
                 if (container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page and context.requestWantsContinue() doesn't object:");
                     CAT.debug("    => retrieving current status.");
