@@ -566,11 +566,19 @@
       <xsl:copy-of select="@name"/>
       <xsl:variable name="thename" select="@name"/>
       <xsl:variable name="pos">
-        <xsl:call-template name="pfx:get_position">
-          <xsl:with-param name="set" select="key('xinp_hidden','hidden')[@name = $thename]"/>
-          <xsl:with-param name="cnode" select="."/>
-          <xsl:with-param name="count" select="1"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="@position = 'auto'">
+            <xsl:call-template name="pfx:get_position">
+              <xsl:with-param name="set" select="key('xinp_hidden','hidden')[@name = $thename]"/>
+              <xsl:with-param name="cnode" select="."/>
+              <xsl:with-param name="count" select="1"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:when test="@position">
+            <xsl:value-of select="@position"/>
+          </xsl:when>
+          <xsl:otherwise>1</xsl:otherwise>
+        </xsl:choose>
       </xsl:variable>
       <ixsl:attribute name="value">
         <ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/>
@@ -579,8 +587,17 @@
     </input>
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>creates a html hidden field, attributes will be copied.
-      </description>
+      <param required="0">
+        <name>position</name>
+        <values><oneof><option>auto</option><option>1,2,3..</option></oneof></values>
+        <description>This is needed for parameters that are defined as multiple, i.e. that one named
+        parameter can occur multiple times. The position attribute let's you specifiy which
+        occurance of a value in the output tree should be used to prefill the input field. Default
+        is to always use the first occurance, other values are integer values to specify the n-th
+        ocurance in the output tree, or the string "auto" which automatically let's the n-th
+        occurance of the input parameter on the UI choose the n-th occurance of the value in the output tree</description>
+      </param>
+      <description>Creates a html hidden field.</description>
     </cus:documentation>
   </xsl:template>
 
@@ -827,48 +844,23 @@
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='text']">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>
-        Creates a text input field. All attributes given will be copied to the final html tag.</description>
-        <param required="1">
-          <name>name</name>
-          <values><string/></values>
-          <description>name of the input-field</description>
-        </param>
-        <param required="0">
-          <name>maxlength</name>
-          <values><int default="200"/></values>
-          <description>maxlength of the inputfield (chars)</description>
-        </param>
-        <param required="0">
-          <name>size</name>
-          <values><int default="40"/></values>
-          <description>size of the inputfield</description>
-        </param>
-        <param required="1">
-          <name>type</name>
-          <values><oneof><option>text</option></oneof></values>
-          <description></description>
-        </param>
-        <param required="0">
-          <name>default</name>
-          <values>
-            <string/>
-          </values>
-          <description>if set to any value, the text field is set this value by default if no
-          other value is given by the business logic</description>
-        </param>
-    </cus:documentation>
     <input type="text" size="40" maxlength="200">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='position']"/>
       <xsl:variable name="thename" select="@name"/>
       <xsl:variable name="pos">
-        <xsl:call-template name="pfx:get_position">
-          <xsl:with-param name="set" select="key('xinp_text','text')[@name = $thename]"/>
-          <xsl:with-param name="cnode" select="."/>
-          <xsl:with-param name="count" select="1"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="@position = 'auto'">
+            <xsl:call-template name="pfx:get_position">
+              <xsl:with-param name="set" select="key('xinp_text','text')[@name = $thename]"/>
+              <xsl:with-param name="cnode" select="."/>
+              <xsl:with-param name="count" select="1"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:when test="@position">
+            <xsl:value-of select="@position"/>
+          </xsl:when>
+          <xsl:otherwise>1</xsl:otherwise>
+        </xsl:choose>
       </xsl:variable>
       <xsl:choose>
         <xsl:when test="@default">
@@ -885,6 +877,49 @@
       </xsl:choose>
       <xsl:apply-templates/>
     </input>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>
+      Creates a text input field. All attributes given will be copied to the final html tag.</description>
+      <param required="1">
+        <name>name</name>
+        <values><string/></values>
+        <description>name of the input-field</description>
+      </param>
+      <param required="0">
+        <name>maxlength</name>
+        <values><int default="200"/></values>
+        <description>maxlength of the inputfield (chars)</description>
+      </param>
+      <param required="0">
+        <name>size</name>
+        <values><int default="40"/></values>
+        <description>size of the inputfield</description>
+      </param>
+      <param required="1">
+        <name>type</name>
+        <values><oneof><option>text</option></oneof></values>
+        <description></description>
+      </param>
+      <param required="0">
+        <name>default</name>
+        <values>
+          <string/>
+        </values>
+        <description>if set to any value, the text field is set this value by default if no
+        other value is given by the business logic</description>
+      </param>
+      <param required="0">
+        <name>position</name>
+        <values><oneof><option>auto</option><option>1,2,3..</option></oneof></values>
+        <description>This is needed for parameters that are defined as multiple, i.e. that one named
+        parameter can occur multiple times. The position attribute let's you specifiy which
+        occurance of a value in the output tree should be used to prefill the input field. Default
+        is to always use the first occurance, other values are integer values to specify the n-th
+        ocurance in the output tree, or the string "auto" which automatically let's the n-th
+        occurance of the input parameter on the UI choose the n-th occurance of the value in the output tree</description>
+      </param>
+    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='password']">
@@ -924,14 +959,22 @@
   
   <xsl:template match="pfx:xinp[@type='area']">
     <textarea cols="38" rows="20">
-      <xsl:copy-of select="@*[name()!='type']"/>
+      <xsl:copy-of select="@*[name()!='type' and name()!='position']"/>
       <xsl:variable name="thename" select="@name"/>
       <xsl:variable name="pos">
-        <xsl:call-template name="pfx:get_position">
-          <xsl:with-param name="set" select="key('xinp_area','area')[@name = $thename]"/>
-          <xsl:with-param name="cnode" select="."/>
-          <xsl:with-param name="count" select="1"/>
-        </xsl:call-template>
+        <xsl:choose>
+          <xsl:when test="@position = 'auto'">
+            <xsl:call-template name="pfx:get_position">
+              <xsl:with-param name="set" select="key('xinp_area','area')[@name = $thename]"/>
+              <xsl:with-param name="cnode" select="."/>
+              <xsl:with-param name="count" select="1"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:when test="@position">
+            <xsl:value-of select="@position"/>
+          </xsl:when>
+          <xsl:otherwise>1</xsl:otherwise>
+        </xsl:choose>
       </xsl:variable>
       <ixsl:choose>
         <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
@@ -961,6 +1004,16 @@
         <name>rows</name>
         <values><int default="20"/></values>
         <description>number of rows</description>
+      </param>
+      <param required="0">
+        <name>position</name>
+        <values><oneof><option>auto</option><option>1,2,3..</option></oneof></values>
+        <description>This is needed for parameters that are defined as multiple, i.e. that one named
+        parameter can occur multiple times. The position attribute let's you specifiy which
+        occurance of a value in the output tree should be used to prefill the input field. Default
+        is to always use the first occurance, other values are integer values to specify the n-th
+        ocurance in the output tree, or the string "auto" which automatically let's the n-th
+        occurance of the input parameter on the UI choose the n-th occurance of the value in the output tree</description>
       </param>
       <example>
         <input>

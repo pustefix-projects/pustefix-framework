@@ -1,3 +1,23 @@
+2004-04-06  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
+
+	* example/core/xsl/forminput.xsl.in: changed the stuff in entry
+	2004-02-11 again: now the behaviour described there will not be
+	automatically, you need to add the attribute position="auto" to
+	the text, hidden, or area xinp tag. Alternatively you can also add
+	position="n" where n is some integer to specify exactly which
+	value of the multiple parameter you want to reference (note this
+	is only when displaying the values from the output tree, this does
+	not give any "index" when submitting the form)
+
+	Reson for this is that it's impossible to make something like 
+	<ixsl:choose><ixsl:when test="...">
+	  <pfx:xinp type="text" name="foo" .../>
+	</ixsl:when><ixsl:otherwise>
+	  <pfx:xinp type="text" name="foo" .../>
+	</ixsl:otherwise></ixsl:choose> 
+	because the second occurance of foo will try to get it's  value from position()=2
+	unless the automatism is removed as done in this patch.
+
 2004-04-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: added @noerror attribute (and $noerror param) to 
