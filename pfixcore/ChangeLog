@@ -1,3 +1,8 @@
+2004-07-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in: commented admin/manager out from editconsole until it
+	 becomes a bit more useful for the general public (and the excpetions are gone)
+
 2004-07-21 Michael Hartmier  <mhm@schlund.de>
 	* build.xml
 	* skel/build.xml: use hostname -i for trusted ip
