@@ -110,7 +110,7 @@ XML_Request.activeX = typeof XML_Request.msXmlHttp == "string";
 //*****************************************************************************
 //
 //*****************************************************************************
-XML_Request.prototype.start = function( content ) {
+XML_Request.prototype.start = function( content, reqId ) {
 
   // unique timestamp to prevent caching
   //  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
@@ -164,7 +164,12 @@ XML_Request.prototype.start = function( content ) {
           if( XML_Request.activeX ) {
             XML_Request._xml[i].onreadystatechange = function() {
               if( XML_Request._xml[i].readyState == 4 ) {
-                self.callback.call( self.context, XML_Request._xml[i].responseXML);
+                var reqId;
+                try {
+                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId);
                 XML_Request._xml[i] = null;
               }
             };
@@ -179,7 +184,12 @@ XML_Request.prototype.start = function( content ) {
                 if( self.status && self.status >= 300 ) {
                   //throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
-                self.callback.call( self.context, XML_Request._xml[i].responseXML );
+                var reqId;
+                try {
+                  reqId = XML_Request._xml[i].getResponseHeader("Request-Id");
+                } catch(e) {
+                }
+                self.callback.call( self.context, XML_Request._xml[i].responseXML, reqId );
                 XML_Request._xml[i] = null;
               }
             };
@@ -199,6 +209,14 @@ XML_Request.prototype.start = function( content ) {
           try {
             // not implemented in Opera 7.6pr1
             XML_Request._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
+          } catch(e) {
+          }
+        }
+
+        if( this.callback && typeof reqId != "undefined" ) {
+          try {
+            // not implemented in Opera 7.6pr1
+            XML_Request._xml[i].setRequestHeader( "Request-Id", reqId.toString() );
           } catch(e) {
           }
         }
@@ -254,13 +272,20 @@ XML_Request.prototype.start = function( content ) {
         document.getElementById("pfxxmldiv"+i).innerHTML = '<' + 'iframe id="pfxxmliframe' + i + '" name="pfxxmliframe' + i + '" style="display:block"><' + '/iframe>';
       }
 
+      var url = this.url;
+      if( reqId ) {
+        url = this.setQueryParameter( url, "PFX_Request_ID", reqId );
+      }
+
       if( this.method.toLowerCase() == "get" ) {
 
         //-----
         // GET
         //-----
-
-        el.src = this.url;
+		
+        // better use location.replace(url) to prevent entry into browser history
+        el.src = url;
+        
         document.body.appendChild(el);
         var self = this;
         XML_Request._xmlTimer[i] = window.setInterval( self.customOnReadyStateChange, XML_Request._xmlTimerInterval);
@@ -288,7 +313,7 @@ XML_Request.prototype.start = function( content ) {
         window.setTimeout( function() {
 
           var elForm = document.createElement("form");
-          elForm.action = self.url;
+          elForm.action = url;
           elForm.target = "pfxxmliframe"+i;
           elForm.method = self.method;
           elForm.id     = "pfxxmlform"+i;
@@ -342,6 +367,34 @@ XML_Request.prototype.setRequestHeader = function( field, value ) {
 //*****************************************************************************
 //
 //*****************************************************************************
+XML_Request.prototype.setQueryParameter = function( url, field, value ) {
+  
+  url += ( ( url.indexOf('?')+1 ) ? '&' : '?' ) + field + "=" + encodeURI(value);
+
+  return url;
+};
+
+//*****************************************************************************
+//
+//*****************************************************************************
+XML_Request.prototype.getQueryParameter = function( url, field ) {
+
+  var pairs = url.substr( url.indexOf('?')+1 ).split('&');
+  
+  var param;
+  for( var i=0; i<pairs.length; i++ ) {
+    param = pairs[i].split('=');
+    if( param[0] == field ) {
+      return param[1];
+    }
+  }
+
+  return null;
+};
+
+//*****************************************************************************
+//
+//*****************************************************************************
 XML_Request.prototype._customOnReadyStateChange = function() {
 
   var win = null;
@@ -355,11 +408,12 @@ XML_Request.prototype._customOnReadyStateChange = function() {
           win = window.frames['pfxxmliframe'+i];
           if( win && 
               win.document && 
-              win.location != "about:blank" && 
+              win.location.href != "about:blank" && 
               (_isMshtml ? win.document.readyState=="complete" : true)) {
 
             XML_Request._xml[i].call( XML_Request._xmlThis[i].context, 
-                                     _isMshtml ? win.document.body : win.document );
+                                      _isMshtml ? win.document.body : win.document,
+                                      XML_Request._xmlThis[i].getQueryParameter( win.location.href, "PFX_Request_ID") );
             this.cancelOnReadyStateChange(i);
           } else {
             XML_Request._xmlTimerCount[i]++;            

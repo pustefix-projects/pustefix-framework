@@ -83,6 +83,14 @@ function XML_Utilities() {
 	this.scopeSupport=false;
 }
 
+XML_Utilities.prototype.getChildElements=function(node,name) {
+	var nodes=new Array();
+	for(var i=0;i<node.childNodes.length;i++) {
+		if(node.childNodes[i].nodeType==1) nodes.push(node.childNodes[i]);
+	}
+	return nodes;
+}
+
 XML_Utilities.prototype.getChildrenByName=function(node,name) {
 	if(arguments.length!=2) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByName");
 	//NOTE: getting child elements via childNodes property and name comparison is much slower
@@ -793,6 +801,7 @@ function SOAP_Call() {
 	this.params=new Array();
 	this.retTypeInfo=null;
   	this.userCallback=null;
+	this.requestID=null;
   	this.request=null;
 }
 
@@ -805,6 +814,10 @@ SOAP_Call.prototype.setTargetEndpointAddress=function() {
 
 SOAP_Call.prototype.setUserCallback=function(cb) {
 	this.userCallback=cb;
+}
+
+SOAP_Call.prototype.setRequestID=function(id) {
+	this.requestID=id;
 }
 
 //setOperationName(operationName)
@@ -846,9 +859,7 @@ SOAP_Call.prototype.invoke=function() {
 		}
 	}
 	if(this.params.length!=arguments.length-ind) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Call.invoke");
-	for(var i=0;i<this.params.length;i++) {
-		this.params[i].setValue(arguments[i+ind]);
-	}
+	for(var i=0;i<this.params.length;i++) this.params[i].setValue(arguments[i+ind]);
 	var rpc=new SOAP_RPCSerializer(this.opName,this.params,this.retTypeInfo);
 	
 	var bodyElem=new SOAP_BodyElement(rpc);
@@ -865,11 +876,12 @@ SOAP_Call.prototype.invoke=function() {
   } else {
     // async
     this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
-    return this.request.start(writer.xml);
+    if(this.requestID==null) return this.request.start(writer.xml);
+    else return this.request.start(writer.xml,this.requestID);
   }
 }
 
-SOAP_Call.prototype.callback=function(xml) {
+SOAP_Call.prototype.callback=function(xml,reqID) {
 	try {
 		var soapMsg=new SOAP_Message(xml);
 		var fault=soapMsg.getSoapPart().getEnvelope().getBody().getFault();
@@ -878,16 +890,16 @@ SOAP_Call.prototype.callback=function(xml) {
 			var ind=fault.faultString.indexOf(":");
 			ex.name=fault.faultString.substring(0,ind);
 			ex.message=fault.faultString.substring(ind+1,fault.faultString.length);
-			if(this.userCallback) this.userCallback(ex);
+			if(this.userCallback) this.userCallback(null,reqID,ex);
 			else throw ex;
 		} else {
 			var rpc=new SOAP_RPCSerializer( this.opName, null, this.retTypeInfo);
 			var res = rpc.deserialize(soapMsg.getSoapPart().getEnvelope().getBody().element);
-  			if(this.userCallback) this.userCallback(res);
+  			if(this.userCallback) this.userCallback(res,reqID,null);
    		else return res;
    	}
   	} catch(ex) {
-  		if(this.userCallback) this.userCallback(null,ex);
+  		if(this.userCallback) this.userCallback(null,reqID,ex);
   		else throw ex;
   	}
 };
@@ -946,13 +958,13 @@ SOAP_Part.prototype.write=function(writer) {
 //*********************************
 function SOAP_Envelope() {
 	if(arguments.length==0) {
-		this.header=new SOAP_Header();
+		this.header=null;
 		this.body=new SOAP_Body();
 		this.element=null;
 	} else if(arguments.length==1) {
 		var e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Header")[0];
 		if(e!=null) this.header=new SOAP_Header(e);
-		else this.header=new SOAP_Header();
+		else this.header=null;
 		e=XML_Utilities.getChildrenByNameNS(arguments[0],"soapenv:Body")[0];
 		if(e!=null) this.body=new SOAP_Body(e);
 		else throw new SOAP_Exception("NO MESSAGE BODY","SOAP_Envelope");
@@ -966,8 +978,16 @@ SOAP_Envelope.prototype.write=function(writer) {
 	writer.startElement(envName);
 	writer.writeNamespaceDeclaration(XML_NS_XSI);
 	writer.writeNamespaceDeclaration(XML_NS_XSD);
+	if(this.header!=null) this.header.write(writer);
 	this.body.write(writer);
 	writer.endElement(envName);
+}
+
+//SOAP_Header addHeader()
+SOAP_Envelope.prototype.addHeader=function() {
+	if(this.header!=null) throw new SOAP_Exception("Message already contains header","SOAP_Envelope");
+	this.header=new SOAP_Header();
+	return this.header;
 }
 
 //SOAP_Header getHeader()
@@ -1038,25 +1058,56 @@ SOAP_Body.prototype.write=function(writer) {
 }
 
 //*********************************
-// SOAP_HeaderElement(serializer)
+// SOAP_HeaderElement(XML_QName qname)
+// SOAP_HeaderElement(Element elem);
 //*********************************
-function SOAP_HeaderElement(serializer) {
-	this.serializer=serializer;
+function SOAP_HeaderElement(arg) {
+	if(arg instanceof XML_QName) {
+		this.qname=arg;
+		this.text=null;
+	} else {
+		this.qname=new XML_QName(arg.nodeName);
+		this.text=arg.nodeValue;
+	}
 }
 
 SOAP_HeaderElement.prototype.write=function(writer) {
-	this.serializer.serialize(writer);
+	writer.startElement(this.qname);
+	if(this.text!=null) writer.writeChars(this.text);
+	writer.endElement(this.qname);
+}
+
+SOAP_HeaderElement.prototype.setText=function(text) {
+	this.text=text;
 }
 
 //*********************************
 // SOAP_Header()
+// SOAP_Header(Element elem)
 //*********************************
 function SOAP_Header() {
-	this.headerElems=new Array();
+	if(arguments.length==0) {
+		this.headerElems=new Array();
+	} else if(arguments.length==1) {
+		this.headerElems=new Array();
+		var nodes=XML_Utilities.getChildElements(arguments[0]);
+		for(var i=0;i<nodes.length;i++) {
+			this.headerElems.push(new SOAP_HeaderElement(nodes[i]));
+		}
+	} else throw new CORE_WrongArgNoEx("","SOAP_Envelope");
 }
 
-SOAP_Header.prototype.addHeaderElement=function(headerElem) {
-	this.headerElems.push(headerElem);
+//SOAP_HeaderElement addHeaderElement(XML_QName)
+SOAP_Header.prototype.addHeaderElement=function(qname) {
+	var elem=new SOAP_HeaderElement(qname);
+	this.headerElems.push(elem);
+	return elem;
+}
+
+SOAP_Header.prototype.getHeaderElement=function(name) {
+	for(var i=0;i<this.headerElems.length;i++) {
+		if(this.headerElems[i].qname.localpart==name) return this.headerElems[i];
+	}
 }
 
 //write(XML_Writer writer) {
@@ -1163,11 +1214,13 @@ SOAP_Stub.prototype._createCall=function() {
   return call;
 }
 
-SOAP_Stub.prototype._extractCallback=function(args,expLen) {
+SOAP_Stub.prototype._extractCallback=function(call,args,expLen) {
 	var argLen=args.length;
-	if(argLen==expLen+1 && typeof args[argLen-1]=="function") return args[argLen-1];
-	else if(argLen!=expLen) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Stub._extractCallback");
-	return null;
+	if(argLen==expLen+1 && typeof args[argLen-1]=="function") call.setUserCallback(args[argLen-1]);
+	else if(argLen==expLen+2 && typeof args[argLen-2]=="function" && typeof args[argLen-1]=="string") {
+		call.setUserCallback(args[argLen-2]);
+		call.setRequestID(args[argLen-1]);
+	} else if(argLen!=expLen) throw new CORE_IllegalArgsEx("Wrong number of arguments","SOAP_Stub._extractCallback");
 }
 
 SOAP_Stub.prototype._setURL=function(url) {

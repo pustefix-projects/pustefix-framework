@@ -28,8 +28,8 @@ ChatApp.prototype.init=function(loggedin,nickname) {
 	
 ChatApp.prototype.login=function(name) {
 	var self=this;
-	var f=function(ex) {
-		if(ex instanceof Error) {alert(ex.message);return;}
+	var f=function(res,id,ex) {
+		if(ex!=undefined) {alert(ex.message);return;}
 		self.name=name;
 		self.loginDisplay();
 		self.initText();
