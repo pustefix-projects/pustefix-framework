@@ -20,6 +20,7 @@ package de.schlund.pfixxml;
 
 import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
+import com.icl.saxon.expr.XPathException;
 
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
 
@@ -72,8 +73,7 @@ public final class IncludeDocumentExtension {
      */
     public static final NodeSetValue get(String path, String part, String product, String docroot, 
                                          String targetgen, String targetkey, String parent_path, 
-                                         String parent_part, String parent_product)
-                                  throws Exception {
+                                         String parent_part, String parent_product) throws Exception {
         boolean         dolog   = ! targetkey.equals(NOTARGET);
         int             length  = 0;
         File            incfile = new File(path);
@@ -87,7 +87,13 @@ public final class IncludeDocumentExtension {
             return new EmptyNodeSet();
         }
         // get the includedocument
-        iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+        try {
+            iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
+        } catch(Exception e) {
+            if(dolog)
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+            throw e;
+        }
         doc = iDoc.getDocument();
         
         // create a new buffer for xpath expressions
@@ -95,9 +101,23 @@ public final class IncludeDocumentExtension {
         
         // Get the part
         sb.append(XPPARTNAME).append(part).append(XPNAMEEND);
-        NodeSetValue ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
         
-        length = ns.getCount();
+        NodeSetValue ns;
+        try {
+            ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+        } catch (Exception e) {
+            if(dolog)
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+            throw e;
+        }
+        
+        try {
+            length = ns.getCount();
+        } catch (XPathException e) {
+            if(dolog)
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+            throw e;
+        }
         if (length == 0) {
         	// part not found 
             sb.delete(0, sb.length());
@@ -105,14 +125,14 @@ public final class IncludeDocumentExtension {
             //CAT.debug("*** Part '" + part + "' is 0 times defined.");
             CAT.debug(sb.toString());
             if (dolog) {
-                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
             return new EmptyNodeSet();
         } else if (length > 1) {
         	// too many parts. Error!
             if (dolog) {
-                DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, 
                                       parent_product, targetgen, targetkey);
             }
             sb.delete(0, sb.length());
@@ -125,17 +145,42 @@ public final class IncludeDocumentExtension {
         sb.delete(0, sb.length());
         sb.append(XPPARTNAME).append(part).append(XPNAMEEND).
         	append(XPPRODNAME).append(product).append(XPNAMEEND);
-        ns     = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+        try {
+            ns     = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+        } catch (Exception e) {
+            if(dolog)
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+            throw e;
+        }
         
-        length = ns.getCount();
+        try {
+            length = ns.getCount();
+        } catch (XPathException e) {
+            if(dolog)
+                DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+            throw e;
+        }
         if (length == 0) {
             // Didn't find the specific product, trying default:
             sb.delete(0, sb.length());
             sb.append(XPPARTNAME).append(part).append(XPNAMEEND).
             	append(XPPRODNAME).append(DEFAULT).append(XPNAMEEND);
-            ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+            try {
+                ns = PFXPathEvaluator.evaluateAsNodeSetValue(sb.toString(), doc);
+            } catch (Exception e) {
+                if(dolog)
+                    DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, parent_product, targetgen, targetkey);
+                throw e;
+            }
             
-            int len = ns.getCount();
+            int len;
+            try {
+                len = ns.getCount();
+            } catch (XPathException e) {
+                if(dolog)
+                    DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
+                throw e;
+            }
             if (len == 1 | len == 0) {
             	// Found one or none default products
                 String retval = "0";

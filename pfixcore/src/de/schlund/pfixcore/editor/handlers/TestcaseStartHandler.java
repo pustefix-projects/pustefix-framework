@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.editor.handlers;
 
+import de.schlund.pfixcore.editor.interfaces.TestcaseStart;
 import de.schlund.pfixcore.editor.resources.CRTestcase;
 import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.generator.IHandler;
@@ -23,10 +24,13 @@ public class TestcaseStartHandler implements IHandler {
      */
     public void handleSubmittedData(Context context, IWrapper wrapper)
         throws Exception {
-            
-        ContextResourceManager crm = context.getContextResourceManager();
-        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-        crtc.executeTest(); 
+        TestcaseStart tcs = (TestcaseStart) wrapper;
+        boolean doit = tcs.getDoStart().booleanValue();
+        if(doit) {
+            ContextResourceManager crm = context.getContextResourceManager();
+            CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+            crtc.executeTest(); 
+        }
     }
 
     /**
@@ -42,7 +46,8 @@ public class TestcaseStartHandler implements IHandler {
     public boolean prerequisitesMet(Context context) throws Exception {
         ContextResourceManager crm = context.getContextResourceManager();
         CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-        return crtc.hasSelectedTestcases();
+        boolean ret = crtc.hasSelectedTestcases();
+        return ret;
     }
 
     /**
@@ -56,7 +61,9 @@ public class TestcaseStartHandler implements IHandler {
      * @see de.schlund.pfixcore.generator.IHandler#needsData(Context)
      */
     public boolean needsData(Context context) throws Exception {
-        return true;
+        ContextResourceManager crm = context.getContextResourceManager();
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
+        boolean ret = !crtc.hasStartedTestcases(); 
+        return ret;
     }
-
 }

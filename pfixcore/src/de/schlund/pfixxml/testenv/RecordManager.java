@@ -2,16 +2,13 @@ package de.schlund.pfixxml.testenv;
 
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixxml.xpath.*;
 import java.io.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.*;
 import org.apache.log4j.*;
 import org.apache.xerces.dom.*;
 import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
-import org.xml.sax.*;
 
 
 /**
@@ -88,7 +85,7 @@ public final class RecordManager {
                     cutil.setSessionValue(session, SESS_RECORD_COUNTER, new Integer(0));
                 }
             } else {
-                // param == null
+                // param == null-> We are in record mode or not
                 if (CAT.isDebugEnabled())
                     CAT.debug("No parameter found");
                 // Look in the session if user is in record mode.

@@ -5,16 +5,16 @@
   <part name="content">
     <product name="default">
       <lang name="default">
+        <div class="doc_div"><h3>You have selected to following testcases:</h3></div>
         <table>
-          <th>You have selected to following testcases:</th>
-          <ixsl:for-each select="/formresult/selected_testcases/selected_testcase">
+          <ixsl:for-each select="/formresult/testcases/selected/testcase">
           <tr>
-            <td>
-              <table border="1">
+            <td colspan="2">
+              <table border="0" class="editor_box">
                 <th><ixsl:value-of select="."/></th>
                 <tr>
                   <td>
-                    temporary directory is: <ixsl:value-of select="./@tmp_directory"/>
+                    temporary directory: <ixsl:value-of select="./@tmp_directory"/>
                   </td>
                 </tr>
               </table>
@@ -22,16 +22,16 @@
           </tr>
           </ixsl:for-each>
           <tr>
-          </tr>
-          <tr>
-            <td>
+            <td align="left">
               <pfx:button normalclass="editor_submit" page="testcaseselect">
                 Back
               </pfx:button>
             </td>
-            <td>
+            <td align="right">
               <pfx:forminput target="_top">
-                <pfx:xinp class="editor_submit" type="submit" value="Start"/>
+                <pfx:xinp class="editor_submit" type="submit" value="Start">
+                  <pfx:argument name="tcstart.DoStart">true</pfx:argument>
+                </pfx:xinp>
               </pfx:forminput>
             </td>
           </tr>

@@ -7,8 +7,6 @@ import com.sun.net.ssl.SSLContext;
 import com.sun.net.ssl.TrustManager;
 import com.sun.net.ssl.X509TrustManager;
 
-import gnu.getopt.Getopt;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,6 +29,7 @@ import java.util.Arrays;
 import javax.net.ssl.SSLSocketFactory;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -46,7 +45,6 @@ import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpRecoverableException;
 import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
@@ -55,10 +53,8 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 
 import org.apache.xerces.dom.DocumentImpl;
-import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -84,89 +80,59 @@ public class TestClient {
 
     //~ Instance/static variables ..................................................................
 
-    private static final String XMLONLY_PARAM_KEY   = "__xmlonly";
-    private static final String XMLONLY_PARAM_VALUE = "1";
-    private static final int    LOOP_COUNT          = 1;
-    private static final String GNU_DIFF            = "diff -u";
-    private String              srcDir;
-    private String              tmpDir;
-    private String              styleDir;
-    private HttpConnection      httpConnect;
+    private static String  XMLONLY_PARAM_KEY   = "__xmlonly";
+    private static String  XMLONLY_PARAM_VALUE = "1";
+    private static String  GNU_DIFF            = "diff -u";
+    private String         srcDir;
+    private String         tmpDir;
+    private String         styleDir;
+    private HttpConnection httpConnect;
     // Xerces
-    private DocumentBuilderFactoryImpl  doc_factory;
-    private long                        request_count = 0;
-    private String                      sessionId;
-    private boolean                     ssl           = false;
-    private HostConfiguration           currentConfig = new HostConfiguration();
-    private String                      uri_session   = new String();
-    private SimpleHttpConnectionManager conMan        = new SimpleHttpConnectionManager();
-    private static Category             CAT           = Category.getInstance(TestClient.class.getName());
+    private static DocumentBuilderFactory docBFactory   = DocumentBuilderFactory.newInstance();
+    private long                          request_count = 0;
+    private String                        sessionId;
+    private boolean                       ssl           = false;
+    private HostConfiguration             currentConfig = new HostConfiguration();
+    private String                        uri_session   = new String();
+    private SimpleHttpConnectionManager   conMan        = new SimpleHttpConnectionManager();
+    private static Category               CAT           = Category.getInstance(TestClient.class.getName());
+
+    //~ Initializers ...............................................................................
+
+    static {
+        docBFactory.setValidating(false);
+        docBFactory.setNamespaceAware(true);
+    }
 
     //~ Constructors ...............................................................................
 
     public TestClient() throws TestClientException {
-        doc_factory = (DocumentBuilderFactoryImpl) DocumentBuilderFactoryImpl.newInstance();
-        doc_factory.setValidating(false);
-        doc_factory.setNamespaceAware(true);
-        //DOMConfigurator.configure("/home/jh/workspace/pfixcore/example/testenv/log4jconf.xml");
     }
 
     //~ Methods ....................................................................................
 
-    public static void main(String[] args) {
-        CAT.setPriority(Priority.DEBUG);
-        TestClient tc = null;
-        try {
-            tc = new TestClient();
-            CAT.info("|====================================================|");
-            CAT.info("|               Pustefix Test TextClient             |");
-            CAT.info("|====================================================|");
-            if (! tc.scanOptions(args)) {
-                tc.printUsage();
-                return;
-            }
-            tc.checkOptions();
-            ArrayList    files  = tc.readFiles();
-            StepConfig[] config = tc.doPrepare(files);
-            CAT.info("\n Starting test NOW!\n");
-            for (int i = 0; i < LOOP_COUNT; i++) {
-                tc.doTest(config);
-            }
-        } catch (TestClientException e) {
-            CAT.error("\n**********************************************");
-            CAT.error("ERROR in TestClient");
-            CAT.error("Exception:");
-            CAT.error(e.getMessage());
-            e.printStackTrace();
-            CAT.error("Nested Exception:");
-            CAT.error(e.getExceptionCause().getMessage());
-            e.getExceptionCause().printStackTrace();
-            CAT.error("\n**********************************************");
-        }
-    }
-
-    public String[] makeTest(String log_dir, String style_dir, String tmp_dir)
-                      throws TestClientException {
+    public TestcasePlaybackResult makeTest() throws TestClientException {
         CAT.warn("Starting test NOW");
-        srcDir   = log_dir;
-        styleDir = style_dir;
-        tmpDir   = tmp_dir;
         File tmp = new File(tmpDir);
-        if(! tmp.exists()) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("Creating tmp dir = "+tmpDir);
+        if (! tmp.exists()) {
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("Creating tmp dir = " + tmpDir);
             }
             tmp.mkdirs();
         }
-        ArrayList    files = readFiles();
+        checkOptions();
+        ArrayList    files  = readFiles();
         StepConfig[] config = doPrepare(files);
         return doTest(config);
     }
 
-    private String[] doTest(StepConfig[] config) throws TestClientException {
-        boolean  has_diff = false;
-        String[] result = new String[config.length];
+    private TestcasePlaybackResult doTest(StepConfig[] config) throws TestClientException {
+        TestcasePlaybackResult tcresult   = new TestcasePlaybackResult();
+        TestcaseStepResult     stepresult = null;
+        boolean                has_diff   = false;
+        int                    scode      = 0;
         for (int j = 0; j < config.length; j++) {
+            stepresult = new TestcaseStepResult();
             if (CAT.isDebugEnabled()) {
                 StringBuffer sb = new StringBuffer();
                 sb.append("\n________________________________________________________________\n");
@@ -178,7 +144,9 @@ public class TestClient {
             }
             Document current_output_tree = null;
             try {
-                current_output_tree = getResultFromFormInput(config[j].getRecordedInput());
+                TestcaseSimpleStepResult res = getResultFromFormInput(config[j].getRecordedInput());
+                current_output_tree = res.getDoc();
+                scode               = res.getScode();
             } catch (TestClientException e) {
                 if (e.getExceptionCause() instanceof HttpRecoverableException) {
                     CAT.warn("Uuuups...skipping...");
@@ -192,11 +160,10 @@ public class TestClient {
             } else if (CAT.isInfoEnabled()) {
                 CAT.info("  Transforming...");
             }
-            Document tmp_rec       = doTransform(config[j].getRecordedOutput(), 
-                                                 config[j].getStyleSheet());
-            Document tmp_out       = doTransform(current_output_tree, config[j].getStyleSheet());
-            String   tmp_fname_cur = tmpDir + "/_current" + j;
-            String   tmp_fname_rec = tmpDir + "/_recorded" + j;
+            Document tmp_rec = doTransform(config[j].getRecordedOutput(), config[j].getStyleSheet());
+            Document tmp_out = doTransform(current_output_tree, config[j].getStyleSheet());
+            String tmp_fname_cur = tmpDir + "/_current" + j;
+            String tmp_fname_rec = tmpDir + "/_recorded" + j;
             writeDocument(tmp_out, tmp_fname_cur);
             writeDocument(tmp_rec, tmp_fname_rec);
             if (CAT.isDebugEnabled()) {
@@ -205,16 +172,18 @@ public class TestClient {
                 CAT.info("  Diffing...");
             }
             String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
-            result[j] = msg;
+            stepresult.setDiffString(msg);
+            stepresult.setStatusCode(scode);
             if (msg == null || msg.equals("")) {
                 msg = ":-)";
             } else {
                 has_diff = true;
             }
+            tcresult.addTestcaseStepResult(stepresult);
         }
         CAT.warn("\n*** Resut: ***");
         CAT.warn(has_diff ? ";-(" : ";-)");
-        return result;
+        return tcresult;
     }
 
     private StepConfig[] doPrepare(ArrayList files) throws TestClientException {
@@ -222,7 +191,7 @@ public class TestClient {
         StepConfig[]    config          = new StepConfig[files.size()];
         boolean         ssl_initialized = false;
         try {
-            doc_builder = doc_factory.newDocumentBuilder();
+            doc_builder = docBFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new TestClientException("Could not get a DocumentBuilder!", e);
         }
@@ -266,8 +235,10 @@ public class TestClient {
             }
             String stylessheet = null;
             try {
-                stylessheet = XPathAPI.selectSingleNode(file_content, "/step/stylesheet").getFirstChild()
-                        .getNodeValue();
+                Node ssheet = XPathAPI.selectSingleNode(file_content, "/step/stylesheet");
+                if(ssheet != null) {
+                    stylessheet = ssheet.getFirstChild().getNodeValue();
+                }
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
@@ -297,27 +268,25 @@ public class TestClient {
                 ssl_initialized = true;
             }
         }
-        if(CAT.isInfoEnabled()) {
+        if (CAT.isInfoEnabled()) {
             CAT.info("Done");
         }
         return config;
     }
 
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
-        
         try {
             removeSerialNumber(in);
-        } catch(TransformerException e) {
+        } catch (TransformerException e) {
             throw new TestClientException("Transformer exception", e);
         }
-        
         // saxon
-        TransformerFactoryImpl trans_fac     = (TransformerFactoryImpl) TransformerFactory.newInstance();
-        String                 path          = styleDir + "/" + stylesheet_name;
-        File styesheet = new File(path);
-        if(styesheet.exists()) {
-            StreamSource           stream_source = new StreamSource("file://" + path);
-            Templates              templates     = null;
+        TransformerFactoryImpl trans_fac = (TransformerFactoryImpl) TransformerFactory.newInstance();
+        String                 path      = styleDir + "/" + stylesheet_name;
+        File                   styesheet = new File(path);
+        if (styesheet.exists()) {
+            StreamSource stream_source = new StreamSource("file://" + path);
+            Templates    templates = null;
             try {
                 templates = trans_fac.newTemplates(stream_source);
             } catch (TransformerConfigurationException e) {
@@ -338,18 +307,17 @@ public class TestClient {
             }
             return (Document) dom_result.getNode();
         } else {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("Stylesheet named "+path+" not found. Transformation skipped!");
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("Stylesheet named " + path + " not found. Transformation skipped!");
             }
         }
         return in;
     }
-    
+
     private void removeSerialNumber(Document in) throws TransformerException {
         Node node = XPathAPI.selectSingleNode(in, "/formresult");
-        ((Element)node).setAttribute("serial", "0");
+        ((Element) node).setAttribute("serial", "0");
     }
-    
 
     private void writeDocument(Document doc, String path) throws TestClientException {
         XMLSerializer ser        = new XMLSerializer();
@@ -372,6 +340,11 @@ public class TestClient {
     }
 
     private String documentToString(Document doc) throws TestClientException {
+        if (doc == null) {
+            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+                                               + "Can't serialize a " + doc
+                                               + " document to a string!");
+        }
         XMLSerializer ser        = new XMLSerializer();
         OutputFormat  out_format = new OutputFormat("xml", "ISO-8859-1", true);
         out_format.setIndent(2);
@@ -389,8 +362,8 @@ public class TestClient {
 
     private String doDiff(String path1, String path2) throws TestClientException {
         String diff = GNU_DIFF + " " + path2 + " " + path1;
-        if(CAT.isDebugEnabled()) {
-            CAT.debug(" Executing :"+diff);
+        if (CAT.isDebugEnabled()) {
+            CAT.debug(" Executing :" + diff);
         }
         Process process = null;
         try {
@@ -422,7 +395,6 @@ public class TestClient {
     }
 
     private ArrayList readFiles() throws TestClientException {
-        //System.out.println(getClass().getName() + " " + srcDir);
         File      dir       = new File(srcDir);
         File[]    all_files = dir.listFiles();
         ArrayList files     = new ArrayList();
@@ -446,39 +418,30 @@ public class TestClient {
         return files;
     }
 
-    private boolean scanOptions(String[] args) {
-        Getopt getopt = new Getopt("TestClient", args, "d:t:s:qv");
-        int    c = 0;
-        while ((c = getopt.getopt()) != -1) {
-            switch (c) {
-                case 'd':
-                    srcDir = getopt.getOptarg();
-                    break;
-                case 't':
-                    tmpDir = getopt.getOptarg();
-                    break;
-                case 's':
-                    styleDir = getopt.getOptarg();
-                    break;
-                case 'q':
-                    CAT.setPriority(Priority.WARN);
-                    break;
-                case 'v':
-                    CAT.setPriority(Priority.DEBUG);
-                    break;
-                default:
-            }
+    public void setOptions(String src_dir, String tmp_dir, String style_dir) throws TestClientException {
+        if (src_dir == null || tmp_dir == null || style_dir == null) {
+            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+                                               + "Arguments: Directories for testcases: " + src_dir
+                                               + ", temporary: " + tmp_dir + ", stylesheets: "
+                                               + style_dir);
         }
-        if (srcDir == null || srcDir.equals("") || tmpDir == null || tmpDir.equals("")
-            || styleDir == null || styleDir.equals("")) {
-            return false;
-        } else {
-            return true;
+        if(CAT.isDebugEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("\n");
+            sb.append("Setting directory for testcases to "+src_dir).append("\n");
+            sb.append("Setting temporary directory to "+tmp_dir).append("\n");
+            sb.append("Setting stylesheet directory to "+style_dir).append("\n");
+            CAT.debug(sb.toString());
         }
+        srcDir    = src_dir;
+        tmpDir    = tmp_dir;
+        styleDir = style_dir;
     }
 
     private void checkOptions() throws TestClientException {
-        CAT.info("Checking options...");
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("Checking options...");
+        }
         File input_dir = new File(srcDir);
         if (! input_dir.isDirectory() || ! input_dir.canRead()) {
             throw new TestClientException(srcDir + " is not a directory or not readable!", null);
@@ -491,11 +454,9 @@ public class TestClient {
         if (! style_dir.isDirectory() || ! style_dir.canRead()) {
             throw new TestClientException(styleDir + " is not a directory or not readable!", null);
         }
-        CAT.info("Ok");
-    }
-
-    private void printUsage() {
-        CAT.warn("TestClient -d [recorded dir] -t [temporary dir] -s [stylesheet dir] -q -v");
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("Checking options done!");
+        }
     }
 
     private void initHttpConnection(String hostname, int port, String proto)
@@ -535,7 +496,8 @@ public class TestClient {
         }
     }
 
-    private Document getResultFromFormInput(Document form_data) throws TestClientException {
+    private TestcaseSimpleStepResult getResultFromFormInput(Document form_data)
+                                                     throws TestClientException {
         String host  = getHostnameFromInput(form_data);
         int    port  = getPortFromInput(form_data);
         String proto = getProtoFromInput(form_data);
@@ -549,7 +511,6 @@ public class TestClient {
             //It not the first request, we already have a session
             uri_session = uri_session + ";jsessionid=" + sessionId;
         }
-       
         if (CAT.isDebugEnabled()) {
             StringBuffer sb = new StringBuffer();
             sb.append("  Executing HTTP POST\n");
@@ -576,7 +537,7 @@ public class TestClient {
         }
         request_count++;
         if (CAT.isInfoEnabled()) {
-            CAT.info("   StatusCode="+status_code+"\n");
+            CAT.info("   StatusCode=" + status_code + "\n");
         }
         if (sessionId == null) { // it's the first request, follow redirect to get a new session
             if (CAT.isDebugEnabled()) {
@@ -590,26 +551,28 @@ public class TestClient {
             sessionId   = uri.substring(uri.indexOf('=') + 1, uri.length());
             uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
         }
-        if (status_code != HttpStatus.SC_OK) {
+
+        /*if (status_code != HttpStatus.SC_OK) {
             throw new TestClientException("HTTP-Status code =" + status_code + " (Must be 200)! ", 
                                           null);
-        }
+        }*/
         InputStream response_stream = null;
         try {
             response_stream = post.getResponseBodyAsStream();
         } catch (IOException e) {
             throw new TestClientException("IOException occured!", e);
         }
-        return convertInputStreamToDocument(response_stream);
+        Document                 d   = convertInputStreamToDocument(response_stream);
+        TestcaseSimpleStepResult res = new TestcaseSimpleStepResult();
+        res.setScode(status_code);
+        res.setDoc(d);
+        return res;
     }
-
-
-
 
     private Document convertInputStreamToDocument(InputStream istream) throws TestClientException {
         DocumentBuilder doc_builder = null;
         try {
-            doc_builder = doc_factory.newDocumentBuilder();
+            doc_builder = docBFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new TestClientException("ParserConfigurationException occured", e);
         }
@@ -618,7 +581,8 @@ public class TestClient {
             doc = doc_builder.parse(istream);
         } catch (SAXException e) {
             throw new TestClientException("SaxException occured", e);
-        } catch (IOException e) {
+        }
+         catch (IOException e) {
             throw new TestClientException("IOException occured", e);
         }
         return doc;
@@ -809,5 +773,47 @@ class MySSLSocketfactory implements SecureProtocolSocketFactory {
     public Socket createSocket(Socket socket, String host, int port, boolean close)
                         throws IOException {
         return sslImpl.createSocket(socket, host, port, close);
+    }
+}
+
+class TestcaseSimpleStepResult {
+
+    //~ Instance/static variables ..................................................................
+
+    private Document doc;
+    private int      scode;
+
+    //~ Methods ....................................................................................
+
+    /**
+     * Returns the doc.
+     * @return Document
+     */
+    public Document getDoc() {
+        return doc;
+    }
+
+    /**
+     * Returns the scode.
+     * @return int
+     */
+    public int getScode() {
+        return scode;
+    }
+
+    /**
+     * Sets the doc.
+     * @param doc The doc to set
+     */
+    public void setDoc(Document doc) {
+        this.doc = doc;
+    }
+
+    /**
+     * Sets the scode.
+     * @param scode The scode to set
+     */
+    public void setScode(int scode) {
+        this.scode = scode;
     }
 }

@@ -27,8 +27,8 @@
               Play-back recorded </span>
               <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
                 testcases
-                <pfx:argument name="testcasereset.Reset">true</pfx:argument>
-                <pfx:command name="SELWRP" page="testcaseselect">testcasereset</pfx:command>
+                <pfx:argument name="tcreset.Reset">true</pfx:argument>
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
               </pfx:button>              
             </td>
           </tr>

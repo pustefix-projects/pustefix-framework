@@ -1,8 +1,6 @@
 package de.schlund.pfixcore.editor.handlers;
 
-import org.apache.log4j.Category;
-
-import de.schlund.pfixcore.editor.interfaces.TestcaseReset;
+import de.schlund.pfixcore.editor.interfaces.TestcaseDelete;
 import de.schlund.pfixcore.editor.resources.CRTestcase;
 import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.generator.IHandler;
@@ -18,25 +16,19 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class TestcaseResetHandler implements IHandler {
-
-    private static Category CAT = Category.getInstance(TestcaseResetHandler.class.getName());
+public class TestcaseDeleteHandler implements IHandler {
 
     /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(Context, IWrapper)
      */
     public void handleSubmittedData(Context context, IWrapper wrapper)
         throws Exception {
-        TestcaseReset reset = (TestcaseReset) wrapper;
-        Boolean do_reset = reset.getReset();
-        if(do_reset != null && do_reset.booleanValue() == Boolean.TRUE.booleanValue()) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("TestcaseResetHandler: resetting ContextResource ");
-            }
-            ContextResourceManager crm = context.getContextResourceManager();
-            CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-            crtc.doReset();
-        }
+        TestcaseDelete tcd = (TestcaseDelete) wrapper;
+        
+        String[] ids = tcd.getSelect();
+        ContextResourceManager crm = context.getContextResourceManager();
+        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        crtc.removeTestcase(ids);
     }
 
     /**

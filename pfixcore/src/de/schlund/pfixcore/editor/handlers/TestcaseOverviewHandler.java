@@ -26,7 +26,7 @@ public class TestcaseOverviewHandler implements IHandler {
      */
     public void retrieveCurrentStatus(Context context, IWrapper wrapper)
         throws Exception {
-            //System.out.println("Und ich? Was ist mit mir??");
+            
     }
 
     /**
