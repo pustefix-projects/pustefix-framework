@@ -2099,12 +2099,12 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     }
 
     if( editor.skipRehighlighting ) {
-      editor._dbg.value += "S";
+      //      editor._dbg.value += "S";
       return;
     }
 
     if( (new Date()).getTime() - editor._timestamp < wfxEditor.timeEvent ) {
-      editor._dbg.value += "K";
+      //      editor._dbg.value += "K";
       return;
     }
 
@@ -2292,7 +2292,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 			 posEnd ] );
     //---------------------------------------------------------------------------
 
-    //    editor.skipRehighlighting = true;
+    editor.skipRehighlighting = true;
 
     bench( "...cursor set", null, 2);
 
@@ -2690,8 +2690,8 @@ wfxEditor.offsetEnd   = -1;
 
 wfxEditor.tabWidth    = 2;
 
-wfxEditor.timeInterval   = 500;   // msec of rehighlighting frequency
-wfxEditor.timeEvent      = 300;   // minimum msec between (key)events
+wfxEditor.timeInterval   = 300;   // msec of rehighlighting frequency
+wfxEditor.timeEvent      = 50 ;   // minimum msec between (key)events
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
