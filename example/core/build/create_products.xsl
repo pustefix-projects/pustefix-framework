@@ -25,6 +25,11 @@
 	    <properties><xsl:apply-templates select="./propfile/node()"/></properties>
 	  </handler>
 	</xsl:for-each>
+        <xsl:for-each select="/projects/common/documentation/doc_file">
+          <documentation>
+            <xsl:apply-templates select="./node()"/>
+          </documentation>
+        </xsl:for-each> 
         <xsl:for-each select="./documentation/doc_file">
           <documentation>
             <xsl:apply-templates select="./node()"/>
