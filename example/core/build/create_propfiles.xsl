@@ -300,7 +300,7 @@
       <xsl:variable name="processor">
         <xsl:choose>
           <xsl:when test="@processor"><xsl:value-of select="@processor" /></xsl:when>
-          <xsl:otherwise>de.schlund.pfixxml.exceptionprocessor.SimpleExceptionProcessor</xsl:otherwise>
+          <xsl:otherwise>de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor</xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
       <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.type=</xsl:text>
