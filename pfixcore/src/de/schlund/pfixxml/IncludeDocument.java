@@ -49,7 +49,7 @@ public class IncludeDocument {
      */
     public void createDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException {
         File tmp = path.resolve();
-        modTime = tmp.lastModified();
+        modTime  = tmp.lastModified();
 
         if (mutable) {
             try {

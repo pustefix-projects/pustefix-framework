@@ -30,45 +30,28 @@ import de.schlund.pfixxml.targets.SPCacheFactory;
  */
 public class IncludeDocumentFactory {
 
-    private static Category  CAT = Category.getInstance(IncludeDocumentFactory.class.getName());
-
-    /** maps keys to IncludeDocuments */
-    private SPCache cache= SPCacheFactory.getInstance().getDocumentCache();
-    private static IncludeDocumentFactory instance= new IncludeDocumentFactory();
+    private static Category               CAT      = Category.getInstance(IncludeDocumentFactory.class.getName());
+    private static IncludeDocumentFactory instance = new IncludeDocumentFactory();
+    private SPCache                       cache    = SPCacheFactory.getInstance().getDocumentCache();
        
     private IncludeDocumentFactory() {}
 
-    /**
-     * Get the document corresponding to the file 
-     * specified by the path. 
-     */
+    public static IncludeDocumentFactory getInstance() {
+        return instance;
+    }
+    
     // FIXME! Don't do the whole method synchronized!!
     public synchronized IncludeDocument getIncludeDocument(Path path, boolean mutable) throws SAXException, IOException, TransformerException  {
-        /*
-         * CAT.debug("cache is now: "+cache.getClass().getName());
-           CAT.debug("cache cap   : "+cache.getCapacity());
-           CAT.debug(System.out.println("cache size  : "+cache.getSize());*/
-        IncludeDocument includeDocument= null;
-        String key = getKey(path, mutable);
+
+        IncludeDocument includeDocument = null;
+        String          key             = getKey(path, mutable);
         
-        // document not in cache->create and store it
-        if (!isDocumentInCache(key)) {
-         //   CAT.debug(path+"("+mutable+") "+ "not in cache");
-            includeDocument= new IncludeDocument();
+        if (!isDocumentInCache(key) || isDocumentInCacheObsolete(path, key)) {
+            includeDocument = new IncludeDocument();
             includeDocument.createDocument(path, mutable);
             cache.setValue(key, includeDocument);
-        }
-        //document is in cache but obsolete->recreate and store it
-        else if (isDocumentInCacheObsolete(path, key)) {
-           // CAT.debug(path+"("+mutable+") "+ "is obsolete");
-            includeDocument= new IncludeDocument();
-            includeDocument.createDocument(path, mutable);
-            cache.setValue(key, includeDocument);
-        }
-        //document is in cache and up to date->get it from cache
-        else {
-         //   CAT.debug(path+"("+mutable+") "+"cache hit");
-            includeDocument= (IncludeDocument) cache.getValue(key);
+        } else {
+            includeDocument = (IncludeDocument) cache.getValue(key);
         }
         return includeDocument;
     }
@@ -78,35 +61,19 @@ public class IncludeDocumentFactory {
     }
     
     private String getKey(Path path, boolean mutable) {
-        String dummy = "";
-        if(mutable)
-            dummy = "_m";
-        else
-            dummy = "_im";
-            
-        StringBuffer newpath = new StringBuffer();
-        newpath.append(path.getRelative()).append(dummy);
-        return newpath.toString();
+        return mutable ? path.getRelative() + "_mutable" : path.getRelative() + "_imutable";
     }
 
     private boolean isDocumentInCacheObsolete(Path path, String newkey) {
-        File file = path.resolve();
-        long savedTime= ((IncludeDocument) cache.getValue(newkey)).getModTime();
+        File file      = path.resolve();
+        long savedTime = ((IncludeDocument) cache.getValue(newkey)).getModTime();
         return file.lastModified() > savedTime ? true : false;
     }
 
-    /**
-     * The getInstance method of a singleton
-     */
-    public static IncludeDocumentFactory getInstance() {
-        return instance;
-    }
-    
     public void reset() {
         SPCacheFactory.getInstance().reset();
         cache = SPCacheFactory.getInstance().getDocumentCache();
     }
     
 }
-
 
