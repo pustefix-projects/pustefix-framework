@@ -1,3 +1,7 @@
+2003-11-03  Sebastian Werner  <sw@schlund.de>
+	* example/core/script/baselib.js: Fixed cookie handling: Some erroneous cookie value's are
+	now ignored by the script.		
+
 2003-10-31  Adam Habermann  <adam.habermann@schlund.de>
 	* build.xml, skel/build.xml:
 	Removed DOCTYPE declaration, as it causes problems if ant.dtd does not (yet) exist
