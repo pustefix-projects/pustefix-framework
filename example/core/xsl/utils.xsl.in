@@ -322,7 +322,7 @@
       <xsl:attribute name="onclick">top.__js_toggleLayer(<xsl:for-each select=".//pfx:layer_ref">
           '<xsl:value-of select="@name"/>'
           <xsl:if test="count(following-sibling::pfx:layer_ref) > 0">,</xsl:if>
-        </xsl:for-each>)</xsl:attribute>      
+        </xsl:for-each>); return false;</xsl:attribute>      
       <xsl:apply-templates/>
     </a>
   </xsl:template>
