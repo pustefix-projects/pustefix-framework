@@ -2,6 +2,12 @@
 
         * src/de/schlund/pfixxml/PfixServletRequest.java: removed newline for
         perf-logging.
+        * src/de/schlund/pfixxml/ServletManager.java(getExceptionConfigForThrowable):
+        log classnotfound-exceptions.
+        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java:
+        ignore all exceptions when calling session-values.toString. This leads
+        to a strange behaviour when having a 'normal' exception and also an
+        exceptions in a toString-method in a contextresource.
 
 2004-07-26 Michael Hartmeier  <mhm@schlund.de>
 	* project.properties

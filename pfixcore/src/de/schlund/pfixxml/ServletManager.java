@@ -600,6 +600,7 @@ public abstract class ServletManager extends HttpServlet {
             try {
                 clazz = Class.forName(key);
             } catch (ClassNotFoundException e) {
+                CAT.error(e);
                 throw new ServletException("Unable to instantiate class: "+key, e);
             }
             if(clazz.isInstance(th)) {
