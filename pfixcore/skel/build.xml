@@ -41,8 +41,8 @@ or delete the DOCTYPE definition -->
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
   <property name="pat.pfixcore_data_tgz"    value="pfixcore-data-*.tar.gz"/>
   <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
-  
-  
+
+
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
          - ant commandline via the '-Dparam=value' option
@@ -70,17 +70,17 @@ or delete the DOCTYPE definition -->
       </and>
     </condition>
     <fail unless="javahome" message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use."/>
-    
+
     <condition  property="prohibitedit" value="yes">
       <equals arg1="${makemode}" arg2="prod"/>
     </condition>
     <property       name="prohibitedit" value="no"/>
-    
+
     <condition property="debug"        value="false">
       <equals arg1="${makemode}" arg2="prod"/>
     </condition>
     <property  name="debug"            value="true"/>
-    
+
     <condition property="machine"       value="${env.MACHINE}">
       <and>
         <isset property="env.MACHINE"/>
@@ -103,7 +103,7 @@ or delete the DOCTYPE definition -->
     <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
-        
+
   </target>
 
   <path id="cp.classpath">
@@ -112,7 +112,7 @@ or delete the DOCTYPE definition -->
     <pathelement location="${dir.build}"/>
     <pathelement location="${dir.res}"/>
   </path>
-  
+
   <target name="init" depends="properties, core-data">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
@@ -120,11 +120,11 @@ or delete the DOCTYPE definition -->
     <!-- pathconvert dumps classpath on ant -verbose -->
     <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
   </target>
-  
+
   <target name="noop" description="just prints the name of the project">
     <echo message="${project.name}"/>
   </target>
-  
+
   <target name="echoproperties" depends="properties">
     <echoproperties/>
   </target>
@@ -139,13 +139,13 @@ or delete the DOCTYPE definition -->
       <param name="run.debugopts" value="${debugopts}"/>
     </antcall>
   </target>
-  
+
   <target name="run" depends="all" description="builds all and runs tomcat">
     <antcall target="_run" inheritall="true">
       <param name="run.debugopts" value=""/>
     </antcall>
   </target>
-  
+
   <target name="_run">
     <property name="run.debugopts" value=""/>
     <path id="run.path.ld_library_path">
@@ -161,22 +161,22 @@ or delete the DOCTYPE definition -->
       <arg line="run"/>
     </exec>
   </target>
-  
+
   <target name="generate" depends="all" description="Generates Targets to ${dir.projects}/.cache">
     <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
     <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
   </target>
-  
+
   <target name="all"
           depends="compile, post-compile, installjars, check-permissions, compile-xml, newprjlog_xml"
           description="builds all files required to run"
           />
-  
+
   <target name="compile-xml"
           depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
           description="performs xslt transformations in dir.projects"
           />
-  
+
   <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
     <depend
      srcdir="${dir.src}"
@@ -185,7 +185,7 @@ or delete the DOCTYPE definition -->
      >
     </depend>
   </target>
-  
+
   <target name="pre-compile">
     <!-- general purpose hook for build files importing this build file -->
     <echo>build-skel.xml: pre-compile</echo>
@@ -194,9 +194,9 @@ or delete the DOCTYPE definition -->
   <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
-  
+
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
-    <javac 
+    <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
      debug="${debug}"
@@ -207,7 +207,7 @@ or delete the DOCTYPE definition -->
      >
     </javac>
   </target>
-  
+
   <target name="post-compile" depends="compile">
     <!-- general purpose hook for build files importing this build file -->
     <echo>build-skel.xml: post-compile</echo>
@@ -230,9 +230,9 @@ or delete the DOCTYPE definition -->
   <target name="clean-jni">
     <ant dir="${dir.jni}" target="clean"/>
   </target>
-  
+
   <target name="installjars">
-    <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
+    <!-- Setting absolute links instead of relative to avoid extra property for dir.build
          as ${dir.build} is specified as location it always resolves to an absolute path;
          does not work for filenames containing spaces -->
     <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/shared/classes"/>
@@ -257,7 +257,7 @@ or delete the DOCTYPE definition -->
       <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
     </exec>
   </target>
-  
+
   <target name="ant-tasks" depends="init" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
     <taskdef
      name="pfx-xslt"
@@ -266,7 +266,7 @@ or delete the DOCTYPE definition -->
      loaderref="pfx-loader"
      description="Performs generic XSLT transformations"
      />
-    <taskdef 
+    <taskdef
      name="pfx-iwrp"
      classname="de.schlund.pfixcore.util.XsltIWrapperTask"
      classpathref="cp.classpath"
@@ -275,7 +275,7 @@ or delete the DOCTYPE definition -->
      />
     <taskdef
      name="pfx-webxml"
-     classname="de.schlund.pfixcore.util.XsltWebXmlTask"
+     classname="de.schlund.pfixcore.util.XsltCustomWebXmlTask"
      classpathref="cp.classpath"
      loaderref="pfx-loader"
      description="Creates WEB-INF/web.xml config files for each project"
@@ -288,19 +288,19 @@ or delete the DOCTYPE definition -->
      description="Creates dependencies in ${dir.projects}/.cache"
      />
   </target>
-  
+
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
-    <!-- DTD generated does not describe this build file thorough. It can't be used 
+    <!-- DTD generated does not describe this build file thorough. It can't be used
          for complete validation though it may be useful for auto competion within IDEs.
          The Element not generated is the nested type "param" used within the custom ant-tasks -->
     <echo message="Creating ant.dtd" level="info"/>
     <antstructure output="ant.dtd"/>
   </target>
-  
+
   <target name="dtd-check" unless="pfx.force">
     <uptodate property="upd.dtd" srcfile="build.xml" targetfile="ant.dtd"/>
   </target>
-  
+
   <target name="clean-dtd">
     <delete file="ant.dtd"/>
   </target>
@@ -329,7 +329,7 @@ or delete the DOCTYPE definition -->
     </delete>
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
-  
+
   <target name="clean-project" description="deletes files from ${dir.projects}">
     <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
     <delete>
@@ -352,7 +352,7 @@ or delete the DOCTYPE definition -->
     </delete>
     <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
   </target>
-  
+
   <target name="realclean" depends="clean, clean-jni">
     <delete dir="${dir.projects}/.cache"/>
     <delete dir="${dir.projects}/core"/>
@@ -366,7 +366,7 @@ or delete the DOCTYPE definition -->
       <mapper type="merge" to="${dir.projects}/core/TIMESTAMP"></mapper>
     </uptodate>
   </target>
-  
+
   <target name="core-data" depends="core-data-check" unless="upd.core-data">
     <delete dir="${dir.projects}/core"/>
     <untar dest="${dir.projects}" compression="gzip" overwrite="true">
@@ -374,21 +374,21 @@ or delete the DOCTYPE definition -->
     </untar>
     <touch file="${dir.projects}/core/TIMESTAMP"></touch>
   </target>
-  
+
   <target name="check-permissions">
     <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
       <fileset dir="${basedir}" includes="apploader.sh startTomcat.sh newproject.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
     </apply>
   </target>
-  
+
   <target name="force" description="disables uptodate checks">
     <!-- All targets *-check that have set the attribute unless="pfx.force"
          will be skipped, so the uptodate properties (upd.*), the execution of the actual tasks
          depends on, do not get set and in turn the actual tasks get executed. -->
     <property name="pfx.force" value="true"/>
   </target>
-  
+
   <target name="checkfiles">
     <!-- find the input files and write them to line separated files -->
     <pathconvert property="checkfiles.ALLPROJECTS" pathsep="&#10;">
@@ -433,10 +433,10 @@ or delete the DOCTYPE definition -->
       <arg file="${dir.projects}/.ALLIMAGES"/>
     </java>
     <echo message="Output written to ${dir.projects}/CHECKOUTPUT.xml" level="info"/>
-  </target>    
+  </target>
 
   <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
-    <pfx-xslt 
+    <pfx-xslt
      style="${dir.projects}/core/build/create_propfiles.xsl"
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
@@ -452,7 +452,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="targetdefs" depends="ant-tasks" description="creates **/depend.xml">
-    <pfx-xslt 
+    <pfx-xslt
      style="${dir.projects}/core/build/create_depend.xsl"
      srcdir="${dir.projects}"
      destdir="${dir.projects}"
@@ -463,7 +463,7 @@ or delete the DOCTYPE definition -->
       <param name="docroot" expression="${dir.docroot}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="projects_xml" depends="ant-tasks" description="creates projects.xml out of projects.xml.in and multiple project.xml files" >
     <fileset id="id.fileset.projectxmlin" dir="${dir.projects}" includes="**/project.xml.in"/>
     <pathconvert property="projectxmlins" refid="id.fileset.projectxmlin" pathsep="|">
@@ -482,21 +482,22 @@ or delete the DOCTYPE definition -->
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="files"   expression="${projectxmlins}"/>
-   	  <param name="fqdn"    expression="${fqdn}"/>
+      <param name="fqdn"    expression="${fqdn}"/>
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>    	
+      <param name="mode"    expression="${makemode}"/>
     </pfx-xslt>
   </target>
 
   <target name="web_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
     <!-- old target name in Makefile was "zoneprops" -->
     <pfx-webxml
-     style="${dir.projects}/core/build/create_tomcatweb.xsl"
-     srcdir="${dir.projects}"
-     destdir="${dir.projects}/servletconf/tomcat"
-     includes="servletconf/projects.xml"
-     extension=".xml"
+      style="${dir.projects}/core/build/create_customtomcatweb.xsl"
+      srcdir="${dir.projects}"
+      destdir="${dir.tomcat}"
+      extension=".xml"
+      projects="servletconf/projects.xml"
+      corewebxml="core/conf/web.xml"
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="fqdn"    expression="${fqdn}"/>
@@ -505,7 +506,7 @@ or delete the DOCTYPE definition -->
       <param name="mode"    expression="${makemode}"/>
     </pfx-webxml>
   </target>
-  
+
   <target name="stylesheets" depends="ant-tasks" description="creates **/*.xsl from **/*.xsl.in with create_stylesheet.xsl">
     <pfx-xslt
      style="${dir.projects}/core/build/create_stylesheet.xsl"
@@ -521,7 +522,7 @@ or delete the DOCTYPE definition -->
       <param name="mode"    expression="${makemode}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="statusmessages_xml" depends="propfiles" description="creates common/dyntxt/statusmessages.xml">
     <java classname="de.schlund.pfixcore.util.MakeStatusMessageXML">
       <sysproperty key="propertyfile" value="${dir.projects}/common/conf/factory.prop"/>
@@ -545,7 +546,7 @@ or delete the DOCTYPE definition -->
       <param name="mode"    expression="${makemode}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="newprjlog_xml" depends="ant-tasks" description="creates common/conf/newprjlog.xml from common/conf/newprjlog.xml.in with core/build/create_log4j_config.xsl">
     <pfx-xslt
      style="${dir.projects}/core/build/create_log4j_config.xsl"
@@ -557,7 +558,7 @@ or delete the DOCTYPE definition -->
       <param name="docroot" expression="${dir.docroot}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
@@ -585,7 +586,7 @@ or delete the DOCTYPE definition -->
       <param name="mode"      expression="${makemode}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
@@ -600,7 +601,7 @@ or delete the DOCTYPE definition -->
       <param name="java_home" expression="${javahome}"/>
     </pfx-xslt>
   </target>
-  
+
   <target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
@@ -642,7 +643,7 @@ or delete the DOCTYPE definition -->
     <echo>tomcat dist file: ${tomcat.bindist}</echo>
     <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
     <fail unless="tomcat.bindist.exists" message="tomcat dist file not found"/>
-     
+
     <delete dir="${dir.tomcat}"/>
     <property name="dir" location="${dir.tomcat}/.."/>
     <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
@@ -656,20 +657,20 @@ or delete the DOCTYPE definition -->
     <move todir="${dir.tomcat}">
       <fileset dir="${tmp.tomcat}" />
     </move>
-    
+
     <!-- cvs would remove this dir, event though we cvs-ignore it! -->
     <touch file="${dir.tomcat}/logs/dontpruneme"/>
   </target>
-    
+
   <target name="tomcat.strip">
     <delete dir="${dir.tomcat}/conf/Catalina"/>
 
     <!-- remove predefined web-apps -->
     <delete dir="${dir.tomcat}/webapps"/>
     <mkdir dir="${dir.tomcat}/webapps"/>
-    
+
     <!-- we keep server/webapps, it contains tomcat manager -->
-    
+
     <delete>
       <fileset dir="${dir.tomcat}/conf">
         <include name="jk2.properties"/>
@@ -697,11 +698,11 @@ or delete the DOCTYPE definition -->
       </dname>
     </genkey>
   </target>
-    
+
   <target name="tomcat.jmx" if="jmx.found">
     <!-- work-around bug 29056 -->
     <copy file="lib/tomcat/jmx.jar" todir="${dir.tomcat}/bin" overwrite="true"/>
-  </target> 
+  </target>
 
   <description>
     Targets
@@ -709,7 +710,7 @@ or delete the DOCTYPE definition -->
     all [default]:  Builds all files required to run ./startTomcat.sh
     generate-src:   Generates .java from .iwrp files
     compile:        Compiles all java files.
-    generate:       Generates all top level targets to 
+    generate:       Generates all top level targets to
     ${dir.projects}/.cache
     run/debug:      Runs tomcat. Advantage over ./startTomcat.sh:
     Ensures all files are build before
@@ -722,7 +723,7 @@ or delete the DOCTYPE definition -->
     noop:           Echos the name of the project
     clean:          Deletes files created by target all.
     echoproperties: Dumps all properties and exits.
-    
+
     Properties
     ----------
     -Dmakemode=
@@ -743,7 +744,7 @@ or delete the DOCTYPE definition -->
     used for generation of
     ${dir.projects}/servletconf/tomcat/workers.prop
     environment: PFX_JAVA_HOME, JAVA_HOME
-    default:     -         
+    default:     -
     mandatory:   yes
 
     -Dgen=
@@ -761,7 +762,7 @@ or delete the DOCTYPE definition -->
     value:       jikes, modern, ...
     see http://ant.apache.org/manual/CoreTasks/javac.html
     environment: -
-    default:     jikes         
+    default:     jikes
     mandatory:   no
 
     -Djavac.nowarn=
@@ -793,7 +794,7 @@ or delete the DOCTYPE definition -->
     "properties". Within this target, properties whose values depend on
     the values of other properties are defined.
 
-  </description>    
+  </description>
 
 </project>
 
