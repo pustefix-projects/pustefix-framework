@@ -1,4 +1,11 @@
-2004-07-02 Michael Hartmier  <mhm@schlund.de>
+2004-06-07 Michael Hartmeier  <mhm@schlund.de>
+	* example/core/build/create_apacheconf.xsl: consider defpath decl
+	* example/core/build/create_serverxml.xsl: consider defpath and passthrough decls
+	* build.xml: removed tomcat.setup switch - always generate both setups
+	* src/de/schlund/pfixxml/ServletManager.java: remove unused code; improved documentation
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: more port fixes for redirect code
+
+2004-07-02 Michael Hartmeier  <mhm@schlund.de>
 	- support ssl in standalone tomcat setup:
 	* example/core/build/create_serverxml.xsl
 	* src/de/schlund/pfixxml/ServletManager.java
