@@ -5,6 +5,7 @@
   <xsl:output method="html"/>
 
   <xsl:template match="page">
+    <xsl:message>*** Generating <xsl:value-of select="@name"/> </xsl:message>
     <saxon:output href="gen/{@name}.html">
       <html>
         <head>
@@ -68,6 +69,12 @@
   </xsl:template>
 
 
+  <xsl:template match="*|@*">
+    <xsl:copy>
+      <xsl:apply-templates/>
+    </xsl:copy>
+  </xsl:template>
+  
   <xsl:template name="gen_navi">
     <xsl:param name="parent"/>
     <xsl:param name="thepage"/>

@@ -23,5 +23,5 @@ install: transform
 	@echo "*** Installing pages on Sourceforge site ***"
 	$(shell scp gen/*.html $(USER)@$(SF):$(SFWEB)/)
 	@echo "*** Fixing permissions ***"
-	$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/*)
+	-$(shell ssh $(USER)@$(SF) chmod -R g+rw $(SFWEB)/*)
 	@echo "*** Done. ***"
