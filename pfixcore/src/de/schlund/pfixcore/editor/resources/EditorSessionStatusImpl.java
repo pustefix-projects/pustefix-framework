@@ -133,10 +133,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public AuxDependency getCurrentImage() {return currentimage;}
     public AuxDependency getCurrentInclude() {return currentinclude;}
     public AuxDependency getCurrentCommon() {return currentcommon;}
-    public String        getCurrentDocumentationId() {
-        // FIXME
-        return currentdokuid;
-    }
+    public String        getCurrentDocumentationId() {return currentdokuid; }
     public boolean       getLoginAllowed() {return login_allowed; }
     public void          setUser(EditorUser user) {this.user = user;}
     public void          setUserForEdit(EditorUserInfo userforedit) {this.userforedit = userforedit;}
@@ -146,10 +143,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public void          setCurrentImage(AuxDependency image) {currentimage = image;}
     public void          setCurrentInclude(AuxDependency include) {currentinclude = include;}
     public void          setCurrentCommon(AuxDependency common) {currentcommon = common;}
-    public void          setCurrentDocumentationId(String id) {
-        currentdokuid = id;
-        // FIXME
-    }
+    public void          setCurrentDocumentationId(String id) { currentdokuid = id; }
     public void          setLoginAllowed(boolean status) {login_allowed = status;}
 
 }// EditorSessionStatusImpl
