@@ -106,15 +106,16 @@ public class DefaultIWrapperState extends StateImpl {
                     context.prohibitContinue();
                 } else {
                     CAT.debug("... Container says he is ready");
-                    CAT.debug("    => end of submit reached successfully.");
-                    if (context.isCurrentPageRequestInCurrentFlow()) {
-                        CAT.debug(">>> Page is part of current pageflow:");
-                        CAT.debug("    => continue with pagflow...");
-                    } else if (context.isCurrentPageFlowRequestedByUser()) {
-                        CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
-                        CAT.debug("    => continue with pagflow...");
-                    } else {
-                        CAT.debug(">>> NO continuable pageflow set:");
+                    CAT.debug("    => end of submit reached successfully. Asking Context if it can continue:");
+//                     if (context.isCurrentPageRequestInCurrentFlow()) {
+//                         CAT.debug(">>> Page is part of current pageflow:");
+//                         CAT.debug("    => continue with pagflow...");
+//                     } else if (context.isCurrentPageFlowRequestedByUser()) {
+//                         CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
+//                         CAT.debug("    => continue with pagflow...");
+//                     } else {
+                    if (!context.canContinue()) {
+                        CAT.debug(">>> Context can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");
                         preq.startLogEntry();
                         container.retrieveCurrentStatus();

@@ -1,3 +1,11 @@
+2005-03-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (canContinue): new
+	method, returns true whenever the Context thinks it can continue
+	somehow (via a valid pageflow, or a jumptopage). 
+	(isCurrentPageRequestInCurrentFlow):
+	(isCurrentPageFlowRequestedByUser): made private, only use canContinue() now
+
 2005-02-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/PfxProperties.java: at least still

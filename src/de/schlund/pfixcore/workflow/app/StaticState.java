@@ -50,7 +50,7 @@ public class StaticState extends StateImpl {
 
         String autocontinue = props.getProperty(CONTINUEONSUBMIT);
         if (autocontinue != null && autocontinue.equals("true") && isSubmitTrigger(context, preq) &&
-            (context.isCurrentPageRequestInCurrentFlow() || context.isCurrentPageFlowRequestedByUser())) {
+            (context.canContinue())) {
             // We continue, despite the fact that this is a StaticState
             return resdoc;
         } else {

@@ -390,22 +390,24 @@ public class Context implements AppContext {
         }
     }
 
-    private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
-        if (pageflow != null && pageflow.containsPageRequest(page)) {
-            return true;
-        } else {
+    public boolean canContinue() {
+        if (prohibitcontinue) {
+            LOG.debug(">>> Have already set prohibitcontinue to true!");
+            LOG.debug("    => must stay on this page");
             return false;
+        } else if (isCurrentPageRequestInCurrentFlow()) {
+            LOG.debug(">>> Page is part of current pageflow:");
+            LOG.debug("    => continue with pagflow...");
+        } else if (isCurrentPageFlowRequestedByUser()) {
+            LOG.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
+            LOG.debug("    => continue with pagflow...");
+        } else if (jumptopagerequest != null) {
+            LOG.debug(">>> Have been called with a jumptopage set:");
+            LOG.debug("    => continue so we can jump to this page...");
         }
+        return false;
     }
     
-    public boolean isCurrentPageRequestInCurrentFlow() {
-        return isPageRequestInFlow(currentpagerequest, currentpageflow);
-    }
-
-    public boolean isCurrentPageFlowRequestedByUser() {
-        return pageflow_requested_by_user;
-    }
-
     public boolean currentFlowStepWantsPostProcess() {
         if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
             if (currentpageflow.getFlowStepForPage(currentpagerequest).hasOnContinueAction()) {
@@ -466,6 +468,22 @@ public class Context implements AppContext {
             }
         }
         return null;
+    }
+
+    private boolean isCurrentPageRequestInCurrentFlow() {
+        return isPageRequestInFlow(currentpagerequest, currentpageflow);
+    }
+
+    private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
+        if (pageflow != null && pageflow.containsPageRequest(page)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isCurrentPageFlowRequestedByUser() {
+        return pageflow_requested_by_user;
     }
 
     private void do_update() throws Exception {
