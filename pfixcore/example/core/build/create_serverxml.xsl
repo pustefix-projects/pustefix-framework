@@ -21,9 +21,13 @@
     <xsl:param name="port">
       <xsl:apply-templates select="/projects/common/tomcat/connectorport/node()"/>
     </xsl:param>
+    <xsl:param name="adminport">
+      <xsl:apply-templates select="/projects/common/tomcat/adminport/node()"/>
+    </xsl:param>
     
     <Server port="8005" shutdown="SHUTDOWN">
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <xsl:if test="not(string($adminport) = '')"><xsl:attribute name="port"><xsl:value-of select="$adminport"/></xsl:attribute></xsl:if>
       
       <Service name="Tomcat-Standalone">
 	
