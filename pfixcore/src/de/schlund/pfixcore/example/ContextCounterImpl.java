@@ -55,6 +55,10 @@ public class ContextCounterImpl implements ContextResource, ContextCounter{
         this.showcounter = showcounter;
     }
 
+    public void setCounter(int count) {
+        counter = count;
+    }
+
     public void addToCounter(int count) {
         counter += count;
     }

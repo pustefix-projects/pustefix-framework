@@ -38,4 +38,5 @@ public interface ContextCounter extends ContextResource{
     public int getCounter();
     public void setShowCounter(Boolean showcounter);
     public void addToCounter(int count);
+    public void setCounter(int count);
 }// ContextCounter

@@ -46,8 +46,8 @@ public class StateFactory implements Reloader {
     }
     
     StateFactory() {
-        AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) appLoader.addReloader(this);
+        AppLoader appLoader = AppLoader.getInstance();
+        if (appLoader.isEnabled()) appLoader.addReloader(this);
     }
     /**
      * <code>getState</code> returns the matching State for classname.
@@ -61,8 +61,8 @@ public class StateFactory implements Reloader {
             if (retval == null) {
                 try {
                     AppLoader appLoader=AppLoader.getInstance();
-                    if(appLoader.isEnabled()) {
-                        retval=(State)appLoader.loadClass(classname).newInstance();
+                    if (appLoader.isEnabled()) {
+                        retval = (State) appLoader.loadClass(classname).newInstance();
                     } else {
                         Class stateclass = Class.forName(classname);
                         retval = (State) stateclass.newInstance();
@@ -83,14 +83,14 @@ public class StateFactory implements Reloader {
     }
     
     public void reload() {
-           HashMap knownNew=new HashMap();
-           Iterator it=knownstates.keySet().iterator();
-           while(it.hasNext()) {
-               String str=(String)it.next();
-               State sOld=(State)knownstates.get(str);
-               State sNew=(State)StateTransfer.getInstance().transfer(sOld);
-               knownNew.put(str,sNew);
-           }
-           knownstates=knownNew;
-     }
+        HashMap knownNew=new HashMap();
+        Iterator it=knownstates.keySet().iterator();
+        while(it.hasNext()) {
+            String str=(String)it.next();
+            State sOld=(State)knownstates.get(str);
+            State sNew=(State)StateTransfer.getInstance().transfer(sOld);
+            knownNew.put(str,sNew);
+        }
+        knownstates=knownNew;
+    }
 }

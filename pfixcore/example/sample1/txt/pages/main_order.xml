@@ -143,10 +143,21 @@
                   </pfx:xinp>
                 </td>
               </tr>
+              <tr>
+                <td>
+                  <pfx:label name="cinput.Sel">Set Counter</pfx:label>
+                </td>
+                <td>
+                  <pfx:xinp type="text" name="cinput.Sel"/>
+                  <pfx:xinp type="submit">
+                    <pfx:command name="SELWRP">cinput</pfx:command>
+                  </pfx:xinp>
+                </td>
+              </tr>
             </ixsl:otherwise>
           </ixsl:choose>
         </table>
-     </lang>
+      </lang>
     </product>
   </part>
   
