@@ -46,7 +46,10 @@ public class FileData extends PartData {
         setType(RequestParamType.FILEDATA);
     }
 
-        
+    public boolean isTrue() {
+        return false;
+    }
+    
     /**
      * Gets the filename.
      * @return Returns a String
