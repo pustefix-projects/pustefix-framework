@@ -20,6 +20,7 @@ package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.util.statuscodes.StatusCode;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,40 +30,40 @@ import javax.servlet.http.*;
 import org.apache.log4j.*;
 
 /**
- * PfixServletRequest.java
+ * <p>This class is an abstraction of a servlet request. Is provides wrapper functions
+ * on a {@link javax.servlet.http.HttpServletRequest} but has also the possibility
+ * to update the request and to retrieve both the current and orginal data.
+ * Classes in the Pustefix system should use this class and not a
+ * <code>HttpServletRequest</code>.</p>
+ * <p>Note: All method with a 'getOrginal' prefix work on the orginal request,
+ * all others methods work on the currently set request, which may
+ * be the original request used when the instance was created, or
+ * any other request that has been set via <code>updateRequest()</code>.</p>
  *
  *
  * Created: Tue May  7 23:55:50 2002
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * <br/>
- * This class is an abstraction of a servlet request. Is provides wrapper functions
- * on a {@link javax.servlet.http.HttpServletRequest} but has also the possibility
- * to update the request and to retrieve both the current and orginal data.
- * Classes in the Pustefix system should use this class and not a
- * <code>HttpServletRequest</code>.<br/>
- * Note: All method with a 'getOrginal' prefix work on the orginal request,
- * all others methods work on the currently set request, which may
- * be the original request used when the instance was created, or
- * any other request that has been set via <code>updateRequest()</code>.
  */
 public class PfixServletRequest {
 
     //~ Instance/static variables ..................................................................
 
-    private static final Category PFXPERF             = Category.getInstance("PFXPERF");
+    private static final Logger   PFXPERF             = Logger.getLogger("PFXPERF");
     private static final String   INDENT              = "   ";
     private static final String   SBMT_PREFIX         = "__SBMT:";
     private static final String   SYNT_PREFIX         = "__SYNT:";
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
+    private static final String   DEF_MESSAGE_LEVEL   = "info";
     private static DecimalFormat  FORMAT              = new DecimalFormat("0000");
     private static String         DEF_TMPDIR          = "/tmp";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
     private Category              CAT                 = Category.getInstance(this.getClass());
     private ArrayList             multiPartExceptions = new ArrayList();
+    private Map                   messageSCodes       = new HashMap();
     private String                servername;
     private String                querystring;
     private String                scheme;
@@ -74,6 +75,9 @@ public class PfixServletRequest {
     private LinkedList            perfstack        = null;
     private long                  starttime        = 0;
 
+    /**
+     *
+     */
     public synchronized void initPerfLog() {
         if(!PFXPERF.isDebugEnabled()) {
             return;
@@ -86,11 +90,14 @@ public class PfixServletRequest {
         }
     }
 
+    /**
+     *
+     */
     public synchronized void startLogEntry() {
         if(!PFXPERF.isDebugEnabled()) {
             return;
         }
-        
+
         if (perflog != null) {
             long now   = System.currentTimeMillis();
 
@@ -100,11 +107,14 @@ public class PfixServletRequest {
         }
     }
 
+    /**
+     *
+     */
     public synchronized void endLogEntry(String info, long delay) {
         if(!PFXPERF.isDebugEnabled()) {
             return;
         }
-        
+
         if (perflog != null) {
             long      now   = System.currentTimeMillis();
             PerfEvent start = null;
@@ -125,14 +135,15 @@ public class PfixServletRequest {
             }
         }
     }
-    
-   
-    
+
+    /**
+     *
+     */
     public synchronized void endLogEntry(PerfEventType p) {
         if(!PFXPERF.isDebugEnabled()) {
             return;
         }
-        
+
         if (perflog != null) {
             long      now   = System.currentTimeMillis();
             PerfEvent start = null;
@@ -143,7 +154,7 @@ public class PfixServletRequest {
                 long stime = start.getTime();
                 p.setDuration(now - stime);
                 if (now - stime >= p.getDelay()) {
-                    String    msg = "[event name=\"" + p.getTag() + 
+                    String    msg = "[event name=\"" + p.getTag() +
                                     "\" page=\"" + p.getPage() +
                                     "\" class=\"" + p.getHandlingClass() +
                                     "\" totaltime=\"" + (now - stime)+
@@ -160,6 +171,9 @@ public class PfixServletRequest {
         }
     }
 
+    /**
+     *
+     */
     public void printLog2() {
         if(!PFXPERF.isDebugEnabled()) {
             return;
@@ -186,7 +200,7 @@ public class PfixServletRequest {
             PFXPERF.debug("--------------------------------------");
         }
     }
-    
+
     public void printLog() {
         if(!PFXPERF.isDebugEnabled()) {
             return;
@@ -203,7 +217,7 @@ public class PfixServletRequest {
                 depth++;
             } else {
                 for(int j = 0; j < depth; j++) {
-                    sb.append("   "); 
+                    sb.append("   ");
                 }
                 depth--;
             }*/
@@ -211,7 +225,7 @@ public class PfixServletRequest {
             if(msg != null || !msg.equals("")) {
                 if(i != perflog.size() - 1)
                     sb.append(entry.getMessage()+"|");
-                else 
+                else
                     sb.append(entry.getMessage());
             }
         }
@@ -220,7 +234,7 @@ public class PfixServletRequest {
             StringBuffer sb2 = new StringBuffer();
             sb2.append("[servletrequest servername=\""+getServerName()+"\"");
             sb2.append(" sessionid=\""+(getSession(false) == null ? "NULL" : getSession(false).getId()));
-            
+
             String localhost= null;
             try {
                 localhost = InetAddress.getLocalHost().getHostName();
@@ -264,7 +278,7 @@ public class PfixServletRequest {
         starttime   = System.currentTimeMillis();
         initPerfLog();
         startLogEntry();
-        
+
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();
@@ -278,23 +292,108 @@ public class PfixServletRequest {
     //~ Methods ....................................................................................
 
     /**
-	 * Returns the value of the request-attribute that is stored under the key
+     * Returns the value of the request-attribute that is stored under the key
      * {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}
-	 */
-	public Throwable getLastException()
-	{
-		return (Throwable) request.getAttribute(ATTR_LASTEXCEPTION);
-	}
+     */
+    public Throwable getLastException()
+    {
+        return (Throwable) request.getAttribute(ATTR_LASTEXCEPTION);
+    }
 
-	/**
-	 * Stores the given <code>exception</code>-object as an attribute in the request,
-     * under the key of {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}.
-	 * @param lastException The value to assign lastException.
-	 */
-	public void setLastException(Throwable lastException)
-	{
-		request.setAttribute(ATTR_LASTEXCEPTION, lastException);
-	}
+    /**
+     * Stores the given <code>exception</code>-object as an attribute in the request,
+       * under the key of {@link #ATTR_LASTEXCEPTION ATTR_LASTEXCEPTION}.
+     * @param lastException The value to assign lastException.
+     */
+    public void setLastException(Throwable lastException)
+    {
+        request.setAttribute(ATTR_LASTEXCEPTION, lastException);
+    }
+
+    /**
+     * @return an instance of <code>Map</code>, that's never <code>null</code>,
+     * and contains the <code>StatusCode</code>-instances, that were added to
+     * this request until now as keys of the map. The <code>Map</code>-values are
+     * <code>List</code>-objects, with the first element of the list, <b>always</b>
+     * being the level of the message (and object of type <code>String</code>),
+     * and all following elements (which can be zero) being arguments to the
+     * <code>StatusCode</code>. <br/>
+     * So the values of the <code>Map</code> are <code>List</code>-objects, with
+     * element <code>0</code> always being the message-level, and all list-elements
+     * &gt; <code>0</code> being String arguments to the <code>StatusCode</code>
+     */
+    public Map getPageMessages()
+    {
+        return messageSCodes;
+    }
+
+    /**
+     * Adds the parameter to the list of StatusCode, that get inserted into
+     * the requests result-tree. The value of
+     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used as level.
+     *
+     * @param scode an instance of <code>StatusCode</code>, that should be added
+     * to the collection of message codes, for this request.
+     */
+    public void addPageMessage(StatusCode scode)
+    {
+        addPageMessage(scode, null, null);
+    }
+
+    /**
+     * @param scode an instance of <code>StatusCode</code>, that should be added
+     * to the collection of message codes, for this request.
+     * @param level the value, that's used to this message's level. If this value
+     * is <code>null</code> or an empty String, the value of
+     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
+     */
+    public void addPageMessage(StatusCode scode, String level)
+    {
+        addPageMessage(scode, null, level);
+    }
+
+    /**
+     * Adds the <code>StatusCode</code>, along with the provided arguments,
+     * to the list of <code>StatusCodes</code>, that get
+     * inserted into the requests result-tree. The value of
+     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used as level.
+
+     * @param scode an instance of <code>StatusCode</code>, that should be added
+     * to the collection of message codes, for this request.
+     * @param args arguments to the provided <code>StatusCode</code>.
+     */
+    public void addPageMessage(StatusCode scode, String[] args)
+    {
+        addPageMessage(scode, args, null);
+    }
+
+    /**
+     * Adds the <code>StatusCode</code>, along with the provided arguments,
+     * to the list of <code>StatusCodes</code>, that get
+     * inserted into the requests result-tree.
+     *
+     * @param scode an instance of <code>StatusCode</code>, that should be added
+     * to the collection of message codes, for this request.
+     * @param args arguments to the provided <code>StatusCode</code>.
+     * @param level the value, that's used to this message's level. If this value
+     * is <code>null</code> or an empty String, the value of
+     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
+     */
+    public void addPageMessage(StatusCode scode, String[] args, String level)
+    {
+        if ( scode == null )
+            return;
+
+        level = level == null || "".equals(level) ? DEF_MESSAGE_LEVEL : level;
+
+        List list = new ArrayList();
+        list.add(level.toLowerCase());
+
+        if ( args != null )
+          list.addAll(Arrays.asList(args));
+
+        messageSCodes.put(scode, list);
+    }
 
     /*public long getCreationTimestamp() {
         return starttime;
@@ -599,7 +698,7 @@ public class PfixServletRequest {
         //        System.out.println("");
         //    } else {
         //        System.out.println(" RequestParam[] is NULL! ");
-        //    } 
+        //    }
         //}
         generateSynthetics(req,allnames);
         // for (Iterator i = parameters.keySet().iterator(); i.hasNext();) {
@@ -613,7 +712,7 @@ public class PfixServletRequest {
         //         System.out.println("");
         //     } else {
         //         System.out.println(" RequestParam[] is NULL! ");
-        //     } 
+        //     }
         // }
     }
 
