@@ -160,11 +160,11 @@ public class SPDocument {
         return xslkey;
     }
 
-    public void setResponseData(String data) {
+    public void setLiteralResonseContent(String data) {
         resdata = data;
     }
 
-    public String getResponseDate() {
+    public String getLiteralResponseContent() {
         return resdata;
     }
     
