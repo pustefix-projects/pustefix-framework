@@ -56,14 +56,12 @@ public class PfixServletRequest {
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
-    private static final String   DEF_MESSAGE_LEVEL   = "info";
     private static DecimalFormat  FORMAT              = new DecimalFormat("0000");
     private static String         DEF_TMPDIR          = "/tmp";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
     private Category              CAT                 = Category.getInstance(this.getClass());
     private ArrayList             multiPartExceptions = new ArrayList();
-    private Map                   messageSCodes       = new HashMap();
     private String                servername;
     private String                querystring;
     private String                scheme;
@@ -306,49 +304,6 @@ public class PfixServletRequest {
      */
     public void setLastException(Throwable lastException) {
         request.setAttribute(ATTR_LASTEXCEPTION, lastException);
-    }
-
-    /**
-     * @return an instance of <code>Map</code>, that's never <code>null</code>,
-     * and contains the <code>StatusCode</code>-instances, that were added to
-     * this request until now as keys of the map. The <code>Map</code>-values are
-     * <code>List</code>-objects, with the first element of the list, <b>always</b>
-     * being the level of the message (and object of type <code>String</code>),
-     * and all following elements (which can be zero) being arguments to the
-     * <code>StatusCode</code>. <br/>
-     * So the values of the <code>Map</code> are <code>List</code>-objects, with
-     * element <code>0</code> always being the message-level, and all list-elements
-     * &gt; <code>0</code> being String arguments to the <code>StatusCode</code>
-     */
-    public Map getPageMessages() {
-        return messageSCodes;
-    }
-
-    /**
-     * Adds the <code>StatusCode</code>, along with the provided arguments,
-     * to the list of <code>StatusCodes</code>, that get
-     * inserted into the requests result-tree.
-     *
-     * @param scode an instance of <code>StatusCode</code>, that should be added
-     * to the collection of message codes, for this request.
-     * @param args arguments to the provided <code>StatusCode</code>.
-     * @param level the value, that's used to this message's level. If this value
-     * is <code>null</code> or an empty String, the value of
-     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
-     */
-    public void addPageMessage(StatusCode scode, String level, String[] args) {
-        if (scode == null)
-            return;
-        
-        level = level == null || "".equals(level) ? DEF_MESSAGE_LEVEL : level;
-        
-        List list = new ArrayList();
-        list.add(level.toLowerCase());
-        
-        if (args != null)
-            list.addAll(Arrays.asList(args));
-        
-        messageSCodes.put(scode, list);
     }
 
     /**

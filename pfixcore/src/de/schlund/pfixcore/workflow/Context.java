@@ -55,6 +55,7 @@ public class Context implements AppContext {
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
     private final static String   PARAM_FLOW          = "__pageflow";
     private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
+    private final static String   DEF_MESSAGE_LEVEL   = "info";
 
     // from constructor
     private String     name;
@@ -86,10 +87,11 @@ public class Context implements AppContext {
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
 
+    private HashMap messageSCodes      = new HashMap();
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
     private boolean needs_update;
-
+    
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -846,10 +848,9 @@ public class Context implements AppContext {
         if (spdoc == null)
             return;
         
-        Map messagesMap = currentpreq.getPageMessages();
-        LOG.debug("Adding "+messagesMap.size()+" PageMessages to result document");
+        LOG.debug("Adding " + messageSCodes.size() + " PageMessages to result document");
         
-        if (!messagesMap.isEmpty()) {
+        if (!messageSCodes.isEmpty()) {
             Document doc        = spdoc.getDocument();
             Element  formresult = doc.getDocumentElement();
 
@@ -857,10 +858,10 @@ public class Context implements AppContext {
                 Element messagesElem = doc.createElement("pagemessages");
                 formresult.appendChild(messagesElem);
 
-                Iterator iter = messagesMap.keySet().iterator();
+                Iterator iter = messageSCodes.keySet().iterator();
                 while (iter.hasNext()) {
                     StatusCode scode        = (StatusCode) iter.next();
-                    List       levelAndArgs = (List) messagesMap.get(scode);
+                    List       levelAndArgs = (List) messageSCodes.get(scode);
                     String     level        = (String)   levelAndArgs.remove(0);
                     String[]   args         = (String[]) levelAndArgs.toArray(new String[0]);
                     Element    msg          = doc.createElement("message");
@@ -872,6 +873,7 @@ public class Context implements AppContext {
                     LOG.debug("Added PageMessage for level " + level + " with args " + levelAndArgs);
                 }
             }
+            messageSCodes.clear();
         }
     }
 
@@ -928,6 +930,7 @@ public class Context implements AppContext {
         return currentpreq.getLastException();
     }
 
+
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
      * as it accesses a non-thread-safe field of this class.
@@ -940,7 +943,7 @@ public class Context implements AppContext {
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
      */
     public void addPageMessage(StatusCode scode) {
-        currentpreq.addPageMessage(scode, null, null);
+        addPageMessage(scode, null, null);
     }
 
     /**
@@ -956,41 +959,33 @@ public class Context implements AppContext {
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
      */
     public void addPageMessage(StatusCode scode, String level) {
-        currentpreq.addPageMessage(scode, level, null);
+        addPageMessage(scode, level, null);
     }
 
-
     /**
-     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
-     * as it accesses a non-thread-safe field of this class.
-     * <br />
-     * This method stores the specified <code>StatusCode</code>-object, along
-     * with it's provided arguments, in the current request, so that it can be
-     * incorporated into the XML result-tree.
+     * Adds the <code>StatusCode</code>, along with the provided arguments,
+     * to the list of <code>StatusCodes</code>, that get
+     * inserted into the requests result-tree.
      *
-     * @param scode the <code>StatusCode</code>-object that should be stored in
-     * the request. If it's null, nothing will be stored in the request.
+     * @param scode an instance of <code>StatusCode</code>, that should be added
+     * to the collection of message codes, for this request.
      * @param args arguments to the provided <code>StatusCode</code>.
-     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[])
+     * @param level the value, that's used to this message's level. If this value
+     * is <code>null</code> or an empty String, the value of
+     * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
      */
     public void addPageMessage(StatusCode scode, String level, String[] args) {
-        currentpreq.addPageMessage(scode, level, args);
-    }
-
-
-    /**
-     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
-     * as it accesses a non-thread-safe field of this class.
-     * <br />
-     * This method stores the specified <code>StatusCode</code>-object in the
-     * current request, so that it can be incorporated into the XML result-tree.
-     *
-     * @param scode the <code>StatusCode</code>-object that should be stored in
-     * the request. If it's null, nothing will be stored in the request.
-     * @param level the level associated with the specified <code>StatusCode</code>.
-     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[], String)
-     */
-    public void addPageMessage(StatusCode scode, String[] args, String level) {
-        currentpreq.addPageMessage(scode, level, args);
+        if (scode == null)
+            return;
+        
+        level = (level == null || "".equals(level)) ? DEF_MESSAGE_LEVEL : level;
+        
+        List list = new ArrayList();
+        list.add(level.toLowerCase());
+        
+        if (args != null)
+            list.addAll(Arrays.asList(args));
+        
+        messageSCodes.put(scode, list);
     }
 }
