@@ -73,7 +73,7 @@ h2 {
 
 .stdimg { margin: 10px; text-align: center; }
 
-.stdimg-img { text-align: center; background-color: white; } 
+.stdimg-img { padding: 5px; text-align: center; background-color: white; } 
 .stdimg-txt { background-color: black; color: white; text-align: left; padding: 5px; font-size: 10px; } 
 
 .xmlcodeOFF { text-align: center; border: 1px solid black; }
