@@ -43,14 +43,15 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     // UndoManager
     
-    UndoManager undo = new UndoManager();
-    UndoAction undoAction = new UndoAction();
-    RedoAction redoAction = new RedoAction();
-    
+    UndoManager undo;
+    UndoAction undoAction;
+    RedoAction redoAction;
+    private MyUndoableEditListener undolistener;
 
     // TextComponents
     JTextArea textPane;
     JTextPane resultArea;
+    // JTextArea syntaxPane;
     //JEditorPane resultArea;
     // SyntaxPane syntaxPane;
     PfixTextPane syntaxPane;
@@ -100,27 +101,34 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         String uploadField = "";
 
+        undo = new UndoManager();
+
         panel = new JPanel();
         frame.setContentPane( panel );
         panel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         panel.setLayout(new BorderLayout());
 
         // building JTextPanes
-        textPane = new JTextArea();
+        // syntaxPane = new JTextArea();
         resultArea = new JTextPane();
         syntaxPane = new PfixTextPane();
 
         xmlChecker = new PfixCheckXml(syntaxPane);
         
         // TextArea - Properties Setting
-        syntaxPane.setEditorKit(new StyledEditorKit());
-        syntaxPane.getDocument().addUndoableEditListener(new MyUndoableEditListener());
+        // syntaxPane.setEditorKit(new StyledEditorKit());
+        undolistener= new MyUndoableEditListener();
+      
+        syntaxPane.getDocument().addUndoableEditListener(undolistener);
+        // syntaxPane.getDocument().addUndoableEditListener(new MyUndoableEditListener());
+        undoAction = new UndoAction();
+        redoAction = new RedoAction();
         
         keyListening();
         
         // Document setting
         doc = syntaxPane.getDocument();
-        doc.addDocumentListener(this);
+        // doc.addDocumentListener(this);
         
         // Creating Scroll-Panel
         scrollPane = new JScrollPane(syntaxPane);
@@ -192,8 +200,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // fileMenu.add(boldSubMenu);
         fileMenu.add(colorizeMenu);
         fileMenu.add(tagClose);
-        fileMenu.addSeparator();
-        fileMenu.add(viewPortMenu);
+        // fileMenu.addSeparator();
+        // fileMenu.add(viewPortMenu);
 
         // Adding ActionListener
         colorizeMenu.addActionListener(this);
@@ -444,7 +452,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         TextAction actTest = new TextAction("h") {
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("I PRESSED Hallo");
-                     undoAction.undo2();
+                    // undoAction.undo2();
                 }
             };
        
@@ -456,7 +464,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
 
     public void colorize() {
-        syntaxPane.hilightAll(); 
+         syntaxPane.hilightAll(); 
     }
     
 
@@ -603,92 +611,81 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
 
-        public class MyUndoableEditListener implements UndoableEditListener{
-        
-        public void undoableEditHappened(UndoableEditEvent e) {
-        //Remember the edit and update the menus
-            undo.addEdit(e.getEdit());
-            undoAction.update();
-            redoAction.update();
-            // checkPress();
-            // updateLinePane2();
+            protected class MyUndoableEditListener implements UndoableEditListener {
+                 public void undoableEditHappened(UndoableEditEvent e) {
+               //Remember the edit and update the menus.
+                        undo.addEdit(e.getEdit());
+                        undoAction.updateUndoState();
+                        redoAction.updateRedoState();
+                }
         }
         
-    }  
 
-    //UNDO AND REDOACTION CLASSES
-    //THIS PASRT OF CODE WAS TAKEN FROM THE NOTEPAD DEMO FOUND IN THE JDK1.4.1 DEMO DIRECTORY
-    class UndoAction extends AbstractAction {
-	public UndoAction() {
-	    super("Undo");
-	    setEnabled(false);
-	}
 
-        public void undo2() {
-            System.out.println("Hallo hier bin ich drun");
-            try {
-		undo.undo();
-	    } catch (CannotUndoException ex) {
-		System.out.println("Unable to undo: " + ex);
-		ex.printStackTrace();
-	    }
-	    update();
-	    redoAction.update();
-	}
-            
-        
-        
-	public void actionPerformed(ActionEvent e) {
-	    try {
-		undo.undo();
-	    } catch (CannotUndoException ex) {
-		System.out.println("Unable to undo: " + ex);
-		ex.printStackTrace();
-	    }
-	    update();
-	    redoAction.update();
-	}
 
-	protected void update() {
-	    if(undo.canUndo()) {
-		setEnabled(true);
-		putValue("Undo", undo.getUndoPresentationName());
-	    }
-	    else {
-		setEnabled(false);
-		putValue(Action.NAME, "Undo");
-	    }
-	}
-    }
+     class UndoAction extends AbstractAction {
+                public UndoAction() {
+                        super("Undo");
+                        setEnabled(false);
+                }
+                public void actionPerformed(ActionEvent e) {
+                        try {
+                                undo.undo();
+                         } 
+                         catch (CannotUndoException ex) {
+                                System.out.println("Unable to undo: " + ex);
+                                ex.printStackTrace();
+                        }
+                        updateUndoState();
+                        redoAction.updateRedoState();
+                }
+          
+                protected void updateUndoState() {
+                        if (undo.canUndo()) {
+                                setEnabled(true);
+                                putValue(Action.NAME, undo.getUndoPresentationName());
+                                } 
+                       else {
+                                setEnabled(false);
+                                putValue(Action.NAME, "Undo");
+                      }
+                }      
+        }    
 
-    class RedoAction extends AbstractAction {
-	public RedoAction() {
-	    super("Redo");
-	    setEnabled(false);
-	}
+        class RedoAction extends AbstractAction {
+                        public RedoAction() {
+                        super("Redo");
+                        setEnabled(false);
+                }
 
-	public void actionPerformed(ActionEvent e) {
-	    try {
-		undo.redo();
-	    } catch (CannotRedoException ex) {
-		System.out.println("Unable to redo: " + ex);
-		ex.printStackTrace();
-	    }
-	    update();
-	    undoAction.update();
-	}
+                public void actionPerformed(ActionEvent e) {
+                         try {
+                        undo.redo();
+                        } 
+                        catch (CannotRedoException ex) {
+                        System.out.println("Unable to redo: " + ex);
+                        ex.printStackTrace();
+                        }
+                        updateRedoState();
+                        undoAction.updateUndoState();
+                }
 
-	protected void update() {
-	    if(undo.canRedo()) {
-		setEnabled(true);
-		putValue("Redo", undo.getRedoPresentationName());
-	    }
-	    else {
-		setEnabled(false);
-		putValue(Action.NAME, "Redo");
-	    }
-	}
-    }
+                protected void updateRedoState() {
+                        if (undo.canRedo()) {
+                                setEnabled(true);
+                                putValue(Action.NAME, undo.getRedoPresentationName());
+                        } 
+                        else {
+                                setEnabled(false);
+                                putValue(Action.NAME, "Redo");
+                        }
+                }
+        }
+
+
+    
+
+
 
 
     
