@@ -76,7 +76,7 @@ public class TargetFactory {
             Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass()});
             target = (TargetRW) constructor.newInstance(new Object[]{type, gen, targetkey});
         } catch (Exception e) {
-            throw new RuntimeException(e.toString());
+            throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);
         }
         return target;
     }
