@@ -1,4 +1,4 @@
-2003-03-05  Joerg Haecker <haecker@schlund.de>
+2003-03-06  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/*: organized imports,
 	removed unused variables and added some javadoc.

@@ -61,6 +61,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @param req a <code>HttpServletRequest</code> value
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.State#isAccessible(Context, PfixServletRequest) 
      */
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         return true;
@@ -75,6 +76,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
      * @param req a <code>HttpServletRequest</code> value
      * @return a <code>SPDocument</code> value
      * @exception Exception if an error occurs
+     * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest) 
      */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
 
@@ -96,7 +98,9 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 throw new XMLException("No interface for prefix " + authprefix);
         }
 
-        CAT.debug("======> Interface for authentication: " + authprefix + " => " + authwrapper);
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("======> Interface for authentication: " + authprefix + " => " + authwrapper);
+        }
         Class    thewrapper  = Class.forName(authwrapper);
         IWrapper user        = (IWrapper) thewrapper.newInstance();
         user.init(authprefix);
@@ -121,24 +125,30 @@ public class DefaultAuthIWrapperState extends StateImpl {
         // Two cases: we are actively submitting data, or not.
         // If we are, we always try to authenticate against supplied user data.
         if (isSubmitAuthTrigger(context, preq)) {
-        CAT.debug("================> Handling AUTHDATA SUBMIT");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("================> Handling AUTHDATA SUBMIT");
+            }
             user.load(rdata);
             if (user.errorHappened()) { // during loading of the wrapper...
                 userhandler.retrieveCurrentStatus(context, user);
-                CAT.debug("================> Error during loading of wrapper data");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("================> Error during loading of wrapper data");
+                }
                 // Try loading the aux interfaces, just to echo the stringvals.
                 // so no error handling needs to take place.
-                auxEchoData(aux, context, rdata, resform);
+                auxEchoData(aux, rdata, resform);
                 userInsertErrors(context.getProperties(), user, resform);
                 return resdoc;
             } else {
-                CAT.debug("================> Calling handleSubmittedData on " + userhandler.getClass().getName());
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("================> Calling handleSubmittedData on " + userhandler.getClass().getName());
+                }
                 userhandler.handleSubmittedData(context, user);
                 if (user.errorHappened()) { // during trying to authenticate
                     userhandler.retrieveCurrentStatus(context, user);
                     // Try loading the aux interfaces, just to echo the stringvals.
                     // so no error handling needs to take place.
-                    auxEchoData(aux, context, rdata, resform);
+                    auxEchoData(aux, rdata, resform);
                     userInsertErrors(context.getProperties(), user, resform);
                     return resdoc;
                 } else {
@@ -150,13 +160,15 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 }
             }
         } else { // No data is actually submitted
-            CAT.debug("================> Checking AUTHDATA");
-            CAT.debug("================> Userhandler: " + userhandler.getClass().getName());
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("================> Checking AUTHDATA\n" +
+                    "================> Userhandler: " + userhandler.getClass().getName());
+            }
             if (userhandler.needsData(context)) { // Not authenticated
                 userhandler.retrieveCurrentStatus(context, user);
                 // Try loading the aux interfaces, just to echo the stringvals.
                 // so no error handling needs to take place.
-                auxEchoData(aux, context, rdata, resform);
+                auxEchoData(aux, rdata, resform);
                 userInsertErrors(context.getProperties(), user, resform);
                 return resdoc;
             } else { // OK, we are already authenticated. So we still want to try to handle the aux data.
@@ -191,7 +203,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     
-    private void auxEchoData(ArrayList aux, Context context, RequestData rdata, ResultForm resform) throws Exception {
+    private void auxEchoData(ArrayList aux, RequestData rdata, ResultForm resform) throws Exception {
         for (Iterator i = aux.iterator(); i.hasNext(); ) {
             IWrapper tmp = (IWrapper) i.next();
             tmp.load(rdata);

@@ -45,12 +45,22 @@ import de.schlund.pfixxml.XMLException;
 public class StaticState extends StateImpl {
     public static final String PROP_INSERTCR = "insertcr";
 
+    /**
+     * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
+     */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
         renderContextResources(context, resdoc);
         return resdoc;
     }
 
+    
+    /**
+     * Method renderContextResources.
+     * @param context
+     * @param resdoc
+     * @throws Exception
+     */
     public void renderContextResources(Context context, ResultDocument resdoc) throws Exception {
         Properties props  = context.getPropertiesForCurrentPageRequest();
         if (props != null) {
@@ -60,7 +70,9 @@ public class StaticState extends StateImpl {
                 for (Iterator i = crs.keySet().iterator(); i.hasNext();) {
                     String nodename  = (String) i.next();
                     String classname = (String) crs.get(nodename);
-                    CAT.debug("*** Auto appending status for " + classname + " at node " + nodename);
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("*** Auto appending status for " + classname + " at node " + nodename);
+                    }
                     ContextResource cr = crm.getResource(classname);
                     
                     if (cr == null) {

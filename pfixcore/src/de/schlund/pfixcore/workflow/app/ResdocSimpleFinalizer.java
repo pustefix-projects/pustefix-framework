@@ -25,8 +25,8 @@ import org.apache.log4j.Category;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
- * ResdocSimpleFinalizer.java
- *
+ * Default implementation of the ResdocFinalizer interface.
+ * <br/>
  *
  * Created: Fri Oct 12 22:00:21 2001
  *
@@ -49,6 +49,7 @@ public class ResdocSimpleFinalizer implements ResdocFinalizer {
      * The default implementation simply calls the {@link renderDefault} method.
      *
      * @param container an <code>IWrapperContainer</code> value
+     * @see de.schlund.pfixcore.workflow.app.ResdocFinalizer#onWorkError(IWrapperContainer) 
      */
     public void onWorkError(IWrapperContainer container) throws Exception{
         renderDefault(container);
@@ -62,6 +63,7 @@ public class ResdocSimpleFinalizer implements ResdocFinalizer {
      * The default implementation simply calls the {@link renderDefault} method.
      *
      * @param container an <code>IWrapperContainer</code> value
+     * @see de.schlund.pfixcore.workflow.app.ResdocFinalizer#onRetrieveStatus(IWrapperContainer) 
      */
     public void onRetrieveStatus(IWrapperContainer container) throws Exception{
         renderDefault(container);
@@ -72,6 +74,7 @@ public class ResdocSimpleFinalizer implements ResdocFinalizer {
      * The default implementation simply sets the SPDocument in the container's associated ResultDocument to "null".
      *
      * @param container an <code>IWrapperContainer</code> value
+     * @see de.schlund.pfixcore.workflow.app.ResdocFinalizer#onSuccess(IWrapperContainer) 
      */
     public void onSuccess(IWrapperContainer container) throws Exception {
         Context    context = container.getAssociatedContext();

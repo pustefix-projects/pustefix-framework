@@ -44,55 +44,79 @@ public class DefaultIWrapperState extends StaticState {
 
     private static String IHDL_CONT_MANAGER = "de.schlund.pfixcore.workflow.app.IHandlerContainerManager";
     
+    /**
+     * @see de.schlund.pfixcore.workflow.State#isAccessible(Context, PfixServletRequest)
+     */
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
         boolean test = container.isPageAccessible(context) && container.areHandlerActive(context);
         return test;
     }
     
+    /**
+     * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
+     */
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         IWrapperContainer container  = getIWrapperContainer(context);
         ResdocFinalizer   rfinal     = getResdocFinalizer(context);
         ResultDocument    resdoc     = new ResultDocument();
-
-	
-        CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
         
+        if(CAT.isDebugEnabled()) {
+            CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
+        }
         container.initIWrappers(context, preq, resdoc);
         
         if (isSubmitTrigger(context, preq)) {
-            CAT.debug(">>> In SubmitHandling... ");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug(">>> In SubmitHandling... ");
+            }
             container.handleSubmittedData();
             if (container.errorHappened()) {
-                CAT.debug("=> Can't continue, as errors happened during load/work.");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("=> Can't continue, as errors happened during load/work.");
+                }
                 container.addErrorCodes();
                 rfinal.onWorkError(container);
             } else {
-                CAT.debug("... No error happened during work ...");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("... No error happened during work ...");
+                }
                 if (container.continueSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page...");
-                    CAT.debug("=> retrieving current status.");
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("... Container says he wants to stay on this page...\n" +
+                            "=> retrieving current status.");
+                    }
                     container.retrieveCurrentStatus();
                     rfinal.onRetrieveStatus(container);
                 } else {
-                    CAT.debug("... Container says he is ready: End of submit successfully...");
-                    CAT.debug("=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
+                    if(CAT.isDebugEnabled()) {
+                        CAT.debug("... Container says he is ready: End of submit successfully...\n" +
+                            "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
+                    }
                     rfinal.onSuccess(container);
                 }
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
-            CAT.debug(">>> In DirectTriggerHandling...");
-            CAT.debug("=> retrieving current status.");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug(">>> In DirectTriggerHandling...\n" +
+                    "=> retrieving current status.");
+            }
             container.retrieveCurrentStatus();
             rfinal.onRetrieveStatus(container);
         } else if (context.flowIsRunning()) {
-            CAT.debug(">>> In FlowHandling...");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug(">>> In FlowHandling...");
+            }
             if (container.needsData()) {
-                CAT.debug("=> needing data, retrieving current status.");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("=> needing data, retrieving current status.");
+                }
                 container.retrieveCurrentStatus();
                 rfinal.onRetrieveStatus(container);
             } else {
-                CAT.debug("=> no need to handle, returning NULL.");
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("=> no need to handle, returning NULL.");
+                }
                 container.getAssociatedResultDocument().setSPDocument(null);
             }
         } else {
@@ -110,7 +134,7 @@ public class DefaultIWrapperState extends StaticState {
     
 
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
-    protected IWrapperContainer getIWrapperContainer(Context context) throws Exception {
+    protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {
         Properties        props     = context.getPropertiesForCurrentPageRequest();
         String            classname = props.getProperty(IWrapperSimpleContainer.PROP_CONTAINER);
         IWrapperContainer obj       = null;
@@ -122,20 +146,20 @@ public class DefaultIWrapperState extends StaticState {
         try {
             obj = (IWrapperContainer) Class.forName(classname).newInstance();
         } catch (InstantiationException e) {
-            CAT.error("unable to instantiate class [" + classname + "]", e);
+            throw new XMLException("unable to instantiate class [" + classname + "] :" + e.getMessage());
         } catch (IllegalAccessException e) {
-            CAT.error("unable access class [" + classname + "]", e);
+            throw new XMLException("unable access class [" + classname + "] :" + e.getMessage());
         } catch (ClassNotFoundException e) {
-            CAT.error("unable to find class [" + classname + "]", e);
+            throw new XMLException("unable to find class [" + classname + "] :" + e.getMessage());
         } catch (ClassCastException e) {
-            CAT.error("class [" + classname + "] does not implement the interface IWrapperContainer", e);
+            throw new XMLException("class [" + classname + "] does not implement the interface IWrapperContainer :" + e.getMessage());
         }
         
         return obj;
     }
 
     // Remember, a ResdocFinalizer is a flyweight!!!
-    protected ResdocFinalizer getResdocFinalizer(Context context) {
+    protected ResdocFinalizer getResdocFinalizer(Context context) throws XMLException {
         Properties props     = context.getPropertiesForCurrentPageRequest();
         String     classname = props.getProperty(ResdocSimpleFinalizer.PROP_FINALIZER);
         if (classname == null) {
@@ -154,7 +178,7 @@ public class DefaultIWrapperState extends StaticState {
     // Remember, a IHandlerContainer is a flyweight!!!
     protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
         Properties                props = context.getProperties();
-    	PropertyObjectManager     pom   = PropertyObjectManager.getInstance();
+        PropertyObjectManager     pom   = PropertyObjectManager.getInstance();
         IHandlerContainerManager  ihcm  = (IHandlerContainerManager) pom.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
         return ihcm.getIHandlerContainer(context);
     }
