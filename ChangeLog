@@ -1,5 +1,7 @@
 2004-03-24  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
 
+	* build.xml: released 0.5.3
+
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
 	(addErrorCodes)	call wrapper.tryErrorLogging() to maybe log StatusCodes
 
