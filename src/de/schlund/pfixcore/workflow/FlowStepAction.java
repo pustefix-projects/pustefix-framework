@@ -25,7 +25,6 @@ import de.schlund.pfixxml.ResultDocument;
 /**
  * @author: jtl
  *
- *
  */
 
 public interface FlowStepAction {

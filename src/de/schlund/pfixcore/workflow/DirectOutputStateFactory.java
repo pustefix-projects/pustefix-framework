@@ -30,7 +30,6 @@ import org.apache.log4j.*;
  * one instance of each requested DirectOutputState.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version $Id$
  */
 public class DirectOutputStateFactory implements Reloader {
     private static HashMap      knownstates = new HashMap();

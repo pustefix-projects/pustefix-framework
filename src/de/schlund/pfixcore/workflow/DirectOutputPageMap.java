@@ -33,7 +33,6 @@ import de.schlund.pfixxml.PropertyObjectManager;
  * ensures that the the DirectOutputPageMap will be recreated every time the properties change.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version $Id$
  */
 public class DirectOutputPageMap implements PropertyObject,Reloader {
     protected            HashMap  pagemap       = new HashMap();

@@ -26,7 +26,6 @@ import de.schlund.pfixxml.ResultDocument;
 /**
  * @author: jtl@schlund.de
  *
- *
  */
 
 public class FlowStepJumpToAction implements FlowStepAction {
