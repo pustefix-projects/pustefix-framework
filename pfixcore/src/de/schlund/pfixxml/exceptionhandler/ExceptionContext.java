@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,6 +33,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
+
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -342,11 +345,12 @@ class ExceptionContext {
      */
     private StringBuffer createSTraceText() {
         StringBuffer err = new StringBuffer();
-        StackTraceElement[] strace = throwable_.getStackTrace();
-        for (int i = 0; i < strace.length; i++) {
-            err.append(strace[i].toString().trim() + "\n");
-        }
-        return err;
+        StringWriter strwriter = new StringWriter();
+        PrintWriter p = new PrintWriter(strwriter);
+        throwable_.printStackTrace(p);
+        p.flush();
+        err.append(throwable_.getClass().getName()+": \n");
+        return strwriter.getBuffer();
     }
 
     /**
