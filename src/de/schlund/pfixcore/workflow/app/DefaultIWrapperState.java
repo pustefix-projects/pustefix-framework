@@ -51,8 +51,8 @@ public class DefaultIWrapperState extends StaticState {
         // CAT.warn("\n============================> " + name + ": Test 1: " + test);
         // container.initIHandlers(context);
         // test = container.isPageAccessible() && container.areHandlerActive();
-        CAT.warn("\n============================> " + name + ": Test 2: " + test);
-        return (test);
+        // CAT.warn("\n============================> " + name + ": Test 2: " + test);
+        return test;
     }
     
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
