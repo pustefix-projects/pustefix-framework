@@ -370,16 +370,30 @@ class ExceptionContext {
         err.append("\n==== Session keys and values: ========================\n");
         Enumeration enm = session.getAttributeNames();
         while (enm.hasMoreElements()) {
-            String sname = (String) enm.nextElement();
-            err.append("Sessionkey: " + sname);
-            Object o = session.getAttribute(sname);
-            err.append(" [" + o.getClass().getName() + "]\n");
-            String resourcedump = null;
-            try {
+        	String resourcedump = null;
+        	try {
+        		String sname = (String) enm.nextElement();
+        		err.append("Sessionkey: " + sname);
+        		Object o = session.getAttribute(sname);
+        		err.append(" [" + o.getClass().getName() + "]\n");
             	resourcedump = o.toString();
             } catch (Exception e) {
-            	// Ignore all Exceptions here!
-            	resourcedump = e.getMessage();
+            	CAT.error("Exception when creating session dump", e);
+            	/* Here we have to catch all exceptions because
+            	   we do NOT want any exceptions to be thrown up
+            	   to the servlet container which would end in a
+            	   ServletException. If exceptions occur in the
+            	   creation of session dump, try to report
+            	   them properly.
+            	*/ 
+            	StringBuffer msg = new StringBuffer(255); 
+            	msg.append(e.getClass().getName()+":"+e.getMessage()+"\n");
+            	StringWriter strwriter = new StringWriter();
+        		PrintWriter p = new PrintWriter(strwriter);
+        	    e.printStackTrace(p);
+        	    p.flush();
+        	    msg.append(strwriter.getBuffer().toString());
+            	resourcedump = msg.toString();
             }
             err.append("Value:      " + resourcedump);
             err.append("\n");
