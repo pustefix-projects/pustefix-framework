@@ -36,153 +36,125 @@ Array.prototype.unmapKeys = function() {
 };
 
 var __js_Cookie = {
-  // Data for the highlevel functions
-  base : "data",
-  days : 365,
-  splitter : "|",
-  path : "/",
-
-  // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
-  maxstr : 4000,
-  maxarr : 10,
-  maxarrhard : 20,
-
-  set : function(name, value)
-  {
-    if (name==null||typeof name=="undefined"||value==null||typeof value=="undefined") return;
-  
-    var c = this.get_sub().split(this.splitter)
-    var n = [];
-
-    // copy other values
-    for (var i = 0; i<c.length; i++)
-    {
-    	if (c[i] == "") continue;
-    	var d = c[i].split(":");
-    	if (d[0] != name) n.push(c[i]);
-    };
-
-    // add new value pair
-    n.unshift(name + ":" + value);
-
-    // copy to destination array
-    d=n;
-
-    // Neue Daten optimiert abspeichern
-    var s = "";
-    var j=0;
+    // Data for the highlevel functions
+    base : "data",
+    days : 365,
+    splitter : "|",
+    path : "/",
     
-    for (var i=0; i<d.length; i++)
-    {
-      // ignore some erroneous values
-      if(d[i] == null || typeof d[i] == "undefined") continue;
+    // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
+    maxstr : 4000,
+    maxarr : 10,
+    maxarrhard : 20,
     
-      // mit neuem zu gross
-      if ((s.length + d[i].length) > this.maxstr)
-      {
-        // also speichern und leeren
-        this.create(this.base + this.norm_sub(j), s, this.days);
+    set : function(name, value) {
+        if (name == null || typeof name == "undefined" || value==null || typeof value == "undefined") return;
+        
+        var c = this.get_sub().split(this.splitter)
+        var n = [];
+        
+        // copy other values
+        for (var i = 0; i < c.length; i++) {
+            if (c[i] == "") continue;
+            var d = c[i].split(":");
+            if (d[0] != name) n.push(c[i]);
+        };
+        
+        // add new value pair
+        n.unshift(name + ":" + value);
+        // copy to destination array
+        d = n;
+        
+        // Neue Daten optimiert abspeichern
+        var s = "";
+        var j = 0;
+        
+        for (var i = 0; i < d.length; i++) {
+            // ignore some erroneous values
+            if (d[i] == null || typeof d[i] == "undefined") continue;
+            
+            // Too big
+            if ((s.length + d[i].length) > this.maxstr) {
+                this.create(this.base + this.norm_sub(j), s, this.days);
+                s = d[i];
+                j++;
+                
+                if (j>maxarr) break;
+            } else {
+                if(s != "") s+= this.splitter;
+                s += d[i];
+            };
+        };
+        
+        // Save remaining values
+        if (s!="" && j<=this.maxarr) {
+            this.create(this.base + this.norm_sub(j), s, this.days);
+            j++;
+        };
+        
+        for (var i = j; i < this.maxarrhard; i++) this.erase(this.base + this.norm_sub(i));
+        
+        return true;
+    },
 
-        // Wert ersetzen
-        s = d[i];
-        j++;
+    get : function(name) {
+        var c = this.prep_sub()[name];
+        if (c && typeof c != "undefined") return c;
+        return null;
+    },
 
-        // Wert vergessen, wenn kein Platz mehr vorhanden
-        if (j>maxarr) break;
-      }
-      else
-      {
-        // Wert anhängen
-	if(s!="") s+= this.splitter;
-        s += d[i];
-      };
-    };
+    norm_sub : function(i) {
+        return String(i < 10 ? "0" + i : i);
+    },
 
-    // Übrige Werte speichern
-    if (s!="" && j<=this.maxarr)
-    {
-      this.create(this.base + this.norm_sub(j), s, this.days);
-      j++;
-    };
+    get_sub : function() {
+        var s = "";
 
-    // Überflüssige Cookies entfernen
-    // Auch die Löschen, die vor einer Rekonfiguration von maxarr angelegt worden sind
-    for(var i=j; i<this.maxarrhard; i++) this.erase(this.base + this.norm_sub(i));
+        for (var i = 0; i < this.maxarrhard; i++) {
+            var r = this.read(this.base + this.norm_sub(i))
+                if (r) s += r;
+        };
 
-    return true;
-  },
+        return s;
+    },
 
-  get : function(name)
-  {
-    var c = this.prep_sub()[name];
-    if (c && typeof c != "undefined") return c;
-    return null;
-  },
+    prep_sub : function() {
+        return this.get_sub().split(this.splitter).mapKeys();
+    },
 
-  norm_sub : function(i)
-  {
-    return String(i < 10 ? "0" + i : i);
-  },
+    // Low Level Internal Functions
+    create : function(name, value, days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            var expires = "; expires=" + date.toGMTString();
+        } else {
+            var expires = "";
+        };
 
-  get_sub : function()
-  {
-    var s="";
+        document.cookie = name + "=" + value + expires + "; path=" + this.path;
+    },
 
-    for (var i=0; i<this.maxarrhard; i++)
-    {
-      var r = this.read(this.base + this.norm_sub(i))
-      if(r) s+=r;
-    };
+    read : function(name) {
+        var ne = name + "=";
+        var ca = document.cookie.split(";");
 
-    return s;
-  },
+        for (var i=0; i < ca.length; i++) {
+            var c = ca[i];
+            
+            while (c.charAt(0) == " ")
+                c = c.substring(1,c.length);
 
-  prep_sub : function()
-  {
-    // Cookies einlesen und als (assoziatives) Array zurückgeben
-    return this.get_sub().split(this.splitter).mapKeys();
-  },
+            if (c.indexOf(ne) == 0)
+                return c.substring(ne.length,c.length);
+        };
 
-  // Low Level Internal Functions
-  create : function(name, value, days)
-  {
-    if (days)
-    {
-      var date = new Date();
-      date.setTime(date.getTime()+(days*24*60*60*1000));
-      var expires = "; expires="+date.toGMTString();
+        return null;
+    },
+
+    erase : function(name) {
+        this.create(name,"",-1);
     }
-    else
-    {
-      var expires = "";
-    };
-
-    document.cookie = name+"="+value+expires+"; path=" + this.path;
-  },
-
-  read : function(name)
-  {
-    var ne = name + "=";
-    var ca = document.cookie.split(";");
-
-    for (var i=0; i < ca.length; i++)
-    {
-      var c = ca[i];
-
-      while (c.charAt(0) == " ")
-        c = c.substring(1,c.length);
-
-      if (c.indexOf(ne) == 0)
-        return c.substring(ne.length,c.length);
-    };
-
-    return null;
-  },
-
-  erase : function(name)
-  {
-    this.create(name,"",-1);
-  }
 };
 
 function __js_Browser() {
