@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<!DOCTYPE project PUBLIC "-//ANT//DTD project//EN" "ant.dtd">
-
 <project name="pfixcore" default="all" basedir=".">
     
     <!-- set global properties for this build -->
@@ -13,7 +11,6 @@
     <property name="uid"                    value="${env.USER}"/>
     <property name="javahome"               value="${env.JAVA_HOME}"/>
     <property name="build.compiler"         value="jikes"/>
-    <property name="name.jnipkg"            value="jni.tar.gz"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
     <property name="dir.src"                location="src"/>
@@ -30,6 +27,8 @@
     <property name="file.projects_xml"      location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                 value="quiet" description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
     <property name="file.log4jconfig"       location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
+    <property name="name.jnipkg"            value="jni.tar.gz"/>
+    <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
     <property name="name.testskel"          value="testskel"/>
     <property name="dir.testskel"           location="${name.testskel}"/>
     <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
@@ -75,12 +74,18 @@
         <pathelement location="${dir.res}"/>
     </path>
     
-    <target name="init" depends="properties">
+    <target name="init" depends="properties, dtd">
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.dist}"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
         <!-- pathconvert dumps classpath on ant -verbose -->
         <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
+        <uptodate property="upd.jni" targetfile="${dir.jni}/build/libapploader.so">
+            <srcfiles dir="${dir.jni}" includes="${name.jnipkg}"/>
+        </uptodate>
+        <uptodate property="upd.jni.javah" targetfile="${dir.jni}/build/libapploader.so">
+            <srcfiles dir="${dir.jni}" includes="${name.jnipkg}"/>
+        </uptodate>
     </target>
     
     <target name="noop" description="just prints the name of the project">
@@ -148,12 +153,34 @@
         <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
-    <target name="jni" depends="pre-compile">
-        <exec dir="${dir.jni}" executable="make" failonerror="true"/>
+    <target name="jni" depends="init, pre-compile">
+        <ant dir="${dir.jni}"/>
     </target>
 
     <target name="clean-jni">
-        <exec dir="${dir.jni}" executable="make" failonerror="true"><arg line="clean"/></exec>
+        <ant dir="${dir.jni}" target="clean"/>
+    </target>
+    
+    <target name="dist-jni">
+        <ant dir="${dir.jni}" target="dist"/>
+    </target>
+    
+    <target name="doc" depends="clean-doc" description="generates javadoc">
+        <mkdir dir="${dir.javadoc}"/>
+        <javadoc
+            destdir="${dir.javadoc}"
+            version="true"
+            author="true"
+            windowtitle="de.schlund ${project.name}"
+            doctitle="&lt;h3&gt;Last update: ${DSTAMP} ${TSTAMP}&lt;/h3&gt;"
+            classpathref="cp.classpath"
+            >
+            <fileset dir="${dir.src}" includes="**/*.java" excludes="${excludes.src}"></fileset>
+        </javadoc>
+    </target>
+
+    <target name="clean-doc">
+        <delete dir="${dir.javadoc}"/>
     </target>
 
     <target name="installjars" >
@@ -217,9 +244,24 @@
             classpathref="cp.classpath"
             description="Creates dependencies in ${dir.projects}/.cache"
             />
+    </target>
+
+    <target name="dtd" depends="dtd-check" unless="upd.dtd" description="Creates a DTD for this build file.">
+    	<!-- DTD generated does not describe this build file thorough. It can't be used
+    	     for validation though it may be nice for auto competion within IDEs. The Element
+    	     not generated is the nested type "param" used within the custom ant-tasks -->
+        <echo message="Creating ant.dtd" level="info"/>
         <antstructure output="ant.dtd"/>
     </target>
     
+    <target name="dtd-check">
+    	<uptodate property="upd.dtd" srcfile="build.xml" targetfile="ant.dtd"/>
+    </target>
+    
+    <target name="clean-dtd">
+        <delete file="ant.dtd"/>
+    </target>
+
     <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
@@ -260,8 +302,10 @@
         <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     </target>
     
-    <target name="realclean" depends="clean, clean-jni">
+    <target name="realclean" depends="clean, clean-jni, clean-doc, clean-dtd">
         <delete dir="${dir.projects}/.cache"/>
+        <delete dir="${dir.testskel}"/>
+        <delete file="ant.dtd"/>
     </target>
 
     <target name="dist" depends="clean, init">
@@ -279,7 +323,7 @@
     </target>
 
     <target name="fixtabs">
-        <fixcrlf srcdir="${basedir}" includes="build.xml, skel/build.xml" tab="remove" tablength="4"/>
+        <fixcrlf srcdir="${basedir}" includes="build.xml, skel/build.xml, jni/build.xml" tab="remove" tablength="4"/>
     </target>
 
     <target name="skeleton" depends="fixtabs, compile, jar, data">
@@ -297,11 +341,13 @@
     <target name="data" depends="init, stylesheets, autotag">
         <echo message="Building ${name.pfixcore_data_tgz} in dist directory" />
         <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
-        <tar destfile="${file.pfixcore_data_tgz}" basedir="${dir.projects}/core" compression="gzip"/>
+        <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
+            <tarfileset dir="${dir.projects}/core" prefix="core"/>
+        </tar>
         <delete file="${dir.projects}/core/${name.cvsautotag}"/>
     </target>
 
-    <target name="jar" depends="autotag">
+    <target name="jar" depends="autotag, dist-jni">
         <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
         <jar destfile="${file.pfixcore_jar}">
             <fileset dir="${basedir}" includes="META-INF/**"/>

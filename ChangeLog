@@ -1,3 +1,24 @@
+2003-10-31  Adam Habermann  <adam.habermann@schlund.de>
+	* build.xml, skel/build.xml:
+	Removed DOCTYPE declaration, as it causes problems if ant.dtd does not (yet) exist
+	Changed creation and extraction of pfixcore-data.jar for compatibility with make;
+	contents of jar are now again prefixed with "core".
+	* build.xml:
+	Added target "doc" for javadoc generation
+	Changed jni targets to use newly created jni/build.xml
+	* skel/build.xml
+	Copied in target "checkfiles" from build.xml
+	* jni/build.xml
+	Replaces jni/Makefile* (not yet removed from repository)
+	* .cvsignore
+	Added .classpath, .project and ant.dtd
+	* jni/.cvsignore
+	Added dir pkg
+	* jni/build/.cvsignore
+	Created as a (cvs-)workaround for directory not being empty. Added pattern "*.so".
+	* jni/include/.cvsignore
+	Created as a (cvs-)workaround for directory not being empty. Added pattern "*.h".
+	
 2003-10-31  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): Eeeek! this will use a complete 
@@ -12,10 +33,10 @@
 2003-10-29  Adam Habermann  <adam.habermann@schlund.de>
 	
 	* build.xml:
+	Added target "fixtabs" for converting hard tabs to softtabs of length 4 in the build.xml files
+	Added target "checkfiles". Replaces example/checkfiles.sh (not yet removed from repository)
 	* build.xml, skel/build.xml:
 	Added DTD generation and DOCTYPE declaration
-	Added target "fixtabs" to convert hard tabs to softtabs of length 4 in the build.xml files
-	Added target "checkfiles" to replace checkfiles.sh
 
 2003-10-28  Adam Habermann  <adam.habermann@schlund.de>
 	
