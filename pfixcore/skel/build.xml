@@ -7,7 +7,6 @@
     <property environment="env"/>
     <property name="project.name"             value="${ant.project.name}"/>
     <property name="uid"                      value="${env.USER}"/>
-    <property name="javahome"                 value="${env.JAVA_HOME}"/>
     <property name="build.compiler"           value="jikes"/>
     <property name="build.compiler.emacs"     value="true"/>
     <property name="javac.source"             value="1.4"/>
@@ -57,9 +56,6 @@
         <condition property="javahome" value="${env.JAVA_HOME}">
             <isset property="env.JAVA_HOME"/>
         </condition>
-        <condition property="javahome" value="${java.home}">
-            <isset property="java.home"/>
-        </condition>
         <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
         
         <condition  property="prohibitedit" value="no">
@@ -97,7 +93,7 @@
         <echo message="${project.name}"/>
     </target>
     
-    <target name="echoproperties">
+    <target name="echoproperties" depends="properties">
         <echoproperties/>
     </target>
     
@@ -211,18 +207,31 @@
         <ant dir="${dir.jni}" target="clean"/>
     </target>
     
-    <target name="installjars" >
+    <target name="installjars">
         <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
         as ${dir.build} is specified as location it always resolves to an absolute path;
         does not work for filenames containing spaces -->
-        <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
+        <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/classes"/>
         <exec executable="sh">
             <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
         </exec>
-        <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
+        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
+        <!-- only deleting symlinks pointing to non existent files, assuming jar files -->
+        <!-- replaced by new versions (with a new filenames) do not exist anymore -->
+        <exec executable="find" os="Linux">
+            <arg file="${dir.projects}/servletconf/tomcat/lib"/>
+            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm -v {} ;"/>
+        </exec>
+        <!-- delete all *-res.jar files but the current *-res.jar version,
+             as the version might have been updated -->
         <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+            <fileset
+                dir="${dir.projects}/servletconf/tomcat/lib"
+                includes="*-res.jar"
+                excludes="${project.name}-${project.version}-res.jar"
+            />
         </delete>
+        <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
         <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
             <fileset dir="${basedir}" includes="META-INF/**"/>
             <fileset dir="${dir.res}"/>
@@ -272,6 +281,12 @@
                 </present>
             </fileset>
         </delete>
+        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
+        <exec executable="find" os="Linux">
+            <arg file="${dir.projects}/servletconf/tomcat"/> <!-- symlink classes -->
+            <arg file="${dir.projects}/servletconf/tomcat/lib"/> <!-- symlinks *.jar -->
+            <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
+        </exec>
         <delete>
             <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
         </delete>

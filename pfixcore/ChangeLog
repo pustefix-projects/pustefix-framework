@@ -1,6 +1,14 @@
 2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
+	Removed java.home fallback for property javahome, as it might lead to confusing results.
+	Fixed/Improved *.jar symlink handling in target installjars. Deletion of symlinks did not work.
+	with task delete. Using native tools now (os=Linux).
+	Fixed/Added deletion of *.jar symlinks and de/classes symlinks in target clean.
+
+2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml:
 	In target test-skeleton apache fails to start, when project example/sample1
 	is copied in, complaining about non existent DocumentRoot htdocs. As the htdocs
 	location is a definition of example/sample1/conf/project.xml.in, the creation of

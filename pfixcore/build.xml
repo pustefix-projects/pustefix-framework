@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
+<!DOCTYPE project PUBLIC "ant" "ant.dtd">
+
 <project name="pfixcore" default="all" basedir=".">
     
     <!-- set global properties for this build -->
@@ -40,7 +42,6 @@
     <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
     <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
     
-    
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
         - ant commandline via the '-Dparam=value' option
@@ -63,10 +64,7 @@
         <condition property="javahome" value="${env.JAVA_HOME}">
             <isset property="env.JAVA_HOME"/>
         </condition>
-        <condition property="javahome" value="${java.home}">
-            <isset property="java.home"/>
-        </condition>
-        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
+        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use. If " unless="javahome"/>
         
         <condition property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
@@ -110,7 +108,7 @@
         <echo message="${project.name}"/>
     </target>
     
-    <target name="echoproperties">
+    <target name="echoproperties" depends="properties">
         <echoproperties/>
     </target>
     
@@ -211,7 +209,7 @@
         <delete dir="${dir.javadoc}"/>
     </target>
 
-    <target name="installjars" >
+    <target name="installjars">
         <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
         as ${dir.build} is specified as location it always resolves to an absolute path;
         does not work for filenames containing spaces -->
@@ -220,10 +218,23 @@
         <exec executable="sh">
             <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
         </exec>
-        <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
+        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
+        <!-- only deleting symlinks pointing to non existent files, assuming jar files -->
+        <!-- replaced by new versions (with a new filenames) do not exist anymore -->
+        <exec executable="find" os="Linux">
+            <arg file="${dir.projects}/servletconf/tomcat/lib"/>
+            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm -v {} ;"/>
+        </exec>
+        <!-- delete regular *-res.jar files but the current *-res.jar version,
+             as the version might have been updated -->
         <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+            <fileset
+                dir="${dir.projects}/servletconf/tomcat/lib"
+                includes="*-res.jar"
+                excludes="${project.name}-${project.version}-res.jar"
+            />
         </delete>
+        <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
         <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-${project.version}-res.jar">
             <fileset dir="${basedir}" includes="META-INF/**"/>
             <fileset dir="${dir.res}"/>
@@ -232,7 +243,7 @@
         <exec executable="sh">
             <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
         </exec>
-    </target>
+     </target>
     
     <target name="pre-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
         <javac 
@@ -301,6 +312,13 @@
                 </present>
             </fileset>
         </delete>
+        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
+        <exec executable="find" os="Linux">
+            <arg file="${dir.projects}/servletconf/tomcat/classes"/> <!-- symlink de -->
+            <arg file="${dir.projects}/servletconf/tomcat/lib"/> <!-- symlinks *.jar -->
+            <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
+        </exec>
+        <!-- delete regular files using task delete -->
         <delete>
             <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
         </delete>
