@@ -1,3 +1,33 @@
+2003-02-13  Joerg Haecker <haecker@schlund.de>
+	
+	* src/de/schlund/pfixcore/util/email/EmailSender[Exception].java:
+	added classes for sending mail via JavaMail-API
+	
+	* src/de/schlund/pfixxml/testenv/RecordManager[Exception].java:
+	added classes for recording requests and its corresponding results in
+	XML.
+	* src/de/schlund/pfixxml/testenv/TestClient[Exception].java:
+	added simple console application to play-back the recorded data.
+	
+	* example/testenv/default.xsl: added needed stylesheet by TestClient.
+	
+	* example/common/conf/pustefix.prop.in: added properties needed by
+	the RecordManager.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: added support for
+	RecordManager.
+
+	* lib/commons-httpclient-2.0-alpha2.jar and lib/commons-logging.jar:
+	added cause needed by TestClient.
+
+	* Makefile.local: changed accordingly.
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: minor
+
+	* src/de/schlund/pfixxml/IncludeDocument.java: instanciating
+	Xerces-DocumentBuilderFactoryImpl directly. Removed clumpsy
+	system properties.
+
 2003-01-30  Jens Lautenbacher  <jtl@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.2.4

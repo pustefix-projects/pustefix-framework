@@ -9,6 +9,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Category;
 
+import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -32,21 +34,30 @@ import org.xml.sax.SAXParseException;
  * of the file from which it is created from and more are stored.  
  */
 public class IncludeDocument {
-    private Document               doc;
-    private DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-    private long                   modTime           = 0;
-    private static String          INCPATH           = "incpath";
-    private static Category        CAT               = Category.getInstance(IncludeDocument.class.getName());
+
+    //~ Instance/static variables ..................................................................
+
+    private Document doc;
+    // NOTE: here we want a XERCES-DocumentBuilderFactory
+    private DocumentBuilderFactoryImpl docBuilderFactory;
+    private long                       modTime = 0;
+    private static String              INCPATH = "incpath";
+    private static Category            CAT     = Category.getInstance(IncludeDocument.class.getName());
+
+    //~ Constructors ...............................................................................
 
     /**
      * Constructor
      */
     public IncludeDocument() {
+        docBuilderFactory = new DocumentBuilderFactoryImpl();
         if (! docBuilderFactory.isNamespaceAware())
             docBuilderFactory.setNamespaceAware(true);
         if (docBuilderFactory.isValidating())
             docBuilderFactory.setValidating(false);
     }
+
+    //~ Methods ....................................................................................
 
     /**
      * Create the internal document.

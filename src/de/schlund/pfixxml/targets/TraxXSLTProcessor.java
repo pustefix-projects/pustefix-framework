@@ -63,10 +63,10 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
 
     private static Category          CAT             = Category.getInstance(TraxXSLTProcessor.class.getName());
     private static TraxXSLTProcessor instance        = new TraxXSLTProcessor();
-    private static final String      TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
-    private static final String      DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
-    private static final String      SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
-    private static final String      DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
+    public static final String      TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
+    public static final String      DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
+    public static final String      SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
+    public static final String      DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
     private static final String      SAXP_FAC_SAXON  = "com.icl.saxon.aelfred.SAXParserFactoryImpl";
     public static final String       TRANS_FAC_KEY   = "javax.xml.transform.TransformerFactory";
     public static final String       DOCB_FAC_KEY    = "javax.xml.parsers.DocumentBuilderFactory";
@@ -185,6 +185,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      */
     public final Document xmlObjectFromDisc(String path) throws Exception {
         InputSource  input      = new InputSource("file://" + path);
+        // use the com.icl.saxon.aelfred.SAXDriver here 
         XMLReader    xml_reader = new SAXDriver();
         SAXSource    saxsource  = new SAXSource(xml_reader, input);
         Controller   controller = new Controller();
