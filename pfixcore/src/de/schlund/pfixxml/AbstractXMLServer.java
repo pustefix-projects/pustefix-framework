@@ -571,7 +571,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         // Check the document for supplied headers...
         HashMap headers = spdoc.getResponseHeader();
-        if (headers != null) {
+        if (headers.size() != 0) {
             for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String val = (String) headers.get(key);
