@@ -3,6 +3,14 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
                      xmlns:cus="http://www.schlund.de/pustefix/customize">
 
+  <appender name="PFXPERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-pfxperf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601}|%m\n"/>
+    </layout>
+  </appender>
+
   <appender name="LOGGER_GENERAL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>servletconf/log/pustefix-servlet.log</param>
     <param name="MaxFileSize" value="10MB"/>
@@ -31,7 +39,7 @@
     <param name="File"><cus:docroot/>servletconf/log/pustefix-editor.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+      <param name="ConversionPattern" value="%d{ISO8601} %c [%M():%L] - %m\n"/>
     </layout>
   </appender>
 
@@ -67,9 +75,26 @@
     </layout>
   </appender>
  
+  <appender name="LOGGER_EDITOR_PERF" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-editor-perf.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+    </layout>
+  </appender>
+ 
   <!-- Categories -->
 
   <!-- make some classes quiet by default --> 
+  <category name="PFXPERF" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="PFXPERF"/>
+  </category>
+
+  <category name="EDITOR_PERF" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_EDITOR_PERF"/>
+  </category>
   
   <category name="de.schlund.pfixcore.workflow.app.RequestDataImpl" additivity="false">
     <priority value="WARN"/>
@@ -97,19 +122,27 @@
   </category>
 
   <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
-    <cus:choose>
-      <cus:test mode="prod">
-        <priority value="WARN"/>
-      </cus:test>
-      <cus:test>
-        <priority value="DEBUG"/>
-      </cus:test>
-    </cus:choose>
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
+  <category name="de.schlund.pfixcore.workflow.Context" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
+  <category name="de.schlund.pfixcore.workflow.AuthContext" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+
+  <category name="de.schlund.pfixxml.testenv.RecordManager" additivity="false">
     <priority value="INFO"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
+  </category>
+        
+  <category name="de.schlund.pfixxml.SessionCleaner" additivity="false">
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -133,7 +166,7 @@
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
-  <category name="de.schlund.pfixxml.exceptionhandler.ExceptionHandler" additivity="false">
+  <category name="de.schlund.pfixxml.exceptionhandler" additivity="false">
     <priority value="INFO"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
@@ -146,6 +179,11 @@
   <category name="de.schlund.pfixxml.loader" additivity="false">
     <priority value="INFO"/>
     <appender-ref ref="LOGGER_APPLOADER"/>
+  </category>
+  
+  <category name="de.schlund.pfixxml.DependencyTracker" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   
   <!-- special categories for additional logfiles -->
@@ -163,6 +201,11 @@
   <category name="LOGGER_EDITOR" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_EDITOR"/>
+  </category>
+
+  <category name="de.schlund.pfixcore.editor" additivity="false">
+   <priority value="DEBUG"/>
+   <appender-ref ref="LOGGER_EDITOR"/>
   </category>
   
   <category name="LOGGER_SERIALIZER" additivity="false">
