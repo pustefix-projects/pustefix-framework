@@ -362,6 +362,17 @@
                 </present>
             </fileset>
         </delete>
+        
+        <!-- Delete empty htdocs and img dirs in the dist examples -->
+        <delete includeemptydirs="true">
+          <fileset dir="${dir.examplepage}" includes="htdocs/**"/>
+          <fileset dir="${dir.examplepage}" includes="img/**"/>
+          <fileset dir="${dir.examplelink}" includes="htdocs/**"/>
+          <fileset dir="${dir.examplelink}" includes="img/**"/>
+          <fileset dir="${dir.exampleform}" includes="htdocs/**"/>
+          <fileset dir="${dir.exampleform}" includes="img/**"/>
+        </delete>
+        
         <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink de -->
@@ -419,21 +430,32 @@
     
      <target name="dist-examples" depends="clean, init" description="Builds three basic examples as a pustefix turorial">
          <echo message="Building ${name.pfixcore_examples_tgz} in dist directory"/>
-         <delete file="${file.pfixcore_examples_tgz}"/>
-         <delete>
+   
+            <!-- creating the empty htdocs and img directories -->
+            <mkdir dir="${dir.examplepage}/htdocs"/>
+            <mkdir dir="${dir.examplepage}/img"/>
+            <mkdir dir="${dir.examplelink}/htdocs"/>
+            <mkdir dir="${dir.examplelink}/img"/>
+            <mkdir dir="${dir.exampleform}/htdocs"/>
+            <mkdir dir="${dir.exampleform}/img"/>           
+            
+         <!-- Deleting the old tar and also the configuration files -->
+         <delete file="${file.pfixcore_examples_tgz}">
             <fileset dir="${dir.examplepage}/conf" excludes="**.in"/>
             <fileset dir="${dir.examplelink}/conf" excludes="**.in"/>
             <fileset dir="${dir.exampleform}/conf" excludes="**.in"/>
          </delete>
+         
+        <!-- Building the example tar with the main java and iwrp files -->
         <tar destfile="${file.pfixcore_examples_tgz}" compression="gzip">
             <tarfileset dir="${dir.examplepage}" includes="**" prefix="${name.examplepage}"/>
             <tarfileset dir="${dir.projects}" includes="README_EXAMPLES.txt"/>
             <tarfileset dir="${dir.examplelink}" includes="**" prefix="${name.examplelink}"/>
             <tarfileset dir="${dir.exampleform}" includes="**" prefix="${name.exampleform}"/>
-            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/iwrapper/DemoText.iwrp" prefix="src"/>
-            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/ContextDemoText.java" prefix="src"/>
-            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/ContextDemoTextImpl.java" prefix="src"/>
-            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/DemoTextHandler.java" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/skelexamples/DemoText.iwrp" prefix="src"/>           
+            <tarfileset dir="${dir.src}" includes="de/skelexamples/ContextDemoText.java" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/skelexamples/ContextDemoTextImpl.java" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/skelexamples/DemoTextHandler.java" prefix="src"/>
         </tar>
     </target>
     
@@ -473,7 +495,12 @@
         <mkdir dir="${dir.dist}" description="creates ${name.pfixcore_jar}"/>
         <jar destfile="${file.pfixcore_jar}">
             <fileset dir="${basedir}" includes="META-INF/**"/>
-            <fileset dir="${dir.build}"/>
+            <fileset dir="${dir.build}">
+                <exclude name="de/schlund/pfixcore/example/iwrapper/DemoText.class"/>
+                <exclude name="de/schlund/pfixcore/example/ContextDemoText.class"/>
+                <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>
+                <exclude name="de/schlund/pfixcore/example/DemoTextHandler.class"/>
+            </fileset>
             <fileset dir="${dir.res}"/>
             <fileset dir="${dir.jni}" includes="${name.jnipkg}"/>
         </jar>
