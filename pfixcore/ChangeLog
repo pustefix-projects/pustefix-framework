@@ -1,5 +1,7 @@
 2003-06-17  Jens Lautenbacher  <jtl@schlund.de>
 
+	* META-INF/pfixcore.version:  released 0.3.5
+
 	* docs/sf/*: new files. Start of sourceforge web site online documentation. Real content follows (I hope)
 
 2003-06-17  Joerg Haecker <haecker@schlund.de>
