@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!--Append include parts here...-->
+<part name="content">
+  <product name="default">
+    <lang name="default">
+      <center><h2>Installing Pustefix and necessary components</h2> </center>
+      <pfx:include part="intro"/>
+      <hr/>
+      <pfx:include part="firststep"/>
+      <hr/>
+      <pfx:include part="httpd"/>
+      <hr/>
+      <pfx:include part="debian"/>
+    </lang>
+  </product>
+</part>
+
+<part name="intro">
+  <product name="default">
+    <lang name="default">
+      <p>This project is supposed to be a tutorial for programming applications with the Pustefix Framework.
+      If you are viewing this page in a browser you successfully managed to install the application. This page
+      gives some details what you need to do to get your own basic application. 
+    </p>
+    
+    <p>
+      You should have received a file <tt>INSTALL</tt> with Pustefix which details some 
+      more of the necessary procedures (installing java 1.3 -> java 1.4 plugin for browsers) to get the
+    framework up and runnning.
+    </p>
+   
+  </lang>
+</product>
+</part>
+
+<part name="firststep">
+  <product name="default">
+    <lang name="default">
+      <h3>What to do first:</h3>
+      <p>You should copy some files</p>
+      <ol>
+        <li><tt>startJServ.sh, startTomcat.sh</tt>: if you have 'make-d' your project and configured your apache 
+        call this script and visit your virtual host to see your project '</li>
+        <li><tt>lib/</tt> -> copy all needed jars here, pfixcore-0.2.x.jar and those your own code needs</li>
+        <li><tt>bin/</tt> -> contains a couple of scripts, simply copy</li>
+        <li><tt>Makefile</tt> (has to be adapted to your project)</li>
+        <li>The XML/XSLT parts of your project will be in the <tt>"projects/"</tt> directory tree
+        see the <pfx:button page="xmltutorial">basic app page</pfx:button> for more information</li>
+        <li>You should put your Java files in the <tt>src</tt> directory, they are compiled into
+        <tt>build/</tt>. See the <pfx:button page="javatutorial">java page</pfx:button> for more
+        info</li>
+        <li>The <tt>res</tt> directory is for status codes that you can specify (status codes 
+        are currently not treated in this tutorial, sorry)</li>
+      </ol>
+    </lang>
+  </product>
+</part>
+
+<part name="httpd">
+  <product name="default">
+    <lang name="default">
+      
+      <h3>Changes to httpd.conf</h3>
+      <pre>
+        #Load mod_jk
+        LoadModule jk_module modules/mod_jk.so
+        # Use name-based virtual hosting.
+        NameVirtualHost hostname.schlund.de:80
+        NameVirtualHost hostname.schlund.de:443
+      </pre>
+      <p>link the generated apache.conf/jk.conf under tomcat dir into your apaches conf.d dir.
+      or else "Include ..../apache.conf" in the httpd.conf. </p>
+      <p>You have probably already done these things for the tutorial or pfixcore 
+      but one thing that might be missing for
+      your application is the link to the generated .conf files!</p>
+     
+    </lang>
+  </product>
+</part>
+
+
+<part name="debian">
+  <product name="default">
+    <lang name="default">
+      <h3>Some notes to debian users:</h3>
+      
+      <p>I am running debian and had some trouble at first with getting everything to work
+      properly since Pustefix was developed using RedHat/Suse systems and noone could quite 
+      tell me what to do. I am sure there 
+      could be notes for other distributions as well, so if you have some hints for others
+      feel free to add your comments here.</p>
+
+      <h4>Java Installation</h4>
+      <p>Note to debian users: DO NOT use the blackdown vm, for whatever reason it did not
+      work with that vm at all. Install the sun jdk and read up on getting it to work in
+      the <A href="http://www.debian.org/doc/manuals/debian-java-faq/ch8.html">Debian Java FAQ</A></p>
+
+      <h4>Getting mod-jk</h4>
+      <p>Note to debian users: the name of the package containing mod-jk 
+      is <tt>libapache-mod-jk</tt>. This installs a working mod-jk. You do not need to compile
+      yourself! (I had to go through a lot of trouble in my first try to get mod-jk)</p>
+
+      
+      <h4>mod_jk logging</h4>
+      <p>Another problem: mod_jk logs some stuff to a dir /var/log/.../httpd/ (as configured in jk.conf)
+      if you are running debian for example your apache is run as apache not as httpd so the dirs
+      are not called httpd and you should add the logging dir vor mod_jk by hand. Again this
+      concerns mostly debian users as RedHat/Suse run apache under httpd</p>
+    </lang>
+  </product>
+</part>
+
+</include_parts>

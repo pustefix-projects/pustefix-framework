@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!--Append include parts here...-->
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+          <h2>Adding Servlets to your project</h2>
+
+          <p>This page will explain how to add and configure your servlets</p>
+          <p>Servlet Names: 
+          You can call your servlet anything but it is always referred to (in depends.xml) as /xml/[servletname]</p>
+        </center>
+        <p>
+          Hello <ixsl:value-of select="/formresult/cr_adultinfo/@name"/>.
+        </p>
+        <p>To add a servlet you need to do two things:</p>
+
+        <ol>
+          <li>
+            <pfx:include part="project"/>
+          </li>
+          <li>add a property file for your servlet in the [projectname]/conf/ directory called [servletname].prop.in</li>
+        </ol>
+        <hr/>     	
+        <pfx:include part="propfile"/>
+       
+
+      </lang>
+    </product>
+  </part>
+
+  <part name="project">
+    <product name="default">
+      <lang name="default">
+        <b>add your servlet in the /servletconf/projects.xml file</b>
+        <p><tt>
+        &lt;servlet name="tutorial" useineditor="true"><br/>
+        &#160;  &lt;active>true&lt;/active><br/>
+        &#160;  &lt;class>de.schlund.pfixxml.ContextXMLServer&lt;/class><br/>
+        &#160;  &lt;propfile>&lt;cus:docroot/>pfixtutorial/conf/tutorial.prop&lt;/propfile><br/>
+        &lt;/servlet><br/>
+        </tt></p>
+      </lang>
+    </product>
+  </part>
+
+  <part name="propfile">
+    <product name="default">
+      <lang name="default">
+        <h3>The Property Files</h3>
+        <h3>What you can do with your servlet configuration OR what's it all for?</h3>
+
+        <p>.prop.in files are rather complicated and I am kind of waiting for someone to explain it.</p>
+
+        <p>The first group of properties define global servlet properties for this servlet:</p>
+
+        <hr/>
+        <pfx:include part="classes"/>
+        <hr/>
+        <pfx:include part="servlets"/>
+        <hr/>
+        <pfx:include part="context"/>
+        <hr/>
+        <pfx:include part="pageflow"/>
+        <hr/>
+        <pfx:include part="pagerequest"/>
+       
+      </lang>
+    </product>
+  </part>
+
+
+ <part name="servlets">
+    <product name="default">
+      <lang name="default">
+        
+        <b>Basic Servlet Configuration</b>
+        <p><tt>
+          &lt;prop name="xmlserver.depend.xml">&lt;cus:docroot/>pfixtutorial/conf/depend.xml&lt;/prop><br/>
+          &lt;prop name="xmlserver.servlet.name">forbarqux&lt;/prop><br/>
+          &lt;prop name="xmlserver.noeditmodeallowed">false&lt;/prop><br/>
+          &lt;prop name="servlet.needsSSL">false&lt;/prop><br/>
+        </tt></p>
+      </lang>
+    </product>
+  </part>
+
+ <part name="context">
+    <product name="default">
+      <lang name="default">
+        <b>Context-resources</b>
+        <p>
+          Define the basic context resource and all the other context resources that are
+          associated with forms/pages and IWrappers.
+        </p>
+          <p><tt>
+            &lt;prop name="context.class">de.schlund.pfixcore.workflow.Context&lt;/prop><br/>
+            &lt;prop name="context.resource.1.de.schlund.pfixtutorial.ContextAdultInfoImpl">de.schlund.pfixtutorial.ContextAdultInfo&lt;/prop>
+          </tt></p>
+      </lang>
+    </product>
+  </part>
+
+  <part name="pageflow">
+    <product name="default">
+      <lang name="default">
+        <b>Pageflows</b>
+        <p>You need a default pageflow that starts with your 'home'-page
+        you can define as many pageflows as you need.</p>
+        <p>Pageflows are needed if you have forms and dynamic pages that 
+        need to know which page to jump to next without being given an
+        explicit link.</p>
+        <p>Mostly you will need the basic linear pageflows as shown below.
+        There must always be at least one page in the pageflow and the pages
+        in flow are numbered. The last page can/must(?) be <tt>FINAL</tt>
+        instead of a number</p>
+
+          <p><tt>
+          &lt;prop name="context.defaultpageflow">HomeFlow&lt;/prop><br/>
+          &lt;prop name="context.pageflow.HomeFlow.0">home&lt;/prop><br/>
+          <br/>
+          &lt;prop name="context.pageflow.form.0">form&lt;/prop><br/>
+          &lt;prop name="context.pageflow.form.FINAL">javatutorial&lt;/prop><br/>
+          </tt></p>
+
+      </lang>
+    </product>
+  </part>
+
+<part name="pagerequest">
+    <product name="default">
+      <lang name="default">
+        <b>Pagerequests</b>
+        <p>Associate pages with states -> f.e. StaticState or DefaultIWrapperState
+          associate pages with iwrappers -- one of those thingies then is the namespace 
+        that is used in the form on the actual xml/web-page</p>
+
+        <p>For static pages you usually use the <tt>StaticState</tt> which is implemented in pfixcore:</p>
+        <tt>
+          &lt;prop name="pagerequest.home.classname">de.schlund.pfixcore.workflow.app.StaticState&lt;/prop><br/>
+          &lt;prop name="pagerequest.basic.classname">de.schlund.pfixcore.workflow.app.StaticState&lt;/prop><br/>
+      </tt>
+        <p>For dynamic pages you can use the <tt>DefaultIWrapperState</tt>. Additionally you need to specify
+        the specific interface to use (the number) and the namespace the form on the page uses (<tt>info</tt>):</p>
+        <tt>
+          &lt;prop name="pagerequest.form.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState&lt;/prop><br/>
+          &lt;prop name="pagerequest.form.interface.1.info">de.schlund.pfixtutorial.iwrapper.AdultInfo&lt;/prop><br/>
+        <br/>
+        <!--&lt;prop name="pagerequest.form.resdocfinalizer.insert.cr_adultinfo">de.schlund.pfixtutorial.ContextAdultInfo&lt;/prop><br/>-->
+        </tt>
+      </lang>
+    </product>
+  </part>
+
+  <part name="classes">
+    <product name="default">
+      <lang name="default">
+        <h4>Which classes use which properties</h4>
+
+        <table border="1" cellspacing="5">
+          <tr><td>ContextResourceManager</td><td>context.resource</td></tr>
+          <tr><td>PageFlowManager</td><td>context.pageflow</td></tr>
+          <tr><td>PageFlow</td><td>context.pageflow.+name</td></tr>
+          <tr><td>PageRequestProperties</td><td>pagerequest</td></tr>
+          <tr><td>PageRequestProperties</td><td>pagerequest.+name</td></tr>
+          <tr><td>DefaultAuthIWrapperState</td><td>interface</td></tr>
+          <tr><td>DefaultAuthIWrapperState</td><td>auxinterface</td></tr>
+          <tr><td>IHandlerSimpleContainer</td><td>interface</td></tr>
+          <tr><td>IWrapperSimpleContainer</td><td>interface</td></tr>
+          <tr><td>StaticState</td><td>resdocfinalizer.insert</td></tr>
+        </table>
+
+        <p>It is of course entirely possible to add properties with arbitrary
+        names that you want to use in your own java classes. Those should not
+        copy any existing prefixes and have the form 
+        <tt>&lt;prop name="">Value&lt;/prop></tt>. An example of this usage
+        is found in the sample1 application from the example in pfixcore.</p>
+
+      </lang>
+    </product>
+  </part>
+
+</include_parts>

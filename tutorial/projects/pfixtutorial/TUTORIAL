@@ -1,0 +1,51 @@
+How to grow your own application at home
+--@author SPP
+
+First a short explanation what should be there before you start (we hope to make a script that generates a skeleton
+project from pfixcore but for now you have to do it yourself).
+
+The files and directories in the projects/ptutorial/ directory make up the xml/xsl part of the pustefix tutorial project
+(the java parts can be found in the src/ directory).
+
+conf/			servlet config, depends.xml -> build file for xsl stylesheets
+htdocs/			static content 
+img/				pictures
+txt/				files containing 'parts' used by multiple pages, navbars etc. -> empty now
+txt/pages/		the actual pages: one sample page
+xml/				xml layout files
+xsl/				xsl metatags - for your basic app you do not need to edit this.
+
+Custom Files needed for the absolutely basic application
+--------------------------------------------------------------
+
+conf/depends.xml.in -> each of your 'pages' is associated with a servlet and a layout in this file.
+conf/<servletname>.prop.in (for each servlet, usually two: one with ssl, one w/o ssl) -> basic servlet conf
+xml/<yourlayout>.xml -> you can have as many as you like, this is a basic one
+txt/page/<prefix>_<pagename>.xml -> this is the example page of this application add some parts if you like
+	more about parts in pages elsewhere :-), but each page needs a 'content' part.
+	
+
+Servlet Names
+--------------------
+You can call your servlet anything but it is always referred to (in depends.xml) as /xml/<servletname>
+
+
+(Mini) PAGE HOWTO: What you need to do to add pages to your projects
+
+1. Add a file with the name [prefix]_[pagename].xml  
+2. Entries in [servletname].prop.in. For each page you need two entries in the servlet config file:
+	- A page must be part of a pageflow to be accessible:
+	  <prop name="context.pageflow.Def.1">[pagename]</prop>
+	- ??? (whats this good for)
+	 <prop name="pagerequest.[pagename].classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+3. Entries in depend.xml.in: 
+	- associate the page with a servlet in the navigation:
+	<navigation>
+	    <page name="[pagename]"     handler="/xml/[servletname]"/>
+		<!-- more pages here -->
+	  </navigation>
+	  - associate the page with a layout from the xml/ directory
+	   <standardpage name="[pagename]" xml="[projectname]/xml/sample_layout.xml"/>
+4. Entries in projects.xml 
+	No changes needed here. (You can configure additional servlets for your project here)
+

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core"><!--Append include parts here...-->
+
+<part name="content">
+  <product name="default">
+    <lang name="default">
+      <center>
+        <h2>Pustefix Forms</h2>
+        
+        <!-- sample form -->
+        <pfx:forminput target="_top">
+          <pfx:errorbox width="500"/>
+          <table bgcolor="#bbccff" border="1" width="400">
+            <tr valign="top">
+              <td>
+                <pfx:include part="adult"/>
+              </td>
+              <td>
+                <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/>
+                <br/>
+                <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
+              </td>
+            </tr>
+            <tr>
+              <td nowrap="nowrap">
+                <pfx:label name="info.Name">Your Name</pfx:label>:
+              </td>
+              <td>
+                <pfx:xinp maxlength="20" name="info.Name" size="10" type="text"/>
+              </td>
+            </tr>
+          </table>
+          <table width="400">
+            <tr>
+              <td align="right" nowrap="nowrap">
+                <pfx:xinp type="submit" value="Go!"/>
+              </td>
+            </tr>
+          </table>
+        </pfx:forminput>
+        <!-- this sample form was brought to you by someone -->
+      </center>
+
+      <pfx:include part="explanation"/>
+
+    </lang>
+  </product>
+</part>
+
+<part name="adult">
+  <product name="default">
+    <lang name="default">
+      <pfx:label name="info.Adult">Are you really intelligent enough to click this button?
+    </pfx:label>
+  </lang>
+</product>
+</part>
+
+<part name="yes">
+  <product name="default">
+    <lang name="default">
+      Yes!
+    </lang>
+  </product>
+</part>
+
+<part name="no">
+  <product name="default">
+    <lang name="default">
+      No!
+    </lang>
+  </product>
+</part>
+
+<part name="explanation">
+  <product name="default">
+    <lang name="default">
+      <h3>What the code for the form looks like:</h3>
+      <p>For further functions of the pfx namespace refer to other projects done with it or
+      the stylesheets in the core/ directory</p>
+      <p>The above form does really nothing except: accept your input and 
+      refer you to another page on the website which is accidentally the next 
+      one in the pageflow that was defined in your <tt>servlet.prop.in</tt> file</p>
+      <tt>
+        &lt;pfx:forminput target="_top"><br/>
+        &#160;  &lt;pfx:errorbox width="500"/><br/>
+        &#160;  &lt;pfx:xinp name="info.Adult" type="radio" value="true"/><br/>
+        &#160;  &lt;pfx:xinp name="info.Adult" type="radio" value="false"/><br/>
+        &#160;  &lt;pfx:xinp type="submit" value="Go!"/><br/>
+        &lt;/pfx:forminput><br/>
+      </tt>
+      <p>
+        The <tt>info</tt> in the above example makes up the 'namespace' for this form.
+        This is needed  for the configuration of pagerequests in the servlet conf to 
+        associate this page with IWrappers. The "Adult" is the field in the IWrapper
+        that is associated with this form value.
+      </p>
+    </lang>
+  </product>
+</part>
+
+</include_parts>
+
+<!--
+     Local Variables:
+     mode: xml
+     End:
+     -->
