@@ -6,47 +6,49 @@
   <pfx:frameset rows="40,*">
     <pfx:frame name="top_navi" scrolling="no">
       <html>
-	<head>
+        <head>
           <style type="text/css">
             <pfx:include href="core/txt/styles.xml" part="standard"/>
             <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
           </style>
         </head>
-	<body class="navi">
-	  <pfx:include href="core/editor/txt/navigation.xml" part="top"/>
-	</body>
+        <body class="navi">
+          <pfx:include href="core/editor/txt/navigation.xml" part="top"/>
+        </body>
       </html>
     </pfx:frame>
     <pfx:frame name="bottom">
       <pfx:frameset cols="200,*" border="2" frameborder="2" framespacing="1">
-	<pfx:frame name="left_navi" noresize="false">
-	  <html>
-	    <head>
+        <pfx:frame name="left_navi" noresize="false">
+          <html>
+            <head>
               <style type="text/css">
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
               </style>
             </head>
-	    <body class="editor_body_sidebar">
-              <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="sidebar"/>
-	    </body>
-	  </html>
+            <body class="editor_body_sidebar">
+              <pfx:maincontent path="core/editor/txt/pages" prefix="main_" 
+                part="sidebar"/>
+            </body>
+          </html>
         </pfx:frame>
         <pfx:frame name="main">
-	  <html>
-	    <head>
+          <html>
+            <head>
               <style type="text/css">
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
               </style>
             </head>
-	    <body>
+            <body>
               <div style="padding-left: 10px; padding-right: 10px;">
-                <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="content"/>
+                <pfx:maincontent path="core/editor/txt/pages" prefix="main_" 
+                  part="content"/>
               </div>
-	    </body>
-	  </html>
-	</pfx:frame>
+            </body>
+          </html>
+        </pfx:frame>
       </pfx:frameset>
     </pfx:frame>
   </pfx:frameset>
