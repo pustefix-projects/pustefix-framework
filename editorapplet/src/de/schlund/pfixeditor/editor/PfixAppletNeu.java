@@ -27,6 +27,7 @@ import javax.swing.*;
 import netscape.javascript.*;
 
 public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener {
+    private static final String TITLE = "PfixEditor";
 
     // JSObject jsWin, jsDocu, jsForm, jsField;
      JSObject window;
@@ -76,6 +77,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     JMenuItem tagClose;
     JMenuItem undoedit;
     JMenuItem redoedit;
+    JMenuItem searchedit;
+    JMenuItem replaceedit;
     
     //JMenuBar
     JMenuBar mbar;
@@ -122,7 +125,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // Creating Scroll-Panel
         scrollPane = new JScrollPane(syntaxPane);
         panel.add(scrollPane);
-        scrollPane.setPreferredSize(new Dimension(800, 250));        
+        scrollPane.setPreferredSize(new Dimension(800, 450));        
         LineNumber lineNumber = new LineNumber(syntaxPane);
         lineNumber.setPreferredSize(99999);
         scrollPane.setRowHeaderView( lineNumber );
@@ -185,8 +188,8 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         // Adding File SubMenu
         fileMenu.add(fileSubMenu);
-        fileMenu.add(colorSubMenu);
-        fileMenu.add(boldSubMenu);
+        // fileMenu.add(colorSubMenu);
+        // fileMenu.add(boldSubMenu);
         fileMenu.add(colorizeMenu);
         fileMenu.add(tagClose);
         fileMenu.addSeparator();
@@ -220,6 +223,19 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         editMenu.add(getActionByName(DefaultEditorKit.selectAllAction));
 
+        searchedit = new JMenuItem("Search");
+        replaceedit = new JMenuItem("Replace");
+
+        editMenu.addSeparator();
+        editMenu.add(searchedit);
+        editMenu.add(replaceedit);
+
+        searchedit.addActionListener(this);
+        searchedit.setMnemonic(KeyEvent.VK_F);
+        replaceedit.addActionListener(this);
+        // replaceedit.addMnemonic(KeyEvent.VK_R);
+        replaceedit.setMnemonic(KeyEvent.VK_R);
+        
         this.mbar.add(editMenu);
     }
     
@@ -394,13 +410,47 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
         Keymap km = syntaxPane.getKeymap();
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_E, Event.CTRL_MASK);
-        Action act = new TextAction("Ctrl-Z") {
+        Action act = new TextAction("Ctrl-E") {
                 public void actionPerformed(ActionEvent e) {
                     syntaxPane.closeFinalTag();
                     syntaxPane.hilightAll();
                 }
             };
         km.addActionForKeyStroke(ks, act);
+
+        KeyStroke ksFind = KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK);
+        Action actFind = new TextAction("Ctrl-F") {
+                public void actionPerformed(ActionEvent e) {
+                    find();
+                }
+            };
+
+        km.addActionForKeyStroke(ksFind, actFind);
+
+        KeyStroke ksReplace = KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK);
+        Action actReplace = new TextAction("Ctrl-R") {
+                public void actionPerformed(ActionEvent e) {
+                    find();
+                }
+            };
+
+        km.addActionForKeyStroke(ksReplace, actReplace);
+
+        KeyStroke ksUndo = KeyStroke.getKeyStroke(KeyEvent.VK_U, Event.CTRL_MASK);
+       
+        km.addActionForKeyStroke(ksUndo, undoAction);
+
+        KeyStroke ksTest = KeyStroke.getKeyStroke(KeyEvent.VK_I, Event.CTRL_MASK);
+        TextAction actTest = new TextAction("h") {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("I PRESSED Hallo");
+                     undoAction.undo2();
+                }
+            };
+       
+        km.addActionForKeyStroke(ksTest, actTest);
+            
+        
     }
 
 
@@ -430,7 +480,20 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
        }
 
         if (e.getSource() == button) {
-            doJSAction();    
+             doJSAction();
+            // FindFrame findframe = new FindFrame(syntaxPane, true);
+        }
+
+        if (e.getSource() == searchedit) {
+            // FindFrame findframe = new FindFrame(syntaxPane, true);
+            find();
+             
+        }
+
+        if (e.getSource() == replaceedit) {
+            // FindFrame findframe = new FindFrame(syntaxPane, true);
+            replace();
+             
         }
         
         
@@ -463,6 +526,58 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     public String getText() {
         String text = syntaxPane.getText();
         return text;
+    }
+
+    public void find() {
+        String tSearchFor = JOptionPane.showInputDialog(frame, "Search");
+        if (tSearchFor != null) {
+           for (int pos = 0; pos < (syntaxPane.getText().length() - 
+                tSearchFor.length()); pos++) {
+              try {
+                 String tLookAt = syntaxPane.getText(pos, tSearchFor.length());
+                 if (tSearchFor.equalsIgnoreCase(tLookAt)) {
+                    syntaxPane.setCaretPosition(pos);
+                    syntaxPane.setSelectionStart(pos);
+                    syntaxPane.setSelectionEnd(pos + tSearchFor.length());
+                    if (JOptionPane.showConfirmDialog(frame, "Search more",
+                            TITLE, JOptionPane.YES_NO_OPTION) == 
+                            JOptionPane.NO_OPTION) {
+                       syntaxPane.requestFocus();
+                       return;
+                    }
+                 }
+              } catch (BadLocationException e) {}
+           }
+        }
+    }
+
+    public void replace() {
+        String tSearchFor = JOptionPane.showInputDialog(frame, "Search");
+        String tReplaceWith = JOptionPane.showInputDialog(frame, "Replace with");
+      
+        if (tSearchFor != null) {
+            for (int pos = 0 ; pos < (syntaxPane.getText().length() - 
+                    tSearchFor.length()) ; pos++) {
+                try {
+                    String tLookAt = syntaxPane.getText(pos, tSearchFor.length());
+                    if (tSearchFor.equalsIgnoreCase(tLookAt)) {
+                       syntaxPane.setCaretPosition(pos);
+                       syntaxPane.setCaretPosition(pos);
+                       syntaxPane.setSelectionStart(pos);
+                       syntaxPane.setSelectionEnd(pos + tSearchFor.length());
+                       int option = JOptionPane.showConfirmDialog(frame, 
+                                "Replace ?", TITLE, JOptionPane.YES_NO_CANCEL_OPTION);
+                       if (option == JOptionPane.YES_OPTION) {
+                          syntaxPane.replaceSelection(tReplaceWith);
+                          syntaxPane.requestFocus();
+                       } else if (option == JOptionPane.CANCEL_OPTION) {
+                          return;
+                       }
+                    }
+                } catch (BadLocationException e) {}
+            }
+        }
+        
     }
 
 
@@ -509,6 +624,20 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 	    setEnabled(false);
 	}
 
+        public void undo2() {
+            System.out.println("Hallo hier bin ich drun");
+            try {
+		undo.undo();
+	    } catch (CannotUndoException ex) {
+		System.out.println("Unable to undo: " + ex);
+		ex.printStackTrace();
+	    }
+	    update();
+	    redoAction.update();
+	}
+            
+        
+        
 	public void actionPerformed(ActionEvent e) {
 	    try {
 		undo.undo();
