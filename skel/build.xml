@@ -27,6 +27,8 @@
     <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
     <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
+    <property name="name.build-include"       value="build-include.xml"/>
+    <property name="file.build-include"       location="${name.build-include}"/>
 
     <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
     <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
@@ -56,7 +58,7 @@
         <condition property="javahome" value="${env.JAVA_HOME}">
             <isset property="env.JAVA_HOME"/>
         </condition>
-        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
+        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use." unless="javahome"/>
         
         <condition  property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
@@ -154,7 +156,7 @@
     </target>
 
     <target name="all" 
-        depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
+        depends="compile, post-compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
         description="builds all files required to run"
         />
     
@@ -166,8 +168,21 @@
             >
         </depend>
     </target>
+    
+    <target name="build-include-available">
+        <available file="${file.build-include}" property="avl.build-include"/>
+    </target>
 
-    <target name="compile" depends="generate-src, jni, depend" description="compiles all .java files">
+    <target name="clean-build-include" depends="build-include-available" if="avl.build-include">
+        <ant antfile="${file.build-include}" target="clean"/>
+    </target>
+    
+    <target name="pre-compile" depends="build-include-available" if="avl.build-include">
+        <echo message="Calling target pre-compile in ${name.build-include}"/>
+        <ant antfile="${file.build-include}" target="pre-compile"/>
+    </target>
+
+    <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac 
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -175,9 +190,15 @@
             classpathref="cp.classpath"
             source="${javac.source}"
             excludes="${excludes.src}"
-            />    
+            >
+        </javac>
     </target>
     
+    <target name="post-compile" depends="build-include-available, compile" if="avl.build-include">
+        <echo message="Calling target post-compile in ${name.build-include}"/>
+        <ant antfile="${file.build-include}" target="post-compile"/>
+    </target>
+
     <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
         <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
@@ -220,17 +241,9 @@
         <!-- replaced by new versions (with a new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat/lib"/>
-            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm -v {} ;"/>
+            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm {} ;"/>
         </exec>
-        <!-- delete all *-res.jar files but the current *-res.jar version,
-             as the version might have been updated -->
-        <delete>
-            <fileset
-                dir="${dir.projects}/servletconf/tomcat/lib"
-                includes="*-res.jar"
-                excludes="${project.name}-${project.version}-res.jar"
-            />
-        </delete>
+        <!-- don't delete the *-res.jar file here, let it be updated by task jar -->
         <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
         <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
             <fileset dir="${basedir}" includes="META-INF/**"/>
@@ -270,10 +283,11 @@
         <antstructure output="ant.dtd"/>
     </target>
     
-    <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
+    <target name="clean" depends="clean-project, clean-build-include" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
         <delete dir="${dir.dist}"/>
+        <!-- Delete *.java files created from *.iwrp files -->
         <delete>
             <fileset dir="${dir.src}" includes="**/*.java">
                 <present present="both" targetdir="${dir.src}">
@@ -287,6 +301,7 @@
             <arg file="${dir.projects}/servletconf/tomcat/lib"/> <!-- symlinks *.jar -->
             <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
         </exec>
+        <!-- delete regular files using task delete -->
         <delete>
             <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
         </delete>
@@ -580,15 +595,7 @@
 
 </project>
 
-<!--
-               sourcepath="${dir.src}"
-            target="${javac.target}"
-            source="${javac.source}"
-            memorymaximumsize="200M"
-            fork="no"
-            <compilerarg compiler="jikes" line="-target ${javac.target}"/>
-            <compilerarg compiler="jikes" line="-sourcepath ${dir.src}"/>
-
+<!-- Cut 'n' Paste "Buffer"
 -->
 
 

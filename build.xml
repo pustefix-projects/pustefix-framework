@@ -11,7 +11,6 @@
     <property name="uid"                    value="${env.USER}"/>
     <property name="build.compiler"         value="jikes"/>
     <property name="build.compiler.emacs"   value="true"/>
-    <property name="build.compiler.fulldepend" value="true"/>
     <property name="javac.source"           value="1.4"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
@@ -62,7 +61,7 @@
         <condition property="javahome" value="${env.JAVA_HOME}">
             <isset property="env.JAVA_HOME"/>
         </condition>
-        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use. If " unless="javahome"/>
+        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use." unless="javahome"/>
         
         <condition property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
@@ -94,12 +93,6 @@
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
         <!-- pathconvert dumps classpath on ant -verbose -->
         <pathconvert property="dev.null" refid="cp.classpath" pathsep="&#013;"/>
-        <uptodate property="upd.jni" targetfile="${dir.jni}/build/libapploader.so">
-            <srcfiles dir="${dir.jni}" includes="${name.jnipkg}"/>
-        </uptodate>
-        <uptodate property="upd.jni.javah" targetfile="${dir.jni}/build/libapploader.so">
-            <srcfiles dir="${dir.jni}" includes="${name.jnipkg}"/>
-        </uptodate>
     </target>
     
     <target name="noop" description="just prints the name of the project">
@@ -143,8 +136,10 @@
         </exec>
     </target>
     
-    <target name="generate" depends="targetdefs, stylesheets, compile, installjars">
+    <target name="generate" depends="targetdefs, stylesheets, compile, installjars" description="Generates Targets to ${dir.projects}/.cache">
         <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
+        <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
+        <echo message="As an alternative try target generate-mx, which forks an external java vm with more Heap Memory."/>
     </target>
 
     <target name="all" 
@@ -161,23 +156,41 @@
         </depend>
     </target>
 
-    <target name="compile" depends="generate-src, jni, depend" description="compiles all .java files">
+    <target name="build-include-available">
+        <available file="${file.build-include}" property="avl.build-include"/>
+    </target>
+
+    <target name="clean-build-include" depends="build-include-available" if="avl.build-include">
+        <ant antfile="${file.build-include}" target="clean"/>
+    </target>
+    
+    <target name="pre-compile" depends="build-include-available" if="avl.build-include">
+        <echo message="Calling target pre-compile in ${name.build-include}"/>
+        <ant antfile="${file.build-include}" target="pre-compile"/>
+    </target>
+
+    <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac
             srcdir="${dir.src}"
             destdir="${dir.build}"
             debug="${debug}"
             classpathref="cp.classpath"
-            excludes="${excludes.src}"
             source="${javac.source}"
+            excludes="${excludes.src}"
             >
         </javac>
     </target>
     
+    <target name="post-compile" depends="build-include-available, compile" if="avl.build-include">
+        <echo message="Calling target post-compile in ${name.build-include}"/>
+        <ant antfile="${file.build-include}" target="post-compile"/>
+    </target>
+
     <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
         <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
-    <target name="jni" depends="init, pre-compile">
+    <target name="jni" depends="init, init-compile">
         <ant dir="${dir.jni}"/>
     </target>
 
@@ -243,7 +256,7 @@
         </exec>
      </target>
     
-    <target name="pre-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
+    <target name="init-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
         <javac 
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -255,14 +268,13 @@
         </javac>
     </target>
     
-    <target name="ant-tasks" depends="init, pre-compile" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
+    <target name="ant-tasks" depends="init, init-compile" description="declares the ant task used for generating java source code. This target needs to be run prior to the actual compile.">
         <taskdef
             name="pfx-xslt"
             classname="de.schlund.pfixcore.util.XsltGenericTask"
             classpathref="cp.classpath"
             description="Performs generic XSLT transformations"
-            ><classpath></classpath>
-        </taskdef>
+            />
         <taskdef 
             name="pfx-iwrp"
             classname="de.schlund.pfixcore.util.XsltIWrapperTask"
@@ -303,6 +315,7 @@
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
         <delete dir="${dir.dist}"/>
+        <!-- Delete *.java files created from *.iwrp files -->
         <delete>
             <fileset dir="${dir.src}" includes="**/*.java">
                 <present present="both" targetdir="${dir.src}">
@@ -664,10 +677,9 @@
     
 </project>
 
-<!-- Cut 'n' Paste
-excludes="de/schlund/pfixxml/exceptionhandler/**, de/schlund/pfixxml/loader/**"
-
+<!-- Cut 'n' Paste "Buffer"
 -->
+
 
 
 <!--
