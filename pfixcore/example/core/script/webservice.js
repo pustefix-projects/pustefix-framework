@@ -91,7 +91,7 @@ xmlUtilities.prototype.getChildrenByNameNS=function(node,name) {
 
 xmlUtilities.prototype.getText=function(node) {
 	if(arguments.length!=1) throw new coreWrongArgNoEx("","xmlUtilities.getText");
-	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getText");
+//	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getText");
 	if(node.childNodes==null) return null;
 	var text="";
 	for(var i=0;i<node.childNodes.length;i++) {
