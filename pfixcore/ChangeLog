@@ -1,3 +1,8 @@
+2004-09-10  Joerg Haecker <haecker@schlund.de>
+
+	*  src/de/schlund/pfixcore/editor/interfaces/CommonsUpload.iwrp:
+	now extends de.schlund.pfixcore.editor.interfaces.IncludesUpload again
+
 2004-09-09  Martin Leidig <mleidig@schlund.de>
 
 	Added a new AppLoader feature, using the new AppLoader configuration property
