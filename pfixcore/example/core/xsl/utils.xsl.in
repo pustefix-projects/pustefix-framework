@@ -85,21 +85,6 @@
     </cus:documentation>
   </xsl:template>
 
-  <xsl:template match="pfx:progressbar">
-    <div id="core_progress_back"></div>
-    <div id="core_progress_wait">
-      <center><span align="center" id="core_progress_waittext"><xsl:apply-templates/></span></center>
-      <div id="core_progress_frame">
-        <div id="core_progress_bar">
-        </div>
-      </div>
-    </div>
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Defines a progress bar</description>
-    </cus:documentation>
-  </xsl:template>
-  
   <xsl:template match="pfx:blank">
     <img src="/core/img/blank.gif" width="1" height="1" border="0" alt="">
       <xsl:copy-of select="@*"/>

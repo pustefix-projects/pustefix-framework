@@ -382,46 +382,6 @@ function __js_Layer(layer_id) {
 }
 
 
-// PROGRESS BAR
-
-var __js_progress_begin     = 1;
-var __js_progress_handler   = 0;
-var __js_progress_frame_idx = 0;
-
-function __js_progress_start_show_work(index) {
-    __js_progress_frame_idx = index;
-    top.frames[__js_progress_frame_idx].captureEvents(Event.KEYPRESS);
-    top.frames[__js_progress_frame_idx].onkeypress = __js_progress_user_abort;
-    __js_progress_handler = window.setInterval('__js_progress_show_work()',100);
-    obj  = top.frames[__js_progress_frame_idx].document.getElementById("core_progress_wait");
-    if (obj != null) {
-        obj.style.visibility = "visible";
-    }
-}
-
-function __js_progress_show_work() {
-    obj = top.frames[__js_progress_frame_idx].document.getElementById("core_progress_bar");
-    if (obj != null) {
-        __js_progress_begin += 2;
-        if (__js_progress_begin > 100) { 
-            __js_progress_begin = 100;
-            window.clearInterval(__js_progress_handler);
-        }
-    
-        obj.style.width = __js_progress_begin + "%";
-    }
-    return true;
-}
-
-function __js_progress_user_abort(Event) {
-    obj  = top.frames[__js_progress_frame_idx].document.getElementById("core_progress_wait");
-    obj2 = top.frames[__js_progress_frame_idx].document.getElementById("core_progress_bar");
-    obj.style.visibility = "hidden";
-    obj2.style.width = "0%";
-     __js_progress_begin = 1;
-    window.clearInterval(__js_progress_handler);
-}
-
 //
 // Misc 
 //

@@ -34,7 +34,6 @@
       <pfx:include part="wizard"/>
     </pfx:forminput>
   </center>
-  <pfx:progressbar>Please Wait...</pfx:progressbar>
 </lang>
     </product>
   </part>
@@ -295,7 +294,7 @@
           <td align="right" nowrap="nowrap">
             <pfx:wizardnext>
               <pfx:active>
-                <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Next >>">
+                <pfx:xinp type="submit" value="Next >>">
                   <pfx:command name="SELGRP">NEXT</pfx:command>
                 </pfx:xinp>
               </pfx:active>
@@ -307,7 +306,7 @@
           <td nowrap="nowrap" width="1%">
             <pfx:wizardfinish>
               <pfx:active>
-                <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Finish"/>
+                <pfx:xinp type="submit" value="Finish"/>
               </pfx:active>
               <pfx:inactive><span class="sample_finish_inactive">Finish</span></pfx:inactive>
             </pfx:wizardfinish>
@@ -315,7 +314,7 @@
         </pfx:group>
         <pfx:flat>
           <td align="right" nowrap="nowrap" width="100%">
-            <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Submit"/>
+            <pfx:xinp type="submit" value="Submit"/>
           </td>
         </pfx:flat>
       </pfx:wizardnavigation>
