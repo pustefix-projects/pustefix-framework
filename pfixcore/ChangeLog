@@ -1,3 +1,9 @@
+2004-08-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* lib/tomcat/README: new file to tell people about the purpose of
+	the lib/tomcat directory and where to get a apache package.  
+	* build.xml: no longer include tomcat into the skeleton tar.gz.
+
 2004-08-04 Michael Hartmeier  <mhm@schlund.de>
 	* build.xml, skel/build.xml: remove jndi.jar
 
