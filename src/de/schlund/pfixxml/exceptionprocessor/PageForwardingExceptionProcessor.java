@@ -39,7 +39,7 @@ import org.apache.log4j.Category;
  */
 public class PageForwardingExceptionProcessor implements ExceptionProcessor {
 
-    private static Category CAT = Category.getInstance(SimpleExceptionProcessor.class);
+    private static Category CAT = Category.getInstance(PageForwardingExceptionProcessor.class);
 
     /**
      * The request gets forwarded to the page specified by the 'page'-attribute
