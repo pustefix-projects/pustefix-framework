@@ -74,7 +74,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
 
         handlers  = new HashSet();
         activeset = new HashSet();
-
+           
         HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
         String     ignore     = props.getProperty(PROP_IGNORE);
         HashSet    skipprefix = new HashSet(); 
@@ -87,8 +87,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         }
         
         if (!interfaces.isEmpty()) {
-            for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
-                String   numprefix = (String) i.next();
+            for (Iterator iter = interfaces.keySet().iterator(); iter.hasNext(); ) {
+                String   numprefix = (String) iter.next();
                 String   prefix    = numprefix; 
                 if (numprefix.indexOf(".") > 0) {
                     prefix = numprefix.substring(numprefix.indexOf(".") + 1); 
@@ -102,8 +102,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                 }
             }
         }
-        AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) {
+        AppLoader appLoader = AppLoader.getInstance();
+        if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
     }
@@ -117,17 +117,15 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IHandlerContainer#isPageAccessible(Context)
      */
-    
     public boolean isPageAccessible(Context context) throws Exception {
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {
-            for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-                IHandler handler = (IHandler) i.next();
+            for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
+                IHandler handler = (IHandler) iter.next();
                 context.startLogEntry();
-                boolean  test    = handler.prerequisitesMet(context);
+                boolean  test = handler.prerequisitesMet(context);
                 context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 3);
-
                 if (!test) {
                     return false;
                 }
@@ -160,10 +158,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         if (policy.equals("ALL")) {
             retval = true;
             synchronized (activeset) {
-                for (Iterator i = activeset.iterator(); i.hasNext(); ) {
-                    IHandler handler = (IHandler) i.next();
+                for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
+                    IHandler handler = (IHandler) iter.next();
                     context.startLogEntry();
-                    boolean  test    = handler.isActive(context);
+                    boolean  test = handler.isActive(context);
                     context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     if (!test) {
                         retval = false;
@@ -174,10 +172,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         } else if (policy.equals("ANY")) {
             retval = false;
             synchronized (activeset) {
-                for (Iterator i = activeset.iterator(); i.hasNext(); ) {
-                    IHandler handler = (IHandler) i.next();
+                for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
+                    IHandler handler = (IHandler) iter.next();
                     context.startLogEntry();
-                    boolean  test    = handler.isActive(context);
+                    boolean  test = handler.isActive(context);
                     context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     if (test) {
                         retval = true;
@@ -204,11 +202,11 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         if (handlers.isEmpty()) return true; // border case
         
         synchronized (handlers) {
-            for (Iterator i = handlers.iterator(); i.hasNext(); ) {
-                IHandler handler = (IHandler) i.next();
+            for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
+                IHandler handler = (IHandler) iter.next();
                 if (handler.isActive(context)) {
                     context.startLogEntry();
-                    boolean  test    = handler.needsData(context);
+                    boolean test = handler.needsData(context);
                     context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 3);
                     if (test) {
                         return true;
@@ -221,18 +219,18 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     
     public void reload() {
         HashSet  handlersNew = new HashSet();
-        Iterator it          = handlers.iterator();
-        while(it.hasNext()) {
-            IHandler ihOld = (IHandler)it.next();
-            IHandler ihNew = (IHandler)StateTransfer.getInstance().transfer(ihOld);
+        Iterator iter        = handlers.iterator();
+        while (iter.hasNext()) {
+            IHandler ihOld = (IHandler) iter.next();
+            IHandler ihNew = (IHandler) StateTransfer.getInstance().transfer(ihOld);
             handlersNew.add(ihNew);
         }
         handlers          = handlersNew;
         HashSet activeNew = new HashSet();
-        it                = activeset.iterator();
-        while(it.hasNext()) {
-            IHandler ihOld = (IHandler)it.next();
-            IHandler ihNew = (IHandler)StateTransfer.getInstance().transfer(ihOld);
+        iter              = activeset.iterator();
+        while (iter.hasNext()) {
+            IHandler ihOld = (IHandler) iter.next();
+            IHandler ihNew = (IHandler) StateTransfer.getInstance().transfer(ihOld);
             activeNew.add(ihNew);
         }
         activeset = activeNew;
