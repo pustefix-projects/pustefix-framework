@@ -95,8 +95,12 @@ Prerequisites:
         
         http://editor.HOSTNAME.DOMAIN 
 
-6a) Have Fun.
-
+7)  If you want to use the application reloading mechanism described on 
+    sourceforge [not yet] you need to compile a small C library. You can do this
+    by calling make with the target "jni". If you have a C compiler, everything
+    should compile flawlessly. 
+    
+    Have Fun.
 
 
 FINAL NOTE:
