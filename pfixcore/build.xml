@@ -783,7 +783,6 @@
 	    <antcall target="tomcat_extract"/>
 	    <antcall target="tomcat_strip"/>
 		<antcall target="tomcat_jndi"/>
-		<!-- TODO: don't wipte tomcat_web_xml - it's needed for the standalone setup"/-->
 	</target>
 
 	<target name="tomcat_extract">
@@ -834,9 +833,9 @@
 			</fileset>
 		</delete>
 		<delete>
+			<!-- dont delete "jasper-*.jar" because the default web.xml refers to it -->
 		    <fileset dir="${dir.tomcat}/common/lib">
 				<include name="ant.jar"/>
-				<include name="jasper-*.jar"/>
 				<include name="commons-dbcp-*.jar"/>
 				<include name="commons-el.jar"/>
 				<include name="commons-pool-*.jar"/>
@@ -884,19 +883,6 @@
 		<copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
 	</target>
 	
-	<target name="tomcat_web_xml">
-		<property name="file" location="${dir.tomcat}/conf/web.xml"/>
-		<delete file="${file}"/>
-		<touch file="${file}"/>
-		<echo file="${dir.tomcat}/conf/web.xml"><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE web-app
-     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-     "http://java.sun.com/dtd/web-app_2_3.dtd">
-<web-app>
-</web-app>
-]]></echo>
-    </target>
-
 	<target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
