@@ -86,8 +86,8 @@
     <xsl:variable name="active">
     	<xsl:apply-templates select="active/node()"/>
     </xsl:variable>
-    <xsl:if test="normalize-space($active) = &apos;true&apos;">
- 		<Host xmlValidation="true">
+    <xsl:if test="normalize-space($active) = 'true'">
+ 		<Host xmlValidation="true" unpackWARs="false" autoDeploy="false">
 		  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
 		  <xsl:attribute name="name">
 		    <xsl:apply-templates select="servername/node()"/>
