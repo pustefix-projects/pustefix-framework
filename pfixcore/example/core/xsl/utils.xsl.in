@@ -236,12 +236,12 @@
         <output>
           <xmlcode>
             <div id="B" class="layer"><b>This is Layer B</b><br/><a class="" href="javascript://" onclick="top.__js_toggleLayer('C')"><script>
-             top.__js_registerLayerChild("B","C", window);
+             top.__js_registerLayerChild("B","C");
                 </script>
                 Toggle Layer C
               </a></div>
             <script>
-              var layer = top.__js_getLayer("B", window);
+              var layer = top.__js_getLayer("B");
               layer.moveTop(10);
               layer.moveRight(10);
               layer.hide();
@@ -250,14 +250,15 @@
         </output>
       </example>
     </cus:documentation>
-      <xsl:param name="name" select="@name" />
+      <xsl:param name="name" select="concat($page, '_', @name)"/>
        <div id="{$name}">
          <xsl:copy-of select="@style"/>
          <xsl:copy-of select="@class"/>
          <xsl:apply-templates/>
        </div>
        <script>
-         var layer = top.__js_getLayer("<xsl:value-of select="$name"/>", window);
+         var layer = top.__js_getLayer("<xsl:value-of select="$name"/>");
+         layer.init("<xsl:value-of select="@visible"/>",window,"<xsl:value-of select="@store"/>");
          <xsl:if test="@pos-left">
            layer.moveLeft(<xsl:value-of select="@pos-left"/>);
          </xsl:if>
@@ -270,14 +271,6 @@
          <xsl:if test="@pos-bottom">
            layer.moveBottom(<xsl:value-of select="@pos-bottom"/>);
          </xsl:if>
-         <xsl:choose>
-            <xsl:when test="string(@visible) = 'false'">
-               layer.hide();
-           </xsl:when>
-           <xsl:otherwise>
-              layer.show();
-          </xsl:otherwise>
-        </xsl:choose>
      </script>
   </xsl:template>
   
@@ -320,7 +313,7 @@
     </xsl:param>
     <a class="{$class}" href="javascript://">
       <xsl:attribute name="onclick">top.__js_toggleLayer(<xsl:for-each select=".//pfx:layer_ref">
-          '<xsl:value-of select="@name"/>'
+          '<xsl:value-of select="concat($page,'_',@name)"/>'
           <xsl:if test="count(following-sibling::pfx:layer_ref) > 0">,</xsl:if>
         </xsl:for-each>); return false;</xsl:attribute>      
       <xsl:apply-templates/>
@@ -366,15 +359,15 @@
               Switch Layer B ON
             </span>
             <script>
-              top.__js_registerSwitchOn("B","SWITCH_ON_d1e174", window);
-              top.__js_registerSwitchOff("B","SWITCH_OFF_d1e174", window);
+              top.__js_registerSwitchOn("B",window.document.getElementById("SWITCH_ON_d1e174"));
+              top.__js_registerSwitchOff("B",window.document.getElementById("SWITCH_OFF_d1e174"));
             </script>
           </xmlcode>
         </output>
       </example>
     </cus:documentation>
     
-    <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
+    <xsl:variable name="name"><xsl:value-of select="concat($page,'_',@name)"/></xsl:variable>
     <xsl:variable name="unique"><xsl:value-of select="generate-id(.)"/></xsl:variable>
     <span>
       <xsl:attribute name="id">SWITCH_ON_<xsl:value-of select="$unique"/></xsl:attribute>
@@ -385,8 +378,8 @@
       <xsl:apply-templates select="./pfx:off/node()"/>
     </span>
     <script>
-      top.__js_registerSwitchOn("<xsl:value-of select="$name"/>","SWITCH_ON_<xsl:value-of select="$unique"/>", window);
-      top.__js_registerSwitchOff("<xsl:value-of select="$name"/>","SWITCH_OFF_<xsl:value-of select="$unique"/>", window);
+      top.__js_registerSwitchOn("<xsl:value-of select="$name"/>", window.document.getElementById("SWITCH_ON_<xsl:value-of select="$unique"/>"));
+      top.__js_registerSwitchOff("<xsl:value-of select="$name"/>",window.document.getElementById("SWITCH_OFF_<xsl:value-of select="$unique"/>"));
     </script>
   </xsl:template>
   
@@ -401,7 +394,6 @@
         <possible_values></possible_values>
         <description>This should be a layer defined via &lt;pfx:layer&gt;. </description>
       </param>
-      
       <example>
         <input>
           Suppose we a inside a layer called "B":
@@ -410,13 +402,12 @@
         <output>
           <xmlcode>
             <script>
-              top.__js_registerLayerChild("B","C", window);
+              top.__js_registerLayerChild("B","C");
             </script>
           </xmlcode>
         </output>
       </example>
     </cus:documentation>
-    
     <xsl:param name="parent">
       <xsl:choose>
         <xsl:when test="count(ancestor::pfx:layer) > 0">
@@ -425,9 +416,9 @@
         <xsl:otherwise>__ROOT_LAYER__</xsl:otherwise>
       </xsl:choose>
     </xsl:param>
-    <xsl:param name="child" select="@name"/>
+    <xsl:param name="child" select="concat($page, '_', @name)"/>
     <script>
-      top.__js_registerLayerChild("<xsl:value-of select="$parent"/>","<xsl:value-of select="$child"/>", window);
+      top.__js_registerLayerChild("<xsl:value-of select="concat($page, '_', $parent)"/>","<xsl:value-of select="$child"/>");
     </script>
   </xsl:template>
   

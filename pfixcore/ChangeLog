@@ -1,5 +1,8 @@
 2003-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/utils.xsl.in: 
+	* example/core/script/baselib.js: make layers remember their state (open/closed) via cookies. work in progress. 
+
 	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java (handleSubmittedData): fix another
 	FileWriter occurance unfortunately at a very prominent position... This is a critical bug fix.
 
