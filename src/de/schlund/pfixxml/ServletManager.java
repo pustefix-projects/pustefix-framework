@@ -47,7 +47,6 @@ import org.apache.log4j.Category;
  * Created: Wed May  8 16:39:06 2002
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version $Id$
  */
 
 public abstract class ServletManager extends HttpServlet {
@@ -201,8 +200,6 @@ public abstract class ServletManager extends HttpServlet {
                                 }
                             } else {
                                 CAT.debug("*** Found NO matching cookie at all. ***");
-                                StringBuffer sendcookies = new StringBuffer();
-                                
                                 CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
                                           "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
                                 session.invalidate();
