@@ -1,4 +1,8 @@
-2004-06-xx Michael Hartmier  <mhm@schlund.de>
+2004-06-28 Michael Hartmier  <mhm@schlund.de>
+	* build.xml: cleanup
+	* skel/build.xml: add tomcat handling
+
+2004-06-28 Michael Hartmier  <mhm@schlund.de>
 	* switch to tomcat 5
 	* the tomcat directory 'example/servletconf/tomcat' is generated now, I've
 	  removed it from cvs

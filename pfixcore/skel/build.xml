@@ -4,7 +4,7 @@
      If any problems arise either regenerate ant.dtd by invoking ant dtd
      or delete the DOCTYPE definition -->
 
-<project name="pfixcore_skel" default="all" basedir=".">
+<project name="skel" default="all" basedir=".">
 
     <!-- set global properties for this build -->
     <property file="build.properties"/>
@@ -40,6 +40,12 @@
     <property name="pat.pfixcore_data_tgz"    value="pfixcore-data-*.tar.gz"/>
     <fileset  id="id.fs.pfixcore_data_tgz"    dir="${dir.lib}" includes="${pat.pfixcore_data_tgz}"/>
     
+    <!-- TODO: use dir.tomcat whereever possible -->
+    <!-- TODO: point into subdirectory of build.dir -->
+    <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
+
+    <!-- embedded or standalone -->
+    <property name="tomcat.setup" value="embedded"/>
     
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
@@ -103,7 +109,7 @@
 
     <path id="cp.classpath">
         <fileset dir="${dir.lib}" includes="*.jar"/>
-        <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
+        <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet-api.jar"/>
         <pathelement location="${dir.build}"/>
         <pathelement location="${dir.res}"/>
     </path>
@@ -198,7 +204,7 @@
         <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
-    <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
+    <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
         <javac 
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -340,16 +346,6 @@
                 </present>
             </fileset>
         </delete>
-        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
-        <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink classes -->
-            <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
-            <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
-        </exec>
-        <!-- delete regular files using task delete -->
-        <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/shared/lib" includes="*.jar"/>
-        </delete>
         <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
     
@@ -373,12 +369,12 @@
             </fileset>
             <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
         </delete>
-        <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     </target>
     
     <target name="realclean" depends="clean, clean-jni">
         <delete dir="${dir.projects}/.cache"/>
         <delete dir="${dir.projects}/core"/>
+        <delete dir="${dir.tomcat}"/>
     </target>
 
     <target name="core-data-check" unless="pfx.force">
@@ -587,7 +583,6 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
 
@@ -602,7 +597,6 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
 
@@ -617,7 +611,6 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
     
@@ -633,7 +626,6 @@
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
             <param name="java_home" expression="${javahome}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
     
@@ -648,8 +640,65 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
+            <param name="setup"     expression="${tomcat.setup}"/>
         </pfx-xslt>
+    </target>
+
+    <target name="tomcat.dir.opt">
+        <available file="${dir.tomcat}" type="dir" property="dir.tomcat.exists" />
+        <antcall target="tomcat.dir.missing"/>
+    </target>
+    <target name="tomcat.dir.missing" unless="dir.tomcat.exists">
+        <antcall target="tomcat.dir"/>
+    </target>
+
+    <target name="tomcat.dir">
+        <antcall target="tomcat.extract"/>
+        <antcall target="tomcat.strip"/>
+        <antcall target="tomcat.jndi"/>
+    </target>
+
+    <target name="tomcat.extract">
+        <path id="src.path">
+          <fileset dir="lib/tomcat" includes="jakarta-tomcat-*.tar.gz"/>
+        </path>
+        <pathconvert property="tomcat.bindist" refid="src.path" dirSep="/"/>
+        <echo>tomcat dist file: ${tomcat.bindist}</echo>
+        <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
+        <fail unless="tomcat.bindist.exists" message="tomcat dist file not found"/>
+         
+        <delete dir="${dir.tomcat}"/>
+        <property name="dir" location="${dir.tomcat}/.."/>
+        <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
+        <path id="dest.path">
+          <dirset dir="${dir}" includes="jakarta-tomcat-*"/>
+        </path>
+        <pathconvert property="tmp.tomcat" refid="dest.path" dirSep="/"/>
+        <echo>tmp directory: ${tmp.tomcat}</echo>
+        <available file="${tmp.tomcat}" type="dir" property="tmp.tomcat.exists" />
+        <fail unless="tmp.tomcat.exists" message="tmp.tomcat not found"/>
+        <move todir="${dir.tomcat}">
+          <fileset dir="${tmp.tomcat}" />
+        </move>
+    </target>
+        
+    <target name="tomcat.strip">
+        <delete dir="${dir.tomcat}/conf/Catalina"/><!-- remove predefined web-apps -->
+        <delete dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
+        <mkdir dir="${dir.tomcat}/webapps"/><!-- remove predefined web-apps -->
+        <delete dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
+        <mkdir dir="${dir.tomcat}/server/webapps"/><!-- remove predefined web-apps -->
+        <delete>
+          <fileset dir="${dir.tomcat}/conf">
+            <include name="jk2.properties"/>
+            <include name="server-minimal.xml"/>
+            <include name="server.xml"/>
+          </fileset>
+        </delete>
+    </target>
+
+    <target name="tomcat.jndi">
+        <copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
     </target>
 
     <description>
