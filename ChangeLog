@@ -1,3 +1,12 @@
+2003-06-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: moved the "method" attribute from
+	the <pfx:switch> tag to it's child tag <pfx:layer_ref>. This
+	allows to specify for each of the ref'ed layers on it's own the
+	method used when the switch is clicked.
+	* example/sample1/txt/pages/main_home.xml: add an example that
+	uses the new functionality
+
 2003-06-11 Martin Leidig <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java:

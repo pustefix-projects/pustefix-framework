@@ -45,6 +45,8 @@
           <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
           <pfx:include part="sample_layers"/>
+
+
         </center>
       </lang>
     </product>
@@ -79,8 +81,8 @@
         </pfx:layer>
 
         
-        <pfx:switch method="on">
-          <pfx:layer_ref name="FOO"/>
+        <pfx:switch>
+          <pfx:layer_ref name="FOO" method="on"/>
           <pfx:layer_check name="FOO">
             <pfx:on class="core_button_invisible">Show it...</pfx:on>
             <pfx:off>Show it...</pfx:off>
@@ -96,8 +98,8 @@
             <pfx:layer store="false" element="td" name="FOO"><b>cell</b></pfx:layer>
           </tr>
         </table>
-        <pfx:switch method="off">
-          <pfx:layer_ref name="FOO"/>
+        <pfx:switch>
+          <pfx:layer_ref name="FOO" method="off"/>
           <pfx:layer_check name="FOO">
             <pfx:on>Hide it...</pfx:on>
             <pfx:off class="core_button_invisible">Hide it...</pfx:off>
@@ -105,6 +107,47 @@
         </pfx:switch>
         <br/>
         <br/>
+        <table>
+          <tr>
+            <td>
+              <pfx:switch>
+                <pfx:layer_ref name="XXX" method="on"/>
+                <pfx:layer_ref name="YYY" method="off"/>
+                <pfx:layer_check name="YYY">
+                  <pfx:on>
+                    <tt>[ ]</tt> Show "BAZ"
+                  </pfx:on>
+                  <pfx:off class="core_button_invisible">
+                    <tt>[X]</tt> Show "BAZ"
+                  </pfx:off>
+                </pfx:layer_check>
+              </pfx:switch>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <pfx:switch>
+                <pfx:layer_ref name="XXX" method="off"/>
+                <pfx:layer_ref name="YYY" method="on"/>
+                <pfx:layer_check name="YYY">
+                  <pfx:on class="core_button_invisible">
+                    <tt>[X]</tt> Show "FOOBAR"
+                  </pfx:on>
+                  <pfx:off>
+                    <tt>[ ]</tt> Show "FOOBAR"
+                  </pfx:off>
+                </pfx:layer_check>
+              </pfx:switch>
+            </td>
+          </tr>
+        </table>
+        <br/>
+        <pfx:layer element="span"  name="XXX" visible="true">
+          BAZ
+        </pfx:layer>
+        <pfx:layer element="span" name="YYY" visible="false">
+          FOOBAR
+        </pfx:layer>
       </lang>
     </product>
   </part>

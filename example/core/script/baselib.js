@@ -14,43 +14,44 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-// function __js_Browser() {
-//   // features
-//   this.all        = document.all ? true : false;
-//   this.layers     = document.layers ? true : false;
-//   this.dom        = document.getElementById ? true : false;
-//   this.dom2events = (document.addEventListener && document.removeEventListener) ? true : false;
-//   this.dom2core   = (document.createTextNode && document.firstChild && document.getElementsByTagName &&
-//                      document.createElement && document.createComment) ? true : false;
-//   this.dom2       = (this.dom2events && this.dom2core) ? true : false;
-// 
-//   // identification
-//   this.vendor     = navigator.vendor ? navigator.vendor.toLowerCase() : false;
-//   this.product    = navigator.product ? navigator.product.toLowerCase() : false;
-// 
-//   // display mode
-//   this.stdmode    = document.compatMode == "CSS1Compat" ? true : false;
-// 
-//   // browser
-//   this.ic         = (window.ScriptEngine && ScriptEngine().indexOf( 'InScript' ) + 1) ? true : false;
-// 
-//   this.op         = window.opera ? true : false;
-//   this.op7        = this.op && this.dom2;
-//   this.op6        = this.op && !this.op7
-// 
-//   this.kq         = (this.vendor == "kde") ? true : false;
-//   this.sf         = (this.mac && this.vendor == "kde") ? true : false;
-//   this.gk         = (this.dom2 && document.defaultView && this.product == "gecko") ? true : false;
-// 
-//   this.ie         = (document.all && !this.kq && !this.op) ? true : false;
-//   this.ie6        = (this.ie && this.dom2 && document.fireEvent && document.createComment) ? true : false;
-//   this.ie55       = (this.ie && document.fireEvent && !this.dom2) ? true : false;
-//   this.ie5        = (this.ie && !document.fireEvent) ? true : false
-//   this.ie5mac     = (this.ie && this.dom && !document.mimeType) ? true : false;
-//   this.ie4        = (this.ie && !this.ie6 && !this.ie55 && !this.ie5 && !this.ie5mac && !this.ie4) ? true : false;
-// }
-// 
-// __Browser = new __js_Browser();
+function __js_Browser() {
+  // features
+  this.all        = document.all ? true : false;
+  this.layers     = document.layers ? true : false;
+  this.dom        = document.getElementById ? true : false;
+  this.dom2events = (document.addEventListener && document.removeEventListener) ? true : false;
+  this.dom2core   = (document.createTextNode && document.firstChild && document.getElementsByTagName &&
+                     document.createElement && document.createComment) ? true : false;
+  this.dom2       = (this.dom2events && this.dom2core) ? true : false;
+
+  // identification
+  this.vendor     = navigator.vendor ? navigator.vendor.toLowerCase() : false;
+  this.product    = navigator.product ? navigator.product.toLowerCase() : false;
+
+  // display mode
+  this.stdmode    = document.compatMode == "CSS1Compat" ? true : false;
+
+  // browser
+  this.ic         = (window.ScriptEngine && ScriptEngine().indexOf( 'InScript' ) + 1) ? true : false;
+
+  this.op         = window.opera ? true : false;
+  this.op7        = this.op && this.dom2;
+  this.op6        = this.op && !this.op7
+
+  this.kq         = (this.vendor == "kde") ? true : false;
+  this.sf         = (this.mac && this.vendor == "kde") ? true : false;
+  this.gk         = (this.dom2 && document.defaultView && this.product == "gecko") ? true : false;
+
+  this.ie         = (document.all && !this.kq && !this.op) ? true : false;
+  this.ie6        = (this.ie && this.dom2 && document.fireEvent && document.createComment) ? true : false;
+  this.ie55       = (this.ie && document.fireEvent && !this.dom2) ? true : false;
+  this.ie5        = (this.ie && !document.fireEvent) ? true : false
+  // We don't detect this so we assume no :-(
+  this.ie5mac     = false; 
+  this.ie4        = (this.ie && !this.ie6 && !this.ie55 && !this.ie5 && !this.ie5mac) ? true : false;
+}
+
+__Browser = new __js_Browser();
 
 //
 // BUTTONS

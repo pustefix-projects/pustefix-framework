@@ -267,13 +267,13 @@
         <description>link stylesheet</description>
       </param>
 
-      <param required="0">
-        <name>method</name>
-        <standard>toggle</standard>
-        <possible_values>on|off|toggle</possible_values>
-        <description>The method called on the associated layer. "On"
-        shows the layer, "off" hides it and "toggle" toggles it's state.</description>
-      </param>
+<!--       <param required="0"> -->
+<!--         <name>method</name> -->
+<!--         <standard>toggle</standard> -->
+<!--         <possible_values>on|off|toggle</possible_values> -->
+<!--         <description>The method called on the associated layer. "On" -->
+<!--         shows the layer, "off" hides it and "toggle" toggles it's state.</description> -->
+<!--       </param> -->
 
       <children>
         <name>pfx:layer_ref</name>
@@ -294,13 +294,6 @@
         </output>
       </example>
     </cus:documentation>  
-    <xsl:param name="method">
-      <xsl:choose>
-        <xsl:when test="@method = 'on'">__js_showLayers</xsl:when>
-        <xsl:when test="@method = 'off'">__js_hideLayers</xsl:when>
-        <xsl:otherwise>__js_toggleLayers</xsl:otherwise>
-      </xsl:choose>
-    </xsl:param>
     <xsl:param name="class">
       <xsl:choose>
         <xsl:when test="not(@class = '')"><xsl:value-of select="@class"/></xsl:when>
@@ -308,10 +301,17 @@
       </xsl:choose>
     </xsl:param>
     <a class="{$class}" href="javascript://">
-      <xsl:attribute name="onclick">top.<xsl:value-of select="$method"/>(<xsl:for-each select=".//pfx:layer_ref">
+      <xsl:attribute name="onclick">top.__js_toggleLayers(<xsl:for-each select=".//pfx:layer_ref[not(@method) or @method = 'toggle']">
           <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
-          <xsl:if test="count(following-sibling::pfx:layer_ref) > 0">,</xsl:if>
-        </xsl:for-each>); return false;</xsl:attribute>      
+          <xsl:if test="count(following-sibling::pfx:layer_ref[not(@method) or @method = 'toggle']) > 0">,</xsl:if>
+        </xsl:for-each>);top.__js_showLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'on']">
+          <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
+          <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'on']) > 0">,</xsl:if>
+        </xsl:for-each>);top.__js_hideLayers(<xsl:for-each select=".//pfx:layer_ref[@method = 'off']">
+          <xsl:text>'</xsl:text><xsl:value-of select="concat($page,'_',@name)"/><xsl:text>'</xsl:text>
+          <xsl:if test="count(following-sibling::pfx:layer_ref[@method = 'off']) > 0">,</xsl:if>
+        </xsl:for-each>);
+        return false;</xsl:attribute>      
       <xsl:apply-templates/>
     </a>
   </xsl:template>
@@ -391,6 +391,14 @@
         <standard></standard>
         <possible_values></possible_values>
         <description>This must be a layer defined via &lt;pfx:layer&gt;. </description>
+      </param>
+      <param required="0">
+        <name>method</name>
+        <standard>toggle</standard>
+        <possible_values>on|off|toggle</possible_values>
+        <description>The method called on the associated layer. "On"
+        shows the layer, "off" hides it. Don't specifying the
+        attribute or giving it the value "toggle" toggles the layer's state.</description>
       </param>
     </cus:documentation>
     <xsl:param name="parent">
