@@ -51,13 +51,13 @@
         Note: MAKE_MODE environment variable is supported for backwards
         compatibility to make based build process
         -->
-        <condition property="makemode"     value="test">
-            <equals arg1="${env.MAKE_MODE}" arg2="test"/>
+        <condition property="makemode"      value="test">
+            <equals arg1="${env.MAKE_MODE}"  arg2="test"/>
         </condition>
         <condition  property="makemode"     value="stage">
-            <equals arg1="${env.MAKE_MODE}" arg2="stage"/>
+            <equals arg1="${env.MAKE_MODE}"  arg2="stage"/>
         </condition>
-        <property  name="makemode"         value="prod"/>
+        <property  name="makemode"          value="prod"/>
         
         <condition property="javahome" value="${env.PFX_JAVA_HOME}">
             <isset property="env.PFX_JAVA_HOME"/>
@@ -77,7 +77,12 @@
         </condition>
         <property  name="debug"            value="false"/>
         
+        <condition property="machine"       value="${env.MACHINE}">
+            <isset property="env.MACHINE"/>
+        </condition>
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
+        <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
+
         <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
         <!-- Create time stamp in ISO 8601 alike format.
         17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->

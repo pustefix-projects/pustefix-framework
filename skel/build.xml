@@ -73,7 +73,13 @@
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
         <property       name="debug"        value="false"/>
+        
+        <condition property="machine"       value="${env.MACHINE}">
+            <isset property="env.MACHINE"/>
+        </condition>
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
+        <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
+
         <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
         <!-- Create time stamp in ISO 8601 alike format.
         17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
