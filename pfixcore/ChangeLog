@@ -1,5 +1,10 @@
 2004-06-02  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/include.xsl.in (pfx:include): added attribute
+	noedit to inhib the creation of the edit brackets in
+	editmode=admin. Those includes can only be edited by selecting
+	them in the editor application.
+
 	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java: added the resetting of internal 
 	factories here, too.
 
