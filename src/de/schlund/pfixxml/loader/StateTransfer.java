@@ -36,7 +36,7 @@ import org.apache.log4j.Category;
 public class StateTransfer {
     
     private Category CAT=Category.getInstance(getClass().getName());
-	private static StateTransfer instance=new StateTransfer();
+    private static StateTransfer instance=new StateTransfer();
 
     //cache transferred AppLoader type objects (old -> new)
     private HashMap transferred=new HashMap();
@@ -51,9 +51,9 @@ public class StateTransfer {
         initVersionDeps();
     }
 
-	public static StateTransfer getInstance() {
-		return instance;
-	}
+    public static StateTransfer getInstance() {
+        return instance;
+    }
     
     public void reset() {
         transferred.clear();
@@ -70,7 +70,7 @@ public class StateTransfer {
         return transferred.get(oldObj);
     }
 
-	public Object transfer(Object oldObj) {
+    public Object transfer(Object oldObj) {
         try {
             if(refs.contains(oldObj)) {return oldObj;} 
         } catch(NullPointerException x) {
@@ -78,7 +78,7 @@ public class StateTransfer {
                 "Can't locate object in hash due to NullPointerException. Possible reason: invalid 'hashcode()' implementation."));
             return oldObj;
         } 
-		Class oldClass=oldObj.getClass();
+        Class oldClass=oldObj.getClass();
         ClassLoader oldCL=oldClass.getClassLoader();
         if(oldCL instanceof AppClassLoader) {
             Object newObj=getTransferred(oldObj);
@@ -97,12 +97,12 @@ public class StateTransfer {
                     //iterate over fields
                     int proc=0;
                     for(int i=0;i<fields.length;i++) {
-				        String name=fields[i].getName();
+                        String name=fields[i].getName();
                         Field field=null;
-				        try {
+                        try {
                             field=newClass.getDeclaredField(name);
                             proc++;
-				            if(!fields[i].isAccessible()) fields[i].setAccessible(true);
+                            if(!fields[i].isAccessible()) fields[i].setAccessible(true);
                             //get field value
                             Object value=fields[i].get(oldObj);
                             CAT.debug("Transfer field '"+name+"'.");
@@ -260,8 +260,8 @@ public class StateTransfer {
                 oldMap.put(key,val);
             }
         }
-		return oldMap;
-	}
+        return oldMap;
+    }
     */
 
     public Object transferArray(Object oldArray) {
