@@ -129,6 +129,9 @@
     <product name="default">
       <lang name="default" warning="NEVER CHANGE THIS NODE!">This combination of size/color is out of stock.</lang>
     </product>
+    <product name="sample1">
+      <lang name="default">The combination <pfx:argref pos="1"/>/<pfx:argref pos="2"/> of size/color is out of stock.</lang>
+    </product>
   </part>
   <part name="pfixcore.generator.MISSING_PARAM">
     <product name="default">

@@ -45,6 +45,7 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
     private ArrayList           precheck   = new ArrayList();
     private ArrayList           postcheck  = new ArrayList();
     private HashSet             scodes     = new HashSet();
+    private HashMap             scodesargs = new HashMap();
     private Category            CAT        = Category.getInstance(this.getClass().getName());
     private StatusCode          missing    = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");
     
@@ -75,13 +76,26 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
         return !scodes.isEmpty();
     }
 
+    public String[] getArgsForStatusCode(StatusCode scode) {
+        return (String[]) scodesargs.get(scode);
+    }
+    
     public StatusCode[] getStatusCodes() {
         return (StatusCode[]) scodes.toArray(new StatusCode[] {}); 
     }
 
     public void addSCode(StatusCode scode) {
+        addSCode(scode, null);
+    }
+    
+    public void addSCode(StatusCode scode, String[] args) {
         synchronized (scodes) {
             scodes.add(scode);
+        }
+        if (args != null) {
+            synchronized (scodesargs) {
+                scodesargs.put(scode, args);
+            }
         }
     }
     
