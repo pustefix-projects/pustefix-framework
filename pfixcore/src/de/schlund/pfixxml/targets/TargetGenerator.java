@@ -62,12 +62,28 @@ public class TargetGenerator {
     private long                          config_mtime                   = 0;
     private final File                    docroot;
     private final String                  fullname;
-    private final File                    confile;
+    
+    private String name;
+    private String language;
     
     /* All registered TargetGenerationListener */
     private Set listeners = new HashSet();
 
+    // needed during load.
+    private int unnamedcount = 0;
     
+    //--
+    
+    public TargetGenerator(File confile) throws Exception {
+        this.docroot = findDocroot(confile);
+        this.config_mtime = confile.lastModified();
+        this.fullname = confile.getCanonicalPath();
+
+        Meminfo.print("TG: Before loading " + confile);
+        loadConfig(confile);
+        Meminfo.print("TG: after loading targets for " + confile.getPath());
+    }
+
     public void addListener(TargetGeneratorListener listener) {
         listeners.add(listener);
     }
@@ -77,25 +93,30 @@ public class TargetGenerator {
     }
     
     
-    // needed during load.
-    private int unnamedcount = 0;
-
     public DependencyRefCounter getDependencyRefCounter() {
         return refcounter;
     }
     public PageTargetTree getPageTargetTree() {
         return pagetree;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
     public String getConfigname() {
         return fullname;
     }
     public File getDisccachedir() {
-        return new File(getDocroot(), ".cache" + File.separatorChar + confile.getName());
+        return new File(getDocroot(), ".cache" + File.separatorChar + getName());
     }
     
     public File getRecorddir() {
-        return new File(getDocroot(), "record_dir" + File.separatorChar + confile.getName());
+        return new File(getDocroot(), "record_dir" + File.separatorChar + getName());
     }
 
     public File getDocroot() {
@@ -128,18 +149,8 @@ public class TargetGenerator {
 
     // -------------------------------------------------------------------------------------------
 
-    public TargetGenerator(File confile) throws Exception {
-        this.docroot = findDocroot(confile);
-        this.confile = confile;
-        this.config_mtime = confile.lastModified();
-        this.fullname = confile.getCanonicalPath();
-
-        Meminfo.print("TG: Before loading " + confile);
-        loadConfig();
-        Meminfo.print("TG: after loading targets for " + confile.getPath());
-    }
-
-    private static File findDocroot(File file) { // TODO
+    public static File findDocroot(File file) { // TODO
+        file = file.getAbsoluteFile();
         while (!isDocroot(file.getName())) {
             file = file.getParentFile();
         }
@@ -149,7 +160,7 @@ public class TargetGenerator {
         return name.equals("projects") || name.equals("example");
     }
     
-    public synchronized boolean tryReinit() throws Exception {
+    public synchronized boolean tryReinit(File confile) throws Exception {
         if (confile.lastModified() > config_mtime) {
             CAT.warn(
                 "\n\n###############################\n"
@@ -161,7 +172,7 @@ public class TargetGenerator {
             pagetree     = new PageTargetTree();
             alltargets   = new HashMap();
             config_mtime = confile.lastModified();
-            loadConfig();
+            loadConfig(confile);
             return true;
         } else {
             return false;
@@ -170,15 +181,18 @@ public class TargetGenerator {
 
     // *******************************************************************************************
 
-    private void loadConfig() throws Exception {
+    private void loadConfig(File confile) throws Exception {
         CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
         config = Xml.parse(confile);
 
-        Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
+        Element  root    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
+        name = getAttribute(root, "project");
+        language = getAttribute(root, "lang");
+        
         File disccache = getDisccachedir();
         if (!disccache.exists()) {
             disccache.mkdirs();
@@ -239,7 +253,7 @@ public class TargetGenerator {
                 String  value   = par.getAttribute("value");
                 params.put(parname, value);
             }
-            params.put("docroot", docroot.getAbsolutePath());
+            params.put("docroot", docroot.getPath());
             struct.setParams(params);
             allstructs.put(name, struct);
         }

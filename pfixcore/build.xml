@@ -351,7 +351,7 @@
         <delete file="ant.dtd"/>
     </target>
 
-    <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
+    <target name="clean" depends="clean-project, junit.clean" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
         <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete dir="${dir.build}"/>
         <delete dir="${dir.dist}"/>
@@ -791,6 +791,61 @@
         </pfx-xslt>
     </target>
     
+	<target name="junit" description="Runs all junit tests or the tests specified by -Djunit.include" depends="compile">
+	    <property name="junit.include" value="**/*Test*.java"/>
+	    <property name="junit.exlucde" value="noSuchFile"/>
+
+	    <antcall target="junit.clean"/><!-- just in case Ctrl-C was used before the store.junit.clean below; otherwise, you get out-dated reports -->
+
+		<property name="junit.src" location="tests/junit"/>
+		<property name="junit.build" location="${dir.build}/junit"/><!-- TODO: not a sub-directory -->
+	    <property name="junit.classes" location="${junit.build}/classes"/>
+	    <property name="junit.results" location="${junit.build}/results"/>
+
+	    <delete dir="${junit.classes}"/>
+	    <mkdir dir="${junit.classes}"/>
+	    <delete dir="${junit.results}"/>
+	    <mkdir dir="${junit.results}"/>
+	    <javac 
+	    	srcdir="${junit.src}" destdir="${junit.classes}" 
+	    	source="${javac.source}" debug="${debug}" includeAntRuntime="false" 
+	    	classpathref="cp.classpath">
+	    </javac>
+	    <junit printsummary="withOutAndErr" haltonerror="no" haltonfailure="no" fork="yes">
+	        <jvmarg value="-Xmx1024M"/>
+	        <jvmarg value="-Xms100M"/>
+	        <classpath>
+	           <path refid="cp.classpath"/>
+	           <pathelement location="${junit.classes}"/>
+	        </classpath>
+	        <formatter type="xml" usefile="true" />
+	        <batchtest>
+	            <fileset dir="${junit.src}">
+	                <include name="${junit.include}"/>
+	                <exclude name="${junit.exclude}"/>
+	            </fileset>
+	        </batchtest>
+	    </junit>
+	    <junitreport todir="${junit.results}">
+	        <fileset dir=".">
+	          <include name="TEST-*"/>
+	        </fileset>
+	        <report format="frames" todir="${junit.results}"/>
+	     </junitreport>
+	     <antcall target="junit.clean"/>
+		<echo>Result written to ${junit.results}</echo>
+	</target>
+
+	<target name="junit.clean">
+	     <!-- I'd like to place these files under build, but I couldn't find the appropiate settings ... -->
+	     <delete>
+	        <fileset dir=".">
+	            <include name="junit*.properties"/>
+	            <include name="TEST-*"/>
+	        </fileset>
+	     </delete>
+	</target>
+	
     <description>
 Targets
 -------

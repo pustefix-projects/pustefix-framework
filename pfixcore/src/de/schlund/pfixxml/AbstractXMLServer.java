@@ -119,7 +119,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     /**
      * The configuration file for the TargetGeneratorFacory.
      */
-    private String          targetconf        = null;
+    private File            targetconf        = null;
     private boolean         render_external   = false;
     private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
@@ -153,13 +153,19 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
 
+    private String getProperty(String name) throws ServletException {
+        String value;
+        
+        value = getProperties().getProperty(name);
+        if (value == null) {
+            throw new ServletException("Need property '" + name + "'");
+        }
+        return value;
+    }
+
     private void initValues() throws ServletException {
-        if ((targetconf = getProperties().getProperty(PROP_DEPEND)) == null) {
-            throw (new ServletException("Need property '" + PROP_DEPEND + "'"));
-        }
-        if ((servletname = getProperties().getProperty(PROP_NAME)) == null) {
-            throw (new ServletException("Need property '" + PROP_NAME + "'"));
-        }
+        targetconf = new File(getProperty(PROP_DEPEND));
+        servletname = getProperty(PROP_NAME);
 
         String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
         if (prohibitDebug != null && (prohibitDebug.equals("true") || prohibitDebug.equals("1")))
@@ -191,7 +197,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         handleXMLOnlyProps();
         
         try {
-            generator = TargetGeneratorFactory.getInstance().createGenerator(new File(targetconf));
+            generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
         } catch (Exception e) {
             CAT.error("Error: ", e);
             throw new ServletException("Couldn't get TargetGenerator", e);
@@ -335,7 +341,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 // This is a fake. We also return true when only depend.xml change, but the properties not.
                 // But we can only signal one type of "reload" event with the return value of this method,
                 // so it's better to reload the properties one time too often.
-                return generator.tryReinit();
+                return generator.tryReinit(targetconf);
             } catch (Exception e) {
                 throw new ServletException("When trying to reinit generator: " + e);
             }
@@ -437,11 +443,11 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         // Set stylesheet parameters for editconsole
         if (recordmodeAllowed) {
-            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
+            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath()).getTestcaseName(session);         
             if (name != null) {
                 params.put(PARAM_RECORDMODE, name);
             }
-            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
+            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath()).isRecordmodeAllowed();
             params.put("recordmode_allowed", new Boolean(allowed).toString());
         }
 
@@ -461,7 +467,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             
             // start recording if allowed and enabled
             if (recordmodeAllowed) {
-                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
+                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf.getPath());
                 recorder.tryRecord(preq, res, spdoc, session);
             }
             if (isDebugEnabled()) {
@@ -730,7 +736,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        paramhash.put(TargetGenerator.XSLPARAM_TG, Path.getRelativeString(generator.getDocroot(), targetconf));
+        paramhash.put(TargetGenerator.XSLPARAM_TG, Path.getRelativeString(generator.getDocroot(), targetconf.getPath()));
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
         addDocroot(paramhash, generator.getDocroot());
         return paramhash;

@@ -9,39 +9,35 @@ package de.schlund.pfixxml.targets;
 import java.io.File;
 import org.w3c.dom.Document;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import junit.framework.TestCase;
 
 public class TargetGeneratorTest extends TestCase {
-    
+    // TODO
+    private static final File DOCROOT = new File("example").getAbsoluteFile();
+
+    public void testDocroot() {
+        assertEquals(new File("/projects"), TargetGenerator.findDocroot(new File("/projects/foo/depend.xml")));
+        assertEquals(new File("/foo/example"), TargetGenerator.findDocroot(new File("/foo/example/core/editor/depend.xml")));
+    }
     public void testEmpty() throws Exception {
-        final File DOCROOT = new File(".").getAbsoluteFile().getCanonicalFile().getParentFile();
 
         TargetGenerator gen;
         
-        gen = create("<make docroot='..' cachedir='.' record_dir='foo'/>");
+        gen = create("<make project='foo' lang='bar'/>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals(gen.getDocroot(), DOCROOT);
-        assertEquals(gen.getDisccachedir(), DOCROOT); // because it's relative to docroot 
-        assertEquals(gen.getRecorddir(), new File(DOCROOT, "foo"));
-    }
-
-    public void testDocrootAbsolute() throws Exception {
-        createInvalid("<make docroot='/' cachedir='.' record_dir='.'/>", "docroot: relative");
-    }
-
-    public void testCachedirAbsolute() throws Exception {
-        createInvalid("<make docroot='.' cachedir='/' record_dir='.'/>", "cachedir: relative");
-    }
-
-    public void testRecorddirAbsolute() throws Exception {
-        createInvalid("<make docroot='.' cachedir='.' record_dir='/'/>", "record_dir: relative");
+        assertEquals(DOCROOT, gen.getDocroot());
+        assertEquals("foo", gen.getName());
+        assertEquals("bar", gen.getLanguage());
+        assertNotNull(Path.getRelativeString(DOCROOT, gen.getDisccachedir().getPath()));
+        assertNotNull(Path.getRelativeString(DOCROOT, gen.getRecorddir().getPath()));
     }
 
     public void testTarget() throws Exception {
         TargetGenerator gen;
         
-        gen = create("<make docroot='.' cachedir='.' record_dir='.'>" + 
+        gen = create("<make project='foo' lang='bar'>" + 
                      "  <target name='master.xsl' type='xsl'>" +
                      "    <depxml name='core/xsl/master.xsl'/>" + 
                      "    <depxsl name='core/xsl/customizemaster.xsl'/>" +
@@ -53,7 +49,7 @@ public class TargetGeneratorTest extends TestCase {
     }
 
     public void testXmlMissing() throws Exception {
-        createInvalid("<make docroot='.' cachedir='.' record_dir='.'>" + 
+        createInvalid("<make project='foo' lang='bar'>" + 
                      "  <target name='master.xsl' type='xsl'>" +
                      "    <depxsl name='core/xsl/customizemaster.xsl'/>" +
                      "  </target>" +
@@ -63,7 +59,7 @@ public class TargetGeneratorTest extends TestCase {
     }
     
     public void testXslMissing() throws Exception {
-        createInvalid("<make docroot='.' cachedir='.' record_dir='.'>" + 
+        createInvalid("<make project='foo' lang='bar'>" + 
                      "  <target name='master.xsl' type='xsl'>" +
                      "    <depxml name='core/xsl/master.xsl'/>" + 
                      "  </target>" +
@@ -73,16 +69,8 @@ public class TargetGeneratorTest extends TestCase {
     }
     
 
-    public void testDocrootMissing() throws Exception {
-        createInvalid("<make cachedir='.' record_dir='.'/>", "docroot");
-    }
-
-    public void testCachedirMissing() throws Exception {
-        createInvalid("<make docroot='.' record_dir='.'/>", "cachedir");
-    }
-
     public void testDocrootNoLongerNeeded() throws Exception {
-        createInvalid("<make cachedir='.' docroot='.' record_dir='.'>" +
+        createInvalid("<make project='foo' lang='bar'>" +
                       "  <target name='master.xsl' type='xsl'>" +
                       "    <depxml name='core/xsl/master.xsl'/>" + 
                       "    <depxsl name='core/xsl/customizemaster.xsl'/>" +
@@ -113,7 +101,7 @@ public class TargetGeneratorTest extends TestCase {
         File file;
         
         Document doc = Xml.parseString(str);
-        file = File.createTempFile("depend", "xml", new File("."));
+        file = File.createTempFile("depend", "xml", new File("example"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
         gen = new TargetGenerator(file);

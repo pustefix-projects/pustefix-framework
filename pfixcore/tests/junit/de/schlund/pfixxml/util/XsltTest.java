@@ -41,7 +41,7 @@ public class XsltTest extends TestCase {
         return transform(name + ".xml", name + ".xsl");
     }
     private static Document transform(String xml, String xsl) throws Exception {
-        final String PREFIX = "test/de/schlund/pfixxml/util/"; // TODO: windows
+        final String PREFIX = "tests/junit/de/schlund/pfixxml/util/"; // TODO: windows
         Document doc;
         Transformer trafo;
         DOMResult result;

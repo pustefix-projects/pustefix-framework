@@ -1,12 +1,25 @@
+2004-06-24  Michael Hartmier  <mhm@schlund.de>
+	- TargetGenerator cleanup
+	- ant target for unit tests
+	- affected files:
+	* ChangeLog
+	* build.xml
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
+	* tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+
 2004-06-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java: small cleanup
 
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
-	- simplified depend.xml: the following attributes have been dumped
-	  o docroot
-	  o cachedir
-	  o record_dir
+	- simplified depend.xml:
+          o the following attributes have been dumped
+	    o docroot
+	    o cachedir
+	    o record_dir
+	  o removed "docroot" from explicit target parameters
      	- improved error message from "ant generate"
 	- move Path into util packages
 	- some API cleanup
