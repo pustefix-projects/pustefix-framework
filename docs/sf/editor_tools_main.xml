@@ -1,5 +1,7 @@
 <div>
 <h1>The <i>Tools</i> page</h1>
+  <p>This is the first page you will see after you logged in and selected a product to edit.</p>
+
   <table>
     <tr valign="top">
       <td>
@@ -16,7 +18,7 @@
           </tr>
           <tr>
             <td>
-              With pressing the lower button you can playback recorded testcases using a GUI. For
+              By pressing the lower button you can playback recorded testcases using a GUI. For
               more information on this see below and the <a href="testclient.html">TestClient</a> documentation.
             </td>
           </tr>
