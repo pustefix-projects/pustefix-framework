@@ -2,8 +2,11 @@
   <h1>What is Pustefix</h1>
 
   <p>
-    <pustefix/> is a framework that helps you to develop web based applications. A high level view of the system is given on
-    <a href="overview.html">this</a> page. The framework consists of two more or less independend parts:
+    <pustefix/> is a framework that helps you to develop web based
+    applications (referred to as <i>projects</i> here). A high level
+    view of the system is given on <a href="overview.html">this</a>
+    page. The framework consists of two more or less independend
+    parts:
   </p>
 
   <ul>
@@ -31,8 +34,8 @@
     <li>
       The next version (released soon) will have rights management for
       the editor. Admins will be able to restrict users to edit only
-      certain subprojects, while the possible use of one include by
-      different subprojects will be taken care of with respect to the
+      certain projects, while the possible use of one include by
+      different projects will be taken care of with respect to the
       user's rights. More information on this will be available
       on the <a href="editor.html">editor's documentation page.</a>
     </li>
