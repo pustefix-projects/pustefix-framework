@@ -21,7 +21,7 @@ statuscodefactory.statuscode.pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEGIF=
 statuscodefactory.statuscode.pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPE=You need to supply a GIF, JPG or PNG image.
 
 statuscodefactory.statuscode.pfixcore.editor.includes.INCLUDE_UNDEF=This include does not exist.
-statuscodefactory.statuscode.pfixcore.editor.includes.COMMONPATH_UNDEF=The path of this dynamic include doesn't point to any file marked as holding dynamic includes.
+statuscodefactory.statuscode.pfixcore.editor.commons.COMMONPATH_UNDEF=The path of this dynamic include doesn't point to any file marked as holding dynamic includes.
 
 statuscodefactory.statuscode.pfixcore.editor.includesupload.PARSE_ERR=Parse error.
 statuscodefactory.statuscode.pfixcore.editor.includesupload.GEN_ERR=General error.
