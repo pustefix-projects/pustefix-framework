@@ -17,8 +17,6 @@ export JAR        = ${JDK_HOME}/bin/jar
 export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
-
 ALLWRAPPERS = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.iwrp")
 TRFBUILD      = de.schlund.pfixcore.util.MultiTransform
 TRFBUILDCLASS = de/schlund/pfixcore/util/MultiTransform.class

@@ -32,19 +32,9 @@ import java.util.HashMap;
 
 
 public class PfixTextPane extends JTextPane implements UndoableEditListener {
-
-
-
     PfixHighlight hilight;
 
-
-    
-
-    
-    
-
     public PfixTextPane() {
-      
         super();
         hilight = new PfixHighlight(this);
         setMargin(new Insets(0,0,0,0));
@@ -56,7 +46,7 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
     public boolean getScrollableTracksViewportWidth() {
         return false;
     }
-
+    
     /**
      * overridden from JEditorPane
      * to suppress line wraps
@@ -71,38 +61,31 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
         //super.setSize(getMaximumSize());
     }
 
-
-
-    
     public void hilightAll() {
         hilight.hilightAll();
     }
-
+    
     public void realtimeHilight() {
         hilight.realtimeHilight();     
     }
 
-
-    
-
-
-     public void closeFinalTag() {
+    public void closeFinalTag() {
         int curPos = getCaretPosition();
-
+        
         DefaultStyledDocument docNeed = (DefaultStyledDocument) getStyledDocument();
         String text = "";
         
         try {
-          text = docNeed.getText(0, docNeed.getLength()); 
+            text = docNeed.getText(0, docNeed.getLength()); 
         }
         catch (Exception ex) {
             
         }
-                   
+        
         Stack stack = new Stack();
-
+        
         stack.push(new String("hallo"));
-
+        
         int tagStart = 2;
         String preString = "";
         String saveString = text.substring(0, curPos);
@@ -110,83 +93,66 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
         String finalTag = "";
         
         try {
-             preString = text.substring(0, curPos);   
-
+            preString = text.substring(0, curPos);   
             
-          while (tagStart > 1) {
-              
-           tagStart = preString.lastIndexOf("<");
-           System.out.println("tagStart " + tagStart);
-           System.out.println(preString);
-           
-           int tagStartNext = tagStart + 1;           
-           Character car = new Character(preString.charAt(tagStartNext));
-
-           if (car.toString().equals("/")) {
-               int tagEnd = preString.lastIndexOf(">");
-               // Building closeTag and put it on stack;                              
-               String closeTag = "<" + preString.substring(tagStart+2, tagEnd)+ ">";
-               stack.addElement(closeTag);
-           }
-           else {
-              int tagEnd = 0;                   
-              tagEnd = preString.lastIndexOf(">");
-               
-              String tag = preString.substring(tagStart, tagEnd) + ">";
-
-              // tag Break --> Tests if Tag already closed
-              int tagBreak = tag.indexOf("/");
-              Character carCommentStart = new Character(tag.charAt(1));
-
-              if (!(carCommentStart.toString().equals("!"))) {
-                  if (tagBreak < 0) {
-                      if (tag.indexOf(" ") > 0) {
-                          int blank = tag.indexOf(" ");
-                          int endStr = tag.length();
-                          StringBuffer strNeu = new StringBuffer(tag);
-                          strNeu = strNeu.delete(blank, endStr-1);
-                          tag = strNeu.toString();                   
-                      }
-              
-              
-                      if (stack.contains(tag)) {
-                          stack.removeElement(tag);
-                      }
-                      else {
-                          StringBuffer strBuf = new StringBuffer(tag);
-                          strBuf.insert(1, "/");
-                          finalTag = strBuf.toString();
-                          
-                          if (finalTag.indexOf(" ") > 0) {
-                              int blank = finalTag.indexOf(" ");
-                              int endStr = finalTag.length();
-                              StringBuffer strNeu = new StringBuffer(finalTag);
-                              strNeu = strNeu.delete(blank, endStr-1);
-                              finalTag = strNeu.toString();                                            
-                          }                                      
-                          break;
-                      }
-                  
-                  }
-                   
-              }
-                  
-             
-              
-
-
-              
-              
+            while (tagStart > 1) {
                 
-           }
-
-           // generating new PreString;
-           preString = preString.substring(0, tagStart);
-                                                       
-             }
-
-        }
-        catch (Exception exc) {
+                tagStart = preString.lastIndexOf("<");
+                System.out.println("tagStart " + tagStart);
+                System.out.println(preString);
+                
+                int tagStartNext = tagStart + 1;           
+                Character car = new Character(preString.charAt(tagStartNext));
+                
+                if (car.toString().equals("/")) {
+                    int tagEnd = preString.lastIndexOf(">");
+                    // Building closeTag and put it on stack;                              
+                    String closeTag = "<" + preString.substring(tagStart+2, tagEnd)+ ">";
+                    stack.addElement(closeTag);
+                } else {
+                    int tagEnd = 0;                   
+                    tagEnd = preString.lastIndexOf(">");
+                    
+                    String tag = preString.substring(tagStart, tagEnd) + ">";
+                    
+                    // tag Break --> Tests if Tag already closed
+                    int tagBreak = tag.indexOf("/");
+                    Character carCommentStart = new Character(tag.charAt(1));
+                    
+                    if (!(carCommentStart.toString().equals("!"))) {
+                        if (tagBreak < 0) {
+                            if (tag.indexOf(" ") > 0) {
+                                int blank = tag.indexOf(" ");
+                                int endStr = tag.length();
+                                StringBuffer strNeu = new StringBuffer(tag);
+                                strNeu = strNeu.delete(blank, endStr-1);
+                                tag = strNeu.toString();                   
+                            }
+                            
+                            if (stack.contains(tag)) {
+                                stack.removeElement(tag);
+                            } else {
+                                StringBuffer strBuf = new StringBuffer(tag);
+                                strBuf.insert(1, "/");
+                                finalTag = strBuf.toString();
+                                
+                                if (finalTag.indexOf(" ") > 0) {
+                                    int blank = finalTag.indexOf(" ");
+                                    int endStr = finalTag.length();
+                                    StringBuffer strNeu = new StringBuffer(finalTag);
+                                    strNeu = strNeu.delete(blank, endStr-1);
+                                    finalTag = strNeu.toString();                                            
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // generating new PreString;
+                preString = preString.substring(0, tagStart);
+            }
+        } catch (Exception exc) {
             // l_error.setText("Not possible here");
             System.out.println("ex " + exc.getMessage());
         }
@@ -197,27 +163,18 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
             // this.checkString();
             setCaretPosition(curPos);
         }
-            
-        
-
     }
 
-          public void undoableEditHappened(UndoableEditEvent e) {
-          /*    if (!getOperation())
-              {
-                  if (compoundEdit == null)
-                      {
-        currentEdit.addEdit(e.getEdit());
-        //undo.addEdit(e.getEdit());
-      } else
-        compoundEdit.addEdit(e.getEdit());
-        }*/
-  }
-
-   
-
-
-
-    
+    public void undoableEditHappened(UndoableEditEvent e) {
+        /* if (!getOperation())
+           {
+           if (compoundEdit == null)
+           {
+           currentEdit.addEdit(e.getEdit());
+           //undo.addEdit(e.getEdit());
+           } else
+           compoundEdit.addEdit(e.getEdit());
+           }*/
+    }
     
 }
