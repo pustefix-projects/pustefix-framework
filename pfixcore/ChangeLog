@@ -1,3 +1,25 @@
+2004-05-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: removed the adding of ports again...
+
+2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	(generateSynthetics): - one more instance to check for null values
+	- Eeek, first fix didn't work out. we need to check the parameters
+	hashmap not the request as multi parameters are not accessible
+	through the request, but only the parameters map.
+
+2004-05-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: pfx:xinp type="submit|image":
+	Fixed a big bug in the encoding of parameters and commands. Now it
+	should work that you can iterate at runtime over the DOM with
+	changing values to xinp parameters.
+
+	* example/core/xsl/navigation.xsl.in: eeek. bug fix for implementation of mode attribute in 
+	pfx:button...
+
 2004-05-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml: released 0.5.4
