@@ -86,11 +86,7 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
-        if (req.getScheme().equals("https") && req.getServerPort() == 443) {
-            return true;
-        } else {
-            return false;
-        }
+        return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
@@ -154,7 +150,7 @@ public abstract class ServletManager extends HttpServlet {
         boolean     force_jump_back_to_ssl   = false;
         boolean     force_reuse_visit_id     = false;
         boolean     does_cookies             = doCookieTest(req, res);
-        if (req.isRequestedSessionIdValid()) { //  && (!does_cookies || sessionCookieMatches(req.getSession(false)))) {
+        if (req.isRequestedSessionIdValid()) {
             session     = req.getSession(false);
             has_session = true;
             CAT.debug("*** Found valid session with ID " + session.getId());
@@ -191,12 +187,13 @@ public abstract class ServletManager extends HttpServlet {
                     force_reuse_visit_id = true;
                 }
             } else {
-                // Normally the balancer has a chance to choose the right server for a new session, but
-                // with a session id in the URL it wasn't able to. So we redirect to a "fresh" request without _any_ id,
-                // giving the balancer the possibility to choose a different server. (this can be overridden by
-                // supplying the parameter __forcelocal=1 to the request). All this makes only sense of course
-                // if we are running in a cluster of servers behind a balancer that chooses the right server
-                // based on the session id included in the URL.
+                // Normally the balancer (or, more accurate: mod_jk) has a chance to choose the right server for a 
+                // new session, but with a session id in the URL it wasn't able to. So we redirect to a "fresh" request 
+                // without _any_ id, giving the balancer the possibility to choose a different server. (this can be 
+                // overridden by supplying the parameter __forcelocal=1 to the request). All this makes only sense of 
+                // course if we are running in a cluster of servers behind a balancer that chooses the right server
+                // based on the session id included in the URL.  This redirect is important when switching from "A" to
+                // "B" machines
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     CAT.debug("    ... but found __forcelocal parameter to be set.");
@@ -270,33 +267,6 @@ public abstract class ServletManager extends HttpServlet {
         //preq.endLogEntry("CALLPROCESS", 0);
         preq.printLog();
     }
-
-
-    // private updateSessionCookie(HttpSession session, HttpServletResponse res, boolean secure) {
-    //     Cookie cookie = new Cookie(SESSID_COOKIE, session.getId());
-    //     cookie.setPath("/");
-    //     cookie.setMaxAge(-1);
-    //     cookie.setSecure(secure);
-    //     res.addCookie(cookie);
-    // }
-    //
-    // private sessionCookieMatches(HttpSession session) {
-    //     Cookie[] cookies = req.getCookies();
-    //     Cookie   tmp;
-    //     if (cookies != null) {
-    //         for (int i = 0; i < cookies.length; i++) {
-    //             tmp = cookies[i];
-    //             if (tmp.getName().equals(SESSID_COOKIE)) {
-    //                 if (tmp.getValue().equals(session.getId())) {
-    //                     return true;
-    //                 } else {
-    //                     return false;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     return false;
-    // }
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
         CAT.debug("===> Redirecting to cleared Request URL");
@@ -743,5 +713,19 @@ public abstract class ServletManager extends HttpServlet {
 
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
+    //--
 
+    // TODO: replace constants - ask tomcat 
+    public static final int HTTP_PORT = 80;
+    public static final int APACHE_SSL_PORT = 443;
+    public static final int TOMCAT_SSL_PORT = 8443;
+    
+    public static boolean isDefault(int port) {
+        return port == HTTP_PORT || port == APACHE_SSL_PORT;
+    }
+
+    public static boolean isSslPort(int port) {
+        return port == APACHE_SSL_PORT || port == TOMCAT_SSL_PORT;
+    }
+    
 }// ServletManager

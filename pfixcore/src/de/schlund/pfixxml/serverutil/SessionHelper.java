@@ -79,9 +79,7 @@ public class SessionHelper {
     public static String getClearedURL(String scheme, String host, HttpServletRequest req) {
         if (scheme == null) scheme = req.getScheme();
         if (host == null) host = req.getServerName();
-        StringBuffer rcBuf = new StringBuffer();
-        rcBuf.append(scheme).append("://").append(host);
-        
+        StringBuffer rcBuf = createPrefix(scheme, host, req);
         stripUriSessionId(null, req.getRequestURI(), rcBuf);
 
         String query = req.getQueryString();
@@ -114,16 +112,10 @@ public class SessionHelper {
     public static String encodeURL(String scheme, String host, HttpServletRequest req) {
         return encodeURL(scheme, host, req, null);
     }
-
-    
     public static String encodeURL(String scheme, String host, HttpServletRequest req, String sessid) {
         if (scheme == null) scheme = req.getScheme();
         if (host == null) host     = req.getServerName();
-        StringBuffer rcBuf         = new StringBuffer();
-        rcBuf.append(scheme).append("://").append(host);
-        // if (scheme == null || !scheme.equals("https")) {
-        //     rcBuf.append(":").append(req.getServerPort());
-        // }
+        StringBuffer rcBuf         = createPrefix(scheme, host, req);
         String       oldSessionId  = stripUriSessionId(null, req.getRequestURI(), rcBuf);
         HttpSession  session       = req.getSession(false);
         
@@ -140,6 +132,26 @@ public class SessionHelper {
             rcBuf.append('?').append(query);
         }
         return rcBuf.toString();
+    }
+
+
+    
+    private static StringBuffer createPrefix(String scheme, String host, HttpServletRequest req) {
+        StringBuffer rcBuf;
+
+        rcBuf = new StringBuffer();
+        rcBuf.append(scheme).append("://").append(host);
+        if (ServletManager.isDefault(req.getServerPort())) {
+            // don't care about port -- stick with defaults
+        } else {
+            // we're running with none-default ports: repeat port in encoded url
+            if ("https".equals(scheme)) {
+                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT); // TODO: ask tomcat's ssl port
+            } else {
+                rcBuf.append(":").append(req.getServerPort());
+            }
+        }
+        return rcBuf;
     }
 
     protected static String stripUriSessionId(String oldSessionId, String uri, StringBuffer rcUri) {

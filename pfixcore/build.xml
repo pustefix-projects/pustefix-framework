@@ -52,7 +52,11 @@ or delete the DOCTYPE definition -->
   <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
   <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
   <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
-  
+
+  <!-- TODO: use dir.tomcat whereever possible -->
+  <!-- TODO: point into subdirectory of build.dir -->
+  <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
+
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
          - ant commandline via the '-Dparam=value' option
@@ -115,7 +119,7 @@ or delete the DOCTYPE definition -->
   
   <path id="cp.classpath">
     <fileset dir="${dir.lib}" includes="*.jar"/>
-    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
+    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet-api.jar"/>
     <pathelement location="${dir.build}"/>
     <pathelement location="${dir.res}"/>
   </path>
@@ -205,7 +209,7 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
   
-  <target name="compile" depends="generate-src, jni, depend, pre-compile" description="compiles all .java files">
+  <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
@@ -375,16 +379,6 @@ or delete the DOCTYPE definition -->
       <fileset dir="${dir.exampleform}" includes="img/**"/>
     </delete>
     
-    <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
-    <exec executable="find" os="Linux">
-      <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink de -->
-      <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
-      <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
-    </exec>
-    <!-- delete regular files using task delete -->
-    <delete>
-      <fileset dir="${dir.projects}/servletconf/tomcat/shared/lib" includes="*.jar"/>
-    </delete>
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
   
@@ -408,12 +402,12 @@ or delete the DOCTYPE definition -->
       </fileset>
       <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
     </delete>
-    <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
   </target>
   
   <target name="realclean" depends="clean, clean-jni, clean-doc">
     <delete dir="${dir.projects}/.cache"/>
     <delete dir="${dir.testskel}"/>
+    <delete dir="${dir.tomcat}"/>
   </target>
 
   <target name="dist" depends="clean, init, dist-examples" description="Builds release files in dist directory, tags cvs.">
@@ -479,10 +473,9 @@ or delete the DOCTYPE definition -->
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
       <tarfileset dir="${dir.metainf}" includes="${name.cvsautotag}" prefix="skel"/>
-      <tarfileset dir="${dir.lib}" includes="*.jar" prefix="skel/lib"/>
+      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/*" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
-      <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
       <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
       <tarfileset dir="${basedir}" includes="INSTALL" prefix="skel"/>
       <tarfileset dir="${dir.toconf}" includes="newproject.prop.in newprjlog.xml.in" prefix="skel/projects/common/conf"/>
@@ -727,7 +720,6 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
-      <param name="container" expression="tomcat"/>
     </pfx-xslt>
   </target>
 
@@ -742,7 +734,6 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
-      <param name="container" expression="tomcat"/>
     </pfx-xslt>
   </target>
 
@@ -757,7 +748,6 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
-      <param name="container" expression="tomcat"/>
     </pfx-xslt>
   </target>
   
@@ -773,7 +763,6 @@ or delete the DOCTYPE definition -->
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
       <param name="java_home" expression="${javahome}"/>
-      <param name="container" expression="tomcat"/>
     </pfx-xslt>
   </target>
   
@@ -788,10 +777,90 @@ or delete the DOCTYPE definition -->
       <param name="uid"       expression="${uid}"/>
       <param name="machine"   expression="${machine}"/>
       <param name="mode"      expression="${makemode}"/>
-      <param name="container" expression="tomcat"/>
     </pfx-xslt>
   </target>
   
+  <target name="tomcat.dir.opt">
+    <available file="${dir.tomcat}" type="dir" property="dir.tomcat.exists" />
+    <antcall target="tomcat.dir.missing"/>
+  </target>
+  <target name="tomcat.dir.missing" unless="dir.tomcat.exists">
+    <antcall target="tomcat.dir"/>
+  </target>
+
+  <target name="tomcat.dir">
+    <antcall target="tomcat.extract"/>
+    <antcall target="tomcat.strip"/>
+    <antcall target="tomcat.jndi"/>
+    <antcall target="tomcat.user"/>
+    <antcall target="tomcat.cert"/>
+  </target>
+
+  <target name="tomcat.extract">
+    <path id="src.path">
+      <fileset dir="lib/tomcat" includes="jakarta-tomcat-*.tar.gz"/>
+    </path>
+    <pathconvert property="tomcat.bindist" refid="src.path" dirSep="/"/>
+    <echo>tomcat dist file: ${tomcat.bindist}</echo>
+    <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
+    <fail unless="tomcat.bindist.exists" message="tomcat dist file not found"/>
+     
+    <delete dir="${dir.tomcat}"/>
+    <property name="dir" location="${dir.tomcat}/.."/>
+    <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
+    <path id="dest.path">
+      <dirset dir="${dir}" includes="jakarta-tomcat-*"/>
+    </path>
+    <pathconvert property="tmp.tomcat" refid="dest.path" dirSep="/"/>
+    <echo>tmp directory: ${tmp.tomcat}</echo>
+    <available file="${tmp.tomcat}" type="dir" property="tmp.tomcat.exists" />
+    <fail unless="tmp.tomcat.exists" message="tmp.tomcat not found"/>
+    <move todir="${dir.tomcat}">
+      <fileset dir="${tmp.tomcat}" />
+    </move>
+  </target>
+    
+  <target name="tomcat.strip">
+    <delete dir="${dir.tomcat}/conf/Catalina"/>
+
+    <!-- remove predefined web-apps -->
+    <delete dir="${dir.tomcat}/webapps"/>
+    <mkdir dir="${dir.tomcat}/webapps"/>
+    
+    <!-- we keep server/webapps, it contains tomcat manager -->
+    
+    <delete>
+      <fileset dir="${dir.tomcat}/conf">
+        <include name="jk2.properties"/>
+        <include name="server-minimal.xml"/>
+        <include name="server.xml"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="tomcat.jndi">
+    <copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
+  </target>
+    
+  <target name="tomcat.user">
+    <echo file="${dir.tomcat}/conf/tomcat-users.xml"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
+<tomcat-users>
+  <role rolename="manager"/>
+  <user username="admin" password="pass" roles="manager"/>
+</tomcat-users>]]></echo>
+  </target>
+
+  <target name="tomcat.cert">
+    <genkey alias="tomcat" storepass="secret" keyalg="RSA" keystore="${dir.tomcat}/conf/keystore">
+      <dname>
+        <param name="CN" value="ue.schlund.de"/>
+        <param name="OU" value="Unix Development"/>
+        <param name="O"  value="Schlund und Partner"/>
+        <param name="C"  value="DE"/>
+      </dname>
+    </genkey>
+  </target>
+    
   <description>
     Targets
     -------

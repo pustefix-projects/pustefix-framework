@@ -18,7 +18,6 @@
 */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
