@@ -33,15 +33,27 @@
 	 added pages, handlers, finalizers, iwrapper and contextresource for test case
 	 handling in pustefix cms.
 
-	 * example/sample1/conf/depend.xml.in
-	 * example/core/editor/txt/navigation.xml
-	 * example/core/build/create_depend.xsl
-	 * example/core/editor/conf/depend.xml.in: adjusted.
+	* example/sample1/conf/depend.xml.in
+	* example/core/editor/txt/navigation.xml
+	* example/core/build/create_depend.xsl
+	* example/core/editor/conf/depend.xml.in
+	* example/core/editor/conf/config.prop.in : adjusted.
 
-	 * example/common/conf/pustefix.prop.in: removed recordmode_logdir
+	* example/common/conf/pustefix.prop.in: removed recordmode_logdir
 	  property
 
-	 * NOTE: Testcase handling in pustefix cms not for production use !
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java: added,
+	RecordManagers are created by this factory. For every depend.xml one
+	RecordManager is created.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: minor
+
+	* example/testenv/log4jconf.xml: added. Sample log4j config for
+	TestClient running in terminal.
+
+	* NOTE: Testcase handling in pustefix cms ready for production use yet!
 
 2003-03-21  Jens Lautenbacher  <jtl@schlund.de>
 

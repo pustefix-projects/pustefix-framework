@@ -23,8 +23,10 @@ import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.ResultDocument;
 
 /**
- *
- *
+ * All classes which want to act as a container for classes
+ * which implement the {@link IWrapper} interface must 
+ * implement this interface. An IWrapperContainer is created
+ * for each request.
  */
 
 public interface IWrapperContainer {
