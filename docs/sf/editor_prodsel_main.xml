@@ -1,10 +1,10 @@
 <div>
-<h1>Products and user</h1>
+<h1>Projects and user data</h1>
   <table>
     <tr valign="top">
       <td>
         <stdimg src="img/editor_prodsel.png">
-          The <i>Products and user</i> page of the <pustefix/> editor
+          The <i>Projects and user data</i> page of the <pustefix/> editor
         </stdimg>
       </td>
       <td>
