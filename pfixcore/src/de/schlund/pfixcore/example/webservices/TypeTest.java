@@ -6,6 +6,7 @@ package de.schlund.pfixcore.example.webservices;
 import java.util.Calendar;
 
 import org.w3c.dom.Element;
+import java.util.HashMap;
 
 /**
  * TypeTest.java 
@@ -38,6 +39,8 @@ public interface TypeTest {
     
     public String[] echoStringArray(String[] strs);
     
+    public String[][] echoStringMultiArray(String[][] strs); 
+    
     public Object echoObject(Object obj);
     
     public Object[] echoObjectArray(Object[] objs);
@@ -49,5 +52,7 @@ public interface TypeTest {
     public DataBean echoDataBean(DataBean data);
     
     public DataBean[] echoDataBeanArray(DataBean[] data);
+    
+    public HashMap echoHashMap(HashMap map);
     
 }

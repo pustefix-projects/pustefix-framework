@@ -4,6 +4,8 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Calendar;
+import java.util.HashMap;
+
 import org.w3c.dom.*;
 
 /**
@@ -59,6 +61,10 @@ public class TypeTestImpl implements TypeTest {
         return strs;
     }
     
+    public String[][] echoStringMultiArray(String[][] strs) {
+        return strs;
+    }
+    
     public Object echoObject(Object obj) {
         return obj;
     }
@@ -81,6 +87,10 @@ public class TypeTestImpl implements TypeTest {
     
     public DataBean[] echoDataBeanArray(DataBean[] data) {
         return data;
+    }
+    
+    public HashMap echoHashMap(HashMap map) {
+        return map;
     }
     
 }

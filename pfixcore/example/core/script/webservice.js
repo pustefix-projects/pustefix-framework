@@ -311,6 +311,27 @@ SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 
 
 //*********************************
+//SimpleTypeDeserializer(QName xmlType,String jsType)
+//*********************************
+function SimpleTypeDeserializer(xmlType,jsType) {
+	if(arguments.length==2) {
+		this.xmlType=xmlType;
+		this.jsType=jsType;
+	} else throw ERR_WRONGARGS;
+}
+
+//deserialize(value,name,writer)
+SimpleTypeDeserializer.prototype.deserialize=function(value,name,writer) {
+	writer.startElement(name);
+	var prefix=writer.getPrefix(this.xmlType.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.xmlType.localpart);
+	writer.writeChars(value);
+	writer.endElement(name);
+}
+
+
+
+//*********************************
 //ArraySerializer(QName xmlType,String jsType)
 //*********************************
 function ArraySerializer(xmlType,jsType) {
@@ -450,20 +471,35 @@ var typeMapping=new TypeMapping();
 
 
 //*********************************
-// RPCProvider(QName opName,ArrayOfParameter params,values,...)
+// RPCSerializer(QName opName,ArrayOfParameter params,values,...)
 //*********************************
-function RPCProvider(opName,params) {
+function RPCSerializer(opName,params) {
 	this.opName=opName;
 	this.params=params;
 }
 
-RPCProvider.prototype.serialize=function(writer) {
+RPCSerializer.prototype.serialize=function(writer) {
 	writer.startElement(this.opName);
 	for(var i=0;i<this.params.length;i++) {
 		var serializer=typeMapping.getSerializer(this.params[i].xmlType,this.params[i].jsType);
 		serializer.serialize(this.params[i].value,this.params[i].name,writer);
 	}
 	writer.endElement(this.opName);
+}
+
+
+//*********************************
+// RPCDeserializer(String opName,QName xmlType,String jsType)
+//*********************************
+function RPCDeserializer(opName,xmlType,jsType) {
+	this.opName=opName;
+	this.xmlType=xmlType;
+	this.jsType=jsType;
+}
+
+RPCDeserializer.prototype.deserialize=function(bodyElem) {
+	
+	return "foo";
 }
 
 
@@ -535,7 +571,7 @@ Call.prototype.invoke=function() {
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
-	var rpc=new RPCProvider(this.opName,this.params);
+	var rpc=new RPCSerializer(this.opName,this.params);
 	
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
@@ -543,7 +579,11 @@ Call.prototype.invoke=function() {
   //  alert("writer.xml:\n" + writer.xml);
   	document.getElementById('request').value=writer.xml;
 
-  return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
+	var resDoc=sendTest(writer.xml);
+	rpc=new RPCDeserializer(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
+	return rpc.deserialize(this.opName,this.retXmlType,this.retJsType);
+	
+  //return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
 
 }
 
@@ -702,15 +742,15 @@ function SOAPFault(faultCode,faultString) {
 function test() {
 	
 	var call=new Call();
-	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
-	call.setOperationName(new QName("add"));
-	call.addParameter("value1",xmltype.XSD_INT,jstype.JS_INTEGER,"IN");
+	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
+	call.setOperationName(new QName("echoStringMultiArray"));
+	//call.addParameter("value1",xmltype.XSD_STRING,jstype.JS_STRING,"IN");
 	//call.addParameter("value2",xmltype.XSD_INT,jstype.JS_INTEGER,"IN");
-	call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_int"),jstype.JS_INTEGER+"[][][]","IN");
+	call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOfArrayOf_xsd_string"),jstype.JS_STRING+"[][]","IN");
 	
 	//call.setReturnType(xmltype.XSD_INT);
 	//try {
-		var arr=new Array(new Array(new Array(1,2),new Array(3,4)),new Array(new Array(5,6),new Array(7,8,9)));
+		var arr=new Array(new Array(1,2),new Array(3,4,5));
 		/*
 		for(var i=0;i<arr.length;i++) {
 			for(var j=0;j<arr[i].length;j++) {
@@ -718,7 +758,8 @@ function test() {
 			}
 		}
 		*/
-		call.invoke(4,arr);
+		alert("RESULT: "+call.invoke(arr));
+		//call.invoke(4,arr);
 	//} catch(exception) {
 		
 	//	 alert(exception);
@@ -727,3 +768,18 @@ function test() {
 	
 }
 
+function sendTest(msg) {
+	var req;
+	if (window.XMLHttpRequest) {
+		req=new XMLHttpRequest();
+	} else if(window.ActiveXObject) {
+      req = new ActiveXObject("Microsoft.XMLHTTP");
+	} else {
+		alert("XMLHttpRequest not supported");
+	}
+	var ws = window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest";
+	req.open("POST", ws, false);
+	req.setRequestHeader("SOAPAction",'""');
+	req.send(msg);
+	return req.responseXML;
+}

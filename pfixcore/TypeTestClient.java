@@ -28,7 +28,7 @@ public class TypeTestClient {
 		tt.echoDoubleArray(new double[] {1d,2d,3d});
 		tt.echoString("a");
 		tt.echoStringArray(new String[] {"a","b","c"});
-		tt.echoStringMultiArray(new String[][] {{"a","b"},{"c","d"}});
+		tt.echoStringMultiArray(new String[][] {{"a","b"},{"c","d","e"}});
 		tt.echoDate(Calendar.getInstance());
 		tt.echoDateArray(new Calendar[] {Calendar.getInstance(),Calendar.getInstance(),Calendar.getInstance()});
 		tt.echoObject("testtext");
