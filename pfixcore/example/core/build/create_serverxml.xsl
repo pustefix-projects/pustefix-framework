@@ -4,6 +4,7 @@
                 xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
                 >
 
+  <xsl:param name="standalone">true</xsl:param>
   <xsl:param name="trusted"/>
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
@@ -77,24 +78,26 @@
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
     </Connector>
-    <Connector port="8080"
-               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-               enableLookups="false" redirectPort="8443" acceptCount="100"
-               connectionTimeout="20000"
-               disableUploadTimeout="true">
-      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-      <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
-      <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
-    </Connector>
-    <Connector port="8443" 
-               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-               enableLookups="false" disableUploadTimeout="true"
-               acceptCount="100" debug="0" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
-      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-      <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
-      <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
-    </Connector>
+    <xsl:if test="$standalone = 'true'">
+      <Connector port="8080"
+                 maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+                 enableLookups="false" redirectPort="8443" acceptCount="100"
+                 connectionTimeout="20000"
+                 disableUploadTimeout="true">
+        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+        <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+        <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
+      </Connector>
+      <Connector port="8443" 
+                 maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+                 enableLookups="false" disableUploadTimeout="true"
+                 acceptCount="100" debug="0" scheme="https" secure="true"
+                 clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
+        <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+        <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+        <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
+      </Connector>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="project">
@@ -130,24 +133,25 @@
       <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
       <xsl:with-param name="docBase">webapps/<xsl:apply-templates select="@name"/></xsl:with-param>
     </xsl:call-template>
-    <xsl:if test="documentroot">
-      <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
-      <xsl:choose>
-        <xsl:when test="ext:exists($abs_path)">
-          <xsl:call-template name="create_context">
-            <xsl:with-param name="path">/</xsl:with-param>
-            <xsl:with-param name="docBase"><xsl:value-of select="$abs_path"/></xsl:with-param>
-            <xsl:with-param name="cookies">false</xsl:with-param>
-          </xsl:call-template>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:if>
-    <xsl:apply-templates select="passthrough"/>
-    <xsl:apply-templates select="/projects/common/apache/passthrough"/>
-    <xsl:comment><![CDATA[ comment-in if you want Tomcat Manager and Tomcat Admin: 
+    <xsl:if test="$standalone = 'true'">
+      <xsl:if test="documentroot">
+        <xsl:variable name="abs_path"><xsl:apply-templates select="documentroot/node()"/></xsl:variable>
+        <xsl:choose>
+          <xsl:when test="ext:exists($abs_path)">
+            <xsl:call-template name="create_context">
+              <xsl:with-param name="path">/</xsl:with-param>
+              <xsl:with-param name="docBase"><xsl:value-of select="$abs_path"/></xsl:with-param>
+              <xsl:with-param name="cookies">false</xsl:with-param>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:message>CAUTION: documentroot does not exist: <xsl:value-of select="$abs_path"/></xsl:message>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+      <xsl:apply-templates select="passthrough"/>
+      <xsl:apply-templates select="/projects/common/apache/passthrough"/>
+      <xsl:comment><![CDATA[ comment-in if you want Tomcat Manager and Tomcat Admin: 
       <Context path="/manager" debug="0" privileged="true" docBase="server/webapps/manager">
         <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
         <Valve className="org.apache.catalina.valves.RemoteAddrValve">
@@ -164,7 +168,8 @@
         <Logger className="org.apache.catalina.logger.FileLogger"
                 prefix="localhost_admin_log." suffix=".txt" timestamp="true"/>
       </Context>]]>
-    </xsl:comment>
+      </xsl:comment>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="passthrough">

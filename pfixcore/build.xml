@@ -56,6 +56,7 @@ or delete the DOCTYPE definition -->
   <!-- TODO: use dir.tomcat whereever possible -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
+  <property name="standalone.tomcat"          value="true"/>
 
   <target name="properties">
     <!-- Ant properties are immutable, the order of definition is:
@@ -775,12 +776,13 @@ or delete the DOCTYPE definition -->
      outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
      style="${dir.projects}/core/build/create_serverxml.xsl"
      >
-      <param name="docroot"   expression="${dir.docroot}"/>
-      <param name="fqdn"      expression="${fqdn}"/>
-      <param name="uid"       expression="${uid}"/>
-      <param name="machine"   expression="${machine}"/>
-      <param name="mode"      expression="${makemode}"/>
-      <param name="trusted"   expression="${trusted.tomcat}"/>
+      <param name="docroot"    expression="${dir.docroot}"/>
+      <param name="fqdn"       expression="${fqdn}"/>
+      <param name="uid"        expression="${uid}"/>
+      <param name="machine"    expression="${machine}"/>
+      <param name="mode"       expression="${makemode}"/>
+      <param name="trusted"    expression="${trusted.tomcat}"/>
+      <param name="standalone" expression="${standalone.tomcat}"/>
     </pfx-xslt>
   </target>
 
