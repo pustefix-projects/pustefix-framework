@@ -1,3 +1,10 @@
+2003-08-26  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java (createMailSubject):
+	bugfix: when handling subclasses of java.lang.Error with no message, the size of the
+	array containing stacktraces seems only to have the length of 1. An
+	access to higher elements caused an ArrayIndexOutOfBoundsException.
+
 2003-08-25  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/multipart/MultipartHandler.java (getHeaderStruct):

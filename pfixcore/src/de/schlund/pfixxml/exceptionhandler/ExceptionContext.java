@@ -325,7 +325,17 @@ class ExceptionContext {
         if (message == null) {
             ThrowableInformation info = new ThrowableInformation(throwable_);
             String[] strace = info.getThrowableStrRep();
-            message = strace[1].trim();
+            
+            if(strace.length > 1) {
+                message = strace[1].trim();
+            } else if (strace.length == 1){
+                // This case can happen when handling a OutofMemoryError, where
+                // the stracktrace has a length of only 1.
+                message = strace[0].trim();
+            } else {
+                // what's this?
+                message = "No information found.";
+            }
         }
         Object[] args = { date_, servername, exceptname, message };
         buf = MessageFormat.format("{0}:[{1}|{2}]:{3}", args);
