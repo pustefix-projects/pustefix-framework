@@ -4,6 +4,14 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.8.3" date="2004-10-20">
+      <action dev="habermann" type="add">
+        <p>
+          .prop.in files get schema validated now, once they are in the new
+          format. See <a href="prop.html">Servlet definition</a>.
+        </p>
+      </action>
+    </release>
     <release version="0.8.2" date="2004-10-20">
       <action dev="jenstl" type="update">
         <p>
