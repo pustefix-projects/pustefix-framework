@@ -1,13 +1,14 @@
 <!-- -*- mode: xml -*- -->
-<make cachedir=".cache/sample1"
+<make cachedir=".cache/sample1" record_allowed="true" record_dir="sample1/recorded"
       xmlns:cus="http://www.schlund.de/pustefix/customize">
-  
+
   <navigation>
     <page name="home"     handler="/xml/config"/>
     <page name="order"    handler="/xml/config"/>
     <page name="overview" handler="/xml/config"/>
     <page name="admin"    handler="/xml/config"/>
     <page name="ssltest"  handler="/xml/secure"/>
+    <page name="install"  handler="/xml/download"/>
   </navigation>
 
   <!-- ========= master =============== -->

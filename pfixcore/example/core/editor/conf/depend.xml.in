@@ -1,5 +1,5 @@
 <!-- -*- mode: xml -*- -->
-<make cachedir=".cache/editor"
+<make cachedir=".cache/editor" record_allowed="false" record_dir="editor/recorded"
       xmlns:cus="http://www.schlund.de/pustefix/customize">
   
   <navigation>
@@ -18,6 +18,9 @@
     <page name="search"            handler="/xml/edit"/>
     <page name="logout"            handler="/xml/edit"/>
     <page name="documentation"     handler="/xml/edit"/>
+    <page name="testcaseselect"    handler="/xml/edit"/>
+    <page name="testcasestart"     handler="/xml/edit"/>
+    <page name="testcaseoverview"  handler="/xml/edit"/>
   </navigation>
 
   <!-- ========= master =============== -->
@@ -57,6 +60,9 @@
   <standardpage name="commons"           xml="core/editor/xml/three_frames_applet.xml"/>
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="documentation"     xml="core/editor/xml/three_frames_doku.xml"/>
+  <standardpage name="testcaseselect"    xml="core/editor/xml/two_frames.xml"/>
+  <standardpage name="testcasestart"     xml="core/editor/xml/two_frames.xml"/>
+  <standardpage name="testcaseoverview"     xml="core/editor/xml/two_frames.xml"/>
   <!-- These pages should never be visible -->
   <standardpage name="logout"            xml="core/editor/xml/empty.xml"/>
 
