@@ -76,7 +76,7 @@ to use them:
       <implements class="AN_INTERFACE>                       <!-- @class is mandatory, must be an interface implemented
                                                                   by the ContextResource. There may be more than one 
                                                                   <implements> tags for a ContextResource. -->
-      ...
+      ...                                                    <!-- each interface must be unique in the whole context -->
     </resource>                               
     ...                                                      <!-- there may be many resources listed -->
   </context>
@@ -92,15 +92,15 @@ to use them:
   <pagerequest name="A_PAGE_NAME">                           <!-- @name is mandatory. The name of the page. 
                                                                   This must be one of the pages defined in 
                                                                   the corresponding depend.xml file. -->
-    <state class="A_CLASSNAME">                              
-    <!-- this is optional. The used state is determined as follows: 
+    <state class="A_CLASSNAME"/>                              
+    <!-- this is optional. The used State is determined as follows: 
          * If <state> is given, use the value of it's @class attribute. Else:
            * If the <pagerequest> has a <authhandler> child, use "de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState". Else:
              * If the <pagerequest> has a <ihandler> child, use "de.schlund.pfixcore.workflow.app.DefaultIWrapperState". Else:
                * use "de.schlund.pfixcore.workflow.app.StaticState".  -->
 
-    <finalizer class="A_FINALIZER">                        
-    <!-- this is optional. It may only be given for a state that is "de.schlund.pfixcore.workflow.app.DefaultIWrapperState"
+    <finalizer class="A_FINALIZER"/>                        
+    <!-- this node optional. It may only be given for a State that is either "de.schlund.pfixcore.workflow.app.DefaultIWrapperState"
          or a descendent of it! 
          @class is mndatory and denotes a class implementing "de.schlund.pfixcore.workflow.app.ResdocFinalizer" --> 
 
@@ -121,7 +121,7 @@ to use them:
     </ihandler>
    
     <authhandler>                                            <!-- Only the <pagerequest> referred to via a @autpage property of <context>
-                                                                  must have, other <pagerequest> nodes must NOT have this subnode-->
+                                                                  MUST have, other <pagerequest> nodes MUST NOT have this subnode-->
       <authinterface prefix="A_PREFIX" class="A_IWRAPPER"/>  <!-- @prefix/@class are mandatory. This denotes the single
                                                                   interface that is responsible for the authentication.
                                                                   The whole node is mandatory! -->
