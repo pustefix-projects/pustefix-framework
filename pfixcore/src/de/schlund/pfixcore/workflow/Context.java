@@ -52,6 +52,7 @@ public class Context implements AppContext {
     private final static String   JUMPPAGE            = "__jumptopage";
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
     private final static String   PARAM_FLOW          = "__pageflow";
+    private final static String   PARAM_LASTFLOW      = "__lf";
     private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
     private final static String   PARAM_FORCESTOP     = "__forcestop";
     private final static String   DEF_MESSAGE_LEVEL   = "info";
@@ -146,6 +147,18 @@ public class Context implements AppContext {
             startwithflow = true;
         }
 
+        // This helps to reset the state between different request from different windows
+        // representing different locations in the same application.
+        // The page will be set a bit below in trySettingPageRequestAndFlow, where the "real" pageflow to use is also deduced.
+        RequestParam lastflow = currentpreq.getRequestParam(PARAM_LASTFLOW);
+        if (lastflow != null && !lastflow.getValue().equals("")) {
+            PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue());
+            if (tmp != null) {
+                LOG.debug("* Got last pageflow state from request as [" + tmp.getName() + "]");
+                currentpageflow = tmp;
+            }
+        }
+        
         SPDocument  spdoc;
         PageRequest prevpage = currentpagerequest;
         PageFlow    prevflow = currentpageflow;

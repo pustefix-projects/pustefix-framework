@@ -569,6 +569,7 @@
     </xsl:variable>
     <xsl:variable name="fulllink">
       <xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
+      <ixsl:if test="not($pageflow = '')">&amp;__lf=<ixsl:value-of select="$pageflow"/></ixsl:if>
       <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
       <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
       <xsl:if test="$jumptopage">&amp;__jumptopage=<xsl:value-of select="$jumptopage"/></xsl:if>
