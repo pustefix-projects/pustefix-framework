@@ -24,6 +24,7 @@ import de.schlund.pfixxml.*;
 import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import javax.xml.parsers.*;
 import org.apache.log4j.*;
@@ -66,7 +67,7 @@ public class MakeStatusMessageXML {
         dbfac.setValidating(false);
     }
     
-    public static void main(String args[]) throws ParserConfigurationException {
+    public static void main(String args[]) throws ParserConfigurationException, IOException {
         MakeStatusMessageXML maker = new MakeStatusMessageXML();
         StatusCodeFactory    scfac = new StatusCodeFactory();
         Properties           props = new Properties();
@@ -89,41 +90,54 @@ public class MakeStatusMessageXML {
 
         try {
             props.load(new FileInputStream(propertyfile));
-            scfac.init(props);
         } catch (Exception e) {
-            CAT.error("Couldn't load propertyfile " + propertyfile + " or couldn't init Factory\n" + e.toString());
+            CAT.error("Couldn't load propertyfile " + propertyfile + "\n" + e.toString());
             System.exit(ERR_LOAD);
         }
-        
-        TreeSet allscodes = new TreeSet(scfac.getAllSCodes().keySet());
 
-        DocumentBuilder domparser         = dbfac.newDocumentBuilder();
-        Document        doc               = null;
-        Element         incroot           = null;
-        File            statusmessagefile = null;
-        boolean         filecreate        = false;
-        
-        // try to open and parse an existing statusmessage file or create a new dom tree
-        statusmessagefile = new File(messagefile);
-        if (statusmessagefile.exists()) {
+        File    tsfile  = new File(messagefile + ".TIMESTAMP");
+        long    lastmod = maker.needToGenerate(props, tsfile);
+
+        if (lastmod != 0) {
             try {
-                // try to parse the existing statusmessage xml-file
-                // load statusmessages xml file
-                CAT.warn( ">>> parsing statusmessages xml-file ...");
-                doc = domparser.parse(messagefile);
-                // doc.normalize();
-                maker.updateFile(scfac, allscodes, doc, messagefile);
+                scfac.init(props);
             } catch (Exception e) {
-                CAT.error("FATAL1: " + e.toString());
-                System.exit(ERR_PARSE);
+                CAT.error("Couldn't init Factory\n" + e.toString());
+                System.exit(ERR_LOAD);
             }
-        } else {   
-            // if not found -> generate one
-            doc = dbfac.newDocumentBuilder().newDocument();
-            maker.createFile(scfac, allscodes, doc, messagefile);
+
+            TreeSet allscodes = new TreeSet(scfac.getAllSCodes().keySet());
+            
+            DocumentBuilder domparser         = dbfac.newDocumentBuilder();
+            Document        doc               = null;
+            Element         incroot           = null;
+            File            statusmessagefile = null;
+            boolean         filecreate        = false;
+            
+            // try to open and parse an existing statusmessage file or create a new dom tree
+            statusmessagefile = new File(messagefile);
+            if (statusmessagefile.exists()) {
+                try {
+                    // try to parse the existing statusmessage xml-file
+                    // load statusmessages xml file
+                    CAT.warn( ">>> parsing statusmessages xml-file ...");
+                    doc = domparser.parse(messagefile);
+                    // doc.normalize();
+                    maker.updateFile(scfac, allscodes, doc, messagefile);
+                } catch (Exception e) {
+                    CAT.error("FATAL1: " + e.toString());
+                    System.exit(ERR_PARSE);
+                }
+            } else {   
+                // if not found -> generate one
+                doc = dbfac.newDocumentBuilder().newDocument();
+                maker.createFile(scfac, allscodes, doc, messagefile);
+            }
+
+            tsfile.setLastModified(lastmod);
         }
     }
-
+        
     protected void createFile(StatusCodeFactory scfac, TreeSet allscodes, Document doc, String filename) {
         CAT.warn(">>> Creating NEW messagefile " + filename);
         Element root = doc.createElement(INCPARTS);
@@ -321,4 +335,63 @@ public class MakeStatusMessageXML {
             return name1.compareTo(name2);
         }
     }// PartNodeComparator
+
+
+    private long needToGenerate(Properties props, File tsfile) throws IOException {
+        long    timestamp;
+        long    max = 0l;
+        
+        if (!tsfile.exists()) {
+            tsfile.createNewFile();
+            timestamp = 0l;
+        } else {
+            timestamp = tsfile.lastModified();
+        }
+        HashMap propfiles = selectProperties(props,  "statuscodefactory.propertyfile");
+        URL     url;
+        
+        for (Iterator i = propfiles.values().iterator(); i.hasNext(); ) {
+            String name = (String) i.next();
+            if (!name.startsWith("/")) {
+                url = getClass().getClassLoader().getResource(name);
+                String urlstr = url.getFile();
+                if (url.getProtocol().equals("jar")) {
+                    name = urlstr.substring(urlstr.indexOf("/"), urlstr.indexOf("!"));
+                }  else {
+                    name = urlstr.substring(urlstr.indexOf("/"));
+                }
+                // CAT.warn("URL is: " + url + " Name is: " + name);
+            }
+            File scfile = new File(name);
+            if (scfile.exists() && scfile.canRead()) {
+                max = Math.max(max, scfile.lastModified());
+            }
+        }
+        if (max > timestamp) {
+            return max;
+        } else {
+            return 0l;
+        }
+    }
+
+    
+    private static HashMap selectProperties(Properties props, String prefix) {
+    	String p;
+    	Enumeration enum;
+    	HashMap     result = new HashMap();
+        
+    	prefix += '.';
+    	enum = props.propertyNames();
+    	while (enum.hasMoreElements()) {
+            p = (String) enum.nextElement();
+            if (p.startsWith(prefix)) {
+                String suffix = p.substring(prefix.length(),p.length());
+                result.put(suffix,props.get(p));
+            }
+    	}
+        
+    	return result;
+    }
+
+
 }

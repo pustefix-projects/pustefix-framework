@@ -1,3 +1,10 @@
+2003-08-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (needToGenerate): new mthod to
+	ceck if any scode property file or a jar file containing a scode property file is 
+	newer than the last timestamp when we called MakeStatusMessageXML. Only call it if the timestamp is 
+	earlier than the max of the modtimes.
+
 2003-08-13  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java
