@@ -23,9 +23,9 @@
   <siteAddress>pustefix.sourceforge.net</siteAddress>
 
   <repository>
-    <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</connection>
-    <developerConnection>scm:cvs:ext:mlhartme@cvs.sourceforge.net:/cvsroot/pfixcore:pfixcore</developerConnection>
-    <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore</url>
+    <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</connection>
+    <developerConnection>scm:cvs:ext:mlhartme@cvs.sourceforge.net:/cvsroot/pustefix:pfixcore</developerConnection>
+    <url>http://cvs.sourceforge.net/viewcvs.py/pustefix/pfixcore/</url>
   </repository>
 
   <mailingLists>
@@ -119,13 +119,36 @@
       <url>http://sourceforge.net/users/mlhartme/</url>
       <timezone>+1</timezone>
     </developer>
+    <developer>
+      <name>Martin Leidig</name>
+      <id>mtld</id>
+      <email>mtld@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/mtld/</url>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Andreas Ecker</name>
+      <id>ecker</id>
+      <email>ecker@users.sourceforge.net</email>
+      <organization>Schlund + Partner</organization>
+      <roles>
+        <role>Unix Development</role>
+      </roles>
+      <url>http://sourceforge.net/users/ecker/</url>
+      <timezone>+1</timezone>
+    </developer>
   </developers>
 
   <build>
     <sourceDirectory>${basedir}/src</sourceDirectory>
   </build>
   <reports>
-    <!-- default reports in maven 1.0 rc 4 -->
+    <!-- default reports in maven 1.0: -->
+    
 	<report>maven-changelog-plugin</report>
     <report>maven-changes-plugin</report>
 	<report>maven-checkstyle-plugin</report>
@@ -139,6 +162,7 @@
 	     report>maven-license-plugin</report -->
 	<report>maven-linkcheck-plugin</report>
 	<report>maven-pmd-plugin</report>
+	
 	<!-- we don't use javadoc @todo tags: 
 	     report>maven-tasklist-plugin</report -->
 
