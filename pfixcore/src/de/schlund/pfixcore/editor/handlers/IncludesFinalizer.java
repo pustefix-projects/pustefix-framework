@@ -83,8 +83,16 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         
         // Render detailed view of currently selected include
         if (currinclude != null) {
-            boolean lock    = esess.getLock(currinclude); 
-            String  dir     = currinclude.getDir();
+            boolean lock    = false;
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            if(allowed) {
+                lock = esess.getLock(currinclude);
+            } else {
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("User is not allowed to edit this include. No lock required.");
+                }
+            }
+            
             long    mod     = currinclude.getModTime();
             String  path    = currinclude.getPath();
             String  part    = currinclude.getPart();

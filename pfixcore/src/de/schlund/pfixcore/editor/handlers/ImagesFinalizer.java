@@ -65,8 +65,15 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
         
         // Render detailed view of currently selected target
         if (currimage != null) {
-            boolean lock = esess.getLock(currimage); 
-            String  dir  = currimage.getDir();
+            boolean lock = false;
+            boolean allowed = esess.getUser().getUserInfo().isImageEditAllowed(currimage.getPath());
+            if(allowed) {
+                lock = esess.getLock(currimage);
+            } else {
+                if(CAT.isDebugEnabled()) {
+                    CAT.debug("User is not allowed to edit this image. No lock required.");
+                }
+            }
             long    mod  = currimage.getModTime();
             String  path = currimage.getPath();
             String  name = path.substring(path.lastIndexOf("/") + 1);
