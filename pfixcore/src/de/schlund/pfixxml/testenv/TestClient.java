@@ -1,6 +1,14 @@
 package de.schlund.pfixxml.testenv;
 
+import com.icl.saxon.TransformerFactoryImpl;
+
+import com.sun.net.ssl.KeyManager;
+import com.sun.net.ssl.SSLContext;
+import com.sun.net.ssl.TrustManager;
+import com.sun.net.ssl.X509TrustManager;
+
 import gnu.getopt.Getopt;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -8,16 +16,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+
 import java.net.InetAddress;
 import java.net.Socket;
+
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLSocketFactory;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
@@ -41,23 +53,22 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
+
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+
 import org.apache.xpath.XPathAPI;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
-import com.icl.saxon.TransformerFactoryImpl;
-import com.sun.net.ssl.KeyManager;
-import com.sun.net.ssl.SSLContext;
-import com.sun.net.ssl.TrustManager;
-import com.sun.net.ssl.X509TrustManager;
 
 
 /**
@@ -111,7 +122,7 @@ public class TestClient {
                 return;
             }
             tc.checkOptions();
-            ArrayList files = tc.readFiles();
+            ArrayList    files  = tc.readFiles();
             StepConfig[] config = tc.doPrepare(files);
             System.out.println("\n Starting test NOW!\n");
             for (int i = 0; i < LOOP_COUNT; i++) {
@@ -195,8 +206,8 @@ public class TestClient {
 
     private StepConfig[] doPrepare(ArrayList files) throws TestClientException {
         DocumentBuilder doc_builder;
-        StepConfig[]    config = new StepConfig[files.size()];
-        boolean ssl_initialized = false;
+        StepConfig[]    config          = new StepConfig[files.size()];
+        boolean         ssl_initialized = false;
         try {
             doc_builder = doc_factory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
@@ -254,20 +265,19 @@ public class TestClient {
             StepConfig conf = new StepConfig(((File) files.get(i)).getName(), recorded_in, 
                                              recorded_out, stylessheet);
             config[i] = conf;
-            
             // check, if we must init SSL
             String proto = null;
             try {
                 proto = XPathAPI.selectSingleNode(recorded_in, "/request/proto").getFirstChild().getNodeValue();
             } catch (TransformerException e) {
-            	throw new TestClientException("TransformerException occured!", e);
+                throw new TestClientException("TransformerException occured!", e);
             }
-            if(proto.toUpperCase().equals("https".toUpperCase()) && !ssl_initialized) {
-            	System.out.println("https detected!");
-            	System.out.print("Initializing SSL...");
-            	initSSL();
-            	System.out.println("Done");
-            	ssl_initialized = true;
+            if (proto.toUpperCase().equals("https".toUpperCase()) && ! ssl_initialized) {
+                System.out.println("https detected!");
+                System.out.print("Initializing SSL...");
+                initSSL();
+                System.out.println("Done");
+                ssl_initialized = true;
             }
         }
         System.out.println("Done");
@@ -389,8 +399,8 @@ public class TestClient {
         } else {
             System.out.println("Reading files...");
         }
-        if(!modeQuiet) {
-	        System.out.println("Done");
+        if (! modeQuiet) {
+            System.out.println("Done");
         }
         return files;
     }
@@ -457,7 +467,7 @@ public class TestClient {
         if (httpConnect != null && config.hostEquals(httpConnect)) {
             return;
         } else {
-        	StringBuffer sb = new StringBuffer(255);
+            StringBuffer sb = new StringBuffer(255);
             currentConfig = config;
             sessionId     = null;
             sb.append("----------------------------------------------\n");
@@ -469,9 +479,9 @@ public class TestClient {
             sb.append("  Host=").append(currentConfig.getHost()).append("\n");
             sb.append("  Port=").append(currentConfig.getPort()).append("\n");
             sb.append(" Proto=").append(currentConfig.getProtocol().toString()).append("\n");
-            if(httpConnect != null && httpConnect.isOpen()) {
-            	httpConnect.close();
-            	conMan.releaseConnection(httpConnect);
+            if (httpConnect != null && httpConnect.isOpen()) {
+                httpConnect.close();
+                conMan.releaseConnection(httpConnect);
             }
             httpConnect = conMan.getConnection(currentConfig);
             try {
@@ -481,8 +491,8 @@ public class TestClient {
             }
             sb.append("   SSL=").append(httpConnect.isSecure()).append("\n");
             sb.append("----------------------------------------------\n");
-            if(!modeQuiet) {
-	            System.out.println(sb.toString());
+            if (! modeQuiet) {
+                System.out.println(sb.toString());
             }
         }
     }
@@ -503,8 +513,8 @@ public class TestClient {
             uri_session = uri_session + ";jsessionid=" + sessionId;
         }
         StringBuffer sb = null;
-        if(!modeQuiet) {
-        	sb = new StringBuffer(255);
+        if (! modeQuiet) {
+            sb = new StringBuffer(255);
         }
         if (modeQuiet) {
         } else if (modeVerbose) {
@@ -523,18 +533,19 @@ public class TestClient {
         post.addParameters(post_params);
         try {
             status_code = post.execute(new HttpState(), httpConnect);
-      	} catch (HttpException e) {
+        } catch (HttpException e) {
             throw new TestClientException("HTTPException occured!:" + status_code, e);
-        } catch (IOException e) {
+        }
+         catch (IOException e) {
             throw new TestClientException("IOException occured!", e);
         }
         request_count++;
-        if(!modeQuiet) {
-	        sb.append("   StatusCode=").append(status_code).append("\n");
+        if (! modeQuiet) {
+            sb.append("   StatusCode=").append(status_code).append("\n");
         }
         if (sessionId == null) { // it's the first request, follow redirect to get a new session
-            if(modeVerbose) {
-            	System.out.println("No session yet. Will follow redirect to get one.");
+            if (modeVerbose) {
+                System.out.println("No session yet. Will follow redirect to get one.");
             }
             try {
                 uri = post.getURI().toString();
@@ -566,11 +577,12 @@ public class TestClient {
             doc = doc_builder.parse(response_stream);
         } catch (SAXException e) {
             throw new TestClientException("SaxException occured", e);
-        } catch (IOException e) {
+        }
+         catch (IOException e) {
             throw new TestClientException("IOException occured", e);
         }
-        if(!modeQuiet) {
-        	System.out.println(sb.toString());
+        if (! modeQuiet) {
+            System.out.println(sb.toString());
         }
         return doc;
     }
