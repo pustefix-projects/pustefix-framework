@@ -32,9 +32,8 @@
             .mainbody       { background-color: #ffeedd; padding-left: 10px;}
             .navibody       { width: 120px; background-color:#aaccff; border-right: solid black 1px; }
             
-            h1 { }
-            h2 { background-color: #6688bb; color: #eeeeee; font-family: arial, helvetica; font-weight: bold; }
-            h2:before { content: url("img/triangle.gif") }
+            h1 { background-color: #6688bb; color: #eeeeee; font-family: arial, helvetica; font-weight: bold; }
+            h1:before { content: url("img/triangle.gif") }
 
             .stdtable       { border-spacing: 0px; margin-right: 40px; margin-left: 40px; background: #ccbbbb; }
             .stdtable tr    { vertical-align: top; }
