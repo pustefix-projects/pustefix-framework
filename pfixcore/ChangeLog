@@ -4,6 +4,14 @@
       added exception-template to incorparate exception-configuration into the
       servlet-property-files.
 
+    * src/de/schlund/pfixcore/workflow/Context.java:
+      added getLastException()-method which simply calls getLastException()
+      on the current request.
+
+    * src/de/schlund/pfixxml/PfixServletRequest.java:
+      added getLastException/setLastException which stores/retrieves the
+      provided parameter (a Throwable-instance) in/from the original request
+
     * src/de/schlund/pfixxml/ServletManager.java:
       added initExceptionConfigs()-method for initialization of declarative
       exception handling and the hook that calls the configured
