@@ -30,8 +30,8 @@ $(JNI_LIB): $(PFX_SOURCES)
 	@make dist 
 
 init:
-	@mkdir ${JNI_BLDDIR} 2>/dev/null
-	@mkdir ${JNI_INCDIR} 2>/dev/null
+	@if [ ! -d ${JNI_BLDDIR} ]; then mkdir ${JNI_BLDDIR}; fi
+	@if [ ! -d ${JNI_INCDIR} ]; then mkdir ${JNI_INCDIR}; fi
 
 headers:
 	@echo "*** Creating JNI header files"
