@@ -776,7 +776,7 @@ wfxEditor.prototype.col2tag = function( buf ) {
   buf = buf.replace( /&lt;/gi,   "<" );
   buf = buf.replace( /&gt;/gi,   ">" );
   buf = buf.replace( /&amp;/gi,  "&" );
-  //  buf = buf.replace( /&quot;/gi, "\"");
+  buf = buf.replace( /&quot;/gi, "\"");
   
   if( wfx.is_ie ) {
     //      buf = buf.replace( /\r\n\r\n/g, "\r\n");
