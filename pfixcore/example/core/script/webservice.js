@@ -9,6 +9,8 @@ XMLNS_PREFIX_MAP[XMLNS_XSI]="xsi";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENC]="soapenc";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENV]="soapenv";
 
+var ERR_WRONGARGS="Wrong number of arguments";
+
 
 //*********************************
 //QName(localpart)
@@ -91,29 +93,40 @@ function XMLType() {
 var xmltype=new XMLType();
 
 //*********************************
-//Parameter(String name,QName xmlType,parameterMode)
-//Parameter(String name,QName xmlType,String typeInfo,parameterMode)
+//JSType
+//*********************************
+function JSType() {
+	
+	this.JS_BOOLEAN="Boolean";
+	this.JS_DATE="Date";
+	this.JS_FLOAT="Float";
+	this.JS_INTEGER="Integer";
+	this.JS_STRING="String";
+	
+}
+
+var jstype=new JSType();
+
+
+//*********************************
+//Parameter(String name,QName xmlType,String jsType,parameterMode)
 //*********************************
 function Parameter() {
 	this.name=null;
 	this.xmlType=null;
-	this.typeInfo=null;
+	this.jsType=null;
 	this.parameterMode=null;
 	this.init(arguments);
 	this.value=null;
 }
 
 Parameter.prototype.init=function(args) {
-	if(args.length==3) {
+	if(args.length==4) {
 		this.name=args[0];
 		this.xmlType=args[1];
-		this.parameterMode=args[2];
-	} else if(args.length==4) {
-		this.name=args[0];
-		this.xmlType=args[1];
-		this.typeInfo=args[2];
+		this.jsType=args[2];
 		this.parameterMode=args[3];
-	}
+	}else throw "Wrong number of arguments";
 }
 
 Parameter.prototype.setValue=function(value) {
@@ -278,34 +291,33 @@ XMLWriter.prototype.getPrefix=function(nsuri) {
 
 
 //*********************************
-//SimpleTypeSerializer(type)
+//SimpleTypeSerializer(QName xmlType,String jsType)
 //*********************************
-function SimpleTypeSerializer(type) {
-	this.type=null;
-	this.init(arguments);
-}
-
-SimpleTypeSerializer.prototype.init=function(args) {
-	if(args.length==1) {
-		this.type=args[0];
-	} else throw "Wrong argument number";
+function SimpleTypeSerializer(xmlType,jsType) {
+	if(arguments.length==2) {
+		this.xmlType=xmlType;
+		this.jsType=jsType;
+	} else throw ERR_WRONGARGS;
 }
 
 //serialize(value,name,writer)
 SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 	writer.startElement(name);
-	var prefix=writer.getPrefix(this.type.namespaceUri);
-	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.type.localpart);
+	var prefix=writer.getPrefix(this.xmlType.namespaceUri);
+	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+this.xmlType.localpart);
 	writer.writeChars(value);
 	writer.endElement(name);
 }
 
 
 //*********************************
-//ArraySerializer(type)
+//ArraySerializer(QName xmlType,String jsType)
 //*********************************
-function ArraySerializer(type) {
-	this.type=type;
+function ArraySerializer(xmlType,jsType) {
+	if(arguments.length==2) {
+		this.xmlType=xmlType;
+		this.jsType=jsType;
+	} else throw ERR_WRONGARGS;
 }
 
 ArraySerializer.prototype.serialize=function(value,name,writer) {
@@ -359,54 +371,61 @@ function TypeMapping() {
 
 //initBuiltin()
 TypeMapping.prototype.initBuiltin=function() {
-	this.builtin[xmltype.XSD_INT.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltype.XSD_STRING.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltype.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
-	this.builtin[xmltype.SOAP_INT.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltype.SOAP_STRING.hashKey()]=this.SER_SIMPLE;
+	this.builtin[jstype.JS_BOOLEAN]=this.SER_SIMPLE;
+	this.builtin[jstype.JS_DATE]=this.SER_SIMPLE;
+	this.builtin[jstype.JS_FLOAT]=this.SER_SIMPLE;
+	this.builtin[jstype.JS_INTEGER]=this.SER_SIMPLE;
+	this.builtin[jstype.JS_STRING]=this.SER_SIMPLE;
 }
 
-//register(QName type,Serializer serializer)
-TypeMapping.prototype.register=function(type,serializer) {
-	this.mappings[type.hashKey()]=serializer;
+//register(String jsType,Serializer serializer)
+TypeMapping.prototype.register=function(jsType,serializer) {
+	this.mappings[jsType]=serializer;
 }
 
-//Serializer getSerializer(QName type) 
-TypeMapping.prototype.getSerializer=function(type) {
-	var serializer=this.mappings[type.hashKey()];
-	if(serializer==null) serializer=this.getBuiltinSerializer(type);
-	if(serializer!=null) this.register(type,serializer);
-	else throw "Can't find serializer for type '"+type.toString()+"'";
+//Serializer getSerializer(QName xmlType,String jsType)
+TypeMapping.prototype.getSerializer=function(xmlType,jsType) {
+	var serializer=this.mappings[jsType];
+	if(serializer==null) {
+		serializer=this.getBuiltinSerializer(xmlType,jsType);
+		if(serializer==null) throw "Can't find serializer for type '"+jsType+"'";
+		this.register(jsType,serializer);
+	} 
 	return serializer;
 }
 
-//Serializer getBuiltinSerializer(QName type)
-TypeMapping.prototype.getBuiltinSerializer=function(type) {
-	var serType=this.builtin[type.hashKey()];
+//Serializer getBuiltinSerializer(QName xmlType,String jsType)
+TypeMapping.prototype.getBuiltinSerializer=function(xmlType,jsType) {
+	var serializer=null;
+	var serType=this.builtin[jsType];
 	if(serType==this.SER_SIMPLE) {
-		return new SimpleTypeSerializer(type);
+		serializer=new SimpleTypeSerializer(xmlType,jsType);
 	} else if(serType==this.SER_ARRAY) {
-		return new ArraySerializer();
+		serializer=new ArraySerializer(xmlType,jsType);
 	}
+	return serializer;
+}
+
+//String getJSTypeForQName(QName type)
+TypeMapping.prototype.getJSTypeForQName=function(type) {
+	
 }
 
 var typeMapping=new TypeMapping();
 
 
 //*********************************
-// RPCSerializer(QName opName,ArrayOfParameter params,values,...)
+// RPCProvider(QName opName,ArrayOfParameter params,values,...)
 //*********************************
-function RPCSerializer(opName,params) {
+function RPCProvider(opName,params) {
 	this.opName=opName;
 	this.params=params;
 }
 
-RPCSerializer.prototype.serialize=function(writer) {
+RPCProvider.prototype.serialize=function(writer) {
 	writer.startElement(this.opName);
-	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
 	for(var i=0;i<this.params.length;i++) {
-		var serializer=typeMapping.getSerializer(this.params[i].xmlType);
-		
+		var serializer=typeMapping.getSerializer(this.params[i].jsType);
 		serializer.serialize(this.params[i].value,this.params[i].name,writer);
 	}
 	writer.endElement(this.opName);
@@ -421,7 +440,7 @@ function Call() {
 	this.opName=null;
 	this.params=new Array();
 	this.retXmlType=null;
-	this.retTypeInfo=null;
+	this.retJsType=null;
   this.callback=null;
 }
 
@@ -440,14 +459,15 @@ Call.prototype.setOperationName=function() {
 }	
 
 //addParameter(paramName,xmlType,parameterMode)
-//addParameter(paramName,xmlType,typeInfo,parameterMode)
+//addParameter(paramName,xmlType,jsType,parameterMode)
 Call.prototype.addParameter=function() {
 	var param;
 	if(arguments.length==3) {
-		param=new Parameter(arguments[0],arguments[1],arguments[2]);
+		var jsType=typeMapping.getJSTypeForQName(arguments[1]);
+		param=new Parameter(arguments[0],arguments[1],jsType,arguments[2]);
 	} else if(arguments.length==4) {
 		param=new Parameter(arguments[0],arguments[1],arguments[2],arguments[3]);
-	}
+	} else throw "Wrong number of arguments";
 	if(param!=null) this.params.push(param);
 }
 
@@ -458,7 +478,7 @@ Call.prototype.setReturnType=function() {
 		this.retXmlType=arguments[0];
 	} else if(arguments.length==2) {
 		this.retXmlType=arguments[0];
-		this.retTypeInfo=arguments[1];
+		this.retJsType=arguments[1];
 	}
 }
 
@@ -480,7 +500,7 @@ Call.prototype.invoke=function() {
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
-	var rpc=new RPCSerializer(this.opName,this.params);
+	var rpc=new RPCProvider(this.opName,this.params);
 	
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
@@ -648,13 +668,11 @@ function test() {
 	var call=new Call();
 	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
 	call.setOperationName(new QName("add"));
-	call.addParameter("value1",xmltype.XSD_INT,"IN");
-	call.addParameter("value2",xmltype.XSD_INT,"IN");
-	//call.addParameter("test",xmltype.SOAP_STRING,"IN");
-	//call.addParameter("test",xmltype.SOAP_ARRAY,"xsd:int[]","IN");
-	//call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_int"),"IN");
+	call.addParameter("value1",xmltype.XSD_INT,jstype.JS_INTEGER,"IN");
+	call.addParameter("value2",xmltype.XSD_INT,jstype.JS_INTEGER,"IN");
+	//call.addParameter("test",new QName("urn:webservices.example.pfixcore.schlund.de","ArrayOf_xsd_int"),jstype.JS_INTEGER+"[]","IN");
 	
-	call.setReturnType(xmltype.XSD_INT);
+	//call.setReturnType(xmltype.XSD_INT);
 	//try {
 		call.invoke(4,new Array(4,"jj","fdfdfd"));
 	//} catch(exception) {
