@@ -1,3 +1,11 @@
+2003-02-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.5
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	(init): Eeeek. fix a bug where the resources were not init'ed in
+	the correct order.
+
 2003-02-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_propfiles.xsl: implemented new xml

@@ -8,7 +8,7 @@
     <prohibitedit>true</prohibitedit>
   </servletinfo>
 
-  <context class="de.schlund.pfixcore.workflow.AuthContext" defaultflow="Editor" authpage="editoruserauth">
+  <context defaultflow="Editor" authpage="editoruserauth">
     <resource class="de.schlund.pfixcore.editor.resources.EditorSessionStatusImpl">
       <implements class="de.schlund.pfixcore.editor.resources.EditorSessionStatus"/>
     </resource>
