@@ -11,7 +11,7 @@
     <property file="build.properties"/>
     <property environment="env"/>
     <property name="project.name"           value="pfixcore"/>
-    <property name="project.version"        value="0.5.2" description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
+    <property name="project.version"        value="0.5.3-pre" description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
     <property name="uid"                    value="${env.USER}"/>
     <property name="build.compiler"         value="jikes"/>
     <property name="build.compiler.emacs"   value="true"/>
