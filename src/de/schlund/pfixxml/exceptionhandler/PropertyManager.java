@@ -32,6 +32,7 @@ import java.util.Vector;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.log4j.Category;
 import org.apache.oro.text.perl.MalformedPerl5PatternException;
 import org.apache.oro.text.perl.Perl5Util;
 
@@ -60,6 +61,7 @@ class PropertyManager {
     private long mtime_                     =0;
     private Properties properties_          =null;
     private final Hashtable validdimensions = new Hashtable();
+    private static Category CAT = Category.getInstance(PropertyManager.class.getName());
 
     //~ Constructors ...........................................................
 
@@ -138,6 +140,30 @@ class PropertyManager {
                                                     reportscheduledim, 
                                                     straceobs, straceobsdim);
         return config;
+    }
+
+
+    void printConfig() {
+        if(CAT.isInfoEnabled()) {
+        
+            StringBuffer sb = new StringBuffer(512);
+            sb.append("\nExceptionHandler after init():\n");
+            GeneralConfig gconfig = getGeneralConfig();
+            sb.append("General config: \n"+gconfig.toString());
+        
+            sb.append("Exception config: \n");
+            ExceptionConfig[] econfigs = getExceptionConfig();
+            for(int i=0; i<econfigs.length; i++) {
+                sb.append(econfigs[i].toString());
+            }
+        
+            doMailConfig();
+            sb.append("Mail config: \n");
+            sb.append(MailConfig.getInstance().toString());
+            
+            CAT.info(sb.toString());
+        }
+        
     }
 
     /**

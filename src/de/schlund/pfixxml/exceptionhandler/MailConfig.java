@@ -88,4 +88,19 @@ class MailConfig {
     String[] getTo() {
         return to_;
     }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer(128);
+        sb.append("Send="+send_).append("\n");
+        if(send_) {
+            sb.append("To  =");
+            for(int i=0; i<to_.length; i++) {
+                sb.append(""+to_[i]);
+            }
+            sb.append("\n");
+            sb.append("From="+from_).append("\n");
+            sb.append("Host="+host_).append("\n");
+        }
+        return sb.toString();
+    }
 }

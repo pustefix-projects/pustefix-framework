@@ -131,6 +131,7 @@ public class ExceptionHandler implements FactoryInit {
         try {
             propman_.init(propfile_);
             propman_.checkProperties();
+            propman_.printConfig();
             xhandler_.init();
             xhandler_.doIt();
         } catch(PFConfigurationException e) {
