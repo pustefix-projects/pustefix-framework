@@ -3,9 +3,3 @@
   <ihandler class="de.schlund.pfixcore.editor.handlers.ImagesHandler"/>
   <param name="Path" type="String"/>
 </interface>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

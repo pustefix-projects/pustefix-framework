@@ -12,9 +12,3 @@
     <caster class="de.schlund.pfixcore.generator.casters.ToFile"/>
   </param>
 </interface> 
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -11,9 +11,3 @@
   <param name="Content" type="String" occurance="optional"/>
   <param name="ExceptionMsg" type="String" occurance="optional"/>
 </interface>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -3,9 +3,3 @@
   <ihandler class="de.schlund.pfixcore.editor.handlers.TargetsHandler"/>
   <param name="Target" type="String"/>
 </interface> 
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

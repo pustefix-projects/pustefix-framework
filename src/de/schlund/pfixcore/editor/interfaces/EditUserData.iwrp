@@ -23,9 +23,3 @@
   <param name="editimg" type="String" occurance="indexed"/>
   <param name="editcom" type="String" occurance="indexed"/>
 </interface>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -5,9 +5,3 @@
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
 </interface> 
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

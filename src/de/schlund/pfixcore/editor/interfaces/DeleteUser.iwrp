@@ -3,9 +3,3 @@
   <ihandler class="de.schlund.pfixcore.editor.handlers.DeleteUserHandler"/>
   <param name="Id" type="String" frequency="multiple"/>
 </interface> 
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -4,9 +4,3 @@
   <param name="Path"    type="String"/>
   <param name="Part"    type="String"/>
 </interface>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

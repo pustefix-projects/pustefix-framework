@@ -4,9 +4,3 @@
   <param name="User" type="String"/>
   <param name="Pass" type="String"/>
 </interface>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
