@@ -201,7 +201,7 @@ class PFXHandler {
             MailConfig mailconfig = MailConfig.getInstance();
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
         } catch (EmailSenderException e) {
-            pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
+            pfutil_.fatal("Sending of errormail failed!!! " + e);
         }
     }
 
@@ -229,7 +229,7 @@ class PFXHandler {
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
             
         } catch (EmailSenderException e) {
-            pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
+            pfutil_.fatal("Sending of errormail failed!!! " + e);
         }
     }
     /**
@@ -247,7 +247,7 @@ class PFXHandler {
             EmailSender.sendMail(subject, message, mailconfig.getTo(), mailconfig.getFrom(), mailconfig.getHost());
             
         } catch (EmailSenderException e) {
-            pfutil_.fatal("Sending of errormail failed!!! " + e.getMessage());
+            pfutil_.fatal("Sending of errormail failed!!! " + e);
         }
     }
 

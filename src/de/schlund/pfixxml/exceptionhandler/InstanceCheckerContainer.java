@@ -148,12 +148,7 @@ class InstanceCheckerContainer {
 					String message = sch.getMessage();
 					StackTraceElement[] strace = sch.getStrace();
 					if (message == null) {
-						if (strace.length > 1) {
-							message = strace[1].toString().trim();
-						} else if (strace.length == 1) {
-							// This case can happen when handling a
-							// OutofMemoryError, where
-							// the stracktrace has a length of only 1.
+						if (strace.length > 0) {
 							message = strace[0].toString().trim();
 						} else {
 							// what's this?
