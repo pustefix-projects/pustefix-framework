@@ -360,7 +360,9 @@ or delete the DOCTYPE definition -->
   </target>
   
   <target name="clean-webapps" depends="clean-webapps-avl" if="avl.clean-webapps">
-    <fileset dir="${dir.webapps}" includes="**/WEB-INF/web.xml"/>
+    <delete>
+      <fileset dir="${dir.webapps}" includes="**/WEB-INF/web.xml"/>
+    </delete>
   </target>
 
   <target name="realclean" depends="clean, clean-jni, realclean-core">
