@@ -72,7 +72,7 @@ public class EditorHelper {
                     }
                 }
             }
-            for (; j.hasNext();) {
+            while (j.hasNext()) {
                 pinfo = (PageInfo) j.next();
                 if (pinfo.getTargetGenerator() != tgen)
                     continue;
@@ -249,7 +249,7 @@ public class EditorHelper {
             Target target = (Target) i.next();
             pages.addAll(target.getPageInfos());
         }
-        renderAffectedPages(ess, pages, prods, resdoc, root);
+        renderAffectedPages(pages, prods, resdoc, root);
     }
 
     public static void renderAffectedPages(EditorSessionStatus ess, Target target, ResultDocument resdoc, Element root) throws Exception {
@@ -262,10 +262,10 @@ public class EditorHelper {
         } else {
             prods.add(ess.getProduct());
         }
-        renderAffectedPages(ess, pages, prods, resdoc, root);
+        renderAffectedPages(pages, prods, resdoc, root);
     }
 
-    private static void renderAffectedPages(EditorSessionStatus ess, TreeSet pages, HashSet prods, ResultDocument resdoc, Element root) {
+    private static void renderAffectedPages(TreeSet pages, HashSet prods, ResultDocument resdoc, Element root) {
 
         for (Iterator i = prods.iterator(); i.hasNext();) {
             EditorProduct prod = (EditorProduct) i.next();
@@ -330,7 +330,6 @@ public class EditorHelper {
 
     public static Element getIncludePart(Document doc, AuxDependency include) throws Exception {
         String part = include.getPart();
-        Path path = include.getPath();
         return (Element) XPath.selectNode(doc, "/include_parts/part[@name = '" + part + "']");
     }
 
@@ -589,7 +588,6 @@ public class EditorHelper {
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
             Path path = curr.getPath();
-            String dir = path.getDir();
             String part = curr.getPart();
             String product = curr.getProduct();
 
@@ -598,9 +596,7 @@ public class EditorHelper {
             inc.setAttribute("part", part);
             inc.setAttribute("product", product);
         }
-            
     }
-
     
     public static void renderAllIncludesForNavigation(TreeSet includes, ResultDocument resdoc,
                                                       Element root, AuxDependency currinc, boolean doshow) {

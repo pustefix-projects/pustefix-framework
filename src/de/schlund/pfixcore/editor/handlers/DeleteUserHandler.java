@@ -50,7 +50,6 @@ public class DeleteUserHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm     = context.getContextResourceManager();
         DeleteUser             deluser = (DeleteUser) wrapper;
-        EditorSessionStatus    esess   = EditorRes.getEditorSessionStatus(crm);
         String[]               delid   = deluser.getId();
         ArrayList              users   = new ArrayList();
         

@@ -24,7 +24,6 @@ import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Path;
-import org.apache.log4j.Category;
 import org.w3c.dom.Element;
 
 /**
@@ -39,8 +38,6 @@ import org.w3c.dom.Element;
  */
 
 public class EditorProduct {
-    private static Category               CAT   = Category.getInstance(EditorProduct.class.getName());
-    
     private final String                 name;
     private final String                 comment;
     private final Path                   depend;

@@ -48,7 +48,6 @@ public class CoreDocumentation {
     private Document doc;
     private String mode;
     private String modus;
-    private String value;
 
     public CoreDocumentation(String param) {
         this.id = encode(param);

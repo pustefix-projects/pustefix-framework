@@ -22,7 +22,6 @@ import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import org.apache.log4j.*;
 
 /**
  * CancelEditUserHandler.java
@@ -36,8 +35,6 @@ import org.apache.log4j.*;
  */
 
 public class CancelEditUserHandler implements IHandler {
-    private Category CAT = Category.getInstance(this.getClass().getName());
-
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm    = context.getContextResourceManager();
         EditorSessionStatus    esess  = EditorRes.getEditorSessionStatus(crm);
