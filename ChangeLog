@@ -1,3 +1,10 @@
+2003-10-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: changed "files" attribute to "includes" as ant doesn't seem to know about this attribute 
+	(Error is: 
+	BUILD FAILED
+	file:/home/jtl/projects/pfixcore/build.xml:454: The <fileset> data type doesn't support the "files" attribute.)
+
 2003-10-24  Adam Habermann  <adam.habermann@schlund.de>
 	
 	* skel/build.xml: does not require specifying the version of pfixcore here, in order to be able

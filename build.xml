@@ -453,7 +453,7 @@
     <echo level="verbose" message="**/project.xml.in matches ${projectxmlins}"/>
     <dependset>
       <srcfileset refid="id.fileset.projectxmlin"/>
-      <targetfileset dir="${dir.projects}/servletconf" files="projects.xml"/>
+      <targetfileset dir="${dir.projects}/servletconf" includes="projects.xml"/>
     </dependset>
     <pfx-xslt
       style="${dir.projects}/core/build/create_projects.xsl"
