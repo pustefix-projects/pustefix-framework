@@ -6,6 +6,7 @@
       <lang name="default">
 		<h1>Calculator service</h1>
 		
+		<div>
 		<h2>Pustefix SOAP</h2>
 		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
 		<p><span class="error" id="pfxsoap_error"></span></p>
@@ -30,7 +31,9 @@
 				</tr>
 			</table>	
 		</form>
+		</div>
 		
+		<div name="gecko_disp" style="display:none">
 		<h2>Mozilla low-level SOAP</h2>
 		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
 		<p><span class="error" id="soap_error"></span></p>
@@ -107,7 +110,7 @@
 			<a href="javascript:mysoapCall()">Send SOAP request</a>
 		</p>
 		
-		
+		</div>
 		
 		
       </lang>
