@@ -152,6 +152,10 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     public void addSCode<xsl:value-of select="$pname"/>(de.schlund.util.statuscodes.StatusCode scode, String index) {
         gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, index);
     }
+
+    public void addSCodeWithArgs<xsl:value-of select="$pname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String index) {
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, index);
+    }
         </xsl:when>
         <xsl:otherwise>
     // <xsl:value-of select="$pname"/>
@@ -167,6 +171,13 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
 
     public void addSCode<xsl:value-of select="$pname"/>(de.schlund.util.statuscodes.StatusCode scode) {
         gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").addSCode(scode);
+        synchronized (errors) {
+            errors.put(gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamInfoForKey("<xsl:value-of select="$pname"/>"));
+        }
+    }
+
+    public void addSCodeWithArgs<xsl:value-of select="$pname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
+        gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args);
         synchronized (errors) {
             errors.put(gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamInfoForKey("<xsl:value-of select="$pname"/>"));
         }
