@@ -1,5 +1,5 @@
 <div>
-<h1>The Targets page</h1>
+<h1>The <i>Targets</i> page</h1>
 
   <p>In the left frame all targets and their  dependency tree are listed. Select a target from that list
     to display detailed information on that target in the right frame.</p>

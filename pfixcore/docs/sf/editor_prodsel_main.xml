@@ -1,1 +1,27 @@
-<div>TODO</div>
+<div>
+<h1>Products and user</h1>
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_prodsel.png">
+          The <i>Products and user</i> page of the <pustefix/> editor
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>The upper box lists all available products and lets you select one of them for editing. 
+            After selection the editor starts with the <a href="editor_tools.html">Tools</a> page.</td>
+          </tr>
+          <tr>
+            <td>The lower box provides buttons as well for listing all editor session and locks as for changing
+            you user data. For more information about this see below.</td>
+          </tr>
+        </table> 
+      </td>
+    </tr>
+  </table>
+
+
+
+</div>
