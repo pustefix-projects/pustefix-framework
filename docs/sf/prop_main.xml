@@ -417,36 +417,84 @@
             </div>
           </xmlcodeOFF>
         </ihandler>
-              
+        <xmlcodeOFF/>
         <authhandler>
-          <!-- Only the pagerequest referred to via a @autpage property of context
-          MUST have, other pagerequest nodes MUST NOT have this subnode -->
-          
-          <authinterface prefix="A_PREFIX" class="A_IWRAPPER"/>
-          <!-- @prefix/@class are mandatory. This denotes the single
-          interface that is responsible for the authentication.
-          The whole node is mandatory! -->
-          <auxinterface prefix="A_PREFIX" class="A_IWRAPPER"/>
-          <!-- @prefix/@class are mandatory if <auxinterface> is given. -->
-          <!-- you can have many auxinterfaces. These denote IHandlers that are
-          called on the authentication page, but no error handling is done. --> 
+          <xmlcodeOFF>
+            <div class="comment">
+              <p>The whole node is optional.
+                It may only be given for a page using a <code>State</code> that is either
+                <code>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</code> or a descendent of it!</p>
+              <p>There may be only one <code>pagerequest</code> using such a <code>State</code>,
+                it must be the one that is also referred to via the <code>authpage</code> attribute of
+                the <code>context</code> node above. Other
+                <code>pagerequest</code> nodes <b>must not</b> have this subnode!</p>
+            </div>
+          </xmlcodeOFF>
+          <authinterface prefix="AName" class="AClassName"/>
+          <auxinterface prefix="AName" class="AClassName"/>
+          <xmlcodeOFF>
+            <div class="comment">
+              <p>
+                One and only one <code>authinterface</code> node <b>must</b> be given.
+                <code>auxinterface</code> nodes are optional.
+              </p>
+              <p>
+                The <code>prefix</code> and <code>class</code> attributes are mandatory for both nodes.
+                The meaning is the same as for the <code>interface</code> subnodes of the <code>ihandler</code>
+                node.
+              </p>
+              <p>
+                The <code>authinterface</code> node denotes the one
+                IWrapper/IHandler combo that is responsible to check
+                the authentification of a user session. The
+                <code>auxinterface</code> nodes denote additional
+                IWrappers/IHandlers that are called together with the
+                authentification handler if the authorization is granted.
+              </p>
+            </div>
+          </xmlcodeOFF>
         </authhandler>
               
         <output>
-          <!-- the whole node is optional -->
-          <resource node="A_NODE" class="A_CR_INTERFACE"/>
-          <!-- @node/@class are mandatory.
-          @node is the node in the output tree ("/formresult/A_NODE") 
-          under which the ContextResource enters its data.
-          @class is one of the ContextResources defined via implements
-          above. -->
-          <!-- you can have many <resource> nodes. -->
+          <xmlcodeOFF>
+            <div class="comment">
+              <p>The whole node is optional. Every page using a State that is itself or a descendant of
+                <code>de.schlund.pfixcore.workflow.app.StaticState</code> can use this.</p>
+              <p>You can have as many <code>resource</code> childnodes as you like.</p>
+            </div>
+          </xmlcodeOFF>
+          <resource node="AName" class="AClassName"/>
+          <xmlcodeOFF>
+            <table class="stdtable">
+              <tr>
+                <th>Attribute</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>class</code></td>
+                <td><b>Mandatory</b>. <code>class</code> is one of the
+                  ContextResources defined via <code>implements</code> above.
+                </td>
+              </tr>
+              <tr>
+                <td><code>node</code></td>
+                <td><b>Mandatory</b>. <code>node</code> is the node in the output tree ("/formresult/<b>AName</b>") 
+                  under which the ContextResource enters its data.</td>
+              </tr>
+            </table>
+          </xmlcodeOFF>
         </output>
               
-        <param name="A_PROP_NAME">A_VALUE</param>
-        <!-- the whole node is optional. It will be transformed into the property
-        "pagerequest.A_PAGE_NAME.A_PROP_NAME=A_VALUE" -->
-        <!-- there can be many <param> nodes. -->
+        <param name="APropertyKey">AValue</param>
+        <xmlcodeOFF>
+          <div class="comment">
+            <p>The node is optional and can be used multiple times. It will be transformed into a java property
+              that is associated to the page. The java property that is constructed will look like this:
+              <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
+              of the <code>name</code> attribute.
+            </p>
+          </div>
+        </xmlcodeOFF>
       </pagerequest>
 
     </properties>
