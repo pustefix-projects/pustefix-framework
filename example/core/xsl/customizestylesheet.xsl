@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="1.1"
                 exclude-result-prefixes="xsl cus" 
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
@@ -25,7 +25,7 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="xsl:include">
+  <xsl:template match="xsl:include | xsl:import">
     <xsl:copy>
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="href"><xsl:value-of select="concat('file://',$docroot,'/',@href)"/></xsl:attribute>

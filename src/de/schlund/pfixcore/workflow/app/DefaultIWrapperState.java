@@ -143,6 +143,8 @@ public class DefaultIWrapperState extends StaticState {
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
         } else if (context.currentFlowStepWantsPostProcess()) {
+            // but we need the Status of the Context Resources in this case to base out decision on
+            // where to jump to.
             renderContextResources(context, resdoc);
         }
         

@@ -42,7 +42,7 @@
      these are _not_ included into the final stylesheet.
      See these files for more info. -->
 
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
@@ -85,7 +85,7 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.0" exclude-result-prefixes="pfx cus xsl ixsl">
+    <ixsl:stylesheet version="1.1" exclude-result-prefixes="pfx cus xsl ixsl">
 
       <ixsl:output indent="no" >
         <xsl:if test="not($outputmethod = '')">
