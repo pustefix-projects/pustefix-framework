@@ -102,8 +102,8 @@ AddHandler cgi-script .cgi
     <xsl:variable name="pass"><xsl:apply-templates select="node()"/></xsl:variable>
       Alias        /<xsl:value-of select="$pass"/><xsl:text> </xsl:text><xsl:value-of select="$docroot"/>/<xsl:value-of select="$pass"/>
   </xsl:template>
-      
-  
-    
+  <!-- supress copy of duplicate passthrough elements -->
+  <xsl:template match="passthrough"/>
+
 </xsl:stylesheet>
 
