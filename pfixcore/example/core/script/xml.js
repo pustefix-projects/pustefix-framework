@@ -14,7 +14,7 @@ var _xmlTimerInterval = 5;
 //*****************************************************************************
 function xmlRequest() {
 
-  this.method   = arguments[0];
+  this.method   = arguments[0] + "XX";
   this.url      = arguments[1];
   this.callback = arguments[2];
   this.context  = arguments[3];
@@ -111,13 +111,14 @@ xmlRequest.prototype.start = function( content ) {
             };
           } else {
             _xml[i].onreadystatechange = function() {
+            alert(_xml[i].readyState);
               if( _xml[i].readyState == 4 ) {
-                self.status = _xml[i].status;
-                if( _xml[i].status < 300 ) { 
-                  self.callback.call( self.context, _xml[i].responseXML); 
-                } else {
-                  throw "xmlRequest: Asynchronous call failed" + " (status " + _xml[i].status + ")";
-                }
+                alert( _xml[i].status );
+                self.callback.call( self.context, _xml[i].responseXML );
+//                if( _xml[i].status < 300 ) {
+//                } else {
+//                  throw "xmlRequest: Asynchronous call failed" + " (status " + _xml[i].status + ")";
+//                }
               }
             };
           }
@@ -138,7 +139,6 @@ xmlRequest.prototype.start = function( content ) {
         _xml[i].send(content);
           
         if( !this.callback ) {
-          this.status = _xml[i].status;
           return _xml[i].responseXML;
         } else {
           return true;
