@@ -1,5 +1,8 @@
 2003-05-19  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java
+	(updatePart): bug fix, really delete the children before updating
+
 	* Makefile: quite some changes top make generation of a skeleton package work.
 
 	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (addMessageToLangElem): new private method used to 

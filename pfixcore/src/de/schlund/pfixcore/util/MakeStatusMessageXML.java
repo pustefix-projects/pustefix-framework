@@ -111,7 +111,7 @@ public class MakeStatusMessageXML {
                 // load statusmessages xml file
                 CAT.warn( ">>> parsing statusmessages xml-file ...");
                 doc = domparser.parse(messagefile);
-                doc.normalize();
+                // doc.normalize();
                 maker.updateFile(scfac, allscodes, doc, messagefile);
             } catch (Exception e) {
                 CAT.error("FATAL1: " + e.toString());
@@ -228,13 +228,16 @@ public class MakeStatusMessageXML {
             System.exit(ERR_NOSCODE);
         }
         Element    deflang = (Element) XPathAPI.selectSingleNode(part, "./product/lang[@name = 'default']");
-        NodeList   nl      = ((Node) deflang).getChildNodes();
+        NodeList   nl      = XPathAPI.selectNodeList(deflang, "./node()");
         // if (nl.getLength() > 1) {
         //     CAT.error("Part: " + name + " Default Language has more than one ChildNode.");
         //     System.exit(ERR_TOOMANYNODES);
         // }
         // deflang.removeChild(nl.item(0));
+        
         for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            // CAT.warn("----> " + node.getNodeName() + " => " + node.getNodeValue());
             deflang.removeChild(nl.item(i));
         }
         deflang.setAttribute("warning", WARNING);
