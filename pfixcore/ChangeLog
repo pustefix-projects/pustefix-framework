@@ -1,3 +1,22 @@
+2004-02-23  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java,
+        src/de/schlund/pfixxml/exceptionhandler/PFXThreadedHandler.java,
+        src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java,
+        src/de/schlund/pfixxml/exceptionhandler/PFUtil.java:
+        minor changes
+
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle),
+        src/de/schlund/pfixxml/ServletManager.java(callProcess):
+        removed param HttpServletResponse
+        
+        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java
+        (createMailSubject): format of mail subject changed.
+        
+        * src/de/schlund/pfixxml/PfixServletRequest.java: new method
+        'getServletName()'.
+
+
 2004-02-20  Joerg Haecker <haecker@schlund.de>
 
         * src/de/schlund/pfixxml/serverutil/SessionHelper.java

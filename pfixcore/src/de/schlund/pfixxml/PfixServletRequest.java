@@ -381,6 +381,15 @@ public class PfixServletRequest {
     public String getServerName() {
         return request.getServerName();
     }
+    
+    
+    /**
+     *  Gets the part of this request's URI that refers to the servlet being invoked.
+     * @ the servlet being invoked, as contained in this request's URI
+     */
+    public String getServletName() {
+        return request.getServletPath();
+    }
 
     // ---------------------------------- //
 

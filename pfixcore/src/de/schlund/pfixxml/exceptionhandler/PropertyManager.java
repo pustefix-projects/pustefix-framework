@@ -84,21 +84,13 @@ class PropertyManager {
     ExceptionConfig[] getExceptionConfig() {
         ExceptionConfig[] config=new ExceptionConfig[exrulecount_];
         for(int i=1; i<=exrulecount_; i++) {
-            String type         =(String) properties_.getProperty(
-                                         "rule." + i + ".type");
-            String match        =(String) properties_.getProperty(
-                                         "rule." + i + ".match");
-            int limit           =Integer.parseInt(
-                                         (String) properties_.getProperty(
-                                                 "rule." + i + ".limit"));
-            String dim          =(String) properties_.getProperty(
-                                         "rule." + i + ".dim");
-            int burst           =Integer.parseInt(
-                                         (String) properties_.getProperty(
-                                                 "rule." + i + ".burst"));
-            ExceptionConfig conf=new ExceptionConfig(type, match, limit, dim, 
-                                                     burst);
-            config[i - 1]       =conf;
+            String type = properties_.getProperty("rule." + i + ".type");
+            String match = properties_.getProperty("rule." + i + ".match");
+            int limit = Integer.parseInt(properties_.getProperty("rule." + i + ".limit"));
+            String dim = properties_.getProperty("rule." + i + ".dim");
+            int burst = Integer.parseInt(properties_.getProperty("rule." + i + ".burst"));
+            ExceptionConfig conf=new ExceptionConfig(type, match, limit, dim, burst);
+            config[i - 1] = conf;
         }
         return config;
     }
@@ -108,24 +100,17 @@ class PropertyManager {
      * @returns a generalconfig object.
      */
     GeneralConfig getGeneralConfig() {
-        String use               =(String) properties_.get(
-                                          "rule.general.use_me");
-        boolean useme            =Boolean.valueOf(use).booleanValue();
-        String cs                =(String) properties_.get(
-                                          "rule.general.cleanuptask_schedule");
-        int cleanupschedule      =Integer.parseInt(cs);
-        String cleanupscheduledim=(String) properties_.get(
-                                          "rule.general.cleanuptask_dim");
-        String rs                =(String) properties_.get(
-                                          "rule.general.reporttask_schedule");
-        int reportschedule       =Integer.parseInt(rs);
-        String reportscheduledim =(String) properties_.get(
-                                          "rule.general.reporttask_dim");
-        String stobs             =(String) properties_.get(
-                                          "rule.general.stracech_obsolete");
-        int straceobs            =Integer.parseInt(stobs);
-        String straceobsdim      =(String) properties_.get(
-                                          "rule.general.stracech_obsolete_dim");
+        String use = properties_.getProperty("rule.general.use_me");
+        boolean useme  = Boolean.valueOf(use).booleanValue();
+        String cs = properties_.getProperty("rule.general.cleanuptask_schedule");
+        int cleanupschedule = Integer.parseInt(cs);
+        String cleanupscheduledim = properties_.getProperty("rule.general.cleanuptask_dim");
+        String rs = properties_.getProperty("rule.general.reporttask_schedule");
+        int reportschedule = Integer.parseInt(rs);
+        String reportscheduledim = properties_.getProperty("rule.general.reporttask_dim");
+        String stobs = properties_.getProperty("rule.general.stracech_obsolete");
+        int straceobs = Integer.parseInt(stobs);
+        String straceobsdim = properties_.getProperty("rule.general.stracech_obsolete_dim");
         GeneralConfig config     =new GeneralConfig(useme, cleanupschedule, 
                                                     cleanupscheduledim, 
                                                     reportschedule, 
@@ -177,8 +162,8 @@ class PropertyManager {
                                       (String) properties_.get("rule.mail.send"))
                .booleanValue();
         if(send==true) {
-            String from   =(String) properties_.getProperty("rule.mail.from");
-            String to     =(String) properties_.get("rule.mail.to");
+            String from = properties_.getProperty("rule.mail.from");
+            String to = properties_.getProperty("rule.mail.to");
             Perl5Util perl=new Perl5Util();
             Vector v      =new Vector();
             try {
@@ -193,7 +178,7 @@ class PropertyManager {
                 String ele=(String) enum.nextElement();
                 tos[i++]=ele.trim();
             }
-            String host      =(String) properties_.getProperty("rule.mail.host");
+            String host = properties_.getProperty("rule.mail.host");
             MailConfig config = MailConfig.getInstance();
             config.configure(tos, from, host, send);
         } else {

@@ -19,14 +19,8 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct;
-
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -34,11 +28,15 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
+
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
 /**
  * Class to to encapsulate the data needed to handle a throwable. It holds
@@ -60,19 +58,17 @@ class ExceptionContext {
     private String message_ = null; // textual message
     private PfixServletRequest pfrequest_ = null; // request
     private Properties props_ = null; // properties
-    private HttpServletResponse response_ = null; // response
-
+   
     //~ Constructors ...........................................................
 
     /**
-     * Create a new exception context object with the given throwable, request, response
+     * Create a new exception context object with the given throwable, request
      * and properties objects.
      */
-    ExceptionContext(Throwable th, PfixServletRequest pfreq, HttpServletResponse res, Properties props) {
+    ExceptionContext(Throwable th, PfixServletRequest pfreq, Properties props) {
         this.throwable_ = th;
         this.pfrequest_ = pfreq;
         this.props_ = props;
-        this.response_ = res;
     }
 
     //~ Methods ................................................................
@@ -147,22 +143,6 @@ class ExceptionContext {
      */
     void setProps(Properties props) {
         this.props_ = props;
-    }
-
-    /**
-     * Sets the response of this exceptioncontext.
-     * @param response The response to set.
-     */
-    void setResponse(HttpServletResponse response) {
-        this.response_ = response;
-    }
-
-    /**
-     * Returns the response of this exceptioncontext.
-     * @return HttpServletResponse the response.
-     */
-    HttpServletResponse getResponse() {
-        return response_;
     }
 
     /**
@@ -337,8 +317,14 @@ class ExceptionContext {
                 message = "No information found.";
             }
         }
-        Object[] args = { date_, servername, exceptname, message };
-        buf = MessageFormat.format("{0}:[{1}|{2}]:{3}", args);
+        String servletname = pfrequest_.getServletPath();
+        if(servletname == null) {
+            servletname = "NULL";
+        } else if(servletname.charAt(0) == '/') {
+            servletname = servletname.substring(1, servletname.length());
+        }
+        Object[] args = { servername, servletname, exceptname, message };
+        buf = MessageFormat.format("{0}|{1}|{2}:{3}", args);
         if(CAT.isDebugEnabled())
             CAT.debug("Create mail subject end.");
         return buf;
