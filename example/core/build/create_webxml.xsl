@@ -94,9 +94,9 @@
   <xsl:template match="cus:session-config">
     <!-- if a 'sessiontimeout'-node exists use it, else use default -->
     <xsl:choose>
-      <xsl:when test="./sessiontimeout">
+      <xsl:when test="$project/sessiontimeout">
         <session-config>
-          <session-timeout><xsl:value-of select="./sessiontimeout"/></session-timeout>
+          <session-timeout><xsl:value-of select="$project/sessiontimeout"/></session-timeout>
         </session-config>
       </xsl:when>
       <xsl:otherwise>
