@@ -1,3 +1,8 @@
+2003-03-03  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/*: code cleanup - removed unused variables
+	and organized imports.
+
 2003-02-28  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/create_propfiles.xsl: bugfix

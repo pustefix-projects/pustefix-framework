@@ -19,9 +19,9 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixcore.util.*;
-import java.util.*;
+import java.util.Properties;
+
+import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 /**
  *

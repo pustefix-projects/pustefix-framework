@@ -1,20 +1,16 @@
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
-
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Category;
-
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import org.xml.sax.SAXParseException;
+
+import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 
 
 /**

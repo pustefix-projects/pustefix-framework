@@ -19,16 +19,26 @@
 
 package de.schlund.pfixxml;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.FactoryInit;
-import de.schlund.util.statuscodes.*;
-import org.apache.log4j.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.TreeSet;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
-import org.apache.log4j.xml.*;
+import org.apache.log4j.xml.DOMConfigurator;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.util.FactoryInit;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the VM.
