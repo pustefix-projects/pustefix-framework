@@ -24,7 +24,7 @@
      <description></description>
       <param required="0">
         <name>path</name>
-        <values><path/></values>
+        <values><path default="PRODUCTNAME/txt/pages"/></values>
         <description>Path, where the pages are (e.g. productname/txt/pages)
           <xmlcode><table><tr><td>Hallo</td></tr></table>
           </xmlcode>
@@ -59,7 +59,12 @@
     </cus:documentation>
           
     <xsl:variable name="path">
-      <xsl:value-of select="@path"/>
+      <xsl:choose>
+        <xsl:when test="@path">
+          <xsl:value-of select="@path"/>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$product"/>/txt/pages</xsl:otherwise>
+      </xsl:choose>
     </xsl:variable>
     <xsl:variable name="prefix">
       <xsl:choose>

@@ -237,6 +237,31 @@
 
   <xmlcode>
     <pfx:maincontent part="content" path="MyProject/txt/pages" prefix="main_"/>
+    <xmlcodeOFF>
+      <table class="stdtable">
+        <tr>
+          <th>Attribute</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>path</td>
+          <td>Optional, defaults to <code>PRODUCTNAME/txt/pages</code></td>
+        </tr>
+        <tr>
+          <td>prefix</td>
+          <td>Optional, defaults to <code>main_</code>.</td>
+        </tr>
+        <tr>
+          <td>postfix</td>
+          <td>Optional, defaults to <code>.xml</code></td>
+        </tr>
+        <tr>
+          <td>part</td>
+          <td>Optional, defaults to <code>content</code></td>
+        </tr>
+      </table>
+      <br/>
+    </xmlcodeOFF>
   </xmlcode>
 
   <p>For the page "home" this is equivalent to</p>
@@ -244,8 +269,8 @@
   <xmlcode>
     <pfx:include href="MyProject/txt/pages/main_home.xml" part="content"/>
   </xmlcode>
+
+  <p>and of course similar for every other page.</p>
   
   <p>Starting with this page specific include, the content of the page can be included from many different include parts.</p>
-    
-  
 </div>
