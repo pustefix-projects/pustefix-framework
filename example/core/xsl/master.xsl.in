@@ -116,6 +116,7 @@
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
 
+      <ixsl:param name="page"><xsl:value-of select="$page"/></ixsl:param>
       <ixsl:param name="pageflow"/>
       <!-- This will be routed through by the servlet
       (needed for frame handling to work) -->
