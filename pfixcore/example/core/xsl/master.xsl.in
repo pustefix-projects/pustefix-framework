@@ -61,7 +61,7 @@
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
   <xsl:include href="core/xsl/include.xsl"/>
-
+  
   <!-- Needed for navibuttons to work.
   Normally not needed in the resulting stylesheet -->
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
@@ -159,13 +159,10 @@
   <xsl:template match="pfx:head">
   <cus:documentation>
       <description>Makes the HTML-Head. The Baselib.js will be included automatically</description>
-
-  <pfx:head>
-    <title>PFIXCORE Sample</title>
-  </pfx:head>
-
-
-     <example>
+      <pfx:head>
+        <title>PFIXCORE Sample</title>
+      </pfx:head>
+      <example>
         <input>
           <xmlcode>
             <pfx:head>
@@ -176,7 +173,7 @@
         <output>
           <xmlcode><head>
               <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-                <script language="JavaScript" src="/core/script/baselib.js" type="text/javascript"></script>
+              <script language="JavaScript" src="/core/script/baselib.js" type="text/javascript"></script>
               <title>PFIXCORE Sample</title></head>
           </xmlcode>
         </output>

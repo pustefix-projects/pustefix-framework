@@ -1,21 +1,17 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="xmlserver.depend.xml"><cus:docroot/>sample1/conf/depend.xml</prop>
-  <prop name="xmlserver.servlet.name">pfixcore_project:sample1::servlet:secure</prop>
-  <prop name="xmlserver.noeditmodeallowed">false</prop>
-  <prop name="servlet.needsSSL">true</prop>
-
-  <prop name="context.class">de.schlund.pfixcore.workflow.Context</prop>
-
-  <!-- *** PageFlows *** -->
-
-  <prop name="context.defaultpageflow">Def</prop>
-
-  <prop name="context.pageflow.Def.0">ssltest</prop>
-
-  <!-- *** PageRequest and associated properties *** -->
-
-  <prop name="pagerequest.ssltest.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:secure">
+    <ssl      force="true"/>
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultflow="Def"/>
+  
+  <pageflow name="Def">
+    <flowstep name="ssltest"/>
+  </pageflow>
+  
+  <pagerequest name="ssltest"/>
   
 </properties>
 

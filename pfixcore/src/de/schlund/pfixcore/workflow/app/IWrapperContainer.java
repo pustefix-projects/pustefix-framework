@@ -18,17 +18,15 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.generator.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import de.schlund.pfixxml.*;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
- *
- *
+ * All classes which want to act as a container for classes
+ * which implement the {@link IWrapper} interface must 
+ * implement this interface. An IWrapperContainer is created
+ * for each request.
  */
 
 public interface IWrapperContainer {

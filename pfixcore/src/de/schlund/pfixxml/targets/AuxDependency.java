@@ -18,7 +18,6 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.util.*;
 
 /**
  *

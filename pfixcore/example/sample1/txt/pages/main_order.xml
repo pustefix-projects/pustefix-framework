@@ -111,7 +111,7 @@
       <lang name="default">
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
           <ixsl:choose>
-            <ixsl:when test="/formresult/cr_counter/@showcounter = &apos;false&apos;">
+            <ixsl:when test="/formresult/counter/@showcounter = &apos;false&apos;">
               <tr>
                 <td colspan="2">
                   <pfx:xinp type="submit" value="Show Counter">
@@ -125,7 +125,7 @@
               <tr>
                 <td align="center" colspan="2">
                   <big><b>
-                      <ixsl:value-of select="/formresult/cr_counter/@counter"/>
+                      <ixsl:value-of select="/formresult/counter/@counter"/>
                     </b></big>
                 </td>
               </tr>
@@ -164,7 +164,7 @@
               </td>
             </tr>
           </pfx:checkactive>
-          <ixsl:if test="/formresult/cr_togglepic[@do_show = &apos;true&apos;]">
+          <ixsl:if test="/formresult/togglepic[@do_show = &apos;true&apos;]">
             <tr>
               <td>
                 <pfx:image src="/sample1/img/test.gif"/>
@@ -191,12 +191,10 @@
   <part name="help_trouser_b">
     <product name="default">
       <lang name="default">
-        Of course we can add more text here. It&apos;s not as if 
-        ProductManagers had problems
-        in fomulating important statements all customers 
-        are eager to read. 
+        Of course we can add even more information here.  
       </lang>
     </product>
+    
   </part>
   
   <part name="trouser">

@@ -10,7 +10,7 @@ else
     debug=""
 fi
 
-export JAVA_OPTS="-server -mx200M $debug"
+export JAVA_OPTS="-mx200M $debug"
 export JSSE_HOME="`pwd`/lib/jsse"
 
 echo "starting tomcat with java-opts '$JAVA_OPTS'"

@@ -1,15 +1,10 @@
 package de.schlund.pfixxml.serverutil.jserv;
 
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.PfixServletRequest;
-
-import java.util.Map;
-import java.util.Iterator;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.serverutil.*;
+import java.util.*;
+import javax.servlet.http.*;
+import org.apache.log4j.*;
 
 /**
  *
@@ -32,7 +27,8 @@ import javax.servlet.http.HttpSession;
  */
 
 public class ModernJServUtil implements ContainerUtil {
-
+    private Category CAT = Category.getInstance(this.getClass());
+    
     public ModernJServUtil() {
     }
 
@@ -78,10 +74,14 @@ public class ModernJServUtil implements ContainerUtil {
         try {
             Iterator iter = store.keySet().iterator();
             String key = null;
+            Object value = null;
             while (iter.hasNext()) {
                 key = (String) iter.next();
-                if (!key.equals(SessionAdmin.LISTENER)) {
-                    session.putValue(key, store.get(key));
+                value = store.get(key);
+                if (value instanceof NoCopySessionData) {
+                    CAT.debug("*** Will not copy a object implementing NoCopySessionData!!! ***");
+                } else if (!key.equals(SessionAdmin.LISTENER)) {
+                    session.putValue(key, value);
                 }
             }
         } catch (NullPointerException e) {
