@@ -1,8 +1,7 @@
 2004-01-20  Niels Schelbach    <niels@schlund.de>
 
-    * example/core/build/create_serverxml.xsl: inactive projects do not get an entry in the 
-    server.xml now like the apache.conf
-
+	* example/core/build/create_serverxml.xsl: inactive projects do not get an entry in the 
+	server.xml now like the apache.conf
 
 2004-01-20  Martin Leidig <mleidig@schlund.de>
 

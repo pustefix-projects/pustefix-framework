@@ -66,11 +66,12 @@ public class DerefServer extends ServletManager {
         } else {
             OutputStream       out     = res.getOutputStream();
             OutputStreamWriter writer  = new OutputStreamWriter(out, res.getCharacterEncoding());
-            String             thelink = preq.getScheme() + ": //" + preq.getServerName() + ":" + preq.getServerPort()
-                + SessionHelper.getClearedURI(preq, res) + "?link = " + link.getValue();
+            String             thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + SessionHelper.getClearedURI(preq, res) + "?link=" + link.getValue();
+            
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + thelink + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><a href=" + thelink + ">" + thelink + "</a></body></html>");
+            writer.flush();
         }
     }
 }
