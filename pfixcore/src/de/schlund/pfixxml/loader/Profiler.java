@@ -214,6 +214,8 @@ public class Profiler {
             sb.append("\n*** Class hierarchy ***\n[C]"+clazz.getName()+"\n");
             sb.append(walkClasses(clazz));
             sb.append("\n*** Class members ***\n"+walkFields(clazz));
+            sb.append("\n*** Constructors ***\n"+walkConstructors(clazz));
+            sb.append("\n*** Methods ***\n"+walkMethods(clazz));
             return sb.toString();
         } catch(ClassNotFoundException x) {
             return "Class '"+className+"' not found!";
@@ -263,6 +265,27 @@ public class Profiler {
                     x.printStackTrace();
                 }
             }    
+            clazz=clazz.getSuperclass();
+        }
+        return sb.toString();
+    }
+    
+    protected String walkConstructors(Class clazz) {
+        StringBuffer sb=new StringBuffer();
+        Constructor[] cons=clazz.getDeclaredConstructors();
+        for(int i=0;i<cons.length;i++) {
+            sb.append(cons[i].toString()+"\n");
+        }
+        return sb.toString();
+    }
+    
+    protected String walkMethods(Class clazz) {
+        StringBuffer sb=new StringBuffer();
+        while(clazz!=null) {
+            Method[] methods=clazz.getDeclaredMethods();
+            for(int i=0;i<methods.length;i++) {
+                sb.append(methods[i].toString()+"\n");
+            }
             clazz=clazz.getSuperclass();
         }
         return sb.toString();

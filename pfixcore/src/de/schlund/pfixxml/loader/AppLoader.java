@@ -194,6 +194,10 @@ public class AppLoader implements FactoryInit,Runnable {
         }
     }
     
+    protected AppClassLoader getAppClassLoader() {
+        return loader;
+    }
+    
     public void addReloader(Reloader reloader) {
         reloaders.put(reloader,null);
         //reloaders.add(reloader);
