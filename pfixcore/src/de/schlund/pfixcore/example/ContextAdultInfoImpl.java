@@ -65,7 +65,6 @@ public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
 
     public void insertStatus(ResultDocument resdoc, Element node) throws Exception{
         node.setAttribute("adult", "" + getAdult());
-        resdoc.addTextChild(node, "info", "AOU ÄÖÜ");
     }
     
 }// ContextAdultInfo
