@@ -13,7 +13,18 @@
     <page name="depend" title="Page definition"/>
     <page name="testclient" title="Test client"/>
   </page>
-  <page name="editor" title="Pustefix Editor"/>
+  <page name="editor" title="Pustefix Editor">
+    <page name="editor_login" title="Login"/>
+    <page name="editor_prodsel" title="Productselection and user managemant"/>
+    <page name="editor_tools" title="Tools"/>
+    <page name="editor_pages" title="Pages"/>
+    <page name="editor_targets" title="Targets"/>
+    <page name="editor_images" title="Images"/>
+    <page name="editor_includes" title="Includes"/>
+    <page name="editor_dynincludes" title="DynIncludes"/>
+    <page name="editor_search" title="Search"/>
+    <page name="editor_docs" title="Docs"/>
+  </page>
   
 </pagedef>
   
