@@ -35,9 +35,28 @@
       <xsl:otherwise>-1</xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-    
   
   <xsl:template match="pfx:label" name="pfx:label">
+    <xsl:param name="name" select="@name"/>
+    <xsl:param name="content">
+      <xsl:apply-templates/>
+    </xsl:param>
+    <ixsl:choose>
+      <ixsl:when test="/formresult/formerrors/error[@name='{$name}']">
+        <xsl:call-template name="pfx:include">
+          <xsl:with-param name="href">common/txt/general.xml</xsl:with-param>
+          <xsl:with-param name="part">error_icon</xsl:with-param>
+        </xsl:call-template>
+        <xsl:if test="not(@type = 'hidden')">
+          <span class="core_label_error"><xsl:apply-templates/></span>
+        </xsl:if>
+      </ixsl:when>
+      <xsl:if test="not(@type = 'hidden')">
+        <ixsl:otherwise>
+          <xsl:apply-templates/>
+        </ixsl:otherwise>
+      </xsl:if>
+    </ixsl:choose>
     <cus:documentation>
       <responsible>JTL</responsible>    
       <description>pfx:label is used for the description of input fields.
@@ -72,26 +91,6 @@
         </output>
       </example>
     </cus:documentation>  
-    <xsl:param name="name" select="@name"/>
-    <xsl:param name="content">
-      <xsl:apply-templates/>
-    </xsl:param>
-    <ixsl:choose>
-      <ixsl:when test="/formresult/formerrors/error[@name='{$name}']">
-        <xsl:call-template name="pfx:include">
-          <xsl:with-param name="href">common/txt/general.xml</xsl:with-param>
-          <xsl:with-param name="part">error_icon</xsl:with-param>
-        </xsl:call-template>
-        <xsl:if test="not(@type = 'hidden')">
-          <span class="core_label_error"><xsl:apply-templates/></span>
-        </xsl:if>
-      </ixsl:when>
-      <xsl:if test="not(@type = 'hidden')">
-        <ixsl:otherwise>
-          <xsl:apply-templates/>
-        </ixsl:otherwise>
-      </xsl:if>
-    </ixsl:choose>
   </xsl:template>
 
   <xsl:template match="pfx:paramref">
@@ -102,43 +101,6 @@
   </xsl:template>
   
   <xsl:template match="pfx:errorbox">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Creates an errorbox,
-        that displays all (or a subset of the) errors that happened on
-        form submit. You are encouraged to overwrite this template with
-        your own definition.  Usually the errorbox shows errors
-        for each field on the page. If you want do show only special fields, you'll
-        have to specify each field by &lt;pfx:paramref name="FIELDNAME"/&gt;</description>
-      <param required="0">
-        <name>width</name>
-        <description>Width of the Errorbox</description>
-        <values>
-          <html default="auto"/>
-        </values>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:errorbox width="200"/></xmlcode>
-        </input>
-        <output>The errormessages will be generated autmatically.
-          <xmlcode>
-            <table class="core_errorbox_table" width="500">
-              <tr>
-                <td nowrap="nowrap" class="core_errorlabel_td" valign="top">
-                  <span class="core_errorlabel_text">Are you really older than 18 year ?</span>
-                </td>
-                <td class="core_errortext_td">
-                  <span class="core_errortext"><error name="info.Adult">Please tell me if you're old enough.</error></span>
-                </td>
-              </tr>
-            </table>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation> 
-
-    
     <xsl:param name="paramref" select="./pfx:paramref"></xsl:param>
     <ixsl:if test="/formresult/formerrors/node()">
       <table class="core_errorbox_table">
@@ -183,10 +145,64 @@
 	</xsl:choose>
       </table>
     </ixsl:if>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Creates an errorbox,
+        that displays all (or a subset of the) errors that happened on
+        form submit. You are encouraged to overwrite this template with
+        your own definition.  Usually the errorbox shows errors
+        for each field on the page. If you want do show only special fields, you'll
+        have to specify each field by &lt;pfx:paramref name="FIELDNAME"/&gt;</description>
+      <param required="0">
+        <name>width</name>
+        <description>Width of the Errorbox</description>
+        <values>
+          <html default="auto"/>
+        </values>
+      </param>
+      <example>
+        <input>
+          <xmlcode><pfx:errorbox width="200"/></xmlcode>
+        </input>
+        <output>The errormessages will be generated autmatically.
+          <xmlcode>
+            <table class="core_errorbox_table" width="500">
+              <tr>
+                <td nowrap="nowrap" class="core_errorlabel_td" valign="top">
+                  <span class="core_errorlabel_text">Are you really older than 18 year ?</span>
+                </td>
+                <td class="core_errortext_td">
+                  <span class="core_errortext"><error name="info.Adult">Please tell me if you're old enough.</error></span>
+                </td>
+              </tr>
+            </table>
+          </xmlcode>
+        </output>
+      </example>
+    </cus:documentation> 
   </xsl:template>
 
-  
   <xsl:template match="pfx:checkactive">
+    <xsl:variable name="prefix"><xsl:value-of select="@prefix"/></xsl:variable>
+    <xsl:variable name="pg"><xsl:value-of select="@page"/></xsl:variable>
+    <xsl:choose>
+      <xsl:when test="not($pg = '') and not($prefix = '')">
+        <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checkactive&gt;]</b>
+      </xsl:when>
+      <xsl:when test="not($prefix = '')">
+        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'true']">
+          <xsl:apply-templates/>
+        </ixsl:if>
+      </xsl:when>
+      <xsl:when test="not($pg = '')">
+        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '1']">
+          <xsl:apply-templates/>
+        </ixsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checkactive&gt;]</b>
+      </xsl:otherwise>
+    </xsl:choose>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Two cases: if the prefix-argument is given, it
@@ -223,30 +239,29 @@
         </output>
       </example>
     </cus:documentation>  
+  </xsl:template>
+
+  <xsl:template match="pfx:checknotactive">
     <xsl:variable name="prefix"><xsl:value-of select="@prefix"/></xsl:variable>
     <xsl:variable name="pg"><xsl:value-of select="@page"/></xsl:variable>
     <xsl:choose>
       <xsl:when test="not($pg = '') and not($prefix = '')">
-        <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checkactive&gt;]</b>
+        <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checknotactive&gt;]</b>
       </xsl:when>
       <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'true']">
+        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'false']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
       <xsl:when test="not($pg = '')">
-        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '1']">
+        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '0']">
           <xsl:apply-templates/>
         </ixsl:if>
       </xsl:when>
       <xsl:otherwise>
-        <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checkactive&gt;]</b>
+        <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checknotactive&gt;]</b>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:template>
-
-  
-  <xsl:template match="pfx:checknotactive">
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Two cases: if the prefix-argument is given, it
@@ -283,30 +298,13 @@
         </output>
       </example>
     </cus:documentation>  
-    <xsl:variable name="prefix"><xsl:value-of select="@prefix"/></xsl:variable>
-    <xsl:variable name="pg"><xsl:value-of select="@page"/></xsl:variable>
-    <xsl:choose>
-      <xsl:when test="not($pg = '') and not($prefix = '')">
-        <b>[Error: You can't give both attributes "prefix" and "page" to &lt;pfx:checknotactive&gt;]</b>
-      </xsl:when>
-      <xsl:when test="not($prefix = '')">
-        <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true']/interface[@prefix = '{$prefix}' and @active = 'false']">
-          <xsl:apply-templates/>
-        </ixsl:if>
-      </xsl:when>
-      <xsl:when test="not($pg = '')">
-        <ixsl:if test="/formresult/navigation//page[@name = '{$pg}' and @visible = '0']">
-          <xsl:apply-templates/>
-        </ixsl:if>
-      </xsl:when>
-      <xsl:otherwise>
-        <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checknotactive&gt;]</b>
-      </xsl:otherwise>
-    </xsl:choose>
   </xsl:template> 
 
-  
   <xsl:template match="pfx:groupdisplayonly">
+    <xsl:variable name="group"><xsl:value-of select="@name"/></xsl:variable>
+    <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true' and @name = '{$group}']">
+      <xsl:apply-templates/>
+    </ixsl:if>
     <cus:documentation>
      <responsible>JTL</responsible>
      <description>Will only be displayed when /formresult/iwrappergropus/group/@current=true</description>
@@ -330,47 +328,19 @@
         </output>
       </example>
     </cus:documentation>  
-    <xsl:variable name="group"><xsl:value-of select="@name"/></xsl:variable>
-    <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true' and @name = '{$group}']">
-      <xsl:apply-templates/>
-    </ixsl:if>
   </xsl:template> 
-
   
   <xsl:template match="pfx:flatdisplayonly">
+    <ixsl:if test="/formresult/iwrappergroups[not(@groupdisplay = 'true')]">
+      <xsl:apply-templates/>
+    </ixsl:if>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Will only be displayed when groupdisplay = false</description>
     </cus:documentation>  
-    <ixsl:if test="/formresult/iwrappergroups[not(@groupdisplay = 'true')]">
-      <xsl:apply-templates/>
-    </ixsl:if>
   </xsl:template> 
 
-  
   <xsl:template match="pfx:forminput">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Similar to the html tag &lt;form&gt;
-        action/method are not required. You'll have to put it around all
-        fields that belong to a formular.
-      </description>
-      <param required="0">
-        <name>send-to-page</name>
-        <values><string/></values>
-        <description>Name of the page that should handle the submitted form values</description>
-      </param>
-      <param required="0">
-        <name>type</name>
-        <values>
-          <oneof>
-            <option default="true"></option>
-            <option>auth</option>
-          </oneof>
-        </values>
-        <description>Setting type to 'auth' will submit the values to authentification handlers</description>
-      </param>
-    </cus:documentation>  
     <xsl:variable name="send-to-page" select="@send-to-page"/>
     <xsl:variable name="theframe">
       <xsl:choose>
@@ -428,15 +398,12 @@
         </xsl:choose>
       </ixsl:attribute>
       <input type="hidden" name="{$sendingdata}" value="1"/>
-
       <ixsl:if test="/formresult/iwrappergroups/@currentindex">
         <input type="hidden">
           <xsl:attribute name="name">__currentindex[<xsl:value-of select="$page"/>]</xsl:attribute>
           <ixsl:attribute name="value"><ixsl:value-of select="/formresult/iwrappergroups/@currentindex"/></ixsl:attribute>
         </input>
       </ixsl:if>
-
-
       <ixsl:for-each select="/formresult/formhiddenvals/hidden">
         <input type="hidden">
           <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
@@ -444,10 +411,29 @@
         </input>
       </ixsl:for-each>
       <xsl:apply-templates/>
-      
     </form>
-
-    
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Similar to the html tag &lt;form&gt;
+        action/method are not required. You'll have to put it around all
+        fields that belong to a formular.
+      </description>
+      <param required="0">
+        <name>send-to-page</name>
+        <values><string/></values>
+        <description>Name of the page that should handle the submitted form values</description>
+      </param>
+      <param required="0">
+        <name>type</name>
+        <values>
+          <oneof>
+            <option default="true"></option>
+            <option>auth</option>
+          </oneof>
+        </values>
+        <description>Setting type to 'auth' will submit the values to authentification handlers</description>
+      </param>
+    </cus:documentation>  
   </xsl:template>
 
 <!--   <xsl:template match="pfx:argument"/> -->
@@ -455,10 +441,6 @@
 <!--   <xsl:template match="pfx:anchor"/> -->
 
   <xsl:template name="generate_coded_name">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Called by pfx:button, pfx:jsbutton etc. Generates the parameters for pfx:argument, pfx:command and pfx:anchor</description>
-    </cus:documentation>
     <ixsl:attribute name="name">
       <xsl:for-each select="./pfx:argument">__DATA:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each>
       <xsl:for-each select="./pfx:anchor">__DATA:__anchor:<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/>:</xsl:for-each>
@@ -474,13 +456,31 @@
           </xsl:otherwise>
         </xsl:choose>]:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each>
     </ixsl:attribute>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Called by pfx:button, pfx:jsbutton etc. Generates the parameters for pfx:argument, pfx:command and pfx:anchor</description>
+    </cus:documentation>
   </xsl:template>
 
-  <xsl:template match="pfx:xinp[@type='image']">
+  <xsl:template match="pfx:xinp[@type='image']" name="pfx:xinp_image">
+    <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
+    <input border="0"> 
+      <xsl:copy-of select="./@*"/>
+      <xsl:attribute name="src">
+        <xsl:value-of select="$src"/>
+      </xsl:attribute>
+      <xsl:call-template name="pfx:image_geom_impl">
+        <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
+      </xsl:call-template>
+      <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
+        <xsl:call-template name="generate_coded_name"/>
+      </xsl:if>
+      <xsl:apply-templates/>
+    </input>
     <cus:documentation>
-    <responsible>JTL</responsible>
-    <description>Use an image as a submit button. If you want to change the size, set the params width/height
-    </description>
+      <responsible>JTL</responsible>
+      <description>Use an image as a submit button. If you want to change the size, set the params width/height
+      </description>
       <param required="0">
         <name>src</name>
         <values>
@@ -513,17 +513,28 @@
         </output>
       </example>
     </cus:documentation>
-    <input border="0"> 
-      <xsl:copy-of select="./@*"/>
-      <xsl:call-template name="pfx:image_geom_impl"/>
-      <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
-        <xsl:call-template name="generate_coded_name"/>
-      </xsl:if> 
-      <xsl:apply-templates/>
-    </input>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='submit']">
+    <input>
+      <xsl:copy-of select="./@*"/>
+      <xsl:choose>
+        <xsl:when test="not(@value)">
+          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
+            <xsl:call-template name="generate_coded_name"/>
+          </xsl:if> 
+          <xsl:attribute name="value">
+            <xsl:apply-templates/>
+          </xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
+            <xsl:call-template name="generate_coded_name"/>
+          </xsl:if> 
+          <xsl:apply-templates/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </input>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates a Submit-Button. A Submit-Button sends all the fields in the correspondent Forumlar.
@@ -548,35 +559,9 @@
         </output>
       </example>
     </cus:documentation>  
-    <input> 
-      <xsl:copy-of select="./@*"/>
-      <xsl:choose>
-        <xsl:when test="not(@value)">
-          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
-            <xsl:call-template name="generate_coded_name"/>
-          </xsl:if> 
-          <xsl:attribute name="value">
-            <xsl:apply-templates/>
-          </xsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
-            <xsl:call-template name="generate_coded_name"/>
-          </xsl:if> 
-          <xsl:apply-templates/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </input>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='hidden']">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Creates a hidden-field. Hidden Fields will can be usefull, if you need values,
-      that shouldn't be displayed on a page. Params will be copied.
-      </description>
-    </cus:documentation>
-
     <input type="hidden">
       <xsl:copy-of select="@name"/>
       <xsl:variable name="thename" select="@name"/>
@@ -592,13 +577,24 @@
       </ixsl:attribute>
       <xsl:apply-templates/>
     </input>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>creates a html hidden field, attributes will be copied.
+      </description>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='select']">
+    <xsl:variable name="name" select="string(@name)"/>
+    <select name="{$name}">
+      <xsl:copy-of select="@*[name()!='type']"/>
+      <xsl:if test="@multiple"><xsl:attribute name="multiple">multiple</xsl:attribute></xsl:if>
+      <xsl:apply-templates/>
+    </select>
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>Creates a select box formelement. The options are given via a list of &lt;pfx:option&gt;
-        elements that are below this element</description>
+      <description>creates a select box form element. The options are given via a list of &lt;pfx:option&gt;
+        child elements.</description>
       <param required="1">
         <name>name</name>
         <values><string/></values>
@@ -636,37 +632,9 @@
         </output>
       </example>
     </cus:documentation>  
-    <xsl:variable name="name" select="string(@name)"/>
-    <select name="{$name}">
-      <xsl:copy-of select="@*[name()!='type']"/>
-      <xsl:if test="@multiple"><xsl:attribute name="multiple">multiple</xsl:attribute></xsl:if>
-      <xsl:apply-templates/>
-    </select>
   </xsl:template>
 
   <xsl:template match="pfx:option">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Creates an "option" formelement.</description>
-      <param required="0">
-        <name>name</name>
-        <values><string/></values>
-        <description>name attribute of the option</description>
-      </param>
-      <param required="0">
-        <name>value</name>
-        <values><string/></values>
-        <description>value attribute of the option tag.</description>
-      </param>
-      <param required="0">
-        <name>default</name>
-        <values>
-          <oneof><option>true</option><option>false</option></oneof>
-        </values>
-        <description>if set to true, the option is selected by default if no
-        other value is given by the business logic</description>
-      </param>
-    </cus:documentation>  
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <xsl:variable name="value">
       <xsl:choose>
@@ -694,19 +662,18 @@
       </xsl:choose>
       <xsl:apply-templates select="./node()"/>
     </option>
-  </xsl:template>
-
-  <xsl:template match="pfx:dynoptions">
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>Creates one or more "option" form elements. The options are taken from the result tree,
-      where they need to be given below the element designated by the "optionpath" attribute</description>
-      <param required="1">
-        <name>optionpath</name> 
-        <values><xpath/></values>
-        <description>The path to
-        the node in the result tree, under which the "option" elements
-        are that should be inserted</description>
+      <description>Creates an "option" formelement.</description>
+      <param required="0">
+        <name>name</name>
+        <values><string/></values>
+        <description>name attribute of the option</description>
+      </param>
+      <param required="0">
+        <name>value</name>
+        <values><string/></values>
+        <description>value attribute of the option tag.</description>
       </param>
       <param required="0">
         <name>default</name>
@@ -716,7 +683,10 @@
         <description>if set to true, the option is selected by default if no
         other value is given by the business logic</description>
       </param>
-    </cus:documentation>
+    </cus:documentation>  
+  </xsl:template>
+
+  <xsl:template match="pfx:dynoptions">
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <ixsl:for-each select="{@optionpath}/option">
       <ixsl:variable name="value">
@@ -738,9 +708,45 @@
         <ixsl:apply-templates select="./node()"/>
       </option>
     </ixsl:for-each>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Creates one or more "option" form elements. The options are taken from the result tree,
+      where they need to be given below the element designated by the "optionpath" attribute</description>
+      <param required="1">
+        <name>optionpath</name> 
+        <values><xpath/></values>
+        <description>The path to
+        the node in the result tree, under which the "option" elements
+        are that should be inserted</description>
+      </param>
+      <param required="0">
+        <name>default</name>
+        <values>
+          <oneof><option>true</option><option>false</option></oneof>
+        </values>
+        <description>if set to true, the option is selected by default if no
+        other value is given by the business logic</description>
+      </param>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='radio']">
+    <input type="radio">
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:choose>
+        <xsl:when test="@default = 'true'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:apply-templates/>
+    </input>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates a html radio button. Every Radio-Button in a group has the same name.
@@ -773,59 +779,9 @@
         </output>
       </example>
     </cus:documentation>  
-    <input type="radio">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
-      <xsl:choose>
-        <xsl:when test="@default = 'true'">
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
-            <ixsl:attribute name="checked">checked</ixsl:attribute>
-          </ixsl:if>
-        </xsl:when>
-        <xsl:otherwise>
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
-            <ixsl:attribute name="checked">checked</ixsl:attribute>
-          </ixsl:if>
-        </xsl:otherwise>
-      </xsl:choose>
-      <xsl:apply-templates/>
-    </input>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='check']">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>
-        Creates a check box form element. All attributes given  except "type" and "default" will be copied to the final html tag.
-      </description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>Name of the Checkbox</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values>
-          <oneof><option>check</option></oneof>
-        </values>
-        <description></description>
-      </param>     
-      <param required="0">
-        <name>default</name>
-        <values>
-          <oneof><option>true</option><option>false</option></oneof>
-        </values>
-        <description>if set to true, the checkbox is checked by default if no
-        other value is given by the business logic</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode>Select: <pfx:xinp type="check" name="foo"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode>Select <input type="checkbox" name="foo"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>    
     <input type="checkbox">
       <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
       <xsl:choose>
@@ -842,6 +798,32 @@
       </xsl:choose>
       <xsl:apply-templates/>
     </input>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>
+        Creates a check box form element. All attributes given  except "type" and "default" will be copied to the final html tag.
+      </description>
+      <param required="1">
+        <name>name</name>
+        <values><string/></values>
+        <description>Name of the check box</description>
+      </param>
+      <param required="1">
+        <name>type</name>
+        <values>
+          <oneof><option>check</option></oneof>
+        </values>
+        <description></description>
+      </param>     
+      <param required="0">
+        <name>default</name>
+        <values>
+          <oneof><option>true</option><option>false</option></oneof>
+        </values>
+        <description>if set to true, the checkbox is checked by default if no
+        other value is mandated by the business logic</description>
+      </param>
+    </cus:documentation>    
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='text']">
@@ -856,7 +838,7 @@
         </param>
         <param required="0">
           <name>maxlength</name>
-          <values><int default="40"/></values>
+          <values><int default="200"/></values>
           <description>maxlength of the inputfield (chars)</description>
         </param>
         <param required="0">
@@ -877,88 +859,85 @@
           <description>if set to any value, the text field is set this value by default if no
           other value is given by the business logic</description>
         </param>
-        <example>
-          <input>
-            <xmlcode><pfx:xinp type="text" name="foo"/></xmlcode>
-          </input>
-          <output>
-            <xmlcode><input type="text" size="40" maxlength="200" name="foo"/></xmlcode>
-          </output>
-        </example>
-      </cus:documentation>
-      <input type="text" size="40" maxlength="200">
-        <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
-        <xsl:variable name="thename" select="@name"/>
-        <xsl:variable name="pos">
-          <xsl:call-template name="pfx:get_position">
-            <xsl:with-param name="set" select="key('xinp_text','text')[@name = $thename]"/>
-            <xsl:with-param name="cnode" select="."/>
-            <xsl:with-param name="count" select="1"/>
-          </xsl:call-template>
-        </xsl:variable>
-        <xsl:choose>
-          <xsl:when test="@default">
-            <ixsl:attribute name="value">
-              <ixsl:choose>
-                <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:value-of select="@default"/></ixsl:when>
-                <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
-              </ixsl:choose>
-            </ixsl:attribute>
-          </xsl:when>
-          <xsl:otherwise>
-            <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:attribute>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:apply-templates/>
-      </input>
-    </xsl:template>
-
-    <xsl:template match="pfx:xinp[@type='password']">
-      <cus:documentation>
-        <responsible>JTL</responsible>
-        <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
-        <param required="1">
-          <name>name</name>
-          <values><string/></values>
-          <description>name of the input-field</description>
-        </param>
-        <param required="0">
-          <name>maxlength</name>
-          <values><int default="40"/></values>
-          <description>maxlength of the inputfield (chars)</description>
-        </param>
-        <param required="0">
-          <name>size</name>
-          <values><int default="40"/></values>
-          <description>size of the inputfield</description>
-        </param>
-        <param required="1">
-          <name>type</name>
-          <values><oneof><option>password</option></oneof></values>
-          <description></description>
-        </param>
-        <example>
-          <input>
-            <xmlcode><pfx:xinp type="password" name="foo"/></xmlcode>
-          </input>
-          <output>
-            <xmlcode><input type="password" size="40" maxlength="200" name="foo"/></xmlcode>
-          </output>
-        </example>
-      </cus:documentation>
-      
-      <input type="password" size="40" maxlength="200">
-        <xsl:copy-of select="@*[name()!='type']"/>
-        <xsl:variable name="thename" select="@name"/>
-        <ixsl:attribute name="value">
-          <ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = 1]"/>
-        </ixsl:attribute>
-        <xsl:apply-templates/>
-      </input>
+    </cus:documentation>
+    <input type="text" size="40" maxlength="200">
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:variable name="thename" select="@name"/>
+      <xsl:variable name="pos">
+        <xsl:call-template name="pfx:get_position">
+          <xsl:with-param name="set" select="key('xinp_text','text')[@name = $thename]"/>
+          <xsl:with-param name="cnode" select="."/>
+          <xsl:with-param name="count" select="1"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:choose>
+        <xsl:when test="@default">
+          <ixsl:attribute name="value">
+            <ixsl:choose>
+              <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:value-of select="@default"/></ixsl:when>
+              <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
+            </ixsl:choose>
+          </ixsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:apply-templates/>
+    </input>
   </xsl:template>
-
+  
+  <xsl:template match="pfx:xinp[@type='password']">
+    <input type="password" size="40" maxlength="200">
+      <xsl:copy-of select="@*[name()!='type']"/>
+      <xsl:variable name="thename" select="@name"/>
+      <ixsl:attribute name="value">
+        <ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = 1]"/>
+      </ixsl:attribute>
+      <xsl:apply-templates/>
+    </input>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
+      <param required="1">
+        <name>name</name>
+        <values><string/></values>
+        <description>name of the input-field</description>
+      </param>
+      <param required="0">
+        <name>maxlength</name>
+        <values><int default="200"/></values>
+        <description>maxlength of the inputfield (chars)</description>
+      </param>
+      <param required="0">
+        <name>size</name>
+        <values><int default="40"/></values>
+        <description>size of the inputfield</description>
+      </param>
+      <param required="1">
+        <name>type</name>
+        <values><oneof><option>password</option></oneof></values>
+        <description></description>
+      </param>
+    </cus:documentation>
+  </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='area']">
+    <textarea cols="38" rows="20">
+      <xsl:copy-of select="@*[name()!='type']"/>
+      <xsl:variable name="thename" select="@name"/>
+      <xsl:variable name="pos">
+        <xsl:call-template name="pfx:get_position">
+          <xsl:with-param name="set" select="key('xinp_area','area')[@name = $thename]"/>
+          <xsl:with-param name="cnode" select="."/>
+          <xsl:with-param name="count" select="1"/>
+        </xsl:call-template>
+      </xsl:variable>
+      <ixsl:choose>
+        <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
+        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
+      </ixsl:choose>
+    </textarea>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates a html-textarea. All attributes will be copied to the resulting
@@ -992,78 +971,37 @@
         </output>
       </example>
     </cus:documentation>   
-    <textarea cols="38" rows="20">
-      <xsl:copy-of select="@*[name()!='type']"/>
-      <xsl:variable name="thename" select="@name"/>
-      <xsl:variable name="pos">
-        <xsl:call-template name="pfx:get_position">
-          <xsl:with-param name="set" select="key('xinp_area','area')[@name = $thename]"/>
-          <xsl:with-param name="cnode" select="."/>
-          <xsl:with-param name="count" select="1"/>
-        </xsl:call-template>
-      </xsl:variable>
-      <ixsl:choose>
-        <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
-        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
-      </ixsl:choose>
-    </textarea>
   </xsl:template>
 
-
-  <!-- DEPRECATED -->
-  <xsl:template match="pfx:xoutp">
-    <cus:documentation>
-      <responsible>Nobody</responsible>
-      <description>Displays the value associated to a named formelement. THIS IS DEPRECATED. DON'T USE IT.</description>
-      <param name="1">
-        <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>The name of a formelement</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:xoutp name="generalData.Account_Id"/></xmlcode>
-        </input>
-        <output>
-        </output>
-      </example>
-    </cus:documentation>  
-    <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
-  </xsl:template>
   
 
+
+
+
+
+
+
+  
   <!-- DEPRECATED -->
-  <xsl:template match="pfx:xoutperror">
+  <xsl:template match="pfx:xoutp">
+    <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
     <cus:documentation>
       <responsible>Nobody</responsible>
-      <description>Displays an error associated to a named formelement. THIS IS DEPRECATED. DON'T USE IT.</description>
-      <param name="1">
-        <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>The name of a formelement</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:xoutp name="generalData.Account_Id"/></xmlcode>
-        </input>
-        <output>
-        </output>
-      </example>
-    </cus:documentation>
-    <ixsl:apply-templates select="/formresult/formerrors/error[@name='{@name}']"/>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>  
   </xsl:template>
-
+  
+  <!-- DEPRECATED -->
+  <xsl:template match="pfx:xoutperror">
+    <ixsl:apply-templates select="/formresult/formerrors/error[@name='{@name}']"/>
+    <cus:documentation>
+      <responsible>Nobody</responsible>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
+  </xsl:template>
 
   <!-- DEPRECATED -->
   <xsl:template name="renderoptions">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Called by pfx:xinp[@type='dynselect'] (which
-      shouldn't be used anymore, see there). This template renders the
-      html formelement &lt;option&gt;</description>
-    </cus:documentation>
     <xsl:param name="options"/>
     <xsl:param name="name"/>
     <xsl:for-each select="$options">
@@ -1085,58 +1023,22 @@
 	<xsl:apply-templates select="./node()"/>
       </option>
     </xsl:for-each>
+    <cus:documentation>
+      <responsible>Nobody</responsible>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
   </xsl:template>
   
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xinp[@type='dynselect']">
-    <cus:documentation>
-      <responsible>Nobody</responsible>
-      <description>THIS ELEMENT IS DEPRECATED! Creates a select box with options taken from the
-        result XML tree. Don't use this tag, usse the &lt;pfx:xinp @type="select"&gt; tag instead with the
-        &lt;pfx:dynoptions optionpath="/foo/bar/baz"&gt; tag as a child.</description>
-      <param required="1">
-        <name>name</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>Name of the parameter</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>dynselect</option></oneof></values>
-      </param>
-      <param required="1">
-        <name>optionpath</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>Path where to find the options in the XML result tree</description>
-      </param>
-      <children>
-        <name>pfx:option</name>
-        <description>You can specify additional
-          options that will appear before the dynamic options. You can
-          put them after the dynamic options by using the param
-          position="end". If value="value" is not set, the
-          option value will be the enclosed text.
-        </description>
-      </children>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="dynselect" name="upload.Backup" optionpath="/formresult/currentimageinfo/backup"/></xmlcode>
-        </input>
-        <output>
-        </output>
-      </example>
-    </cus:documentation>
     <xsl:variable name="name" select="string(@name)"/>
     <select name="{$name}">
       <xsl:copy-of select="@*[name()!='type' and name()!='optionpath']"/>
       <xsl:if test="@multiple"><xsl:attribute name="multiple">multiple</xsl:attribute></xsl:if>
-
       <xsl:call-template name="renderoptions">
 	<xsl:with-param name="options" select=".//pfx:option[not(@position = 'end')]"/>
 	<xsl:with-param name="name"><xsl:value-of select="$name"/></xsl:with-param>
       </xsl:call-template>
-      
       <ixsl:for-each select="{@optionpath}/option">
         <ixsl:variable name="value">
           <ixsl:choose>
@@ -1155,12 +1057,15 @@
           </ixsl:if>
           <ixsl:apply-templates select="./node()"/></option>
       </ixsl:for-each>
-      
       <xsl:call-template name="renderoptions">
 	<xsl:with-param name="options" select=".//pfx:option[@position = 'end']"/>
 	<xsl:with-param name="name"><xsl:value-of select="$name"/></xsl:with-param>
       </xsl:call-template>
     </select>
+    <cus:documentation>
+      <responsible>Nobody</responsible>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
   </xsl:template>
     
 </xsl:stylesheet>

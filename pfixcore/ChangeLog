@@ -1,3 +1,18 @@
+2004-02-26  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+
+	* example/core/xsl/include.xsl.in: cleanup. moved <cus:documentation> nodes to end of templates to
+	again have valid xsl even in the *.xsl.in
+
+	* example/core/xsl/forminput.xsl.in: 
+	cleanup. moved <cus:documentation> nodes to end of templates to 
+	again have valid xsl even in the *.xsl.in
+	
+	made pfx:xinp[@type = "image"] callable as template
+	named pfx:xinp_image with optional parameter "src". This way a contructedf src attribute could be used 
+	inside a custom template (E.g. <foobar_submit attr="val">...</...> could be handled by a template 
+	that calls pfx:xinp_image with a computed "src" attribute. The "attr" attribute would still be copied
+	by pfx:xinp_image into the resulting <input type="image"> html tag.
+
 2004-02-05  Adam Habermann  <adam.habermann@schlund.de>
 
 	* .classpath: Because of the removal of lib/ant*.jar a local ant.jar must

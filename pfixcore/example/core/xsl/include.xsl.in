@@ -1,5 +1,4 @@
-<!-- The needed parameters must be set in the including stylesheet! -->
-
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
@@ -9,6 +8,8 @@
                 xmlns:runtime="xalan://de.schlund.pfixxml.DependencyTracker"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
                 exclude-result-prefixes="include runtime geometry">
+
+  <!-- The needed parameters must be set in the including stylesheet! -->
 
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
@@ -136,11 +137,6 @@
   </xsl:template>
  
 <!--   <xsl:template name="include_error"> -->
-<!--     <cus:documentation> -->
-<!--       <description>This template will be executed if exceptions occur -->
-<!--       in class de.schlund.pfixxml.IncludeDocumentExtension.  -->
-<!--       </description> -->
-<!--     </cus:documentation> -->
 <!--     <xsl:param name="errors"/> -->
 <!--     <center> -->
 <!--       <table cellpadding="2" style="border: 1px solid black"> -->
@@ -158,17 +154,15 @@
 <!--         </xsl:if> -->
 <!--       </table> -->
 <!--     </center> -->
+<!--     <cus:documentation> -->
+<!--       <description>This template will be executed if exceptions occur -->
+<!--       in class de.schlund.pfixxml.IncludeDocumentExtension.  -->
+<!--       </description> -->
+<!--     </cus:documentation> -->
 <!--  </xsl:template> -->
 
  
   <xsl:template name="pfx:missinc">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Called by &lt;pfx:include&gt;. This template will be executed
-        if an Include-Document/Part cannot be found, instead of this a warning-icon
-        and a warning-message will be displayed
-      </description>
-    </cus:documentation>
     <xsl:param name="part"/>
     <xsl:param name="path"/>
     <xsl:param name="href"/>
@@ -180,13 +174,17 @@
     <xsl:message>*** Include not found:
       Document = <xsl:value-of select="$path"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>
+        Called by &lt;pfx:include&gt;. This template will
+        be executed if an include part cannot be found. Instead a
+        warning-icon and a warning-message will be displayed
+      </description>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:include" name="pfx:include">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>test</description>
-    </cus:documentation>
     <xsl:param name="__env"/>
     <xsl:param name="parent_path">
       <xsl:if test="/include_parts and not($__target_key='__NONE__')">
@@ -382,6 +380,15 @@
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
+    <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
+    <img border="0" alt="">
+      <xsl:copy-of select="./@*"/>
+      <xsl:attribute name="src"><xsl:value-of select="$src"/></xsl:attribute>
+      <xsl:call-template name="pfx:image_geom_impl">
+        <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
+      </xsl:call-template>
+      <xsl:apply-templates/> <!--FIXME  ??????????????? wtf is this ? -->
+    </img>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>You can add images by using this tag. Standard Value for Border is 0. If
@@ -420,22 +427,9 @@
         </output>
       </example>
     </cus:documentation>
-    <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
-    <img border="0" alt="">
-      <xsl:copy-of select="./@*"/>
-      <xsl:attribute name="src"><xsl:value-of select="$src"/></xsl:attribute>
-      <xsl:call-template name="pfx:image_geom_impl">
-        <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
-      </xsl:call-template>
-      <xsl:apply-templates/> <!--FIXME  ??????????????? wtf is this ? -->
-    </img>
   </xsl:template>
 
   <xsl:template name="pfx:image_geom_impl">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Called by pfx:image</description>
-    </cus:documentation>
     <xsl:param name="src"><xsl:value-of select="./@src"/></xsl:param>
     <xsl:param name="path" select="concat($docroot, $src)"/>
     <xsl:param name="parent_path">
@@ -492,6 +486,10 @@
         <xsl:value-of select="$height"/>
       </xsl:attribute>
     </xsl:if>
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Called by pfx:image</description>
+    </cus:documentation>
   </xsl:template>
 
 </xsl:stylesheet>
