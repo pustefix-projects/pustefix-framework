@@ -6,6 +6,7 @@
 	* build.xml, skel/build.xml:
 	Removed copying of ant.dtd to skel dir, added as tarfileset to target "skeleton" instead.
 	Fixed target "projects_xml" to handle multiple projects correctly.
+	Fixed targets "propfiles" and "web_xml" to include param "machine".
 	* skel/build.xml:
 	Changed handling of projects/core directroy from dependent patternset exclusion
 	to target *-check logic.

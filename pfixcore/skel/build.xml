@@ -351,6 +351,7 @@
             <param name="docroot" expression="${dir.docroot}"/>
             <param name="fqdn"    expression="${fqdn}"/>
             <param name="uid"     expression="${uid}"/>
+            <param name="machine" expression="${machine}"/>
             <param name="mode"    expression="${makemode}"/>
         </pfx-xslt>
     </target>
@@ -401,6 +402,7 @@
             <param name="docroot" expression="${dir.docroot}"/>
             <param name="fqdn"    expression="${fqdn}"/>
             <param name="uid"     expression="${uid}"/>
+            <param name="machine" expression="${machine}"/>
             <param name="mode"    expression="${makemode}"/>
         </pfx-webxml>
     </target>
