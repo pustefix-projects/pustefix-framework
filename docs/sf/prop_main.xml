@@ -360,30 +360,90 @@
           </div>
           <a name="stophere"/>
         </xmlcodeOFF>
-        <flowstep name="AnotherPageName" stophere="true|false"/>
-        <xmlcodeOFF>
-          <table class="stdtable">
-            <tr>
-              <th>Attribute</th>
-              <th>Description</th>
-            </tr>
-            <tr>
-              <td><code>name</code></td>
-              <td><b>Mandatory</b>, must reference a valid <code>pagerequest</code>.
-              Usually there are many flowsteps defined in a pageflow.</td>
-            </tr>
-            <tr>
-              <td><code>stophere</code></td>
-              <td><b>Optional</b>, if true the pageflow will stop at
-              this step unconditionally if the submit originated from
-              a step that's before this one in the pageflow. See also
-              the <code>stopnext</code> attribute of the <pageflow/>
-              tag which is quivalent to specifying
-              <code>stophere="true"</code> for every single flowstep.
-              </td>
-            </tr>
-          </table>
-        </xmlcodeOFF>
+        <flowstep name="AnotherPageName" stophere="true|false">
+          <xmlcodeOFF>
+            <table class="stdtable">
+              <tr>
+                <th>Attribute</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><b>Mandatory</b>, must reference a valid <code>pagerequest</code>.
+                  Usually there are many flowsteps defined in a pageflow.</td>
+              </tr>
+              <tr>
+                <td><code>stophere</code></td>
+                <td><b>Optional</b>, if true the pageflow will stop at
+                  this step unconditionally if the submit originated from
+                  a step that's before this one in the pageflow. See also
+                  the <code>stopnext</code> attribute of the <pageflow/>
+                  tag which is quivalent to specifying
+                  <code>stophere="true"</code> for every single flowstep.
+                </td>
+              </tr>
+            </table>
+          </xmlcodeOFF>
+          <oncontinue applyall="true|false">
+            <xmlcodeOFF>
+              <div class="comment">
+                <p>
+                  This tag (which is optional) starts a sequence of test/action pairs. The tests are
+                  XPath expressions which work on the DOM tree as produced by the flowsteps
+                  associated state (note that the navigation is not inserted into the DOM tree at
+                  this stage, and the <code>/formresult/formvalues</code>
+                  and <code>/formresult/formerrors</code> paths are also not present).
+                </p>
+                <p>
+                  The <code>applyall</code> attribute is <b>optional</b>. If given and <b>true</b>, all
+                  actions with matching conditions are executed, if not given or <b>false</b> (the
+                  default) only the first action with a matching condition is executed.
+                </p>
+              </div>
+            </xmlcodeOFF>
+            <when test="A_XPath_Expression">
+              <xmlcodeOFF>
+                <div class="comment">
+                  <p>
+                    The <code>when</code> tag contains the XPath expression to try in
+                    it's <code>test</code> attribute. If this attribute is omitted, the whole condition is
+                    considered to be true.
+                  </p>
+                </div>
+              </xmlcodeOFF>
+              <action type="jumpto" page="APage" pageflow="APageFlow">
+                <xmlcodeOFF>
+                  <div class="comment">
+                    <p>
+                      The <code>action</code> tag denotes the FlowStepAction to
+                      execute. The <code>type</code> attribute is <b>mandatory</b> and defines the
+                      special action to use. The string <code>jumpto</code> denotes the special
+                      FlowStepAction <code>de.schlund.pfixcore.workflow.FlowStepJumpToAction</code>
+                      which is used to set the <i>jumptopage</i> (defined via the <code>page</code>
+                      attribute) and/or the <i>jumptopageflow</i> (defined via
+                      the <code>pageflow</code> attribute). 
+                    </p>
+                  </div>
+                </xmlcodeOFF>
+              </action>
+            </when>
+            <when test="A_XPath_Expression">
+              <action type="A_FlowStepAction" somekey="somevalue">
+                <xmlcodeOFF>
+                  <div class="comment">
+                    <p>
+                      If the <code>type</code> attribute is not <i>jumpto</i>, the value is
+                      interpreted as a class of
+                      type <code>de.schlund.pfixcore.workflow.FlowStepAction</code>. There can be
+                      an arbitrary number of additional attributes (<code>somekey</code> in this
+                      example) which are supplied as named parameters to the special FlowStepAction.
+                    </p>
+                  </div>
+                </xmlcodeOFF>
+              </action>
+            </when>
+          </oncontinue>
+        </flowstep>
       </pageflow>
       <xmlcodeOFF>
         <a name="pagerequest"/>
