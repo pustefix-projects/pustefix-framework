@@ -35,6 +35,14 @@
   
   <p><b>Current release: 0.8.0</b></p>
 
+  <p>The big feature of this release is a lightweight webservices
+  implementation for Pustefix and a JavaScript enabled Browser. The
+  Java side of things uses AXIS, which is integated into Pustefix so
+  that a webservice automatically has access to the ContextResources
+  of the current session. The client uses our own small SOAP
+  implementation in JavaScript and (depending on the browser's
+  featureset) different transports to submit the data to server</p>
+
   <p>You can see changes with increasing details:</p>
   <ul>  
      <li><p>High level: <a href="changes-report.html">Release announcements</a></p></li>
