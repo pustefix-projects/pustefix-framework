@@ -1,5 +1,20 @@
 2005-03-29  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setForceUpdate): new method, sets a boolean arg to true which
+	will force an update of the target next time it's checked.
+	(generateValue): set forceupdate back to false.
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (getModTime): getModTime again has no arguments.
+	Now we call the new method setForceUpdate() on all the affected VirtualTargets
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java:
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: 
+	remove the changes to calls to getModTime() as explained below again... This was a stupid idea to begin with.
+
+2005-03-28  Jens Lautenbacher  <jtl@schlund.de>
+
 	* src/de/schlund/pfixxml/targets/PageInfo.java: variant handling: PageInfo now has 3 constituents: page name,
 	target generator, variant (which can be 'null').
 	* src/de/schlund/pfixxml/targets/PageInfoFactory.java: changed accordingly.
