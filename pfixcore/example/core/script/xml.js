@@ -17,6 +17,7 @@ function xmlRequest() {
   this.method   = arguments[0];
   this.url      = arguments[1];
   this.callback = arguments[2];
+  this.context  = arguments[3];
 
   this.timer = [];
   this.timerCount = [];
@@ -48,7 +49,18 @@ xmlRequest.prototype.start = function( content ) {
 
       if( this.callback ) {
         //alert(""+_xml['+i+'].readyState + (_xml['+i+'].readyState==4 ? _xml['+i+'].status : "XXX"));
-        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { if( _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); } else { throw "Asynchronous call failed"; }}' );
+        //        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { if( _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); } else { throw "Asynchronous call failed"; }}' );
+
+        var self = this;
+        _xml[i].onreadystatechange = function() {
+          if( _xml[i].readyState == 4 ) { 
+            if( _xml[i].status < 300 ) { 
+              self.callback.call( self.context, _xml[i].responseXML); 
+            } else { 
+              throw "Asynchronous call failed"; 
+            }
+          }
+        };
       }
       _xml[i].open( this.method, this.url, this.callback ? true : false);
       _xml[i].setRequestHeader("SOAPAction", '""');

@@ -447,7 +447,7 @@ function Call() {
 	this.opName=null;
 	this.params=new Array();
 	this.retTypeInfo=null;
-  this.callback=null;
+  this.userCallback=null;
 }
 
 //setTargetEndpointAddress(address)
@@ -501,15 +501,21 @@ Call.prototype.invoke=function() {
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
   //  alert("writer.xml:\n" + writer.xml);
-  //  	document.getElementById('request').value=writer.xml;
-  	
-
-  var resDoc=sendTest(writer.xml,this.endpoint);
-
-	
+  //  document.getElementById('request').value=writer.xml;
+  
+  var resDoc;
+  if( !this.userCallback ) {
+    // sync
+    resDoc = new xmlRequest( 'POST', this.endpoint ).start( writer.xml );
+    return this.callback(resDoc);
+  }
+    
+  // async
+  return new xmlRequest( 'POST', this.endpoint, this.callback, this ).start( writer.xml );
+  
+  //  var resDoc=sendTest(writer.xml,this.endpoint);
   //	return rpc.deserialize(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
-
-  return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
+  //  return new xmlRequest( 'POST', this.endpoint, this.userCallback ).start( writer.xml );
 }
 
 
@@ -689,23 +695,63 @@ function BeanInfo(xmlType,arrayType,propToInfo) {
 }
 
 
+//*****************************************************************************
+//
+//*****************************************************************************
+Call.prototype.callback = function( xml ) {
+
+  //  alert("Call.callback()..." + xml);
+
+  //-------------
+  // deserialize
+  //-------------
+
+	var rpc=new RPCSerializer( this.opName, null, this.retTypeInfo);
+  var res = rpc.deserialize(xml.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
+
+  if( this.userCallback ) {
+    // async
+    this.userCallback( res );
+    return true;
+  } else {
+    // sync
+    return res;
+  }
+};
+
+var count = 0;
 
 function test() {
 	
 	
-	var call=new Call();
+	var call = new Call();
 	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
 	//call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
-	
 	
 	call.setOperationName(new QName("add"));
 	call.addParameter("val1",new TypeInfo(xmltypes.XSD_INT),"IN");
 	call.addParameter("val2",new TypeInfo(xmltypes.XSD_INT),"IN");
 	call.setReturnType(new TypeInfo(xmltypes.XSD_INT));
-	var res=call.invoke(2,3);
-	alert("Result: "+res);
-	alert(res+9);
+
+  if( count % 2 ) {
+    call.userCallback = function(v) { 
+      document.getElementById('request').value += "odd:  async: "+v + "\n";
+    };
+  } else {
+    call.userCallback = function(v) { 
+      document.getElementById('request').value += "even: async: "+v + "\n";
+    };
+  }
+
+  try {
+    var res = call.invoke( count++, 2);
+  } catch(e) { alert(e); }
 	
+
+  if( !call.userCallback ) {
+    alert("sync: " + res);
+  }
+
 	/*
 	call.setOperationName(new QName("echoString"));
 	call.addParameter("val",new TypeInfo(xmltypes.XSD_STRING),"IN");
