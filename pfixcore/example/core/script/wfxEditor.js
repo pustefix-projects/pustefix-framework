@@ -23,14 +23,21 @@ function wfxEditor( config ) {
   this._timerToolbar = null; //XXX
   this._timestamp = null;
 
-  this.skipRehighlighting = true;
-  //  this.cancelRehighlighting = true;
-  //  this.insideRehighlighting = false;
+  this.skipRehighlighting   = true;
+  this.needRehighlighting   = 0;
+  this.cancelRehighlighting = false;
+  this.insideRehighlighting = false;
+
+
+  this.countRangeMarkers = 0;
 
   this._showLine   = document.getElementById("wfxed_line");
   this._showColumn = document.getElementById("wfxed_column");
   this._showMsg    = document.getElementById("wfxed_msg");
   this._dbg        = document.getElementById("dbg");
+
+  this.showStatus = false;
+  this.syntaxrehighlighting = this._showLine;
 
   this._ta_src = document.getElementById("ta_src");
   this._ta_col = document.getElementById("ta_col");
@@ -39,7 +46,6 @@ function wfxEditor( config ) {
 
   this._linepx    = 16;
   this._linebarheight = null;
-
   this._linenumber = 1;
 
   this._content_tag;
@@ -79,17 +85,19 @@ wfxEditor.prototype.setRangeMarker = function() {
   var sel = this._getSelection();
   var rng = this._createRange(sel);
 
+  this.countRangeMarkers++;
+
   if( wfx.is_ie ) {
 
     rngStart = rng.duplicate();
     rngStart.collapse(true);
-    rngStart.pasteHTML('<span class="sfxStart"></span>');
+    rngStart.pasteHTML('<span id="sfxStart' + this.countRangeMarkers + '"></span>');
 
     //    alert("sel.type:" + sel.type);
     if( sel.type == "Text" ) {
       rngEnd   = rng.duplicate();
       rngEnd.collapse(false);
-      rngEnd.pasteHTML('<span class="sfxEnd"></span>');
+      rngEnd.pasteHTML('<span id="sfxEnd' + this.countRangeMarkers + '"></span>');
     }
 
   } else {
@@ -101,23 +109,23 @@ wfxEditor.prototype.setRangeMarker = function() {
     startOffset    = rng.startOffset;
     endOffset      = rng.endOffset;
     
-//    alert( "startContainer:>>>"+ startContainer.nodeValue + "<<<\n" +
-//	   "endContainer:>>>"+ endContainer.nodeValue + "<<<\n" +
-//	   "startOffset:"+ startOffset + "\n" +
-//	   "endOffset:"+ endOffset);
+    //    alert( "startContainer:>>>"+ startContainer.nodeValue + "<<<\n" +
+    //	   "endContainer:>>>"+ endContainer.nodeValue + "<<<\n" +
+    //	   "startOffset:"+ startOffset + "\n" +
+    //	   "endOffset:"+ endOffset);
 
     var mydoc  = this._doc.createDocumentFragment();
     var mynode;
 
     mynode = this._doc.createElement("span");
-    mynode.className = "sfxStart";
+    mynode.id = "sfxStart" + this.countRangeMarkers;
     mydoc.appendChild(mynode);
-//    mynode = this._doc.createComment("sfxStart");
-//    mydoc.appendChild(mynode);
+    //    mynode = this._doc.createComment("sfxStart");
+    //    mydoc.appendChild(mynode);
 
     if( !sel.isCollapsed) {
       mynode = this._doc.createElement("span");
-      mynode.className = "sfxEnd";
+      mynode.id = "sfxEnd" + this.countRangeMarkers;
       mydoc.appendChild(mynode);
 
       var rngEnd = this._doc.createRange();
@@ -140,7 +148,27 @@ wfxEditor.prototype.setRangeMarker = function() {
 //#****************************************************************************
 wfxEditor.prototype.changeRangeMarker = function(buf) {
 
-  return buf.replace( /<span class="(sfx.+?)"><\/span>/g, "[[[$1]]]");
+  //  var arr = buf.match( /<span id="sfxStart"><\/span>/g );
+  //  if( arr instanceof Array ) {
+  //    if( arr.length > 1 ) {
+  //      this._dbg.value += "A" + arr.length + " ";
+  //    }
+  //  }
+
+  var rule_marker = new RegExp( '<span id="(sfx(Start|End)' + 
+				this.countRangeMarkers + ')"><\/span>', "g" );
+  buf = buf.replace( rule_marker, "[[[sfx$2]]]");
+  //  alert(this.countRangeMarkers + "\n" + buf);
+
+  buf = buf.replace( /<span id="(sfx.+?)"><\/span>/g, "");
+  return buf;
+
+
+  //  if( this.countRangeMarkers > 1 ) {
+  //    buf = buf.replace( /<span id="sfx(Start|sfxEnd)"><\/span>/g, "[[[$1]]]");
+  //  } else {
+  return buf.replace( /<span id="(sfx.+?)"><\/span>/g, "[[[$1]]]");
+  //  }
 };
 
 //#****************************************************************************
@@ -236,7 +264,7 @@ wfxEditor.prototype.isWellFormedXML = function( xml, err ) {
   if( xml.indexOf("<?xml ") != 0 ) {
     // prepend XML declaration
     xml = '<?xml version="1.0" encoding="utf-8" ?>\n' +
-    '<sfxroot xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">\n' + xml + '\n</sfxroot>\n';
+      '<sfxroot xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">\n' + xml + '\n</sfxroot>\n';
   }
 
   if( typeof err == "undefined" ) {
@@ -317,13 +345,13 @@ wfxEditor.prototype.updateLineNumbers = function() {
 
   var doctype =  '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n';
   var html_header1 = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n<head>\n' + 
-  '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
+    '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
   var html_header2 = '</head>\n<body id="bodynode">\n<pre style="text-align:right">';
   var html_footer  = '</pre>\n</body>\n</html>\n';
   var style_source = '<style>\n' + 
-  'body,pre { font-family: monospace; font-size: 13px; margin:0px; background-color:#eeeeee }\n' + 
-  'td {text-align:right; font-weight:bold }\n' + 
-  '</style>\n';
+    'body,pre { font-family: monospace; font-size: 13px; margin:0px; background-color:#eeeeee }\n' + 
+    'td {text-align:right; font-weight:bold }\n' + 
+    '</style>\n';
   
   var content = "";
   for( var i=1; i<=2222; i++ ) {
@@ -342,23 +370,23 @@ wfxEditor.prototype.updateLineNumbers = function() {
 //#****************************************************************************
 wfxEditor.Config = function () {
 
-	this.width = "auto";
-	this.height = "auto";
+  this.width = "auto";
+  this.height = "auto";
 
-	// the next parameter specifies whether the toolbar should be included
-	// in the size or not.
-	this.sizeIncludesToolbar = true;
+  // the next parameter specifies whether the toolbar should be included
+  // in the size or not.
+  this.sizeIncludesToolbar = true;
 
-	// style included in the iframe document
-	this.pageStyle = "body { background-color: #00f; font-family: verdana,sans-serif; }";
-	if (typeof _editor_url != "undefined") {
-		this.editorURL = _editor_url;
-	} else {
-		this.editorURL = "";
-	}
+  // style included in the iframe document
+  this.pageStyle = "body { background-color: #00f; font-family: verdana,sans-serif; }";
+  if (typeof _editor_url != "undefined") {
+    this.editorURL = _editor_url;
+  } else {
+    this.editorURL = "";
+  }
 
-	// URL-s
-	this.imgURL = "images/";
+  // URL-s
+  this.imgURL = "images/";
 };
 
 //#****************************************************************************
@@ -395,24 +423,26 @@ wfxEditor.prototype.tag2src = function( buf ) {
 //#****************************************************************************
 wfxEditor.prototype.src2col = function( buf ) {
 
-  bench( null, 10);
+  var dbg_bench = 1;
 
-  bench( null, 6);
+  dbg_bench && bench( null, 10);
+
+  dbg_bench && bench( null, 6);
   var rule_htmlTag        = /&lt;(\w+\b.*?)&gt;/g;
   var rule_htmlTagName    = /&lt;(\/?\w+)\b(.*?)&gt;/g;
   var rule_htmlEndTag     = /&lt;(\/\w+)&gt;/g;
 
-//  var rule_pfxTag      = /&lt;(pfx\:\w+[\s\S]*?)&gt;/g;
-//  var rule_pfxTagName  = /&lt;(pfx\:\w+)\b(.*?)&gt;/g;
-//  var rule_pfxEndTag   = /&lt;(\/pfx\:\w+)&gt;/g;
-//
-//  var rule_xslTag      = /&lt;(xsl\:\w+[\s\S]*?)&gt;/g;
-//  var rule_xslTagName  = /&lt;(xsl\:\w+)\b(.*?)&gt;/g;
-//  var rule_xslEndTag   = /&lt;(\/xsl\:\w+)&gt;/g;
-//
-//  var rule_ixslTag     = /&lt;(ixsl\:\w+[\s\S]*?)&gt;/g;
-//  var rule_ixslTagName = /&lt;(ixsl\:\w+)\b(.*?)&gt;/g;
-//  var rule_ixslEndTag  = /&lt;(\/ixsl\:\w+)&gt;/g;
+  //  var rule_pfxTag      = /&lt;(pfx\:\w+[\s\S]*?)&gt;/g;
+  //  var rule_pfxTagName  = /&lt;(pfx\:\w+)\b(.*?)&gt;/g;
+  //  var rule_pfxEndTag   = /&lt;(\/pfx\:\w+)&gt;/g;
+  //
+  //  var rule_xslTag      = /&lt;(xsl\:\w+[\s\S]*?)&gt;/g;
+  //  var rule_xslTagName  = /&lt;(xsl\:\w+)\b(.*?)&gt;/g;
+  //  var rule_xslEndTag   = /&lt;(\/xsl\:\w+)&gt;/g;
+  //
+  //  var rule_ixslTag     = /&lt;(ixsl\:\w+[\s\S]*?)&gt;/g;
+  //  var rule_ixslTagName = /&lt;(ixsl\:\w+)\b(.*?)&gt;/g;
+  //  var rule_ixslEndTag  = /&lt;(\/ixsl\:\w+)&gt;/g;
 
   var rule_colonTag        = /&lt;((pfx|ixsl|xsl)\:[\w\-]+[\s\S]*?)&gt;/g;
   var rule_colonTagName    = /&lt;(\/?(pfx|ixsl|xsl)\:[\w\-]+)\b(.*?)&gt;/g;
@@ -425,29 +455,29 @@ wfxEditor.prototype.src2col = function( buf ) {
   var rule_comment = /(&lt;!--[^\0]*?--&gt;)/g;
   var rule_cdata   = /(&lt;!\[CDATA\[[^\0]*?\]\]&gt;)/g;
 
-  bench( "\n------------------------\n  rules", null, 6);
+  dbg_bench && bench( "\n------------------------\n  rules", null, 6);
 
   //-------------------------
   // comments: preprocessing
   //-------------------------
   
-  bench( null, 6 );
+  dbg_bench && bench( null, 6 );
   var comments = buf.match( rule_comment );
   if( comments instanceof Array ) {
     for( var i=0; i<comments.length; i++ ) {
       buf = buf.replace( new RegExp(comments[i].replace(/(\W)/g,'\\$1')), '&lt;!-- '+i+' --&gt;' );
     }
   }
-  bench( "  comments1", null, 6);
+  dbg_bench && bench( "  comments1", null, 6);
 
-  bench( null, 6 );
+  dbg_bench && bench( null, 6 );
   var cdatas = buf.match( rule_cdata );
   if( cdatas instanceof Array ) {
     for( var i=0; i<cdatas.length; i++ ) {
       buf = buf.replace( new RegExp(cdatas[i].replace(/(\W)/g,'\\$1')), '&lt;!\[CDATA\[ '+i+' \]\]&gt;' );
     }
   }
-  bench( "  cdatas1", null, 6);
+  dbg_bench && bench( "  cdatas1", null, 6);
   //---------------------------------------------------------------------------
 
   //------
@@ -455,39 +485,39 @@ wfxEditor.prototype.src2col = function( buf ) {
   //------
   
   if(1) {
-  bench( null, 6 );
-  var pos;
-  var arr = buf.match( rule_htmlTag );
-  if( arr instanceof Array ) {
-    var oldexp, newexp, myexp;
-    for( var i=0; i<arr.length; i++ ) {
+    dbg_bench && bench( null, 6 );
+    var pos;
+    var arr = buf.match( rule_htmlTag );
+    if( arr instanceof Array ) {
+      var oldexp, newexp, myexp;
+      for( var i=0; i<arr.length; i++ ) {
 
-      if( buf.indexOf(arr[i]) != -1 ) {
-	// only if not yet replaced (redundancy!)
+	if( buf.indexOf(arr[i]) != -1 ) {
+	  // only if not yet replaced (redundancy!)
 
-	newexp = arr[i].replace( rule_argval, '$1<span class="string">$2</span>');
-	if(newexp != arr[i]) {
-	  // quotemeta
-	  arr[i] = arr[i].replace( /(\W)/g, '\\$1' );
-	  newexp = newexp.replace( /\$/g, '$$$' );  // escape $ for IE as $$
-	  //	  alert( "oldexp:" + arr[i] + "\nnewexp:" + newexp);
-	  myexp = new RegExp( arr[i], "g" );
-	  buf = buf.replace( myexp, newexp );
+	  newexp = arr[i].replace( rule_argval, '$1<span class="string">$2</span>');
+	  if(newexp != arr[i]) {
+	    // quotemeta
+	    arr[i] = arr[i].replace( /(\W)/g, '\\$1' );
+	    newexp = newexp.replace( /\$/g, '$$$' );  // escape $ for IE as $$
+	    //	  alert( "oldexp:" + arr[i] + "\nnewexp:" + newexp);
+	    myexp = new RegExp( arr[i], "g" );
+	    buf = buf.replace( myexp, newexp );
+	  }
 	}
       }
     }
-  }
-  bench( "  argval", null, 6);
+    dbg_bench && bench( "  argval", null, 6);
   }
   //---------------------------------------------------------------------------
 
-  bench( null, 6 );
+  dbg_bench && bench( null, 6 );
   buf = buf.replace( rule_colonTag,     '<span class="$2tag">&lt;$1&gt;</span>' );
   buf = buf.replace( rule_colonEndTag,  '<span class="$2endtag">&lt;$1&gt;</span>' );
   buf = buf.replace( rule_colonTagName, '&lt;<span class="$2tagname">$1</span>$3&gt;' );
-  bench( "  colon", null, 6);
+  dbg_bench && bench( "  colon", null, 6);
 
-  bench( null, 6 );
+  dbg_bench && bench( null, 6 );
   buf = buf.replace( rule_htmlTag,    '<span class="htmltag">&lt;$1&gt;</span>' );
   buf = buf.replace( rule_htmlEndTag, '<span class="htmlendtag">&lt;$1&gt;</span>' );
   buf = buf.replace( rule_htmlTagName,'&lt;<span class="htmltagname">$1</span>$2&gt;' );
@@ -496,51 +526,51 @@ wfxEditor.prototype.src2col = function( buf ) {
   //  buf = buf.replace( /&lt;<span class="htmltagname">(\w+)<\/span>:/g, "&lt;$1:");
   //  buf = buf.replace( /<span class="htmltag">(&lt;\w+\:\w+.*?&gt;)<\/span>/g, "$1");
 
-  bench( "  html", null, 6);
+  dbg_bench && bench( "  html", null, 6);
 
   if(0) {
-//    bench( null, 6 );
-//    buf = buf.replace( rule_pfxTag,     '<span class="pfxtag">&lt;$1&gt;</span>' );
-//    buf = buf.replace( rule_pfxTagName, '&lt;<span class="pfxtagName">$1</span>$2&gt;' );
-//    buf = buf.replace( rule_pfxEndTag,  '<span class="pfxendtag">&lt;$1&gt;</span>' );
-//    
-//    buf = buf.replace( rule_xslTag,     '<span class="xsltag">&lt;$1&gt;</span>' );
-//    buf = buf.replace( rule_xslTagName, '&lt;<span class="xsltagName">$1</span>$2&gt;' );
-//    buf = buf.replace( rule_xslEndTag,  '<span class="xslendtag">&lt;$1&gt;</span>' );
-//    
-//    buf = buf.replace( rule_ixslTag,     '<span class="ixsltag">&lt;$1&gt;</span>' );
-//    buf = buf.replace( rule_ixslTagName, '&lt;<span class="ixsltagName">$1</span>$2&gt;' );
-//    buf = buf.replace( rule_ixslEndTag,  '<span class="ixslendtag">&lt;$1&gt;</span>' );
-//    bench( "  pfx|xsl|ixsl", null, 6);
+    //    bench( null, 6 );
+    //    buf = buf.replace( rule_pfxTag,     '<span class="pfxtag">&lt;$1&gt;</span>' );
+    //    buf = buf.replace( rule_pfxTagName, '&lt;<span class="pfxtagName">$1</span>$2&gt;' );
+    //    buf = buf.replace( rule_pfxEndTag,  '<span class="pfxendtag">&lt;$1&gt;</span>' );
+    //    
+    //    buf = buf.replace( rule_xslTag,     '<span class="xsltag">&lt;$1&gt;</span>' );
+    //    buf = buf.replace( rule_xslTagName, '&lt;<span class="xsltagName">$1</span>$2&gt;' );
+    //    buf = buf.replace( rule_xslEndTag,  '<span class="xslendtag">&lt;$1&gt;</span>' );
+    //    
+    //    buf = buf.replace( rule_ixslTag,     '<span class="ixsltag">&lt;$1&gt;</span>' );
+    //    buf = buf.replace( rule_ixslTagName, '&lt;<span class="ixsltagName">$1</span>$2&gt;' );
+    //    buf = buf.replace( rule_ixslEndTag,  '<span class="ixslendtag">&lt;$1&gt;</span>' );
+    //    bench( "  pfx|xsl|ixsl", null, 6);
   } else {
   }
 
-  bench( null, 6 );
+  dbg_bench && bench( null, 6 );
   buf = buf.replace( rule_entity,     '<span class="entity">$1</span>' );
-  bench( "  entities", null, 6 );
+  dbg_bench && bench( "  entities", null, 6 );
 
   //--------------------------
   // comments: postprocessing
   //--------------------------
 
-  bench( null, 6);
+  dbg_bench && bench( null, 6);
   if( comments instanceof Array ) {
     for( var i=0; i<comments.length; i++ ) {
       buf = buf.replace( new RegExp('&lt;!-- '+i+' --&gt;'), '<span class="comment">'+comments[i].replace(/\$/g,'$$$')+'</span>' );
     }
   }
-  bench( "  comments2", null, 6);
+  dbg_bench && bench( "  comments2", null, 6);
 
-  bench( null, 6);
+  dbg_bench && bench( null, 6);
   if( cdatas instanceof Array ) {
     for( var i=0; i<cdatas.length; i++ ) {
 
       buf = buf.replace( new RegExp('&lt;!\\[CDATA\\[ '+i+' \\]\\]&gt;'), '<span class="cdata">'+cdatas[i].replace(/\$/g,'$$$')+'</span>' );
     }
   }
-  bench( "  cdatas2", null, 6);
+  dbg_bench && bench( "  cdatas2", null, 6);
 
-  bench( "  src2col(intern)", null, 10);
+  dbg_bench && bench( "src2col(intern)", null, 10);
 
   return buf;
 }
@@ -604,18 +634,18 @@ wfxEditor.prototype.prepareContent = function( content ) {
 //#
 //#****************************************************************************
 wfxEditor.prototype.execCommand = function(cmdID, UI, param) {
-	var editor = this;	// for nested functions
+  var editor = this;	// for nested functions
 
-	this.focusEditor();
+  this.focusEditor();
 
-	switch (cmdID.toLowerCase()) {
-	default: try { 
-	    //		  alert("execCommand: " + cmdID + ", " + UI + ", " + param);
-	    this._doc.execCommand(cmdID, UI, param);
-	  } catch(e) {
-	  }
-	}
-	return false;
+  switch (cmdID.toLowerCase()) {
+  default: try { 
+    //		  alert("execCommand: " + cmdID + ", " + UI + ", " + param);
+    this._doc.execCommand(cmdID, UI, param);
+  } catch(e) {
+  }
+  }
+  return false;
 };
 
 /***************************************************
@@ -625,7 +655,7 @@ wfxEditor.prototype.execCommand = function(cmdID, UI, param) {
 /** A generic event handler for things that happen in the IFRAME's document.
  * This function also handles key bindings. */
 wfxEditor.prototype._editorEvent = function(ev) {
-  //alert("_editorEvent()..." + ev.type);
+  //  alert("_editorEvent()..." + ev.type);
 
   var editor = this;
 
@@ -639,16 +669,93 @@ wfxEditor.prototype._editorEvent = function(ev) {
     //    return;
   }
   //---------------------------------------------------------------------------
- 
+
   if (keyEvent && !(ev.type == "mousedown" || ev.type == "scroll") ) {
     // other keys here
-    switch (ev.keyCode) {
+
+    //    alert("keyEvent: " + (keyEvent==true) + "\n" + ev.type + ", " + 
+    //	  "\nkeyCode: " + ev.keyCode + "\ncharCode: " + ev.charCode + 
+    //	  "\nCtrl: " + (ev.ctrlKey==true) + "\nAlt: " + (ev.altKey==true) );
+
+    //    this._dbg.value += "k" + ev.keyCode + " ";
+
+    switch( ev.keyCode ) {
   
+    case 0:
+      this.skipRehighlighting = false;
+      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+      //------
+      // Ctrl
+      //------
+
+      if( ev.ctrlKey ) {
+	switch( ev.charCode ) {
+	case 97:   // Ctrl-A
+	  alert("Ctrl-A");
+	  this.skipRehighlighting = true;
+	  return;
+	  break;
+	case 99:   // Ctrl-C
+	  this.skipRehighlighting = true;
+	  return;
+	  break;
+	case 101:   // Ctrl-E
+	  this.skipRehighlighting = true;
+	  wfxEditor._stopEvent(ev);
+	  return;
+	  break;
+	case 107:   // Ctrl-K
+	  //	  alert("ctrl-k:\n" + wfxEditor.str2chr(this.getHTML()));
+	  this.skipRehighlighting = true;
+	  wfxEditor._stopEvent(ev);
+	  //	  this.focusEditor();
+	  return;
+	  break;
+	}
+      }
+      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      //-----
+      // Alt
+      //-----
+
+      if( ev.altKey ) {
+	switch( ev.charCode ) {
+	case 97:   // Alt-A
+	  this.skipRehighlighting = true;
+	  return;
+	  break;
+	}
+      }
+      //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      this.needRehighlighting++;
+
+      if( this.insideRehighlighting ) {
+	//	alert("event1: insideRehighlighting ==> cancelRehighlighting");
+	//	this._dbg.value += "event1 ";
+	this.cancelRehighlighting = true;
+      } else {
+	this.cancelRehighlighting = false;
+      }
+      this._timestamp = (new Date()).getTime();
+      break;
+
+    case 65:
+      if( ev.ctrlKey ) {
+	// Ctrl-A
+	this.needRehighlighting = 0;
+	this.skipRehighlighting = true;
+	return;
+      }
+      break;
+	
     case 13: // KEY enter
-//      if (wfx.is_ie) {
-//	this.insertHTML("&lrm;");
-//	//	wfxEditor._stopEvent(ev);
-//      }
+      //      if (wfx.is_ie) {
+      //	this.insertHTML("&lrm;");
+      //	//	wfxEditor._stopEvent(ev);
+      //      }
 
       this.skipRehighlighting = true;
       
@@ -691,7 +798,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
       } else {
 	content = this.col2tag(this.getHTML());
       }
-      //	alert("1:\n" + wfxEditor.str2chr(content));
+      //      alert("1:\n" + wfxEditor.str2chr(content));
       //-------------------------------------------------------------------------
 
       //	content = this.indentCurrentLine( content, optiTab );
@@ -764,7 +871,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 
 	if( optiTab ) {
 	  content = buf;
-	  content = content.replace( /<span class="sfx.+?"><\/span>/g, "");
+	  content = content.replace( /<span id="sfx.+?"><\/span>/g, "");
 	} else {
 	  content = this.removeChangedRangeMarker(content);
 	}
@@ -826,17 +933,26 @@ wfxEditor.prototype._editorEvent = function(ev) {
     case 39: // CursorRight
     case 40: // CursorDown
       this.skipRehighlighting = true;
+      if( this.insideRehighlighting ) {
+	this.cancelRehighlighting = true;
+      } else {
+	this.cancelRehighlighting = false;
+      }
       break;
     default:
+      this.needRehighlighting++;
       this.skipRehighlighting = false;
-      if( insideRehighlighting ) {
-	cancelRehighlighting = true;
-	this._dbg.value += "cancel\n";
+      if( this.insideRehighlighting ) {
+	//	alert("event2: insideRehighlighting ==> cancelRehighlighting");
+	this.cancelRehighlighting = true;
+	//	this._dbg.value += "event2 ";
       } else {
-	cancelRehighlighting = false;
+	this.cancelRehighlighting = false;
       }
       this._timestamp = (new Date()).getTime();
     }
+  } else if(!(ev.type == "mousedown" || ev.type == "scroll")) {
+    //    wfxEditor._stopEvent(ev);
   }
   //---------------------------------------------------------------------------
   
@@ -851,7 +967,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
     } else {
       scrollTop = editor._editor.pageYOffset;
     }
-    editor._showColumn.value = scrollTop;
+    //    editor._showColumn.value = scrollTop;
     
     if( scrollTop != editor._scrollTop ) {
       // scroll offset has changed
@@ -867,136 +983,122 @@ wfxEditor.prototype._editorEvent = function(ev) {
   }, 50);   // Moz needs some delay to detect current scrolling
   //---------------------------------------------------------------------------
 
-  // update the toolbar state after some time
-  if (editor._timerToolbar) {
-    clearTimeout(editor._timerToolbar);
-  }
-  editor._timerToolbar = setTimeout
-  (function() {
+  //#  // update the toolbar state after some time
+  //#  if (editor._timerToolbar) {
+  //#    clearTimeout(editor._timerToolbar);
+  //#  }
+  //#  editor._timerToolbar = setTimeout
+  //#    (function() {
+  //#
+  //#      if( 0 ) {
+  //#
+  //#	var sel = editor._getSelection();
+  //#	var rng = editor._createRange(sel);
+  //#
+  //#	if(wfx.is_ie) {
+  //#
+  //#	  //----
+  //#	  // IE
+  //#	  //----
+  //#
+  //#	  var parNode   = rng.parentElement().nodeName;
+  //#	  var className = rng.parentElement().className;
+  //#	  var content;
+  //#      
+  //#	  if( parNode == "BODY" || parNode == "PRE" ) {
+  //#
+  //#	    // expand to the left till ">"
+  //#	    while( rng.moveStart( "character", -1 ) &&
+  //#		   rng.text.charAt(0)!=">" ) {
+  //#	    }
+  //#	    rng.moveStart( "character", 1 );
+  //#
+  //#	    // expand to the right till "<"
+  //#	    while( rng.moveEnd( "character", 1 ) &&
+  //#		   rng.text.charAt(rng.text.length-1)!="<" ) {
+  //#	    }
+  //#	    rng.moveEnd( "character", -1 );
+  //#
+  //#	    content = rng.text + "[" + parNode + "]";
+  //#	
+  //#	  } else if( className == "htmltag" ||
+  //#		     className == "pfxtag"  ||
+  //#		     className == "xsltag"  ||
+  //#		     className == "ixsltag" ) {
+  //#
+  //#	    // look to the right
+  //#	    rng.moveEnd( "character", 1);
+  //#	    content = rng.text;
+  //#
+  //#	    if( content.charAt(0)== "=" ) {
+  //#	      // before "=" <==> End Of AttrVar
+  //#	      while( rng.moveStart( "character", -1 ) &&
+  //#		     rng.text.charAt(0)!=" " ) {
+  //#	      }
+  //#	      rng.moveStart( "character", 1 );
+  //#
+  //#	      content = rng.text + "[EndOfAttrVar]";
+  //#	      //	  rng.select();
+  //#	    } else if( content.charAt(0)== ">" ) {
+  //#	      // Before Closing Bracket
+  //#	      content = "??? [BeforeClosingBracket]";
+  //#	    } else if( content.charAt(0)== "<" ) {
+  //#	      // Before Opening Bracket
+  //#	      content = "??? [BeforeOpeningBracket]";
+  //#	    } else {
+  //#
+  //#	      // look to the left
+  //#	      rng.moveStart( "character", -1);
+  //#	      rng.moveEnd( "character", -1);
+  //#	      content = rng.text;
+  //#	  
+  //#	      if( content.charAt(0)== ">" ) {
+  //#		// After Closing Bracket
+  //#		content = "??? [AfterClosingBracket]";
+  //#	      } else {
+  //#
+  //#		// look again to the right
+  //#		rng.moveStart( "character", 1);
+  //#		rng.moveEnd( "character", 1);
+  //#		//	    content = rng.text;
+  //#	  
+  //#		rng.expand("word");
+  //#
+  //#		if( rng.text.charAt(0) == "=" ) {
+  //#		  // before AttrVal
+  //#		  content = "??? [BeforeAttrVal]";
+  //#		} else {
+  //#		  rng.moveEnd( "character", 1 );
+  //#		  content = rng.text + "[InsideAttrVar]";
+  //#		}
+  //#	      }
+  //#	    }
+  //#	  } else if( 1 ) {
+  //#	    content = rng.parentElement().innerHTML + "[???]";
+  //#	  }
+  //#
+  //#	  editor._showMsg.value =
+  //#	    "par.nodeName:" + rng.parentElement().nodeName + ", " +
+  //#	    "(" + className + "), " + 
+  //#	    "content:" + content;
+  //#	} else {
+  //#
+  //#	  //-----
+  //#	  // Moz
+  //#	  //-----
+  //#
+  //#	  editor._showMsg.value = rng.startContainer.nodeValue;
+  //#
+  //#	  var parEl = rng.commonAncestorContainer.parentNode;
+  //#	  editor._showMsg.value += " (" + parEl.className + ")";
+  //#	}
+  //#      }
+  //#
+  //#      //    editor.updateToolbar();
+  //#      editor._timerToolbar = null;
+  //#    }, 50);
 
-    var sel = editor._getSelection();
-    var rng = editor._createRange(sel);
-
-    if( 0 ) {
-      if(wfx.is_ie) {
-
-	//----
-	// IE
-	//----
-
-	var parNode   = rng.parentElement().nodeName;
-	var className = rng.parentElement().className;
-	var content;
-      
-	if( parNode == "BODY" || parNode == "PRE" ) {
-
-	  // expand to the left till ">"
-	  while( rng.moveStart( "character", -1 ) &&
-		 rng.text.charAt(0)!=">" ) {
-	  }
-	  rng.moveStart( "character", 1 );
-
-	  // expand to the right till "<"
-	  while( rng.moveEnd( "character", 1 ) &&
-		 rng.text.charAt(rng.text.length-1)!="<" ) {
-	  }
-	  rng.moveEnd( "character", -1 );
-
-	  content = rng.text + "[" + parNode + "]";
-	
-	} else if( className == "htmltag" ||
-		   className == "pfxtag"  ||
-		   className == "xsltag"  ||
-		   className == "ixsltag" ) {
-
-	  // look to the right
-	  rng.moveEnd( "character", 1);
-	  content = rng.text;
-
-	  if( content.charAt(0)== "=" ) {
-	    // before "=" <==> End Of AttrVar
-	    while( rng.moveStart( "character", -1 ) &&
-		   rng.text.charAt(0)!=" " ) {
-	    }
-	    rng.moveStart( "character", 1 );
-
-	    content = rng.text + "[EndOfAttrVar]";
-	    //	  rng.select();
-	  } else if( content.charAt(0)== ">" ) {
-	    // Before Closing Bracket
-	    content = "??? [BeforeClosingBracket]";
-	  } else if( content.charAt(0)== "<" ) {
-	    // Before Opening Bracket
-	    content = "??? [BeforeOpeningBracket]";
-	  } else {
-
-	    // look to the left
-	    rng.moveStart( "character", -1);
-	    rng.moveEnd( "character", -1);
-	    content = rng.text;
-	  
-	    if( content.charAt(0)== ">" ) {
-	      // After Closing Bracket
-	      content = "??? [AfterClosingBracket]";
-	    } else {
-
-	      // look again to the right
-	      rng.moveStart( "character", 1);
-	      rng.moveEnd( "character", 1);
-	      //	    content = rng.text;
-	  
-	      rng.expand("word");
-
-	      if( rng.text.charAt(0) == "=" ) {
-		// before AttrVal
-		content = "??? [BeforeAttrVal]";
-	      } else {
-		rng.moveEnd( "character", 1 );
-		content = rng.text + "[InsideAttrVar]";
-	      }
-	    }
-	  }
-	} else if( 1 ) {
-	  content = rng.parentElement().innerHTML + "[???]";
-	}
-
-	editor._showMsg.value =
-	  "par.nodeName:" + rng.parentElement().nodeName + ", " +
-	  "(" + className + "), " + 
-	  "content:" + content;
-      } else {
-
-	//-----
-	// Moz
-	//-----
-
-	editor._showMsg.value = rng.startContainer.nodeValue;
-
-	var parEl = rng.commonAncestorContainer.parentNode;
-	editor._showMsg.value += " (" + parEl.className + ")";
-      }
-    }
-
-//    var linenumber = editor._linenumberFromRange( rng );
-//    if( linenumber && (linenumber != editor._linenumber)) {
-//      editor._showLine.value = linenumber;
-//
-//      editor._linenumber = linenumber;
-//    }
-
-    if( !editor.skipRehighlighting ) {
-
-      //      var t1 = (new Date()).getTime();
-      //      if( editor._timestamp == null || t1-editor._timestamp > 3000 ) {
-
-      //	editor.rehighlight();
-	//      }
-    }
-    editor._timestamp = (new Date()).getTime();
-
-    //    editor.updateToolbar();
-    editor._timerToolbar = null;
-  }, 50);
+  editor._timestamp = (new Date()).getTime();
 };
 
 //#----------------------------------------------------------------------------
@@ -1092,9 +1194,9 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
   contentTrailing = content.substr(    posEnd );
   content         = content.substring( posprev, posEnd );
 
-//  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
-//  	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
-//  	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
+  //  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
+  //  	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
+  //  	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
 
   pos     -= contentLeading.length;
   posprev -= contentLeading.length;
@@ -1105,21 +1207,21 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
   //  return contentLeading + content + contentTrailing;
 
   //SC  if( !(pos==0 && (posEnd==content.length || posEnd==newline.length)) ) {
-    do {
-      if( pos>posprev ) {
-	content = this.indentCurrentLineInternal( content, posprev, pos, optiTab );
-      }
+  do {
+    if( pos>posprev ) {
+      content = this.indentCurrentLineInternal( content, posprev, pos, optiTab );
+    }
 
-      posprev = pos;
-      pos = content.substring(posprev).indexOf(newline);
-      if( pos>-1 ) {
-	pos += posprev + newline.length;
-      }
+    posprev = pos;
+    pos = content.substring(posprev).indexOf(newline);
+    if( pos>-1 ) {
+      pos += posprev + newline.length;
+    }
       
-      //      alert("posprev:" + posprev + "\npos:" + pos + "\ncontent.length:" + (content.replace( /\[\[\[sfxEnd\]\]\]/, "")).length);
+    //      alert("posprev:" + posprev + "\npos:" + pos + "\ncontent.length:" + (content.replace( /\[\[\[sfxEnd\]\]\]/, "")).length);
       
-    } while( pos>-1 && pos<(content.replace( /\[\[\[sfxEnd\]\]\]/, "")).length );
-    //SC  }
+  } while( pos>-1 && pos<(content.replace( /\[\[\[sfxEnd\]\]\]/, "")).length );
+  //SC  }
   return contentLeading + content + contentTrailing;
 };
 
@@ -1128,9 +1230,9 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
 //#----------------------------------------------------------------------------
 wfxEditor.prototype.indentCurrentLineInternal = function( content, posprev, pos, optiTab ) {
 
-//  alert("indentCurrentLineInternal():\n\n" + wfxEditor.str2chr(content) + 
-//	"\n\nposprev:"+ posprev + "\npos:" + pos + "\n\n" + 
-//	wfxEditor.str2chr(content.substring(posprev, pos)));
+  //  alert("indentCurrentLineInternal():\n\n" + wfxEditor.str2chr(content) + 
+  //	"\n\nposprev:"+ posprev + "\npos:" + pos + "\n\n" + 
+  //	wfxEditor.str2chr(content.substring(posprev, pos)));
   //-------------------------------------------------------------------------
 
   var prevline = content.substring( posprev, pos );
@@ -1211,7 +1313,7 @@ wfxEditor.prototype.indentCurrentLineInternal = function( content, posprev, pos,
   }
   //-------------------------------------------------------------------------
   
-  //  alert("indentprev:" + indentprev + "\nindentdiif:" + indentdiff);
+  //  alert("indentprev:" + indentprev + "\nindentdiff:" + indentdiff);
   //  alert("indent:" + indent + "\nindentnew:" + indentnew);
 
   var indentstr = "";
@@ -1426,13 +1528,13 @@ wfxEditor.prototype._linenumberFromRange = function( rng2 ) {
   if (wfx.is_ie) {
     rng = rng2.duplicate();
     rng.moveStart( "textedit", -1 );
-//    var str = "";
-//    while( rng.moveStart( "character", -1) == -1 ) {
-//      str += wfxEditor.str2chr(rng.htmlText) + "\n";
-//    }
-//    //    rng.moveStart( "character", -1 );
-//
-//    alert(str);
+    //    var str = "";
+    //    while( rng.moveStart( "character", -1) == -1 ) {
+    //      str += wfxEditor.str2chr(rng.htmlText) + "\n";
+    //    }
+    //    //    rng.moveStart( "character", -1 );
+    //
+    //    alert(str);
     // needed to include the previous newline if at the very beginning of 
     // a line
     rng.moveEnd( "character", 1);
@@ -1452,9 +1554,9 @@ wfxEditor.prototype._linenumberFromRange = function( rng2 ) {
   if (wfx.is_ie) {
     html = rng.htmlText;
 
-//    html = html.replace( /<(\/?)PRE>/g, '<$1pre>' );
-//    html = html.replace( /&nbsp;<\/pre>/g, '</pre>' );
-//    html = html.replace( /<\/pre><pre>/g , "\r\n" );
+    //    html = html.replace( /<(\/?)PRE>/g, '<$1pre>' );
+    //    html = html.replace( /&nbsp;<\/pre>/g, '</pre>' );
+    //    html = html.replace( /<\/pre><pre>/g , "\r\n" );
 
   } else {
     html = wfxEditor.getHTML(rng.cloneContents(), false);
@@ -1501,9 +1603,11 @@ wfxEditor.prototype._linenumberFromHTML = function( html ) {
 
 // focuses the iframe window.  returns a reference to the editor document.
 wfxEditor.prototype.focusEditor = function() {
-  try { 
-    this._editor.focus() 
-  } catch(e) {}
+  setTimeout( function() {
+    try { 
+      this._editor.focus() 
+	} catch(e) {}
+  }, 50);
 }
 
 // retrieve the HTML
@@ -1517,10 +1621,11 @@ wfxEditor.prototype.getHTML = function(dbg) {
     //    html = wfxEditor.getHTML(this._doc.body, false, dbg);
 
     html = this._doc.body.innerHTML;
+    bench( "getHTML (intrinsic)", null, 3 );
 
     html = html.replace( /\"/g, '&quot;');
 
-    html = html.replace( /<SPAN class=(.*?)>/g, '<span class="$1">');
+    html = html.replace( /<SPAN (class|id)=(.+?)>/g, '<span $1="$2">');
     html = html.replace( /<\/SPAN>/g, '</span>' );
     html = html.replace( /<BR>/g, '<br />' );
     html = html.replace( /<(\/?)PRE>/g, '<$1pre>' );
@@ -1528,22 +1633,25 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     //    alert( html + "\n**********************************************************************\n" + html3 + "\n**********************************************************************\n" + html2);
 
-    // remove bogus spans (introduced by Return at AfterClosingBracket
-
-    var rule_emptyspans = /<span class="[^\"]+?"><\/span>/g;
-    
+    // remove bogus spans (introduced by Return at AfterClosingBracket)
+    var rule_emptyspans = /<span class="[^\"]+?"><\/span>/g;    
+    var i=0;
     while( html.match(rule_emptyspans) ) {
+      i++;
       html = html.replace( rule_emptyspans, "" );
+    }
+    if( i>0 ) {
+      alert("emptyspans:" + i );
     }
 
     html = html.replace( /<\/pre><pre>/g , "<br />" );
     
-//    html = html.replace( /<p \/>/g, "<br />" );
-//    html = html.replace( /<\/p>((<br \/>)*)<p>/g, "<br />$1" );
-//    html = html.replace( /<p>/g, "" );
-//    html = html.replace( /<\/p>/g, "" );
+    //    html = html.replace( /<p \/>/g, "<br />" );
+    //    html = html.replace( /<\/p>((<br \/>)*)<p>/g, "<br />$1" );
+    //    html = html.replace( /<p>/g, "" );
+    //    html = html.replace( /<\/p>/g, "" );
 
-//    alert("getHTML() postprocessed:\n" + wfxEditor.str2chr(html));
+    //    alert("getHTML() postprocessed:\n" + wfxEditor.str2chr(html));
 
     html = html.replace( /\r\n/g , "<br />" );
 
@@ -1553,7 +1661,7 @@ wfxEditor.prototype.getHTML = function(dbg) {
   } else {
     html = this._doc.body.innerHTML;
 
-    // Windows
+    // Windows (XXX: only as first char??)
     html = html.replace( /\r/g, "");
 
     html = html.replace( /^\n?<pre>\n?/g, "<pre>");
@@ -1563,8 +1671,8 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     // Ctrl-A selects entire content including <pre>
     // ==> bring leading and trailing range markers inside <pre>
-    html = html.replace( /^(.+?)<pre>/, "<pre>$1");
-    html = html.replace( /<\/pre>(.+?)$/, "$1</pre>");
+    html = html.replace( /^(.+?)\n?<pre>/, "<pre>$1");
+    html = html.replace( /<\/pre>\n?(.+?)$/, "$1</pre>");
 
     // after Ctrl-A + Backspace to empty entire content, a Ctrl-V to paste new
     // content could be inserted after empty pre tags including wrong newlines
@@ -1580,8 +1688,8 @@ wfxEditor.prototype.getHTML = function(dbg) {
   
   //  html = html.replace( /\u200E/g, '' );   // &#8206; == &lrm;
 
+  bench( "getHTML (total)", null, 3 );
   //  alert( "getHTML():\n" + wfxEditor.str2chr(html));
-  bench( "getHTML", null, 3 );
 
   return html;
 };
@@ -1594,11 +1702,11 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
 // returns the current selection object
 wfxEditor.prototype._getSelection = function() {
-	if (wfx.is_ie) {
-		return this._doc.selection;
-	} else {
-		return this._editor.getSelection();
-	}
+  if (wfx.is_ie) {
+    return this._doc.selection;
+  } else {
+    return this._editor.getSelection();
+  }
 };
 
 // returns a range for the current selection
@@ -1618,95 +1726,95 @@ wfxEditor.prototype._createRange = function(sel) {
 // event handling
 
 wfxEditor._addEvent = function(el, evname, func) {
-	if (wfx.is_ie) {
-		el.attachEvent("on" + evname, func);
-	} else {
-		el.addEventListener(evname, func, true);
-	}
+  if (wfx.is_ie) {
+    el.attachEvent("on" + evname, func);
+  } else {
+    el.addEventListener(evname, func, true);
+  }
 };
 
 wfxEditor._addEvents = function(el, evs, func) {
-	for (var i in evs) {
-		wfxEditor._addEvent(el, evs[i], func);
-	}
+  for (var i in evs) {
+    wfxEditor._addEvent(el, evs[i], func);
+  }
 };
 
 wfxEditor._removeEvent = function(el, evname, func) {
-	if (wfx.is_ie) {
-		el.detachEvent("on" + evname, func);
-	} else {
-		el.removeEventListener(evname, func, true);
-	}
+  if (wfx.is_ie) {
+    el.detachEvent("on" + evname, func);
+  } else {
+    el.removeEventListener(evname, func, true);
+  }
 };
 
 wfxEditor._removeEvents = function(el, evs, func) {
-	for (var i in evs) {
-		wfxEditor._removeEvent(el, evs[i], func);
-	}
+  for (var i in evs) {
+    wfxEditor._removeEvent(el, evs[i], func);
+  }
 };
 
 wfxEditor._stopEvent = function(ev) {
-	if (wfx.is_ie) {
-		ev.cancelBubble = true;
-		ev.returnValue = false;
-	} else {
-		ev.preventDefault();
-		ev.stopPropagation();
-	}
+  if (wfx.is_ie) {
+    ev.cancelBubble = true;
+    ev.returnValue = false;
+  } else {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
 };
 
 wfxEditor._removeClass = function(el, className) {
-	if (!(el && el.className)) {
-		return;
-	}
-	var cls = el.className.split(" ");
-	var ar = new Array();
-	for (var i = cls.length; i > 0;) {
-		if (cls[--i] != className) {
-			ar[ar.length] = cls[i];
-		}
-	}
-	el.className = ar.join(" ");
+  if (!(el && el.className)) {
+    return;
+  }
+  var cls = el.className.split(" ");
+  var ar = new Array();
+  for (var i = cls.length; i > 0;) {
+    if (cls[--i] != className) {
+      ar[ar.length] = cls[i];
+    }
+  }
+  el.className = ar.join(" ");
 };
 
 wfxEditor._addClass = function(el, className) {
-	// remove the class first, if already there
-	wfxEditor._removeClass(el, className);
-	el.className += " " + className;
+  // remove the class first, if already there
+  wfxEditor._removeClass(el, className);
+  el.className += " " + className;
 };
 
 wfxEditor._hasClass = function(el, className) {
-	if (!(el && el.className)) {
-		return false;
-	}
-	var cls = el.className.split(" ");
-	for (var i = cls.length; i > 0;) {
-		if (cls[--i] == className) {
-			return true;
-		}
-	}
-	return false;
+  if (!(el && el.className)) {
+    return false;
+  }
+  var cls = el.className.split(" ");
+  for (var i = cls.length; i > 0;) {
+    if (cls[--i] == className) {
+      return true;
+    }
+  }
+  return false;
 };
 
 wfxEditor.needsClosingTag = function(el) {
   //	var closingTags = " script style div span tr td tbody table em strong font a ";
-	var closingTags = " span ";
-	return (closingTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
+  var closingTags = " span ";
+  return (closingTags.indexOf(" " + el.tagName.toLowerCase() + " ") != -1);
 };
 
 // performs HTML encoding of some given string
 wfxEditor.htmlEncode = function(str) {
-	// we don't need regexp for that, but.. so be it for now.
-	str = str.replace( /&/ig,    "&amp;");
-	str = str.replace( /</ig,    "&lt;");
-	str = str.replace( />/ig,    "&gt;");
-	str = str.replace( /\x22/ig, "&quot;");
-	// \x22 means '"' -- we use hex representation so that we don't disturb
-	// JS compressors (well, at least mine fails.. ;)
+  // we don't need regexp for that, but.. so be it for now.
+  str = str.replace( /&/ig,    "&amp;");
+  str = str.replace( /</ig,    "&lt;");
+  str = str.replace( />/ig,    "&gt;");
+  str = str.replace( /\x22/ig, "&quot;");
+  // \x22 means '"' -- we use hex representation so that we don't disturb
+  // JS compressors (well, at least mine fails.. ;)
 
-	str = str.replace(/\xA9/ig, "&copy;");
+  str = str.replace(/\xA9/ig, "&copy;");
 
-	return str;
+  return str;
 };
 
 // Retrieves the HTML code from the given node.	 This is a replacement for
@@ -1738,39 +1846,39 @@ wfxEditor.getHTML = function(root, outputRoot) {
 	  continue;
 	}
 	var value;
-//	if (name != "style") {
-//	  // IE5.5 reports 25 when cellSpacing is
-//	  // 1; other values might be doomed too.
-//	  // For this reason we extract the
-//	  // values directly from the root node.
-//	  // I'm starting to HATE JavaScript
-//	  // development.  Browser differences
-//	  // suck.
-//
-//	  // XXX: IE: String, Number, Boolean !!!
-//	  // XXX: Moz: String only
-//
-//	  if( wfx.is_ie && typeof root[a.nodeName] != "undefined") {
-//	    value = root[a.nodeName];
-//	  } else {
-	    value = a.nodeValue;
-//	  }
-//	} else { // IE fails to put style in attributes list
-//	  // FIXME: cssText reported by IE is UPPERCASE
-//	  value = root.style.cssText;
-//	}
-//	if (/_moz/.test(value)) {
-//	  // Mozilla reports some special tags
-//	  // here; we don't need them.
-//	  continue;
-//	}
+	//	if (name != "style") {
+	//	  // IE5.5 reports 25 when cellSpacing is
+	//	  // 1; other values might be doomed too.
+	//	  // For this reason we extract the
+	//	  // values directly from the root node.
+	//	  // I'm starting to HATE JavaScript
+	//	  // development.  Browser differences
+	//	  // suck.
+	//
+	//	  // XXX: IE: String, Number, Boolean !!!
+	//	  // XXX: Moz: String only
+	//
+	//	  if( wfx.is_ie && typeof root[a.nodeName] != "undefined") {
+	//	    value = root[a.nodeName];
+	//	  } else {
+	value = a.nodeValue;
+	//	  }
+	//	} else { // IE fails to put style in attributes list
+	//	  // FIXME: cssText reported by IE is UPPERCASE
+	//	  value = root.style.cssText;
+	//	}
+	//	if (/_moz/.test(value)) {
+	//	  // Mozilla reports some special tags
+	//	  // here; we don't need them.
+	//	  continue;
+	//	}
 	html += " " + name + '="' + value + '"';
       }
       //      if( wfx.is_ie && root.tagName.toLowerCase() == "br" ) {
       //	html += " />\r\n";
       //      } else {
-	html += closed ? " />" : ">";
-	//      }
+      html += closed ? " />" : ">";
+      //      }
     }
 
     //    thisdbg && alert("html (before for):>>>" + html + "<<<");
@@ -1793,9 +1901,9 @@ wfxEditor.getHTML = function(root, outputRoot) {
 
 wfxEditor.str2chr = function( str ) {
 
-//*****************************************************************************
-//
-//*****************************************************************************
+  //*****************************************************************************
+  //
+  //*****************************************************************************
   var res = "";
   
   for( var i=0; i<str.length; i++) {
@@ -1847,54 +1955,54 @@ wfxEditor.restoreRange = function(root, outputRoot, offsetStart, offsetEnd, this
     thisdbg && alert("case 1: Node.ELEMENT_NODE");
   case 11: // Node.DOCUMENT_FRAGMENT_NODE
     thisdbg && alert("case 11: Node.DOCUMENT_FRAGMENT_NODE");			
-    var closed;
-    var i;
-    if (outputRoot) {
-      closed = (!(root.hasChildNodes() || wfxEditor.needsClosingTag(root)));
-    }
+			var closed;
+			var i;
+			if (outputRoot) {
+			  closed = (!(root.hasChildNodes() || wfxEditor.needsClosingTag(root)));
+			}
 
-    for (i = root.firstChild; i; i = i.nextSibling) {
-      wfxEditor.restoreRange(i, true, offsetStart, offsetEnd, thisdbg);
-      if( wfxEditor.reachedOffset ) {
-	return;
-      }
-    }
-    if (outputRoot && !closed) {
-    }
-    break;
+			for (i = root.firstChild; i; i = i.nextSibling) {
+			  wfxEditor.restoreRange(i, true, offsetStart, offsetEnd, thisdbg);
+			  if( wfxEditor.reachedOffset ) {
+			    return;
+			  }
+			}
+			if (outputRoot && !closed) {
+			}
+			break;
   case 3: // Node.TEXT_NODE
     thisdbg && alert("case 3: Node.TEXT_NODE:" + root.data + "<<");
 
-    wfxEditor.currentOffset += root.data.length;
-    //    alert("currentOffset:" + wfxEditor.currentOffset);
+			wfxEditor.currentOffset += root.data.length;
+			//    alert("currentOffset:" + wfxEditor.currentOffset);
 
-    if( offsetStart != null && 
-	wfxEditor.offsetStart <0 && 
-	wfxEditor.currentOffset >= offsetStart ) {
+			if( offsetStart != null && 
+			    wfxEditor.offsetStart <0 && 
+			    wfxEditor.currentOffset >= offsetStart ) {
 
-      if( offsetEnd < 0 ) {
-	wfxEditor.reachedOffset = true;
-      }
+			  if( offsetEnd < 0 ) {
+			    wfxEditor.reachedOffset = true;
+			  }
       
-      wfxEditor.nodeStart = root;
+			  wfxEditor.nodeStart = root;
 
-      var localOffset = offsetStart - wfxEditor.currentOffset + root.data.length;
-      //	alert("localOffset(start):" + localOffset);
-      wfxEditor.offsetStart = localOffset;
-    }
+			  var localOffset = offsetStart - wfxEditor.currentOffset + root.data.length;
+			  //	alert("localOffset(start):" + localOffset);
+			  wfxEditor.offsetStart = localOffset;
+			}
 
-    if( offsetEnd >= 0 && 
-	wfxEditor.currentOffset >= offsetEnd ) {
+			if( offsetEnd >= 0 && 
+			    wfxEditor.currentOffset >= offsetEnd ) {
 
-      wfxEditor.reachedOffset = true;
+			  wfxEditor.reachedOffset = true;
       
-      wfxEditor.nodeEnd = root;
+			  wfxEditor.nodeEnd = root;
 
-      var localOffset = offsetEnd - wfxEditor.currentOffset + root.data.length;
-      wfxEditor.offsetEnd = localOffset;
-    }
+			  var localOffset = offsetEnd - wfxEditor.currentOffset + root.data.length;
+			  wfxEditor.offsetEnd = localOffset;
+			}
 
-    break;
+			break;
   }
 
   return;
@@ -1913,29 +2021,29 @@ wfxEditor.restoreRangeByNewlines = function(root, outputRoot, offsetStart, offse
   case 11: // Node.DOCUMENT_FRAGMENT_NODE
     thisdbg && alert("case 11: Node.DOCUMENT_FRAGMENT_NODE");
 			
-    if( root.tagName.toLowerCase() == "br" ) {
-      wfxEditor.currentOffset++;
+			if( root.tagName.toLowerCase() == "br" ) {
+			  wfxEditor.currentOffset++;
 
-      if( wfxEditor.currentOffset == offsetStart ) {
-	wfxEditor.nodeStart = root;
-	//	alert("br! (start)");
-      }
-      if( wfxEditor.currentOffset == offsetEnd ) {
-	wfxEditor.nodeEnd = root;
-	//	alert("br! (end)");
-      }
-    }
+			  if( wfxEditor.currentOffset == offsetStart ) {
+			    wfxEditor.nodeStart = root;
+			    //	alert("br! (start)");
+			  }
+			  if( wfxEditor.currentOffset == offsetEnd ) {
+			    wfxEditor.nodeEnd = root;
+			    //	alert("br! (end)");
+			  }
+			}
 
-    var closed;
-    var i;
-    if (outputRoot) {
-      closed = (!(root.hasChildNodes() || wfxEditor.needsClosingTag(root)));
-    }
+			var closed;
+			var i;
+			if (outputRoot) {
+			  closed = (!(root.hasChildNodes() || wfxEditor.needsClosingTag(root)));
+			}
 
-    for (i = root.firstChild; i; i = i.nextSibling) {
-      wfxEditor.restoreRangeByNewlines(i, true, offsetStart, offsetEnd, thisdbg);
-    }
-    break;
+			for (i = root.firstChild; i; i = i.nextSibling) {
+			  wfxEditor.restoreRangeByNewlines(i, true, offsetStart, offsetEnd, thisdbg);
+			}
+			break;
   }
 
   return;
@@ -1951,68 +2059,84 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 
   //    this._dbg.value += "setRange( " + nodeStart +"(" + nodeStart.nodeValue + "), "+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")\n";
 
-    try {
+  try {
 
-      //  Moz only
-      if( !wfx.is_ie ) {
+    //  Moz only
+    if( !wfx.is_ie ) {
 	
-	var rng = this._doc.createRange();
+      var rng = this._doc.createRange();
 
-	if( nodeStart.nodeType == 1 ) {
-	  // element node (br)
+      if( nodeStart.nodeType == 1 ) {
+	// element node (br)
 
-//	  if( nodeStart.nextSibling != null ) {
-//	    //	    rng.setStartBefore( nodeStart.nextSibling );
-//	    //	    rng.setEndAfter(   nodeStart.nextSibling );
-//	    rng.selectNode(nodeStart.nextSibling);
-//	  } else {
-	    rng.setStartAfter( nodeStart );
-	    rng.setEndAfter(   nodeStart );
-	    //	  }
+	//	  if( nodeStart.nextSibling != null ) {
+	//	    //	    rng.setStartBefore( nodeStart.nextSibling );
+	//	    //	    rng.setEndAfter(   nodeStart.nextSibling );
+	//	    rng.selectNode(nodeStart.nextSibling);
+	//	  } else {
+	rng.setStartAfter( nodeStart );
+	rng.setEndAfter(   nodeStart );
+	//	  }
 
-	} else if( nodeStart.nodeType == 3 ) {
-	  // text node
+      } else if( nodeStart.nodeType == 3 ) {
+	// text node
 
-	  if(offsetStart > 0 ) {
-	    rng.setStart( nodeStart, offsetStart);
-	    rng.setEnd(   nodeStart, offsetStart);
-	  } else if(offsetStart == 0 ) {
-	    rng.setStartBefore( nodeStart );
-	    rng.setEndBefore(   nodeStart);
-	  }
+	if(offsetStart > 0 ) {
+	  rng.setStart( nodeStart, offsetStart);
+	  rng.setEnd(   nodeStart, offsetStart);
+	} else if(offsetStart == 0 ) {
+	  rng.setStartBefore( nodeStart );
+	  rng.setEndBefore(   nodeStart);
 	}
-
-//	try {
-//	  nodeEnd.nodeType;
-//	} catch(e) {
-//	  nodeEnd = null;
-//	}
-
-//	alert( typeof nodeEnd );
-
-	if( nodeEnd != null ) {
-	  //	  alert(nodeEnd instanceof HTMLBRElement);
-
-	  if( nodeEnd.nodeType == 1 ) {
-	    // element node (br)
-	    
-	    rng.setEndAfter( nodeEnd );
-	  } else  if( nodeEnd.nodeType == 3 ) {
-	    // text node
-	    
-	    if( offsetEnd >= 0 ) {
-	      rng.setEnd( nodeEnd, offsetEnd);
-	    }
-	  }
-	}
-
-	var sel = this._editor.getSelection();
-	sel.removeAllRanges();
-	sel.addRange(rng);
       }
-    } catch(e) {
-      alert("Exception:\n" + e);
+
+      //	try {
+      //	  nodeEnd.nodeType;
+      //	} catch(e) {
+      //	  nodeEnd = null;
+      //	}
+
+      //	alert( typeof nodeEnd );
+
+      if( nodeEnd != null ) {
+	//	  alert(nodeEnd instanceof HTMLBRElement);
+
+	if( nodeEnd.nodeType == 1 ) {
+	  // element node (br)
+	    
+	  rng.setEndAfter( nodeEnd );
+	} else  if( nodeEnd.nodeType == 3 ) {
+	  // text node
+	    
+	  if( offsetEnd >= 0 ) {
+	    rng.setEnd( nodeEnd, offsetEnd);
+	  }
+	}
+      }
+
+      var sel = this._editor.getSelection();
+
+	
+      try {
+	// Moz bug: Ctrl-K ('kill-line') at the end of a line terminates 
+	// the entire browser without a catchable exception
+	// This is caused by a fatal call of sel.removeAllRanges(); 
+	// ==> as an alternative: remove ranges one by one
+	var oneRng;
+	for( var i=0; i<sel.rangeCount; i++ ) {
+	  oneRng = sel.getRangeAt(i);
+	  sel.removeRange(oneRng);
+	}
+      } catch(e) {
+	alert("Exception:\n" + e);
+      }
+
+      sel.addRange(rng);
+
     }
+  } catch(e) {
+    alert("Exception:\n" + e);
+  }
 };
 
 //#****************************************************************************
@@ -2091,47 +2215,47 @@ wfxEditor.prototype.generate = function( target, content ) {
 
   var doctype =  '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n';
   var html_header1 = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">\n<head>\n' + 
-  '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
+    '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />\n<title></title>\n';
   var html_header2 = '</head>\n<body id="bodynode">\n';
   // Moz: \n after body tag is required to prevent exception in rng.setStart
   
   var html_footer  = '</body>\n</html>\n';
-//  var style_source = '<style>\n' + 
-//  '@import url("wfxSource.css")\n' +
-//  '</style>\n';
-//  var style_source = '<link rel="stylesheet" type="text/css" href="wfxSource.css" />\n';
+  //  var style_source = '<style>\n' + 
+  //  '@import url("wfxSource.css")\n' +
+  //  '</style>\n';
+  //  var style_source = '<link rel="stylesheet" type="text/css" href="wfxSource.css" />\n';
   var style_source = '<style>\n' + 
-  'body,pre { font-family: monospace; font-size: 13px; margin:0px }\n' + 
-  'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
-  '.string      { color:#118800; font-weight:normal }\n' + 
-  '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
-  '.htmltagname { color:#ffaa44; font-weight:bold }\n' + 
-  '.htmlendtag  { color:#0000ff; font-weight:normal }\n' + 
-  '.pfxtag      { color:#0000ff; font-weight:normal }\n' + 
-  '.pfxtagname  { color:#0000aa; font-weight:bold }\n' + 
-  '.pfxendtag   { color:#0000ff; font-weight:normal }\n' + 
-  '.xsltag      { color:#0000ff; font-weight:normal }\n' + 
-  '.xsltagname  { color:#dd0000; font-weight:bold }\n' + 
-  '.xslendtag   { color:#0000ff; font-weight:normal }\n' + 
-  '.ixsltag     { color:#0000ff; font-weight:normal }\n' + 
-  '.ixsltagname { color:#cc44aa; font-weight:bold }\n' + 
-  '.ixslendtag  { color:#0000ff; font-weight:normal }\n' + 
-  '.entity      { color:#cc0000; font-weight:normal }\n' + 
-  '.comment     { color:#aaaaaa; font-weight:normal }\n' + 
-  '.cdata       { color:#009999; font-weight:normal }\n' + 
-  '</style>\n';
+    'body,pre { font-family: monospace; font-size: 13px; margin:0px }\n' + 
+    'p    { margin-top: 0px !important; margin-bottom: 0px !important; }\n' + 
+    '.string      { color:#118800; font-weight:normal }\n' + 
+    '.htmltag     { color:#0000ff; font-weight:normal }\n' + 
+    '.htmltagname { color:#ffaa44; font-weight:bold }\n' + 
+    '.htmlendtag  { color:#0000ff; font-weight:normal }\n' + 
+    '.pfxtag      { color:#0000ff; font-weight:normal }\n' + 
+    '.pfxtagname  { color:#0000aa; font-weight:bold }\n' + 
+    '.pfxendtag   { color:#0000ff; font-weight:normal }\n' + 
+    '.xsltag      { color:#0000ff; font-weight:normal }\n' + 
+    '.xsltagname  { color:#dd0000; font-weight:bold }\n' + 
+    '.xslendtag   { color:#0000ff; font-weight:normal }\n' + 
+    '.ixsltag     { color:#0000ff; font-weight:normal }\n' + 
+    '.ixsltagname { color:#cc44aa; font-weight:bold }\n' + 
+    '.ixslendtag  { color:#0000ff; font-weight:normal }\n' + 
+    '.entity      { color:#cc0000; font-weight:normal }\n' + 
+    '.comment     { color:#aaaaaa; font-weight:normal }\n' + 
+    '.cdata       { color:#009999; font-weight:normal }\n' + 
+    '</style>\n';
 
-//  '.string      { color:#0000ff; font-weight:normal }\n' + 
-//  '.htmltag     { color:#990099; font-weight:normal }\n' + 
-//  '.htmlendtag  { color:#990099; font-weight:normal }\n' + 
-//  '.pfxtag      { color:#0000aa; font-weight:normal }\n' + 
-//  '.pfxendtag   { color:#0000aa; font-weight:normal }\n' + 
-//  '.xsltag      { color:#dd0000; font-weight:normal }\n' + 
-//  '.xslendtag   { color:#dd0000; font-weight:normal }\n' + 
-//  '.ixsltag     { color:#cc44aa; font-weight:normal }\n' + 
-//  '.ixslendtag  { color:#cc44aa; font-weight:normal }\n' + 
-//  '.entity      { color:#ff0000; font-weight:normal }\n' + 
-//  '.comment     { color:#00aa00; font-weight:normal; font-style:italic }\n' + 
+  //  '.string      { color:#0000ff; font-weight:normal }\n' + 
+  //  '.htmltag     { color:#990099; font-weight:normal }\n' + 
+  //  '.htmlendtag  { color:#990099; font-weight:normal }\n' + 
+  //  '.pfxtag      { color:#0000aa; font-weight:normal }\n' + 
+  //  '.pfxendtag   { color:#0000aa; font-weight:normal }\n' + 
+  //  '.xsltag      { color:#dd0000; font-weight:normal }\n' + 
+  //  '.xslendtag   { color:#dd0000; font-weight:normal }\n' + 
+  //  '.ixsltag     { color:#cc44aa; font-weight:normal }\n' + 
+  //  '.ixslendtag  { color:#cc44aa; font-weight:normal }\n' + 
+  //  '.entity      { color:#ff0000; font-weight:normal }\n' + 
+  //  '.comment     { color:#00aa00; font-weight:normal; font-style:italic }\n' + 
 
     
   content = this.prepareContent( content );
@@ -2168,26 +2292,26 @@ wfxEditor.prototype.generate = function( target, content ) {
     } catch(e) {
     }
   }
-  if( !this._designMode ) {
-    setTimeout( enableDesignMode, 1000 );
-  }
+    if( !this._designMode ) {
+      setTimeout( enableDesignMode, 1000 );
+    }
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   
   wfxEditor._addEvents
-  ( this._editor.document, 
-    ["keydown", "keypress", "mousedown", "mouseup", "drag"],
-    function (event) {
-      return editor._editorEvent(wfx.is_ie ? 
-				 editor._editor.event : event);
-    } );
+    ( this._editor.document, 
+      ["keydown", "keypress", "mousedown", "mouseup", "drag"],
+      function (event) {
+	return editor._editorEvent(wfx.is_ie ? 
+				   editor._editor.event : event);
+      } );
 
   wfxEditor._addEvents
-  ( this._editor,
-    ["scroll"],
-    function (event) {
-      return editor._editorEvent(wfx.is_ie ? 
-				 editor._editor.event : event);
-    } );
+    ( this._editor,
+      ["scroll"],
+      function (event) {
+	return editor._editorEvent(wfx.is_ie ? 
+				   editor._editor.event : event);
+      } );
   
   //    editor.updateToolbar();
 
@@ -2199,6 +2323,8 @@ wfxEditor.prototype.generate = function( target, content ) {
 
   this.updateLineNumbers();
 
+  this.showStatus && ( this.syntaxrehighlighting.style.backgroundColor = "#00ff00");
+
   //  bench( "...generate()" );
 };
 
@@ -2209,221 +2335,394 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
   var editor = this;
 
+  var dbg = 0;
+  var dbgcancel = 0;
+  
+  var needHighlighting;
+
   this._timerRehighlight = setInterval( function() {
 
-    //    editor._dbg.value += "insideRehighlighting...\n";
+    //editor._dbg.value += ". ";
   
-    if( insideRehighlighting ) {
-      editor._dbg.value += "insideRehighlighting ==> cancel\n";
-      cancelHighlighting = true;
+    if( editor.cancelRehighlighting ) {
+      // editor._dbg.value += "cc ";
       return;
     }
 
-    if( editor.skipRehighlighting ) {
-      //      editor._dbg.value += "S";
+    if( editor.insideRehighlighting ) {
+      dbg && ( editor._dbg.value += "ci ");
       return;
     }
 
-    if( (new Date()).getTime() - editor._timestamp < wfxEditor.timeEvent ) {
-      //      editor._dbg.value += "K";
+    if( editor.needRehighlighting == 0 ) {
+      dbg && ( editor._dbg.value += "N ");
       return;
     }
 
-    insideRehighlighting = true;
+    //    if( editor.skipRehighlighting ) {
+    //      editor._dbg.value += "S ";
+    //      return;
+    //    }
+
+    if( ((new Date()).getTime() - editor._timestamp) < wfxEditor.timeEvent ) {
+      // editor._dbg.value += "K ";
+      editor.showStatus && ( editor.syntaxrehighlighting.style.backgroundColor = "#ffff00");
+      return;
+    }
+
+    editor.showStatus && ( editor.syntaxrehighlighting.style.backgroundColor = "#ff0000");
+
+    editor.insideRehighlighting = true;
+
+    needRehighlighting = editor.needRehighlighting;
 
     var content;
+
+    var offsetStart, offsetNewlinesStart, offsetEnd, offsetNewlinesEnd, posEnd;
 
     bench( null, 1);
     //---------------------------------------------------------------------------
 
-    //----------------
-    // setRangeMarker
-    //----------------
+    setTimeout( function() {   // c0
+      dbg && ( editor._dbg.value += "a0 ");
 
-    bench( null, 2);
-    editor.setRangeMarker();
-    bench( "setRangeMarker", null, 2);
-    //---------------------------------------------------------------------------
+      //----------------
+      // setRangeMarker
+      //----------------
+	
+      bench( null, 2);
+      editor.setRangeMarker();
+      bench( "setRangeMarker", null, 2);
 
-    if( cancelRehighlighting ) {
-      editor._dbg.value += "c1\n";
-      insideRehighlighting = false;
-      return;
-    }
-    //---------------------------------------------------------------------------
+      sleepMSec( 1000 );
+      //----------------------------------------------------------------------
 
-    //-----------------------
-    // get content (col2tag)
-    //-----------------------
+      setTimeout( function() {   // c1
+	dbg && ( editor._dbg.value += "a1 ");
 
-    bench( null, 2);
-    content = editor.col2tag(editor.getHTML());
-    bench( "col2tag(getHTML())", null, 2);
-    //    alert(wfxEditor.str2chr(content));
+	if( editor.cancelRehighlighting ) {
+	  dbgcancel && ( editor._dbg.value += "c1 ");
+	  editor.insideRehighlighting = false;
+	  editor.cancelRehighlighting = false;
+	  return;
+	}
 
-//    if( content == "[[[sfxStart]]]" ) {
-//      // empty content
-//      editor._doc.body.innerHTML = '<pre></pre>';
-//      insideRehighlighting = false;
-//      return;
-//    }
-    //---------------------------------------------------------------------------
+	//-------------
+	// get content
+	//-------------
 
-    if( cancelRehighlighting ) {
-      editor._dbg.value += "c2\n";
-      insideRehighlighting = false;
-      return;
-    }
-    //---------------------------------------------------------------------------
+	bench( null, 11);
+	content = editor.getHTML();
+	bench( "getHTML()", null, 11);
 
-    //------------
-    // getOffsets
-    //------------
-    
-    var ret = new Array();
-    editor.getOffsets( content, ret );
+	sleepMSec( 1000 );
+	//-------------------------------------------------------------------
 
-    //-------------------------------------------------------------------------
-    if( cancelRehighlighting ) {
-      editor._dbg.value += "c3\n";
-      insideRehighlighting = false;
-      return;
-    }
-    //-------------------------------------------------------------------------
+	setTimeout( function() {   // c1
+	  dbg && ( editor._dbg.value += "a1b ");
+	  
+	  if( editor.cancelRehighlighting ) {
+	    dbgcancel && ( editor._dbg.value += "c1b ");
+	    editor.insideRehighlighting = false;
+	    editor.cancelRehighlighting = false;
+	    return;
+	  }
 
-    var offsetStart         = ret[0];
-    var offsetNewlinesStart = ret[1];
-    var offsetEnd           = ret[2];
-    var offsetNewlinesEnd   = ret[3];
-    var posEnd              = ret[4];
+	  //---------
+	  // col2tag
+	  //---------
+	  
+	  bench( null, 2);
+	  content = editor.col2tag(content);
+	  bench( "col2tag", null, 2);
 
-    //    alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
-    //---------------------------------------------------------------------------
 
-    //-------------------
-    // XML wellformdness
-    //-------------------
+	  //    if( content == "[[[sfxStart]]]" ) {
+	  //      // empty content
+	  //      editor._doc.body.innerHTML = '<pre></pre>';
+	  //      editor.insideRehighlighting = false;
+	  //      return;
+	  //    }
 
-    //  var err = new Array();
-    //  if( !this.isWellFormedXML( this.removeChangedRangeMarker(content), err) ) {
-    //    //    alert("XML parse error!");
-    //
-    //    if( err instanceof Array ) {
-    //      alert("errReason:" + err["Reason"] + "\n" + 
-    //            "errLine:"   + err["Line"]   + "\n" +
-    //            "errColumn:" + err["Column"] + "\n" +    
-    //            "errSource:" + err["Source"] + "\n");
-    //    }
-    //    return;
-    //  }
-    //---------------------------------------------------------------------------
+	  sleepMSec( 1000 );
+	  //-------------------------------------------------------------------
+
+	  setTimeout( function() {   // c2
+	    dbg && ( editor._dbg.value += "a2 ");
+
+	    if( editor.cancelRehighlighting ) {
+	      dbgcancel && ( editor._dbg.value += "c2 ");
+	      editor.insideRehighlighting = false;
+	      editor.cancelRehighlighting = false;
+	      return;
+	    }
+	    
+	    //------------
+	    // getOffsets
+	    //------------
+
+	    var ret = new Array();
+	    
+	    editor.getOffsets( content, ret );
+	    
+	    offsetStart         = ret[0];
+	    offsetNewlinesStart = ret[1];
+	    offsetEnd           = ret[2];
+	    offsetNewlinesEnd   = ret[3];
+	    posEnd              = ret[4];
+
+	    //    alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
+	    //-----------------------------------------------------------------
+	    
+	    //#    var contentLeading="", contentTrailing="";
+	    //#
+	    //#    var newline;
+	    //#    if( wfx.is_ie ) {
+	    //#      newline = '\r\n';
+	    //#    } else {
+	    //#      newline = '\n';
+	    //#    }
+	    //#
+	    //#    var posLeading;
+	    //#    if( (posLeading = content.lastIndexOf(newline, offsetStart)) == -1 ) {
+	    //#      posLeading = 0; 
+	    //#    } else {
+	    //#      posLeading += newline.length;
+	    //#    }
+	    //#
+	    //#    contentLeading = content.substr( 0, posLeading );
+	    //#    alert("contentLeading:\n" + wfxEditor.str2chr(contentLeading));
+	    //#
+	    //#    var posTrailing;
+	    //#    if( (posTrailing = content.indexOf(newline, offsetStart)) == -1 ) {
+	    //#      posTrailing = 0; 
+	    //#    } else {
+	    //#      posTrailing += newline.length;
+	    //#    }
+	    //#
+	    //#    contentTrailing = content.substr( posTrailing );
+	    //#    alert("contentTrailing:\n" + wfxEditor.str2chr(contentTrailing));
+	    //#
+	    //#    content = content.substring( posLeading, posTrailing );
+
+	    //      content = editor.src2col(editor.tag2src(editor.removeChangedRangeMarker(content)));
+
+	    sleepMSec( 1000 );
+	    //-----------------------------------------------------------------
+
+	    setTimeout( function() {   // c3
+	      dbg && ( editor._dbg.value += "a3 ");
+
+	      if( editor.cancelRehighlighting ) {
+		dbgcancel && ( editor._dbg.value += "c3 ");
+		editor.insideRehighlighting = false;
+		editor.cancelRehighlighting = false;
+		return;
+	      }
+
+	      //--------------------------
+	      // removeChangedRangeMarker
+	      //--------------------------
+
+	      bench( null, 3);
+	      content = editor.removeChangedRangeMarker(content);
+	      bench( "removeChangedRangeMarker", null, 3);
+	      
+	      sleepMSec( 1000 );
+	      //----------------------------------------------------------------
+
+	      setTimeout( function() {   // c4
+		dbg && ( editor._dbg.value += "a4 ");
+
+		if( editor.cancelRehighlighting ) {
+		  dbgcancel && ( editor._dbg.value += "c4 ");
+		  editor.insideRehighlighting = false;
+		  editor.cancelRehighlighting = false;
+		  return;
+		}
+
+		//--------------------------------------------
+		// transform content in step 1 of 2 (tag2src)
+		//--------------------------------------------
+
+		bench( null, 4);
+		content = editor.tag2src(content);
+		bench( "tag2src", null, 4);
+		
+		sleepMSec( 1000 );
+		//-------------------------------------------------------------
+
+		setTimeout( function() {   // c5
+		  dbg && ( editor._dbg.value += "a5 ");
+
+		  if( editor.cancelRehighlighting ) {
+		    dbgcancel && ( editor._dbg.value += "c5 ");
+		    editor.insideRehighlighting = false;
+		    editor.cancelRehighlighting = false;
+		    return;
+		  }
+
+		  //--------------------------------------------
+		  // transform content in step 2 of 2 (src2col)
+		  //--------------------------------------------
+
+		  //s		  var dummy;
+		  //s		  var loop = 200;
+		  //s
+		  //s		  //      alert("1: cancelRehighlighting:" + editor.cancelRehighlighting);
+		  //s		  //      alert("1: insideRehighlighting:" + editor.insideRehighlighting);
+		  //s
+		  //s		  setTimeout( function() {
+		  //s		    editor._dbg.value += "a1 ";
+		  //s
+		  //s	if( editor.cancelRehighlighting ) {
+		  //s	  //	  alert("2: cancelRehighlighting:" + editor.cancelRehighlighting);
+		  //s	  editor._dbg.value += "x1 ";
+		  //s	  return;
+		  //s	}
+		  //s
+		  //s	for( var i=0; i<loop; i++ ) {
+		  //s	  dummy = editor.src2col(content);
+		  //s	}
+		  //s
+		  //s
+		  //s      setTimeout( function() {
+		  //s	editor._dbg.value += "a2 ";
+		  //s		    
+		  //s	if( editor.cancelRehighlighting ) {
+		  //s	  //	    alert("3: cancelRehighlighting:" + editor.cancelRehighlighting);
+		  //s	  editor._dbg.value += "x2 ";
+		  //s	  return;
+		  //s	}
+		  //s
+		  //s	for( var i=0; i<loop; i++ ) {
+		  //s	  dummy = editor.src2col(content);
+		  //s	}
+		  //s
+		  //s      setTimeout( function() {
+		  //s	editor._dbg.value += "a3 ";
+		  //s		    
+		  //s	if( editor.cancelRehighlighting ) {
+		  //s	  //	      alert("4: cancelRehighlighting:" + editor.cancelRehighlighting);
+		  //s	  editor._dbg.value += "x3 ";
+		  //s	  return;
+		  //s	}
+		  //s	    
+		  //s	for( var i=0; i<loop; i++ ) {
+		  //s	  dummy = editor.src2col(content);
+		  //s	}
+		  //s
+		  //s      setTimeout( function() {
+		  //s	editor._dbg.value += "a4 ";
+		  //s		    
+		  //s	if( editor.cancelRehighlighting ) {
+		  //s	  //		alert("5: cancelRehighlighting:" + editor.cancelRehighlighting);
+		  //s	  editor._dbg.value += "x4 ";
+		  //s	  return;
+		  //s	}
+		  //s
+		  //s	for( var i=0; i<loop; i++ ) {
+		  //s	  dummy = editor.src2col(content);
+		  //s	}
+		  //s	      
+		  //s	editor._dbg.value += "z4 ";
+		  //s      }, 0);
+		  //s	editor._dbg.value += "z3 ";
+		  //s      }, 0);
+		  //s	editor._dbg.value += "z2 ";
+		  //s      }, 0);
+		  //s	editor._dbg.value += "z1 ";
+		  //s      }, 0);
+		  //s
+		  //s		  editor._dbg.value += "g ";
+	
+		  bench( null, 5);
+		  content = editor.src2col(content);
+		  bench( "src2col", null, 5);
+
+		  sleepMSec( 1000 );
+		  //--------------------------------------------------------------------
+
+		  setTimeout( function() {   // c6
+		    dbg && ( editor._dbg.value += "a6 ");
+
+		    if( editor.cancelRehighlighting ) {
+		      dbgcancel && ( editor._dbg.value += "c6 ");
+		      editor.insideRehighlighting = false;
+		      editor.cancelRehighlighting = false;
+		      return;
+		    }
+
+		    //-------------------------
+		    // set content (innerHTML)
+		    //-------------------------
   
-    try {
+		    content = editor.prepareContent( content );
 
-      //      content = editor.src2col(editor.tag2src(editor.removeChangedRangeMarker(content)));
+		    try {
 
-      if( cancelRehighlighting ) {
-	editor._dbg.value += "c4\n";
-	insideRehighlighting = false;
-	return;
-      }
-      //-------------------------------------------------------------------------
+		      //      alert("innerHTML=content:\n" + wfxEditor.str2chr(content));
+		      bench( null, 6);
+		      //#      editor._doc.body.innerHTML = '<pre>' + contentLeading + content + 
+		      //#	contentTrailing + '</pre>';
+		      editor._doc.body.innerHTML = '<pre>' + content + '</pre>';
+		      bench( "innerHTML", null, 6);
 
-      //--------------------------
-      // removeChangedRangeMarker
-      //--------------------------
+		    } catch(e) {
+		      alert("Exception:\n" + e);
+		    }
 
-      bench( null, 4);
-      content = editor.removeChangedRangeMarker(content);
-      bench( "removeChangedRangeMarker", null, 4);
-      //-------------------------------------------------------------------------
+		    //-------------------------------------------------------------------
 
-      if( cancelRehighlighting ) {
-	editor._dbg.value += "c5\n";
-	insideRehighlighting = false;
-	return;
-      }
-      //-------------------------------------------------------------------------
+		    //------------
+		    // setOffsets
+		    //------------
 
-      //--------------------------------------------
-      // transform content in step 1 of 2 (tag2src)
-      //--------------------------------------------
+		    bench( null, 2);
+		    editor.setOffsets( [ offsetStart, offsetNewlinesStart, 
+					 offsetEnd,   offsetNewlinesEnd,
+					 posEnd ] );
+		    bench( "setOffsets", null, 2);
+		    //-------------------------------------------------------------------
 
-      bench( null, 4);
-      content = editor.tag2src(content);
-      bench( "tag2src", null, 4);
-      //-------------------------------------------------------------------------
+		    bench("rehighlight()", null, 1);
 
-      if( cancelRehighlighting ) {
-	editor._dbg.value += "c6\n";
-	insideRehighlighting = false;
-	return;
-      }
-      //-------------------------------------------------------------------------
+		    if( doBench ) {
+		      document.forms[0].dbg.value += benchMsg;
+		    }
 
-      //--------------------------------------------
-      // transform content in step 2 of 2 (src2col)
-      //--------------------------------------------
+		    editor.countRangeMarkers = 0;
 
-      bench( null, 4);
-      content = editor.src2col(content);
-      bench( "src2col", null, 4);
-      //-------------------------------------------------------------------------
+		    editor.showStatus && ( editor.syntaxrehighlighting.style.backgroundColor = "#00ff00");
 
-      if( cancelRehighlighting ) {
-	editor._dbg.value += "c7\n";
-	insideRehighlighting = false;
-	return;
-      }
-      //-------------------------------------------------------------------------
+		    editor.insideRehighlighting = false;
+		    editor.cancelRehighlighting = false;
+		    //      editor.skipRehighlighting = true;
+		    //
 
-      //-------------------------
-      // set content (innerHTML)
-      //-------------------------
-  
-      content = editor.prepareContent( content );
+		    if( needRehighlighting == editor.needRehighlighting ) {
+		      //		    alert("needRehighlighting == editor.needRehighlighting:" + needRehighlighting);
+		      editor.needRehighlighting = 0;
+		    } else {
+		      alert("needRehighlighting:" + needRehighlighting);
+		    }
 
-      if( cancelRehighlighting ) {
-	editor._dbg.value += "c8\n";
-	insideRehighlighting = false;
-	return;
-      }
-
-      //      alert("innerHTML=content:\n" + wfxEditor.str2chr(content));
-      bench( null, 4);
-      editor._doc.body.innerHTML = '<pre>' + content + '</pre>';
-      bench( "innerHTML", null, 4);
-
-      bench( "...content set", null, 1);
-    
-
-    } catch(e) {
-      alert("Exception:\n" + e);
-    }
-
-    bench( null, 2);
-    //---------------------------------------------------------------------------
-
-    //------------
-    // setOffsets
-    //------------
-
-    editor.setOffsets( [ offsetStart, offsetNewlinesStart, 
-			 offsetEnd,   offsetNewlinesEnd,
-			 posEnd ] );
-    //---------------------------------------------------------------------------
-
-    editor.skipRehighlighting = true;
-
-    bench( "...cursor set", null, 2);
-
-    bench("rehighlight()", null, 1);
-
-    //    document.forms[0].dbg.value += benchMsg;
-
-    //    editor._dbg.value = parseInt(editor._dbg.value)+1;
-
-    insideRehighlighting = false;
+		    dbg && ( editor._dbg.value += "z6 ");
+		  }, 0);
+		  dbg && ( editor._dbg.value += "z5 ");
+		}, 0);
+		dbg && ( editor._dbg.value += "z4 ");
+	      }, 0);
+	      dbg && ( editor._dbg.value += "z3 ");
+	    }, 0);
+	    dbg && ( editor._dbg.value += "z2 ");
+	  }, 0);
+	  dbg && ( editor._dbg.value += "z1b ");
+	}, 0);
+	dbg && ( editor._dbg.value += "z1 ");
+      }, 0);
+      dbg && ( editor._dbg.value += "z0 ");
+    }, 0);
 
   }, wfxEditor.timeInterval );
 
@@ -2474,7 +2773,7 @@ wfxEditor.prototype.getOffsets = function( content, ret ) {
 
       offsetStart = posStart - newlines;
     }
-    bench( "...posStart", null, 2);
+    //    bench( "...posStart", null, 2);
     //    alert("offsetStart:" + offsetStart + ", " + offsetNewlinesStart);
     
     //-----
@@ -2507,7 +2806,7 @@ wfxEditor.prototype.getOffsets = function( content, ret ) {
 	
 	offsetEnd = posEnd - newlines - 14; // 14 == [[[sfxStart]]]".length
       }
-      bench( "...posEnd", null, 2);
+      //      bench( "...posEnd", null, 2);
     }
   }
 
@@ -2618,6 +2917,8 @@ wfxEditor.prototype.setOffsets = function( arg ) {
 };
 
 function sleepMSec( msec ) {
+
+  return;
 
   var t0 = (new Date()).getTime();
   var t1;
@@ -2791,11 +3092,11 @@ wfxEditor.prototype.findAndReplace = function( fstr, rstr ) {
 //#
 //#****************************************************************************
 
-var doBench = true;
+var doBench = false;
 var benchMsg = "";
 var tt = new Array();
 
-var insideRehighlighting = false;
+//var insideRehighlighting = false;
 
 wfxEditor._doc;
 wfxEditor._bodynode;
@@ -2810,8 +3111,8 @@ wfxEditor.offsetEnd   = -1;
 
 wfxEditor.tabWidth    = 2;
 
-wfxEditor.timeInterval   = 500;   // msec of rehighlighting frequency
-wfxEditor.timeEvent      = 200 ;   // minimum msec between (key)events
+wfxEditor.timeInterval   = 50;   // msec of rehighlighting frequency
+wfxEditor.timeEvent      = 500 ;   // minimum msec between (key)events
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
