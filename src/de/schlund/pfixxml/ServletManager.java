@@ -158,11 +158,13 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug("    ... and session is secure.");
                     if (does_cookies) {
                         CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
+                        String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE);
+                        CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                         Cookie cookie = getSecureSessionCookie(req);
                         if (cookie != null) {
                             CAT.debug("*** Found a matching cookie ...");
-                            if (cookie.getValue().equals(session.getId())) {
-                                CAT.debug("   ... and the value is correct!");
+                            if (cookie.getValue().equals(sec_testid)) {
+                                CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
                                 has_ssl_session_secure = true;
                             } else {
                                 CAT.debug("   ... but the value is WRONG!");
@@ -178,6 +180,9 @@ public abstract class ServletManager extends HttpServlet {
                             session.invalidate();
                             has_session = false;
                         }
+                    } else {
+                        // We don't do cookies, so we simply have to believe it...
+                        has_ssl_session_secure = true;
                     }
                 } else {
                     CAT.debug("    ... but session is insecure!");
@@ -203,10 +208,12 @@ public abstract class ServletManager extends HttpServlet {
                 // the already running secure session instead (but only if a secure cookie can identify the request as
                 // coming from the browser that made the initial jump http->https).
                 if (does_cookies) {
+                    CAT.debug("    ... client handles cookies, so we'll check if we can reuse the parent session.");
                     force_jump_back_to_ssl = true;
                 } else {
                     // OK, it seems as if we will not be able to identify the peer by comparing cookies.
                     // So the only thing we can do is to reuse the VISIT_ID.
+                    CAT.debug("    ... but can't reuse the secure session because the client doesn't handle cookies.");
                     force_reuse_visit_id = true;
                 }
             } else {
@@ -310,16 +317,18 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("*** The current insecure SSL session says to check for a already running SSL session for reuse");
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
             if (secure_session != null) {
-                String secure_id = secure_session.getId();
+                String secure_id  = secure_session.getId();
+                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE);
                 CAT.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
+                CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                 // But we need to make sure that the current request comes
                 // from the same user who created this secure session.
                 // We do this by checking for a (secure) cookie with a corresponding session id.
                 Cookie cookie = getSecureSessionCookie(req);
                 if (cookie != null) {
                     CAT.debug("*** Found a matching cookie ...");
-                    if (cookie.getValue().equals(secure_id)) {
-                        CAT.debug("   ... and the value is correct!");
+                    if (cookie.getValue().equals(sec_testid)) {
+                        CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
                         CAT.debug("==> Redirecting to the secure SSL URL with the already running secure session " + secure_id);
                         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req,  secure_id);
                         relocate(res, redirect_uri);
@@ -376,7 +385,10 @@ public abstract class ServletManager extends HttpServlet {
             cookie.setMaxAge(0);
             res.addCookie(cookie);
         }
-        cookie = new Cookie(SECURE_SESS_COOKIE, session.getId());
+        String sec_testid = req.getRemoteAddr() + "_" + Math.random();
+        CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
+        session.setAttribute(SECURE_SESS_COOKIE, sec_testid);
+        cookie = new Cookie(SECURE_SESS_COOKIE, sec_testid);
         cookie.setPath("/");
         cookie.setMaxAge(-1);
         cookie.setSecure(true);

@@ -4,6 +4,25 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.8.2" date="2004-10-20">
+      <action dev="jenstl" type="update">
+        <p>
+          More security stuff. We are still more paranoid about secure
+          sessions being transmitted over a non-SSL channel. Also a
+          double check is performed to compare the secure session id
+          with the id stored in the client cookie (only if the browser
+          has cookies enabled)
+        </p>
+      </action>
+      <action dev="firstbman" type="add">
+        <p>
+          New feature: Allow to use statuscodes not only for the purpose of
+          signalling errors, but also for messages. These messages will not interrupt the 
+          pageflow, and will be displayed on the next page as determined by the 
+          pageflow process.
+        </p>
+      </action>
+    </release>
     <release version="0.8.1" date="2004-10-20">
       <action dev="jenstl" type="update">
         <p>
