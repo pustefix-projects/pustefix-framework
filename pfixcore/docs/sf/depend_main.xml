@@ -180,6 +180,33 @@
       <depaux name="core/xsl/navigation.xsl"/>
       <depaux name="core/xsl/utils.xsl"/>
       <depaux name="core/xsl/forminput.xsl"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          <p>
+            <code>depaux</code> tags create user defined dendencies on
+            the files they reference in their <code>name</code>
+            attribute. Whenever the target generation system is asked
+            for a target, all its dependencies are checked whether their
+            modification time is older than the creation time of the
+            target. Dependencies include by design the
+            <code>depxml</code> and <code>depxsl</code> targets (which
+            may be files in the case of a leaf target or another
+            virtual target that returns its own creation time as the modification time) and all
+            include files from which include parts are taken during
+            the transformation of the target.
+          </p>
+          <p>
+            If any of these files or targets has been changed after
+            the target was built, it is taken care of that the target
+            is rebuild.
+          </p>
+          <p>
+            <code>depaux</code> just adds more dependencies
+            that are not automatically detected "by hand". In the example
+            above, the files referenced are XSLT stylesheets that are included via <code>xsl:include</code> into
+            the <code>master.xsl</code> stylesheet. Such external files are not handled automatically currently.</p>
+        </div>
+      </xmlcodeOFF>
       <param name="product" value="editor"/>
       <param name="lang"    value="en"/>
     </target>
@@ -200,13 +227,13 @@
       <depxml name="home.xml"/>
       <depxsl name="master.xsl"/>
       <param name="page" value="home"/>
-      <param name="docroot" value="/some/absolute/path/to/your/environments/projects"/>
+      <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
     </target><xmlcodeOFF/>
     <target name="home.xml" type="xml">
       <depxml name="core/editor/xml/two_frames.xml"/>
       <depxsl name="metatags.xsl"/>
       <param name="page" value="home"/>
-      <param name="docroot" value="/some/absolute/path/to/your/environments/projects"/>
+      <param name="docroot" value="/some/absolute/path/to/your/pustefix/projects"/>
     </target>
   </xmlcode>
 
