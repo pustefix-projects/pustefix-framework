@@ -24,18 +24,13 @@ public class TestcaseStartHandler implements IHandler {
     /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(Context, IWrapper)
      */
-    public void handleSubmittedData(Context context, IWrapper wrapper)  {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception  {
         TestcaseStart tcs = (TestcaseStart) wrapper;
         boolean doit = tcs.getDoStart().booleanValue();
         if(doit) {
             ContextResourceManager crm = context.getContextResourceManager();
             CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-            try {
-                crtc.executeTest();
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                CAT.error(e);
-            } 
+            crtc.executeTest();
         }
     }
 

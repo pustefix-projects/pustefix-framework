@@ -164,10 +164,13 @@ public class TestcaseStep {
                 }
                 
                 Header conheader = post.getResponseHeader("connection");
-                if(conheader.getValue().equals("close")) {
-                    CAT.error("Connection closed by server. Either the server does not support keep-alive or" +
-                        "the testcase has more steps then keep-alive request are allowed by the server");
-                    return;
+                if(conheader != null) {
+                
+                    if(conheader.getValue().equals("close")) {
+                        CAT.error("Connection closed by server. Either the server does not support keep-alive or" +
+                            "the testcase has more steps then keep-alive request are allowed by the server");
+                        return;
+                    }
                 }
                 
                 Header locheader = post.getResponseHeader("location");

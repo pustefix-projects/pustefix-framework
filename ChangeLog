@@ -1,3 +1,12 @@
+2003-09-04  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/TestcaseStep.java(getResultFromFormInput):
+	bugfix for wrong handling of server-side closed connections.
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java(handleSubmittedData):
+	do not catch Exceptions, throw them.
+	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java(createDiff):
+	wrong sequence for diffing.. 
+
 2003-09-02  Volker Zaich <zaich@schlund.de>
 	
 	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java 
