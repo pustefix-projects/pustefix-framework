@@ -1355,12 +1355,40 @@
             </tr>
           </ixsl:for-each>
         </table>
-
-      
     </ixsl:if>
-   
-
   </xsl:template>
 
 
+  <xsl:template match="displayerrortree">
+    <xsl:param name="path"><xsl:value-of select="@errorpath"/></xsl:param>
+    <table cellpadding="2" cellspacing="0" style="background-color: #aaaacc; border: 1px solid black">
+      <tr>
+        <td align="center" bgcolor="#cc0000" colspan="2">
+          <span style="color:#ffffff; font-weight: bold">XML/XSLT Error!</span>
+        </td>
+      </tr>
+      <ixsl:for-each select="{$path}/error">
+        <tr>
+          <td bgcolor="#dd9999" colspan="2" align="center">
+            <b><ixsl:value-of select="@type"/></b>
+          </td>
+        </tr>
+        <ixsl:for-each select="./info">
+          <tr>
+            <ixsl:attribute name="bgcolor">
+              <ixsl:choose>
+                <ixsl:when test="count(preceding-sibling::info) mod 2 = 0">#aaaacc</ixsl:when>
+                <ixsl:otherwise>#ccccee</ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:attribute>
+            <td><b><ixsl:value-of select="@key"/>:</b></td>
+            <td><ixsl:value-of select="@value"/></td>
+          </tr>
+        </ixsl:for-each>
+      </ixsl:for-each>
+    </table>
+  </xsl:template>
+
 </xsl:stylesheet>
+
+
