@@ -393,7 +393,8 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
                 // get the parameter from the session
                 if ((record_logdir = (String) conutil.getSessionValue(session, SESS_RECORDMODE)) != null) {
-                    recording_enabled = record_logdir.equals("0") ? false : true;
+                    recording_enabled = (record_logdir.equals("0") || record_logdir.equals("")) ? false : true;
+                    params.put(PARAM_RECORDMODE, record_logdir);
                     if (CAT.isInfoEnabled()) {
                         CAT.info("Recording enabled=" + recording_enabled + " directory ="
                                  + record_logdir);

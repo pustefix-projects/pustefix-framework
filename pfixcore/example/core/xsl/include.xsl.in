@@ -15,6 +15,7 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <xsl:param name="__editmode"/>
+  <xsl:param name="__recordmode"/>
   <xsl:param name="__sessid"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
@@ -42,26 +43,51 @@
       
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
-      <ixsl:choose>
-        <ixsl:when test="$__editmode=&apos;admin&apos;">
-          <a target="_top">
-            <ixsl:attribute name="href">
-              <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-            <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
-          </a>
-        </ixsl:when>
-        <ixsl:otherwise>
-          <a target="_top">
-            <ixsl:attribute name="href">
-              <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-            <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
-          </a>
-        </ixsl:otherwise>
-      </ixsl:choose>
-      <a target="__xml_source__">
-        <ixsl:attribute name="href">
-          <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
-        <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+     <table border="1">
+       <tr>
+         <td>
+           <ixsl:choose>
+             <ixsl:when test="$__editmode=&apos;admin&apos;">
+               <a target="_top">
+                 <ixsl:attribute name="href">
+                   <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
+                 <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
+               </a>
+             </ixsl:when>
+             <ixsl:otherwise>
+               <a target="_top">
+                  <ixsl:attribute name="href">
+                <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
+                <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
+               </a>
+             </ixsl:otherwise>
+           </ixsl:choose>
+         </td>
+         <td>
+           <ixsl:choose>
+             <ixsl:when test="$__recordmode and $__recordmode!='0'">
+               <a target="_top">
+                 <ixsl:attribute name="href">
+                   <ixsl:value-of select="$__uri"/>?__recordmode=0</ixsl:attribute>
+                 <img border="0" title="Switch record mode OFF" src="/core/img/player_pause.png"/>
+              </a>
+             </ixsl:when>
+             <ixsl:otherwise>
+               <form target="_top">
+                 <input align="center" name="__recordmode" type="text" size="10" maxlength="20"/>
+                 <input align="center" type="image" src="/core/img/player_play.png" title="Switch record mode ON"/>
+              </form>
+             </ixsl:otherwise>
+           </ixsl:choose>
+         </td>
+         <td>
+           <a target="__xml_source__">
+             <ixsl:attribute name="href">
+               <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+             <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+         </td>  
+       </tr>
+     </table>
     </xsl:if>
   </xsl:template>
 
