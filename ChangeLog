@@ -1,3 +1,45 @@
+2004-04-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(handleSubmittedData): now also insert the CRs when the state
+	want's to continue AND the corresponding FlowStep has Actions
+	that may need the DOM for their tests. 
+
+	* src/de/schlund/pfixcore/workflow/PageFlow.java: use FlowSteps
+	as members of the flow. Fix return values of the relevant methods accordingly.
+
+	* src/de/schlund/pfixcore/workflow/Context.java: change
+	accordingly. 
+	(documentFromFlow): when the state returns and wants to continue,
+	let the state check it's FlowStepActions before the flow continues.
+
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: New class. Now
+	PageFlows no longer contain PageRequests but PageSteps to
+	aggregate other data that's associated to a single step in a
+	PageFlow. It contains the PageRequest, the "isstophere" flag
+	(aka stophere="true") and possible FlowStepActions (see
+	below). The method applyActionsOnContinue(...) applies all
+	matching actions before the page wants to continue with the flow. 
+
+	* src/de/schlund/pfixcore/workflow/FlowStepAction.java:
+	Interfaces for classes that define actions that should be
+	executed after a flowstep is ready to continue in the
+	pageflow. Resdoc and context are supplied to the
+	doAction() method.
+
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java:
+	New class. Factory to produce FlowStepActions: type "jumpto" is
+	predefined to result in FlowStepJumpToAction, all other types are
+	interpreted as classes implementing FlowStepAction. 
+
+	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java:
+	New class. Main FlowStepAction class that is able to set the
+	jumptopage and jumptopageflow.
+
+	* src/de/schlund/pfixcore/example/MsgFlowStepAction.java: New
+	class. Example FLowStepAction that simply prints some text to the
+	log file
+
 2004-04-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/navigation.xsl.in (button, jsbutton): Now

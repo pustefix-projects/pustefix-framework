@@ -142,7 +142,10 @@ public class DefaultIWrapperState extends StaticState {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
+        } else if (context.currentFlowStepWantsPostProcess()) {
+            renderContextResources(context, resdoc);
         }
+        
         return resdoc;
     }
     

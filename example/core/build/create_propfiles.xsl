@@ -185,7 +185,19 @@
       <xsl:value-of select="$prefix"/><xsl:value-of select="position()"/>=<xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
       <xsl:if test="@stophere = 'true' or $stopnext = 'true'">
         <xsl:text>context.pageflowproperty.</xsl:text>
-        <xsl:value-of select="$flowname"/>.stopat.<xsl:value-of select="@name"/>=true<xsl:text>&#xa;</xsl:text>
+        <xsl:value-of select="$flowname"/>.<xsl:value-of select="@name"/>.stophere=true<xsl:text>&#xa;</xsl:text>
+      </xsl:if>
+      <xsl:if test="./oncontinue/@applyall = 'true'">
+        <xsl:text>context.pageflowproperty.</xsl:text>
+        <xsl:value-of select="$flowname"/>.<xsl:value-of select="@name"/>.oncontinue.applyall=true<xsl:text>&#xa;</xsl:text>
+      </xsl:if>
+      <xsl:if test="./oncontinue">
+        <xsl:call-template name="render_tests">
+          <xsl:with-param name="tests" select="./oncontinue/when"/>
+          <xsl:with-param name="prefix">oncontinue</xsl:with-param>
+          <xsl:with-param name="flow"><xsl:value-of select="$flowname"/></xsl:with-param>
+          <xsl:with-param name="page"><xsl:value-of select="@name"/></xsl:with-param>
+        </xsl:call-template>
       </xsl:if>
     </xsl:for-each>
     <xsl:if test="@final">
@@ -193,6 +205,26 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template name="render_tests">
+    <xsl:param name="prefix"/>
+    <xsl:param name="page"/>
+    <xsl:param name="flow"/>
+    <xsl:param name="tests"/>
+    <xsl:for-each select="$tests">
+      <xsl:variable name="xpath"><xsl:value-of select="@test"/></xsl:variable>
+      <xsl:variable name="pos" select="position()"/>
+      <xsl:variable name="actionnode" select="./action[position() = 1]"/>
+      <xsl:text>context.pageflowaction.</xsl:text><xsl:value-of select="$flow"/>.<xsl:value-of select="$page"/>
+      <xsl:text>.</xsl:text><xsl:value-of select="$prefix"/>.<xsl:value-of select="$pos"/>.test=<xsl:value-of select="$xpath"/><xsl:text>&#xa;</xsl:text>
+      <xsl:text>context.pageflowaction.</xsl:text><xsl:value-of select="$flow"/>.<xsl:value-of select="$page"/>
+      <xsl:text>.</xsl:text><xsl:value-of select="$prefix"/>.<xsl:value-of select="$pos"/>.action=<xsl:value-of select="$actionnode/@type"/><xsl:text>&#xa;</xsl:text>
+      <xsl:for-each select="$actionnode/@*[name() != 'type']">
+        <xsl:text>context.pageflowaction.</xsl:text><xsl:value-of select="$flow"/>.<xsl:value-of select="$page"/>
+        <xsl:text>.</xsl:text><xsl:value-of select="$prefix"/>.<xsl:value-of select="$pos"/>.data.<xsl:value-of select="name()"/>=<xsl:value-of select="current()"/><xsl:text>&#xa;</xsl:text>
+      </xsl:for-each>
+    </xsl:for-each>
+  </xsl:template>
+  
   <xsl:template match="context">
     <xsl:text>context.class=</xsl:text>
     <xsl:choose>

@@ -31,17 +31,17 @@ import org.apache.log4j.*;
  */
 
 public class PageFlow {
-    private String              flowname;
-    private ArrayList           allsteps                = new ArrayList();
-    private HashSet             allclearingpoints       = new HashSet();
-    private final static String PROPERTY_PREFIX         = PageFlowManager.PROP_PREFIX;
-    private final static String FLAG_FINAL              = "FINAL";
-    private final static String PROPERTY_PAGEFLOW       = "context.pageflowproperty";
-    private static Category     LOG                     = Category.getInstance(PageFlow.class.getName());
-    private PageRequest         finalpage               = null;
+    private String    flowname;
+    private ArrayList allsteps = new ArrayList();
+    private HashMap   stepmap  = new HashMap();
+    
+    private final static String PROPERTY_PREFIX   = PageFlowManager.PROP_PREFIX;
+    private final static String FLAG_FINAL        = "FINAL";
+    private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
+    private PageRequest         finalpage         = null;
     
     public PageFlow(Properties props, String name) {
-        flowname = name;
+        flowname       = name;
         Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + name);
         TreeMap sorted = new TreeMap();
         
@@ -57,37 +57,28 @@ public class PageFlow {
                     index = new Integer(key);
                     sorted.put(index, pagename);
                 } catch (NumberFormatException e) {
-                    throw new RuntimeException("**** The Pageflow [" + name +
-                                               "] didn't specifiy a numerical index for page [" +
+                    throw new RuntimeException("**** The Pageflow [" + name + "] didn't specifiy a numerical index for page [" +
                                                pagename + "] ****\n" + e.getMessage());
                 }
             }
         }
 
-        Map    propmap          = PropertiesUtils.selectProperties(props, PROPERTY_PAGEFLOW + "." + name);
-        
         for (Iterator i = sorted.values().iterator(); i.hasNext(); ) {
-            String      pagename = (String) i.next();
-            PageRequest page     = new PageRequest(pagename);
-            allsteps.add(page);
-            // check if step is a clearing point (aka: it should always be triggered in a pageflow if
-            // it is behind the just handled page regardless of the handlers of the associated page.
-            String      clearing = (String) propmap.get("stopat." + pagename);
-            if (clearing != null && clearing.equals("true")) {
-                allclearingpoints.add(page);
-            }
+            String   pagename = (String) i.next();
+            FlowStep step     = new FlowStep(new PageRequest(pagename), props, name);
+            allsteps.add(step);
+            stepmap.put(step.getPageRequest(), step);
         }
         
         if (LOG.isDebugEnabled()) {
             for (int i = 0; i < allsteps.size(); i++) {
-                LOG.debug(">>> Workflow '" + name + "' Step #" + i +
-                          " name [" + ((PageRequest) allsteps.get(i)).getName() + "]");
+                LOG.debug(">>> Workflow '" + name + "' Step #" + i + " " + allsteps.get(i));
             }
         }
     }
 
     public boolean containsPageRequest(PageRequest page) {
-        return allsteps.contains(page);
+        return stepmap.keySet().contains(page);
     }
 
     /**
@@ -98,24 +89,28 @@ public class PageFlow {
      * @return an <code>int</code> value
      */
     public int getIndexOfPageRequest(PageRequest page) {
-        return allsteps.indexOf(page);
+        FlowStep step = (FlowStep) stepmap.get(page);
+        if (step != null) {
+            return allsteps.indexOf(step);
+        } else {
+            return -1;
+        }
     }
 
-    
-    public boolean pageIsClearingPoint(PageRequest page) {
-        return allclearingpoints.contains(page);
-    }
-    
     public String getName() {
         return flowname;
     }
 
-    public PageRequest[] getAllSteps() {
-        return (PageRequest[]) allsteps.toArray(new PageRequest[] {});
+    public FlowStep[] getAllSteps() {
+        return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
     }
     
-    public PageRequest getFirstStep() {
-        return (PageRequest) allsteps.get(0);
+    public FlowStep getFlowStepForPage(PageRequest page) {
+        return (FlowStep) stepmap.get(page);
+    }
+
+    public FlowStep getFirstStep() {
+        return (FlowStep) allsteps.get(0);
     }
     
     public PageRequest getFinalPage() {
@@ -124,15 +119,19 @@ public class PageFlow {
 
     public String toString() {
         String ret = "";
-
         for (int i = 0; i < allsteps.size(); i++) {
             if (ret.length() > 0) {
                 ret += ", ";
             } else {
                 ret  = flowname + " = ";
             }
-            ret += "[" + i + ": " + ((PageRequest) allsteps.get(i)).getName() + "]";
+            ret += "[" + i + ": " + allsteps.get(i) + "]";
         }
+        if (finalpage != null) {
+            ret += " FINAL: " + finalpage.getName();
+        }
+        
         return ret;
     }
+
 }
