@@ -111,15 +111,21 @@ public class DirectOutputServlet extends ServletManager {
      * @exception Exception if an error occurs
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-         HttpSession   session = preq.getSession(false);
          String        name    = ext_cname + ContextXMLServer.CONTEXT_SUFFIX;
-         Context       context = (Context)session.getAttribute(name);
-         ContextResourceManager crm = context.getContextResourceManager();
          
-         if (context == null) {
-             throw new RuntimeException("*** didn't find Context " + name + " in Session, maybe it's not yet initialized??? ***");
+         HttpSession   session = preq.getSession(false);
+         if (session == null) {
+             throw new RuntimeException("*** didn't get Session from request. ***");
          }
          
+         Context context = (Context) session.getAttribute(name);
+         if (context == null) {
+             throw new RuntimeException("*** didn't find Context " + name + " in Session " + session.getId() +
+                                        " , maybe it's not yet initialized??? ***");
+         }
+
+         ContextResourceManager crm = context.getContextResourceManager();
+
          if (context instanceof AuthContext) {
              // check the authentification first....
              SPDocument spdoc = ((AuthContext) context).checkAuthorization(preq);

@@ -59,7 +59,7 @@ public class FileDownloadDOState implements DirectOutputState {
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
      */
-    public boolean isAccessible(ContextResourceManager crm, Properties props, PfixServletRequest preq) throws Exception {
+    public synchronized boolean isAccessible(ContextResourceManager crm, Properties props, PfixServletRequest preq) throws Exception {
         String filename = props.getProperty(PROP_FILENAME);
         if (filename == null || filename.equals("")) {
             throw new XMLException("*** Need property " + PROP_FILENAME + " ***");
@@ -91,7 +91,7 @@ public class FileDownloadDOState implements DirectOutputState {
      * @param res <code>HttpServletResponse</code> of the current request as given by the ServletContainer.
      * @exception Exception if an error occurs
      */
-    public void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+    public synchronized void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception {
         String filename = props.getProperty(PROP_FILENAME);
         String mimetype = props.getProperty(PROP_MIMETYPE);
         File   file     = new File(filename);

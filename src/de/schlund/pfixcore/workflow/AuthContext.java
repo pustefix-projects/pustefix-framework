@@ -43,7 +43,7 @@ public class AuthContext extends Context {
         authpage = new PageRequest(authpagename);
     }
 
-    public SPDocument checkAuthorization(PfixServletRequest preq) throws Exception {
+    public synchronized SPDocument checkAuthorization(PfixServletRequest preq) throws Exception {
         SPDocument  spdoc = null;
         // Push the authpage to be the current PageRequest
         PageRequest saved = getCurrentPageRequest();

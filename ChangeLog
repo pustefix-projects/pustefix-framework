@@ -1,3 +1,16 @@
+2003-08-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: release 0.3.8
+
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java 
+	(isAccessible): 
+	(handleRequest): make it both synchronized
+
+	* src/de/schlund/pfixcore/workflow/AuthContext.java (checkAuthorization): make it synchronized so calls from 
+	outside are propery serialized
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): bugfix, more logging
+
 2003-08-05  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
