@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.*;
 import java.util.*;
@@ -84,7 +85,7 @@ public class Context implements AppContext {
     private boolean            on_jumptopage;
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
-    
+
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
     private boolean needs_update;
@@ -125,7 +126,7 @@ public class Context implements AppContext {
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
         startwithflow              = false;
-        
+
         if (needs_update) {
             do_update();
         }
@@ -153,6 +154,7 @@ public class Context implements AppContext {
             }
             spdoc = resdoc.getSPDocument();
             spdoc.setPagename(admin_pagereq.getName());
+            insertPageMessages(spdoc);
             return spdoc;
         }
 
@@ -170,6 +172,7 @@ public class Context implements AppContext {
         if (spdoc.getResponseError() != 0) {
             currentpagerequest = prevpage;
             currentpageflow    = prevflow;
+            insertPageMessages(spdoc);
             return spdoc;
         }
 
@@ -187,6 +190,7 @@ public class Context implements AppContext {
         }
 
         LOG.debug("\n");
+        insertPageMessages(spdoc);
         return spdoc;
     }
 
@@ -514,7 +518,7 @@ public class Context implements AppContext {
         PerfEventType et = PerfEventType.PAGE_ISACCESSIBLE;
         et.setPage(page.toString());
         currentpreq.endLogEntry(et);
-        
+
         //currentpreq.endLogEntry("IS_ACCESSIBLE (" + page + ")", 10);
         currentpagerequest = saved;
         return retval;
@@ -522,14 +526,16 @@ public class Context implements AppContext {
 
     private SPDocument documentFromFlow() throws Exception {
         SPDocument     document = null;
-        PageRequest[]  workflow;
-        ResultDocument resdoc;
 
         // First, check if the requested page is defined at all
         // We do this only if the current pagerequest is not the special STARTWITHFLOW_PAGE
         // because then we don't know yet which page to use.
 
         if (!startwithflow) {
+
+            PageRequest[]  workflow;
+            ResultDocument resdoc;
+
             State state = pagemap.getState(currentpagerequest);
             if (state == null) {
                 LOG.warn("* Can't get a handling state for page " + currentpagerequest);
@@ -577,7 +583,7 @@ public class Context implements AppContext {
                 on_jumptopage     = true; // we need this information to supress the interpretation of
                                           // the request as one that submits data. See StateImpl,
                                           // methods isSubmitTrigger & isDirectTrigger
-                
+
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();
             } else if (currentpageflow != null) {
@@ -693,7 +699,7 @@ public class Context implements AppContext {
         if (!page.isEmpty() && (authpage == null || !page.equals(authpage))) {
             page.setStatus(PageRequestStatus.DIRECT);
             currentpagerequest    = page;
-            PageFlow     flow     = null; 
+            PageFlow     flow     = null;
             RequestParam flowname = currentpreq.getRequestParam(PARAM_FLOW);
             if (flowname != null && !flowname.getValue().equals("")) {
                 LOG.debug("===> User requesting to switch to flow '" + flowname.getValue() + "'");
@@ -714,7 +720,7 @@ public class Context implements AppContext {
             } else {
                 flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                 pageflow_requested_by_user = false;
-            }          
+            }
             currentpageflow = flow;
             LOG.debug("* Setting currentpagerequest to [" + page + "]");
             LOG.debug("* Setting currentpageflow to [" + currentpageflow.getName() + "]");
@@ -834,6 +840,49 @@ public class Context implements AppContext {
     }
 
     /**
+     *
+     */
+    private void insertPageMessages(SPDocument spdoc)
+    {
+        if ( spdoc == null )
+            return;
+
+        Map messagesMap = currentpreq.getPageMessages();
+        LOG.debug("Adding "+messagesMap.size()+" PageMessages to result document");
+
+        if ( !messagesMap.isEmpty() ) {
+
+            Document doc = spdoc.getDocument();
+            Element formresult = doc.getDocumentElement();
+
+            if ( formresult != null ) {
+                String  incfile = (String) getProperties().get("statuscodefactory.messagefile");
+
+                Element messagesElem = doc.createElement("pagemessages");
+                formresult.appendChild(messagesElem);
+
+                Iterator iter = messagesMap.keySet().iterator();
+                while ( iter.hasNext() ) {
+                    StatusCode scode  = (StatusCode) iter.next();
+                    List levelAndArgs = (List) messagesMap.get(scode);
+
+                    String   level = (String) levelAndArgs.remove(0);
+                    String[] args  = (String[]) levelAndArgs.toArray(new String[0]);
+                    Element  msg   =
+                            ResultDocument.addTextIncludeChild(messagesElem,
+                                                               "message",
+                                                               incfile,
+                                                               scode.getPart());
+                    msg.setAttribute("level", level);
+                    LOG.debug("Added PageMessage for level "+level+" with args "+levelAndArgs);
+                }
+
+            }
+        }
+    }
+
+
+    /**
      * <code>toString</code> tries to give a detailed printed representation of the Context.
      * WARNING: this may be very long!
      *
@@ -869,18 +918,91 @@ public class Context implements AppContext {
     public void endLogEntry(String info, long min) {
         currentpreq.endLogEntry(info, min);
     }
-    
+
     public void endLogEntry(PerfEventType t) {
         currentpreq.endLogEntry(t);
     }
 
     /**
-	 * Returns the last exception-object that was stored in the request object.
+     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
+     * as it accesses a non-thread-safe field of this class.
+     *
+     * @return the last exception-object that was stored in the request object.
      * See {@link PfixServletRequest#getLastException() PfixServletRequest} for details.
-	 */
-	public Throwable getLastException()
-	{
-		return currentpreq.getLastException();
-	}
+     */
+    public Throwable getLastException()
+    {
+        return currentpreq.getLastException();
+    }
+
+    /**
+     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
+     * as it accesses a non-thread-safe field of this class.
+     * <br />
+     * This method stores the specified <code>StatusCode</code>-object in the
+     * current request, so that it can be incorporated into the XML result-tree.
+     *
+     * @param scode the <code>StatusCode</code>-object that should be stored in
+     * the request. If it's null, nothing will be stored in the request.
+     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
+     */
+    public void addPageMessage(StatusCode scode)
+    {
+        currentpreq.addPageMessage(scode);
+    }
+
+    /**
+     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
+     * as it accesses a non-thread-safe field of this class.
+     * <br />
+     * This method stores the specified <code>StatusCode</code>-object in the
+     * current request, so that it can be incorporated into the XML result-tree.
+     *
+     * @param scode the <code>StatusCode</code>-object that should be stored in
+     * the request. If it's null, nothing will be stored in the request.
+     * @param level the level associated with the specified <code>StatusCode</code>.
+     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
+     */
+    public void addPageMessage(StatusCode scode, String level)
+    {
+        currentpreq.addPageMessage(scode, level);
+    }
+
+
+    /**
+     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
+     * as it accesses a non-thread-safe field of this class.
+     * <br />
+     * This method stores the specified <code>StatusCode</code>-object, along
+     * with it's provided arguments, in the current request, so that it can be
+     * incorporated into the XML result-tree.
+     *
+     * @param scode the <code>StatusCode</code>-object that should be stored in
+     * the request. If it's null, nothing will be stored in the request.
+     * @param args arguments to the provided <code>StatusCode</code>.
+     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[])
+     */
+    public void addPageMessage(StatusCode scode, String[] args)
+    {
+        currentpreq.addPageMessage(scode, args);
+    }
+
+
+    /**
+     * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
+     * as it accesses a non-thread-safe field of this class.
+     * <br />
+     * This method stores the specified <code>StatusCode</code>-object in the
+     * current request, so that it can be incorporated into the XML result-tree.
+     *
+     * @param scode the <code>StatusCode</code>-object that should be stored in
+     * the request. If it's null, nothing will be stored in the request.
+     * @param level the level associated with the specified <code>StatusCode</code>.
+     * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String[], String)
+     */
+    public void addPageMessage(StatusCode scode, String[] args, String level)
+    {
+        currentpreq.addPageMessage(scode, args, level);
+    }
 
 }
