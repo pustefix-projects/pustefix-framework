@@ -1,3 +1,12 @@
+2003-08-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (isDebugEnabled): 
+	(isInfoEnabled): two new methods to decide if we should write the logfile. 
+	This takes into account not only the usual CAT.isDebugEnabled() but also the setting
+	of a property xmlserver.prohibitdebug (or prohibitinfo resp.).
+
+	* example/core/editor/conf/config.prop.in: set those two to "true" for the editor.
+
 2003-08-12  Joerg Haecker <haecker@schlund.de>
 
 	* lib/saxon-6_5_2: removed
