@@ -310,8 +310,6 @@
       <xsl:value-of select="@forward"/><xsl:text>&#xa;</xsl:text>
       <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.page=</xsl:text>
       <xsl:value-of select="@page"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.jms=</xsl:text>
-      <xsl:value-of select="@jms"/><xsl:text>&#xa;</xsl:text>
       <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.processor=</xsl:text>
       <xsl:value-of select="$processor"/><xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
