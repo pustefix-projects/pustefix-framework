@@ -4,6 +4,54 @@
 
   <insertexternalprojects/>
   
+  <!-- Don't change the two projects below, they are needed to make the whole system work -->
+
+  <!-- This is the Content Management System. You will be able to edit all projects -->
+  <!-- which have at least one servlet with the "useineditor" attribute set to "true" -->
+  
+  <project name="cmscore">
+    <active>true</active>
+    <comment>CMS for Pfixcore</comment>
+    <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
+    <virtualhost><cus:fqdn/></virtualhost>
+    <servername>cmscore.<cus:fqdn/></servername>
+    <serveralias>cmscore.<cus:machine/></serveralias>
+    <defpath>/xml/edit</defpath>
+    <passthrough>core/editor/img</passthrough>
+    <ports>
+      <port number="80"/>
+    </ports>
+    <servlet name="edit" useineditor="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.ContextXMLServer</class>
+      <propfile><cus:docroot/>core/editor/conf/config.prop</propfile>
+    </servlet>
+    <servlet name="deref">
+      <active>true</active>
+      <class>de.schlund.pfixxml.DerefServer</class>
+    </servlet>
+  </project>
+
+  <!-- You should not change this pseudo project below unless you know what you are doing.
+       It is needed for administrative stuff like initializing all the needed factories. -->
+
+  <project name="admcore">
+    <active>true</active>
+    <comment>Adminzone For Pfixcore</comment>
+    <virtualhost><cus:fqdn/></virtualhost>
+    <servername>admcore.<cus:fqdn/></servername>
+    <serveralias>admcore.<cus:machine/></serveralias>
+    <ports>
+      <port number="80"/>
+    </ports>
+    <!-- The autostart attribute will start the servlet as soon as the container starts -->
+    <servlet name="init" autostartup="true">
+      <active>true</active>
+      <class>de.schlund.pfixxml.FactoryInitServlet</class>
+      <propfile><cus:docroot/>common/conf/factory.prop</propfile>
+    </servlet>
+  </project>
+
   <!-- some common definitions that are shared between all projects -->
   
   <common>
@@ -35,60 +83,4 @@
       <passthrough>core/script</passthrough>
     </apache>
   </common>
-
-  <!-- FILL IN NEW PROJECTS HERE -->
-  
-
-  <!-- DON'T CHANGE THE STUFF BELOW -->
-  <!-- Don't change the two projects below, they are needed to make the whole system work -->
-
-  <!-- This is the Content Management System. You will be able to edit all projects -->
-  <!-- which have at least one servlet with the "useineditor" attribute set to "true" -->
-  
-  <project name="editor">
-    <active>true</active>
-    <comment>CMS for Pfixcore</comment>
-    <depend><cus:docroot/>core/editor/conf/depend.xml</depend>
-
-    <virtualhost><cus:fqdn/></virtualhost>
-    <servername>editor.<cus:fqdn/></servername>
-    <serveralias>editor.<cus:machine/></serveralias>
-    <passthrough>core/editor/img</passthrough>
-    <defpath>/xml/edit</defpath>
-    <ports>
-      <port number="80"/>
-    </ports>
-
-    <servlet name="edit" useineditor="true">
-      <active>true</active>
-      <class>de.schlund.pfixxml.ContextXMLServer</class>
-      <propfile><cus:docroot/>core/editor/conf/config.prop</propfile>
-    </servlet>
-    <servlet name="deref">
-      <active>true</active>
-      <class>de.schlund.pfixxml.DerefServer</class>
-    </servlet>
-  </project>
-
-  <!-- You should not change this pseudo project below unless you know what you are doing.
-       It is needed for administrative stuff like initializing all the needed factories. -->
-
-  <project name="admskel">
-    <active>true</active>
-    <comment>Adminzone For Pfixcore</comment>
-    
-    <virtualhost><cus:fqdn/></virtualhost>
-    <servername>admskel.<cus:fqdn/></servername>
-    <serveralias>admskel.<cus:machine/></serveralias>
-    <ports>
-      <port number="80"/>
-    </ports>
-    <!-- The autostart attribute will start the servlet as soon as the container starts -->
-    <servlet name="init" autostartup="true">
-      <active>true</active>
-      <class>de.schlund.pfixxml.FactoryInitServlet</class>
-      <propfile><cus:docroot/>common/conf/factory.prop</propfile>
-    </servlet>
-  </project>
-
 </projects>

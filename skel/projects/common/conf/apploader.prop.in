@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <!--APPLOADER CONFIGURATION-->
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 	
@@ -7,15 +6,12 @@
   	
     <!--don't use AppLoader in production environment-->
     <cus:test mode="prod">
-
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">off</prop>
-
     </cus:test>
 
     <!--use AppLoader in development environment--> 
     <cus:test>
-
       <!--use/don't use AppLoader (on|off)-->
       <prop name="apploader.mode">on</prop>
       
@@ -53,9 +49,7 @@
       <!--add classes which have to be traversed even though their packages have not-->
       <prop name="apploader.traverse.includeclass.1">java.lang.Object</prop>
       <prop name="apploader.traverse.includeclass.2">java.lang.Thread</prop>
-      
     </cus:test>
-
   </cus:choose>
   
 </properties>

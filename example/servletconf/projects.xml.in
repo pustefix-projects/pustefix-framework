@@ -5,6 +5,7 @@
   <insertexternalprojects/>
   
   <!-- Don't change the two projects below, they are needed to make the whole system work -->
+
   <!-- This is the Content Management System. You will be able to edit all projects -->
   <!-- which have at least one servlet with the "useineditor" attribute set to "true" -->
   
@@ -51,10 +52,10 @@
     </servlet>
   </project>
 
-
   <!-- some common definitions that are shared between all projects -->
   
   <common>
+    <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
     <documentation>
       <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
       <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
@@ -62,7 +63,6 @@
       <doc_file><cus:docroot/>core/xsl/master.xsl.in</doc_file>
       <doc_file><cus:docroot/>core/xsl/include.xsl.in</doc_file>
     </documentation>  
-    <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
     <tomcat>
       <minprocessors>100</minprocessors>
       <maxprocessors>500</maxprocessors>
@@ -77,10 +77,7 @@
       <jvmroute>foo</jvmroute>
     </tomcat>
     <apache>
-      <apachelogdir>/var/log/httpd</apachelogdir>
-      <!-- For all of these there will be an alias for direct handling by apache in ALL projects. -->
-      <!-- plus all the passthrough nodes under the projects -->
-      <!-- This is needed because every project can potentially use images from every other projects "img" directory  -->
+      <apachelogdir><cus:docroot/>servletconf/log</apachelogdir>
       <passthrough>common/img</passthrough>
       <passthrough>core/img</passthrough>
       <passthrough>core/script</passthrough>

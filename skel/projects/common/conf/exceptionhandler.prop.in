@@ -3,15 +3,7 @@
   <cus:choose>
     <cus:test mode="prod">
       <prop name="rule.mail.send">true</prop>
-      <prop name="rule.mail.to">pfix-core@schlund.de,pfix-app@schlund.de</prop>
-    </cus:test>
-    <cus:test uid="jtl">
-      <prop name="rule.mail.send">true</prop>
-      <prop name="rule.mail.to">jtl@schlund.de</prop>
-    </cus:test>
-    <cus:test uid="jh">
-      <prop name="rule.mail.send">true</prop>
-      <prop name="rule.mail.to">testhaecker@localhost</prop>
+      <prop name="rule.mail.to"><cus:uid>@<cus:fqdn/></prop>
     </cus:test>
     <cus:test>
       <prop name="rule.mail.send">false</prop>
