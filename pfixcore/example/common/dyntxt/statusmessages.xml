@@ -184,6 +184,11 @@
       <lang name="default">The entered value is no valid integer number.</lang>
     </product>
   </part>
+  <part name="pfixcore.generator.caster.ERR_TO_BYTE">
+    <product name="default">
+      <lang name="default">The entered value is no valid byte number.</lang>
+    </product>
+  </part>
   <part name="pfixcore.generator.caster.ERR_TO_P5PATTERN">
     <product name="default">
       <lang name="default">The entered value is not a valid Perl5 Regexp.</lang>
