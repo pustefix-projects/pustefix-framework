@@ -137,11 +137,22 @@ public class ResultDocument {
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
+        return createIncludeFromStatusCode(props, code, null);
+    }
+    
+    public Element createIncludeFromStatusCode(Properties props, StatusCode code, String[] args) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
         String  part    = code.getStatusCodeWithDomain();
         Element include = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                Element arg   = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:arg");
+                arg.setAttribute("value", args[i]);
+                include.appendChild(arg);
+            }
+        }
         return include;
     }
     

@@ -114,7 +114,11 @@ public class ResultForm {
     // }
 
     public void addStatusCode(Properties props, StatusCode code, String field) {
-        Element elem = resdoc.createIncludeFromStatusCode(props, code);
+        addStatusCode(props, code, null, field);
+    }
+
+    public void addStatusCode(Properties props, StatusCode code, String[] args, String field) {
+        Element elem = resdoc.createIncludeFromStatusCode(props, code, args);
         addErrorNode(field, elem);
     }
 
