@@ -3,6 +3,8 @@
 	* skel/build.xml: changed targets "core-data-check" and "core-data" to 
 	created and use the file ${dir.projects}/core/TIMESTAMP to decide whether
 	pfixcore-data.jar has to be extracted or not.
+	Added deletion of directory ${dir.projects}/core in target "realclean".
+	
 	* build.xml: updated project.version to 0.5.4-pre2
 
 2004-04-07 Joerg Haecker <haecker@schlund.de>
