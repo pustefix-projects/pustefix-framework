@@ -52,6 +52,8 @@ function wfxEditor( config ) {
   this._content_src;
   this._content_col;
 
+  //U  this.undo = [];
+
   if( wfx.is_ie ) {
     this.newline = '\r\n';
   } else {
@@ -786,11 +788,6 @@ wfxEditor.prototype.prepareContent = function( content ) {
 
   if(wfx.is_ie) {
     content = content.replace( /<br \/>/g, '\r\n' );
-    // insert &lrm; to ensure correct line numbering for empty lines
-    //    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span>\r\n' );
-  } else {
-    // insert &lrm; to ensure correct line height for some monospace fonts
-    //    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span><br />' );
   }
 
   return content;
@@ -807,11 +804,22 @@ wfxEditor.prototype.execCommand = function(cmdID, UI, param) {
   this.focusEditor();
 
   switch (cmdID.toLowerCase()) {
-  default: try { 
-    //		  alert("execCommand: " + cmdID + ", " + UI + ", " + param);
-    this._doc.execCommand(cmdID, UI, param);
-  } catch(e) {
-  }
+//U  case "undo":
+//U    if( this.undo.length-2 >= 0 ) {
+//U      alert("undo ==> " + (this.undo.length-2) );
+//U      try {
+//U	this._doc.body.innerHTML = '<pre>' + this.undo[this.undo.length-2] + '</pre>';
+//U      } catch(e) {
+//U	alert("Exception:\n" + e);
+//U      }
+//U    }
+//U    break;
+  default: 
+    try { 
+      //      alert("execCommand: " + cmdID + ", " + UI + ", " + param);
+      this._doc.execCommand(cmdID, UI, param);
+    } catch(e) {
+    }
   }
   return false;
 };
@@ -983,7 +991,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 
       bench( "...indentCurrentRange", null, 8 );
 
-      this._dbg.value = benchMsg;
+      //      this._dbg.value = benchMsg;
       //-------------------------------------------------------------------------
       //-------------------------------------------------------------------------
 
@@ -1722,9 +1730,6 @@ wfxEditor.prototype.getHTML = function(dbg) {
 
     html = html.replace( /\r\n/g , "<br />" );
 
-    // untabify
-    html = html.replace( /&nbsp;/g, "  ");
-
   } else {
     html = this._doc.body.innerHTML;
 
@@ -1745,10 +1750,10 @@ wfxEditor.prototype.getHTML = function(dbg) {
     // content could be inserted after empty pre tags including wrong newlines
     html = html.replace( /^<pre><\/pre>([^\0]*)$/, "<pre>$1</pre>");
     html = html.replace( /\n/g, " ");
-
-    // untabify
-    html = html.replace( /\x09/g, "  ");
   }
+
+  // untabify
+  html = html.replace( /\x09/g, "  ");
 
   // untabify (IE); paste weirdness (Moz)
   html = html.replace( /&nbsp;/g, "  ");
@@ -2170,9 +2175,9 @@ wfxEditor.prototype.submitContent = function( textarea, submit) {
 
   var content = this.col2tag(this.getHTML());
   
-  //-------------------
-  // XML wellformdness
-  //-------------------
+  //--------------------
+  // XML wellformedness
+  //--------------------
 
   var err = new Array();
   if( !this.isWellFormedXML( content, err) ) {
@@ -2185,8 +2190,6 @@ wfxEditor.prototype.submitContent = function( textarea, submit) {
     return;
   }
   //---------------------------------------------------------------------------
-
-  //  content = this.tag2src(content).replace(/<br \/>/g, newline);
 
   var el;
   el = document.getElementById(textarea);
@@ -2217,14 +2220,13 @@ wfxEditor.prototype.generate = function( target, content ) {
     content = content.value;
   }
   
-  this._content_tag = content;
+  // untabify
+  content = content.replace( /\x09/g, "  ");
 
   content = this.tag2src( content );
-  this._content_src  = content;
   this._ta_src.value = content;
 
   content = this.src2col( content );
-  this._content_col  = content;
   this._ta_col.value = content;
 
   var body = '<body id="bodynode">\n';
@@ -2564,6 +2566,8 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
   
 		    content = editor.prepareContent( content );
 
+		    //U		    editor.undo[editor.undo.length] = content;
+
 		    try {
 
 		      //      alert("innerHTML=content:\n" + wfxEditor.str2chr(content));
@@ -2607,10 +2611,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		    //
 
 		    if( needRehighlighting == editor.needRehighlighting ) {
-		      //		    alert("needRehighlighting == editor.needRehighlighting:" + needRehighlighting);
 		      editor.needRehighlighting = 0;
-		    } else {
-		      alert("needRehighlighting:" + needRehighlighting);
 		    }
 
 		    dbg && ( editor._dbg.value += "z6 ");
@@ -2837,7 +2838,7 @@ wfxEditor.prototype.setOffsets = function( arg ) {
 
 	var par = wfxEditor.nodeStart;
 	while( par = par.parentNode ) {
-	  alert("parent:" + par.nodeName );
+	  //alert("parent:" + par.nodeName );
 	}
       }
 
