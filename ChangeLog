@@ -8,6 +8,32 @@
 
 2004-03-01  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
+	* src/de/schlund/pfixcore/workflow/Context.java:
+	(jumpToPageIsRunning) new method. returns true when a jumped into
+	a jumptopage.
+	(setJumpToPageRequest) new method. used to set the jumptopage
+	(getJumpToPageRequest) returns a set jumptopage, null otherwise.
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: 
+	(isDirectTrigger)
+	(isSubmitTrigger) make sure that we don't interpret a request
+	with __sendingdata=1 as a data submit if the context is already
+	handling a jumptopage (as the original request was for a
+	different page in that case)
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	Implement the state specific part of __jumptopage handling. this
+	basically means that after a successful submit, if the context
+	has a jumptopage set, set the continue flag to true
+	regardless of any SELWRP stuff. The UI is supposed to know what
+	to do.
+
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	(runPageFlow) new private method - just refactoring
+	(documentFromFlow) added __jumptopage handling: it's possible now
+	to set a page from the UI the system should jump to after a successful submit
+	handling. this calls documentFromFlow recursively.
+
 	* src/de/schlund/pfixxml/IncludeDocument.java: 
 	* src/de/schlund/pfixcore/workflow/PageRequest.java: 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
