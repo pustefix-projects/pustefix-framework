@@ -6,39 +6,64 @@
     environment. Additionally you can create images and include parts
     and edit them.</p>
   
-  <p><b>Note:</b> The source code of the Editor is not a good example
-  for writing applications with pustefix. For example see the sample application
-  in the CVS checkout.</p>
-
-  <h2>Getting started</h2>
-  <p>First we will have a closer look at the Sample Application.</p>
+  <p style="margin:5px; border:1px solid red;"><b>Note:</b> The source code of the editor is not a good example
+    for writing applications with <pustefix/>. This is due to the fact
+    that this part of the code is quite old. For an example that should always be up to date with respect to the current
+    features of <pustefix/> see the <i>sample1</i> application in the CVS checkout.</p>
   
+  <h2>Getting started</h2>
+  
+  <p>
+    Most people will start the editor directly from the page where they want to start editing.
+    Another way is to start the editor application directly (by entering <code>cmscore.HOSTNAME.DOMAINNAME</code> in the
+    case of the CVS checkout or <code>cmsskel.HOSTNAME.DOMAINNAME</code> in the case of the skeleton environment). In that case
+    you would start (after a successful login) with the <a href="editor_prodsel.html">project selection</a> page.</p>
+  <p>But for now let's assume  you want to change an include on the first page of the  <i>sample1</i> application.</p>
   <table>
     <tr valign="top">
       <td>
-        <stdimg src="img/sample_editconsole1.png"></stdimg>
+        <stdimg src="img/sample_editconsole1.png">
+          The first page of the <i>sample1</i> application
+        </stdimg>
       </td>
       <td>
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              In the red box you see the <i>EditConsole</i> divided into three different
-              sections. Press the button with the pen symbol showing the ToolTip 
-              <i>Switch edit mode ON</i> in section No. 1. Now, the
-              application will look like as follows.
+              <p>
+                In the red box you see the <i>edit console</i> divided
+                into three different sections. Press the button with the
+                pen symbol in <b>section 1</b>.  This button also shows the
+                tooltip <i>Switch edit mode ON</i> when you move the
+                mouse pointer over it. Now, the application will change
+                into <i>edit mode</i> and look like the next image.
+                The button itself changes into a pen with a red
+                cross. Pressing it again switches the edit mode off.
+              </p>
+              <p>
+                Note: The edit mode button only works if you set
+                the <code>editmode</code> property (decribed <a href="prop.html#editmode">here</a>) to
+                <code>true</code>.  Instead of switching to edit mode by
+                using the edit console, you can alternatively start by
+                appending <code>__editmode=admin</code> or switch off by
+                appending <code>__editmode=0</code> to the URL.
+              </p>
             </td>
           </tr>
           <tr>
             <td>
-              Note:
-              The button Section No. 1 only works if you declared the <code>editmode</code>
-              property <a href="prop.html#editmode">here</a> as <code>true</code>.
-              Alternatively you can switch EditMode on by appending <code>__editmode=admin</code>
-              or switch it off by appending <code>__editmode=[WHAT_YOU_WANT_BUT_NOT_'ADMIN']</code>
-              to the URL.
-              Section No. 3 is only visible if you have declared a <code>record_dir</code>
-              <a href="depend.html#record_dir">here</a>. Also have a look at the
-              <a href="testclient.html">TestClient</a> documentation.
+              <b>Section 2</b> can be used to show the last DOM response tree from the business logic that
+                was used to render the current page. Note that this DOM tree is only stored for some time
+                in the system which is usually much shorter than the time the session is valid. (The skeleton
+                environment defines this timout to be 10 minutes for test mode, and 20 seconds for production mode - but
+                the whole feature is not available in production mode anyway, so the 20 seconds should be no problem)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Section 3</b> is only visible if you have declared a
+              <code>record_dir</code> <a href="depend.html#record_dir">here</a>. Also have a look
+              at the <a href="testclient.html">test client</a> documentation for more information about it.
             </td>
           </tr>
         </table>
@@ -46,26 +71,22 @@
     </tr>
     <tr valign="top">
       <td>
-        <stdimg src="img/sample_editconsole2.png"></stdimg>
+        <stdimg src="img/sample_editconsole2.png">
+          The same page after the change into <i>edit mode</i>. Note the red brackets surrounding the include parts.
+        </stdimg>
       </td>
       <td>
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              Now the application is in <i>EditMode.</i>
-              In EditMode every include part is framed by red curly braces. Remember that include parts
-              can be nested. After each closing curly brace there is a small box with a
-              pen symbol in it. Staying with to mouse over it shows the ToolTip
-              '<i>Edit include: ...</i>'. Pressing this box opens the Editor in a new
-              window starting with the <a href="editor_login.html">login</a> page.
+              Now the application is in <i>edit mode.</i>
+              In edit mode every include part is framed by red curly brackets. Remember that include parts
+              can be nested. After each closing curly bracket there is a small box with a
+              pen symbol. Moving with the mouse over it shows the tool tip
+              "<i>Edit include: 'PART' in file 'INCLUDEFILE'</i>". Pressing the box
+              opens the pustefix editor in a new window starting with the <a href="editor_login.html">login</a> page.
               After successful login the include is automatically opened in 
-              the <a href="editor_includes.html">Includes</a> page.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              To leave EditMode press the canceled button showing the ToolTop <i>Switch edit
-              mode OFF</i>. The curly braces will disappear.
+              the <a href="editor_includes.html">Includes</a> page and can be edited in the editor applet.
             </td>
           </tr>
         </table>
