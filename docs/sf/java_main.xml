@@ -1,4 +1,46 @@
 <div>
-  
+  <h1>The servlets used in <pustefix/></h1>
 
+  <p>
+    The processing of a request in <pustefix/> starts with a servlet
+    that is derived from <code>de.schlund.pfixxml.ServletManager</code>.
+    This class implements session creation, redirecting into sessions,
+    handling of SSL and other services for it's descendants.
+  </p>
+  <p>
+    The main feature of it's session handling is that it's mostly
+    transparent to the user. You can submit data to a URL, and the
+    system will take care to store the supplied data, create a session,
+    redirect to the URL with an embedded session id, and continue with
+    the business logic and the data submitted with the original
+    request afterwards.
+  </p>
+  <p>
+    Even SSL is handled transparently. A descending servlet must
+    implement the method <code>+needsSession(): boolean</code> to
+    decide if the the current request should result into the session
+    to be "secure". You don't have to make sure that the webpages use
+    "https://" in all needed links, the target itself tells the system
+    that it want's to run under SSL.
+  </p>
+  <p>
+    If the servlet decides that from now on it want's to run under SSL,
+    a complex redirect sequence happens that makes sure
+    that all data is copied from the previous insecure session into
+    a new, secure session (a session is secure if it's session id was
+    never transmitted over an insecure channel). After a session has
+    once transformed into a secure one, there's no way back: Every
+    time you try to use the session with "http://" it will create a
+    new, secure session dropping the old one (because it's tainted now).
+    If the visitor's browser supports cookies, the system manages
+    to map request with the old, original, insecure session id (which
+    can happen whenever the user uses the back button of her browser
+    to go back to a page that has still the old session id embedded in
+    every link) to the new, currently running secure session and
+    silenty and securely redirects to this session.
+  </p>
+  
+  <stdimg src="img/java_servlets.png">
+    The commonly used servlets
+  </stdimg>
 </div>

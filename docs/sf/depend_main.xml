@@ -236,8 +236,8 @@
               <depaux name="MyProject/xsl/skin.xsl"/>
             </xmlcode>
         </div><br/>
-        <div class="comment" style="border: 1px red solid; background: #ee9999;">
-          <b>The section below applies only for the definition of <code>master.xsl</code></b>
+        <div class="comment" style="border: 1px red solid; background: #eeaaaa;">
+          <b>This section applies only for the definition of <code>master.xsl</code></b>
           <div>
             <xmlcode>
               <xmlcodeINV>
