@@ -389,7 +389,7 @@
             <b>Caution below: only one of <code>ihandler</code> or <code>authhandler</code> may be given as a child node!</b>
           </div>
         </xmlcodeOFF>
-        <ihandler policy="ANY|ALL">
+        <ihandler policy="ANY|ALL|NONE">
           <xmlcodeOFF>
             <div class="comment">
               <p>The whole node is optional.
@@ -401,10 +401,13 @@
               </p>
               <ul>
                 <li>
-                  ANY: just one of the associated handlers needs to
-                  be active for the page to be accessible.</li>
+                  ANY: just one of the associated handlers <b>needs to
+                  be active</b> for the page to be accessible.</li>
                 <li>
-                  ALL: all the associated handlers need to be active for the
+                  ALL: all the associated handlers <b>must be active</b> for the
+                  page to be accessible.</li>
+                <li>
+                  NONE: none of the associated handlers <b>needs to be active</b> for the
                   page to be accessible.</li>
               </ul>
               <p>If one of the associated handlers returns <b>false</b> on calling <code>prerequisitesMet()</code>,
