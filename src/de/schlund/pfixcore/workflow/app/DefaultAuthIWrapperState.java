@@ -150,7 +150,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
         IWrapper       user        = getAuthWrapper(context, true);
         IHandler       userhandler = user.gimmeIHandler();
         Properties     properties  = context.getProperties();
-        ResultDocument resdoc      = new ResultDocument();
+        ResultDocument resdoc      = super.createDefaultResultDocument(context);
         ResultForm     resform     = resdoc.createResultForm();
         RequestData    rdata       = new RequestDataImpl(context, preq);
         ArrayList      aux         = getAuxWrapper(context);
