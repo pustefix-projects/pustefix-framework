@@ -339,7 +339,7 @@ ArraySerializer.prototype.serialize=function(value,name,writer) {
 
 
 //*********************************
-//BeanSerializer(type)
+//BeanSerializer(QName type)
 //*********************************
 function BeanSerializer(type) {
 	this.type=type;
