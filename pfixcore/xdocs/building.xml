@@ -19,9 +19,9 @@
       <subsection name="Core">
         <p>Pustefix core features an <a href="http://ant.apache.org">Ant</a> build.</p>
         <p>To build the core with all projects:</p>
-        <source>ant</source>
+        <source>ant -Dmakemode=test</source>
         <p>You may want to run
-        <source>ant generate</source>
+        <source>ant generate -Dmakemode=test</source>
         to pre-process all the templates up-front. This speeds up the first hit of a page
         in applications since the page doesn't need to be build from scratch then.</p>
         <p>To get a list of available targets:</p>
@@ -58,8 +58,8 @@
             <li><p>In pfixcore: Make sure that all changes in <code>build.xml</code> have
               been incorporated into <code>skel/build.xml</code>.</p></li>
             <li><p>In pfixcore: Run
-                <source>ant dist</source>
-              (or <code>ant notag</code>) to build a distribution.</p></li>
+                <source>ant dist -Dmakemode=test</source>
+              (or <code>ant notag -Dmakemode=test</code>) to build a distribution.</p></li>
             <li><p>Make your that your environment contains current versions of <code>pfixcore/lib/*.jar</code>
               and <code>pfixcore/lib/tomcat/*</code>.</p></li>
             <li><p>Update the build file:
