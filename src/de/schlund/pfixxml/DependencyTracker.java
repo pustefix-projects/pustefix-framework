@@ -41,8 +41,13 @@ public class DependencyTracker {
 	        CAT.error("Error adding Dependency: empty path"); 
 	        return "1"; 
 		}
+		Path relativePath = relative(docroot, path);
+		if (relativePath == null) {
+	        CAT.error("Error adding Dependency: missing src attribute (docroot=" + docroot + ", path=" + path + ")"); 
+			return "1";
+		}
         try {
-    		logTyped(type, relative(docroot, path), part, product, relative(docroot, parent_path), parent_part, parent_product, target);
+    		logTyped(type, relativePath, part, product, relative(docroot, parent_path), parent_part, parent_product, target);
     		return "0";
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 
@@ -61,15 +66,16 @@ public class DependencyTracker {
                                 Path parent_path, String parent_part, String parent_product,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
+        	String targetGen = target.getTargetGenerator().getConfigname();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
                       "Type        = " + type + "\n" +
                       "Path        = " + path.getRelative() + "\n" +
                       "Part        = " + part + "\n" +
                       "Product     = " + product + "\n" +
-                      "ParentPath  = " + parent_path.getRelative() + "\n" +
+                      "ParentPath  = " + ((parent_path == null)? "null" : parent_path.getRelative()) + "\n" +
                       "ParentPart  = " + parent_part + "\n" +
                       "ParentProd  = " + parent_product + "\n" +
-                      "TargetGen   = " + target.getTargetGenerator().getConfigname() + "\n");
+                      "TargetGen   = " + targetGen + "\n");
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
         target.getAuxDependencyManager().addDependency(thetype, path, part, product,
