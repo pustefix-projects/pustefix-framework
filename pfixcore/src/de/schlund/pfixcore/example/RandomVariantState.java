@@ -23,19 +23,6 @@ public class RandomVariantState extends DefaultIWrapperState {
     
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
 
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("/home/jtl/out"), "utf8");
-        
-        RequestParam tmp = preq.getRequestParam("foo");
-        if (tmp != null) {
-            writer.write("=FOO==>" + tmp.getValue());
-        }
-        tmp = preq.getRequestParam("bar");
-        if (tmp != null) {
-            writer.write("=BAR==>" + tmp.getValue());
-        }
-        writer.flush();
-        writer.close();
-        
         long key = (System.currentTimeMillis() % 5);
         if (key == 0) {
             context.setVariant(null);
