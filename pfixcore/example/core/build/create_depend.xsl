@@ -7,7 +7,6 @@
   <xsl:include href="create_lib.xsl"/>
 
   <xsl:param name="prohibitEdit"/>
-<!--  <xsl:param name="docroot"/>-->
 
   <xsl:template match="make">
     <xsl:param name="cache" select="./@cachedir"/> 
@@ -18,9 +17,6 @@
         *** Error *** You must specify a cachedir attribute to the make node
       </xsl:message>
     </xsl:if>
-    <!--<xsl:if test="not($recallow)">
-      <xsl:attribute name="record_allowed">false</xsl:attribute>
-    </xsl:if>-->
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
       <xsl:choose>
@@ -61,6 +57,7 @@
     <target name="{@name}.xsl" type="xsl">
       <depxml name="{@name}.xml"/>
       <depxsl name="master.xsl"/>
+      <xsl:apply-templates/>
       <param name="page" value="{@name}"/>
       <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
@@ -71,6 +68,7 @@
     <target name="{@name}.xml" type="xml">
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
+      <xsl:apply-templates/>
       <param name="page" value="{@name}"/>
       <param name="docroot" value="{$docroot}"/>
       <xsl:if test="not($prohibitEdit = 'no')">

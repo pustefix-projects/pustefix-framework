@@ -191,12 +191,10 @@
   <part name="help_trouser_b">
     <product name="default">
       <lang name="default">
-        Of course we can add more text here. It&apos;s not as if 
-        ProductManagers had problems
-        in fomulating important statements all customers 
-        are eager to read. 
+        Of course we can add even more information here.  
       </lang>
     </product>
+    
   </part>
   
   <part name="trouser">
