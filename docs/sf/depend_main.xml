@@ -164,6 +164,17 @@
       </xmlcodeOFF>
       <depxml name="core/xsl/master.xsl"/>
       <depxsl name="core/editor/xsl/custommaster.xsl"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          <code>depxml</code> and <code>depxsl</code> reference other
+          targets by their <code>name</code> attribute that serve as
+          the XML resp. XSL input used to create this target via a XSL
+          transformation. If for a given <code>name</code> attribute of either
+          <code>depxml</code> or <code>depxsl</code> no other target definition is found,
+          the transformation parent is supposed to be a leaf target and the <code>name</code> attribute
+          is interpreted as a path relative to the docroot.
+        </div>
+      </xmlcodeOFF>
       <depaux name="core/xsl/default_copy.xsl"/>
       <depaux name="core/xsl/include.xsl"/>
       <depaux name="core/xsl/navigation.xsl"/>
@@ -189,13 +200,13 @@
       <depxml name="home.xml"/>
       <depxsl name="master.xsl"/>
       <param name="page" value="home"/>
-      <param name="docroot" value="/home/jtl/projects/pfixcore/example"/>
+      <param name="docroot" value="/some/absolute/path/to/your/environments/projects"/>
     </target><xmlcodeOFF/>
     <target name="home.xml" type="xml">
       <depxml name="core/editor/xml/two_frames.xml"/>
       <depxsl name="metatags.xsl"/>
       <param name="page" value="home"/>
-      <param name="docroot" value="/home/jtl/projects/pfixcore/example"/>
+      <param name="docroot" value="/some/absolute/path/to/your/environments/projects"/>
     </target>
   </xmlcode>
 
