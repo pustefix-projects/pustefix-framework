@@ -1,3 +1,11 @@
+2003-09-17 Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixIncludeDialog.java
+
+	Image-Path Bug fixed. <pfx:image path=""> replaced by <pfx:image src="">
+	
+
 2003-09-16  Martin Leidig <mleidig@schlund.de>
 
 	* example/common/conf/apploader.prop.in:

@@ -161,7 +161,7 @@ public class PfixAppletInfo {
             // String part       = el.getAttribute("part");
             String path       = el.getAttribute("path");            
             // String newPath    = path.substring(path.indexOf("example/"), path.length());
-            String includeStr = "<pfx:image href=\"" + path + "\" />";
+            String includeStr = "<pfx:image src=\"" + path + "\" />";
             
             incImages[i] = includeStr;
             tree.add(path);
