@@ -1,3 +1,9 @@
+2004-03-25  Joerg Haecker <haecker@schlund.de>
+        
+        * src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+        make sure no to rethrow TransformerExceptions which wrap a
+        'org.apache.catalina.connector.ClientAbortException'(quick fix)
+
 2004-03-24  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
 
 	* build.xml: started 0.5.4-pre

@@ -615,14 +615,15 @@ public abstract class AbstractXMLServer extends ServletManager {
                                              stylevalue, paramhash, 
                                              res.getOutputStream());
             } catch (TransformerException e) {
-                if(e.getException() instanceof SocketException) {
+            	if(e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());
                     if (isInfoEnabled()) {
                         CAT.info("[Ignored TransformerException]", e);
                     }
-                } else {
-                    throw e;
-                }
+            	}	else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                		CAT.warn("[Ignored TransformerException] : " + e.getMessage());
+                	} 	else 
+                			throw e;
             }
         } else if (plain_xml) {
             res.setContentType(XML_CONTENT_TYPE);
