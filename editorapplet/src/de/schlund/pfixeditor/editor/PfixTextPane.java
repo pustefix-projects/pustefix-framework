@@ -62,11 +62,12 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
     }
 
     public void hilightAll() {
-        hilight.hilightAll();
+        DefaultStyledDocument docNeed = (DefaultStyledDocument) getStyledDocument();
+        hilight.hilightRegion(0, docNeed.getLength());
     }
     
-    public void realtimeHilight() {
-        hilight.realtimeHilight();     
+    public void realtimeHilight(int code) {
+        hilight.realtimeHilight(code);     
     }
 
 

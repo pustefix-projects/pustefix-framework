@@ -147,8 +147,9 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     public void init() {
         System.out.println("Shalala");
+        System.out.println("BIN DRIN !!");
         
-        frame = new JFrame("Pfix-XML-Editor");
+        frame = new JFrame("Pfix-XML-Editor-der neue halt");
         // frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 
         String uploadField = "";
@@ -655,7 +656,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // Remove UndoListener !!
         if (!((keyEvent.getKeyCode() > 36) && (keyEvent.getKeyCode() < 41))) {            
             syntaxPane.getDocument().removeUndoableEditListener(undolistener);
-            syntaxPane.realtimeHilight();
+            syntaxPane.realtimeHilight(keyEvent.getKeyCode());
             syntaxPane.getDocument().addUndoableEditListener(undolistener);
         }
     }
