@@ -8,3 +8,4 @@ testskel
 .externalToolBuilders
 .classpath
 .project
+ant.dtd
