@@ -459,8 +459,13 @@ public abstract class AbstractXMLServer extends ServletManager {
        
         if (spdoc == null) {
             preq.startLogEntry();
-            spdoc = getDom(preq);
-            preq.endLogEntry("GETDOM", 0);
+            spdoc           = getDom(preq);
+            String pagename = spdoc.getPagename();
+            if (pagename == null) {
+                preq.endLogEntry("GETDOM", 0);
+            } else {
+                preq.endLogEntry("GETDOM (" + pagename + ")", 0);
+            }
             
             // start recording if allowed and enabled
             if (recordmodeAllowed) {

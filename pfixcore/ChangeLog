@@ -1,3 +1,9 @@
+2004-01-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	(readIWrappersConfigFromProperties) throw an exception when we find a prefix is used more 
+	than one time on a page.
+
 2004-01-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: (currentPageNeedsSSL) guard against null properties

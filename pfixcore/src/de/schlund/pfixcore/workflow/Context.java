@@ -154,7 +154,7 @@ public class Context implements AppContext {
             String adminprop = properties.getProperty(ADMINMODE + "." + watchprop + ".status");
             String adminpage = properties.getProperty(ADMINPAGE);
             if (adminpage != null && !adminpage.equals("") && adminprop != null && adminprop.equals("on")) {
-                LOG.debug("*** setting Wartungsmodus for : " + watchprop + " ***");
+                LOG.debug("*** setting Adminmode for : " + watchprop + " ***");
                 admin_pagereq = new PageRequest(adminpage);
                 in_adminmode  = true;
             }
@@ -408,26 +408,14 @@ public class Context implements AppContext {
         StringBuffer warn_buffer  = new StringBuffer();
         
         if (autoinvalidate_navi) {
+            preq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, preq, null, warn_buffer, debug_buffer);
-            LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
+            preq.endLogEntry("CREATE_NAVI_COMPLETE", 25);
         } else {
+            preq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, preq, navigation_visible, warn_buffer, debug_buffer);
-            LOG.info(" **** REUSING NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
+            preq.endLogEntry("CREATE_NAVI_REUSE", 2);
         }
-        
-        // print the timing information on all isAccessibles
-        if(LOG.isDebugEnabled()) {
-            if(debug_buffer.length() > 0) {
-                LOG.debug("All calls to isAccessible() which took longer than " +
-                          MAXTIME_ISACCESSIBLE_DEBUG + " ms:\n" + debug_buffer.toString());
-            }
-        }
-        
-        if (warn_buffer.length() > 0) { 
-            LOG.warn("All calls to isAccessible() which took longer than " +
-                     MAXTIME_ISACCESSIBLE_WARN + " ms:\n" + warn_buffer.toString());
-        }
-        
     }
 
     private void recursePages(NavigationElement[] pages, Element parent,  Document doc, PfixServletRequest pfixreq,
@@ -455,13 +443,13 @@ public class Context implements AppContext {
                     State       state   = pagemap.getState(preq);
                     // LOG.info("    * found state " + state.getClass() + " for page " + name);
                     PageRequest saved   = getCurrentPageRequest();
-
+                    
                     setCurrentPageRequest(preq);
                     preq.setStatus(PageRequestStatus.NAVI_GEN);
                     
                     pfixreq.startLogEntry();
                     boolean visible  = state.isAccessible(this, pfixreq);
-                    pfixreq.endLogEntry("NAVIGEN (" + preq.getName() + ")", MAXTIME_ISACCESSIBLE_DEBUG);
+                    pfixreq.endLogEntry("IS_ACCESSIBLE (" + preq.getName() + ")", MAXTIME_ISACCESSIBLE_DEBUG);
 
                     setCurrentPageRequest(saved);
 
