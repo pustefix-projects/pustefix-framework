@@ -10,10 +10,13 @@
   <p>
     The main feature of it's session handling is that it's mostly
     transparent to the user. You can submit data to a URL, and the
-    system will take care to store the supplied data, create a session,
-    redirect to the URL with an embedded session id, and continue with
-    the business logic and the data submitted with the original
-    request afterwards.
+    system will take care to store the supplied data (this is done in
+    the form of a <code>PfixServletRequest</code>, which can be seen
+    as basically the same as a <code>HttpServletRequest</code>, with
+    some additional features, e.g. more or less transparent handling
+    of file uploads), create a session, redirect to the URL with an
+    embedded session id, and continue with the business logic and the
+    data submitted with the original request afterwards.
   </p>
   <p>
     Even SSL is handled transparently. A descending servlet must
@@ -24,23 +27,58 @@
     that it want's to run under SSL.
   </p>
   <p>
-    If the servlet decides that from now on it want's to run under SSL,
-    a complex redirect sequence happens that makes sure
-    that all data is copied from the previous insecure session into
-    a new, secure session (a session is secure if it's session id was
-    never transmitted over an insecure channel). After a session has
-    once transformed into a secure one, there's no way back: Every
-    time you try to use the session with "http://" it will create a
-    new, secure session dropping the old one (because it's tainted now).
-    If the visitor's browser supports cookies, the system manages
-    to map request with the old, original, insecure session id (which
-    can happen whenever the user uses the back button of her browser
-    to go back to a page that has still the old session id embedded in
-    every link) to the new, currently running secure session and
-    silenty and securely redirects to this session.
+    If the servlet decides that from it want's to run under SSL from
+    now on, a complex redirect sequence happens that makes sure that
+    all data is copied from the previous insecure session into a new,
+    secure session (a session is secure if it's session id was never
+    transmitted over an insecure channel). After a session has once
+    transformed into a secure one, there's no way back: Every time you
+    try to use the session with "http://" it will create a new, secure
+    session dropping the old one (because it's tainted now).  If the
+    visitor's browser supports cookies, the system manages to map
+    request with the old, original, insecure session id (which can
+    happen whenever the user uses the back button of her browser to go
+    back to a page that has still the old session id embedded in every
+    link) to the new, currently running secure session and silenty and
+    securely redirects to this session.
   </p>
   
   <stdimg src="img/java_servlets.png">
     The commonly used servlets
   </stdimg>
+
+  <ul>
+    <li>
+      <code>de.schlund.pfixxml.DerefServer</code>
+      <p>
+        This is a small servlet that should be used whenever a link to
+        a URL outside the own site is made. All such foreign links
+        must be of the form
+        <code>/xml/deref?link=http://some.other.domain/foo/bar</code>
+        This is important because for any link that goes directly to a
+        foreign destination (e.g. &lt;a
+        href="http://some.other.domain/foo/bar"&gt;) makes the session
+        id visible in the logfile of the foreign site's webserver (via
+        the <code>Referer</code> header). This is of course a security
+        problem. Using the <code>DerefServer</code> avoids this by
+        using a redirect loop so the Referer header transmitted will
+        no longer contain the session id.
+      </p>
+    </li>
+    <li>
+      <code>de.schlund.pfixxml.AbstractXMLServer</code>
+      <p>This servlet, while still abstract, implements most of the
+      output handling needed for servlets that want use XSLT/XML to
+      produce the final html sent to the browser.</p>
+      <p>The only thing a descendant needs to implement is the
+      abstract method <code>+ getDom(PfixServletRequest) :
+      SPDocument</code>, whose return value can be thought of as a
+      small container around a <code>org.w3c.Document</code>. The
+      additional data stored in a SPDocument is among other things a
+      map of XSLT transformation parameters that should be set and the
+      "page name" which the system uses to choose the correct target
+      stylesheet to transform the DOM with.
+      </p>
+    </li>
+  </ul>
 </div>
