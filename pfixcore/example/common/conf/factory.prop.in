@@ -3,9 +3,6 @@
   
   <properties>
     
-    <!-- This will be the only place in a future version where docroot is referenced! -->
-    <prop name="pustefix.docroot"><cus:docroot/></prop>
-    
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
     
     <!-- List of all factories to init -->
@@ -22,6 +19,9 @@
     <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
     
     <prop name="jmx.server.port">9334</prop>
+
+    <!-- part index -->
+    <prop name="partindex.reloadchanges">true</prop>
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
