@@ -56,6 +56,9 @@ import javax.xml.transform.TransformerException;
 
 
 
+
+
+
 public class PfixAppletNeu extends JApplet implements DocumentListener, ActionListener, KeyListener, UndoableEditListener, ItemListener {
     private static final String TITLE = "PfixEditor";
 
@@ -416,8 +419,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
 
-    public void destroyApplet() {
-        testConnection();
+    public void destroyApplet() {        
         frame.hide();
         stop();
         destroy();
@@ -425,7 +427,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     
 
     public void showApplet() {
-        testConnection();
         if (!pack) {
             frame.pack();
             pack = true;
@@ -441,7 +442,6 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
     }
 
     public void hideApplet() {
-        testConnection();
         frame.hide();
     }
 

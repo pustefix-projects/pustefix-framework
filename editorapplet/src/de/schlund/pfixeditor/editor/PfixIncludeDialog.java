@@ -274,7 +274,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
     public String getHost() {
-        return this.host();
+        return this.host;
     }
 
     
