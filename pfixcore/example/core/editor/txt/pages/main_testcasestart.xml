@@ -7,7 +7,7 @@
       <lang name="default">
         <br/><br/>
         <pfx:forminput target="_top">
-          <table align="center">
+          <table align="center" width="50%">
             <tr>
               <td>
                 <table>
@@ -19,11 +19,11 @@
                     </td>
                   </tr>
                 </table>
-                <table align="center" class="editor_box">
+                <table width="100%" align="center" class="editor_box">
                   <ixsl:for-each select="/formresult/testcases/selected/testcase">
                     <tr>
                       <td colspan="2">
-                        <table border="0" class="editor_box" width="200">
+                        <table border="0" class="editor_box" width="100%">
                           <tr><td align="center"><b><ixsl:value-of select="."/></b></td></tr>
                         </table>
                       </td>
