@@ -50,7 +50,35 @@ public class PropertyObjectManager {
     
     /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
     public PropertyObject getPropertyObject(Properties props,Class propObjClass) throws Exception {
-        HashMap propObjs = null;
+        HashMap        propObjs = null;
+        PropertyObject propObj  = null;
+        
+        propObjs = (HashMap) propMaps.get(props);
+        if (propObjs == null) {
+            synchronized (propMaps) {
+                propObjs = (HashMap) propMaps.get(props);
+                if (propObjs == null) {
+                    propObjs = new HashMap();
+                    propMaps.put(props,propObjs);
+                }
+            }
+        }
+
+        propObj = (PropertyObject) propObjs.get(propObjClass);
+        if (propObj == null) {
+            synchronized (propObjs) {
+                propObj = (PropertyObject) propObjs.get(propObjClass);
+                if (propObj == null) {
+                    CAT.warn("******* Creating new PropertyObject " + propObjClass.getName());
+                    propObj = (PropertyObject) propObjClass.newInstance();
+                    propObj.init(props);
+                    propObjs.put(propObjClass,propObj);
+                }
+            }
+        }
+        return propObj;
+
+        /*
         synchronized (propMaps) {
             propObjs = (HashMap) propMaps.get(props);
             if (propObjs == null) {
@@ -67,7 +95,8 @@ public class PropertyObjectManager {
                 propObjs.put(propObjClass,propObj);
             }
             return propObj;
-        }
+         }
+        */
     }
     
     /**Removes PropertyObjects for Properties.They are newly created on demand, i.e. as a result of subsequent getPropertyObject calls.*/

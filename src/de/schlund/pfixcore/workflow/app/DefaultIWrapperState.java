@@ -213,9 +213,10 @@ public class DefaultIWrapperState extends StateImpl {
 
     // Remember, a IHandlerContainer is a flyweight!!!
     protected IHandlerContainer getIHandlerContainer(Context context) throws Exception {
-        Properties                props = context.getProperties();
-        PropertyObjectManager     pom   = PropertyObjectManager.getInstance();
-        IHandlerContainerManager  ihcm  = (IHandlerContainerManager) PropertyObjectManager.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
+        Properties props               = context.getProperties();
+        PropertyObjectManager pom      = PropertyObjectManager.getInstance();
+        IHandlerContainerManager  ihcm = (IHandlerContainerManager)
+            PropertyObjectManager.getInstance().getPropertyObject(props, IHDL_CONT_MANAGER);
         return ihcm.getIHandlerContainer(context);
     }
 
