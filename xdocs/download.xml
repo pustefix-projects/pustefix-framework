@@ -123,69 +123,15 @@
         <a href="http://oss.software.ibm.com/developerworks/opensource/jikes/">jikes</a>
       </td>
       <td>
-        Jikes is a blazingly fast java compiler from IBM. You need it in 
-        order for the build environment to work out of the box. If you want to use javac, 
-        this is no problem, adjust the ant property build.compiler to value modern and javac 
-        will be used.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">mod_jk</a>
-      </td>
-      <td>
-        <p><b>Optional:</b> A working installation of the Apache webserver (complete with
-        mod_rewrite - which should be pretty standard nowadays) and a working mod_jk 
-        (the apache connection module for tomcat - get the jakarta-tomcat-connectors 
-        package to compile it). You need to have this module loaded, but
-        you need no further configuration, the build process (skeleton
-        application and CVS) will take care of providing you with a
-        sample config file that should at least get you started.</p>
-        <p>Note that there have been problems with the order of
-        inclusion of mod_rewrite and mod_jk in the
-        httpd.conf. It seems that mod_jk needs to be loaded
-        BEFORE mod_rewrite. If you experience problems, try changing
-        the order of these two modules.  Other problems that have
-        been experienced are related to a changed regexp syntax
-        between different versions of mod_rewrite. You may have to
-        customize the relevant regexps in the file core/build/create_apacheconf.xsl.
-        </p>
-        <p>Your apache needs to have enabled name-based virtual servers
-        for the default hostname of your machine. Furthermore you should have 
-        a <code>* entry</code> for your machine in DNS (This means that a lookup 
-        to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no matter 
-        what NAME is). If you don't have DNS configured like this you can 
-        still supply the names (if you use the skelelton distribution) 
-        <code>cmsskel.HOSTNAME.DOMAIN</code> and <code>admskel.HOSTNAME.DOMAIN</code>
-        or, in case you work with the cvs checkout <code>cmscore.HOSTNAME.DOMAIN</code>
-        and <code>admcore.HOSTNAME.DOMAIN</code> via your /etc/hosts file.</p>
+        <p><b>Optional</b>: <a href="http://www-124.ibm.com/developerworks/oss/jikes/">Jikes</a>
+        is a blazingly fast java compiler from IBM. Pustefix is pre-configured to use jikes, so you
+        need to install it in order for the build system to work out of the box. If you want to use
+        javac, this is no problem, adjust the ant property build.compiler to <code>modern</code>
+        and javac will be used.</p>
       </td>
     </tr>
   </table>
 
-  </subsection>  
-  <subsection name="Non-Prerequisites">
-  <p>Things you <i>don't</i> need:</p>
-  <ul>
-    <li>You don't need a standalone installation of tomcat,
-      everything you need is contained in the skeleton package and the
-      CVS checkout.  I suggest that even if you have your own tomcat
-      setup already, start by using the supplied version and, if all
-      goes well, you can try to move the configuration into your own
-      installation.
-    </li>
-    <li>
-      You don't need any additional jar files or classes besides what is supplied with your java installation.
-      Everything you need is in the skeleton package and the CVS checkout.
-    </li>
-  </ul>
-  
-  </subsection>
-  <subsection name="Using CVS">
-  <p>
-    Please follow the instructions on the Sourceforge <a href="http://sourceforge.net/cvs/?group_id=72089">CVS page</a>
-    if you want to download the source repository for Pustefix. The name of the repository module is <b><i>pfixcore</i></b>.
-  </p>
   </subsection>
   </section>
 </body>
