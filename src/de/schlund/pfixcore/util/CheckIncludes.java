@@ -37,7 +37,7 @@ import org.w3c.dom.*;
  */
 
 public class CheckIncludes {
-    private static final String                 XPATH = "/include_parts/part/product";
+    private static final String XPATH = "/include_parts/part/product";
     
     private HashMap generators       = new HashMap();
     private TreeSet includefilenames = new TreeSet();
@@ -59,15 +59,15 @@ public class CheckIncludes {
         
         input = new BufferedReader(new FileReader(allincs));
         while ((line = input.readLine()) != null) {
-            line = new File(pwd + line).getCanonicalPath();
-            includefilenames.add(line);
+            // line = new File(pwd + line).getCanonicalPath();
+            includefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
         }
         input.close();
 
         input = new BufferedReader(new FileReader(allimgs));
         while ((line = input.readLine()) != null) {
-            line = new File(pwd + line).getCanonicalPath();
-            imagefilenames.add(line);
+            // line = new File(pwd + line).getCanonicalPath();
+            imagefilenames.add(PathFactory.getInstance().createPath(line.substring(2)));
         }
         input.close();
         
@@ -168,7 +168,7 @@ public class CheckIncludes {
             String fullpath = img.getCanonicalPath();
 
             Element res_image = result.createElement("image");
-            res_image.setAttribute("name", fullpath);
+            res_image.setAttribute("name", path.getRelative());
             
             res_root.appendChild(res_image);
             

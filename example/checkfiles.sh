@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export CLASSPATH=`cd ..; make -s echo-classpath`
+export CLASSPATH=`ls \`pwd\`/../lib/*.jar | xargs echo | sed -e 's/ /:/g'`:`pwd`/../build
 export LANG=C
 
 find . -type f | grep "/txt/" | grep "\.xml$"  > .ALLINCFILES
