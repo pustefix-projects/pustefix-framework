@@ -20,10 +20,11 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
-import de.schlund.jmsexceptionhandler.rmiobj.ExceptionDataValue;
-import de.schlund.jmsexceptionhandler.rmiobj.TextCreatorVisitor;
-import de.schlund.jmsexceptionhandler.rmiobj.XMLCreatorVisitor;
 import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValue;
+import de.schlund.pfixxml.exceptionprocessor.util.ExceptionDataValueHelper;
+import de.schlund.pfixxml.exceptionprocessor.util.TextCreatorVisitor;
+import de.schlund.pfixxml.exceptionprocessor.util.XMLCreatorVisitor;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
