@@ -38,7 +38,6 @@ import org.w3c.dom.*;
  * Created: Fri Nov 30 16:40:07 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version $Id$
  */
 
 public class EditorHelper {
