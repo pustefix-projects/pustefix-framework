@@ -196,14 +196,14 @@
             to the <b>docroot</b>
           </div>
         </xmlcodeOFF>
-        <editmode  allow="true"/>
+        <editmode  allow="true|false"/>
         <xmlcodeOFF>
           <div class="comment">
             <code>allow</code> needs to be set to <b>true</b>
             if you want to be able to use the pustefix editor. The whole node is optional.
           </div>
         </xmlcodeOFF>
-        <ssl force="true"/>
+        <ssl force="true|false"/>
         <xmlcodeOFF>
           <div class="comment">
             <code>force</code> must be set to <b>true</b> if the 
@@ -334,7 +334,7 @@
         </xmlcodeOFF>
       </pageflow>
       <xmlcodeOFF/>
-      <pagerequest name="APageName" nostore="true">
+      <pagerequest name="APageName" nostore="true|false">
         <xmlcodeOFF>
           <div class="comment">
             <code>name</code> is <b>mandatory</b>. It must be the name
@@ -383,7 +383,7 @@
             <p>The <code>class</code> attribute is mandatory and denotes a class implementing
               <code>de.schlund.pfixcore.workflow.app.ResdocFinalizer</code></p>
             <p>CAUTION: the use of Finalizers is <b>not suggested</b> most of the time! They can completely change the result document
-            and the logic when to trigger the next step in the current page flow. Use them at your own risk.</p>
+              and the logic when to trigger the next step in the current page flow. Use them at your own risk. Or better: Don't use them at all.</p>
           </div><br/>
           <div class="comment" style="color: #cc0000;">
             <b>Caution below: only one of <code>ihandler</code> or <code>authhandler</code> may be given as a child node!</b>
@@ -414,7 +414,7 @@
                 the page is of course still inaccessible.</p>
             </div>
           </xmlcodeOFF>
-          <interface prefix="AName" class="AClassName" activeignore="true|false" continue="true|false"/>
+          <interface prefix="AName" class="AClassName" activeignore="true|false" continue="true|false" alwaysretrieve="true|false"/>
           <xmlcodeOFF>
             <div class="comment">
               <p>
@@ -463,13 +463,16 @@
                       switch to the next page according to the current
                       <code>pageflow</code>.</p>
                     <p>
-                      This is different when the
-                      submit is <i>restricted</i> to a subset of one ore
-                      more of the page's defined handlers.  The usual
-                      action in this case is to <b>stay on the page</b> no
-                      matter if the data submit was successful (no errors happened)
-                      or not. <b>BUT:</b> if <b>ALL</b> of the handlers the submit was restricted to have the attribute
-                      <code>continue</code> set to <b>true</b>, the context again will switch to the next page.
+                      This is different when the submit is
+                      <i>restricted</i> to a subset of one ore more of
+                      the page's defined handlers.  The usual action
+                      in this case is to <b>stay on the page</b> no
+                      matter if the data submit was successful (no
+                      errors happened) or not. <b>BUT:</b> if
+                      <b>ALL</b> of the handlers the submit was
+                      restricted to have the attribute
+                      <code>continue</code> set to <b>true</b>, the
+                      context again will switch to the next page.
                     </p>
                     <p>
                       Note that all of the explained behavior can be
@@ -481,10 +484,40 @@
                 <tr>
                   <td><code>activeignore</code></td>
                   <td>
-                    Optional, default is <b>false</b>. The <code>IHandler</code> method <code>isActive()</code> is <b>NOT</b>
-                    called on handlers with <code>activeignore</code> set to <b>true</b>. In other words: the handler is ignored
-                    when the system tries to find out if the page is accessible or not. See also the comment for the <code>policy</code>
-                    attribute above.
+                    Optional, default is <b>false</b>. The
+                    <code>IHandler</code> method
+                    <code>isActive()</code> is <b>NOT</b> called on
+                    handlers with <code>activeignore</code> set to
+                    <b>true</b>. In other words: the handler is
+                    ignored when the system tries to find out if the
+                    page is accessible or not. See also the comment
+                    for the <code>policy</code> attribute above.
+                  </td>
+                </tr>
+                <tr>
+                  <td><code>alwaysretrieve</code></td>
+                  <td>
+                    <p>Optional, default is <b>false</b>. This attribute
+                      changes the way the <b>not</b> selected
+                      IHandlers of a page are treated when the system
+                      decides that it should stay on the page after a
+                      submit has been handled without an error.</p>
+                    <p>The default behaviour is to only call
+                      retrieveCurrentStatus() on those IHandlers that
+                      are in the set of selected IHandlers (via the
+                      SELWRP command). For the remaining IHandlers,
+                      only the (ignored) input is copied back verbatim
+                      so the net effect is that all associated form
+                      elements stay the same as they were before the
+                      submit.</p>
+                    <p>By setting <code>alwaysretrieve</code> to
+                      <code>true</code> the retrieveCurrentStatus()
+                      method of this IHandler is also called in the
+                      described situation. You need this if a submit
+                      handled in one or more IHandler(s) should change
+                      the filled in form values of another, not
+                      currently selected IHandler.
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -637,19 +670,22 @@
     <code>directoutputpagerequest</code>. For the XML/XSLT side of
     things, they look like normal pages (in fact, the value of the
     <code>directoutputpagerequest</code>'s <code>name</code> attribute
-    must be a page defined in <code>depened.xml</code>). But other
-    than the usual <code>pagerequest</code>, a
+    must be a page defined in <code>depened.xml</code>. Of course, no
+    target definition must be given, only the page in the
+    <code>navigation</code> structure must exist). But other than the
+    usual <code>pagerequest</code>, a
     <code>directoutputpagerequest</code> has an associated
-    <code>directoutputstate</code> whose <code>class</code> attribute is a java class
-    implementing <code>de.schlund.pfixcore.workflow.app.DirectOutputState</code>.
+    <code>directoutputstate</code> whose <code>class</code> attribute
+    is a java class implementing
+    <code>de.schlund.pfixcore.workflow.app.DirectOutputState</code>.
   </p>
   
   <xmlcode>
     <properties>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
       <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
-        <ssl force="true"/>
-        <editmode allow="true"/>
+        <ssl force="true|false"/>
+        <editmode allow="true|false"/>
         <xmlcodeOFF>
           <div class="comment">
             See the comment for the <code>servletinfo</code> node of the

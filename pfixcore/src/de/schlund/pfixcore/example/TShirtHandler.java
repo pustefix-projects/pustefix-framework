@@ -61,7 +61,14 @@ public class TShirtHandler implements IHandler {
         // Everything was ok, store it.
         ct.setSize(size);
         ct.setColor(color);
-        ct.setFeature(feature);
+        if (feature != null) {
+            ct.setFeature(feature);
+        } else {
+            ct.setFeature(new Integer[]{new Integer(-1)});
+            // This is needed so we produce some output at all on retrieveCurrentStatus when
+            // the user decided to NOT check any checkbox in the UI (this makes defaults work)
+        }
+        
     }
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
@@ -77,7 +84,7 @@ public class TShirtHandler implements IHandler {
                 String[]  feat = new String[features.length];
                 for (int i = 0; i < features.length; i++) {
                     feat[i] = features[i].toString();
-                }
+                } 
                 tshirt.setStringValFeature(feat);
             } else {
                 tshirt.setStringValFeature(null);
