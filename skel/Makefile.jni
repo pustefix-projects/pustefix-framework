@@ -21,5 +21,7 @@ lib/$(JNILIB): lib/$(PFIXCORE_JAR)
 	@rm -rf lib/${JNIDIR}
 	@cd lib && tar xfz ${JNIPKG}
 	cd lib/${JNIDIR} && make -f Makefile
-
 endif
+
+clean: 
+	@rm -rf lib/$(JNIDIR) lib/${JNIPKG}
