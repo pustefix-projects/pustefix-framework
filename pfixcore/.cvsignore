@@ -11,3 +11,4 @@ testskel
 .project
 target
 velocity.log*
+.settings
