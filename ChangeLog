@@ -1,5 +1,8 @@
 2004-10-06  Martin Leidig  <mleidig@schlund.de>
 
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java:
+	Now only checks for server skeleton if there's something to do
+
 	* example/common/conf/server-config.wsdd: Removed setting of
 	attachments.Directory, so WEB-INF/attachments should be taken
 	as default

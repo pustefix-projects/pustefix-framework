@@ -63,9 +63,6 @@ public class WebServiceTask extends Task {
         
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
         
-        if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton"+
-                wsddSkel.getAbsolutePath()+"doesn't exist.");
-        
         try {
 
             Document doc=loadDoc(prjfile);
@@ -80,6 +77,9 @@ public class WebServiceTask extends Task {
                 
                 //go on processing if webservices found
                 if(wsConfFile.exists()) {
+                    
+                    if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton"+
+                            wsddSkel.getAbsolutePath()+"doesn't exist.");
                 
                     File tmpDir=getTmpDir(prjName);
                     File globPropsFile=new File(tmpDir,"global.props");
