@@ -130,7 +130,7 @@ public class Xslt {
         return xmlObjectFromSource(src);
     }
 
-    public static Document xmlObjectFromSource(Source input) throws XPathException {
+    public static synchronized Document xmlObjectFromSource(Source input) throws XPathException {
         // TODO: use empty transformation
         
         // I can't use TinyBuilder.build because it returns wrappers for DOMSources ...
@@ -209,7 +209,7 @@ public class Xslt {
         transform(xml, trafo, params, new StreamResult(out));
     }
 
-    public static void transform(Document xml, Transformer trafo, Map params, Result result) throws TransformerException {
+    public static synchronized void transform(Document xml, Transformer trafo, Map params, Result result) throws TransformerException {
         long start = 0;
         if (params != null) {
             for (Iterator e = params.keySet().iterator(); e.hasNext();) {
