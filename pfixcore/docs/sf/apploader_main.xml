@@ -22,7 +22,7 @@ When code modifications are detected, the complete object tree gets traversed re
 The Pustefix distribution contains the shell script <code>apploader.sh</code> (located in the root directory), which gives you runtime control over the AppLoader, e.g. simply type <code>./apploader.sh reload</code> to reload the classes after you made some modifications. Your application, resp. new incoming requests, will be blocked until the reload finished. Success or any exceptions, occurred while reloading, are reported to you on the commandline. Detailed error information can be found in the logfile <code>pustefix-apploader.log</code> (located in the <code>DOCROOT/servletconf/log</code> directory).
 </p>
 <p>
-You have to be aware of the AppLoader's basic concept and its limitations to be able to understand its behaviour and to interpret the resulting output. For example, when you have removed an instance field, the AppLoader tries to set its old value at the new instance of the reloaded class and will inevitably fail. This is no problem for the AppLoader by itself, he just leaves it out and continues, but it might be a problem for you, because your application's integrity and consistency are jeopardized. In this case you will be warned by the AppLoader and get the recommendation to do a restart.  
+You have to be aware of the AppLoader's basic concept and its limitations to be able to understand its behaviour and to interpret the resulting output. For example, when you have removed an instance field, the AppLoader tries to set its old value at the new instance of the reloaded class and will inevitably fail. This is no problem for the AppLoader by itself, he just leaves it out and continues, but it could be a problem for you, because your application's integrity and consistency are jeopardized. In this case you will be warned by the AppLoader and get the recommendation to do a restart.  
 </p>
 <p>
 A restart is done by typing <code>./apploader.sh restart</code>. A restart differs from a reload in additionally invalidating all sessions and thus losing the state of all session dependant objects. While this can be a way to deal with the state inconsistency problem showed before, you have to be aware that a restart doesn't suffice for major modifications at classes, whose instances are not session dependant, resp. not newly created for new sessions. At this point the only way out is a complete Tomcat restart.
@@ -97,6 +97,12 @@ The AppLoader configuration is done by the property file <code>apploader.prop.in
 </xmlcode>
 
 <h2>Limitations</h2>
+<p>
+The current AppLoader version creates empty instances of reloaded classes and fills them with the state of their prior instances. This means that no initialization is done, neither in an empty constructor, nor for directly initialized members. Therefore adding new member variables to classes of session dependant instances normally requires to do an AppLoader restart, for session independant instances a complete Tomcat restart is necessary.
+</p>
+<p>
+A successful reload requires that all objects are accessible from the root objects of the application's object tree. Some scenarios are known, where this can't be assured, e.g. when a background thread is started and no other object holds a reference to it. Another problem that arises with threads is the lack of synchronization done by the AppLoader. Reloading threads can cause concurrent modifications and can damage the application integrity. 
+</p> 
 
 <h2>FAQs</h2>
 
