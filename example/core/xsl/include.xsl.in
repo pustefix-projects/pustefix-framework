@@ -16,6 +16,7 @@
 
   <xsl:param name="__editmode"/>
   <xsl:param name="__recordmode"/>
+  <xsl:param name="recordmode_allowed"/>
   <xsl:param name="__sessid"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
@@ -52,6 +53,7 @@
                 <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
               <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
           </td>  
+          <ixsl:if test="$recordmode_allowed = 'true'">
           <td nowrap="nowrap" style="border: black solid 1px; background-color: #999999;">
             <ixsl:choose>
               <ixsl:when test="$__recordmode and $__recordmode!='0'">
@@ -74,6 +76,7 @@
               </ixsl:otherwise>
             </ixsl:choose>
           </td>
+          </ixsl:if>
         </tr>
       </table>
     </xsl:if>

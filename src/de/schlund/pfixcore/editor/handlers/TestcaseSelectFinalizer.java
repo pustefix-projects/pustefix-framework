@@ -1,7 +1,6 @@
 package de.schlund.pfixcore.editor.handlers;
 
-import java.io.File;
-
+        
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor.EditorProduct;
@@ -13,7 +12,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.app.IWrapperContainer;
 import de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
+
 
 /**
  * @author jh
@@ -38,13 +37,12 @@ public class TestcaseSelectFinalizer extends ResdocSimpleFinalizer {
         EditorSessionStatus esess = EditorRes.getEditorSessionStatus(crm);
         EditorProduct product = esess.getProduct();
         String depend = product.getDepend();
-        String dir = RecordManagerFactory.getInstance().createRecordManager(depend).getRecordmodeBaseDir();
-        crtc.setAvailableTestcasesDirectory(dir);
         
-        System.out.println("Depend="+depend+" | dir="+dir);
+        String dir = crtc.getAvailableTestcasesDirectoryForProduct();
         
         Element ele = resdoc.createNode("testcases");
         ele.setAttribute("directory", dir);
+        
         String[] cases = crtc.getAvailableTestcases();
         
         for(int i=0; i<cases.length; i++) {

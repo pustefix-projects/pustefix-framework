@@ -26,13 +26,10 @@ public class TestcaseSelectHandler implements IHandler {
         throws Exception {
             TestcaseSelect testcase = (TestcaseSelect)wrapper;
             String[] foo = testcase.getcase();
-            for(int i=0; i<foo.length; i++) {
-                System.out.println("handle: +++"+foo[i]);
-            }
             
             ContextResourceManager crm = context.getContextResourceManager();
             CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-            crtc.setTestcasesForProcessing(foo);
+            crtc.setSelectedTestcases(foo);
     }
 
     /**
@@ -43,12 +40,10 @@ public class TestcaseSelectHandler implements IHandler {
         ContextResourceManager crm = context.getContextResourceManager();
         CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
 
-        if(crtc.hasTestcasesForProcessing()) {
+        if(crtc.hasSelectedTestcases()) {
             TestcaseSelect testcase = (TestcaseSelect)wrapper;
-            String[] foo =  crtc.getTestcasesForProcessing();
-            for(int i=0; i<foo.length; i++) {
-                System.out.println("foo: "+foo[i]);
-            }
+            String[] foo =  crtc.getSelectedTestcases();
+           
             testcase.setStringValcase(foo);
         }
     }

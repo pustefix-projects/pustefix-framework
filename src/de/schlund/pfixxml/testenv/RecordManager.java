@@ -48,21 +48,21 @@ public final class RecordManager {
 
     //~ Instance/static variables ..................................................................
 
-    private static Category      CAT                       = Category.getInstance(RecordManager.class.getName());
-    private static final String  SESS_RECORDMODE_DIR       = "__RECORDMODE__";
-    private static final String  SESS_RECORD_COUNTER       = "__RECORDCOUNT__";
-    private static final String  XPATH_RECORDDIR           = "/make/@record_dir";
-    private static final String  XPATH_RECOREDALLOW        = "/make/@record_allowed";
-    private static final String  DEFAULT_STYLESHEET        = "default.xsl";
-    private static final String  REQ_PARAM_KEY_RECMODE     = "__recordmode";
-    private static final String  REQ_PARAM_VAL_RECMODE_OFF = "0";
-    private static final String  XML_PARAM_VAL_RECORDALLOW = "true";
-    private String               recordBaseDir             = null;
-    private boolean              recordAllowed             = false;
+    private static Category     CAT                       = Category.getInstance(RecordManager.class.getName());
+    private static final String SESS_RECORDMODE_DIR       = "__RECORDMODE__";
+    private static final String SESS_RECORD_COUNTER       = "__RECORDCOUNT__";
+    private static final String XPATH_RECORDDIR           = "/make/@record_dir";
+    private static final String XPATH_RECOREDALLOW        = "/make/@record_allowed";
+    private static final String DEFAULT_STYLESHEET        = "default.xsl";
+    private static final String REQ_PARAM_KEY_RECMODE     = "__recordmode";
+    private static final String REQ_PARAM_VAL_RECMODE_OFF = "0";
+    private static final String XML_PARAM_VAL_RECORDALLOW = "true";
+    private String              recordBaseDir             = null;
+    private boolean             recordAllowed             = false;
 
     //~ Constructors ...............................................................................
 
-    public RecordManager(String depxml) throws Exception{
+    public RecordManager(String depxml) throws Exception {
         try {
             if (CAT.isDebugEnabled()) {
                 CAT.debug(this.getClass().getName() + " initializing");
@@ -87,29 +87,6 @@ public final class RecordManager {
 
     //~ Methods ....................................................................................
 
-    /*public final void init(String depxml) throws RecordManagerException {
-        try {
-            if (CAT.isDebugEnabled()) {
-                CAT.debug(this.getClass().getName() + " initializing");
-            }
-            DocumentBuilderFactory dbfac = new DocumentBuilderFactoryImpl();
-            dbfac.setNamespaceAware(true);
-            dbfac.setValidating(false);
-            DocumentBuilder db  = dbfac.newDocumentBuilder();
-            Document        doc = db.parse(depxml);
-            getConfigFromXML(doc);
-            debug(null);
-        } catch (ParserConfigurationException e) {
-            throw new RecordManagerException("Error", e);
-        }
-         catch (IOException e) {
-            throw new RecordManagerException("Error", e);
-        }
-         catch (SAXException e) {
-            throw new RecordManagerException("Error", e);
-        }
-    }
-    */
     public final void tryRecord(PfixServletRequest preq, HttpServletResponse resp, 
                                 SPDocument resdoc, HttpSession session, ContainerUtil cutil)
                          throws Exception {
@@ -157,6 +134,10 @@ public final class RecordManager {
                     count++;
                     cutil.setSessionValue(session, SESS_RECORD_COUNTER, new Integer(count));
                     doRecord(count, recordBaseDir, dir, preq.getRequestURI(resp), preq, resdoc);
+                } else {
+                    if (CAT.isDebugEnabled()) {
+                        CAT.debug("Request has nothing to do with recording");
+                    }
                 }
             }
         }
@@ -186,7 +167,9 @@ public final class RecordManager {
                                                  + testcasename, null);
             }
         } else {
-            CAT.debug(basedir + "/" + testcasename + " exists!!!!!!");
+            if(CAT.isDebugEnabled()) {
+                CAT.debug(basedir + "/" + testcasename + " exists!!!!!!");
+            }
             int    i       = 0;
             String newname = null;
             while (file.exists()) {
@@ -238,10 +221,9 @@ public final class RecordManager {
                 return;
                 //throw new RecordManagerException("Unable to find recording directory!", null);
             }
-           
             recordBaseDir = dir;
         } catch (Exception e) {
-            throw new RecordManagerException("Error: "+e.getMessage(), e);
+            throw new RecordManagerException("Error: " + e.getMessage(), e);
         }
     }
 
@@ -283,58 +265,30 @@ public final class RecordManager {
      * parameters.
      * @param result_document the {@link SPDocument} containing the current state of business data 
      * @param session_id the sessionid the above PfixServletRequest belongs to. 
-     * @return new directory name
      * @throws RecordManagerException on all non-recoverable errors
      */
-    private final String doRecord(int count, String basedir, String logdir, String uri, 
+    private final void doRecord(int count, String basedir, String logdir, String uri, 
                                   PfixServletRequest pfix_servlet_request, 
                                   SPDocument result_document) throws RecordManagerException {
 
-        /*String[] req_param_names = pfix_servlet_request.getRequestParamNames();
-        System.out.println("=================" + uri + "==================="); 
-        System.out.println("URI: " + uri);
-        System.out.println("Query string : " + pfix_servlet_request.getQueryString());
-        System.out.println("Scheme       : " + pfix_servlet_request.getScheme());
-        System.out.println("Server name  : " + pfix_servlet_request.getServerName());
-        System.out.println("Server port  : " + pfix_servlet_request.getServerPort());
-        System.out.println("Servlet path : " + pfix_servlet_request.getServletPath());
-        for (int i = 0; i < req_param_names.length; i++) {
-            RequestParam[] values = pfix_servlet_request.getAllRequestParams(req_param_names[i]);
-            for (int j = 0; j < values.length; j++) {
-                System.out.println(req_param_names[i] + " = " + values[j].getValue());
-            }
-        }*/
-        /*    String path = basedir + "/" + logdir;
-            File   file = new File(path);
-            if (file.exists()) {
-                if (file.isFile()) {
-                    throw new RecordManagerException(path + " already exists, but its a file!", null);
-                } else if (file.isDirectory() && ! file.canRead()) {
-                    throw new RecordManagerException(path + " alreay exists, but its not readable!", 
-                                                     null);
-                } else if (file.isDirectory() && file.canRead() && count == 0) {
-                    int i = 0;
-                    while (file.exists()) {
-                        String suffix = "_" + i++;
-                        if (CAT.isInfoEnabled()) {
-                            CAT.info(file.getName() + " exists. Trying " + path + suffix);
-                        }
-                        file = new File(path + suffix);
-                    }
+        if(CAT.isDebugEnabled()) {
+            StringBuffer sb = new StringBuffer(512);
+            sb.append("\nRecordManager#doRecord current PfixServletRequest: \n"); 
+            sb.append("URI: " + uri).append("\n");
+            sb.append("Query string : " + pfix_servlet_request.getQueryString()).append("\n");
+            sb.append("Scheme       : " + pfix_servlet_request.getScheme()).append("\n");
+            sb.append("Server name  : " + pfix_servlet_request.getServerName()).append("\n");
+            sb.append("Server port  : " + pfix_servlet_request.getServerPort()).append("\n");
+            sb.append("Servlet path : " + pfix_servlet_request.getServletPath()).append("\n");
+            String[] req_param_names = pfix_servlet_request.getRequestParamNames();
+            for (int i = 0; i < req_param_names.length; i++) {
+                RequestParam[] values = pfix_servlet_request.getAllRequestParams(req_param_names[i]);
+                for (int j = 0; j < values.length; j++) {
+                    sb.append(req_param_names[i] + " = " + values[j].getValue()).append("\n");
                 }
             }
-            if (count == 0) {
-                if (CAT.isInfoEnabled()) {
-                    CAT.info("Createing directory " + file.getAbsoluteFile());
-                }
-                boolean ok = file.mkdirs();
-                if (! ok) {
-                    throw new RecordManagerException("Unable to create directory: " + file.getName(), 
-                                                     null);
-                }
-            }*/
-
-        //    logdir = file.getName();
+            CAT.debug(sb.toString());
+        }
         Node     input_node      = doPFServletRequesttoXML(uri, pfix_servlet_request);
         Node     output_node     = doSPDocumenttoXML(result_document);
         Node     stylesheet_node = doDefaultStylesheettoXML();
@@ -348,7 +302,6 @@ public final class RecordManager {
         Node imp3 = doc.importNode(stylesheet_node, true);
         step.appendChild(imp3);
         writeDocument(doc, basedir + "/" + logdir + "/" + "testdata." + count);
-        return "";
     }
 
     /**

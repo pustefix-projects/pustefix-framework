@@ -10,12 +10,19 @@
           <ixsl:for-each select="/formresult/selected_testcases/selected_testcase">
           <tr>
             <td>
-              <ul>
-                <li><h4><ixsl:value-of select="."/></h4></li>
-              </ul>
+              <table border="1">
+                <th><ixsl:value-of select="."/></th>
+                <tr>
+                  <td>
+                    temporary directory is: <ixsl:value-of select="./@tmp_directory"/>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           </ixsl:for-each>
+          <tr>
+          </tr>
           <tr>
             <td>
               <pfx:button normalclass="editor_submit" page="testcaseselect">
@@ -24,10 +31,7 @@
             </td>
             <td>
               <pfx:forminput target="_top">
-                <pfx:xinp normalclass="editor_submit" type="submit" value="Next"/>
-              <!--<pfx:button normalclass="editor_submit" page="testcaseoverview">
-                Start
-              </pfx:button>-->
+                <pfx:xinp class="editor_submit" type="submit" value="Start"/>
               </pfx:forminput>
             </td>
           </tr>

@@ -47,9 +47,6 @@
               <td class="navi_cell"> 
                 <pfx:button activeclass="editor_box" normalclass="editor_submit" page="documentation" target="_top">Docs</pfx:button>
               </td> 
-              <td class="navi_cell">
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">Testcases</pfx:button>
-              </td>
               
               <td align="right" nowrap="nowrap" width="99%">
                 [<b><ixsl:value-of select="/formresult/cr_editorsession/product/@comment"/></b>]

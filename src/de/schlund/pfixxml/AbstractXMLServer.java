@@ -200,7 +200,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         handleRecordModeProps();
        
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
+        
         handleXMLOnlyProps();
+        
         try {
             generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
         } catch (Exception e) {
@@ -213,7 +215,34 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
             render_external = true;
         }
-        
+        if(CAT.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer(255);
+            sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
+            sb.append("                targetconf = ").append(targetconf).append("\n");
+            sb.append("               servletname = ").append(servletname).append("\n");
+            sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
+            sb.append("                    timout = ").append(timeout).append("\n");
+            sb.append("        recordmode allowed = ").append(recordmodeAllowed).append("\n");
+            String str = null;
+            if(isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
+                str = "allowed";
+            } else if(isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
+                str = "restricted";
+            } else if(isXMLOnlyAllowed == XML_ONLY_PROHIBITED) {
+                str = "prohibited";
+            } else str = "???";
+            sb.append("            xmlOnlyAllowed = ").append(str).append("\n");
+            if(isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
+                if(xmlOnlyValidHosts!=null) {
+                    for(int i=0; i<xmlOnlyValidHosts.length; i++) {
+                        sb.append("                       host = ").append(xmlOnlyValidHosts).append("\n");
+                    }
+                }
+            }
+            sb.append("skip_getmodtimemaybeupdate = ").append(skip_getmodtimemaybeupdate).append("\n");
+            sb.append("           render_external = ").append(render_external).append("\n");
+            CAT.info(sb.toString());
+        }
     }
 
     /**
@@ -421,6 +450,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             if(name != null) {
                 params.put(PARAM_RECORDMODE, name);            
             }
+            boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
+            params.put("recordmode_allowed", new Boolean(allowed).toString());
         }
 
         
