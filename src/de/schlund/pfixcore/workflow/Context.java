@@ -221,6 +221,10 @@ public class Context implements AppContext {
             spdoc.setPagename(getCurrentPageRequest().getName());
         }
 
+        if (getCurrentPageFlow() != null) {
+            spdoc.setProperty("pageflow", getCurrentPageFlow().getName());
+        }
+        
         if (pageIsSidestepPage(getCurrentPageRequest())) {
             LOG.warn("*** Sidestep page: Restoring to page " +  prevpage + " and " + prevflow);
             setCurrentPageRequest(prevpage);

@@ -1,3 +1,17 @@
+2003-11-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): added the remote IP address and servername
+	to the xsl parameters for the transormation
+
+	* src/de/schlund/pfixcore/workflow/Context.java (handleRequest): add the current pageflow name to the 
+	spdoc properties (and by that to the used xsl parameters).
+
+	* example/core/xsl/master.xsl.in: handle the above with the ixsl variables pageflow, 
+	__remote_addr and __server_name
+
+	* src/de/schlund/pfixxml/SPDocument.java (setProperty): new method, inits properties 
+	instance variable first if still == null	
+
 2003-11-05  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfexditor/editor/PfixDebug.java

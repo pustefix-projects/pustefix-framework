@@ -204,6 +204,13 @@ public class SPDocument implements NoCopySessionData {
         properties = newProperties;
     }
 
+    public void setProperty(String key, String value) {
+        if (properties == null) {
+            properties = new Properties();
+        }
+        properties.setProperty(key, value);
+    }
+
     /**
      * Describe <code>setXSLKey</code> method here.
      *
