@@ -1,3 +1,22 @@
+2004-06-29  Michael Hartmier  <mhm@schlund.de>
+	* src/de/schlund/pfixxml/util/Xml.java: support Text node serialization
+	* src/de/schlund/pfixxml/targets/SPCacheFactory.java: fix java 1.5 warning
+	- dump common/projects.prj, servletconf/projects.xml is used instead:
+	* build.xml
+	* docs/sf/project_main.xml
+	* example/common/conf/.cvsignore
+	* example/common/conf/factory.prop.in
+	* example/core/build/create_products.xsl
+	* example/core/build/create_projects.xsl
+	* example/core/build/create_propfiles.xsl
+	* skel/build.xml
+	* skel/projects/common/conf/factory.prop.in
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/PfixcoreServlet.java
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
+	* tests/junit/de/schlund/pfixcore/editor/EditorProductFactoryTest.java
+
+
 2004-06-29  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Path.java (create(File file)): new method,

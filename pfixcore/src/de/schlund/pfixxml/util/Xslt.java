@@ -22,7 +22,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.*;
 import net.sf.saxon.*;

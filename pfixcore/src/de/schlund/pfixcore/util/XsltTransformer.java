@@ -7,8 +7,6 @@
 package de.schlund.pfixcore.util;
 
 
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.Xslt;
 import java.io.File;
 import java.util.*;
 import javax.xml.transform.*;

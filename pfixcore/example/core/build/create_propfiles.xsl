@@ -2,12 +2,6 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <!--  <xsl:param name="docroot"/>
-  <xsl:param name="uid"/>
-  <xsl:param name="machine"/>
-  <xsl:param name="fqdn"/>
-  <xsl:param name="mode"/>-->
-
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
   <xsl:include href="create_lib.xsl"/>
 

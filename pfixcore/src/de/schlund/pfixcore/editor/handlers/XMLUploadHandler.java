@@ -24,7 +24,6 @@ import org.apache.oro.text.regex.Substitution;
 import org.apache.oro.text.regex.Util;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
@@ -203,17 +202,12 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                 pm = new Perl5Matcher();
                 List nl = XPath.select(thepart, "./product[@name = '" + product + "']/node()");
                 if (nl.size() > 0) {
-                    DocumentFragment frag = thepart.getOwnerDocument().createDocumentFragment();
+                    String text = "";
                     for (int i = 0; i < nl.size(); i++) {
-                        frag.appendChild((Node) nl.get(i));
+                        text = Xml.serialize((Node) nl.get(i), false, false);
                     }
-                    String text = Xml.serialize(frag, false, false);
-                    if (text != null) {
-                        text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
-                        text = text.trim();
-                    } else {
-                        text = DEF_TEXT_APPLET;
-                    }
+                    text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
+                    text = text.trim();
                     upl.setStringValContent(text);
                     if (SERIALIZER.isDebugEnabled())
                         SERIALIZER.debug(

@@ -80,7 +80,7 @@ public final class Xml {
     public static Document createDocument() {
         return createDocumentBuilder().newDocument();       
     }
-    
+
     //-- parse immutable
     
     public static Document parseString(String str) throws TransformerException {
@@ -276,7 +276,6 @@ public final class Xml {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
                                                + "Can't serialize a null node!");
         }
-        
         OutputFormat format;
         XMLSerializer ser;
     
@@ -301,12 +300,20 @@ public final class Xml {
 
         if (node instanceof Document) {
             ser.serialize((Document) node);
-        } else if (node instanceof DocumentFragment) {
-            ser.serialize((DocumentFragment) node);
         } else if (node instanceof Element) {
             ser.serialize((Element) node);
+        } else if (node instanceof DocumentFragment) {
+            ser.serialize((DocumentFragment) node);
         } else {
-            throw new IllegalArgumentException("" + node);
+            Document doc;
+            DocumentFragment frag;
+            Node cloned;
+            
+            doc = createDocument();
+            frag = doc.createDocumentFragment();
+            cloned = doc.importNode(node, true);
+            frag.appendChild(cloned);
+            ser.serialize(frag);
         }
     }
 }

@@ -11,6 +11,10 @@ import de.schlund.pfixxml.util.Xml;
 import junit.framework.TestCase;
 
 public class XmlTest extends TestCase {
+    public void testCreateDocument() {
+        assertNotNull(Xml.createDocument());
+    }
+
     //-- parse tests 
     
     public void testXmlReaderConfig() throws Exception {
@@ -69,6 +73,10 @@ public class XmlTest extends TestCase {
     public void testSerializeImplicitNamespace() throws Exception {
         Document doc = parse(serialize("<ok xmlns='bar'/>", false));
         assertEquals("bar", doc.getDocumentElement().getNamespaceURI());
+    }
+    public void testSerializeText() throws Exception {
+        Document doc = parse("<a>foo</a>");
+        assertEquals("foo\n", Xml.serialize(XPath.selectNode(doc, "/a/node()"), false, false));
     }
 
     //-- helper code
