@@ -303,15 +303,16 @@
           <xsl:otherwise>de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor</xsl:otherwise>
         </xsl:choose>
       </xsl:variable>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.type=</xsl:text>
+      <xsl:variable name="translatedtype" select="translate(@type, '.', '')" />
+      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.type=</xsl:text>
       <xsl:value-of select="@type"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.forward=</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.forward=</xsl:text>
       <xsl:value-of select="@forward"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.page=</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.page=</xsl:text>
       <xsl:value-of select="@page"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.jms=</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.jms=</xsl:text>
       <xsl:value-of select="@jms"/><xsl:text>&#xa;</xsl:text>
-      <xsl:text>exception.</xsl:text><xsl:value-of select="format-number(position(),'00')"/><xsl:text>.processor=</xsl:text>
+      <xsl:text>exception.</xsl:text><xsl:value-of select="$translatedtype"/><xsl:text>.processor=</xsl:text>
       <xsl:value-of select="$processor"/><xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
   </xsl:template>
