@@ -47,8 +47,22 @@
         <condition  property="makemode"     value="test">
             <equals arg1="${env.MAKE_MODE}" arg2="test"/>
         </condition>
+        <condition  property="makemode"     value="stage">
+            <equals arg1="${env.MAKE_MODE}" arg2="stage"/>
+        </condition>
         <property       name="makemode"        value="prod"/>
 
+        <condition property="javahome" value="${env.PFX_JAVA_HOME}">
+        	<isset property="${env.JAVA_HOME}"/>
+        </condition>
+        <condition property="javahome" value="${env.JAVA_HOME}">
+        	<isset property="${env.JAVA_HOME}"/>
+        </condition>
+        <condition property="javahome" value="${java.home}">
+        	<isset property="${java.home}"/>
+        </condition>
+		<fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
+		
         <condition  property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
@@ -123,8 +137,27 @@
         </exec>
     </target>
     
-    <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions">
+    <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions" description="Generates Targets to ${dir.projects}/.cache">
         <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
+    	<echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
+    	<echo message="As an alternative try target generate-mx, which forks an external java vm with more Heap Memory."/>
+    </target>
+    
+    <target name="generate-mx" depends="targetdefs, stylesheets, compile, installjars, check-permissions" description="Same as generate, but forks an external vm with more Heap Memory.">
+        <pathconvert property="generate-mx.configs" pathsep=" ">
+            <path>
+                <fileset dir="${dir.projects}">
+                    <include name="**/depend.xml"/>
+					<exclude name="${excludes.projects}"/>
+                </fileset>
+            </path>
+        </pathconvert>
+    	<java classname="de.schlund.pfixxml.targets.TargetGenerator" classpathref="cp.classpath" fork="true">
+    		<arg line="${generate-mx.configs}"/>
+			<sysproperty key="log4jconfig" value="${dir.projects}/core/conf/generator_quiet.xml"/>
+			<jvmarg value="-ms200M"/>
+			<jvmarg value="-mx200M"/>
+    	</java>
     </target>
 
     <target name="all" 
