@@ -1,3 +1,17 @@
+2003-07-03  Volker Zaich <zaich@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoHandler.java
+	--> Both Classes are still in work ! Only for testing-reasons committed !
+
+	* editorapplet/Makefile
+	* editorapplet/lib/xerces.jar
+	Now, the Editor-Applet uses Classes from the xerces.jar for parsing DomTrees
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+	still in work -- only for testing committed !
+	
+
 2003-06-26  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
