@@ -80,7 +80,7 @@ public class TestcaseStepResult {
         String srv_path = tmpdir + "/_current" + count;
         XMLSerializeUtil.getInstance().serializeToFile(serverResponse, srv_path, 2, false);
         XMLSerializeUtil.getInstance().serializeToFile(recordedReferenceDoc, ref_path, 2, false);
-        doDiff(ref_path, srv_path);
+        doDiff(srv_path, ref_path);
     }
 
     public String getDiffString() {
