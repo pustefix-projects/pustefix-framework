@@ -914,9 +914,12 @@ SOAP_Call.prototype.invoke=function() {
     return this.callback(resDoc);
   } else {
     // async
-    this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
-    if(this.requestID==null) this.request.start(writer.xml);
-    else this.request.start(writer.xml,this.requestID);
+    
+    try {
+      this.request=new XML_Request( 'POST', this.endpoint, this.callback, this );
+      if(this.requestID==null) this.request.start(writer.xml);
+      else this.request.start(writer.xml,this.requestID);
+    } catch(ex) { }
   }
 }
 
