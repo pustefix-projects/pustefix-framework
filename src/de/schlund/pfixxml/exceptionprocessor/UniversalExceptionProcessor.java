@@ -38,67 +38,67 @@ import de.schlund.pfixxml.testenv.XMLSerializeUtil;
  */
 public class UniversalExceptionProcessor implements ExceptionProcessor {
 
-	private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
-	private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
-	/* (non-Javadoc)
-	 * @see de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor#processException(java.lang.Throwable, de.schlund.pfixxml.exceptionprocessor.ExceptionConfig, de.schlund.pfixxml.PfixServletRequest, javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
-	 */
-	public void processException(Throwable exception, ExceptionConfig exConfig,
-			PfixServletRequest pfixReq, ServletContext servletContext,
-			HttpServletRequest req, HttpServletResponse res, Properties props)
-			throws IOException, ServletException {
-		Document doc = null;
-		String text = null;
+    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
+    private static final Logger LOG = Logger.getLogger(UniversalExceptionProcessor.class);
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor#processException(java.lang.Throwable, de.schlund.pfixxml.exceptionprocessor.ExceptionConfig, de.schlund.pfixxml.PfixServletRequest, javax.servlet.ServletContext, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.String)
+     */
+    public void processException(Throwable exception, ExceptionConfig exConfig,
+                                 PfixServletRequest pfixReq, ServletContext servletContext,
+                                 HttpServletRequest req, HttpServletResponse res, Properties props)
+        throws IOException, ServletException {
+        Document doc = null;
+        String text = null;
         
-		if(exception instanceof TargetGenerationException) {
-			TargetGenerationException tex = (TargetGenerationException) exception;
-			try {
-				doc = tex.toXMLRepresentation();
+        if(exception instanceof TargetGenerationException) {
+            TargetGenerationException tex = (TargetGenerationException) exception;
+            try {
+                doc = tex.toXMLRepresentation();
                 text = tex.toStringRepresentation();
-			} catch (ParserConfigurationException e) {
-				throw new ServletException(e);
-			}
-		} else {
-			ExceptionDataValue data = ExceptionDataValueHelper.createExceptionDataValue(exception, pfixReq);
-			XMLCreatorVisitor xv = new XMLCreatorVisitor();
-			data.accept(xv);
+            } catch (ParserConfigurationException e) {
+                throw new ServletException(e);
+            }
+        } else {
+            ExceptionDataValue data = ExceptionDataValueHelper.createExceptionDataValue(exception, pfixReq);
+            XMLCreatorVisitor xv = new XMLCreatorVisitor();
+            data.accept(xv);
             TextCreatorVisitor tv = new TextCreatorVisitor();
             data.accept(tv);
-			doc = xv.getDocument();
+            doc = xv.getDocument();
             text = tv.getText();
-		}
+        }
         
         LOG.error(text);
-		
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("Got following DOM for error-representation: "+
-					XMLSerializeUtil.getInstance().serializeToString(doc));
-		}
-		
-		try {
-			doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
-		} catch (TransformerException e) {
-			throw new ServletException(e);
-		}
-		
-		Object stvalue = null;
-
-		String depxml = props.getProperty("xmlserver.depend.xml");
+	
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("Got following DOM for error-representation: "+
+                      XMLSerializeUtil.getInstance().serializeToString(doc));
+        }
+        
+        try {
+            doc = TraxXSLTProcessor.getInstance().xmlObjectFromDocument(doc);
+        } catch (TransformerException e) {
+            throw new ServletException(e);
+        }
+	
+        Object stvalue = null;
+        
+        String depxml = props.getProperty("xmlserver.depend.xml");
         if(depxml == null) {
             throw new IllegalArgumentException("Need property xmlserver.depend.xml");
         }
-		try {
-			stvalue = TargetGeneratorFactory.getInstance().createGenerator(new File(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
-		try {
-			TraxXSLTProcessor.getInstance().applyTrafoForOutput(doc, stvalue, null, res.getOutputStream());
-		} catch (TransformerException e) {
-			throw new ServletException(e);
-		} catch (IOException e) {
-			throw new ServletException(e);
-		}
-	}
-
+        try {
+            stvalue = TargetGeneratorFactory.getInstance().createGenerator(new File(depxml)).createXSLLeafTarget(ERROR_STYLESHEET).getValue();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+        try {
+            TraxXSLTProcessor.getInstance().applyTrafoForOutput(doc, stvalue, null, res.getOutputStream());
+        } catch (TransformerException e) {
+            throw new ServletException(e);
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
+    }
+    
 }
