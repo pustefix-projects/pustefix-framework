@@ -6,7 +6,6 @@
   </properties>
 
   <body>
-
   <section name="The Test client">
 
   <subsection name="About">
@@ -66,6 +65,7 @@
     </make>
   </xmlcode>
   </subsection>
+
   <subsection name="Recording data">
   <p>Starting to record click trails is quite simple. Just append <code>__recordmode=TESTCASE_NAME</code>
     as a parameter to the URL. <code>TESTCASE_NAME</code> is an
