@@ -14,11 +14,12 @@ var wsCalc=new wsCalculator();
 
 var t1=null;
 
-function foo(result) {
+function foo(result,exception) {
 	var d2=new Date();
    var t2=d2.getTime();
    var t=t2-t1;
-   pfxsoapPrint(result,t);
+  	if(exception==undefined) pfxsoapPrint(result,t);
+  	else pfxsoapPrintError(exception.toString(),t);
 }
 
 function pfxsoapCall(method,val1,val2) {

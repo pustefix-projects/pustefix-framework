@@ -14,18 +14,19 @@ var _xmlTimerInterval = 5;
 //*****************************************************************************
 function xmlRequest() {
 
-  this.method   = arguments[0] + "XX";
+  this.method   = arguments[0];
   this.url      = arguments[1];
   this.callback = arguments[2];
   this.context  = arguments[3];
 
-  this.iframes  = 1;
+  this.iframes  = 0;
 
   this.msXmlHttp = "";
 
   this.headers = [ [ 'SOAPAction', '""'] ];
   this.errors = [];
   this.status = 0;
+  this.statusText = "";
 }
 
 xmlRequest.prototype.IFRAMES_NEVER    = -1;
@@ -111,9 +112,9 @@ xmlRequest.prototype.start = function( content ) {
             };
           } else {
             _xml[i].onreadystatechange = function() {
-            alert(_xml[i].readyState);
               if( _xml[i].readyState == 4 ) {
-                alert( _xml[i].status );
+                self.status=_xml[i].status;
+                self.statusText=_xml[i].statusText;
                 self.callback.call( self.context, _xml[i].responseXML );
 //                if( _xml[i].status < 300 ) {
 //                } else {
@@ -129,6 +130,8 @@ xmlRequest.prototype.start = function( content ) {
         }
       }
 
+		
+
       try {
         _xml[i].open( this.method, this.url, this.callback ? true : false); 
           
@@ -139,6 +142,8 @@ xmlRequest.prototype.start = function( content ) {
         _xml[i].send(content);
           
         if( !this.callback ) {
+          this.status=_xml[i].status;
+          this.statusText=_xml[i].statusText;
           return _xml[i].responseXML;
         } else {
           return true;

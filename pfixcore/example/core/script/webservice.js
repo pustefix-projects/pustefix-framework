@@ -1,3 +1,101 @@
+//Add inheritance support
+Function.prototype.extend=function(base) {
+	var derived=this.prototype=new base;
+	this.prototype.superclass=base.prototype;
+	return derived;
+};
+
+
+
+//==================================================================
+//core (Pustefix core classes)
+//==================================================================
+
+
+//*********************************
+//coreException(string msg,string src)
+//*********************************
+function coreException(msg,src) {
+   this.msg=msg;
+   this.src=src;
+   this.name="soapException";
+   this.desc="General error";
+}
+//string toString()
+coreException.prototype.toString=function() {
+	return this.name+":"+this.desc+"["+this.src+"] "+this.msg;
+}
+
+//*********************************
+//coreIllegalArgsEx
+//*********************************
+function coreIllegalArgsEx(msg,src) {
+	coreException.call(this,msg,src);
+	this.name="IllegalArgumentException";
+	this.desc="Illegal arguments";
+}
+coreIllegalArgsEx.extend(coreException);
+
+//*********************************
+//coreWrongArgNoEx
+//*********************************
+function coreWrongArgNoEx(msg,src) {
+	coreIllegalArgsEx.call(this,msg,src);
+	this.desc="Wrong number of arguments";
+}
+coreWrongArgNoEx.extend(coreIllegalArgsEx);
+
+
+
+//==================================================================
+//xml (Pustefix xml classes)
+//==================================================================
+
+
+//*********************************
+//xmlException(string msg,string src)
+//*********************************
+function xmlException(msg,src) {
+	coreException.call(this,msg,src);
+   this.name="xmlException";
+   this.desc="XML error";
+}
+coreWrongArgNoEx.extend(coreException);
+
+//*********************************
+//xmlUtilities
+//*********************************
+function xmlUtilities() {
+}
+
+xmlUtilities.prototype.getChildrenByName=function(node,name) {
+	if(arguments.length!=2) throw new coreWrongArgNoEx("","xmlUtilities.getChildrenByName");
+	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getChildrenByName");
+	if(node.childNodes==null || node.childNodes.length==0) return null;
+	var nodes=new Array();
+	for(var i=0;i<node.childNodes.length;i++) {
+		if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+	}
+	return nodes;
+}
+
+xmlUtilities.prototype.getText=function(node) {
+	if(arguments.length!=1) throw new coreWrongArgNoEx("","xmlUtilities.getText");
+	if(!(node instanceof Node)) throw new coreIllegalArgsEx("Illegal argument type: "+(typeof node),"xmlUtilities.getText");
+	if(node.childNodes==null) return null;
+	var text="";
+	for(var i=0;i<node.childNodes.length;i++) {
+		var n=node.childNodes[i];
+		if(n.nodeType==3) text+=n.nodeValue;
+		else if(n.nodeType==1 || n.nodeType==10) text+=this.getText(n);
+	}
+	return text;
+}
+
+var xmlUtils=new xmlUtilities();
+
+
+
 //### CONSTANTS ###
 var XMLNS_XSD="http://www.w3.org/2001/XMLSchema";
 var XMLNS_XSI="http://www.w3.org/2001/XMLSchema-instance";
@@ -9,11 +107,7 @@ XMLNS_PREFIX_MAP[XMLNS_XSI]="xsi";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENC]="soapenc";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENV]="soapenv";
 
-Function.prototype.extend = function( base ) {
-var derived = this.prototype = new base;
-this.prototype.superclass = base.prototype;
-return derived;
-};
+
 
 //*********************************
 //QName(localpart)
@@ -137,7 +231,7 @@ Parameter.prototype.init=function(args) {
 		this.name=args[0];
 		this.typeInfo=args[1];
 		this.parameterMode=args[2];
-	} else throw new soapIllegalArgsException("Wrong number of arguments","Parameter.init");
+	} else throw new coreIllegalArgsEx("Wrong number of arguments","Parameter.init");
 }
 
 Parameter.prototype.setValue=function(value) {
@@ -323,24 +417,6 @@ function soapSerializeEx(message,source) {
 }
 soapSerializeEx.extend(soapException);
 
-//*********************************
-//soapIllegalArgsEx
-//*********************************
-function soapIllegalArgsEx(message,source) {
-	soapException.call(this,message,source);
-	this.name="IllegalArgumentException";
-	this.desc="Illegal arguments";
-}
-soapIllegalArgsEx.extend(soapException);
-
-//*********************************
-//soapWrongArgNoEx
-//*********************************
-function soapWrongArgNoEx(message,source) {
-	soapIllegalArgsEx.call(this,message,source);
-	this.desc="Wrong number of arguments";
-}
-soapWrongArgNoEx.extend(soapIllegalArgsEx);
 
 
 //*********************************
@@ -378,11 +454,16 @@ IntSerializer.extend(SimpleTypeSerializer);
 
 IntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
 	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"IntSerializer.serialize");
+	if(isNaN(value)) throw new soapSerializeEx("Illegal value: "+value,"IntSerializer.serialize");
 	this.superclass.serialize(value,name,typeInfo,writer);
 }
 
 IntSerializer.prototype.deserialize=function(typeInfo,element) {
-	return parseInt(this.superclass.deserialize.call(this,typeInfo,element));
+	var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
+	//val=parseInt("fadf");
+	//alert(val);
+	//if(isNaN(val)) throw new soapSerializeEx("Illegal value: "+val,"IntSerializer.deserialize");
+	return val;
 }
 
 //*********************************
@@ -411,7 +492,7 @@ FloatSerializer.prototype.deserialize=function(typeInfo,element) {
 function ArraySerializer(xmlType) {
 	if(arguments.length==1) {
 		this.xmlType=xmlType;
-	} else throw new soapIllegalArgsEx("Wrong number of arguments","ArraySerializer");
+	} else throw new coreIllegalArgsException("Wrong number of arguments","ArraySerializer");
 }
 
 ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer) {
@@ -481,7 +562,6 @@ TypeMapping.prototype.register=function(xmlType,serializer) {
 //Serializer getSerializer(TypeInfo typeInfo)
 TypeMapping.prototype.getSerializer=function(typeInfo) {
 	if(arguments.length==1) {
-		alert("TYPE:"+typeInfo);
 		var serializer=this.mappings[typeInfo.xmlType.hashKey()];
 		if(serializer==null) {
 			serializer=this.getBuiltinSerializer(typeInfo);
@@ -489,7 +569,7 @@ TypeMapping.prototype.getSerializer=function(typeInfo) {
 			this.register(typeInfo.xmlType,serializer);
 		} 
 		return serializer;
-	} else throw new soapIllegalArgsEx("Wrong number of arguments","TypeMapping.getSerializer");
+	} else throw new coreIllegalArgsException("Wrong number of arguments","TypeMapping.getSerializer");
 }
 
 //Serializer getBuiltinSerializer(TypeInfo typeInfo)
@@ -513,8 +593,6 @@ var typeMapping=new TypeMapping();
 // RPCSerializer(QName opName,ArrayOfParameter params,values,...)
 //*********************************
 function RPCSerializer(opName,params,retTypeInfo) {
-	alert("ARGLEN:"+arguments.length);
-	alert("RETINF:"+retTypeInfo);
 	this.opName=opName;
 	this.params=params;
 	this.retTypeInfo=retTypeInfo;
@@ -531,12 +609,8 @@ RPCSerializer.prototype.serialize=function(writer) {
 }
 
 RPCSerializer.prototype.deserialize=function(element) {
-	alert("RPCDES:"+element);
-	alert(this.retTypeInfo);
 	var serializer=typeMapping.getSerializer(this.retTypeInfo);
-	alert("FOO:"+element.getElementsByTagName(this.opName+"Return")[0]);
 	var res=serializer.deserialize(this.retTypeInfo,element.getElementsByTagName(this.opName+"Return")[0]);
-	
 	return res;
 }
 
@@ -549,7 +623,8 @@ function Call() {
 	this.opName=null;
 	this.params=new Array();
 	this.retTypeInfo=null;
-  this.userCallback=null;
+  	this.userCallback=null;
+  	this.request=null;
 }
 
 //setTargetEndpointAddress(address)
@@ -578,7 +653,7 @@ Call.prototype.addParameter=function() {
 	} else if(arguments.length==3) {
 		var param=new Parameter(arguments[0],arguments[1],arguments[2]);
 		this.params.push(param);
-	} else throw new soapIllegalArgsEx("Wrong number of arguments","Call.addParameter");
+	} else throw new coreIllegalArgsEx("Wrong number of arguments","Call.addParameter");
 }
 
 //setReturnType(retTypeInfo)
@@ -600,7 +675,7 @@ Call.prototype.invoke=function() {
 			ind++;
 		}
 	}
-	if(this.params.length!=arguments.length-ind) throw new soapIllegalArgsEx("Wrong number of arguments","Call.invoke");
+	if(this.params.length!=arguments.length-ind) throw new coreIllegalArgsException("Wrong number of arguments","Call.invoke");
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
@@ -613,49 +688,39 @@ Call.prototype.invoke=function() {
   var resDoc;
   if( !this.userCallback ) {
     // sync
-    resDoc = new xmlRequest( 'POST', this.endpoint ).start( writer.xml );
-    return this.callback(resDoc);
-  }
+    this.request=new xmlRequest('POST',this.endpoint);
+    resDoc=this.request.start(writer.xml); 
     
-  // async
-  return new xmlRequest( 'POST', this.endpoint, this.callback, this ).start( writer.xml );
-}
-
-function getChildrenByName(elem,name) {
-	var nodes=new Array();
-	for(var i=0;i<elem.childNodes.length;i++) {
-		//alert(i+" "+elem.childNodes[i].nodeName);
-		if(elem.childNodes[i].nodeName==name) nodes.push(elem.childNodes[i]);
-	}
-	return nodes;
-}
-
-
-Call.prototype.callback = function( xml ) {
-
-  	  alert("Call.callback()..." + xml);
-	alert( this );
-	alert("XML:"+xml);
-	alert("XMLTYPE:"+typeof xml);
-	var soapMsg=new SOAPMessage(xml);
-	
-	var fault=xml.getElementsByTagName("soapenv:Fault");
-
-  //-------------
-  // deserialize
-  //-------------
-
-	var rpc=new RPCSerializer( this.opName, null, this.retTypeInfo);
-  var res = rpc.deserialize(soapMsg.getSOAPPart().getEnvelope().getBody().element);
-  if( this.userCallback ) {
-    // async
-    this.userCallback( res );
-    return true;
+    //resDoc = new xmlRequest( 'ePOST', this.endpoint ).start( writer.xml );
+    return this.callback(resDoc);
   } else {
-    // sync
-    return res;
+    // async
+    this.request=new xmlRequest( 'POST', this.endpoint, this.callback, this );
+    return this.request.start(writer.xml);
   }
+}
+
+Call.prototype.callback=function(xml) {
+	try {
+		var soapMsg=new SOAPMessage(xml);
+		var fault=soapMsg.getSOAPPart().getEnvelope().getBody().getFault();
+		if(fault!=null) {
+			var ex=new soapException(fault.toString(),"Call.callback");
+			if(this.userCallback) this.userCallback(null,ex);
+			else throw ex;
+		} else {
+			var rpc=new RPCSerializer( this.opName, null, this.retTypeInfo);
+			var res = rpc.deserialize(soapMsg.getSOAPPart().getEnvelope().getBody().element);
+  			if(this.userCallback) this.userCallback(res);
+   		else return res;
+   	}
+  	} catch(ex) {
+  		if(this.userCallback) this.userCallback(null,ex);
+  		else throw ex;
+  	}
 };
+
+
 
 
 //*********************************
@@ -667,7 +732,7 @@ function SOAPMessage() {
 		this.soapPart=new SOAPPart();
 	} else if(arguments.length==1) {
 		this.soapPart=new SOAPPart(arguments[0]);
-	} else throw new soapWrongArgNoEx("","SOAPMessage");
+	} else throw new coreWrongArgNoEx("","SOAPMessage");
 }
 
 //SOAPPart getSOAPPart()
@@ -688,11 +753,10 @@ function SOAPPart() {
 	if(arguments.length==0) {
 		this.envelope=new SOAPEnvelope();
 	} else if(arguments.length==1) {
-		var e=getChildrenByName(arguments[0],"soapenv:Envelope")[0];
-		alert("PART:"+e);
+		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Envelope")[0];
 		if(e==null) throw new soapException("NO SOAP MESSAGE","SOAPPart");
 		this.envelope=new SOAPEnvelope(e);
-	} else throw new soapWrongArgNoEx("","SOAPPart");
+	} else throw new coreWrongArgNoEx("","SOAPPart");
 }
 
 //SOAPEnvelope getEnvelope()
@@ -716,14 +780,14 @@ function SOAPEnvelope() {
 		this.body=new SOAPBody();
 		this.element=null;
 	} else if(arguments.length==1) {
-		var e=getChildrenByName(arguments[0],"soapenv:Header")[0];
+		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Header")[0];
 		if(e!=null) this.header=new SOAPHeader(e);
 		else this.header=new SOAPHeader();
-		e=getChildrenByName(arguments[0],"soapenv:Body")[0];
+		e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Body")[0];
 		if(e!=null) this.body=new SOAPBody(e);
 		else throw new soapException("NO MESSAGE BODY","SOAPEnvelope");
 		this.element=arguments[0];
-	} else throw new soapWrongArgNoEx("","SOAPEnvelope");
+	} else throw new coreWrongArgNoEx("","SOAPEnvelope");
 }
 
 //write(XMLWriter writer) {
@@ -767,18 +831,20 @@ function SOAPBody() {
 		this.bodyElems=new Array();
 		this.element=null;
 	} else if(arguments.length==1) {
-		var e=getChildrenByName(arguments[0],"soapenv:Fault")[0];
+		var e=xmlUtils.getChildrenByName(arguments[0],"soapenv:Fault")[0];
 		if(e!=null) this.fault=new SOAPFault(e);
-		else {
-			
-		};
 		this.element=arguments[0];
-	} else throw new soapWrongArgNoEx("","SOAPEnvelope");
+	} else throw new coreWrongArgNoEx("","SOAPEnvelope");
 }
 
 //addBodyElement(SOAPBodyElement bodyElem)
 SOAPBody.prototype.addBodyElement=function(bodyElem) {
 	this.bodyElems.push(bodyElem);	
+}
+
+//SOAPFault getFault()
+SOAPBody.prototype.getFault=function(fault) {
+	return this.fault;
 }
 
 //setFault(SOAPFault fault) 
@@ -844,15 +910,20 @@ function SOAPFault() {
 		this.detail=null;
 		this.element=null;
 	} else if(arguments.length==1) {
-		var e=getChildrenByName(arguments[0],"faultcode")[0];
-		if(e!=null) this.faultCode=e.nodeValue;
-		e=getChildrenByName(arguments[0],"faultstring")[0];
-		if(e!=null) this.faultString=e.nodeValue;
-		e=getChildrenByName(arguments[0],"detail")[0];
-		if(e!=null) this.detail=e.nodeValue;
+		var nl=xmlUtils.getChildrenByName(arguments[0],"faultcode");
+		if(nl!=null && nl.length>0) this.faultCode=xmlUtils.getText(nl[0]);
+		nl=xmlUtils.getChildrenByName(arguments[0],"faultstring");
+		if(nl!=null && nl.length>0) this.faultString=xmlUtils.getText(nl[0]);
+		nl=xmlUtils.getChildrenByName(arguments[0],"detail");
+		if(nl!=null && nl.length>0) this.detail=xmlUtils.getText(nl[0]);
 		this.element=arguments[0];
-		alert("FAULT: "+this.faultString+" "+arguments[0]);
-	} else throw new soapWrongArgNoEx("","SOAPFault");
+	} else throw new coreWrongArgNoEx("","SOAPFault");
+}
+SOAPFault.prototype.toString=function() {
+	var str="";
+	if(this.faultCode!=null) str+=": "+this.faultCode;
+	if(this.faultString!=null) str+=": "+this.faultString;
+	return str;
 }
 
 //*********************************
@@ -897,7 +968,7 @@ soapStub.prototype._createCall=function() {
 soapStub.prototype._extractCallback=function(args,expLen) {
 	var argLen=args.length;
 	if(argLen==expLen+1 && typeof args[argLen-1]=="function") return args[argLen-1];
-	else if(argLen!=expLen) throw new soapIllegalArgsEx("Wrong number of arguments","soapStub._extractCallback");
+	else if(argLen!=expLen) throw new coreIllegalArgsException("Wrong number of arguments","soapStub._extractCallback");
 	return null;
 }
 
