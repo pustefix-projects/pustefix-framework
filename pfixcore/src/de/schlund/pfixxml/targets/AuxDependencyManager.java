@@ -71,8 +71,7 @@ public class AuxDependencyManager implements DependencyParent {
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
-        String auxpath = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
-        File   auxfile = new File(auxpath);
+        File   auxfile = new File(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
         if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
             Document        doc     = Xml.parse(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
@@ -95,7 +94,7 @@ public class AuxDependencyManager implements DependencyParent {
 
     public synchronized void saveAuxdepend() throws IOException  {
         CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
-        String path = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
+        File path = new File(target.getTargetGenerator().getDisccachedir(), target.getTargetKey() + ".aux");
         
         Document auxdoc = Xml.createDocument();
         Element  root   = auxdoc.createElement("aux");

@@ -633,7 +633,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             ext_doc.appendChild(root);
             Element  ssheet  = ext_doc.createElement("stylesheet");
             root.appendChild(ssheet);
-            ssheet.setAttribute("name", generator.getDisccachedir() + stylesheet);
+            ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
             for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
                 String  key   = (String) i.next();
                 String  val   = (String) paramhash.get(key);

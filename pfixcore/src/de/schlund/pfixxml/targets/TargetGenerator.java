@@ -64,7 +64,7 @@ public class TargetGenerator {
     private final String                  configname;
     private final File                    confile;
     private File                          docroot;
-    private String                        disccachedir;
+    private File                          disccache;
     private File                          recorddir; // may be null
     
     /* All registered TargetGenerationListener */
@@ -92,8 +92,8 @@ public class TargetGenerator {
     public String getConfigname() {
         return configname;
     }
-    public String getDisccachedir() {  // TODO: return File
-        return disccachedir;
+    public File getDisccachedir() {
+        return disccache;
     }
     public File getRecorddir() {
         return recorddir;
@@ -177,13 +177,12 @@ public class TargetGenerator {
         NodeList targetnodes = config.getElementsByTagName("target");
 
         recorddir = getFileAttributeOpt(makenode, "record_dir");
-        File cache = getFileAttribute(makenode, "cachedir");
-        disccachedir = cache.getPath() + "/";
-        CAT.debug("* Set CacheDir to " + disccachedir);
-        if (!cache.exists()) {
-            cache.mkdirs();
-        } else if (!cache.isDirectory() || !cache.canWrite() || !cache.canRead()) {
-            throw new XMLException("Directory " + disccachedir + " is not writeable,readeable or is no directory");
+        disccache = getFileAttribute(makenode, "cachedir");
+        CAT.debug("* Set CacheDir to " + disccache);
+        if (!disccache.exists()) {
+            disccache.mkdirs();
+        } else if (!disccache.isDirectory() || !disccache.canWrite() || !disccache.canRead()) {
+            throw new XMLException("Directory " + disccache + " is not writeable, readeable or is no directory");
         }
 
         docroot = getFileAttribute(makenode, "docroot");
@@ -477,7 +476,7 @@ public class TargetGenerator {
             Target current = getTarget((String) e.next());
             if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
                 StringBuffer buf = new StringBuffer();
-                buf.append(">>>>> Generating ").append(getDisccachedir()).append(current.getTargetKey())
+                buf.append(">>>>> Generating ").append(getDisccachedir()).append(File.separator).append(current.getTargetKey())
                     .append(" from ").append(current.getXMLSource().getTargetKey()).append(" and ") .append(current.getXSLSource().getTargetKey());
                 System.out.println(buf.toString());
                 
@@ -629,8 +628,7 @@ public class TargetGenerator {
         
         attr = node.getAttributeNode(name);
         if (attr == null) {
-            return ""; // TODO
-            //throw new XMLException("missing attribute: " + name);
+            return null;
         }
         return attr.getValue();
     }

@@ -406,7 +406,7 @@ public class EditorHelper {
 
     public static void renderTargetContent(Target target, ResultDocument resdoc, Element root) {
         String key = target.getTargetKey();
-        String cache = target.getTargetGenerator().getDisccachedir();
+        File cache = target.getTargetGenerator().getDisccachedir();
         File docroot = target.getTargetGenerator().getDocroot();
         TargetType type = target.getType();
         File file;

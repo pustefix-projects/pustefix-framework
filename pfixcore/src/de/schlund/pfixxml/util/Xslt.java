@@ -109,10 +109,10 @@ public class Xslt {
         return xmlObjectFromSource(src);
     }
 
-    // public static Document xmlObjectFromString(String str) throws TransformerException {
-    //     SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
-    //     return xmlObjectFromSource(src);
-    // }
+    public static Document xmlObjectFromString(String str) throws TransformerException {
+        SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
+        return xmlObjectFromSource(src);
+    }
 
     private static Document xmlObjectFromSource(Source input) throws  TransformerException, TransformerConfigurationException {
         try {

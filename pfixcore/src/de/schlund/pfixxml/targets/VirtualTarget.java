@@ -100,7 +100,7 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0l) {
             synchronized (this) {
                 if (modtime == 0l) {
-                    File doc = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                    File doc = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -200,7 +200,7 @@ public abstract class VirtualTarget extends TargetImpl {
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                        File cachefile = new File(getTargetGenerator().getDisccachedir(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
@@ -229,7 +229,7 @@ public abstract class VirtualTarget extends TargetImpl {
         String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        File cachefile = new File(getTargetGenerator().getDisccachedir() + key);
+        File cachefile = new File(getTargetGenerator().getDisccachedir(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");

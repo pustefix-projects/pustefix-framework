@@ -18,8 +18,8 @@ public class TargetGeneratorTest extends TestCase {
         
         gen = create("<make docroot='.' cachedir='.' record_dir='.'/>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals(gen.getDocroot(), ".");
-        assertEquals(gen.getDisccachedir(), ".");
+        assertEquals(gen.getDocroot(), new File("."));
+        assertEquals(gen.getDisccachedir(), new File("."));
     }
 
     public void testTarget() throws Exception {
@@ -63,10 +63,6 @@ public class TargetGeneratorTest extends TestCase {
 
     public void testCachedirMissing() throws Exception {
         createInvalid("<make docroot='.' record_dir='.'/>", "cachedir");
-    }
-
-    public void testRecorddirMissing() throws Exception {
-        createInvalid("<make docroot='.' cachedir='.'/>", "record_dir");
     }
 
     public void testDocrootNoLongerNeeded() throws Exception {
