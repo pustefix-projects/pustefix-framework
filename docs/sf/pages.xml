@@ -2,11 +2,12 @@
 <pagedef>
     
   <page name="index" title="News"/>
+  <page name="download" title="Download"/>
   <page name="overview" title="Overview">
     <page name="xml" title="XML/XSLT"/>
     <page name="java" title="Java framework"/>
+    <page name="includeparts" title="Include parts"/>
   </page>
-  <page name="download" title="Download"/>
   <page name="udocs" title="Configuration">
     <page name="project" title="Project definition"/>
     <page name="prop" title="Servlet definition"/>
