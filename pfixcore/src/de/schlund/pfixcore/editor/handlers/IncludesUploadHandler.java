@@ -105,7 +105,7 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         text = text.trim();
                         
                     } else {
-                        text=DEF_TEXT_APPLET;
+                        text = DEF_TEXT_APPLET;
                     }
                     upl.setStringValContent(text);
                     if (SERIALIZER.isDebugEnabled())

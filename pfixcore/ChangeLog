@@ -1,3 +1,21 @@
+2003-05-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* Makefile: quite some changes top make generation of a skeleton package work.
+
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (addMessageToLangElem): new private method used to 
+	add the default message of a statuscode to the <lang> node. This method now handles the message as a xml fragment.
+	This allows e.g. to also use <pfx:argref> or other tags right in the default message.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (addUsedNamespace): new method: add namespaces used in the result tree.
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java (renderDefault): use this to add all namespaces defined
+	for the product (as they could occur in an include part)
+
+	* example/core/xsl/customizestylesheet.xsl: new file. this replaces
+	all the custommetatags files currently in use.
+	* ..../depend.xml.in: use it.
+	
+	* META-INF/pfixcore.version: start 0.3.3-pre
+
 2003-05-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* Makelfile:

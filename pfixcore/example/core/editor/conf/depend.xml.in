@@ -39,9 +39,10 @@
   <!-- ========= metatags =============== -->
   <target name="metatags.xsl" type="xsl">
     <depxml name="core/editor/xsl/metatags.xsl"/>
-    <depxsl name="core/editor/xsl/custommetatags.xsl"/>
+    <depxsl name="core/xsl/customizestylesheet.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/utils.xsl"/>
     <param name="product" value="editor"/>
     <param name="lang"    value="en"/>
   </target>

@@ -55,7 +55,13 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         EditorProduct          eprod       = esess.getProduct();
         TargetGenerator        tgen        = eprod.getTargetGenerator();
         AuxDependency          currinclude = esess.getCurrentInclude();
-        
+        PfixcoreNamespace[]    nspaces     = eprod.getPfixcoreNamespace();
+
+        for (int i = 0; i < nspaces.length; i++) {
+            PfixcoreNamespace nsp = nspaces[i];
+            resdoc.addUsedNamespace(nsp.getPrefix(), nsp.getUri());
+        }
+
         // Render the current status of the editor session
         esess.insertStatus(resdoc, resdoc.createNode("cr_editorsession"));
         

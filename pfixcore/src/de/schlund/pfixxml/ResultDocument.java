@@ -39,6 +39,7 @@ import de.schlund.util.statuscodes.StatusCode;
 
 public class ResultDocument {
     public  static final String PFIXCORE_NS = "http://www.schlund.de/pustefix/core";
+    public  static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
     
     private        Category               CAT   = Category.getInstance(ResultDocument.class.getName());
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
@@ -69,7 +70,7 @@ public class ResultDocument {
         
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
-        formresult.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
+        // formresult.setAttribute("xmlns:ixsl", IXSL_NS);
         formresult.setAttribute("serial", "" + date.getTime());
         doc.appendChild(formresult);
     }
@@ -77,6 +78,10 @@ public class ResultDocument {
     // public void setProperty(String name, String value) {
     //     spprop.put(name, value);
     // }
+
+    public void addUsedNamespace(String prefix, String uri) {
+        formresult.setAttribute("xmlns:" + prefix, uri);
+    }
     
     public SPDocument getSPDocument() {
         return spdoc;

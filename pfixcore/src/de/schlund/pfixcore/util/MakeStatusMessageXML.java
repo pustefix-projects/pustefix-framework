@@ -19,17 +19,18 @@
 
 package de.schlund.pfixcore.util;
 
-import java.util.*;
-import java.io.*;
+
+import de.schlund.pfixxml.*;
 import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*; 
-
-import org.w3c.dom.*;
-import org.apache.xpath.*;
+import java.io.*;
+import java.util.*;
 import javax.xml.parsers.*;
+import org.apache.log4j.*;
 import org.apache.xml.serialize.*;
+import org.apache.xpath.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 /**
  *
@@ -57,8 +58,13 @@ public class MakeStatusMessageXML {
     private static final int                    ERR_PARSE        = -4;
     private static final int                    ERR_SER          = -5;
     private static final int                    ERR_NOSCODE      = -6; 
-    private static final int                    ERR_TOOMANYNODES = -7;
+    private static final int                    ERR_NOTVALID     = -7;
     private static final int                    ERR_REMNA        = -8;
+
+    static {
+        dbfac.setNamespaceAware(true);
+        dbfac.setValidating(false);
+    }
     
     public static void main(String args[]) throws ParserConfigurationException {
         MakeStatusMessageXML maker = new MakeStatusMessageXML();
@@ -108,7 +114,7 @@ public class MakeStatusMessageXML {
                 doc.normalize();
                 maker.updateFile(scfac, allscodes, doc, messagefile);
             } catch (Exception e) {
-                CAT.error("FATAL: " + e.toString());
+                CAT.error("FATAL1: " + e.toString());
                 System.exit(ERR_PARSE);
             }
         } else {   
@@ -121,6 +127,8 @@ public class MakeStatusMessageXML {
     protected void createFile(StatusCodeFactory scfac, TreeSet allscodes, Document doc, String filename) {
         CAT.warn(">>> Creating NEW messagefile " + filename);
         Element root = doc.createElement(INCPARTS);
+        root.setAttribute("xmlns:ixsl", "http://www.w3.org/1999/XSL/Transform");
+        root.setAttribute("xmlns:pfx",  "http://www.schlund.de/pustefix/core");
         doc.appendChild(root);
         for (Iterator i = allscodes.iterator(); i.hasNext(); ) {
             String     scodename = (String) i.next();
@@ -189,7 +197,7 @@ public class MakeStatusMessageXML {
             format.setLineWidth(0);
             serial.serialize(doc);
         } catch (Exception e) {
-            CAT.error("FATAL: " + e.toString());
+            CAT.error("FATAL2: " + e.toString());
             System.exit(ERR_SER);
         }
     }
@@ -221,13 +229,17 @@ public class MakeStatusMessageXML {
         }
         Element    deflang = (Element) XPathAPI.selectSingleNode(part, "./product/lang[@name = 'default']");
         NodeList   nl      = ((Node) deflang).getChildNodes();
-        if (nl.getLength() > 1) {
-            CAT.error("Part: " + name + " Default Language has more than one ChildNode.");
-            System.exit(ERR_TOOMANYNODES);
+        // if (nl.getLength() > 1) {
+        //     CAT.error("Part: " + name + " Default Language has more than one ChildNode.");
+        //     System.exit(ERR_TOOMANYNODES);
+        // }
+        // deflang.removeChild(nl.item(0));
+        for (int i = 0; i < nl.getLength(); i++) {
+            deflang.removeChild(nl.item(i));
         }
-        deflang.removeChild(nl.item(0));
         deflang.setAttribute("warning", WARNING);
-        deflang.appendChild(part.getOwnerDocument().createTextNode(scode.getDefaultMessage()));
+        // deflang.appendChild(part.getOwnerDocument().createTextNode(scode.getDefaultMessage()));
+        addMessageToLangElem(deflang, scode.getDefaultMessage());
     }
 
     private void removePart(Element part) {
@@ -246,32 +258,52 @@ public class MakeStatusMessageXML {
     }
 
     private Element createNewPart(Document doc, String name, String message, boolean addwhite) {
-            Element part    = doc.createElement(PART);
-            Element defprod = doc.createElement(DEFPROD);
-            defprod.setAttribute("name", "default");
-            Element deflang = doc.createElement(DEFLANG);
-            deflang.setAttribute("name", "default");
-            deflang.setAttribute("warning", WARNING);
-            Text    text    = doc.createTextNode(message);
-            part.setAttribute("name", name);
-            if (addwhite) {
-                part.appendChild(doc.createTextNode(DOUBLE_WS));
-            }
-            part.appendChild(defprod);
-            if (addwhite) {
-                part.appendChild(doc.createTextNode(SINGLE_WS));
-            }
-            if (addwhite) {
-                defprod.appendChild(doc.createTextNode(TRIPLE_WS));
-            }
-            defprod.appendChild(deflang);
-            if (addwhite) {
-                defprod.appendChild(doc.createTextNode(DOUBLE_WS));
-            }
-            deflang.appendChild(text);
-            return part;
+        Element part    = doc.createElement(PART);
+        Element defprod = doc.createElement(DEFPROD);
+        defprod.setAttribute("name", "default");
+        Element deflang = doc.createElement(DEFLANG);
+        deflang.setAttribute("name", "default");
+        deflang.setAttribute("warning", WARNING);
+        part.setAttribute("name", name);
+        // Text     text    = doc.createTextNode(message);
+        if (addwhite) {
+            part.appendChild(doc.createTextNode(DOUBLE_WS));
+        }
+        part.appendChild(defprod);
+        if (addwhite) {
+            part.appendChild(doc.createTextNode(SINGLE_WS));
+        }
+        if (addwhite) {
+            defprod.appendChild(doc.createTextNode(TRIPLE_WS));
+        }
+        defprod.appendChild(deflang);
+        if (addwhite) {
+            defprod.appendChild(doc.createTextNode(DOUBLE_WS));
+        }
+        // deflang.appendChild(text);
+        addMessageToLangElem(deflang, message);
+        return part;
     }
 
+    private void addMessageToLangElem(Element langnode, String message) {
+        Document doc     = langnode.getOwnerDocument(); 
+        // Text     text    = doc.createTextNode(message);
+        // langnode.appendChild(text);
+        String   text = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
+            "<foo xmlns:pfx=\"http://www.schlund.de/pustefix/core\">" + message + "</foo>";
+        NodeList impelems = null;
+        try {
+            DocumentBuilder parser = dbfac.newDocumentBuilder();
+            impelems = parser.parse(new InputSource(new StringReader(text))).getDocumentElement().getChildNodes();
+        } catch (Exception exp) {
+            CAT.error("*** " + exp.toString());
+            System.exit(ERR_NOTVALID);
+        }
+        for (int i = 0; i < impelems.getLength(); i++) {
+            Node node = impelems.item(i);
+            langnode.appendChild(doc.importNode(node, true));
+        }
+    }
 
     private class PartNodeComparator implements Comparator {
         public int compare(Object param1, Object param2) {
