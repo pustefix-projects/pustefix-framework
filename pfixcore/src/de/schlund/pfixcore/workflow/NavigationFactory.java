@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixxml.*;
+import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 
@@ -33,23 +34,32 @@ import org.apache.log4j.*;
 public class NavigationFactory {
     private static Category          CAT      = Category.getInstance(NavigationFactory.class.getName());
     private static HashMap           navis    = new HashMap();
+    private static HashMap           modts    = new HashMap();
     private static NavigationFactory instance = new NavigationFactory();
     
     public static NavigationFactory getInstance() {
         return instance;
     }
             
-    public synchronized Navigation getNavigation(String navifilename, boolean force_load) throws Exception {
-        Navigation navi = null;
-
-        if (!force_load) {
-            navi = (Navigation) navis.get(navifilename);
-        } 
-
-        if (navi == null) {
-            navi = new Navigation(navifilename);
-            navis.put(navifilename, navi);
+    public synchronized Navigation getNavigation(String navifilename) throws Exception {
+        Navigation navi     = null;
+        File       navifile = new File(navifilename);
+        long       modfile  = navifile.lastModified();
+        long       currmod  = modfile;
+        
+        navi = (Navigation) navis.get(navifilename);
+        if (navi != null) {
+            currmod = ((Long) modts.get(navifilename)).longValue();
         }
+        
+        if (navi == null || (currmod < modfile)) {
+            CAT.warn("***** Creating Navigation object *******");
+            long now = System.currentTimeMillis();
+            navi     = new Navigation(navifilename);
+            navis.put(navifilename, navi);
+            modts.put(navifilename, new Long(now));
+        }
+        
         return navi;
     }
 }

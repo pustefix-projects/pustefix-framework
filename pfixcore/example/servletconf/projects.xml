@@ -52,6 +52,11 @@
       <active>true</active>
       <class>de.schlund.pfixxml.DerefServer</class>
     </servlet>
+    <servlet name="download">
+      <active>true</active>
+      <class>de.schlund.pfixxml.DirectOutputServlet</class>
+      <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
+    </servlet>
     <documentation>
       <doc_file><cus:docroot/>core/xsl/navigation.xsl.in</doc_file>
       <doc_file><cus:docroot/>core/xsl/utils.xsl.in</doc_file>
@@ -127,6 +132,7 @@
       <jvmopts>-mx200M</jvmopts>
     </jserv>
     <tomcat>
+      <maxprocessors>500</maxprocessors>
       <debug>0</debug>
       <loglevel>info</loglevel>
       <jkhost><cus:fqdn/></jkhost>
