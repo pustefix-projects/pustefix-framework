@@ -142,18 +142,18 @@ public abstract class ServletManager extends HttpServlet {
                 }
             }
         }
-        HttpSession session                    = null;
-        boolean     has_session                = false;
-        boolean     has_ssl_session_insecure   = false;
-        boolean     has_ssl_session_secure     = false;
-        boolean     force_jump_back_to_ssl     = false;
-        boolean     force_reuse_visit_id       = false;
+        HttpSession session                  = null;
+        boolean     has_session              = false;
+        boolean     has_ssl_session_insecure = false;
+        boolean     has_ssl_session_secure   = false;
+        boolean     force_jump_back_to_ssl   = false;
+        boolean     force_reuse_visit_id     = false;
         String      mark_session_as_no_cookies = null;
-        boolean     does_cookies               = doCookieTest(req, res);
+        boolean     does_cookies             = doCookieTest(req, res);
         if (req.isRequestedSessionIdValid()) {
-            session              = req.getSession(false);
-            has_session          = true;
-            Boolean secure       = (Boolean) session.getAttribute(SESSION_IS_SECURE);
+            session        = req.getSession(false);
+            has_session    = true;
+            Boolean secure = (Boolean) session.getAttribute(SESSION_IS_SECURE);
             CAT.debug("*** Found valid session with ID " + session.getId());
             // Much of the advanced security depends on having cookies enabled.  We need to make
             // sure that this isn't defeated by just disabling cookies.  So we mark every session
@@ -461,12 +461,12 @@ public abstract class ServletManager extends HttpServlet {
         HttpSession session = req.getSession(true);
         if (!reuse_session) {
             if (msanc == null) {
-                registerSession(req, session);
+            registerSession(req, session);
             } else {
                 session.setAttribute(VISIT_ID, msanc);
                 session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
                 SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
-            }
+        }
         }
         session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
@@ -515,7 +515,7 @@ public abstract class ServletManager extends HttpServlet {
         HttpSession session = req.getSession(true);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         if (msanc == null) {
-            registerSession(req, session);
+        registerSession(req, session);
         } else {
             session.setAttribute(VISIT_ID, msanc);
             session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
@@ -533,16 +533,16 @@ public abstract class ServletManager extends HttpServlet {
             for (int i = 0; i < cookies.length ; i++) {
                 Cookie cookie = cookies[i];
                 if (cookie.getName().equals(TEST_COOKIE)) {
-                    return true;
+            return true;
                 }
             }
             CAT.debug("*** Client sends cookies, but not our test cookie! ***");
         }
-        Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
-        probe.setPath("/");
-        res.addCookie(probe);
-        return false;
-    }
+            Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
+            probe.setPath("/");
+            res.addCookie(probe);
+            return false;
+        }
 
     private Cookie getSecureSessionCookie(HttpServletRequest req, String id) {
         Cookie[] cookies = req.getCookies();
@@ -734,7 +734,8 @@ public abstract class ServletManager extends HttpServlet {
     /**
      * This method uses all properties prefixed with 'exception' to build ExceptionConfig
      * objects, which are then stored in the exConfig-Map, keyed by the type attribute
-     * of the ExceptionConfig
+     * of the ExceptionConfig.
+     * Syntax of key: "exception" '.' JAVATYPE '.' ("forward"|"page"|"processor")
      * @exception ServletException if the exception configuration defined in the properties
      * is somehow invalid
      */
@@ -748,27 +749,35 @@ public abstract class ServletManager extends HttpServlet {
             
             if (propName.startsWith(PROP_EXCEPTION)) {
                 String          propValue = properties.getProperty(propName);
-                StringTokenizer tokenizer = new StringTokenizer(propName, ".");
-                if (tokenizer.countTokens() < 3)
-                    throw new ServletException("Exception configuration has wrong format: " + propName);
-                tokenizer.nextToken();
+
+                String type = null;
+                String attrName = null;
+                IndexOutOfBoundsException ioobex = null;
+                try {
+                    int dot1 = propName.indexOf('.');
+                    int dot2 = propName.lastIndexOf('.');
+                    type = propName.substring(dot1+1, dot2);
+                    attrName = propName.substring(dot2+1);
+                } catch (IndexOutOfBoundsException e) {
+                    // logging is done below
+                    ioobex = e;
+                }
+                if ( type == null || attrName == null || "".equals(type) || "".equals(attrName) ) {
+                    CAT.debug("Could not parse property key \""+propName+"\" into three non-empty parts separated by '.'", ioobex);
+                }
                 
-                String          exConfName = tokenizer.nextToken();
-                ExceptionConfig exConf     = (ExceptionConfig) tmpExConf.get(exConfName);
+                ExceptionConfig exConf     = (ExceptionConfig) tmpExConf.get(type);
 
                 CAT.debug("Property found for exception processing: " + propName + "=" + propValue);
 
                 if (exConf == null) {
                     exConf = new ExceptionConfig();
-                    tmpExConf.put(exConfName, exConf);
+                    exConf.setType(type);
+                    tmpExConf.put(type, exConf);
                 }
 
                 try {
-                    String attrName = tokenizer.nextToken();
-                    CAT.debug(attrName);
-                    if ("type".equals(attrName) ) {
-                        exConf.setType(propValue);
-                    } else if ("forward".equals(attrName) ) {
+                    if ("forward".equals(attrName) ) {
                         exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
                     } else if ("page".equals(attrName) ) {
                         exConf.setPage(propValue);

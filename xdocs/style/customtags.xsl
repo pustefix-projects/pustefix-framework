@@ -50,9 +50,12 @@
     <span class="ltgt">&lt;</span>
     <span><xsl:attribute name="class"><xsl:value-of select="$col"/>
       </xsl:attribute><xsl:value-of select="name()"/></span>
-    <xsl:for-each select="./xmlcodeNS">&#160;<span class="attrkey">xmlns<xsl:if test="string-length(@ns) &gt; 0">:</xsl:if><xsl:value-of select="@ns"/></span>
-      <xsl:text>="</xsl:text><span class="attrval"><xsl:value-of select="./text()"/></span><xsl:text>"</xsl:text></xsl:for-each>
-    <xsl:for-each select="@*">&#160;<span class="attrkey">
+    <xsl:for-each select="./xmlcodeNS"><xsl:text>&#160;</xsl:text>
+      <span class="attrkey">
+        <xsl:if test="@ns">xmlns</xsl:if><xsl:if test="string-length(@ns) &gt; 0">:<xsl:value-of select="@ns"/></xsl:if>
+        <xsl:if test="string-length(@attr) &gt; 0"><xsl:value-of select="@attr"/></xsl:if>
+      </span><xsl:text>="</xsl:text><span class="attrval"><xsl:value-of select="./text()"/></span><xsl:text>"</xsl:text></xsl:for-each>
+    <xsl:for-each select="@*"><xsl:text>&#160;</xsl:text><span class="attrkey">
         <xsl:value-of select="name()"/></span><xsl:text>="</xsl:text><span class="attrval">
         <xsl:value-of select="."/></span><xsl:text>"</xsl:text></xsl:for-each><span class="ltgt">
       <xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>

@@ -1,80 +1,86 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
-
-  <!-- This will be the only place in a future version where docroot is referenced! -->
-  <prop name="pustefix.docroot"><cus:docroot/></prop>
+<standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
   
-  <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
-
-  <!-- List of all factories to init -->
-  <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
-  <prop name="factory.initialize.01">de.schlund.util.statuscodes.PartIndex</prop>
-  <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
-  <prop name="factory.initialize.03">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
-  <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorProductFactory</prop>
-  <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
-  <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
-  <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
-  <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
-  <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
-
-  <cus:choose>
-    <cus:test mode="prod"></cus:test>
-    <cus:test>
-      <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
-    </cus:test>
-  </cus:choose>
-  
-  <!-- JMX Server -->
-  <prop name="jmx.server.port">9334</prop>
-  
-  <!-- SPCacheFactory -->
-  <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
-  <prop name="targetcache.cachecapacity">50</prop>
-  <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
-  <prop name="includecache.cachecapacity">50</prop>
-
-
-  <!--SPCacheStatistic-->
-  <prop name="cachestatistic.queuesize">60</prop>
-  <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
-
-  <!-- AuthManagerFactory -->
-  <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
-
-  <!-- EditorProductFactory -->
-  <cus:choose>
-    <cus:test mode="prod">
-      <prop name="editorproductfactory.delayinit">false</prop>
-    </cus:test>
-  </cus:choose>
-  <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
-
-  <!-- EditorCommonsFactory -->
-  <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
-  
-  <!--ExceptionHandler-->
-  <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
-  
-  <!--AppLoader-->
-  <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
-
-  <!--PerfStat-->
-  <prop name="perfstat.IHANDLER_IS_ACTIVE">3</prop>
-  <prop name="perfstat.IHANDLER_NEEDS_DATA">3</prop>
-  <prop name="perfstat.IHANDLER_PREREQUISITES_MET">3</prop>
-  <prop name="perfstat.CONTEXTRESOURCE_INSERT_STATUS">5</prop>
-  <prop name="perfstat.CONTEXTRESOURCE_OBSERVER_UPDATE">0</prop>
-  <prop name="perfstat.PAGE_IS_ACCESSIBLE">10</prop>
-  <prop name="perfstat.PAGE_NEEDS_DATA">10</prop>
-  <prop name="perfstat.PAGE_HANDLE_SUBMITTED_DATA">300</prop>
-  <prop name="perfstat.PAGE_INIT_IWRAPPERS">5</prop>
-  <prop name="perfstat.PAGE_RETRIEVE_CURRENT_STATUS">5</prop>
-  <prop name="perfstat.CONTEXT_CREATE_NAVI_COMPLETE">25</prop>
-  <prop name="perfstat.CONTEXT_CREATE_NAVI_REUSE">2</prop>
-  <prop name="perfstat.XMLSERVER_HANDLE_DOCUMENT">0</prop>
-  <prop name="perfstat.XMLSERVER_GET_DOM">0</prop>
-  <prop name="perfstat.XMLSERVER_CALL_PROCESS">0</prop>
-  <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
-  
-</properties>
+  <properties>
+    
+    <!-- This will be the only place in a future version where docroot is referenced! -->
+    <prop name="pustefix.docroot"><cus:docroot/></prop>
+    
+    <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
+    
+    <!-- List of all factories to init -->
+    <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
+    <prop name="factory.initialize.01">de.schlund.util.statuscodes.PartIndex</prop>
+    <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
+    <prop name="factory.initialize.03">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
+    <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorProductFactory</prop>
+    <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
+    <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
+    <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
+    <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
+    <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
+    
+    <choose>
+      <!--
+    <cus:test mode="prod"/>
+    -->
+      
+      <test>
+        <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
+      </test>
+    </choose>
+    
+    <!-- JMX Server -->
+    <prop name="jmx.server.port">9334</prop>
+    
+    <!-- SPCacheFactory -->
+    <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
+    <prop name="targetcache.cachecapacity">50</prop>
+    <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
+    <prop name="includecache.cachecapacity">50</prop>
+    
+    
+    <!--SPCacheStatistic-->
+    <prop name="cachestatistic.queuesize">60</prop>
+    <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
+    
+    <!-- AuthManagerFactory -->
+    <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
+    
+    <!-- EditorProductFactory -->
+    <choose>
+      <test mode="prod">
+        <prop name="editorproductfactory.delayinit">false</prop>
+      </test>
+    </choose>
+    <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
+    
+    <!-- EditorCommonsFactory -->
+    <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
+    
+    <!--ExceptionHandler-->
+    <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
+    
+    <!--AppLoader-->
+    <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
+    
+    <!--PerfStat-->
+    <prop name="perfstat.IHANDLER_IS_ACTIVE">3</prop>
+    <prop name="perfstat.IHANDLER_NEEDS_DATA">3</prop>
+    <prop name="perfstat.IHANDLER_PREREQUISITES_MET">3</prop>
+    <prop name="perfstat.CONTEXTRESOURCE_INSERT_STATUS">5</prop>
+    <prop name="perfstat.CONTEXTRESOURCE_OBSERVER_UPDATE">0</prop>
+    <prop name="perfstat.PAGE_IS_ACCESSIBLE">10</prop>
+    <prop name="perfstat.PAGE_NEEDS_DATA">10</prop>
+    <prop name="perfstat.PAGE_HANDLE_SUBMITTED_DATA">300</prop>
+    <prop name="perfstat.PAGE_INIT_IWRAPPERS">5</prop>
+    <prop name="perfstat.PAGE_RETRIEVE_CURRENT_STATUS">5</prop>
+    <prop name="perfstat.CONTEXT_CREATE_NAVI_COMPLETE">25</prop>
+    <prop name="perfstat.CONTEXT_CREATE_NAVI_REUSE">2</prop>
+    <prop name="perfstat.XMLSERVER_HANDLE_DOCUMENT">0</prop>
+    <prop name="perfstat.XMLSERVER_GET_DOM">0</prop>
+    <prop name="perfstat.XMLSERVER_CALL_PROCESS">0</prop>
+    <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
+    
+  </properties>
+</standardprops>

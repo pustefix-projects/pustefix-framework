@@ -1,3 +1,36 @@
+2004-12-03  Adam Habermann  <adam.habermann@schlund.de>
+
+	See following article for some background info about XML Schema
+	within pustefix and the new format of the .prop.in files:
+	http://sourceforge.net/mailarchive/forum.php?thread_id=5923414&forum_id=24420
+
+	* example/core/schema/properties200401.xsd:
+	XML Schema for .prop.in files
+	* xdocs/prop.xml:
+	new syntax for .prop.in files
+	* xdocs/prop082.xml
+	old syntax for .prop.in files
+	* skel/build.xml:
+	target "propfiles": turned on XML Schema validation
+	* build.xml:
+	target "testskel": added copy instruction for copying
+	lib/tomcat/jakarta-tomcat-x.x.xx.tar.gz which is not included
+	in pfixcore-skel-*.tar.gz anymore.
+	* stuff/propconv200401:
+	Tools for converting .prop.in files from syntax before XML Schema to
+	new syntax.
+	* example/core/prjtemplates/config.tmpl:
+	converted to new format
+	* **/prop.in:
+	converted to new format
+	* src/de/schlund/pfixxml/DirectOutputServer.java:
+	made a subclass of DirectOutputServlet to come to a consistent naming
+	* src/de/schlund/pfixxml/ServletManager.java:
+	Changed processing of exception properties to:
+	"exception" '.' JAVATYPE '.' ("forward"|"page"|"processor")
+	This is to get rid of the <exception> tag within pustefix.prop.in,
+	which did not comply to new format of <standardprops>.
+	
 2004-12-01  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/create_apacheconf.xsl: added match for literalauth-tag
