@@ -1,3 +1,9 @@
+2004-06-xx Michael Hartmier  <mhm@schlund.de>
+	* switch to tomcat 5
+	* example/tomcat is generated now, not checked-in
+	* create_*.xsl  container parameter removed
+	* tomcat.setup switch added	
+	
 2004-06-07  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: Let target "generate" depend on "all" again

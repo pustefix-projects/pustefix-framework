@@ -32,9 +32,7 @@ RewriteEngine on
   <xsl:apply-templates select="sslkey"/>
 </xsl:if>
 
-<xsl:if test="$container = 'tomcat'">
-  JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
-</xsl:if>
+JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
 
 <xsl:apply-templates select="$currentprj/errordoc"/>
 

@@ -8,29 +8,21 @@
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
   
   <xsl:param name="setup"/>
-  <xsl:param name="tomcat_defaulthost">
-    <xsl:apply-templates select="/projects/common/tomcat/defaulthost/node()"/>
-  </xsl:param>
-  <xsl:param name="tomcat_jvmroute">
-    <xsl:apply-templates select="/projects/common/tomcat/jvmroute/node()"/>
-  </xsl:param>
-  <xsl:param name="debug">
+  
+  <xsl:variable name="debug">
     <xsl:apply-templates select="/projects/common/tomcat/debug/node()"/>
-  </xsl:param>
-  <xsl:param name="minprocessors">
-    <xsl:apply-templates select="/projects/common/tomcat/minprocessors/node()"/>
-  </xsl:param>
-  <xsl:param name="maxprocessors">
-    <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
-  </xsl:param>
-  <xsl:param name="port">
-    <xsl:apply-templates select="/projects/common/tomcat/connectorport/node()"/>
-  </xsl:param>
-  <xsl:param name="adminport">
-    <xsl:apply-templates select="/projects/common/tomcat/adminport/node()"/>
-  </xsl:param>
+  </xsl:variable>
 
   <xsl:template match="projects">
+    <xsl:variable name="adminport">
+      <xsl:apply-templates select="/projects/common/tomcat/adminport/node()"/>
+    </xsl:variable>
+    <xsl:variable name="tomcat_defaulthost">
+      <xsl:apply-templates select="/projects/common/tomcat/defaulthost/node()"/>
+    </xsl:variable>
+    <xsl:variable name="tomcat_jvmroute">
+      <xsl:apply-templates select="/projects/common/tomcat/jvmroute/node()"/>
+    </xsl:variable>
     <Server port="8005" shutdown="SHUTDOWN">
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <xsl:if test="not(string($adminport) = '')"><xsl:attribute name="port"><xsl:value-of select="$adminport"/></xsl:attribute></xsl:if>
@@ -55,10 +47,19 @@
   </xsl:template>
 
   <xsl:template name="create-connector">
+    <xsl:variable name="jkport">
+      <xsl:apply-templates select="/projects/common/tomcat/connectorport/node()"/>
+    </xsl:variable>
+    <xsl:variable name="minprocessors">
+      <xsl:apply-templates select="/projects/common/tomcat/minprocessors/node()"/>
+    </xsl:variable>
+    <xsl:variable name="maxprocessors">
+      <xsl:apply-templates select="/projects/common/tomcat/maxprocessors/node()"/>
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="$setup = 'embedded'">
 	    <Connector port="8009" enableLookups="false" acceptCount="100" minProcessors="5" maxProcessors="20" protocol="AJP/1.3">
-          <xsl:if test="not(string($port) = '')"><xsl:attribute name="port"><xsl:value-of select="$port"/></xsl:attribute></xsl:if>
+          <xsl:if test="not(string($jkport) = '')"><xsl:attribute name="port"><xsl:value-of select="$jkport"/></xsl:attribute></xsl:if>
           <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
           <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
           <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
@@ -70,7 +71,6 @@
                enableLookups="false" redirectPort="8443" acceptCount="100"
                connectionTimeout="20000"
                disableUploadTimeout="true">
-          <!-- TODO: xsl:if test="not(string($port) = '')"><xsl:attribute name="port"><xsl:value-of select="$port"/></xsl:attribute></xsl:if -->
           <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
           <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
           <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
@@ -87,7 +87,7 @@
     	<xsl:apply-templates select="active/node()"/>
     </xsl:variable>
     <xsl:if test="normalize-space($active) = &apos;true&apos;">
- 		<Host>
+ 		<Host xmlValidation="true">
 		  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
 		  <xsl:attribute name="name">
 		    <xsl:apply-templates select="servername/node()"/>

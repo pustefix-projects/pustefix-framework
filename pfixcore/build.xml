@@ -475,7 +475,7 @@
             <tarfileset dir="${dir.lib}" includes="*.jar" prefix="skel/lib"/>
             <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
             <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
-            <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
+            <tarfileset dir="${dir.tomcat}" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
             <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
             <tarfileset dir="${basedir}" includes="INSTALL" prefix="skel"/>
             <tarfileset dir="${dir.toconf}" includes="newproject.prop.in newprjlog.xml.in" prefix="skel/projects/common/conf"/>
@@ -645,7 +645,7 @@
         <pfx-webxml
             style="${dir.projects}/core/build/create_tomcatweb.xsl"
             srcdir="${dir.projects}"
-            destdir="${dir.projects}/servletconf/tomcat"
+            destdir="${dir.tomcat}"
             includes="servletconf/projects.xml"
             extension=".xml"
             >
@@ -720,14 +720,13 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
 
     <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates common/conf/products.prj from servletconf/projects.xml with core/build/create_apacheconf.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
-            outfile="${dir.projects}/servletconf/tomcat/apache.conf"
+            outfile="${dir.tomcat}/apache.conf"
             style="${dir.projects}/core/build/create_apacheconf.xsl"
             >
             <param name="docroot"   expression="${dir.docroot}"/>
@@ -735,14 +734,13 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
 
     <target name="jk_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
-            outfile="${dir.projects}/servletconf/tomcat/jk.conf"
+            outfile="${dir.tomcat}/jk.conf"
             style="${dir.projects}/core/build/create_jkconf.xsl"
             >
             <param name="docroot"   expression="${dir.docroot}"/>
@@ -750,14 +748,13 @@
             <param name="uid"       expression="${uid}"/>
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
     
     <target name="workers_prop" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/workers.prop from servletconf/projects.xml with core/build/create_workersprop.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
-            outfile="${dir.projects}/servletconf/tomcat/workers.prop"
+            outfile="${dir.tomcat}/workers.prop"
             style="${dir.projects}/core/build/create_workersprop.xsl"
             >
             <param name="docroot"   expression="${dir.docroot}"/>
@@ -766,7 +763,6 @@
             <param name="machine"   expression="${machine}"/>
             <param name="mode"      expression="${makemode}"/>
             <param name="java_home" expression="${javahome}"/>
-            <param name="container" expression="tomcat"/>
         </pfx-xslt>
     </target>
     
@@ -827,16 +823,14 @@
 	<target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
-            outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
+            outfile="${dir.tomcat}/conf/server.xml"
             style="${dir.projects}/core/build/create_serverxml.xsl"
             >
-        	<param name="debug"       expression="0"/>
             <param name="docroot"     expression="${dir.docroot}"/>
             <param name="fqdn"        expression="${fqdn}"/>
             <param name="uid"         expression="${uid}"/>
             <param name="machine"     expression="${machine}"/>
             <param name="mode"        expression="${makemode}"/>
-            <param name="container"   expression="tomcat"/>
         	<param name="setup"       expression="${tomcat.setup}"/>
         </pfx-xslt>
     </target>
@@ -879,7 +873,7 @@ Properties
 -Djavahome=
   value:       location of the root directory of the j2se installation
                used for generation of
-               ${dir.projects}/servletconf/tomcat/workers.prop
+               ${dir.tomcat}/workers.prop
   environment: PFX_JAVA_HOME, JAVA_HOME
   default:     -         
   mandatory:   yes
