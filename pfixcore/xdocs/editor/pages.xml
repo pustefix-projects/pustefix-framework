@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>The Pages page</title>
+  </properties>
+
+  <body>
+
+  <section name="The Pages page">
+
+  <p>In the left frame all pages of the project are listed. If you select one of them,
+    detailed information on this page is displayed in the right frame.</p>
+  
+  <table>
+    <tr valign="top">
+      <td>
+        <p>The <i>Pages</i> page of the Pustefix editor.</p>
+        <img alt="editor pages page" src="../images/editor_pages.png"/>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td>
+              <b>Box No. 1</b> lists all targets for the current page. If you select
+              a target, you will see it in the <a href="targets.html">Targets</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 2</b> shows all includes used by the current page. With a click on it
+                you will see it in the <a href="includes.html">Includes</a> page.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 3</b> contains all images used by the current page. If you want to edit
+                an image, click on it and you will see it in the <a href="images.html">Images</a> page.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  </section>
+</body>
+</document>

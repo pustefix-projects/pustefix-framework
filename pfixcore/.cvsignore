@@ -10,4 +10,4 @@ testskel
 .classpath
 .project
 target
-velocity.log
+velocity.log*

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+
+  <properties>
+    <title>The Context</title>
+  </properties>
+
+  <body>
+
+  <section name="The Context">
+
+  <p>
+    The class <code>de.schlund.pfixcore.workflow.Context</code> is the main entry
+    point and dispatcher for requests in Pustefix. It is responsible for...
+    <ul>
+      <li>
+        ...providing an interface to
+        <code>de.schlund.pfixcore.workflow.ContextResource</code>
+        objects. These objects contain the data and the methods needed
+        to implement the desired functionality of a project.  Each
+        Context objects initializes one
+        <code>de.schlund.pfixcore.workflow.ContextResourceManager</code>,
+        which in turn initializes all the <a
+        href="prop.html#resource">requested</a> ContextResources. All
+        user data must be stored in ContextResources instead of
+        directly into the HttpSession (this is by design, because a
+        HttpSession only allows to store untyped String-to-Object
+        relations, while the ContextResources can expose arbitrary
+        complex access methods to the stored data).
+      </li>
+      <li>
+        ...poviding a pluggable authentication mechanism that is
+        called before any request processing to check if the current session
+        has the needed privileges.
+      </li>
+      <li>
+        ...mapping of requested pagenames (aka "PageRequests") to the objects that
+        implement the functionality that should be supplied by the
+        page. The Context (with the help of a PageMap object
+        initialized on startup of the Context) checks which page is
+        <a href="prop.html#pagerequest">requested</a> and uses the associated
+        <code>de.schlund.pfixcore.workflow.State</code> object to
+        dispatch the request processing to. See below for more details
+        on this process. Note that State objects are singeltons, so no
+        local data can be stored in States - all session data must be
+        stored in ContextResources.
+      </li>
+      <li>
+        ...organizing pages into PageFlows to provide a small scale
+        "workflow management". PageFlows are linear lists of
+        PageRequests which should be stepped through in order. The
+        Context advances a PageFlow after a request has been handled
+        sucessfully, ie. no error has happened as the result of
+        processing the request data. The detailed rules how page flows
+        work are explained below.
+      </li>
+    </ul>
+  </p>
+  <p>
+    The return value of the Context's entry point method
+    <code>handleRequest()</code> is a
+    <code>de.schlund.pfixxml.SPDocument</code>. This class is a
+    small wrapper around a <code>org.w3c.Document</code> and
+    supplies the XML input document for the final transformation
+    which produces the HTML output. Besides the DOM tree it contains
+    the information the system needs to choose the right stylesheet
+    for the dired page that is to be shown plus some other stuff
+    like XSLT parameters that should be set for the transformation
+    process. The Context doesn't produce the SPDocument itself but
+    delagates this to the State's method
+    <code>getDocument()</code>. See below for more detail.
+  </p>
+  
+  <subsection name="The Pustefix backend system">
+    <img src="images/java_context.png"/>
+  </subsection>
+
+  </section>
+  
+  <section name="States">
+
+  <p>
+    A State (a class implementing
+    <code>de.schlund.pfixcore.workflow.State</code>) is responsible for
+    processing incoming requests to produce the needed output in the
+    form of a <code>de.schlund.pfixxml.SPDocument</code>. States are
+    singletons, and one instance of a State can in fact be used to
+    handle lots of different pages (the object that represents a page
+    - or better: a page name - is a  <code>de.schlund.pfixcore.workflow.PageRequest</code>).
+  </p>
+
+  <p>
+    The interface of <code>State</code> is quite simple, it consists of just three methods:
+    
+    <ul>
+      <li>
+        <code>+ isAccessible(Context, PfixServletRequest) :
+        boolean</code>
+        <p>
+          This method is called by the Context to
+          check if the current page is accessible at all. A State can
+          deny accessibility depending on the state of the application's
+          data model which is stored in the Context's associated
+          ContextResources. A State can also request page specific
+          properties (by using the Context method
+          <code>gePropertiesForCurrentPageRequest() : Properties</code>)
+          to implement different behaviour (and accessibility) according
+          to which page it currently handles. The page specific
+          properties are a map of all <a href="prop.html#param"><code>param</code> child nodes</a> of
+          a <code>pagerequest</code> node (mapping the "name"
+          attribute of the param element to it's content).
+        </p>
+      </li>
+      <li>
+        <code>+ needsData(Context, PfixServletRequest) :
+        boolean</code>
+        <p>
+          This method is used while to determine the
+          next step in a page flow. Whenever a State signals the Context
+          "to continue" with the page flow, the Context starts searching
+          for the next member page to call <code>getDocument()</code> on
+          it's associated State. The (simplified) algorithm is like this:
+          The Context starts with the first page of the flow and calls
+          <code>needsData()</code> on it. If it returns
+          <code>false</code>, the next page is asked until finally a
+          State returns <code>true</code>. The associated page becomes
+          the new "current page" and the <code>getDocument()</code>
+          method of the State is called. Note that the real process is
+          more complicated, details are found below.
+        </p>
+      </li>
+      <li>
+        <code>+ getDocument(Context, PfixServletRequest) :
+        ResultDocument</code>
+        <p>
+          In this method the DOM tree is
+          produced which is returned to the XSLT transformation
+          engine. The return value is not the already mentioned
+          <code>SPDocument</code> but instead another small wrapper
+          class <code>de.schlund.pfixxml.ResultDocument</code>
+          that contains a SPDocument and some more meta data. E.g. there
+          is a flag that tells the Context that it should not return the
+          current DOM tree but instead start the page flow process to
+          ask another State to produce the returned DOM. This flag is
+          set to true by calling the ResultDocument method <code>setContinue(true)</code>.
+        </p>
+        <p>
+          The Context doesn't care if the current request submits data
+          that should be handled or if it is only asking for a page to
+          supply it's status so the page can be rendered initially
+          without handling any input. It is the sole responsibility of
+          the States inside their <code>getDocument()</code> method to
+          distinguish between these cases. The possible cases are
+          already implemented in
+          <code>de.schlund.pfixcore.workflow.StateImpl</code> from
+          which every State should inherit. The supplied methods one
+          can use are <code>isDirectTrigger(Context,
+          PfixServletRequest) : boolean</code> (true, when no data is
+          supplied) and <code>isSubmitTrigger(Context,
+          PfixServletRequest) : boolean</code> (true whenever
+          submitted data is to be handled be the State. The
+          <code>isSubmitAuthTrigger</code> method is a special case of
+          this, it is only true when the data that's submitted is for
+          a State that handles the authorization/authentication of a
+          session). Together with the Context method
+          <code>flowIsRunning() : boolean</code> (true whenever a
+          State's <code>getDocument()</code> method is called as the
+          result of a page flow process) these methods allow to handle
+          all relevant cases of calls to <code>getDocument()</code>.
+        </p>
+      </li>
+    </ul>
+  </p>
+
+  </section>
+  <section name="The contract between States and Context">
+  <p>
+    In this section we will describe in detail how the Context selects
+    the State to call and what a state is expected to return in which
+    situation.
+  </p>
+  <subsection name="PageFlows">
+  <p>
+    As already mentioned above, the pages the Context knows about are
+    optionally organized into PageFlow objects in the form of a linear
+    list of pages. A page can be part of none, one or many PageFlow. 
+  </p>
+  </subsection>
+  <subsection name="Some example page flows">
+
+  <img src="images/PageFlow.png"/>
+    
+  <p>The image shows some typical pages (named <b>A</b> to <b>N</b>) and
+  how they are organized into page flows ( <b>Flow I</b> to <b>Flow IV</b>). The
+  context selects the page to process depending on information given
+  via the path of the request. A typical Pustefix request looks
+  like this (parts in square brackets are variable):</p>
+  <p>
+    <code>http://[some.server.tld]/xml/[servletname]/[pagename]?[query_string]</code>
+  </p>
+  <p>
+    If the pagename is not given, the Context will reuse the last page
+    that was handled. If there is no last page, it will use the first
+    page from a PageFlow that has been designated to be the <a href="prop.html#defflow"><i>default
+    flow</i></a>. Because of this, every Context knows at least one
+    PageFlow with one member page.
+  </p>
+  <p>
+    The PageFlow is most often selected automatically. The Context
+    initially starts with the current page flow being set to the default
+    flow. Whenever a request comes in, the Context checks which page
+    should handle the request as descibed above. If the current flow
+    has this page as one of it's members, the flow is not changed (not
+    even when there are other flows that contain the page, too). If
+    the current flow does not contain the page, the Context looks if
+    there is another flow that contains it. If it finds <i>one</i> the
+    current flow is changed to this flow. If it finds <i>none</i>, the
+    pageflow is not changed, despite the fact that the current page is
+    not a member of the flow. If it finds <i>more than one</i>,
+    the result is undefined (one of those is selected, but don't count
+    on any order). This is one of the cases where you must help the
+    system by actually specifing which page flow to choose. This is
+    done by giving the special request parameter
+    <code>__pageflow</code> with the name of the flow as it's value.
+  </p>
+  <p>
+    In our example pictured above, suppose you are on <i>page[pageflow]</i> <b>M[Flow
+    IV]</b>. Now you jump to page <b>A</b> without giving a
+    <code>__pageflow</code> parameter. The system will switch to
+    <b>A[Flow I]</b>. But if you jump to page <b>D</b> instead, you
+    need to tell the system which pageflow to choose, as there is no
+    single valid possibility.
+  </p>
+  <p>
+    Note: using the <code>__pageflow</code> parameter even allows to
+    select a page flow which doesn't contain the target page at all!
+    so it is indeed possible to select a situation like <b>F[Flow
+    IV]</b>, it's just that the system will never choose a situation
+    like that <i>automatically</i> (only if the page isn't a member of
+    any flow, as explained above).
+  </p>
+  </subsection>
+  <subsection name="The processing of a request">
+  <p>
+    When the system has determined the <i>current page</i> and
+    <i>current pageflow</i> it goes on to hand over the request to the
+    State associated with the current page. This is done by calling
+    the State's <code>getDocument(Context, PfixServletRequest) :
+    ResultDocument</code> already mentioned above, of course after
+    checking if the State is accessible at all by calling
+    <code>isAccessible(Context, PfixServletRequest) : boolean</code>.
+    Note that the Context doesn't know or care if the request
+    submits data to be processed or request the current status to be
+    displayed.
+  </p>
+  <p>
+    The return value of processing this request that directly
+    addressed the current page is checked for a set <i>continue</i>
+    flag.  If this is false, the <code>SPDocument</code> is extracted
+    from the <code>ResultDocument</code> and returned (after some more
+    tweaking) to the upper layers to render the final HTML output.
+  </p>
+  <p>
+    Things get much more interesting when the <i>continue</i> flag is
+    set to true. In this case, the SPDocument is not used at all,
+    instead the Context starts a page flow process by asking all the
+    pages of the <i>current pageflow</i>, one after the other,
+    <b>always starting with the first member</b> but omitting the
+    <i>current page and any page that is not accessible</i> if they
+    <i>"need Data"</i>. As one can suspect this is done by calling the
+    <code>needsData(Context, PfixServletRequest) : boolean</code>
+    method of the associated State.
+  </p>
+  <p>
+    The first page that returns true becomes the new <i>current
+    page</i> and the associated State is used to again call the
+    <code>getDocument(Context, PfixServletRequest) :
+    ResultDocument</code> method.
+    <b>NOTE:</b> The State <b>must never</b> return from getDocument()
+    with the <i>continue</i> flag set to true when called from within
+    a page flow run. States can check in what status they are called by
+    using the Context's method <code>flowIsRunning() :
+    boolean</code>. The returned ResultDocument's embedded SPDocument
+    is always used for producing the HTML output in this case.
+  </p>
+  <p>
+    There are some additional bells and whistles to this seemingly
+    simple process.
+    <ul>
+      <li>
+        <p>
+          The pageflow process may stop not only because of a page
+          "needing data". Instead it's possible for a flow to mark <a
+          href="prop.html#stophere">one, many</a>
+          or <a href="prop.html#stopnext">all</a> pages to stop the
+          running flow (aka: call getDocument()) without the
+          associated State needing data <i> if and only if the
+          original request was targetted on a page that's before the
+          marked page in the current flow</i>. 
+        </p>
+        <p>
+          In our example, pageflow <b>Flow II</b> has one of those
+          marked flow steps, <b>G</b>. When a request originally
+          goes to page <b>B</b> the flow will stop at <b>G</b> just
+          because of the stop mark. If the request originally goes to
+          page <b>H</b>, it will only stop at <b>G</b> if the State
+          says it needs data.
+        </p>
+        <p>
+          This feature is very important whenever the data model is
+          already satisfied with it's status, and you don't want to
+          abuse the <code>needsData()</code> method to return true
+          just to implement a stop in the flow of pages. It's
+          important to stay true to the semantic of
+          <code>needsData()</code>: <b>Only return true when the State
+          really needs more input data to be "satisfied"</b> (whatever
+          this means depends on the special case). Don't abuse this
+          method for user interface driven flow handling.
+        </p>
+      </li>
+      <li>
+        <p>
+          When the page flow run is at the end of the flow, you need
+          to make sure that you don't "fall off the end" by having the
+          last page returning false on needsData(). There are two
+          possible ways to achieve this:
+          <ol>
+            <li>
+              Make sure the page's State always return true on
+              needsData() or mark the page to stop. This makes sure that
+              a page flow will always stop at least at the last step.
+              But note that you have to make sure that the State also
+              never returns from getDocument() with the continue flag
+              set to true because the current page is never asked for
+              data anyway in a flow run.
+            </li>
+            <li>
+              Define a so called <a href="prop.html#stopnext"><i>final page</i></a> for the
+              pageflow. This is another existing page (from the same
+              or another or none flow) which is called whenever the
+              flow "falls off the end". This page is never asked if it
+              needs data, getDocument() is called unconditionally
+              (Note please that of course every time the accessibility
+              is checked before getDocument() is called - the final
+              page is required to be accessible at that moment). In
+              our example, <b>Flow I</b> and <b>Flow III</b> have
+              final pages defined. In most cases defining final pages
+              is considered a good idea.
+            </li>
+          </ol>
+        </p>
+      </li>
+    </ul>
+  </p>
+
+  </subsection>
+  <subsection name="Breaking out of a pageflow">
+  <p>
+    After a request was handled that returns with the continue flag
+    set to true, the usual behaviour of the Context is to start a page
+    flow run with the current pageflow. Alternatively there is the
+    possibility to jump to any other page defined in the Context
+    instead. This is achieved by two optional request parameters
+    <code>__jumptopage</code> and <code>__jumptopageflow</code>. As
+    the name suggests, __jumptopage references the page to jump to
+    after the original request is processed (the returned
+    ResultDocument's continue flag still has to be set to true!). 
+    <code>__jumptopageflow</code> allows to also select the pageflow for the
+    <code>__jumptopage</code> if it can't be determined automatically or has to be
+    set differently than the automatic algorithm would choose it to be
+    (this works just the same as for the __pageflow parameter). The
+    __jumptopageflow parameter is only looked at if the __jumptopage
+    parameter is given, too.
+  </p>
+  </subsection>
+  </section>
+</body>
+</document>
