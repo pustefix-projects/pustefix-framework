@@ -1,3 +1,36 @@
+2004-10-11  Martin Leidig  <mleidig@schlund.de>
+
+	Added a "real world" webservice example application: a simple 
+	HTML/Javascript chat client and Pustefix based server, doing
+	all necessary communication via the Pustefix SOAP mechanism.
+
+	* example/webservice/conf/config.prop.in: Inserted chat configuration
+	* example/webservice/conf/depend.xml.in: Inserted chat configuration
+	* example/webservice/conf/webservice.conf.in: Definied chat service
+	* example/webservice/xml/two_frames.xml: Inserted chat stuff
+	* example/webservice/htdocs/chat-pfxsoap.js: Added chat javascript
+	* example/webservice/txt/pages/main_chat.xml: Added chat page
+	* src/de/schlund/pfixcore/example/webservices/chat/Chat.java: Added
+	chat webservice interface
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatImpl.java: Added
+	chat webservice implementation
+	* src/de/schlund/pfixcore/example/webservices/chat/ChatServer.java:
+	Added chat server implementation
+	* src/de/schlund/pfixcore/example/webservices/chat/ContextChat.java:
+	Added chat ContextResource interface
+	* src/de/schlund/pfixcore/example/webservices/chat/ContextChatImpl.java:
+	Added chat ContextResource implementation
+	* src/de/schlund/pfixcore/example/webservices/chat/Message.java: Added
+	bean representing chat message
+
+	* src/de/schlund/pfixcore/webservice/monitor/Monitor.java: Bugfix
+	* example/core/script/webservice.js: Now creates Javascript Error 
+	objects instead of SOAP_Exceptions for SOAP faults. Added handling
+	of void return types.
+	* example/core/script/xmlRequest.js: Now for asynchronous Mozilla 
+	XMLHttpRequests returning a HTTP error no exception is thrown, so
+	that the callback function can be called to process the response body.
+
 2004-10-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:

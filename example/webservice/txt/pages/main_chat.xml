@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+
+		<h1>Chat service</h1>
+        <div>
+		  <h2>Pustefix SOAP</h2>
+			<p>Pustefix soap calls took <span id="pfxsoap_time">0</span> ms.</p>
+			<p><span class="error" id="pfxsoap_error"></span></p>
+			
+            <table cellpadding="5" cellspacing="5" style="background-color:#b6cfe4;">
+              <tr>
+                <td>
+                  <form name="login" onsubmit="return false;">
+                    Nickname: <input id="nicknameInput" type="text" size="20" maxlength="20"/>
+                    <input id="loginInput" type="button" onclick="chatApp.login(document.getElementById('nicknameInput').value)" value="Log in"/>
+                    <input id="logoutInput" type="button" onclick="chatApp.logout()" value="Log out"/>
+                  </form>
+                </td>
+                <td>
+                    <div id="nicknames" name="nicknames" style="padding:5pt;border-style:ridge;border-width:0px;background-color:#dae7f2;width:250px;height:50px;overflow:auto"/>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div id="messages" name="messages" style="padding:5pt;border-style:ridge;border-width:0px;background-color:#dae7f2;width:750px;height:200px;overflow:auto"/>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <form name="sendmsg" onsubmit="chatApp.send(document.getElementById('messageInput').value);return false;">
+                    Message: <input id="messageInput" type="text" size="40"/>
+                    <input id="sendInput" type="button" onclick="chatApp.send(document.getElementById('messageInput').value)" value="Send"/>
+                  </form>
+                </td>
+              </tr>
+            </table> 
+            <pfx:script>  
+            	chatApp.init('<ixsl:value-of select="/formresult/chat/@loggedin"/>','<ixsl:value-of select="/formresult/chat/@nickname"/>');
+            </pfx:script>
+            
+		</div>
+          
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>

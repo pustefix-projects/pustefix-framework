@@ -28,7 +28,7 @@ public class Monitor {
     public Monitor(int histSize,String scope) {
         this.histSize=histSize;
         this.scope=scope;
-    	sessionToHistory=new WeakHashMap();
+        sessionToHistory=new WeakHashMap();
         ipToHistory=new HashMap();
         cleanupThread=new Thread() {
         	public void run() {
@@ -52,7 +52,7 @@ public class Monitor {
     }
     
     public synchronized MonitorHistory getMonitorHistory(HttpSession session) {
-    	MonitorHistory mh=(MonitorHistory)sessionToHistory.get(session);
+        MonitorHistory mh=(MonitorHistory)sessionToHistory.get(session);
         if(mh==null) {
         	mh=new MonitorHistory(histSize);
             sessionToHistory.put(session,mh);
@@ -71,13 +71,15 @@ public class Monitor {
     
     public synchronized void cleanup() {
         long time=System.currentTimeMillis()-(timeout*1000);
-    	Iterator it=sessionToHistory.keySet().iterator();
+        /**
+        Iterator it=sessionToHistory.keySet().iterator();
         while(it.hasNext()) {
-        	HttpSession session=(HttpSession)it.next();
+            HttpSession session=(HttpSession)it.next();
             MonitorHistory hist=(MonitorHistory)sessionToHistory.get(session);
             if(hist.lastModified()<time) sessionToHistory.remove(session);
         }
-        it=ipToHistory.keySet().iterator();
+        */
+        Iterator it=ipToHistory.keySet().iterator();
         while(it.hasNext()) {
             String ip=(String)it.next();
             MonitorHistory hist=(MonitorHistory)ipToHistory.get(ip);

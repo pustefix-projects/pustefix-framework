@@ -13,10 +13,10 @@
   
   <navigation>
     <page name="calculator" handler="/xml/config"/>
+    <page name="chat" handler="/xml/config"/>
     <page name="counter" handler="/xml/config"/>
     <page name="data" handler="/xml/config"/>
 	<page name="typetest" handler="/xml/config"/>
-   
     <page name="gencss"   handler="/xml/config"/>
   </navigation>
 
@@ -29,10 +29,10 @@
   </standardmetatags>
   
   <standardpage name="calculator" xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="chat" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="counter" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="data" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="typetest" xml="webservice/xml/two_frames.xml"/>
-
   <standardpage name="gencss"   xml="webservice/xml/styles.xml">
     <param name="outputmethod" value="text"/>
   </standardpage>

@@ -17,6 +17,7 @@
 			<div style="background:#000000;color:#FFFFFF;font-size:16pt;padding:5pt;padding-left:10pt;">
 				<span style="padding-right:20pt">Web service test application:</span>
 				<pfx:button page="calculator" activeclass="navi" normalclass="navi">Calculator</pfx:button>
+                <pfx:button page="chat" activeclass="navi" normalclass="navi">Chat</pfx:button>
 				<pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button>
 				<pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
 				<pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
@@ -42,6 +43,10 @@
 				<script type="text/javascript" src="/xml/wsscript/Calculator.js"></script>
 				<script type="text/javascript" src="/calc-pfxsoap.js"></script>		
 			</ixsl:when>
+            <ixsl:when test="$page='chat'">
+                <script type="text/javascript" src="/xml/wsscript/Chat.js"></script>
+                <script type="text/javascript" src="/chat-pfxsoap.js"></script>
+            </ixsl:when>
 			<ixsl:when test="$page='counter'">
 				<script type="text/javascript" src="/counter-soap.js"></script>
 				<script type="text/javascript" src="/counter-wsdl.js"></script>
@@ -64,7 +69,7 @@
                  <!-- <script type="text/javascript" src="/webservice_helper.js"></script>
                   <script type="text/javascript" src="/webservice.js"></script>-->
         </head>
-        <body style="padding-left:10pt;" onload="setupDisplay()">
+        <body style="padding-left:10pt;" onload="setupDisplay();">
           <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/>
           <div name="no_disp" style="display:none">
 			<h2 style="color:red">Browser has no native webservice support!</h2>
