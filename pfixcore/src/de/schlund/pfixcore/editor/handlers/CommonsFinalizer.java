@@ -51,14 +51,15 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
         TargetGenerator        tgen         = eprod.getTargetGenerator();
         AuxDependency          currcomm     = esess.getCurrentCommon();
         boolean                showincs     = esess.getShowAdditionalIncfiles();
-        esess.showAdditionalIncfiles(false);
-        
+        // esess.showAdditionalIncfiles(false);
+          
         // Render the current status of the editor session
         esess.insertStatus(resdoc, resdoc.createNode("cr_editorsession"));
-        
+          
         // Render all dynamic includes
         TreeSet commons = EditorCommonsFactory.getInstance().getAllCommons();
         Element root    = resdoc.createNode("allcommons"); 
+        root.setAttribute("allshown", "" + showincs);
         EditorHelper.renderAllIncludesForNavigation(commons, resdoc, root, currcomm, showincs);
 
         TreeSet searchcom = esearch.getDynResultSet();
