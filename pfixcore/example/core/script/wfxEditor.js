@@ -420,7 +420,7 @@ wfxEditor.prototype.src2col = function( buf ) {
 
   var rule_argval  = /(\"[^\0]*?\")/g;
 
-  var rule_entity  = /(&amp;.+?;)/g;
+  var rule_entity  = /(&amp;(.+?;))/g;
   var rule_comment = /(&lt;!--[^\0]*?--&gt;)/g;
   var rule_cdata   = /(&lt;!\[CDATA\[[^\0]*?\]\]&gt;)/g;
 
@@ -434,7 +434,6 @@ wfxEditor.prototype.src2col = function( buf ) {
   var comments = buf.match( rule_comment );
   if( comments instanceof Array ) {
     for( var i=0; i<comments.length; i++ ) {
-      // XXX: $$
       buf = buf.replace( new RegExp(comments[i].replace(/(\W)/g,'\\$1')), '&lt;!-- '+i+' --&gt;' );
     }
   }
@@ -444,7 +443,6 @@ wfxEditor.prototype.src2col = function( buf ) {
   var cdatas = buf.match( rule_cdata );
   if( cdatas instanceof Array ) {
     for( var i=0; i<cdatas.length; i++ ) {
-      // XXX: $$
       buf = buf.replace( new RegExp(cdatas[i].replace(/(\W)/g,'\\$1')), '&lt;!\[CDATA\[ '+i+' \]\]&gt;' );
     }
   }
@@ -517,7 +515,7 @@ wfxEditor.prototype.src2col = function( buf ) {
   }
 
   bench( null, 6 );
-  buf = buf.replace( rule_entity,     '<span class="entity">$1</span>' );
+  buf = buf.replace( rule_entity,     '<span class="entity" title="\&$2">$1</span>' );
   bench( "  entities", null, 6 );
 
   //--------------------------
@@ -527,7 +525,7 @@ wfxEditor.prototype.src2col = function( buf ) {
   bench( null, 6);
   if( comments instanceof Array ) {
     for( var i=0; i<comments.length; i++ ) {
-      buf = buf.replace( new RegExp('&lt;!-- '+i+' --&gt;'), '<span class="comment">'+comments[i]+'</span>' );
+      buf = buf.replace( new RegExp('&lt;!-- '+i+' --&gt;'), '<span class="comment">'+comments[i].replace(/\$/g,'$$$')+'</span>' );
     }
   }
   bench( "  comments2", null, 6);
@@ -536,7 +534,7 @@ wfxEditor.prototype.src2col = function( buf ) {
   if( cdatas instanceof Array ) {
     for( var i=0; i<cdatas.length; i++ ) {
 
-      buf = buf.replace( new RegExp('&lt;!\\[CDATA\\[ '+i+' \\]\\]&gt;'), '<span class="cdata">'+cdatas[i]+'</span>' );
+      buf = buf.replace( new RegExp('&lt;!\\[CDATA\\[ '+i+' \\]\\]&gt;'), '<span class="cdata">'+cdatas[i].replace(/\$/g,'$$$')+'</span>' );
     }
   }
   bench( "  cdatas2", null, 6);
@@ -1035,11 +1033,29 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
     pos = 0; 
   }
 
-  // strip off trailing whitespaces irrelevant for indentation
-  var prev = content.substring(0, pos).replace( /^([^\0]*?)\s*$/g, "$1");
-  //  alert( wfxEditor.str2chr(buf));
+  var prev = content.substring(0, pos);
 
-  //  if( (posprev = content.substring(0, pos).lastIndexOf(newline)) == -1 ) {
+  // single-/multiline comments: replace comments by inclosed newlines
+  // and pad with spaces
+  var rule_comment = /(<!--[^\0]*?-->)/g;
+  var comments = prev.match( rule_comment );
+  if( comments instanceof Array ) {
+    var comment2newlines, padding, str;
+    for( var i=0; i<comments.length; i++ ) {
+      comment2newlines = comments[i].replace( /[^\n\r]/g, "");
+      padding          = comments[i].length - comment2newlines.length;
+      str = "";
+      for( var j=0; j<padding; j++) {
+	str += " ";
+      }
+      prev = prev.replace( new RegExp(comments[i].replace(/(\W)/g,'\\$1')),
+			   str+comment2newlines);
+    }
+  }
+  
+  // strip off trailing whitespaces irrelevant for indentation
+  prev = prev.replace( /^([^\0]*?)\s*$/g, "$1");
+
   if( (posprev = prev.lastIndexOf(newline)) == -1 ) {
     // no previous newline
     posprev = 0;   // set to start of content
@@ -1075,9 +1091,9 @@ wfxEditor.prototype.indentCurrentRange = function( content, optiTab ) {
   contentTrailing = content.substr(    posEnd );
   content         = content.substring( posprev, posEnd );
 
-  //  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
-  //	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
-  //	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
+//  alert( wfxEditor.str2chr(contentLeading) + "\n**********************************************************************\n" +
+//  	 wfxEditor.str2chr(content) + "\n**********************************************************************\n" +
+//  	 wfxEditor.str2chr(contentTrailing) + "\n**********************************************************************\n" );
 
   pos     -= contentLeading.length;
   posprev -= contentLeading.length;
@@ -1134,11 +1150,15 @@ wfxEditor.prototype.indentCurrentLineInternal = function( content, posprev, pos,
   //  alert("spaces(prev):" + indentprev);
   //-------------------------------------------------------------------------
 
-  var rule_htmlTag        = /<([\w\:\-]+\b.*?)>/g;
-  var rule_htmlEndTag     = /<(\/[\w\:\-]+)>/g;
-  var rule_htmlSingleTag  = /<([\w\:\-]+\b[^>]*?)\/>/g;
+  var rule_htmlTag        = /<[\w\:\-]+\b.*?>/g;
+  var rule_htmlEndTag     = /<\/[\w\:\-]+>/g;
+  var rule_htmlSingleTag  = /<[\w\:\-]+\b[^>]*?\/>/g;
+  var rule_comment        = /<!--[^\0]*?-->/g;
 
   var prevline = prevline.replace( rule_htmlSingleTag, "");
+  var prevline = prevline.replace( rule_comment, "");
+
+  //  alert("prevline:\n" + wfxEditor.str2chr(prevline));
 
   var count_tags    = prevline.match(rule_htmlTag);
   count_tags = (count_tags instanceof Array ? count_tags.length : 0);
@@ -1771,8 +1791,8 @@ wfxEditor.str2chr = function( str ) {
     res += str.charAt(i)+"("+str.charCodeAt(i)+")";
   }
 
-  //  return str + "\n---------------------------------------\n" + res;
-  return "\n---------------------------------------\n" + res;
+  return str + "\n---------------------------------------\n" + res;
+  //  return "\n---------------------------------------\n" + res;
 }
 
 //*****************************************************************************
@@ -2780,8 +2800,8 @@ wfxEditor.offsetEnd   = -1;
 
 wfxEditor.tabWidth    = 2;
 
-wfxEditor.timeInterval   = 300;   // msec of rehighlighting frequency
-wfxEditor.timeEvent      = 50 ;   // minimum msec between (key)events
+wfxEditor.timeInterval   = 500;   // msec of rehighlighting frequency
+wfxEditor.timeEvent      = 200 ;   // minimum msec between (key)events
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
