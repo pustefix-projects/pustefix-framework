@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <div>
-  <h1>The Context</h1> The class
+  <h1>The Context</h1>
   <p>
-    <code>de.schlund.pfixcore.workflow.Context</code> is the main entry
+    The class <code>de.schlund.pfixcore.workflow.Context</code> is the main entry
     point and dispatcher for requests in <pustefix/>. It is responsible for...
     <ul>
       <li>
@@ -84,25 +84,87 @@
     <ul>
       <li>
         <code>+ isAccessible(Context, PfixServletRequest) :
-        boolean</code><br/> This method is called by the Context to
-        check if the current page is accessible at all. A State can
-        deny accessibility depending on the state of the application's
-        data model which is stored in the Context's associated
-        ContextResources. A State can also request page specific
-        properties (by using the Context method
-        <code>gePropertiesForCurrentPageRequest() : Properties</code>)
-        to implement different behaviour (and accessibility) according
-        to which page it currently handles. The page specific
-        properties are a map of all <a href="prop.html#param"><code>param</code> child nodes</a> of
-        a <code>pagerequest</code> node (mapping the "name" attribute of the param to it's content).
+        boolean</code>
+        <p>
+          This method is called by the Context to
+          check if the current page is accessible at all. A State can
+          deny accessibility depending on the state of the application's
+          data model which is stored in the Context's associated
+          ContextResources. A State can also request page specific
+          properties (by using the Context method
+          <code>gePropertiesForCurrentPageRequest() : Properties</code>)
+          to implement different behaviour (and accessibility) according
+          to which page it currently handles. The page specific
+          properties are a map of all <a href="prop.html#param"><code>param</code> child nodes</a> of
+          a <code>pagerequest</code> node (mapping the "name"
+          attribute of the param element to it's content).
+        </p>
       </li>
       <li>
-        <code>+ needsData(Context, PfixServletRequest) : boolean</code><br/>
+        <code>+ needsData(Context, PfixServletRequest) :
+        boolean</code>
+        <p>
+          This method is used while to determine the
+          next step in a page flow. Whenever a State signals the Context
+          "to continue" with the page flow, the Context starts searching
+          for the next member page to call <code>getDocument()</code> on
+          it's associated State. The (simplified) algorithm is like this:
+          The Context starts with the first page of the flow and calls
+          <code>needsData()</code> on it. If it returns
+          <code>false</code>, the next page is asked until finally a
+          State returns <code>true</code>. The associated page becomes
+          the new "current page" and the <code>getDocument()</code>
+          method of the State is called. Note that the real process is
+          more complicated, details are found below.
+        </p>
       </li>
       <li>
-        <code>+ getDocument(Context, PfixServletRequest) : SPDocument</code><br/>
+        <code>+ getDocument(Context, PfixServletRequest) :
+        ResultDocument</code>
+        <p>
+          In this method the DOM tree is
+          produced which is returned to the XSLT transformation
+          engine. The return value is not the already mentioned
+          <code>SPDocument</code> but instead another small wrapper
+          class <code>de.schlund.pfixxml.ResultDocument</code>
+          that contains a SPDocument and some more meta data. E.g. there
+          is a flag that tells the Context that it should not return the
+          current DOM tree but instead start the page flow process to
+          ask another State to produce the returned DOM. This flag is
+          set to true by calling the ResultDocument method <code>setContinue(true)</code>.
+        </p>
+        <p>
+          The Context doesn't care if the current request submits data
+          that should be handled or if it is only asking for a page to
+          supply it's status so the page can be rendered initially
+          without handling any input. It is the sole responsibility of
+          the States inside their <code>getDocument()</code> method to
+          distinguish between these cases. The possible cases are
+          already implemented in
+          <code>de.schlund.pfixcore.workflow.StateImpl</code> from
+          which every State should inherit. The supplied methods one
+          can use are <code>isDirectTrigger(Context,
+          PfixServletRequest) : boolean</code> (true, when no data is
+          supplied) and <code>isSubmitTrigger(Context,
+          PfixServletRequest) : boolean</code> (true whenever
+          submitted data is to be handled be the State. The
+          <code>isSubmitAuthTrigger</code> method is a special case of
+          this, it is only true when the data that's submitted is for
+          a State that handles the authorization/authentication of a
+          session). Together with the Context method
+          <code>flowIsRunning() : boolean</code> (true whenever a
+          State's <code>getDocument()</code> method is called as the
+          result of a page flow process) these methods allow to handle
+          all relevant cases of calls to <code>getDocument()</code>.
+        </p>
       </li>
     </ul>
   </p>
+
+  <h2>The Contract between States and Context</h2>
+  In this section we will describe in detail how the Context selects
+  the State to call and what a state is expected to return in which
+  situation.
+  ...
   
 </div>
