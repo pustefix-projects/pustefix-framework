@@ -3,7 +3,7 @@
   <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
 
   <servletinfo depend="core/editor/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
-    <editmode allow="true"/>
+    <editmode allow="false"/>
   </servletinfo>
 
   <context defaultflow="Editor" authpage="editoruserauth">

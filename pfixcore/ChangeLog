@@ -1,3 +1,8 @@
+2003-03-04  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/editor/conf/config.prop.in: changed editmode allow to
+	false
+
 2003-03-03  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/*: code cleanup - removed unused variables
