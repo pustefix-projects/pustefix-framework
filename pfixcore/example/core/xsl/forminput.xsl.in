@@ -322,14 +322,14 @@
   <xsl:template match="pfx:forminput">
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>Similar to the form-HTML-Tag &lt;form&gt;
-        action/method are not required. You'll have to put it round all
-        fields that belongs to a Formular. Other params will be copied (like frame|target etc).
+      <description>Similar to the html tag &lt;form&gt;
+        action/method are not required. You'll have to put it around all
+        fields that belong to a formular.
       </description>
       <param required="0">
-        <name>send_to_page</name>
+        <name>send-to-page</name>
         <values><string/></values>
-        <description>Name of the frame to display in the response</description>
+        <description>Name of the page that should handle the submitted form values</description>
       </param>
       <param required="0">
         <name>type</name>
@@ -339,16 +339,8 @@
             <option>auth</option>
           </oneof>
         </values>
-        <description>Setting type to 'auth' will make it possible to submit the values to authentification handlers</description>
+        <description>Setting type to 'auth' will submit the values to authentification handlers</description>
       </param>
-      <example>
-        <input>
-          <xmlcode><pfx:forminput target="_top">...</pfx:forminput></xmlcode>
-        </input>
-        <output>
-          <xmlcode><form method="post" target="_top" action="/xml/config/home;jsessionid=993288407194E4D00F35ED0A42A15368.foo?__frame=_top">...</form></xmlcode>
-        </output>
-      </example>  
     </cus:documentation>  
     <xsl:variable name="send-to-page" select="@send-to-page"/>
     <xsl:variable name="theframe">
