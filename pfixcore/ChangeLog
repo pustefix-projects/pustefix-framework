@@ -1,3 +1,11 @@
+2005-02-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/PfxProperties.java: new class,
+	overwrite hashCode() to return only object.hashCode(). This is to
+	go away from the slow synchronized hashCode() of Hashtable.  
+	* src/de/schlund/pfixxml/ServletManager.java (init): use
+	PfxProperties here.
+
 2005-02-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
