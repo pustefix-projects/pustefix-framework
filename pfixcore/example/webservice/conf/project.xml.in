@@ -42,7 +42,7 @@
   <servlet name="webservice">
 	<active>true</active>
 	<class>de.schlund.pfixcore.webservice.WebServiceServlet</class>
-	<propfile><cus:docroot/>webservice/conf/webservice.prop</propfile>
+	<propfile><cus:docroot/>webservice/conf/webservice.conf</propfile>
   </servlet>
   <documentation>
     <doc_file><cus:docroot/>webservice/xsl/metatags.xsl.in</doc_file>

@@ -76,7 +76,7 @@ public class WebServiceTask extends Task {
                 
                 Element elem=(Element)nl.item(i);
                 String prjName=elem.getAttribute("name");
-                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.prop");         
+                File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.conf");         
                 
                 //go on processing if webservices found
                 if(wsConfFile.exists()) {

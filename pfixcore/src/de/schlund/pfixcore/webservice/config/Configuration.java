@@ -18,6 +18,10 @@ public class Configuration {
     private GlobalServiceConfig globConf;
     private HashMap srvsConf;
     
+    public Configuration() {
+        srvsConf=new HashMap();
+    }
+    
     public Configuration(ConfigProperties props) throws ConfigException {
         this.props=props;
         init();
@@ -61,6 +65,14 @@ public class Configuration {
         return globConf;
     }
     
+    public void setGlobalServiceConfig(GlobalServiceConfig globConf) {
+        this.globConf=globConf;
+    }
+    
+    public void addServiceConfig(ServiceConfig srvConf) {
+        srvsConf.put(srvConf.getName(),srvConf);
+    }
+    
     public ServiceConfig getServiceConfig(String name) {
         return (ServiceConfig)srvsConf.get(name);
     }
@@ -88,5 +100,7 @@ public class Configuration {
         if(cnt!=scCnt) return true;
         return false;
     }
+    
+    
     
 }

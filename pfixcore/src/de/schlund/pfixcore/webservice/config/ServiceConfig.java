@@ -34,6 +34,10 @@ public class ServiceConfig extends AbstractConfig {
     String encUse;
     HashMap params;
     
+    public ServiceConfig() {
+        
+    }
+    
     public ServiceConfig(ConfigProperties props,String name) throws ConfigException {
         this.props=props;
         this.name=name;
@@ -60,12 +64,24 @@ public class ServiceConfig extends AbstractConfig {
         return name;
     }
     
+    public void setName(String name) {
+        this.name=name;
+    }
+    
     public String getInterfaceName() {
         return itfName;
     }
     
+    public void setInterfaceName(String itfName) {
+        this.itfName=itfName;
+    }
+    
     public String getImplementationName() {
         return implName;
+    }
+    
+    public void setImplementationName(String implName) {
+        this.implName=implName;
     }
     
     public void setContextName(String ctxName) {

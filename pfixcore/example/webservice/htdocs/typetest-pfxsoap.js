@@ -88,6 +88,8 @@ function pfxsoapCallback(result,exception) {
   	else pfxsoapPrintError(exception.toString(),t);
 }
 
+
+
 function pfxsoapCall() {
 	pfxsoapReset();
 	
