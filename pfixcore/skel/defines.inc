@@ -1,5 +1,5 @@
 PROJECT  = pfixcore_skel
-SRCDIR   = src
+SRCROOT  = src
 BUILDDIR = build
 
 export CLASSPATH  = $(shell ./bin/setClassPath.sh ${PWD}):${PWD}/projects/servletconf/tomcat/common/lib/servlet.jar
@@ -9,8 +9,8 @@ export JAVAC      = jikes -d ${PWD}/$(BUILDDIR) -sourcepath ${PWD}/$(SRCROOT) -g
 export JAR        = jar
 
 # add all directories containing source code of your projects here
-# e.g. ALLDIRS=$(SRCDIR)/org/my/projectFoo \
-#              $(SRCDIR)/org/my/projectBar
+# e.g. ALLDIRS=$(SRCROOT)/org/my/projectFoo \
+#              $(SRCROOT)/org/my/projectBar
 
-ALLDIRS = $(SRCDIR)
+ALLDIRS = $(SRCROOT)
 
