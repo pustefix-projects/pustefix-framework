@@ -11,10 +11,9 @@
     <page name="project" title="Project definition"/>
     <page name="prop" title="Servlet definition"/>
     <page name="depend" title="Page definition"/>
-    <page name="editor" title="Pustefix Editor"/>
     <page name="testclient" title="Test client"/>
   </page>
-  <page name="misc" title="Misc."/>
+  <page name="editor" title="Pustefix Editor"/>
   
 </pagedef>
   
