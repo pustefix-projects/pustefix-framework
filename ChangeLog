@@ -1,6 +1,7 @@
 2003-08-01  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixxml/loader/AppClassLoader.java (AppClassLoader): really removed it... and the jar file.
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java (AppClassLoader): really removed BCEL... 
+	and the jar file, too
 
 2003-08-01  Martin Leidig  <mleidig@schlund.de>
 
