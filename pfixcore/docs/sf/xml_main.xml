@@ -12,9 +12,8 @@
     are involved in producing the final stylesheet
     <code>BazPage.xsl</code> (this is slightly simplified,
     <code>master.xsl</code> and <code>metatags.xsl</code> are in fact
-    the product of yet another transformation, but the only thing these transformations
-    do is to customize the resulting stylesheets to your particular environment
-    so they can be written without using e.g. absolute pathnames).</p>
+    the product of yet another transformation, but these transformations
+    only customize the resulting stylesheets to your particular environment).</p>
   <p>
     Note that we only discuss the common case here, arbitrary complex
     and deep transformation trees are in fact possible.
@@ -42,18 +41,28 @@
     represent files that you need to create yourself. As you can see from the diagram, you only need one
     <code>metatags.xsl</code> per project. The <code>skin.xsl</code>
     file is special, as it is not a target (see below) but just another
-    XSLT stylesheet that can be included via <code>xsl:include</code> into both 
-    <code>master.xsl</code> and <code>metatags.xsl</code>. It contains templates that should apply on both
-    transformation stages, while <code>metatags.xsl</code> contains templates that apply only on the
+    XSLT stylesheet that can be included via <code>xsl:include</code> into 
+    <code>master.xsl</code>. It contains templates that should apply on the last 
+    transformation stage, while <code>metatags.xsl</code> contains templates that apply only on the
     first stage.</p>
-
   <p>
     There are projects that don't use a <code>skin.xsl</code>
-    stylesheet at all or include even more stylesheets. This is part
-    of the customization of <code>master.xsl</code> and
-    <code>metatags.xsl</code> mentioned above (and <a href="#caution">below</a>), but not shown in the diagram.
+    stylesheet at all or include even more stylesheets.
+    Making master.xsl aware of the presence of the
+    <code>skin.xsl</code> or <code>runtime.xsl</code> stylesheets is
+    part of the transformation from
+    <code>core/xsl/master.xsl</code> +
+    <code>core/xsl/customizemaster.xsl</code> =>
+    <code>master.xsl</code> mentioned above (and <a href="#caution">below</a>), but not shown in the diagram.
   </p>
-
+  <p>
+    Adding more stylesheets to <code>metatags.xsl</code> on the other
+    hand is done by simply using <code>xsl:include</code> in the head
+    of the <code>YOUR_PROJECT/xsl/metatags.xsl</code> file with a relative pathname. These will be expanded in a
+    similar transformation  <code>YOUR_PROJECT/xsl/metatags.xsl</code> +
+    <code>core/xsl/customizestylesheet.xsl</code> => <code>metatags.xsl</code>. 
+  </p>
+  
   <p>
     The <code>FooBase.xml</code> file defines the <i>structure</i> of
     the "BazPage" page (e.g. frames, the outer table structure if you do the
@@ -137,7 +146,7 @@
     and <code>metatags.xsl</code> are no leaf targets, but in fact virtual targets. The complete truth is that
     the transformations look like this:</p>
   <center>
-    <code>core/xsl/master.xsl</code> (<b>XML</b>/Leaf) + <code>YOUR_PROJECT/xsl/custommaster.xsl</code> (XSL/Leaf) =>
+    <code>core/xsl/master.xsl</code> (<b>XML</b>/Leaf) + <code>core/xsl/customizemaster.xsl</code> (XSL/Leaf) =>
     <code>master.xsl</code> (XSL/Virtual)
     <br/>and<br/>
     <code>YOUR_PROJECT/xsl/metatags.xsl</code> (<b>XML</b>/Leaf) + <code>core/xsl/customizestylesheet.xsl</code> (XSL/Leaf) =>
