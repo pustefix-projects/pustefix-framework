@@ -227,33 +227,42 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         
         editMenu.addSeparator();
 
-        action = getActionByName(DefaultEditorKit.cutAction);
+        System.out.println("Hier bin ich");
+        action = new DefaultEditorKit.CutAction();
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-        action.putValue(DefaultEditorKit.cutAction, new String("cut"));
+        action.putValue(Action.NAME, new String("Cut"));
         editMenu.add(action);
-
-
-        // editMenu.add(getActionByName(DefaultEditorKit.cutAction));
 
         
 
-        action = getActionByName(DefaultEditorKit.copyAction);
+       
+        action = new DefaultEditorKit.CopyAction();
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-        action.putValue(DefaultEditorKit.copyAction, "Copy");
-        editMenu.add(action);
+        action.putValue(Action.NAME, "Copy");
+        editMenu.add(action); 
+
+
         
-        action = getActionByName(DefaultEditorKit.pasteAction);
+        // action = getActionByName(DefaultEditorKit.pasteAction); --> Wrong ! Null Pointer Exception by the Second Call
+
+        action = new DefaultEditorKit.PasteAction();
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-        action.putValue(DefaultEditorKit.pasteAction, "Paste");
+        action.putValue(Action.NAME, "Paste");
         editMenu.add(action);
 
         editMenu.addSeparator();
 
-        action = getActionByName(DefaultEditorKit.selectAllAction);
-        action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
-        action.putValue(DefaultEditorKit.selectAllAction, "Select all");
-        editMenu.add(action);
+        // action = getActionByName(DefaultEditorKit.selectAllAction);
+        // if (action == null) {
+        //     System.out.println("Action Errror -------------------------");
+        // }
         
+        // action = new DefaultEditorKit.selectAllAction();
+        // action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        // action.putValue(Action.NAME, "Select all");
+        // editMenu.add(action);
+        editMenu.add(new SelectAllAction());
+
 
         tagClose = new JMenuItem("Close Tag");
         editMenu.add(tagClose);
@@ -611,6 +620,33 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
             redoAction.updateRedoState();
         }
     }
+
+
+
+
+    
+    protected class SelectAllAction extends AbstractAction
+    {
+	public SelectAllAction ()
+	{
+	    super("Select All");
+	    putValue(Action.ACCELERATOR_KEY,
+                     KeyStroke.getKeyStroke("control A"));
+	    putValue(Action.MNEMONIC_KEY, new Integer('A'));
+            putValue(Action.NAME, "Select all");
+	}
+        
+	public void actionPerformed (ActionEvent event)
+	{
+	    // Component focus = syntaxPane.getFocusOwner();	// who has focus?
+            
+	    // if (focus instanceof JTextComponent)
+            // ((JTextComponent) focus).selectAll();
+            syntaxPane.selectAll();
+	}
+    }
+    
+    
     
     class UndoAction extends AbstractAction {
         public UndoAction() {
