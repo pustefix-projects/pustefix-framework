@@ -61,7 +61,7 @@ public class FlowStepActionFactory {
             } catch (InvocationTargetException e) {
                 CAT.error("unable to invoke constructor in [" + action + "]", e);
             } catch (ClassCastException e) {
-                CAT.error("class [" + action + "] does not implement the interface FlowStepHandler", e);
+                CAT.error("class [" + action + "] does not implement the interface FlowStepAction", e);
             }
         }
         return act;

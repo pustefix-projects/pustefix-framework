@@ -61,34 +61,6 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
 
     private static Category          CAT             = Category.getInstance(TraxXSLTProcessor.class.getName());
     private static TraxXSLTProcessor instance        = new TraxXSLTProcessor();
-  /*  public static final String       TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
-    public static final String       DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
-    public static final String       SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
-    public static final String       DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
-    private static final String      SAXP_FAC_SAXON  = "com.icl.saxon.aelfred.SAXParserFactoryImpl";
-    public static final String       TRANS_FAC_KEY   = "javax.xml.transform.TransformerFactory";
-    public static final String       DOCB_FAC_KEY    = "javax.xml.parsers.DocumentBuilderFactory";
-    public static final String       SAXP_FAC_KEY    = "javax.xml.parsers.SAXParserFactory";
-    public static final String       TRANS_FAC_VALUE = TRANS_FAC_SAXON;
-    public static final String       DOCB_FAC_VALUE  = DOCB_FAC_XERCES;
-    public static final String       SAXP_FAC_VALUE  = SAXP_FAC_XERCES;*/
-
-    //~ Initializers ...............................................................................
-
-  /*  static {
-        if (CAT.isInfoEnabled()) {
-            StringBuffer b = new StringBuffer(100);
-            b.append("\nSetting ").append(TRANS_FAC_KEY).append(" to ").append(TRANS_FAC_VALUE).append(
-                    "\n").append("Setting ").append(DOCB_FAC_KEY).append(" to ").append(
-                    DOCB_FAC_VALUE).append("\n").append("Setting ").append(SAXP_FAC_KEY).append(
-                    " to ").append(SAXP_FAC_VALUE);
-            CAT.info(b.toString());
-        }
-        //wuerg!
-        System.getProperties().put(TRANS_FAC_KEY, TRANS_FAC_VALUE);
-        System.getProperties().put(DOCB_FAC_KEY, DOCB_FAC_VALUE);
-        System.getProperties().put(SAXP_FAC_KEY, SAXP_FAC_VALUE);
-    }*/
 
     //~ Methods ....................................................................................
 
@@ -345,7 +317,4 @@ class PFErrorListener implements ErrorListener {
         throw arg0;
     }
 
-    /*private void print(String msg, TransformerException ex) {
-        System.out.println(msg+": hallo:"+ex.getMessage()+"-->"+ex.getLocationAsString()+"-->"+ex.getException());
-    }*/
 }
