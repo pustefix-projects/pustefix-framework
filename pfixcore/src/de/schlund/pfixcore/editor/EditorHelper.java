@@ -617,6 +617,8 @@ public class EditorHelper {
                 olddir = dir;
                 if (dir == null) {
                     System.out.println("TODO: empty dir for path " + path);
+                    System.out.println("  part " + part);
+                    System.out.println("  product " + product);
                 }
             }
             if (!path.equals(oldpath) || olddir.equals("")) {
