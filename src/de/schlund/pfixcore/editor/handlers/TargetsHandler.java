@@ -30,6 +30,8 @@ import de.schlund.pfixxml.targets.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
 
+import org.apache.log4j.Category;
+
 /**
  * TargetsHandler.java
  *
@@ -42,6 +44,7 @@ import java.util.*;
  */
 
 public class TargetsHandler extends EditorStdHandler {
+    private static Category CAT = Category.getInstance(TargetsHandler.class.getName());
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm        = context.getContextResourceManager();
@@ -53,7 +56,11 @@ public class TargetsHandler extends EditorStdHandler {
         Target                 currtarget = tgen.getTarget(key);
         
         if (currtarget != null) {
-            currtarget.getValue(); // to force an update.
+            try {
+                currtarget.getValue(); // to force an update.
+            } catch(Exception e) {
+                CAT.warn("Exception when forcing update!", e);
+            }
             esess.setCurrentTarget(currtarget);
         } else {
             StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.targets");
