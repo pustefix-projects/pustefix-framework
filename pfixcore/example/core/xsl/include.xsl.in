@@ -370,31 +370,36 @@
   </xsl:template>
 
   <xsl:template match="pfx:image" name="pfx:image">
-    <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
-    <img border="0" alt="">
-      <xsl:copy-of select="./@*"/>
-      <xsl:attribute name="src"><xsl:value-of select="$src"/></xsl:attribute>
+    <xsl:param name="src" select="@src"/>
+    <xsl:param name="alt" select="@alt"/>
+    <xsl:param name="exclude-attributes"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt'"/>
+    <img src="{$src}" alt="{$alt}">
+      <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
-        <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
+        <xsl:with-param name="src" select="$src"/>
       </xsl:call-template>
-      <xsl:apply-templates/> <!--FIXME  ??????????????? wtf is this ? -->
+      <xsl:apply-templates/>
     </img>
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>
-        Used to add images. Standard value for border is 0. If
-        you want to change this, add the border attribute. All
-        attributes are copied into the resulting img tag.
-     </description>
-     <param required="1">
+        Include an image. All attributes are copied into the resulting img tag.
+      </description>
+      <param required="1">
         <name>src</name>
         <values><path/></values>
-        <description>path to the image</description>
-     </param>
-     <param required="0">
-        <name>border</name>
-        <values><html default="0"/></values>
-        <description>border</description>
+        <description>URI of image to embed</description>
+      </param>
+      <param required="1">
+        <name>alt</name>
+        <values><string/></values>
+        <description>Alternate text for user agents that cannot display images</description>
+      </param>
+      <param required="0">
+        <name>exclude-attributes</name>
+        <values><string/></values>
+        <description>String of attribute-names _not_ to copy from context-node</description>
       </param>
       <param required="0">
         <name>width</name>
@@ -404,7 +409,7 @@
       <param required="0">
         <name>height</name>
         <values><html default="auto"/></values>
-        <description>Height (different from the orgignal height)</description>
+        <description>Height (different from the original height)</description>
       </param>
       <example>
         <input>

@@ -488,17 +488,17 @@
     </xsl:choose>]:<xsl:value-of select="@name"/></ixsl:attribute><ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
     </xsl:for-each>
   </xsl:template>
-  
+
   <xsl:template match="pfx:xinp[@type='image']" name="pfx:xinp_image">
-    <xsl:param name="src"><xsl:value-of select="@src"/></xsl:param>
+    <xsl:param name="src" select="@src"/>
+    <xsl:param name="alt" select="@alt"/>
+    <xsl:param name="exclude-attributes"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|type|name|jumptopage|jumptopageflow|forcestop|pageflow'"/>
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
-    <input border="0"> 
-      <xsl:copy-of select="./@*[name()!='name']"/>
-      <xsl:attribute name="src">
-        <xsl:value-of select="$src"/>
-      </xsl:attribute>
+    <input type="image" src="{$src}" alt="{$alt}"> 
+      <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
-        <xsl:with-param name="src"><xsl:value-of select="$src"/></xsl:with-param>
+        <xsl:with-param name="src" select="$src"/>
       </xsl:call-template>
       <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
       <xsl:apply-templates/>
@@ -507,19 +507,20 @@
     <cus:documentation>
       <description>Use an image as a submit button. If you want to change the size, set the params width/height
       </description>
-      <param required="0">
+      <param required="1">
         <name>src</name>
-        <values>
-          <path/>
-        </values>
-        <description>Path to the image (usually /projectname/img/*.gif) </description>
+        <values><path/></values>
+        <description>URI of image to embed</description>
+      </param>
+      <param required="1">
+        <name>alt</name>
+        <values><string/></values>
+        <description>Alternate text for user agents that cannot display images</description>
       </param>
       <param required="0">
-        <name>border</name>
-        <values>
-          <int default="0"/>
-        </values>
-        <description></description>
+        <name>exclude-attributes</name>
+        <values><string/></values>
+        <description>String of attribute-names _not_ to copy from context-node</description>
       </param>
       <param required="0">
         <name>jumptopage</name>
