@@ -61,7 +61,7 @@ public class PageForwardingExceptionProcessor implements ExceptionProcessor {
                                  HttpServletRequest req, HttpServletResponse res)
                           throws IOException, ServletException {
         if ( !exConfig.getForward() || exConfig.getPage() == null )
-            throw new ServletException("Can't process Exception, due to wrong configuration: "+exConfig);
+            throw new ServletException("Wrong ExceptionConfig! 'forward' is false or 'page' is null : \n"+exConfig);
 
         String forwardPage = exConfig.getPage();
         pfixReq.setLastException(exception);
