@@ -19,13 +19,13 @@
 
 package de.schlund.pfixxml;
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.w3c.dom.*;
-import org.apache.log4j.*;
-import de.schlund.util.statuscodes.*;
+import java.util.Properties;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  *

@@ -19,15 +19,17 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import java.util.Date;
+import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * @author jtl

@@ -19,14 +19,16 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
-import java.lang.reflect.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import java.util.Iterator;
+import java.util.WeakHashMap;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 /**
  * @author jtl
