@@ -1,3 +1,8 @@
+2003-10-31  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/master.xsl.in: Eeeek. seem to finally have solved the stupid copying of namespaces
+	into the html.... wonder why I always thought this wouldn't work?????
+
 2003-10-29  Adam Habermann  <adam.habermann@schlund.de>
 	
 	* build.xml:

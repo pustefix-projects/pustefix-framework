@@ -83,7 +83,7 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.0">
+    <ixsl:stylesheet version="1.0" exclude-result-prefixes="pfx cus xsl ixsl">
       <cus:final-output-method>
         <xsl:attribute name="method">
           <xsl:value-of select="$outputmethod"/>
