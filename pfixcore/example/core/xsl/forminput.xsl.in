@@ -663,10 +663,10 @@
       <description>Creates one or more "option" form elements. The options are taken from the result tree,
       where they need to be given below the elment designated by the "optionpath" attribute</description>
       <param required="1">
-        <name>optionpath</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>...</description>
+        <name>optionpath</name> <standard></standard>
+        <possible_values></possible_values> <description>The path to
+        the node in the result tree, under which the "option" elements
+        are that should be inserted</description>
       </param>
     </cus:documentation>
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
