@@ -588,10 +588,19 @@
       </example>
     </cus:documentation>  
     <input type="radio">
-      <xsl:copy-of select="@*"/>
-      <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
-        <ixsl:attribute name="checked">checked</ixsl:attribute>
-      </ixsl:if>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:choose>
+        <xsl:when test="@default = 'true'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:apply-templates/>
     </input>
   </xsl:template>

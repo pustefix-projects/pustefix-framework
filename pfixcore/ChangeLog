@@ -1,3 +1,10 @@
+2003-10-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/script/baselib.js (__js_Layer): Rewrote cookie
+	handling after a suggestion of Sebastian Werner <sw@schlund.de>:
+	We store the state of the layers not each in it's own cookie but
+	concatenated together in up to 10 cookies.
+
 2003-10-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
