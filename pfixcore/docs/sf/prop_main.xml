@@ -426,7 +426,7 @@
                       FlowStepAction <code>de.schlund.pfixcore.workflow.FlowStepJumpToAction</code>
                       which is used to set the <i>jumptopage</i> (defined via the <code>page</code>
                       attribute) and/or the <i>jumptopageflow</i> (defined via
-                      the <code>pageflow</code> attribute). 
+                      the <code>pageflow</code> attribute).
                     </p>
                   </div>
                 </xmlcodeOFF>
@@ -812,6 +812,84 @@
           </div>
         </xmlcodeOFF>
       </pagerequest>
+      <xmlcodeOFF>
+        <a name="pagerequest"/>
+      </xmlcodeOFF>
+      <exception forward="true|false" page="/AServletName/APageName" type="any.kind.of.Exception"
+                 processor="class.implementing.ExceptionProcessor">
+        <xmlcodeOFF>
+          <div class="comment">
+            There may be multiple <code>exception</code> tags
+            defined, each with a different <code>type</code>-attribute. If there
+            are <code>exception</code>-tags with the same <code>type</code>-attribute,
+            only one of these will affect exception-handling, although there is no
+            guarantee on which one this will be.
+            <br />
+            If an exception occurs during exception processing, or during processing
+            of the page, the request got forwarded to, no exception furhter handling
+            as can be configured during the <code>exception</code>-tag,  will take
+            place. Therefore the code that processes exceptions and the code that
+            drives pages to which requests get forwarded, in case of exceptions, should
+            be quite robust. Otherwise the whole exception-handling thing would be quite
+            useless, wouldn't it?
+            <br/><br/>
+            <table class="stdtable">
+                <tr>
+                  <th>Attribute</th>
+                  <th>Description</th>
+                </tr>
+                <tr>
+                    <td><code>type</code></td>
+                    <td><b>Mandatory</b>. This attribute must contain the fully qualified
+                        class name of a valid Exception-class, for which the handling should be
+                        configured at this point. In this case it specifically means,
+                        that the specified class must be a descendant of <code>java.lang.Throwable</code>,
+                        as the <code>catch</code>-block that handles the exceptions which are specified
+                        here, catches <code>Throwable</code>.
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>forward</code></td>
+                    <td>If you specify a custom ExceptionProcessor, it depends on the implementation
+                        of the custom processor, whether this attribute is mandatory or optional.
+                        <br />
+                        If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>,
+                        and <b>must</b> be set to <code>true</code>. It signals the ExceptionProcessor,
+                        whether the request should be forwarded to the specified page. In case
+                        of the default ExceptionProcessor (see below) the page gets always forwarded, and
+                        another value as <code>true</code> for the <code>forward</code>-attribute will
+                        result in an exception.
+                     </td>
+                </tr>
+                <tr>
+                    <td><code>page</code></td>
+                    <td>If you specify a custom ExceptionProcessor, it depends on the implementation
+                        of the custom processor, whether this attribute is mandatory or optional.
+                        <br />
+                        If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>.
+                        This specifies a page to which the request will be forwarded in case
+                        an exception occurs. The page must be specified as an absolute servlet-path,
+                        which means, the pageName must be prefixed with the servletName that
+                        serves the page (e.g. <code>/config/auth_user</code> or something similar).
+                        <br />
+                        The page must be served by a servlet that is contained within the same webapp
+                        (or pustefix-project, which basically means the same). One cannot forward a request
+                        to page that's in another project as the one in which the exception occurred.
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>processor</code></td>
+                    <td>Optional. A fully qualified class name of a class, that implements
+                        the <code>de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor</code>
+                        -interface. If not present the default processor
+                        <code>de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor</code>
+                        will be used.
+                    </td>
+                </tr>
+            </table>
+          </div>
+        </xmlcodeOFF>
+      </exception>
       <prop name="AProperty">AValue</prop>
     </properties>
   </xmlcode>
