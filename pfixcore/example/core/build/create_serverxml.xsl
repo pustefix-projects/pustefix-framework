@@ -67,29 +67,32 @@
     <xsl:param name="debug">
       <xsl:apply-templates select="/projects/common/tomcat/debug/node()"/>
     </xsl:param>
-    
-    <Host>
-      <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-      <xsl:attribute name="name">
-	<xsl:apply-templates select="servername/node()"/>
-      </xsl:attribute>
-      <xsl:call-template name="create_tomcat_aliases">
-        <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
-      </xsl:call-template>
-      <Valve className="org.apache.catalina.valves.AccessLogValve"
-	     directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
-      
-      <Logger className="org.apache.catalina.logger.FileLogger"
-	      directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>
-      
-      <Context path="/xml" debug="20" crossContext="true" cookies="false">
-	<xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
-	<xsl:attribute name="docBase">
-	  <xsl:value-of select="$docroot"/>/servletconf/tomcat/webapps/<xsl:apply-templates select="@name"/>
-	</xsl:attribute>
-      </Context>
-    </Host>
-      
+    <xsl:variable name="active">
+    	<xsl:apply-templates select="active/node()"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($active) = &apos;true&apos;">
+ 		<Host>
+		  <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+		  <xsl:attribute name="name">
+		<xsl:apply-templates select="servername/node()"/>
+		  </xsl:attribute>
+		  <xsl:call-template name="create_tomcat_aliases">
+			<xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
+		  </xsl:call-template>
+		  <Valve className="org.apache.catalina.valves.AccessLogValve"
+			 directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
+		  
+		  <Logger className="org.apache.catalina.logger.FileLogger"
+			  directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>
+		  
+		  <Context path="/xml" debug="20" crossContext="true" cookies="false">
+		<xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+		<xsl:attribute name="docBase">
+		  <xsl:value-of select="$docroot"/>/servletconf/tomcat/webapps/<xsl:apply-templates select="@name"/>
+		</xsl:attribute>
+		  </Context>
+		</Host>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="create_tomcat_aliases">
