@@ -405,7 +405,6 @@ or delete the DOCTYPE definition -->
       </fileset>
       <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml servletconf/tomcat/conf/Catalina/**/*"/>
     </delete>
-    <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
     <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
   </target>
 
@@ -478,7 +477,7 @@ or delete the DOCTYPE definition -->
     <tar destfile="${file.pfixcore_skel_tgz}" compression="gzip">
       <tarfileset dir="${dir.skel}" prefix="skel"/>
       <tarfileset dir="${dir.metainf}" includes="${name.cvsautotag}" prefix="skel"/>
-      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/*" prefix="skel/lib"/>
+      <tarfileset dir="${dir.lib}" includes="*.jar, tomcat/*" excludes="tomcat/jmx.jar" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_jar}" prefix="skel/lib"/>
       <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
       <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
@@ -802,6 +801,8 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.jndi"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
+    <available file="lib/tomcat/jmx.jar" property="jmx.found"/>
+    <antcall target="tomcat.jmx"/>
   </target>
 
   <target name="tomcat.extract">
@@ -826,6 +827,9 @@ or delete the DOCTYPE definition -->
     <move todir="${dir.tomcat}">
       <fileset dir="${tmp.tomcat}" />
     </move>
+    
+    <!-- cvs would remove this dir, event though we cvs-ignore it! -->
+    <touch file="${dir.tomcat}/logs/dontpruneme"/>
   </target>
 
   <target name="tomcat.strip">
@@ -868,6 +872,11 @@ or delete the DOCTYPE definition -->
       </dname>
     </genkey>
   </target>
+
+  <target name="tomcat.jmx" if="jmx.found">
+    <!-- work-around bug 29056 -->
+    <copy file="lib/tomcat/jmx.jar" todir="${dir.tomcat}/bin" overwrite="true"/>
+  </target> 
 
   <description>
     Targets
