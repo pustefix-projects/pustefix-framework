@@ -26,7 +26,6 @@ import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.Target;
 import java.util.HashSet;
 

@@ -17,7 +17,5 @@
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
 	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
-	<classpathentry kind="lib" path="lib/rmiobj.jar"/>
-	<classpathentry kind="lib" path="lib/jbossall-client.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
