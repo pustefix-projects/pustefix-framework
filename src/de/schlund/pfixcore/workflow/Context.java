@@ -34,10 +34,7 @@ import org.w3c.dom.Element;
  * request. This decision is based on the notion of workflows (aka
  * {@link de.schlund.pfixcore.workflow.PageFlow PageFlow}s).
  *
- *
  * @author jtl
- * @version $Id$
- *
  *
  */
 public class Context implements AppContext {
@@ -719,7 +716,7 @@ public class Context implements AppContext {
                     flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                     pageflow_requested_by_user = false;
                 }
-             } else {
+            } else {
                 flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
                 pageflow_requested_by_user = false;
             }
