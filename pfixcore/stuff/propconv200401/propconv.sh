@@ -292,7 +292,7 @@ fi
 # $2-* docroot relative prop.in
 function convert {
   if [ $# -lt 2 ]; then
-    echo $0: too few arguments: continue.
+    echo $0: \"$@\" too few arguments: continue.
     return
   fi
   roottag=$1
@@ -334,9 +334,9 @@ if [ "$project" = "true" ]; then
 fi
 
 if [ "$convert" = "true" ]; then
-  convert standardprops $standardprops
-  convert directoutputserver $directprops
-  convert contextxmlserver $contextprops
+  test -n "$standardprops" && convert standardprops $standardprops
+  test -n "$directprops" && convert directoutputserver $directprops
+  test -n "$contextprops" && convert contextxmlserver $contextprops
   (cd $d && grep -q "// TODO_PROPCONV" $allprops)
   AH_RET=$?
   if [ $AH_RET -eq 0 ]; then
