@@ -1,4 +1,4 @@
-2004-06-03  Michael Hartmier  <mhm@schlund.de>
+2004-06-16  Michael Hartmier  <mhm@schlund.de>
 	Minore cleanup to prepare pfixschlund upgrade:
 	* build.xml
 	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
