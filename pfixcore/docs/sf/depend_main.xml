@@ -58,7 +58,7 @@
             <tr>
               <td>This tag has only <code>page</code> nodes as
               children. The tree of pages matches the hierarchy of the
-              projects sitetree.</td>
+              project's sitetree.</td>
             </tr>
           </table>
         </xmlcodeOFF>
@@ -121,9 +121,9 @@
               <td>
                 <p>The only other tags allowed besides the
                   <code>navigation</code> tag are <code>target</code>
-                  and <code>standardpage</code>. The latter is only a
+                  and <code>standardpage</code>. <b>The latter is only a
                   convenience tag that can be expressed fully in terms
-                  of <code>target</code> tags (Expanding the
+                  of <code>target</code> tags</b> (Expanding the
                   <code>standardpage</code> tag is one of the duties
                   of the transformation [<code>depend.xml.in</code>
                   => <code>depend.xml</code>] mentioned above).
