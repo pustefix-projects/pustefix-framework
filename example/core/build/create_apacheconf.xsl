@@ -57,8 +57,8 @@ CustomLog  <xsl:apply-templates select="/projects/common/apache/apachelogdir"/>/
 &lt;Location /&gt;
 Options ExecCGI FollowSymLinks
 AllowOverride None
+<xsl:apply-templates select="$currentprj/literalauth"/>
 &lt;/Location&gt;
-
 DirectoryIndex index.cgi
 AddHandler cgi-script .cgi
 &lt;/VirtualHost&gt;

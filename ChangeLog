@@ -1,3 +1,8 @@
+2004-12-01  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/build/create_apacheconf.xsl: added match for literalauth-tag
+	which can be used in project.xml for .htacces based auth.
+
 2004-11-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/Cleanup.java: killed stupid Path bug (used without PathFactory!)
