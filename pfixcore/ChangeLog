@@ -1,3 +1,9 @@
+2004-10-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* build.xml: relased 0.8.0 
+
+	* src/de/schlund/pfixxml/ImageGeometryData.java: close the input stream.
+
 2004-10-15  Martin Leidig  <mleidig@schlund.de>
 
 	* example/core/schema/wsconfig200401.xsd: Added optional SSL configuration 
@@ -10,8 +16,6 @@
 	handling for forcing SSL connections and checking session security
 
 2004-10-15  Jens Lautenbacher  <jtl@schlund.de>
-
-	* build.xml: relased 0.8.0 
 
 	* src/de/schlund/pfixcore/editor/handlers/LockManagerFinalizer.java:
 	Bug fix: don't print the Path _object_, but the relative path string as auxpath...
