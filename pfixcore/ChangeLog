@@ -1,8 +1,14 @@
+2004-08-18 Benjamin Reitzammer <benjamin@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: <pfx:button> now accepts the new mode
+    'urlonly' which suppresses the generation of the HTML <a> tag and prints out
+    just the URL of the button, in all cases
+
 2004-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/core/xsl/include.xsl.in: always create the "$realpath" and use it 
+	* example/core/xsl/include.xsl.in: always create the "$realpath" and use it
 	also in the include:get method.
-	
+
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java (get):
 	assume that the path_str is already correct when entering the
 	method. no need to check if it's empty and use the parent path in
