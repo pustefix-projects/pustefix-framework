@@ -748,7 +748,7 @@ TypeMapping.prototype.getSerializer=function(xmlType) {
 		var serializer=this.mappings[xmlType.hashKey()];
 		if(serializer==null) throw "Can't find serializer for type '"+xmlType.toString()+"'";
 		return serializer;
-	} else throw new coreIllegalArgsException("Wrong number of arguments","TypeMapping.getSerializer");
+	} else throw new coreIllegalArgsEx("Wrong number of arguments","TypeMapping.getSerializer");
 }
 
 //Serializer getSerializerByInfo(TypeInfo info)
@@ -759,7 +759,7 @@ TypeMapping.prototype.getSerializerByInfo=function(info) {
 		if(serializer==null && (info instanceof soapBeanInfo)) serializer=this.mappings["BEAN"];
 		if(serializer==null) throw "Can't find serializer for type '"+info.xmlType.toString()+"'";
 		return serializer;
-	} else throw new coreIllegalArgsException("Wrong number of arguments","TypeMapping.getSerializerByInfo");
+	} else throw new coreIllegalArgsEx("Wrong number of arguments","TypeMapping.getSerializerByInfo");
 }
 
 var typeMapping=new TypeMapping();
@@ -852,7 +852,7 @@ Call.prototype.invoke=function() {
 			ind++;
 		}
 	}
-	if(this.params.length!=arguments.length-ind) throw new coreIllegalArgsException("Wrong number of arguments","Call.invoke");
+	if(this.params.length!=arguments.length-ind) throw new coreIllegalArgsEx("Wrong number of arguments","Call.invoke");
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
@@ -1175,7 +1175,7 @@ soapStub.prototype._createCall=function() {
 soapStub.prototype._extractCallback=function(args,expLen) {
 	var argLen=args.length;
 	if(argLen==expLen+1 && typeof args[argLen-1]=="function") return args[argLen-1];
-	else if(argLen!=expLen) throw new coreIllegalArgsException("Wrong number of arguments","soapStub._extractCallback");
+	else if(argLen!=expLen) throw new coreIllegalArgsEx("Wrong number of arguments","soapStub._extractCallback");
 	return null;
 }
 
