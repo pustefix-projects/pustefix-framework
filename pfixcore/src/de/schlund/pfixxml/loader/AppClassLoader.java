@@ -167,7 +167,8 @@ public class AppClassLoader extends java.lang.ClassLoader {
                 modTimes.put(file,new Long(file.lastModified()));
             }
         } catch(ClassNotFoundException x) {
-            CAT.error("Can't get Class for file '" + file + "'.",x);
+            CAT.warn(x.getMessage());
+            CAT.debug("Can't get Class for file '" + file + "'.",x);
         }
         return data;
     }
