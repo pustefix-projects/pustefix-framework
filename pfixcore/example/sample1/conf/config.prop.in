@@ -71,7 +71,6 @@
     </input>
     <output>
       <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
-      
       <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>
     </output>
     <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
@@ -80,7 +79,8 @@
     
     <properties>
       <prop name="group.01-Shirt">shirt counter cinput pic</prop>
-    <prop name="group.02-Trouser">trouser</prop></properties>
+      <prop name="group.02-Trouser">trouser</prop>
+    </properties>
   </pagerequest>
   
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
@@ -90,9 +90,7 @@
     <state class="de.schlund.pfixcore.example.OverviewState"/>
     <output>
       <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
-      
       <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
-      
       <resource node="trouser" class="de.schlund.pfixcore.example.ContextTrouser"/>
     </output>
   </pagerequest>
@@ -110,23 +108,15 @@
       </choose>
     </properties>
   </pagerequest>
-  
+
   <properties>
-    
     <!-- *** some additional properties needed for this application *** -->
-    
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
-    
     <prop name="contexttshirt.feature.0">Waterproof</prop>
     <prop name="contexttshirt.feature.1">Extra warm</prop>
     <prop name="contexttshirt.feature.2">Windproof</prop>
-    
     <prop name="contexttrouser.feature.0">Waterproof</prop>
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
-    
-    
-    
-    
   </properties>
 </contextxmlserver>
