@@ -17,42 +17,46 @@
 *
 */
 
-package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
+package de.schlund.pfixcore.workflow;
+
 import java.util.*;
 import org.apache.log4j.*;
+import de.schlund.pfixcore.util.*;
 
 /**
- * IHandlerContainerFactory.java
- *
+ * The <code>DirectOutputStateFactory</code> class is a singleton that manages and creates
+ * one instance of each requested DirectOutputState.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
- *
- *
+ * @version 1.0
  */
-
-public class IHandlerContainerFactory {
-    private static Category                 LOG      = Category.getInstance(IHandlerContainerFactory.class.getName());
-    private static HashMap                  known    = new HashMap();
-    private static IHandlerContainerFactory instance = new IHandlerContainerFactory();
+public class DirectOutputStateFactory {
+    private static HashMap      knownstates = new HashMap();
+    private static Category     LOG         = Category.getInstance(StateFactory.class.getName());
+    private static DirectOutputStateFactory instance    = new DirectOutputStateFactory();
     
-    public static IHandlerContainerFactory getInstance() {
+    /**
+     * The singleton's <code>getInstance</code> method.
+     *
+     * @return The <code>DirectOutputStateFactory</code> instance.
+     */
+    public static DirectOutputStateFactory getInstance() {
         return instance;
     }
-
-    public IHandlerContainer getIHandlerContainer(String classname, Context context) {
-        synchronized (known) {
-            String            pagename    = context.getCurrentPageRequest().getName();
-            String            contextname = context.getName();
-            String            key         = pagename + "@" + contextname;
-            IHandlerContainer retval      = (IHandlerContainer) known.get(key); 
+    
+    /**
+     *<code>getDirectOutputState</code> returns the matching DirectOutputState for <code>classname</code>.
+     *
+     * @param classname a <code>String</code> value
+     * @return a <code>DirectOutputState</code> value
+     */
+    public DirectOutputState getDirectOutputState(String classname) {
+        synchronized (knownstates) {
+            DirectOutputState retval = (DirectOutputState) knownstates.get(classname); 
             if (retval == null) {
                 try {
-                    Class theclass = Class.forName(classname);
-                    retval = (IHandlerContainer) theclass.newInstance();
-                    retval.initIHandlers(context);
+                    Class stateclass = Class.forName(classname);
+                    retval = (DirectOutputState) stateclass.newInstance();
                 } catch (InstantiationException e) {
                     LOG.error("unable to instantiate class [" + classname + "]", e);
                 } catch (IllegalAccessException e) {
@@ -60,12 +64,11 @@ public class IHandlerContainerFactory {
                 } catch (ClassNotFoundException e) {
                     LOG.error("unable to find class [" + classname + "]", e);
                 } catch (ClassCastException e) {
-                    LOG.error("class [" + classname + "] does not implement the interface IHandlerContainer", e);
+                    LOG.error("class [" + classname + "] does not implement the interface DirectOutputState", e);
                 }
-                known.put(key, retval);
+                knownstates.put(classname, retval);
             }
             return retval;
         }
     }
-
-}// IHandlerContainerFactory
+}
