@@ -1,3 +1,10 @@
+2004-04-07  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml: changed creation of symlink from directory
+	tomcat shared/classes to directory build in target installjars.
+	Link now always gets (re-)created. Fixed deletion of symlink classes
+	in target clean.
+
 2004-05-10  Jens Lautenbacher  <jtl@schlund.de>
 	* example/core/xsl/forminput.xsl.in:
 	(pfx:button_impl): assume mode="force" when neither a page

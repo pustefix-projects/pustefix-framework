@@ -255,7 +255,7 @@
         does not work for filenames containing spaces -->
         <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/shared/classes"/>
         <exec executable="sh">
-            <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/shared/classes -a ! -L ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/shared/classes || true&quot;"/>
+            <arg line="-c &quot;[ -e ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/classes ; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/shared/classes&quot;"/>
         </exec>
         <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
         <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
@@ -337,7 +337,8 @@
         </delete>
         <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
         <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat"/> <!-- symlink classes -->
+
+            <arg file="${dir.projects}/servletconf/tomcat/shared/classes"/> <!-- symlink classes -->
             <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
             <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
         </exec>
