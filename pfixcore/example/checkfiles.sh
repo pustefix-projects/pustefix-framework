@@ -9,5 +9,5 @@ find . -type f | grep "depend.xml$"  > .ALLPROJECTS
 
 java de.schlund.pfixcore.util.CheckIncludes CHECKOUTPUT.xml .ALLPROJECTS .ALLINCFILES .ALLIMAGES
 
-java com.icl.saxon.StyleSheet  CHECKOUTPUT.xml core/build/unused.xsl > UnusedInfo.txt
+#java com.icl.saxon.StyleSheet  CHECKOUTPUT.xml core/build/unused.xsl > UnusedInfo.txt
 

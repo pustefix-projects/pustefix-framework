@@ -24,7 +24,7 @@ import org.w3c.dom.*;
 public class CheckIncludes {
     private static       DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
     private static final String                 XPATH = "/include_parts/part/product";
-
+    
     private HashMap generators       = new HashMap();
     private TreeSet includefilenames = new TreeSet();
     private TreeSet imagefilenames   = new TreeSet();
@@ -32,6 +32,10 @@ public class CheckIncludes {
     private TreeSet includes;
     private String  pwd;
     private String  outfile;
+
+    static {
+//        dbfac.setNamespaceAware(true);
+    }
     
     public CheckIncludes(String pwd, String outfile, File allprj, File allincs, File allimgs) throws Exception {
         this.pwd     = pwd;
@@ -70,7 +74,11 @@ public class CheckIncludes {
 
     public void doCheck() throws Exception {
         Document doc         = dbfac.newDocumentBuilder().newDocument();
+
         Element  check_root  = doc.createElement("checkresult");
+        check_root.setAttribute("xmlns:ixsl","http://www.w3.org/1999/XSL/Transform");
+        check_root.setAttribute("xmlns:pfx", "http://www.schlund.de/pustefix/core");
+        check_root.setAttribute("xmlns:hlp", "http://www.schlund.de/pustefix/onlinehelp");
         Element  files_root  = doc.createElement("includefiles");
         Element  images_root = doc.createElement("images");
         Element  prj_root    = doc.createElement("projects");
@@ -171,7 +179,7 @@ public class CheckIncludes {
     }
     
     private void checkForUnusedIncludes(Document result, Element res_root) throws Exception {
-        IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
+        // IncludeDocumentFactory incfac = IncludeDocumentFactory.getInstance();
         
         for (Iterator i = includefilenames.iterator(); i.hasNext();) {
             String path = (String) i.next();
@@ -183,8 +191,10 @@ public class CheckIncludes {
             res_incfile.setAttribute("name", path);
             
             try {
-                IncludeDocument incdoc = incfac.getIncludeDocument(path, true);
-                doc    = incdoc.getDocument();
+                // IncludeDocument incdoc = incfac.getIncludeDocument(path, true);
+                // doc    = incdoc.getDocument();
+                DocumentBuilder incdoc = dbfac.newDocumentBuilder();
+                doc = incdoc.parse(path);
             } catch (Exception e) {
                 Element error = result.createElement("ERROR");
                 res_incfile.appendChild(error);
@@ -257,56 +267,9 @@ public class CheckIncludes {
                                                            productelem.getNodeName() + "/" + langelem.getNodeName());
                                         continue;
                                     }
-                                    
-                                    String langname = langelem.getAttribute("name");
-                                    
-                                    Element res_lang = result.createElement("lang");
+
+                                    Node res_lang = result.importNode(langelem, true); 
                                     res_product.appendChild(res_lang);
-                                    res_lang.setAttribute("name", langname);
-                                    
-                                    NodeList     textnodes = XPathAPI.selectNodeList(langelem, ".//text()");
-                                    StringBuffer textbuff  = new StringBuffer("");
-                                    for (int x = 0; x < textnodes.getLength(); x++) {
-                                        String text = ((Text) textnodes.item(x)).getNodeValue();
-                                        text = text.trim();
-                                        textbuff.append(text + " ");
-                                    }
-                                    
-                                    String alltext = textbuff.toString().trim();
-                                    
-                                    if (!alltext.equals("")) {
-                                        Element textelm = result.createElement("text");
-                                        Text    textval = result.createTextNode(alltext);
-                                        textelm.appendChild(textval);
-                                        res_lang.appendChild(textelm);
-                                    }
-
-                                    NodeList altnodes   = XPathAPI.selectNodeList(langelem, ".//*[@alt or @title]");
-                                    
-                                    for (int x = 0; x < altnodes.getLength(); x++) {
-                                        if (altnodes.item(x) instanceof Element) {
-                                            Element alt = (Element) altnodes.item(x);
-                                            String  alttxt   = alt.getAttribute("alt");
-                                            String  titletxt = alt.getAttribute("title");
-
-                                            if (alttxt != null && !alttxt.equals("")) {
-                                                Element altelem = result.createElement("attribute");
-                                                altelem.setAttribute("type", "alt");
-                                                altelem.setAttribute("nodename", alt.getNodeName());
-                                                Text txtval = result.createTextNode(alttxt);
-                                                altelem.appendChild(txtval);
-                                                res_lang.appendChild(altelem);
-                                            }
-                                            if (titletxt != null && !titletxt.equals("")) {
-                                                Element titleelem = result.createElement("attribute");
-                                                titleelem.setAttribute("type", "title");
-                                                titleelem.setAttribute("nodename", alt.getNodeName());
-                                                Text txtval = result.createTextNode(titletxt);
-                                                titleelem.appendChild(txtval);
-                                                res_lang.appendChild(titleelem);
-                                            }
-                                        }
-                                    }
                                 }
                             }
                         }

@@ -1,3 +1,8 @@
+2003-04-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): 
+	now we don't insert only the text extract but the whole content of the include.
+
 2003-04-28  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get):
