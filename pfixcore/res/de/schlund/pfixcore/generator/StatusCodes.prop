@@ -37,4 +37,6 @@ statuscodefactory.statuscode.pfixcore.generator.postcheck.INTEGER_TOO_BIG=The en
 statuscodefactory.statuscode.pfixcore.generator.postcheck.FLOAT_TOO_SMALL=The entered value is too small.
 statuscodefactory.statuscode.pfixcore.generator.postcheck.FLOAT_TOO_BIG=The entered value is too big.
 
-
+#PostCheck StringLength
+statuscodefactory.statuscode.pfixcore.generator.postcheck.STRING_TOO_LONG=The entered string is too long.
+statuscodefactory.statuscode.pfixcore.generator.postcheck.STRING_TOO_SHORT=The entered string is too short.
