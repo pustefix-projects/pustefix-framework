@@ -1,5 +1,8 @@
 2003-08-07  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/forminput.xsl.in: added a "default" attribute to most of the pfx:xinp tags. 
+	This applies whenever no value is given via the formresults/formvalues DOM tree.
+
 	* src/de/schlund/pfixcore/editor/EditorDocumentation.java (getCoreDocumentationForId): new method
 
 	* src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
