@@ -28,18 +28,18 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpConnection;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpRecoverableException;
-import org.apache.commons.httpclient.HttpState;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.apache.commons.pfix_httpclient.HostConfiguration;
+import org.apache.commons.pfix_httpclient.HttpConnection;
+import org.apache.commons.pfix_httpclient.HttpException;
+import org.apache.commons.pfix_httpclient.HttpRecoverableException;
+import org.apache.commons.pfix_httpclient.HttpState;
+import org.apache.commons.pfix_httpclient.HttpStatus;
+import org.apache.commons.pfix_httpclient.NameValuePair;
+import org.apache.commons.pfix_httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.pfix_httpclient.URIException;
+import org.apache.commons.pfix_httpclient.methods.PostMethod;
+import org.apache.commons.pfix_httpclient.protocol.Protocol;
+import org.apache.commons.pfix_httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Category;
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xpath.XPathAPI;
@@ -56,7 +56,6 @@ import com.sun.net.ssl.SSLContext;
 import com.sun.net.ssl.TrustManager;
 import com.sun.net.ssl.X509TrustManager;
 
-
 /**
  * Class for playback of a testcase.
  * 
@@ -66,21 +65,22 @@ public class TestClient {
 
     //~ Instance/static variables ..................................................................
 
-    private static String                 XMLONLY_PARAM_KEY   = "__xmlonly";
-    private static String                 XMLONLY_PARAM_VALUE = "1";
-    private static String                 GNU_DIFF            = "diff -u";
-    private String                        srcDir;
-    private String                        tmpDir;
-    private String                        styleDir;
-    private HttpConnection                httpConnect;
-    private static DocumentBuilderFactory docBFactory         = DocumentBuilderFactory.newInstance();
-    private long                          request_count       = 0;
-    private String                        sessionId;
-    private boolean                       ssl                 = false;
-    private HostConfiguration             currentConfig       = new HostConfiguration();
-    private String                        uri_session         = new String();
-    private SimpleHttpConnectionManager   conMan              = new SimpleHttpConnectionManager();
-    private static Category               CAT                 = Category.getInstance(TestClient.class.getName());
+    private static String XMLONLY_PARAM_KEY = "__xmlonly";
+    private static String XMLONLY_PARAM_VALUE = "1";
+    private static String GNU_DIFF = "diff -u";
+    private static DocumentBuilderFactory docBFactory = DocumentBuilderFactory.newInstance();
+    private static Category CAT = Category.getInstance(TestClient.class.getName());
+
+    private String srcDir;
+    private String tmpDir;
+    private String styleDir;
+    private HttpConnection httpConnect;
+    private long request_count = 0;
+    private String sessionId;
+    private boolean ssl = false;
+    private HostConfiguration currentConfig = new HostConfiguration();
+    private String uri_session = new String();
+    private SimpleHttpConnectionManager conMan = new SimpleHttpConnectionManager();
 
     //~ Initializers ...............................................................................
 
@@ -105,18 +105,18 @@ public class TestClient {
      * @return the result of the testcase
      */
     public TestcasePlaybackResult makeTest() throws TestClientException {
-        if(CAT.isInfoEnabled()) {
+        if (CAT.isInfoEnabled()) {
             CAT.info("Starting test NOW");
         }
         File tmp = new File(tmpDir);
-        if (! tmp.exists()) {
+        if (!tmp.exists()) {
             if (CAT.isDebugEnabled()) {
                 CAT.debug("Creating tmp dir = " + tmpDir);
             }
             tmp.mkdirs();
         }
         checkOptions();
-        ArrayList    files  = getAllFilesFromTestcase();
+        ArrayList files = getAllFilesFromTestcase();
         StepConfig[] config = doPrepare(files);
         return doTest(config);
     }
@@ -127,13 +127,16 @@ public class TestClient {
      * @param tmp_dir directory where temporay data is written. If null, defaults are used.
      * @param style_dir directory containing stylesheets. If null, defaults are used.
      */
-    public void setOptions(String src_dir, String tmp_dir, String style_dir)
-                    throws TestClientException {
+    public void setOptions(String src_dir, String tmp_dir, String style_dir) throws TestClientException {
         if (src_dir == null) {
-            throw new IllegalArgumentException("The value 'null' is not allowed here for src_dir! "
-                                               + "Arguments: Directories for testcases: " + src_dir
-                                               + ", temporary: " + tmp_dir + ", stylesheets: "
-                                               + style_dir);
+            throw new IllegalArgumentException(
+                "The value 'null' is not allowed here for src_dir! "
+                    + "Arguments: Directories for testcases: "
+                    + src_dir
+                    + ", temporary: "
+                    + tmp_dir
+                    + ", stylesheets: "
+                    + style_dir);
         }
         if (CAT.isDebugEnabled()) {
             StringBuffer sb = new StringBuffer();
@@ -143,13 +146,13 @@ public class TestClient {
             sb.append("Setting stylesheet directory to " + style_dir).append("\n");
             CAT.debug(sb.toString());
         }
-        srcDir   = src_dir;
-        if(tmp_dir == null) {
+        srcDir = src_dir;
+        if (tmp_dir == null) {
             tmpDir = System.getProperties().getProperty("java.io.tmpdir");
         } else {
-            tmpDir   = tmp_dir;
+            tmpDir = tmp_dir;
         }
-        if(style_dir == null) {
+        if (style_dir == null) {
             styleDir = srcDir;
         } else {
             styleDir = style_dir;
@@ -158,10 +161,10 @@ public class TestClient {
 
     /** execute test */
     private TestcasePlaybackResult doTest(StepConfig[] config) throws TestClientException {
-        TestcasePlaybackResult tcresult   = new TestcasePlaybackResult();
-        TestcaseStepResult     stepresult = null;
-        boolean                has_diff   = false;
-        int                    scode      = 0;
+        TestcasePlaybackResult tcresult = new TestcasePlaybackResult();
+        TestcaseStepResult stepresult = null;
+        boolean has_diff = false;
+        int scode = 0;
         for (int j = 0; j < config.length; j++) {
             stepresult = new TestcaseStepResult();
             if (CAT.isDebugEnabled()) {
@@ -174,10 +177,11 @@ public class TestClient {
                 CAT.info("\nDoing step " + j);
             }
             Document current_output_tree = null;
+            TestcaseSimpleStepResult res = null;
             try {
-                TestcaseSimpleStepResult res = getResultFromFormInput(config[j].getRecordedInput());
+                res = getResultFromFormInput(config[j].getRecordedInput(), null);
                 current_output_tree = res.getDoc();
-                scode               = res.getScode();
+                scode = res.getScode();
             } catch (TestClientException e) {
                 if (e.getExceptionCause() instanceof HttpRecoverableException) {
                     CAT.warn("Uuuups...skipping...");
@@ -186,13 +190,29 @@ public class TestClient {
                     throw e;
                 }
             }
+            if (scode == HttpStatus.SC_MOVED_PERMANENTLY || scode == HttpStatus.SC_MOVED_TEMPORARILY) {
+                try {
+                    String loc = res.getRedirectLocation();
+                    //System.out.println("redirect nach:" + loc);
+                    res = getResultFromFormInput(config[j].getRecordedInput(), loc);
+                    current_output_tree = res.getDoc();
+                    scode = res.getScode();
+                } catch (TestClientException e) {
+                    if (e.getExceptionCause() instanceof HttpRecoverableException) {
+                        CAT.warn("Uuuups...skipping...");
+                        break;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+
             if (scode == HttpStatus.SC_OK) {
-                
-                Document tmp_rec       = doTransform(config[j].getRecordedOutput(), 
-                                                     config[j].getStyleSheet());
-                Document tmp_out       = doTransform(current_output_tree, config[j].getStyleSheet());
-                String   tmp_fname_cur = tmpDir + "/_current" + j;
-                String   tmp_fname_rec = tmpDir + "/_recorded" + j;
+
+                Document tmp_rec = doTransform(config[j].getRecordedOutput(), config[j].getStyleSheet());
+                Document tmp_out = doTransform(current_output_tree, config[j].getStyleSheet());
+                String tmp_fname_cur = tmpDir + "/_current" + j;
+                String tmp_fname_rec = tmpDir + "/_recorded" + j;
                 try {
                     XMLSerializeUtil.getInstance().serializeToFile(tmp_out, tmp_fname_cur, 2, false);
                 } catch (FileNotFoundException e) {
@@ -213,8 +233,8 @@ public class TestClient {
                     CAT.info("  Diffing...");
                 }
                 String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
-                if(CAT.isInfoEnabled()) {
-                    CAT.info("  Diff "+(msg == null || msg.equals("") ? "not exists" : "exists"));
+                if (CAT.isInfoEnabled()) {
+                    CAT.info("  Diff " + (msg == null || msg.equals("") ? "not exists" : "exists"));
                 }
                 stepresult.setDiffString(msg);
                 stepresult.setStatusCode(scode);
@@ -231,8 +251,8 @@ public class TestClient {
                 return tcresult;
             }
         }
-        if(CAT.isInfoEnabled()) {
-            CAT.warn("\n*** Resut: ***\n"+ (has_diff ? ";-(" : ";-)"));
+        if (CAT.isInfoEnabled()) {
+            CAT.warn("\n*** Resut: ***\n" + (has_diff ? ";-(" : ";-)"));
         }
         return tcresult;
     }
@@ -240,8 +260,8 @@ public class TestClient {
     /** prepare */
     private StepConfig[] doPrepare(ArrayList files) throws TestClientException {
         DocumentBuilder doc_builder;
-        StepConfig[]    config          = new StepConfig[files.size()];
-        boolean         ssl_initialized = false;
+        StepConfig[] config = new StepConfig[files.size()];
+        boolean ssl_initialized = false;
         try {
             doc_builder = docBFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
@@ -261,19 +281,16 @@ public class TestClient {
             } catch (SAXException e) {
                 if (e instanceof SAXParseException) {
                     SAXParseException saxex = (SAXParseException) e;
-                    throw new TestClientException("SAXException occured at line "
-                                                  + saxex.getLineNumber() + "in file "
-                                                  + file.getName(), e);
+                    throw new TestClientException("SAXException occured at line " + saxex.getLineNumber() + "in file " + file.getName(), e);
                 } else {
                     throw new TestClientException("SAXException occured", e);
                 }
-            }
-             catch (IOException e) {
+            } catch (IOException e) {
                 throw new TestClientException("IOException occured", e);
             }
             Document recorded_out = new DocumentImpl();
             Document recorded_in = new DocumentImpl();
-            Node     result_out  = null;
+            Node result_out = null;
             try {
                 result_out = XPathAPI.selectSingleNode(file_content, "/step/formresult");
             } catch (TransformerException e) {
@@ -298,8 +315,7 @@ public class TestClient {
             Node n_in = recorded_in.importNode(result_in, true);
             recorded_out.appendChild(n_out);
             recorded_in.appendChild(n_in);
-            StepConfig conf = new StepConfig(((File) files.get(i)).getName(), recorded_in, 
-                                             recorded_out, stylessheet);
+            StepConfig conf = new StepConfig(((File) files.get(i)).getName(), recorded_in, recorded_out, stylessheet);
             config[i] = conf;
             // check, if we must init SSL
             String proto = null;
@@ -308,7 +324,7 @@ public class TestClient {
             } catch (TransformerException e) {
                 throw new TestClientException("TransformerException occured!", e);
             }
-            if (proto.toUpperCase().equals("https".toUpperCase()) && ! ssl_initialized) {
+            if (proto.toUpperCase().equals("https".toUpperCase()) && !ssl_initialized) {
                 if (CAT.isInfoEnabled()) {
                     CAT.info("https detected!");
                     CAT.info("Initializing SSL...");
@@ -328,25 +344,23 @@ public class TestClient {
 
     /** do the transformation */
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
-        
+
         if (CAT.isInfoEnabled()) {
             CAT.info("  Removing serial number ...");
         }
-        try {
-            removeSerialNumber(in);
-        } catch (TransformerException e) {
-            throw new TestClientException("Transformer exception", e);
-        }
+
+        removeSerialNumber(in);
+
         // saxon
         TransformerFactoryImpl trans_fac = (TransformerFactoryImpl) TransformerFactory.newInstance();
-        String                 path      = styleDir + "/" + stylesheet_name;
-        File                   styesheet = new File(path);
+        String path = styleDir + "/" + stylesheet_name;
+        File styesheet = new File(path);
         if (styesheet.exists()) {
-            if(CAT.isInfoEnabled()) {
+            if (CAT.isInfoEnabled()) {
                 CAT.info("  Transforming...");
             }
             StreamSource stream_source = new StreamSource("file://" + path);
-            Templates    templates = null;
+            Templates templates = null;
             try {
                 templates = trans_fac.newTemplates(stream_source);
             } catch (TransformerConfigurationException e) {
@@ -369,7 +383,7 @@ public class TestClient {
         } else {
             if (CAT.isDebugEnabled()) {
                 CAT.debug("  Stylesheet named " + path + " not found. Transformation skipped!");
-            } else if(CAT.isInfoEnabled()) {
+            } else if (CAT.isInfoEnabled()) {
                 CAT.info("  No stylesheet given. Skipping transformation...");
             }
         }
@@ -377,14 +391,10 @@ public class TestClient {
     }
 
     /** remove the serial number from the result document */
-    private void removeSerialNumber(Document in) throws TransformerException {
-        Node node = XPathAPI.selectSingleNode(in, "/formresult");
+    private void removeSerialNumber(Document in) {
+        Node node = in.getFirstChild();
         ((Element) node).setAttribute("serial", "0");
     }
-
-    
-
-   
 
     /** start GNU diff process */
     private String doDiff(String path1, String path2) throws TestClientException {
@@ -399,8 +409,8 @@ public class TestClient {
             throw new TestClientException("IOException occured!", e);
         }
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String         s;
-        StringBuffer   buf = new StringBuffer();
+        String s;
+        StringBuffer buf = new StringBuffer();
         try {
             while ((s = reader.readLine()) != null) {
                 buf.append(s).append("\n");
@@ -423,12 +433,11 @@ public class TestClient {
 
     /** read testcase files */
     private ArrayList getAllFilesFromTestcase() throws TestClientException {
-        File      dir       = new File(srcDir);
-        File[]    all_files = dir.listFiles();
-        ArrayList files     = new ArrayList();
+        File dir = new File(srcDir);
+        File[] all_files = dir.listFiles();
+        ArrayList files = new ArrayList();
         for (int i = 0; i < all_files.length; i++) {
-            if (all_files[i].canRead() && all_files[i].isFile() &&
-                !all_files[i].getName().startsWith(".")) {
+            if (all_files[i].canRead() && all_files[i].isFile() && !all_files[i].getName().startsWith(".")) {
                 files.add(all_files[i]);
             }
         }
@@ -453,15 +462,15 @@ public class TestClient {
             CAT.debug("Checking options...");
         }
         File input_dir = new File(srcDir);
-        if (! input_dir.isDirectory() || ! input_dir.canRead()) {
+        if (!input_dir.isDirectory() || !input_dir.canRead()) {
             throw new TestClientException(srcDir + " is not a directory or not readable!", null);
         }
         File tmp_dir = new File(tmpDir);
-        if (! tmp_dir.isDirectory() || ! tmp_dir.canRead()) {
+        if (!tmp_dir.isDirectory() || !tmp_dir.canRead()) {
             throw new TestClientException(tmpDir + " is not a directory or not readable!", null);
         }
         File style_dir = new File(styleDir);
-        if (! style_dir.isDirectory() || ! style_dir.canRead()) {
+        if (!style_dir.isDirectory() || !style_dir.canRead()) {
             throw new TestClientException(styleDir + " is not a directory or not readable!", null);
         }
         if (CAT.isDebugEnabled()) {
@@ -470,8 +479,7 @@ public class TestClient {
     }
 
     /** initialize the HTTP-connection */
-    private void initHttpConnection(String hostname, int port, String proto)
-                             throws TestClientException {
+    private void initHttpConnection(String hostname, int port, String proto) throws TestClientException {
         HostConfiguration config = new HostConfiguration();
         config.setHost(hostname, port, proto);
         if (httpConnect != null && config.hostEquals(httpConnect)) {
@@ -479,11 +487,11 @@ public class TestClient {
         } else {
             StringBuffer sb = new StringBuffer(255);
             currentConfig = config;
-            sessionId     = null;
+            sessionId = null;
             sb.append("\n----------------------------------------------\n");
             if (httpConnect == null) {
                 sb.append("No HTTP Connection. Establishing new connection.\n");
-            } else if (! config.hostEquals(httpConnect)) {
+            } else if (!config.hostEquals(httpConnect)) {
                 sb.append("HostConfiguration has changed. Establishing new connection.\n");
             }
             sb.append("  Host=").append(currentConfig.getHost()).append("\n");
@@ -508,20 +516,25 @@ public class TestClient {
     }
 
     /** get result from server after posting request data */
-    private TestcaseSimpleStepResult getResultFromFormInput(Document form_data)
-                                                     throws TestClientException {
-        String host  = getHostnameFromInput(form_data);
-        int    port  = getPortFromInput(form_data);
+    private TestcaseSimpleStepResult getResultFromFormInput(Document form_data, String red_uri) throws TestClientException {
+        String host = getHostnameFromInput(form_data);
+        int port = getPortFromInput(form_data);
         String proto = getProtoFromInput(form_data);
         initHttpConnection(host, port, proto);
-        String          uri         = getURIFromInput(form_data);
+        String uri = getURIFromInput(form_data);
+        if (red_uri != null)
+            uri = red_uri;
         NameValuePair[] post_params = getPostParamsFromInput(form_data);
-        PostMethod      post        = null;
-        int             status_code = -1;
+        PostMethod post = null;
+        int status_code = -1;
         uri_session = uri;
         if (sessionId != null) {
             //It not the first request, we already have a session
-            uri_session = uri_session + ";jsessionid=" + sessionId;
+            //System.out.println("uri_sessin="+uri_session+"red_uri="+red_uri);
+            if(red_uri != null)
+                uri_session = uri_session.substring(0, uri_session.indexOf(";")) + ";jsessionid=" + sessionId;
+            else
+                uri_session = uri_session + ";jsessionid=" + sessionId;
         }
         if (CAT.isDebugEnabled()) {
             StringBuffer sb = new StringBuffer();
@@ -529,42 +542,45 @@ public class TestClient {
             sb.append("          URI=").append(uri_session).append("\n");
             sb.append("       Params=\n");
             for (int i = 0; i < post_params.length; i++) {
-                sb.append("            ").append(post_params[i].getName()).append("=").append(post_params[i].getValue())
-                  .append("\n");
+                sb.append("            ").append(post_params[i].getName()).append("=").append(post_params[i].getValue()).append("\n");
             }
             CAT.debug(sb.toString());
         } else if (CAT.isInfoEnabled()) {
             CAT.info("  Executing HTTP POST");
         }
+
         post = new PostMethod(uri_session);
         post.setFollowRedirects(true);
         post.addParameters(post_params);
         try {
             status_code = post.execute(new HttpState(), httpConnect);
+            status_code = post.getStatusCode();
         } catch (HttpException e) {
             throw new TestClientException("HTTPException occured!:" + status_code, e);
-        }
-         catch (IOException e) {
+        } catch (IOException e) {
             throw new TestClientException("IOException occured!", e);
         }
+        //System.out.println("Post nach: " + uri_session + "=" + status_code);
         request_count++;
         if (CAT.isInfoEnabled()) {
             CAT.info("   StatusCode=" + status_code);
         }
-        if (sessionId == null) { // it's the first request, follow redirect to get a new session
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("No session yet. Will follow redirect to get one.");
-            }
-            try {
-                uri = post.getURI().toString();
-            } catch (URIException e) {
-                throw new TestClientException("URIException occured!", e);
-            }
-            sessionId   = uri.substring(uri.indexOf('=') + 1, uri.length());
-            uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
-        }
+
         TestcaseSimpleStepResult res = new TestcaseSimpleStepResult();
-        if (status_code != HttpStatus.SC_OK) {
+        if (status_code == HttpStatus.SC_MOVED_PERMANENTLY || status_code == HttpStatus.SC_MOVED_TEMPORARILY) {
+            res.setScode(status_code);
+            res.setRedirectLocation(post.getResponseHeader("location").getValue());
+            if (sessionId == null) { // it's the first request, follow redirect to get a new session
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("No session yet. Will follow redirect to get one.");
+                }
+               
+                uri = post.getResponseHeader("location").getValue();
+                
+                sessionId = uri.substring(uri.indexOf('=') + 1, uri.length());
+                uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
+            }
+        } else if (status_code != HttpStatus.SC_OK) {
             res.setScode(status_code);
             res.setDoc(null);
         } else {
@@ -594,8 +610,7 @@ public class TestClient {
             doc = doc_builder.parse(istream);
         } catch (SAXException e) {
             throw new TestClientException("SaxException occured", e);
-        }
-         catch (IOException e) {
+        } catch (IOException e) {
             throw new TestClientException("IOException occured", e);
         }
         return doc;
@@ -610,11 +625,11 @@ public class TestClient {
             throw new TestClientException("TransformerException occured!", e);
         }
         NameValuePair[] post_params = new NameValuePair[value.getLength() + 1];
-        int             i = 0;
+        int i = 0;
         for (int ii = 0; ii < value.getLength(); ii++) {
-            Element e           = (Element) value.item(ii);
-            String  param_name  = e.getAttribute("name");
-            String  param_value = e.hasChildNodes() ? e.getFirstChild().getNodeValue() : "";
+            Element e = (Element) value.item(ii);
+            String param_name = e.getAttribute("name");
+            String param_value = e.hasChildNodes() ? e.getFirstChild().getNodeValue() : "";
             post_params[i] = new NameValuePair(param_name, param_value);
             i++;
         }
@@ -642,8 +657,8 @@ public class TestClient {
         } catch (TransformerException e) {
             throw new TestClientException("TransformerException occured!", e);
         }
-        String p    = ((Element) value).getFirstChild().getNodeValue();
-        int    port = Integer.parseInt(p);
+        String p = ((Element) value).getFirstChild().getNodeValue();
+        int port = Integer.parseInt(p);
         return port;
     }
 
@@ -675,10 +690,10 @@ public class TestClient {
     private void initSSL() throws TestClientException {
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
-        X509TrustManager tm         = new MyX509TrustManager();
-        KeyManager[]     km         = null;
-        TrustManager[]   tma        = {tm};
-        SSLContext       sslContext;
+        X509TrustManager tm = new MyX509TrustManager();
+        KeyManager[] km = null;
+        TrustManager[] tma = { tm };
+        SSLContext sslContext;
         try {
             sslContext = SSLContext.getInstance("SSLv3");
         } catch (NoSuchAlgorithmException e) {
@@ -689,9 +704,9 @@ public class TestClient {
         } catch (KeyManagementException e) {
             throw new TestClientException("KeyManagmentException during SSLInit!", e);
         }
-        SSLSocketFactory   ssl_fac = sslContext.getSocketFactory();
-        MySSLSocketfactory myssl   = new MySSLSocketfactory(ssl_fac);
-        Protocol           myHTTPS = new Protocol("https", myssl, 443);
+        SSLSocketFactory ssl_fac = sslContext.getSocketFactory();
+        MySSLSocketfactory myssl = new MySSLSocketfactory(ssl_fac);
+        Protocol myHTTPS = new Protocol("https", myssl, 443);
         Protocol.registerProtocol("https", myHTTPS);
     }
 }
@@ -701,18 +716,20 @@ class StepConfig {
 
     //~ Instance/static variables ..................................................................
 
+    /** The recorded input params **/
     private Document recordedInput;
+    /** the recorded output **/
     private Document recordedOutput;
-    private String   styleSheet;
-    private String   fileName;
+    private String styleSheet;
+    private String fileName;
 
     //~ Constructors ...............................................................................
 
     StepConfig(String filename, Document recordIn, Document recordOut, String stylesheet) {
-        this.fileName       = filename;
-        this.recordedInput  = recordIn;
+        this.fileName = filename;
+        this.recordedInput = recordIn;
         this.recordedOutput = recordOut;
-        this.styleSheet     = stylesheet;
+        this.styleSheet = stylesheet;
     }
 
     //~ Methods ....................................................................................
@@ -787,13 +804,11 @@ class MySSLSocketfactory implements SecureProtocolSocketFactory {
         return sslImpl.createSocket(host, port);
     }
 
-    public Socket createSocket(String host, int port, InetAddress client_address, int client_port)
-                        throws IOException {
+    public Socket createSocket(String host, int port, InetAddress client_address, int client_port) throws IOException {
         return sslImpl.createSocket(host, port, client_address, client_port);
     }
 
-    public Socket createSocket(Socket socket, String host, int port, boolean close)
-                        throws IOException {
+    public Socket createSocket(Socket socket, String host, int port, boolean close) throws IOException {
         return sslImpl.createSocket(socket, host, port, close);
     }
 }
@@ -806,8 +821,8 @@ class TestcaseSimpleStepResult {
     //~ Instance/static variables ..................................................................
 
     private Document doc;
-    private int      scode;
-
+    private int scode;
+    private String redirect_location;
     //~ Methods ....................................................................................
 
     /**
@@ -841,4 +856,19 @@ class TestcaseSimpleStepResult {
     public void setScode(int scode) {
         this.scode = scode;
     }
+
+    /**
+     * @return
+     */
+    public String getRedirectLocation() {
+        return redirect_location;
+    }
+
+    /**
+     * @param string
+     */
+    public void setRedirectLocation(String string) {
+        redirect_location = string;
+    }
+
 }
