@@ -137,7 +137,7 @@ public class SPCacheFactory implements FactoryInit {
         } catch (InvocationTargetException e) {
             CAT.error("unable to invoke correct method in [" + classname + "]", e);
         } catch (ClassCastException e) {
-            CAT.error("class [" + classname + "] does not implement the interface IHandler", e);
+            CAT.error("class [" + classname + "] does not implement the interface SPCache", e);
         }
         return retval;
     }

@@ -4,7 +4,7 @@
     <editmode  allow="true"/>
     <adminmode watch="default" page="admin"/>
   </servletinfo>
-
+  
   <context defaultflow="OrderFlow">
     <resource class="de.schlund.pfixcore.example.ContextCounterImpl">
       <implements class="de.schlund.pfixcore.example.ContextCounter"/>
@@ -28,7 +28,16 @@
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow">
     <flowstep name="home"/>
-    <flowstep name="order"/>
+    <flowstep name="order">
+      <oncontinue applyall="true">
+        <when test="/formresult/counter/@counter = 2">
+          <action type="jumpto" page="test" pageflow="OrderFlow"/>
+        </when>
+        <when>
+          <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Hi Ho ****"/>
+        </when>
+      </oncontinue>
+    </flowstep>
     <flowstep name="overview"/>
   </pageflow>
 

@@ -299,11 +299,12 @@ public class Context implements AppContext {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() +
                                        " does not contain current pagerequest " + currentpagerequest);
         }
-        PageRequest   current  = currentpagerequest;
-        PageRequest[] workflow = currentpageflow.getAllSteps();
+        PageRequest current  = currentpagerequest;
+        FlowStep[]  workflow = currentpageflow.getAllSteps();
         
         for (int i = 0; i < workflow.length; i++) {
-            PageRequest page = workflow[i];
+            FlowStep    step = workflow[i];
+            PageRequest page = step.getPageRequest();
             if (page.equals(current)) {
                 return false;
             }
@@ -329,13 +330,22 @@ public class Context implements AppContext {
     }
 
     public boolean isCurrentPageRequestInCurrentFlow() {
-        if (currentpageflow.containsPageRequest(currentpagerequest)) {
+        if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
             return true;
         } else {
             return false;
         }
     }
     
+    public boolean currentFlowStepWantsPostProcess() {
+        if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
+            if (currentpageflow.getFlowStepForPage(currentpagerequest).hasOnContinueAction()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean currentPageNeedsSSL(PfixServletRequest preq) throws Exception {
         PageRequest page = new PageRequest(preq); 
         if (page.isEmpty() && currentpagerequest != null) {
@@ -402,7 +412,7 @@ public class Context implements AppContext {
         }
 
         currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
-        currentpagerequest = currentpageflow.getFirstStep();
+        currentpagerequest = currentpageflow.getFirstStep().getPageRequest();
 
         checkForAuthenticationMode();
         checkForAdminMode();
@@ -416,7 +426,7 @@ public class Context implements AppContext {
         if (props != null) {
             String nostore = props.getProperty(NOSTORE);
             if (nostore != null && nostore.toLowerCase().equals("true")) {
-                LOG.info("*** Found sidestep page: " + page);
+                // LOG.debug("*** Found sidestep page: " + page);
                 return true;
             }
         } else {
@@ -520,7 +530,7 @@ public class Context implements AppContext {
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
                 currentpageflow     = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
-                PageRequest defpage = currentpageflow.getFirstStep();
+                PageRequest defpage = currentpageflow.getFirstStep().getPageRequest();
                 currentpagerequest  = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
                     throw new XMLException("Even first page [" + defpage + "] of default flow was not accessible! Bailing out.");
@@ -528,6 +538,12 @@ public class Context implements AppContext {
             }
 
             resdoc = documentFromCurrentStep();
+            if (resdoc.wantsContinue() &&
+                currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
+                FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest);
+                step.applyActionsOnContinue(this, resdoc);
+            }
+            
             if (!resdoc.wantsContinue()) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
@@ -538,8 +554,8 @@ public class Context implements AppContext {
                 jumptopagerequest  = null; // we don't want to recurse infinitely
                 jumptopageflow     = null; // we don't want to recurse infinitely
                 on_jumptopage      = true; // we need this information to supress the interpretation of
-                // the request as one that submits data. See StateImpl,
-                // methods isSubmitTrigger & isDirectTrigger  
+                                           // the request as one that submits data. See StateImpl,
+                                           // methods isSubmitTrigger & isDirectTrigger  
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();
             } else if (currentpageflow != null) {
@@ -563,12 +579,13 @@ public class Context implements AppContext {
         if (document != null) {
             return document;
         }
-        PageRequest[] workflow    = currentpageflow.getAllSteps();
+        FlowStep[]  workflow      = currentpageflow.getAllSteps();
         PageRequest saved         = currentpagerequest;
         boolean     after_current = false;
         
         for (int i = 0; i < workflow.length; i++) {
-            PageRequest page = workflow[i];
+            FlowStep    step = workflow[i];
+            PageRequest page = step.getPageRequest();
             if (page.equals(saved)) {
                 LOG.debug("* Skipping step [" + page + "] in page flow (been there already...)");
                 after_current = true;
@@ -578,7 +595,7 @@ public class Context implements AppContext {
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
                 boolean needsdata;
-                if (after_current && currentpageflow.pageIsClearingPoint(page)) {
+                if (after_current && step.wantsToStopHere()) {
                     LOG.debug("=> [" + page + "]: Page flow wants to stop, getting document now.");
                     currentpagerequest = page;
                     page.setStatus(PageRequestStatus.WORKFLOW);
