@@ -160,7 +160,6 @@ public class ContextResourceManager implements Reloader {
     
     private void checkInterface(Object obj, String interfacename) throws ServletException {
 	Class   wantedinterface       = null;
-	Class[] implementedinterfaces = null;
 
 	// Get the class of the requested interface and get all
 	// implemented interfaces of the object
@@ -171,7 +170,6 @@ public class ContextResourceManager implements Reloader {
         } else {
             wantedinterface = Class.forName(interfacename) ;
         }
-        implementedinterfaces = obj.getClass().getInterfaces();
 	} catch (ClassNotFoundException e) {
 	    throw new ServletException("Got ClassNotFoundException for classname " +  interfacename +
 				       "while checking for interface");
@@ -179,21 +177,14 @@ public class ContextResourceManager implements Reloader {
 	
 	CAT.debug("Check if requested interface [" + interfacename + 
 		  "] is implemented by [" + obj.getClass().getName() + "]");
-	boolean gotcha = false;
         
 	// Check for all implemented interfaces, if it equals the interface that
 	// we want, than break.
-	for (int i = 0; i < implementedinterfaces.length; i++) {
-	    if (implementedinterfaces[i].equals(wantedinterface)) {
-		CAT.debug("Got requested interface " + interfacename + "! Bingo!");
-		gotcha = true;
-		break;
-	    } else {
-		CAT.debug("Got interface [" + implementedinterfaces[i].getName() + "], this doesn't match");
-	    }
-	}
-        
-	if (!gotcha) {
+
+    if (wantedinterface.isInstance(obj)) {
+        CAT.debug("Got requested interface " + interfacename + "! Bingo!");
+    }
+	else  {
 	    // Uh, the requested interface is not implemented by the
 	    // object, that's not nice!
 	    throw new ServletException("The class [" + obj.getClass().getName() +
