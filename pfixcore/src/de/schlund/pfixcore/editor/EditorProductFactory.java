@@ -160,8 +160,7 @@ public class EditorProductFactory implements FactoryInit {
                 }
                 nspaces[j + 2] = new PfixcoreNamespace(prefix, uri);
             }
-            NodeList nliste = doc.getElementsByTagName("documentation");
-            nliste = prj.getElementsByTagName("documentation");
+            NodeList nliste = prj.getElementsByTagName("documentation");
             String[] argument = new String[nliste.getLength()];
             for (int k = 0; k < nliste.getLength(); k++) {
                 Element el   = (Element) nliste.item(k);

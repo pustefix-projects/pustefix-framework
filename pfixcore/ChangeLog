@@ -1,4 +1,13 @@
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
+	- use more File objects
+	- simplify project name computation
+	- affected files:
+	* example/sample1/conf/project.xml.in
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+
+2004-06-24  Michael Hartmier  <mhm@schlund.de>
 	- TargetGenerator cleanup
 	- ant target for unit tests
 	- affected files:

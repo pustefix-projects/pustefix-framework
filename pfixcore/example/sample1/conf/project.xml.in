@@ -54,9 +54,5 @@
     <class>de.schlund.pfixxml.DirectOutputServlet</class>
     <propfile><cus:docroot/>sample1/conf/direct.prop</propfile>
   </servlet>
-  <documentation>
-    <doc_file><cus:docroot/>sample1/xsl/metatags.xsl.in</doc_file>
-  </documentation>  
-  <!-- <namespace prefix="foo" uri="http://bar.foobaz"/> -->
 </project>
 

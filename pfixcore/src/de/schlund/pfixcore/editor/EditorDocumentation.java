@@ -50,7 +50,7 @@ public class EditorDocumentation {
                     
                 }
                 LOG.debug(" * DOCUMENTATION-FILE " + args[i] + " found * ");
-                this.readFile(path);
+                this.readFile(file);
             }
             catch (Exception ex) {
                 LOG.debug(" * File " + args[i] + " not found * ");
@@ -59,9 +59,9 @@ public class EditorDocumentation {
     }
     
     // read the xsl-File and create the NodeList
-    private void readFile(String filename) throws Exception {
+    private void readFile(File file) throws Exception {
         
-        this.doc = Xml.parse(filename);
+        this.doc = Xml.parse(file);
         this.doc.normalize();
         
         NodeList nl = doc.getElementsByTagName("xsl:template");
@@ -74,6 +74,7 @@ public class EditorDocumentation {
             String mode = prj.getAttribute("mode");
             
             // Getting the Filename without the Path
+            String filename = file.getPath();
             String filenameNew =
                 filename.substring(filename.lastIndexOf("/") + 1, filename.lastIndexOf("."));
             
