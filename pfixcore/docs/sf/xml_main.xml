@@ -147,6 +147,7 @@
     In almost all cases, you can just forget about this added
     complexity when reading the documentation. We will explicitly make it clear where you can't.</p>
 
+  <a name="include_parts"/>
   <h1>Include parts</h1>
   <p>Include parts contain the content that is displayed on your pages.
     The parts are organized into include files. Every part has the
