@@ -132,8 +132,8 @@
       <jvmopts>-mx200M</jvmopts>
     </jserv>
     <tomcat>
-      <!--<minprocessors>100</minprocessors>
-      <maxprocessors>500</maxprocessors>-->
+      <minprocessors>100</minprocessors>
+      <maxprocessors>500</maxprocessors>
       <connectorport>8009</connectorport>
       <debug>0</debug>
       <loglevel>info</loglevel>
