@@ -82,7 +82,7 @@ class ReportGeneratorTask extends TimerTask {
                                     mailconfig.getFrom(),
                                     mailconfig.getHost());
             } catch (EmailSenderException e) {
-                pfutil_.fatal("Sending of errormail failed!!! "+e.getMessage());
+                pfutil_.fatal("Sending of errormail failed!!! "+e);
           }
         }
     }

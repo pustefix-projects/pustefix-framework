@@ -1,3 +1,8 @@
+2004-04-07 Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/exceptionhandler/InstanceCheckerContainer.java(getReports):
+        now we use the first line of the stacktrace for mail subject.
+
 2004-04-06  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
 
 	* example/core/xsl/forminput.xsl.in: changed the stuff in entry
