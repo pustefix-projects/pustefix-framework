@@ -428,6 +428,7 @@
         <antcall target="skeleton" inheritall="true"/>
     </target>
     
+     <!-- Building the basic examples for dist -->
      <target name="dist-examples" depends="clean, init" description="Builds three basic examples as a pustefix turorial">
          <echo message="Building ${name.pfixcore_examples_tgz} in dist directory"/>
    
@@ -460,8 +461,11 @@
     </target>
     
     
-    <target name="basic-app" description="Builds a naked application and creates the basic stuff">
-        
+    <!-- a target to create a new project -->
+    <target name="new-basicapp" depends="compile" description="Builds a naked application and creates the basic stuff">
+        <java classname="de.schlund.pfixcore.util.basicapp.InitNewPfixProject">
+            <classpath refid="cp.classpath"/>
+        </java>
     </target>
 
     <target name="fixtabs">
