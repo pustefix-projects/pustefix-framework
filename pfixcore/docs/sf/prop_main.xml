@@ -107,8 +107,8 @@
     </properties>
   </xmlcode>
 
-  <p>Several property files in <pustefix/> are contructed this way. While
-    the <code>prop</code> tag would be sufficant to enter every java
+  <p>Several property files in <pustefix/> are constructed this way. While
+    the <code>prop</code> tag would be sufficient to enter every java
     property, there are convenience tags defined for the configuration
     of the most commonly used servlets (see below).</p>
   <p>
@@ -146,7 +146,7 @@
         </p>
         <p>The set of properties for a
           servlet is constructed in the following way: The common
-          porperty file <code>pustefix.prop</code> is read, the the
+          property file <code>pustefix.prop</code> is read, the the
           servlet specific property file is merged into the property
           object. This way it is possible to override properties
           defined in the common file with properties defined in the
@@ -164,7 +164,7 @@
           <b>admcore</b>. This project is active in every pustefix
           environment and automatically starts a
           <code>de.schlund.pfixxml.FactoryInitServlet</code> servlet
-          whenever the servletcontainer starts up to initalize
+          whenever the servletcontainer starts up to initialize
           services that are used by all the other projects.
         </p>
       </td>
@@ -222,7 +222,7 @@
               <td>Optional. If given, use it as the classname for the <code>Context</code> Implementation to use. Else,
                 if <code>authpage</code> is given, use <code>de.schlund.pfixcore.workflow.AuthContext</code>. Else,
                 use <code>de.schlund.pfixcore.workflow.Context</code>. In other words: Normally there's no need to
-                explicitely supply this attribute.</td>
+                explicitly supply this attribute.</td>
             </tr>
             <tr>
               <td><code>defaultflow</code></td>
@@ -252,8 +252,8 @@
                 than one <code>implements</code> tag for a
                 ContextResource, but each interface must the be unique
                 in the whole context. In other words: it's possible
-                for a ContextResource to implement more than one interface, mut not possible for one
-                interface to be impleded by two ContextResources used in the same Context definition.
+                for a ContextResource to implement more than one interface, but not possible for one
+                interface to be implemented by two ContextResources used in the same Context definition.
               </div>
             </xmlcodeOFF>
           </implements>
@@ -333,7 +333,7 @@
                   ANY: just one of the associated handlers needs to
                   be active for the page to be accessible.</li>
                 <li>
-                  ALL: all the assiciated handlers need to be active for the
+                  ALL: all the associated handlers need to be active for the
                   page to be accessible.</li>
               </ul>
               <p>If one of the associated handlers returns <b>false</b> on calling <code>prerequisitesMet()</code>,
@@ -363,7 +363,7 @@
                   <td>
                     <b>Mandatory</b>. Must be the name of a java
                     class implementing
-                    <code>de.schlund.pfixcore.generator.IWrapper</code>. This implicitely defines a
+                    <code>de.schlund.pfixcore.generator.IWrapper</code>. This implicitly defines a
                     <code>de.schlund.pfixcore.generator.IHandler</code>, as
                     every IWrapper knows it's associated IHandler and can be queried for it.
                   </td>
