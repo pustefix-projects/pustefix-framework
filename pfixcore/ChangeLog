@@ -1,8 +1,16 @@
+2003-11-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: change in button_impl for pfx:command handling:
+	if the pfx:command has no page attribute, default to use is now: if the pfx:button has 
+	a page attribute set, use this, if not use $page.
+	* example/core/xsl/forminput.xsl.in: a similar change as above, only this time we look at a 
+	possible send-to-page attribute of the enclosing pfx:forminput
+
 2003-11-27  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixcore/generator/IHandlerFactory.java(getIHandler,getIHandlerForWrapperClass):
-        if exceptions occur, do not log them only any more, but throw a
-        IllegalStateException.
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java: 
+	(getIHandler, getIHandlerForWrapperClass): if exceptions occur, do
+	not log them only any more, but throw a IllegalStateException.
 
 2003-11-13  Jens Lautenbacher  <jtl@schlund.de>
 

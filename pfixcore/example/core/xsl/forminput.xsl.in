@@ -437,6 +437,9 @@
           <xsl:when test="@page">
             <xsl:value-of select="@page"/>
           </xsl:when>
+          <xsl:when test="ancestor::pfx:forminput[position() = 1 and @send-to-page != '']">
+            <xsl:value-of select="ancestor::pfx:forminput[position() = 1]/@send-to-page"/>
+          </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="$page"/>
           </xsl:otherwise>
