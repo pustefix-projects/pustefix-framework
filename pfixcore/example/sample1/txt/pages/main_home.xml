@@ -4,7 +4,7 @@
   <part name="adult">
     <product name="default">
       <lang name="default">
-        <pfx:label name="info.Adult">Are you really older than 18 years?</pfx:label>
+        Are you really older than 18 years?
       </lang>
     </product>
   </part>
@@ -14,7 +14,9 @@
       <lang name="default">
         <center>
           <pfx:forminput target="_top">
-            <pfx:errorbox width="500"/>
+            <pfx:errorbox width="500">
+              <pfx:paramref name="info.Adult"/>
+            </pfx:errorbox>
             <br/>
             <table width="400">
               <tr>
@@ -25,9 +27,13 @@
             </table>
             <table bgcolor="#bbccff" class="boxed" width="400">
               <tr valign="top">
-                <td><pfx:include part="adult"/></td>
-                <td><pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-                  <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/></td>
+                <td>
+                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label>
+                </td>
+                <td>
+                  <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
+                  <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
+                </td>
               </tr>
             </table>
             <table width="400">
@@ -35,6 +41,21 @@
                 <td align="right" nowrap="nowrap"><pfx:xinp type="submit" value="Go!"/></td>
               </tr>
             </table>
+
+            <ixsl:if test="1 = 2">
+              <table bgcolor="#bbccff" class="boxed" width="400">
+                <tr valign="top">
+                  <td>
+                    <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label>
+                  </td>
+                  <td>
+                    <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
+                    <pfx:xinp name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
+                  </td>
+                </tr>
+              </table>
+            </ixsl:if>
+            
           </pfx:forminput>
           <pfx:include part="switch"/>&#160;&#160;<pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>

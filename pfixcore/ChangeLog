@@ -1,3 +1,7 @@
+2003-03-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: really make selective display of errors via paramref work.
+
 2003-03-19  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (auxEchoData): also echo all "__anchor"

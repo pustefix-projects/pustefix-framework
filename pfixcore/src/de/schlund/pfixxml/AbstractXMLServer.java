@@ -378,8 +378,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                        conutil.getSessionValue(session, ContainerUtil.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
-                    spdoc = (SPDocument) conutil.getSessionValue(session, 
-                                                                 servletname + SUFFIX_SAVEDDOM);
+                    spdoc = (SPDocument) conutil.getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
                 }
             }
             // do this only if recordmode is allowed
@@ -466,13 +465,11 @@ public abstract class AbstractXMLServer extends ServletManager {
                          + (System.currentTimeMillis() - currtime) + "ms");
             }
             RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
-            if (store == null || store.getValue() == null || ! store.getValue().equals("1")) {
-                if (session != null) {
-                    long stamp = System.currentTimeMillis();
-                    spdoc.setTimestamp(stamp);
-                    synchronized (session) {
-                        conutil.setSessionValue(session, servletname + SUFFIX_SAVEDDOM, spdoc);
-                    }
+            if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
+                long stamp = System.currentTimeMillis();
+                spdoc.setTimestamp(stamp);
+                synchronized (session) {
+                    conutil.setSessionValue(session, servletname + SUFFIX_SAVEDDOM, spdoc);
                 }
             }
         }
