@@ -83,7 +83,7 @@ public class XsltCustomWebXmlTask extends XsltGenericTask {
                     in = coreWebXml;
                 }
 
-                log("Using "+in+" as sourcefile for web.xml transformation", Project.MSG_INFO);
+                log("Using "+in+" as sourcefile for web.xml transformation", Project.MSG_DEBUG);
                 getTransformer().setParameter(new XsltParam("prjname", name));
                 getTransformer().setParameter(new XsltParam("projectsxmlfile", projectsFile.getPath()));
                 String outdir = "webapps/" + name + "/WEB-INF";
