@@ -58,16 +58,16 @@
         <property  name="makemode"         value="prod"/>
         
         <condition property="javahome" value="${env.PFX_JAVA_HOME}">
-        	<isset property="${env.JAVA_HOME}"/>
+            <isset property="env.PFX_JAVA_HOME"/>
         </condition>
         <condition property="javahome" value="${env.JAVA_HOME}">
-        	<isset property="${env.JAVA_HOME}"/>
+            <isset property="env.JAVA_HOME"/>
         </condition>
         <condition property="javahome" value="${java.home}">
-        	<isset property="${java.home}"/>
+            <isset property="java.home"/>
         </condition>
-		<fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
-		
+        <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop.  Set JAVA_HOME environment variable to point to the root directory of Java2 Standard Edition installation." unless="javahome"/>
+        
         <condition property="prohibitedit" value="no">
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
