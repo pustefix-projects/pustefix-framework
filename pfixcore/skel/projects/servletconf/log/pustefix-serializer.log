@@ -1,0 +1,425 @@
+2003-05-16 16:07:01,647 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_editoruserauth.xml@content
+<lang name="default">
+        <br/><br/>
+        <center>
+          <table><tr><td class="welcome" nowrap="nowrap">
+             W e l c o m e&#160;&#160;&#160;
+             to&#160;&#160;&#160;t h e&#160;&#160;&#160;
+             P u s t e f i x&#160;&#160;&#160;C M S</td></tr></table><br/><br/>
+          <pfx:forminput target="_top" type="auth">
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.User">Username:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" colspan="2">
+                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+
+2003-05-16 16:07:25,853 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_editoruserauth.xml@content
+<lang name="default">
+        <br/><br/>
+        <center>
+          <table><tr><td class="welcome" nowrap="nowrap">
+             W e l c o m e&#160;&#160;&#160;
+             to&#160;&#160;&#160;t h e&#160;&#160;&#160;
+             P u s t e f i x&#160;&#160;&#160;C M S</td></tr></table><br/><br/>
+          <pfx:forminput target="_top" type="auth">
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.User">Your Username:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" colspan="2">
+                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+
+2003-05-16 16:07:56,691 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_editoruserauth.xml@content
+<lang name="default">
+        <br/><br/>
+        <center>
+          <table><tr><td class="welcome" nowrap="nowrap">
+             W e l c o m e&#160;&#160;&#160;
+             to&#160;&#160;&#160;t h e&#160;&#160;&#160;
+             P u s t e f i x&#160;&#160;&#160;C M S</td></tr></table><br/><br/>
+          <pfx:forminput target="_top" type="auth">
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.User">Your Username:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" colspan="2">
+                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+
+2003-05-16 16:08:05,734 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_editoruserauth.xml@content
+<lang name="default">
+        <br/><br/>
+        <center>
+          <table><tr><td class="welcome" nowrap="nowrap">
+             W e l c o m e&#160;&#160;&#160;
+             to&#160;&#160;&#160;t h e&#160;&#160;&#160;
+             P u s t e f i x&#160;&#160;&#160;C M S</td></tr></table><br/><br/>
+          <pfx:forminput target="_top" type="auth">
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.User">Username:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" colspan="2">
+                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+
+2003-05-16 16:08:10,649 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_editoruserauth.xml@logoutbutton
+<lang name="default">
+        [<b>6100 - More Power</b>]
+      </lang>
+
+2003-05-16 16:08:14,245 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_home.xml@content
+<lang name="default">
+        <br/> 
+        <table align="center" border="0" width="75%">
+          <tr>
+            <td align="center">
+              <pfx:include href="core/editor/txt/pages/main_home.xml" part="welcome"/>
+            </td>
+          </tr>
+        </table>
+        <table align="center" cellpadding="5" cellspacing="1">
+          <tr>
+            <td>
+              <span class="editor_main_emph">
+                Schedule all pages of the product for updating:</span>&#160;&#160;
+            </td>
+            <td align="center">
+              <pfx:button mode="force" normalclass="editor_submit" page="home">
+                <pfx:command name="SELWRP">update</pfx:command>
+                <pfx:argument name="update.DoUpdate">true</pfx:argument>Do it!</pfx:button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="editor_main_emph">
+                Play-back recorded testcases:</span>
+            </td>
+            <td align="center">
+              <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
+                <pfx:argument name="tcreset.Reset">true</pfx:argument>
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>Go...</pfx:button>              
+            </td>
+          </tr>
+        </table>
+      </lang>
+
+2003-05-16 16:08:20,100 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_images.xml@content
+<lang name="default">
+        <center>
+          <ixsl:choose>
+            <ixsl:when test="/formresult/formerrors/error[@name = &apos;imgsel.Path&apos;]">
+              <br/>
+              <table class="core_errorbox_table" width="400">
+                <tr>
+                  <td class="core_errorlabel_text">
+                    Error!
+                  </td>
+                  <td class="core_errortext">
+                    <ixsl:apply-templates select="/formresult/formerrors/error[@name = &apos;imgsel.Path&apos;]/node()"/>
+                  </td>
+                </tr>
+              </table>
+            </ixsl:when>
+            <ixsl:when test="/formresult/formerrors/error">
+              <br/>
+              <pfx:errorbox width="400"/>
+            </ixsl:when>
+          </ixsl:choose>
+        </center>
+        <ixsl:choose>
+          <ixsl:when test="/formresult/currentimageinfo">
+            <displaycurrentimage/><br/>
+            <displayimagedetails/>
+            <displayaffectedpages path="/formresult/currentimageinfo"/>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <center>
+              <br/>
+              <div class="editor_main_emph">
+                Please select an image from the list on the left
+              </div>
+            </center>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </lang>
+
+2003-05-16 16:08:22,092 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_images.xml@sidebar
+<lang name="default">
+        <div class="editor_sidebar_head"><center>I&#160;m&#160;a&#160;g&#160;e&#160;s</center></div><br/>
+        <displayallimages/>
+      </lang>
+
+2003-05-16 16:08:24,342 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_includes.xml@content
+<lang name="default">
+        <ixsl:choose>
+          <ixsl:when test="/formresult/currentincludeinfo">
+            <displaycurrentinclude/><br/>
+            <displayincludedetails/>
+            <displayaffectedpages path="/formresult/currentincludeinfo"/>
+            <displaybranchoptions/>
+            <displayincludes path="/formresult/currentincludeinfo"/>
+            <displayimages path="/formresult/currentincludeinfo"/>
+            <div>
+              <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/currentincludeinfo/content/node()">
+                  <staticdisplay path="/formresult/currentincludeinfo/content/node()"/>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <div class="editor_box editor_warn">Part is not yet defined!</div>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </div>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <center>
+              <br/>
+              <div class="editor_main_emph">
+                Please select an include from the list on the left
+              </div>
+            </center>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </lang>
+
+2003-05-16 16:08:26,994 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_includes.xml@sidebar
+<lang name="default">
+        <ixsl:if test="/formresult/currentsearchincludes">
+          <div class="editor_sidebar_head"><center>I&#160;n&#160;c&#160;l&#160;u&#160;d&#160;e&#160;s<br/>
+              <span style="font-size: 10px;">(matching last Search)</span></center></div><br/>
+          <displayallincludes path="/formresult/currentsearchincludes"/><br/>
+        </ixsl:if>
+        <div class="editor_sidebar_head"><center>I&#160;n&#160;c&#160;l&#160;u&#160;d&#160;e&#160;s</center></div><br/>
+        <displayallincludes/>
+      </lang>
+
+2003-05-16 16:08:30,034 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_pages.xml@content
+<lang name="default">
+        <center>
+          <ixsl:if test="/formresult/formerrors/error">
+            <br/>
+            <table class="core_errorbox_table" width="200">
+              <tr>
+                <td class="core_errorlabel_text">
+                  Error!
+                </td>
+                <td class="core_errortext">
+                  <ixsl:apply-templates select="/formresult/formerrors/error[@name = &apos;psel.Page&apos;]/node()"/>
+                </td>
+              </tr>
+            </table>
+          </ixsl:if>
+        </center>
+        <ixsl:choose>
+          <ixsl:when test="/formresult/currentpageinfo">
+            <displaycurrentpage/><br/>
+            <displaytarget_of_page/>
+            <displayincludes path="/formresult/currentpageinfo"/>
+            <displayimages path="/formresult/currentpageinfo"/>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <center>
+              <br/>
+              <div class="editor_main_emph">
+                Please select a page from the list on the left
+              </div>
+            </center>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </lang>
+
+2003-05-16 16:08:33,902 
+==========================================================
+| User      >>> CMS Administrator
+| Path@Part >>> /home/jh/wuergspace/workspace/skel_pfixcore/projects/core/editor/txt/pages/main_pages.xml@sidebar
+<lang name="default">
+        <div class="editor_sidebar_head"><center>P&#160;a&#160;g&#160;e&#160;s</center></div><br/>
+        <displayallpages/>
+        <documentation/>
+      </lang>
+

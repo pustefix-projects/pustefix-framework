@@ -1,0 +1,7 @@
+This directory holds utilities that are needed when calling "make" in 
+the parent directory. These utilities may need to be customized by the user
+or may be build automatically during the "make" run.
+
+Refer to the INSTALL file in the parent directory for instructions on how to
+go on.
+

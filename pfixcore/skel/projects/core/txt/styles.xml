@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="standard">
+    <product name="default">
+      <lang name="default">
+        <!-- Put core CSS here -->
+        body      { color: #000000; background-color: #ffffff;
+                    font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+	td        { font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
+        
+        .core_errorbox_table   { background-color: #cccccc; }
+        .core_errorlabel_td    { align: left; }
+        .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
+        .core_errortext        { font-style: italic; }
+
+        .core_button_active    { }
+        .core_button_normal    { }
+        .core_button_invisible { }
+
+        .core_xml_errorbox     { background-color: #cccccc; color: #ff0000; font-weight: bold; border:outset 1px #000000; }
+        
+        #core_progress_wait { position:absolute; visibility:hidden; 
+                              top:10%; left:40%; right:40%;
+                              background:#dddddd; border:outset 1px #000000; 
+                              padding:10px; margin:0px; }
+        
+        #core_progress_bar { background:#3344dd; margin:0px; padding:0px; 
+                             width:0%; height:100%; }
+        
+        #core_progress_frame { margin:0px; margin-top:10px; border: inset 1px;
+                               padding:0px; width:100%; height:10px; }
+        
+        #core_progress_waittext { font-family:Arial, Helvetica; 
+                                  font-weight:bold; font-size:14px; }
+      </lang>
+    </product>
+  </part>
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

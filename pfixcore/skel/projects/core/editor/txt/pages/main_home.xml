@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <br/> 
+        <table align="center" border="0" width="75%">
+          <tr>
+            <td align="center">
+              <pfx:include href="core/editor/txt/pages/main_home.xml" part="welcome"/>
+            </td>
+          </tr>
+        </table>
+        <table align="center" cellpadding="5" cellspacing="1">
+          <tr>
+            <td>
+              <span class="editor_main_emph">
+                Schedule all pages of the product for updating:</span>  
+            </td>
+            <td align="center">
+              <pfx:button mode="force" normalclass="editor_submit" page="home">
+                <pfx:command name="SELWRP">update</pfx:command>
+                <pfx:argument name="update.DoUpdate">true</pfx:argument>Do it!</pfx:button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="editor_main_emph">
+                Play-back recorded testcases:</span>
+            </td>
+            <td align="center">
+              <pfx:button activeclass="editor_box" normalclass="editor_submit" page="testcaseselect" target="_top">
+                <pfx:argument name="tcreset.Reset">true</pfx:argument>
+                <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>Go...</pfx:button>              
+            </td>
+          </tr>
+        </table>
+      </lang>
+    </product>
+    
+    
+  </part>
+
+  <part name="welcome">
+    <product name="default">
+      <lang name="default">
+        <br/>
+        <div style="color: #ffffff;">
+          <b>
+            <span style="font-size: 16px;">
+              W e l c o m e   t o   t h e
+            </span>
+            <br/><br/>
+            <span style="font-size: 14px;">
+              Pustefix Contentmanagement System
+            </span>
+          </b>
+          <br/><pfx:blank height="40"/><br/>
+          Please use the menubar to go to the different sections of the CMS.<br/>
+          <br/>
+        </div>
+      </lang>
+    </product>
+  </part>
+
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

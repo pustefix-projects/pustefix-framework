@@ -1,0 +1,17 @@
+
+autoreload.classes=true
+autoreload.file=true
+init.timeout=10000
+destroy.timeout=10000
+session.useCookies=false
+session.timeout=14400000
+session.checkFrequency=30000
+    
+servlets.startup=init
+singleThreadModelServlet.initialCapacity=1
+singleThreadModelServlet.incrementCapacity=2
+singleThreadModelServlet.maximumCapacity=100
+
+servlets.default.initArgs=servlet.commonpropfile=/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/pustefix.prop
+servlet.init.code=de.schlund.pfixxml.FactoryInitServlet
+servlet.init.initArgs=servlet.propfile=/home/jh/wuergspace/workspace/skel_pfixcore/projects/common/conf/factory.prop

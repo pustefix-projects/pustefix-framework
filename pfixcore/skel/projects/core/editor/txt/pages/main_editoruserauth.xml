@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="logoutbutton">
+    <product name="default">
+      <lang name="default">
+        [<b>6100 - More Power</b>]
+      </lang>
+    </product>
+  </part>
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <br/><br/>
+        <center>
+          <table><tr><td class="welcome" nowrap="nowrap">
+             W e l c o m e   
+             to   t h e   
+             P u s t e f i x   C M S</td></tr></table><br/><br/>
+          <pfx:forminput target="_top" type="auth">
+            <table width="400">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your userdata below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <table class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="2">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.User">Username:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.User" size="20" type="text"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" nowrap="nowrap">
+                        <pfx:label name="auth.Pass">Passwort:</pfx:label>
+                      </td>
+                      <td>
+                        <pfx:xinp class="editor_input" name="auth.Pass" size="20" type="password"/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right" colspan="2">
+                        <br/><pfx:xinp class="editor_submit" type="submit">Login</pfx:xinp>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </pfx:forminput>
+        </center>
+      </lang>
+    </product>
+    
+  </part>
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->
