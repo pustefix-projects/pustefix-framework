@@ -1,3 +1,8 @@
+2003-05-07  Joerg Haecker <haecker@schlund.de>
+	
+	* src/de/schlund/pfixxml/testenv/RecordManager.java(doRecord): bugfix,
+	now we serialize to the right location.
+	
 2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (getModTimeMaybeUpdate): set storedException to null.

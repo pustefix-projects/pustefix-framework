@@ -308,7 +308,7 @@ public final class RecordManager {
             file = new File(new_filename);
         }
         try {
-            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getName(), 2, false);
+            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getAbsolutePath(), 2, false);
         } catch (FileNotFoundException e) {
             throw new RecordManagerException("Unable to serialize! File not found.", e);
         } catch (IOException e) {
