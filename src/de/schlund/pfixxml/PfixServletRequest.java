@@ -81,7 +81,7 @@ public class PfixServletRequest {
             return;
         }
         if (perflog == null) {
-            perflog   = new LinkedList();
+            perflog = new LinkedList();
         }
         if (perfstack == null) {
             perfstack = new LinkedList();
@@ -92,13 +92,12 @@ public class PfixServletRequest {
      *
      */
     public synchronized void startLogEntry() {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
 
         if (perflog != null) {
-            long now   = System.currentTimeMillis();
-
+            long      now = System.currentTimeMillis();
             PerfEvent evn = new PerfEvent(now, "START ", PerfEvent.START);
             perflog.add(evn);
             perfstack.add(evn); // this will be decreased by stop events
@@ -109,7 +108,7 @@ public class PfixServletRequest {
      *
      */
     public synchronized void endLogEntry(String info, long delay) {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
 
@@ -138,7 +137,7 @@ public class PfixServletRequest {
      *
      */
     public synchronized void endLogEntry(PerfEventType p) {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
 
@@ -173,7 +172,7 @@ public class PfixServletRequest {
      *
      */
     public void printLog2() {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
         if (session != null && perflog != null) {
@@ -200,25 +199,15 @@ public class PfixServletRequest {
     }
 
     public void printLog() {
-        if(!PFXPERF.isDebugEnabled()) {
+        if (!PFXPERF.isDebugEnabled()) {
             return;
         }
         StringBuffer sb = new StringBuffer(255);
-        for(int i=0; i<perflog.size(); i++) {
+        for (int i = 0; i < perflog.size(); i++) {
             PerfEvent entry = (PerfEvent)perflog.get(i);
             if(entry.getType() == PerfEvent.START) {
                 continue;
             }
-                /*for(int j = 0; j < depth; j++) {
-                    sb.append("   ");
-                }
-                depth++;
-            } else {
-                for(int j = 0; j < depth; j++) {
-                    sb.append("   ");
-                }
-                depth--;
-            }*/
             String msg = entry.getMessage();
             if(msg != null || !msg.equals("")) {
                 if(i != perflog.size() - 1)
@@ -228,7 +217,7 @@ public class PfixServletRequest {
             }
         }
         String str = sb.toString();
-        if(!str.equals("")) {
+        if (!str.equals("")) {
             StringBuffer sb2 = new StringBuffer();
             sb2.append("[servletrequest servername=\""+getServerName()+"\"");
             sb2.append(" sessionid=\""+(getSession(false) == null ? "NULL" : getSession(false).getId()));
@@ -594,33 +583,7 @@ public class PfixServletRequest {
             }
             parameters.put(key, params);
         }
-        //for (Iterator i = allnames.iterator(); i.hasNext();) {
-        //    String         key    = (String) i.next();
-        //    RequestParam[] params = (RequestParam[]) parameters.get(key);
-        //    System.out.print("Param: " + key);
-        //    if (params != null) {
-        //        for (int j = 0;  j < params.length; j++) {
-        //            System.out.print("[" + params[j].toString() + "] ");
-        //        }
-        //        System.out.println("");
-        //    } else {
-        //        System.out.println(" RequestParam[] is NULL! ");
-        //    }
-        //}
         generateSynthetics(req,allnames);
-        // for (Iterator i = parameters.keySet().iterator(); i.hasNext();) {
-        //     String         key    = (String) i.next();
-        //     RequestParam[] params = (RequestParam[]) parameters.get(key);
-        //     System.out.print("Final: " + key + "=>");
-        //     if (params != null) {
-        //         for (int j = 0;  j < params.length; j++) {
-        //             System.out.print("[" + params[j].toString() + "] ");
-        //         }
-        //         System.out.println("");
-        //     } else {
-        //         System.out.println(" RequestParam[] is NULL! ");
-        //     }
-        // }
     }
 
     private HashSet handleMulti(HttpServletRequest req, Properties properties) {
