@@ -19,7 +19,7 @@ function xmlRequest() {
   this.callback = arguments[2];
   this.context  = arguments[3];
 
-  this.iframes  = 1;
+  this.iframes  = 0;
 
   this.msXmlHttp = "";
 
@@ -130,15 +130,18 @@ xmlRequest.prototype.start = function( content ) {
         }
       }
 
-		
 
       try {
         _xml[i].open( this.method, this.url, this.callback ? true : false); 
-          
+
         for( var j=0; j<this.headers.length; j++ ) {
-          _xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
+          try {
+            // exception in Opera
+            _xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
+          } catch(e) {
+          }
         }
-          
+
         _xml[i].send(content);
           
         if( !this.callback ) {
