@@ -11,7 +11,7 @@
             <source>./newproject.sh</source>
           and follow the instructions.</p></li>
         <li><p>Type
-            <source>ant</source>
+            <source>ant -Dmakemode=test</source>
           to build your project.</p></li>
         <li><p>Start tomcat:
             <source>./startTomcat.sh</source></p></li>
