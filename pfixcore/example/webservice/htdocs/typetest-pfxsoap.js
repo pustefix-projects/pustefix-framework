@@ -55,6 +55,13 @@ function beanEquals(b1,b2) {
 	return true;
 }
 
+function elementEquals(e1,e2) {
+	if(e1.nodeType!=1 || (e1.nodeType!=e2.nodeType)) return false;
+	if(e1.nodeName!=e2.nodeName) return false;
+	//TODO: attribute/text/recursive check
+	return true;
+}
+
 function equals(obj1,obj2) {
 	var type1=typeof obj1;
 	var type2=typeof obj2;
@@ -234,9 +241,10 @@ function pfxsoapCall() {
 		try {
 			var bean=new Object();
 			bean["date"]=new Date();
-			bean["floatVal"]=1.2;
+			bean["floatVals"]=new Array(1.2,2.1);
 			bean["intVal"]=2;
 			bean["name"]="TestBean";
+			bean["children"]=new Array();
 			var resBean=wsType.echoDataBean(bean);
 			var t2=(new Date()).getTime();
 			if(!equals(resBean,bean)) throw "Wrong result";
@@ -245,21 +253,29 @@ function pfxsoapCall() {
 			var t2=(new Date()).getTime();
    		pfxsoapPrint("echoDataBean",(t2-t1),ex);
    	}	
-   	
+   
    	//echoDataBeanArray
 		t1=(new Date()).getTime();
 		try {
 			var bean1=new Object();
 			bean1["date"]=new Date();
-			bean1["floatVal"]=1.2;
+			bean1["floatVals"]=new Array(1.2,2.1);
 			bean1["intVal"]=2;
 			bean1["name"]="TestBean1";
+			bean1["children"]=new Array();
 			var bean2=new Object();
 			bean2["date"]=new Date();
-			bean2["floatVal"]=1.2;
+			bean2["floatVals"]=new Array(1.2,2.1);
 			bean2["intVal"]=2;
 			bean2["name"]="TestBean2";
-			var beans=new Array(bean1,bean2);
+			bean2["children"]=new Array();
+			var bean3=new Object();
+			bean3["date"]=new Date();
+			bean3["floatVals"]=new Array(1.2,2.1);
+			bean3["intVal"]=2;
+			bean3["name"]="TestBean3";
+			bean3["children"]=new Array(bean1,bean2);
+			var beans=new Array(bean3);
 			var resBeans=wsType.echoDataBeanArray(beans);
 			var t2=(new Date()).getTime();
 			if(!equals(resBeans,beans)) throw "Wrong result";
@@ -268,6 +284,31 @@ function pfxsoapCall() {
 			var t2=(new Date()).getTime();
    		pfxsoapPrint("echoDataBeanArray",(t2-t1),ex);
    	}	
+   	
+   	//echoElement
+   	t1=(new Date()).getTime();
+   	try {
+   		var doc=null;
+   		var elem=null;
+     		if(document.implementation && document.implementation.createDocument) {
+       		doc=document.implementation.createDocument("","",null);
+         } else if(window.ActiveXObject) {
+            return new ActiveXObject(getDomDocumentPrefix()+".DomDocument");
+         }
+         elem=doc.createElement("test");
+         var sub=doc.createElement("foo");
+         elem.appendChild(sub);
+         sub.setAttribute("id","dafdfd");
+         var txt=doc.createTextNode("asdfghjklöä");
+         sub.appendChild(txt);
+			var resElem=wsType.echoElement(elem);
+			var t2=(new Date()).getTime();
+			if(!elementEquals(resElem,elem)) throw "Wrong result";
+			pfxsoapPrint("echoElement",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+   		pfxsoapPrint("echoElement",(t2-t1),ex);
+   	}
    	
    	var total2=(new Date()).getTime();
 		pfxsoapPrintTime((total2-total1));	

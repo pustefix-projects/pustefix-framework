@@ -5,23 +5,42 @@
     <product name="default">
       <lang name="default">
 		<h1>Data service</h1>
+		
+		<h2>Pustefix SOAP</h2>
+		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
+		<p><span class="error" id="pfxsoap_error"></span></p>
+		<form name="pfxsoap" action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="pfxsoap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
+					<td><input type="button" onclick="pfxsoapCall('getData');" value="get data"/></td>
+					<td><input type="button" onclick="pfxsoapCall('getDataArray');" value="get data array"/></td>
+					<td><input type="button" onclick="pfxsoapCall('getDataBean');" value="get data bean"/></td>
+					<td><input type="button" onclick="pfxsoapCall('echoDataBean');" value="echo data bean"/></td>
+					<td><input type="button" onclick="pfxsoapCall('getElement');" value="get XML element"/></td>
+				</tr>
+			</table>	
+		</form>
+		
 		<h2>Mozilla low-level SOAP</h2>
 		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
 		<p><span class="error" id="soap_error"></span></p>
-		<form action="">
+		<form name="mozsoap" action="">
 			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
 			<table cellpadding="5" bgcolor="#b6cfe4">
 				<tr>
 					<td>Data:</td>
 					<td><textarea id="soap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
-					<td><input type="button" onclick="soapCall('getData',null,document.forms[0].sid.value);" value="get data"/></td>
-					<td><input type="button" onclick="soapCall('getDataArray',null,document.forms[0].sid.value);" value="get data array"/></td>
-					<td><input type="button" onclick="soapCall('getDataBean',null,document.forms[0].sid.value);" value="get data bean"/></td>
-					<td><input type="button" onclick="soapCall('echoDataBean',0,document.forms[0].sid.value);" value="echo data bean"/></td>
-					<td><input type="button" onclick="soapCall('getElement',null,document.forms[0].sid.value);" value="get XML element"/></td>
+					<td><input type="button" onclick="soapCall('getData',null,document.mozsoap.sid.value);" value="get data"/></td>
+					<td><input type="button" onclick="soapCall('getDataArray',null,document.mozsoap.sid.value);" value="get data array"/></td>
+					<td><input type="button" onclick="soapCall('getDataBean',null,document.mozsoap.sid.value);" value="get data bean"/></td>
+					<td><input type="button" onclick="soapCall('echoDataBean',0,document.mozsoap.sid.value);" value="echo data bean"/></td>
+					<td><input type="button" onclick="soapCall('getElement',null,document.mozsoap.sid.value);" value="get XML element"/></td>
 				</tr>
 			</table>	
 		</form>
+		
 		<h2>Mozilla WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
 		<p><span class="error" id="wsdl_error"></span></p>

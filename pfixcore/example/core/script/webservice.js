@@ -101,6 +101,7 @@ var XMLNS_XSD="http://www.w3.org/2001/XMLSchema";
 var XMLNS_XSI="http://www.w3.org/2001/XMLSchema-instance";
 var XMLNS_SOAPENC="http://schemas.xmlsoap.org/soap/encoding/"
 var XMLNS_SOAPENV="http://schemas.xmlsoap.org/soap/envelope/";
+var XMLNS_APACHESOAP="http://xml.apache.org/xml-soap";
 var XMLNS_PREFIX_MAP=new Array();
 XMLNS_PREFIX_MAP[XMLNS_XSD]="xsd";
 XMLNS_PREFIX_MAP[XMLNS_XSI]="xsi";
@@ -184,6 +185,8 @@ function XMLTypes() {
 	this.SOAP_LONG=new QName(XMLNS_SOAPENC,"long");
 	this.SOAP_SHORT=new QName(XMLNS_SOAPENC,"short");
 	this.SOAP_STRING=new QName(XMLNS_SOAPENC,"string");
+	
+	this.APACHESOAP_ELEMENT=new QName(XMLNS_APACHESOAP,"Element");
 	
 }
 
@@ -584,15 +587,22 @@ soapArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writ
 		var dimStr="";
 		for(var j=0;j<dim;j++) dimStr+="[]";
 		dimStr=dimStr.replace(/\[\]$/,"["+value.length+"]");
-		var prefix=writer.getPrefix(typeInfo.arrayType.namespaceUri);
-		writer.writeAttribute(QNAME_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.localpart+dimStr);
+		
+		var nsuri=typeInfo.arrayType.xmlType.namespaceUri;
+		var prefix=writer.currentCtx.getPrefix(nsuri);
+		if(prefix==null) {
+			prefix=writer.getPrefix(nsuri);
+			writer.writeNamespaceDeclaration(nsuri);
+		}
+		
+		writer.writeAttribute(QNAME_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.xmlType.localpart+dimStr);
 		for(var i=0;i<value.length;i++) {
 			this.serializeSub(value[i],"item",typeInfo,dim-1,writer);
 		}
 		writer.endElement(name);
 	} else {
-		var serializer=typeMapping.getSerializer(typeInfo.arrayType);
-		serializer.serialize(value,name,new soapTypeInfo(typeInfo.arrayType),writer);
+		var serializer=typeMapping.getSerializerByInfo(typeInfo.arrayType);
+		serializer.serialize(value,name,typeInfo.arrayType,writer);
 	}
 }
 
@@ -612,10 +622,12 @@ soapArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
 	} else if(dim==1) {
 		var items=xmlUtils.getChildrenByName(element,"item");
 		var array=new Array();
-		for(var i=0;i<items.length;i++) {
-			var deserializer=typeMapping.getSerializer(typeInfo.arrayType);
-			var val=deserializer.deserialize(typeInfo,items[i]);
-			array.push(val);
+		if(items!=null) {
+			for(var i=0;i<items.length;i++) {
+				var deserializer=typeMapping.getSerializerByInfo(typeInfo.arrayType);
+				var val=deserializer.deserialize(typeInfo.arrayType,items[i]);
+				array.push(val);
+			}
 		}
 		return array;
 	} else throw new soapSerializeEx("Illegal array dimension: "+dim,"soapArraySerializer.deserializeSub");
@@ -661,6 +673,38 @@ soapBeanSerializer.prototype.deserialize=function(typeInfo,element) {
 	return obj;
 }
 
+//*********************************
+//soapElementSerializer(QName type)
+//*********************************
+function soapElementSerializer(type) {
+	soapSimpleSerializer.call(this,type);
+}
+soapElementSerializer.extend(soapSimpleSerializer);
+soapElementSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	writer.startElement(name);
+	this.serializeSub(value,writer);
+	writer.endElement(name);
+}
+soapElementSerializer.prototype.serializeSub=function(element,writer) {
+	writer.startElement(element.nodeName);
+	for(var j=0;j<element.attributes.length;j++) {
+		var node=element.attributes.item(j);
+		writer.writeAttribute(node.nodeName,node.nodeValue);
+	}
+	for(var i=0;i<element.childNodes.length;i++) {
+		var node=element.childNodes[i];
+		if(node.nodeType==1) this.serializeSub(node,writer);
+		else if(node.nodeType==3) writer.writeChars(node.nodeValue);
+	}
+	writer.endElement(element.nodeName);
+}
+soapElementSerializer.prototype.deserialize=function(typeInfo,element) {
+	for(var i=0;i<element.childNodes.length;i++) {
+		var node=element.childNodes[i];
+		if(node.nodeType==1) return node;
+	}
+}
+
 
 //*********************************
 //TypeMapping()
@@ -680,6 +724,7 @@ TypeMapping.prototype.init=function() {
 	this.mappings[xmltypes.SOAP_STRING.hashKey()]=new soapStringSerializer();
 	this.mappings["ARRAY"]=new soapArraySerializer();
 	this.mappings["BEAN"]=new soapBeanSerializer();
+	this.mappings[xmltypes.APACHESOAP_ELEMENT.hashKey()]=new soapElementSerializer();
 }
 
 //register(QName xmlType,Serializer serializer)
@@ -805,7 +850,7 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
-  //alert(writer.xml);
+//alert(writer.xml);
   var resDoc;
   if( !this.userCallback ) {
     // sync
@@ -1056,36 +1101,56 @@ function soapTypeInfo(xmlType) {
 }
 
 //*********************************
-// soapArrayInfo(QName xmlType,QName arrayType,Number dimension)
+// soapArrayInfo(QName xmlType)
+// soapArrayInfo(QName xmlType,TypeInfo arrayType,Number dimension)
 //*********************************
 function soapArrayInfo(xmlType,arrayType,dimension) {
 	soapTypeInfo.call(this,xmlType);
+	if(arguments.length==3) {
+		this.dimension=dimension;
+		this.arrayType=arrayType;
+	}
+}
+soapArrayInfo.extend(soapTypeInfo);
+soapArrayInfo.prototype.populate=function(arrayType,dimension) {
 	this.arrayType=arrayType;
 	this.dimension=dimension;
 }
-soapArrayInfo.extend(soapTypeInfo);
 
 //*********************************
+// soapBeanInfo(QName xmlType)
 // soapBeanInfo(QName xmlType,Array props)
 //*********************************
 function soapBeanInfo(xmlType,props) {
 	soapTypeInfo.call(this,xmlType);
-	this.props=props;
-	this.propNames=new Array();
-	this.propToInfo=new Array();
-	for(var i=0;i<props.length;i=i+2) {
-		this.propNames.push(props[i]);
-		this.propToInfo[props[i]]=props[i+1];
+	this.props=null;
+	this.propNames=null;
+	this.propToInfo=null;
+	if(arguments.length==2) {
+		this.props=props;
+		this.init();
 	}
 }
 soapBeanInfo.extend(soapTypeInfo);
-
+soapBeanInfo.prototype.init=function() {
+	this.propNames=new Array();
+	this.propToInfo=new Array();
+	for(var i=0;i<this.props.length;i=i+2) {
+		this.propNames.push(this.props[i]);
+		this.propToInfo[this.props[i]]=this.props[i+1];
+	}
+}
+soapBeanInfo.prototype.populate=function(props) {
+	this.props=props;
+	this.init();
+}
 
 //*********************************
 // soapStub
 //*********************************
 function soapStub() {
 	this._url="";
+	this._typeInfos=new Array();
 }
 
 soapStub.prototype._createCall=function() {

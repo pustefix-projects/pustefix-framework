@@ -52,6 +52,8 @@
 			<ixsl:when test="$page='data'">
 				<script type="text/javascript" src="/data-soap.js"></script>
 				<script type="text/javascript" src="/data-wsdl.js"></script>
+				<script type="text/javascript" src="/xml/wsscript/Data.js"></script>
+				<script type="text/javascript" src="/data-pfxsoap.js"></script>		
 			</ixsl:when>
 			<ixsl:when test="$page='typetest'">
 				<script type="text/javascript" src="/xml/wsscript/TypeTest.js"></script>

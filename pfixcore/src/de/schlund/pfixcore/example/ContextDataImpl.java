@@ -58,14 +58,14 @@ public class ContextDataImpl implements ContextResource, ContextData {
     }
     
     public String[] getDataArray() {
-        int no=10;
+        int no=250;
         String[] data=new String[no];
         for(int i=0;i<no;i++) data[i]="data"+i;
         return data;
     }
     
     public DataBean getDataBean() {
-        return new DataBean("test",Calendar.getInstance(),123,123f);
+        return new DataBean("test",Calendar.getInstance(),123,new float[] {123f,456f});
     }
     
     public ComplexDataBean getComplexDataBean() {

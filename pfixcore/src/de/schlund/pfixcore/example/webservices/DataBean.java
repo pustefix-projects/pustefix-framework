@@ -17,15 +17,16 @@ public class DataBean {
     String name;
     Calendar date;
     int intVal;
-    float floatVal;
+    float[] floatVals;
+    DataBean[] children;
     
     public DataBean() {}
     
-    public DataBean(String name,Calendar date,int intVal,float floatVal) {
+    public DataBean(String name,Calendar date,int intVal,float[] floatVals) {
         this.name=name;
         this.date=date;
         this.intVal=intVal;
-        this.floatVal=floatVal;
+        this.floatVals=floatVals;
     }
 
     public String getName() {
@@ -52,12 +53,21 @@ public class DataBean {
         this.intVal=intVal;
     }
     
-    public float getFloatVal() {
-        return floatVal;
+    public float[] getFloatVals() {
+        return floatVals;
     }
     
-    public void setFloatVal(float floatVal) {
-        this.floatVal=floatVal;
+    public void setFloatVals(float[] floatVals) {
+        this.floatVals=floatVals;
     }
+    
+    public DataBean[] getChildren() {
+        return children;
+    }
+   
+    public void setChildren(DataBean[] children) {
+        this.children=children;
+    }
+    
     
 }

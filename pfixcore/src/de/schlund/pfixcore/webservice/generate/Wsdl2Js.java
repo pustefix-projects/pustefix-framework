@@ -5,7 +5,6 @@ package de.schlund.pfixcore.webservice.generate;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -14,15 +13,11 @@ import javax.wsdl.factory.*;
 import javax.wsdl.xml.*;
 
 import javax.wsdl.extensions.ExtensibilityElement;
-import javax.wsdl.extensions.UnknownExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
 
 import de.schlund.pfixcore.webservice.generate.js.*;
 import de.schlund.pfixcore.webservice.Constants;
@@ -34,8 +29,6 @@ import org.apache.wsif.schema.Parser;
 import org.apache.wsif.schema.SchemaType;
 import org.apache.wsif.schema.SequenceElement;
 import org.apache.wsif.schema.ComplexType;
-
-
 
 
 /**
@@ -53,6 +46,9 @@ public class Wsdl2Js {
     private File inputFile;
     
     private HashMap schemaTypes;
+    private HashMap typeInfoMap;
+    private ArrayList typeInfoList;
+    private ArrayList popInfoList;
     
     private SOAPAddress getSOAPAddress(Port port) {
         Iterator it=port.getExtensibilityElements().iterator();
@@ -119,6 +115,9 @@ public class Wsdl2Js {
             //get schema types from wsdl definition
             ArrayList list=new ArrayList();
             schemaTypes=new HashMap();
+            typeInfoMap=new HashMap();
+            popInfoList=new ArrayList();
+            typeInfoList=new ArrayList();
             Parser.getAllSchemaTypes(def,list,null);
             Iterator listIt=list.iterator();
             while(listIt.hasNext()) {
@@ -197,6 +196,14 @@ public class Wsdl2Js {
                         
                     }
                     
+                    
+                    for(int i=0;i<typeInfoList.size();i++) {
+                        block.addStatement(new JsStatement("this._typeInfos["+i+"]="+(String)typeInfoList.get(i)));
+                    }
+                    for(int i=0;i<popInfoList.size();i++) {
+                        block.addStatement(new JsStatement((String)popInfoList.get(i)));
+                    }
+                    
                     jsClass.printCode(new FileOutputStream(outputFile));
                     
                 }
@@ -207,38 +214,51 @@ public class Wsdl2Js {
     
     
     private String createJsTypeInfo(QName type) {
-        String info="\"\"";
-        if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)||type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
-            info="new soapTypeInfo("+createJsQName(type)+")";
-        } else {
-            SchemaType stype=(SchemaType)schemaTypes.get(type);
-            if(stype!=null) {
-                if(stype.isComplex()) {
-                    ComplexType ctype=(ComplexType)stype;
-                    if(ctype.isArray()) {
-                        System.out.println(ctype.getTypeName()+" "+ctype.getArrayDimension()+" "+ctype.getArrayType());
-                        String qn1=createJsQName(ctype.getTypeName());
-                        String qn2=createJsQName(ctype.getArrayType());
-                        info="new soapArrayInfo("+qn1+","+qn2+","+ctype.getArrayDimension()+")";
-                    } else if(true) {
-                        info="new soapBeanInfo("+createJsQName(type)+",new Array(";
-                        SequenceElement[] elems=ctype.getSequenceElements();
-                        for(int i=0;i<elems.length;i++) {
-                            QName propType=elems[i].getElementType();
-                            String propInfo=createJsTypeInfo(propType);
-                            info+="\""+elems[i].getTypeName().getLocalPart()+"\","+propInfo;
-                            if(i<elems.length-1) info+=",";
+        System.out.println(type);
+        String ret=(String)typeInfoMap.get(type);
+        if(ret==null) {
+            int ind=typeInfoList.size();
+            ret="this._typeInfos["+ind+"]";
+            typeInfoMap.put(type,ret);
+            String info="\"\"";
+            typeInfoList.add(info);
+            if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)||type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)||
+                    type.getNamespaceURI().equals(Constants.XMLNS_APACHESOAP)) {
+                info="new soapTypeInfo("+createJsQName(type)+")";
+            } else {
+                SchemaType stype=(SchemaType)schemaTypes.get(type);
+                if(stype!=null) {
+                    if(stype.isComplex()) {
+                        ComplexType ctype=(ComplexType)stype;
+                        if(ctype.isArray()) {
+                            String qn=createJsQName(ctype.getTypeName());
+                            String ainf=createJsTypeInfo(ctype.getArrayType());
+                            String pop=ret+".populate("+ainf+","+ctype.getArrayDimension()+")";
+                            popInfoList.add(pop);
+                            info="new soapArrayInfo("+qn+")";
+                        } else if(true) {
+                            info="new soapBeanInfo("+createJsQName(type)+")";
+                            String pop=ret+".populate(new Array(";
+                            SequenceElement[] elems=ctype.getSequenceElements();
+                            for(int i=0;i<elems.length;i++) {
+                                QName propType=elems[i].getElementType();
+                                String propInfo=createJsTypeInfo(propType);
+                                pop+="\""+elems[i].getTypeName().getLocalPart()+"\","+propInfo;
+                                if(i<elems.length-1) pop+=",";
+                            }
+                            pop+="))";
+                            popInfoList.add(pop);
                         }
-                        info+="))";
+                    } else {
+                        info="new soapTypeInfo("+createJsQName(type)+")";
                     }
-                } else {
-                    info="new soapTypeInfo("+createJsQName(type)+")";
                 }
             }
+            typeInfoList.set(ind,info);
         }
-        return info;
+        return ret; 
     }
-    
+   
     private String createJsQName(QName name) {
         String nsuri="";
         if(name.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
