@@ -22,8 +22,8 @@
     <property name="name.so"    value="libapploader.so"/>
     
     <path id="cp">
-        <pathelement location="${dir.class}"/>
-        <fileset dir=".." includes="pfixcore-*.jar"/>
+        <pathelement location="${dir.class}"/>          <!-- pfixcore/jni/../build -->
+        <fileset dir=".." includes="pfixcore-*.jar"/>   <!-- skel/lib/jni/../pfixcore-*.jar -->
     </path>
 
     <target name="help">

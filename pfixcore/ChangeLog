@@ -1,3 +1,11 @@
+2003-12-08  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml:
+	In target "jni" set unjar/untar attributes overwrite to false, so jni.tar.gz does not
+	get extracted out of pfixcore.jar and not get extracted to lib/jni on every build.
+	* build.xml, skel/build.xml:
+	Changed creation of ant.dtd to manual. Checking in ant.dtd. Added DOCTYPE Definition.
+
 2003-12-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_propfiles.xsl: handle the "stophere" attribute of flowsteps and the "stopnext" of the 
