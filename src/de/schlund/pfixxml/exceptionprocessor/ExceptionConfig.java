@@ -60,8 +60,7 @@ public class ExceptionConfig {
              valid = false;
          if ( type == null || "".equals(type) )
              valid = false;
-         if ( (forward && (page == null || "".equals(page)))
-                || jms == null && "".equals(jms) )
+         if ( forward && (page == null || "".equals(page)) )
              valid = false;
 
          return valid;
