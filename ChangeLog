@@ -1,3 +1,15 @@
+2003-07-30 Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/loader/StateTransfer.java:
+	Added additional parameter to transfer() method: a reference to the current 
+	object is passed to recursive calls (predecessor object in the new context).
+	The reference is passed to the createInstance() method, where it is used for
+	for creating inner class instances with a reference to the according outer 
+	class instances. Added support for creating static nested classes.
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java:
+	Improved logging.
+
+
 2003-07-29 Martin Leidig <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/loader/Profiler.java:

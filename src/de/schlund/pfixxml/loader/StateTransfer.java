@@ -18,7 +18,7 @@
 */
 
 package de.schlund.pfixxml.loader;
-
+ 
 import java.lang.reflect.*;
 import java.util.*;
 import java.io.*;
@@ -81,7 +81,11 @@ public class StateTransfer {
         return refs.contains(new Integer(System.identityHashCode(obj)));
     }
 
-    public Object transfer(Object oldObj) {
+    public Object transfer(Object obj) {
+        return transfer(obj,null);
+    }
+
+    protected Object transfer(Object oldObj,Object predecObj) {
         if(oldObj==null) return null;
 		AppLoader loader=AppLoader.getInstance();
         if(oldObj instanceof Class) {
@@ -110,7 +114,7 @@ public class StateTransfer {
             Class newClass=null;
             try {
                 newClass=loader.loadClass(oldClass.getName());
-                newObj=createInstance(newClass);
+                newObj=createInstance(newClass,predecObj);
                 addTransferred(oldObj,newObj);
                 //refs.add(newObj);
                 while(oldClass!=null) {
@@ -129,7 +133,7 @@ public class StateTransfer {
                             if(debug) {
                                 CAT.debug("Transfer field '"+name+"' of class '"+oldClass.getName()+"'.");
                             } 
-                           	value=transfer(value);
+                           	value=transfer(value,newObj);
                             if(!field.isAccessible()) field.setAccessible(true);     
                             field.set(newObj,value);
                         } catch(NoSuchFieldException x) {
@@ -217,7 +221,7 @@ public class StateTransfer {
                         Object value=fields[i].get(oldObj);
                         if(debug) CAT.debug("Transfer field '"+name+"'.");
                         if(value!=null) {
-                        	Object newValue=transfer(value);
+                        	Object newValue=transfer(value,null);
                             if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
                             	fields[i].set(oldObj,newValue);
                             }
@@ -280,8 +284,8 @@ public class StateTransfer {
         while(it.hasNext()) {
             Object key=it.next();
             Object val=oldMap.get(key);
-            Object newKey=transfer(key);
-            Object newVal=transfer(val);
+            Object newKey=transfer(key,null);
+            Object newVal=transfer(val,null);
             if(newKey!=null && newKey.getClass().getClassLoader() instanceof AppClassLoader) {
                 it.remove();
                 tmpMap.put(newKey,newVal);    
@@ -317,7 +321,7 @@ public class StateTransfer {
                 for(int k=0;k<len;k++) {
                     Object val=Array.get(oldArray,k);
                     if(val!=null) {
-                        Object newVal=transfer(val);
+                        Object newVal=transfer(val,null);
                         Array.set(newArray,k,newVal);
                     }
                 }
@@ -333,7 +337,7 @@ public class StateTransfer {
             for(int k=0;k<len;k++) {
                 Object val=Array.get(oldArray,k);
                 if(val!=null) {
-                    Object newVal=transfer(val);
+                    Object newVal=transfer(val,null);
                     //if(val.hashCode()!=newVal.hashCode()) Array.set(oldArray,k,val);
                     if(newVal.getClass().getClassLoader() instanceof AppClassLoader) Array.set(oldArray,k,newVal);
                 }
@@ -353,16 +357,25 @@ public class StateTransfer {
         return false;
     }
 
-    protected Object createInstance(Class clazz) {
+    protected Object createInstance(Class clazz,Object predecObj) {
         Class decClazz=clazz.getDeclaringClass();
         Constructor con=null;
         Object obj=null;
         try {
             if(decClazz!=null) {
-                con=clazz.getDeclaredConstructor(new Class[] {decClazz});
-                if(!con.isAccessible()) con.setAccessible(true);
-                //hack or not? is instance of outer class needed?
-                obj=con.newInstance(new Object[] {null});
+                //create instance of nested class
+                boolean isStatic=Modifier.isStatic(clazz.getModifiers());
+                if(isStatic) {
+                    //static nested class:
+                    con=clazz.getDeclaredConstructor(null);
+                    if(!con.isAccessible()) con.setAccessible(true);
+                    obj=con.newInstance(null);
+                } else {
+                    //inner class:
+                    con=clazz.getDeclaredConstructor(new Class[] {decClazz});
+                    if(!con.isAccessible()) con.setAccessible(true);
+                    obj=con.newInstance(new Object[] {predecObj});
+                }
             } else {
                 con=clazz.getDeclaredConstructor(null);
                 if(!con.isAccessible()) con.setAccessible(true);
