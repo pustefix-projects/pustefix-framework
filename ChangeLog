@@ -1,3 +1,14 @@
+2003-04-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/PFConfigurationException.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java: 
+	* src/de/schlund/pfixxml/testenv/TestClientException.java: 
+	* src/de/schlund/pfixxml/testenv/RecordManagerException.java: 
+	* src/de/schlund/pfixxml/testenv/TestClient.java: make it compile with java 1.4
+	Basically just renaming "getCause" methods to non conflicting name "getExceptionCause".
+	This should be ported to the real 1.4 api as soon as we have completed the switch.
+
 2003-03-31  Martin Leidig  <mleidig@schlund.de>
         * example/core/build/create_propfiles.xsl: fixed some bugs concerning transformation
         of new property file format, i.e. getting prefix for pagerequest parameters within

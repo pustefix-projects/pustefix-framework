@@ -22,7 +22,7 @@ public class RecordManagerException extends Exception {
 
     //~ Methods ....................................................................................
 
-    public Exception getCause() {
+    public Exception getExceptionCause() {
         return theCause == null ? new Exception("unkonw reason") : theCause;
     }
 
