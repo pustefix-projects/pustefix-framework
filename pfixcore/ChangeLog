@@ -1,3 +1,8 @@
+2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java (generateSynthetics): 
+	one more instance to check for null values
+
 2004-05-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: pfx:xinp type="submit|image":
