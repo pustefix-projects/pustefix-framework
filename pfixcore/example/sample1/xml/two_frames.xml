@@ -28,7 +28,8 @@
           </style>
         </head>
         <body>
-           <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
+          <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
+          <pfx:editconsole/>
         </body>
       </html>
     </pfx:frame>
