@@ -27,7 +27,8 @@ import java.util.Properties;
  * All classes which want to act as a container for classes
  * which implement the {@link IHandler} interface must
  * implement this interface. A IHandlerContainer contains
- * all IHandler belonging to a single page.
+ * all IHandler belonging to a single page and it is shared
+ * between sessions.
  */
 public interface IHandlerContainer {
 

@@ -94,9 +94,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer {
     /**
      * This method must be called right after an instance of this class is created.
      *
-     * @param context a <code>Context</code> value
-     * @param preq a <code>PfixServletRequest</code> value
-     * @param resdoc a <code>ResultDocument</code> value
+     * @param context a <code>Context</code> value. Not null.
+     * @param preq a <code>PfixServletRequest</code> value. Not null.
+     * @param resdoc a <code>ResultDocument</code> value. Not null.
      * @exception Exception if an error occurs
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#initIWrappers(Context, PfixServletRequest, ResultDocument) 
      */
