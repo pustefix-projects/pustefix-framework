@@ -812,100 +812,102 @@
       <responsible>JTL</responsible>
       <description>
         Creates a text input field. All attributes given will be copied to the final html tag.</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the input-field</description>
-      </param>
-      <param required="0">
-        <name>maxlength</name>
-        <values><int default="40"/></values>
-        <description>maxlength of the inputfield (chars)</description>
-      </param>
-      <param required="0">
-        <name>size</name>
-        <values><int default="40"/></values>
-        <description>size of the inputfield</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>text</option></oneof></values>
-        <description></description>
-      </param>
-      <param required="0">
-        <name>default</name>
-        <values>
-          <string/>
-        </values>
-        <description>if set to any value, the text field is set this value by default if no
-        other value is given by the business logic</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="text" name="foo"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><input type="text" size="40" maxlength="40" name="foo"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
-    <input type="text" size="40" maxlength="40">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
-      <xsl:choose>
-        <xsl:when test="@default">
-          <ixsl:attribute name="value">
-            <ixsl:choose>
-              <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:value-of select="@default"/></ixsl:when>
-              <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
-            </ixsl:choose>
-          </ixsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:attribute>
-        </xsl:otherwise>
-      </xsl:choose>
-    </input>
-  </xsl:template>
+        <param required="1">
+          <name>name</name>
+          <values><string/></values>
+          <description>name of the input-field</description>
+        </param>
+        <param required="0">
+          <name>maxlength</name>
+          <values><int default="40"/></values>
+          <description>maxlength of the inputfield (chars)</description>
+        </param>
+        <param required="0">
+          <name>size</name>
+          <values><int default="40"/></values>
+          <description>size of the inputfield</description>
+        </param>
+        <param required="1">
+          <name>type</name>
+          <values><oneof><option>text</option></oneof></values>
+          <description></description>
+        </param>
+        <param required="0">
+          <name>default</name>
+          <values>
+            <string/>
+          </values>
+          <description>if set to any value, the text field is set this value by default if no
+          other value is given by the business logic</description>
+        </param>
+        <example>
+          <input>
+            <xmlcode><pfx:xinp type="text" name="foo"/></xmlcode>
+          </input>
+          <output>
+            <xmlcode><input type="text" size="40" maxlength="200" name="foo"/></xmlcode>
+          </output>
+        </example>
+      </cus:documentation>
+      <input type="text" size="40" maxlength="200">
+        <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+        <xsl:choose>
+          <xsl:when test="@default">
+            <ixsl:attribute name="value">
+              <ixsl:choose>
+                <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:value-of select="@default"/></ixsl:when>
+                <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:attribute>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:apply-templates/>
+      </input>
+    </xsl:template>
 
-  <xsl:template match="pfx:xinp[@type='password']">
-   <cus:documentation>
-     <responsible>JTL</responsible>
-      <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the input-field</description>
-      </param>
-      <param required="0">
-        <name>maxlength</name>
-        <values><int default="40"/></values>
-        <description>maxlength of the inputfield (chars)</description>
-      </param>
-      <param required="0">
-        <name>size</name>
-        <values><int default="40"/></values>
-        <description>size of the inputfield</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>password</option></oneof></values>
-        <description></description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="password" name="foo"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><input type="password" size="40" maxlength="40" name="foo"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
-    <input type="password" size="40" maxlength="40">
-      <xsl:copy-of select="@*[name()!='type']"/>
-      <ixsl:attribute name="value">
-        <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
-      </ixsl:attribute>
-    </input>
+    <xsl:template match="pfx:xinp[@type='password']">
+      <cus:documentation>
+        <responsible>JTL</responsible>
+        <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
+        <param required="1">
+          <name>name</name>
+          <values><string/></values>
+          <description>name of the input-field</description>
+        </param>
+        <param required="0">
+          <name>maxlength</name>
+          <values><int default="40"/></values>
+          <description>maxlength of the inputfield (chars)</description>
+        </param>
+        <param required="0">
+          <name>size</name>
+          <values><int default="40"/></values>
+          <description>size of the inputfield</description>
+        </param>
+        <param required="1">
+          <name>type</name>
+          <values><oneof><option>password</option></oneof></values>
+          <description></description>
+        </param>
+        <example>
+          <input>
+            <xmlcode><pfx:xinp type="password" name="foo"/></xmlcode>
+          </input>
+          <output>
+            <xmlcode><input type="password" size="40" maxlength="200" name="foo"/></xmlcode>
+          </output>
+        </example>
+      </cus:documentation>
+      <input type="password" size="40" maxlength="200">
+        <xsl:copy-of select="@*[name()!='type']"/>
+        <ixsl:attribute name="value">
+          <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
+        </ixsl:attribute>
+        <xsl:apply-templates/>
+      </input>
   </xsl:template>
 
   
@@ -1110,6 +1112,6 @@
 
 <!--
 Local Variables:
-mode: xml
+mode: xsl
 End:
 -->
