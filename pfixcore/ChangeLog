@@ -1,3 +1,9 @@
+2004-12-14  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* skel/build.xml:
+	"clean-project": do not fail if there is no dir.webapps
+	"clean-jni": do not fail if there is no dir.jni
+
 2004-12-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Changed the way a pageflow continuation is started. Now the default

@@ -231,7 +231,11 @@ or delete the DOCTYPE definition -->
     <ant dir="${dir.jni}"/>
   </target>
 
-  <target name="clean-jni">
+  <target name="clean-jni-avl">
+    <available property="avl.clean-jni" file="${dir.jni}/build.xml"/>
+  </target>
+  
+  <target name="clean-jni" depends="clean-jni-avl" if="avl.clean-jni">
     <ant dir="${dir.jni}" target="clean"/>
   </target>
 
@@ -310,8 +314,8 @@ or delete the DOCTYPE definition -->
     <delete file="ant.dtd"/>
   </target>
 
-  <target name="clean" depends="clean-project, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
-    <delete dir="${dir.build}"/>
+  <target name="clean" depends="clean-project, clean-webapps, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
+    <delete dir="${dir.build}" />
     <!-- Delete *.java files created from *.iwrp files -->
     <delete>
       <fileset dir="${dir.src}" includes="**/*.java">
@@ -324,7 +328,8 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="clean-project" description="deletes files from ${dir.projects}">
-    <delete >
+    <mkdir dir="${dir.webapps}"/>
+    <delete>
       <fileset dir="${dir.projects}" includes="**/*.xsl">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.xsl" to="*.xsl.in"/>
@@ -340,7 +345,6 @@ or delete the DOCTYPE definition -->
           <mapper type="glob" from="*.prop" to="*.prop.in"/>
         </present>
       </fileset>
-      <fileset dir="${dir.webapps}" includes="**/WEB-INF/web.xml"/>
       <fileset dir="${dir.projects}" includes="**/webservice.conf">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*webservice.conf" to="*webservice.conf.in"/>
@@ -349,6 +353,14 @@ or delete the DOCTYPE definition -->
       <fileset dir="${dir.projects}" includes="common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>
     </delete>
     <delete dir="${dir.projects}/servletconf/tomcat/conf/Catalina"/>
+  </target>
+  
+  <target name="clean-webapps-avl">
+    <available file="${dir.webapps}" property="avl.clean-webapps"></available>
+  </target>
+  
+  <target name="clean-webapps" depends="clean-webapps-avl" if="avl.clean-webapps">
+    <fileset dir="${dir.webapps}" includes="**/WEB-INF/web.xml"/>
   </target>
 
   <target name="realclean" depends="clean, clean-jni, realclean-core">
