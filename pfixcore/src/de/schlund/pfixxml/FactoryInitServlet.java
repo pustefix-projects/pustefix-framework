@@ -123,6 +123,9 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         } else {
             throw new ServletException("*** FATAL: Need the servlet.propfile property as init parameter! ***");
         }
+        // this is for stuff that can't use the PathFactory. Should not be used when possible...
+        properties.setProperty("pustefix.docroot", docrootstr);
+        
         synchronized (LOCK) {
             if (!configured) {
                 PathFactory.getInstance().init(docrootstr);
