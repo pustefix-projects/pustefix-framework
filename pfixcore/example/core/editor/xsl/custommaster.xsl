@@ -72,19 +72,19 @@
 
 
      <ixsl:template match="xmlcode">
-             <div style="background: #ffffff; border-style: ridge; border-width: 2px;">
-              <ixsl:attribute name="style">
-                 <ixsl:choose>
-                  <ixsl:when test="@width">width:<ixsl:value-of select="@width"/>px; background: #ffffff; border-style: ridge; border-width: 2px;</ixsl:when>
-                 <ixsl:otherwise>background: #ffffff; border-style: ridge; border-width: 2px;</ixsl:otherwise>
-                </ixsl:choose>
-               </ixsl:attribute>
-               <ixsl:apply-templates mode="static_disp" select="node()"/>
-          </div>
-      </ixsl:template>
-
+      <div style="background: #ffffff; border-style: ridge; border-width: 2px;">
+        <ixsl:attribute name="style">
+          <ixsl:choose>
+            <ixsl:when test="@width">width:<ixsl:value-of select="@width"/>px; background: #ffffff; border-style: ridge; border-width: 2px;</ixsl:when>
+            <ixsl:otherwise>background: #ffffff; border-style: ridge; border-width: 2px;</ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:attribute>
+        <ixsl:apply-templates mode="static_disp" select="node()"/>
+      </div>
+    </ixsl:template>
+    
     <ixsl:template match="comment()" mode="static_disp">
-    <br/> <font color="#999999">&lt;!--<ixsl:value-of select="."/>--&gt;</font>
+      <br/> <font color="#999999">&lt;!--<ixsl:value-of select="."/>--&gt;</font>
     </ixsl:template>
   </xsl:template>
 

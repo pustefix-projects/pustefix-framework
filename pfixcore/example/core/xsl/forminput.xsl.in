@@ -11,32 +11,32 @@
   <xsl:template match="pfx:label" name="pfx:label">
     <cus:documentation>
        
-     <description>pfx:label is used for the description of textfields
-                   If the user submits a wrong input, an icon indicating an error will be
-                   displayed in front of the label text.</description>
+      <description>pfx:label is used for the description of input fields.
+        These descriptions will normally also be used in the &lt;pfx:errorbox&gt;.
+        If the user submits a wrong input, an icon indicating an error will be
+        displayed in front of the label text.</description>
       <param required="1">
         <name>name</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Must be the same name as the corresponding input-field</description>
+        <description>Must be the same name as the name of the corresponding input field</description>
       </param>
 
       <param required="0">
         <name>type</name>
         <standard></standard>
         <possible_values>hidden</possible_values>
-        <description>Label is hidden (it will not be displayed in the page</description>
+        <description>Label is hidden (it will not be displayed in the page, only the error icon is shown in case of an error)</description>
       </param>
-
-
 
       <example>
         <input>
           <xmlcode><pfx:label name="shirt.Color">Color-No.</pfx:label></xmlcode>
         </input>
         <output>
-          usually displayed as <xmlcode width="80">Color-No.:</xmlcode>(no error detecdet) <br/><br/>
-          An Error detected <xmlcode><span class="core_errorlabel_text">Color-No.</span></xmlcode>
+          Displayed as <xmlcode width="80">Color-No.:</xmlcode> when no error happened;<br/><br/>
+          if and error has been detected it's displayed as
+          <xmlcode>[Displayed Error icon]<span class="core_errorlabel_text">Color-No.</span></xmlcode>
         </output>
       </example>
     </cus:documentation>  
@@ -63,24 +63,22 @@
   </xsl:template>
 
   <xsl:template match="pfx:paramref"/>
-  <xsl:template match="pfx:prefixref"/>
+  <!-- <xsl:template match="pfx:prefixref"/> -->
   
   <xsl:template match="pfx:errorbox">
     <cus:documentation>
-    <description>Creates an errorbox,
+      <description>Creates an errorbox,
         that displays all (or a subset of the) errors that happened on
         form submit. You are encouraged to overwrite this template with
-        your own definition.  Usually the errorbox shows error
-                   for each field on the page. If you want do show only destined fields, you'll
-                   have to specify each field by pfx:paramref</description>
+        your own definition.  Usually the errorbox shows errors
+        for each field on the page. If you want do show only special fields, you'll
+        have to specify each field by &lt;pfx:paramref name="FIELDNAME"/&gt;</description>
       <param required="1">
         <name>width</name>
         <standard></standard>
         <possible_values></possible_values>
         <description>Width of the Errorbox</description>
       </param>
-
-
       <example>
         <input>
           <xmlcode><pfx:errorbox width="200"/></xmlcode>
@@ -100,9 +98,8 @@
           </xmlcode>
         </output>
       </example>
-
-      
     </cus:documentation> 
+
     <xsl:param name="paramref" select="./pfx:paramref"></xsl:param>
     <ixsl:if test="/formresult/formerrors/node()">
       <table class="core_errorbox_table">
@@ -129,11 +126,11 @@
 	  <xsl:otherwise>
             <xsl:for-each select="$paramref">
               <xsl:variable name="labelname"><xsl:value-of select="./@name"/></xsl:variable>
-              <xsl:variable name="label" select="//pfx:label[@name = $labelname]/node()"/>
+              <xsl:variable name="label" select="//pfx:label[@name = $labelname]"/>
               <ixsl:if test="/formresult/formerrors/error[@name='{$labelname}']">
                 <tr>
                   <td nowrap="nowrap" class="core_errorlabel_td" valign="top">
-                    <span class="core_errorlabel_text"><xsl:apply-templates select="$label"/></span>
+                    <span class="core_errorlabel_text"><xsl:apply-templates select="$label[position() = 1]/node()"/></span>
                   </td>
                   <td class="core_errortext_td">
                     <span class="core_errortext">

@@ -16,24 +16,52 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixcore.workflow.app;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.generator.*;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import de.schlund.pfixxml.*;
+
+import de.schlund.pfixcore.workflow.Context;
+
+import java.util.Properties;
+
 
 /**
- *
- *
+ * All classes which want to act as a container for classes
+ * which implement the {@link IHandler} interface must
+ * implement this interface. A IHandlerContainer contains
+ * all IHandler belonging to a single page and it is shared
+ * between sessions.
  */
-
 public interface IHandlerContainer {
-    void    initIHandlers(Context context);
-    boolean isPageAccessible() throws Exception;
-    boolean areHandlerActive() throws Exception;
-    boolean needsData() throws Exception;
+
+    //~ Methods ....................................................................................
+
+    /**
+     * Initialize all IHandlers in this container.
+     * @param props the properties needed for initialization
+     */
+    void initIHandlers(Properties props);
+
+    /**
+     * Determine if the requested page is accesible.
+     * @param context the context identifying the current page
+     * @return true if page is accesible, else false
+     * @throws Exception on errors
+     */
+    boolean isPageAccessible(Context context) throws Exception;
+
+    /**
+     * Determine if the IHandler in this container are active.
+     * @param context the context identifying the current page
+     * @return true if handler are active, else false
+     * @throws Exception on errors
+     * 
+     */
+    boolean areHandlerActive(Context context) throws Exception;
+
+    /**
+     * Determine if any of the IHandler in this container needs data.
+     * @param context the context identifying the current page
+     * @return true if handler need data, else false
+     * @throws Exception on errors 
+     */
+    boolean needsData(Context context) throws Exception;
 }

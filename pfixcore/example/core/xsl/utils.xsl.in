@@ -5,10 +5,6 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-
-
-
-
   <xsl:template match="pfx:on">
     <cus:documentation>
        <description>Always a child of pfx:layer_check (see there)</description>
@@ -63,12 +59,8 @@
         <output>
         </output>
       </example>
-
-      
     </cus:documentation>
           
-
-    
     <xsl:variable name="path">
       <xsl:value-of select="@path"/>
     </xsl:variable>
@@ -119,6 +111,7 @@
       </example>
    
     </cus:documentation>
+
     <div id="core_progress_back"></div>
     <div id="core_progress_wait">
       <center><span align="center" id="core_progress_waittext"><xsl:apply-templates/></span></center>
@@ -154,7 +147,6 @@
         <description>Border</description>
       </param>
 
-
       <example>
         <input>
           <xmlcode><pfx:blank width="10"/></xmlcode>
@@ -179,14 +171,6 @@
     </img>
   </xsl:template>
 
-
-  <!-- <xsl:template match="pfx:jscript"> -->
-  <!--   <xsl:param name="src" select="@src"/> -->
-  <!--   <script type="text/javascript" language="JavaScript"> -->
-  <!--     <ixsl:attribute name="src"><xsl:value-of select="$src"/></ixsl:attribute> -->
-  <!--   </script> -->
-  <!-- </xsl:template> -->
-  
   <xsl:template match="pfx:layer">
     <cus:documentation>
      <description>Creates a layer object which can be shown/hidden and moved on demand.</description>
@@ -204,14 +188,12 @@
         <description>left position</description>
       </param>
 
-
       <param required="0">
         <name>pos-right</name>
         <standard></standard>
         <possible_values></possible_values>
         <description>right position</description>
       </param>
-      
 
       <param required="0">
         <name>pos-top</name>
@@ -219,7 +201,6 @@
         <possible_values></possible_values>
         <description>top position</description>
       </param>
-
 
       <param required="0">
         <name>pos-bottom</name>
@@ -240,7 +221,6 @@
         <description>see pfx:switch</description>        
       </children>
 
-
       <example>
         <input>
           <xmlcode>
@@ -255,18 +235,17 @@
         </input>
         <output>
           <xmlcode>
-          <div id="B" class="layer"><b>This is Layer B</b><br/><a class="" href="javascript://" onclick="top.__js_toggleLayer('C')"><script>
+            <div id="B" class="layer"><b>This is Layer B</b><br/><a class="" href="javascript://" onclick="top.__js_toggleLayer('C')"><script>
              top.__js_registerLayerChild("B","C", window);
-                  </script>
-                    Toggle Layer C
-                     </a></div>
-                      <script>
-                       var layer = top.__js_getLayer("B", window);
-                       layer.moveTop(10);
-                       layer.moveRight(10);
-                       layer.hide();
-                     </script>
-
+                </script>
+                Toggle Layer C
+              </a></div>
+            <script>
+              var layer = top.__js_getLayer("B", window);
+              layer.moveTop(10);
+              layer.moveRight(10);
+              layer.hide();
+            </script>
           </xmlcode>
         </output>
       </example>
@@ -303,8 +282,9 @@
   </xsl:template>
   
   <xsl:template match="pfx:switch">
+
     <cus:documentation>
-     <description>Creates a switch (a link) to show/hide layers (see &lt;pfx:layer&gt;)</description>
+     <description>Creates a "switch" (a link) to show/hide layers (see &lt;pfx:layer&gt;)</description>
       <param required="0">
         <name>class</name>
         <standard>core_button_normal</standard>
@@ -316,7 +296,6 @@
         <name>pfx:layer_ref</name>
         <description>Can occur multiple times. See &lt;pfx:layer_ref&gt;</description>        
       </children>
-
 
       <example>
         <input>
@@ -331,9 +310,8 @@
           <xmlcode></xmlcode>
         </output>
       </example>
-
-
     </cus:documentation>  
+
     <xsl:param name="class">
       <xsl:choose>
         <xsl:when test="not(@class = '')"><xsl:value-of select="@class"/></xsl:when>
@@ -344,17 +322,15 @@
       <xsl:attribute name="onclick">top.__js_toggleLayer(<xsl:for-each select=".//pfx:layer_ref">
           '<xsl:value-of select="@name"/>'
           <xsl:if test="count(following-sibling::pfx:layer_ref) > 0">,</xsl:if>
-        </xsl:for-each>)</xsl:attribute>      
+        </xsl:for-each>); return false;</xsl:attribute>      
       <xsl:apply-templates/>
     </a>
   </xsl:template>
 
   <xsl:template match="pfx:layer_check">
 
-        <cus:documentation>
-      
-     <description>Always a child of pfx:switch. Checks the visibility of a Sub-layer.
-      </description>
+    <cus:documentation>
+      <description>Always a child of &lt;pfx:switch&gt;. Checks the visibility of a sub-layer. </description>
       <param required="0">
         <name>name</name>
         <standard></standard>
@@ -396,20 +372,17 @@
           </xmlcode>
         </output>
       </example>
-
-
     </cus:documentation>
-
     
     <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
     <xsl:variable name="unique"><xsl:value-of select="generate-id(.)"/></xsl:variable>
     <span>
       <xsl:attribute name="id">SWITCH_ON_<xsl:value-of select="$unique"/></xsl:attribute>
-      <xsl:apply-templates select="./pfx:on"/>
+      <xsl:apply-templates select="./pfx:on/node()"/>
     </span>
     <span>
       <xsl:attribute name="id">SWITCH_OFF_<xsl:value-of select="$unique"/></xsl:attribute>
-      <xsl:apply-templates select="./pfx:off"/>
+      <xsl:apply-templates select="./pfx:off/node()"/>
     </span>
     <script>
       top.__js_registerSwitchOn("<xsl:value-of select="$name"/>","SWITCH_ON_<xsl:value-of select="$unique"/>", window);
@@ -418,15 +391,8 @@
   </xsl:template>
   
   <xsl:template match="pfx:layer_ref">
-    <!-- Param Name: name -->
-
     <cus:documentation>
-    <!-- Parameter: style, class, name, pos-top, pos-left, pos-right, pos-bottom, visible -->
-    <!-- Ermittelt zunaechst das Parent, das heisst, wenn innerhalb eines Layers steht,
-         dann wird der pfx:layer zu Parent, ansonsten wird __ROOT__LAYER zu parent gesetzt -->
-
-
-     <description>Always a child of &lt;pfx:switch&gt;. This selects which layer
+      <description>Always a child of &lt;pfx:switch&gt;. This selects which layer
         should be toggled by the switch. Multiple
         &lt;pfx:layer_ref&gt; are possible.</description>
       <param required="1">
@@ -435,19 +401,20 @@
         <possible_values></possible_values>
         <description>This should be a layer defined via &lt;pfx:layer&gt;. </description>
       </param>
-
+      
       <example>
         <input>
-          <xmlcode> <pfx:layer_ref name="C"/></xmlcode>
+          Suppose we a inside a layer called "B":
+          <xmlcode><pfx:layer_ref name="C"/></xmlcode>
         </input>
         <output>
-          <xmlcode>    <script>
-                            top.__js_registerLayerChild("B","C", window);
-                       </script>
+          <xmlcode>
+            <script>
+              top.__js_registerLayerChild("B","C", window);
+            </script>
           </xmlcode>
         </output>
       </example>
-      
     </cus:documentation>
     
     <xsl:param name="parent">
@@ -463,51 +430,51 @@
       top.__js_registerLayerChild("<xsl:value-of select="$parent"/>","<xsl:value-of select="$child"/>", window);
     </script>
   </xsl:template>
-
-
   
-<!-- CAUTION This is much too broken. I will fix it when we need it again... (jtl) -->
-<!-- -->
-<!--    <xsl:template match="pfx:jsbuttondirect"> -->
-<!--      <script language="JavaScript"> -->
-<!--        <ixsl:comment> -->
-<!--          top.__js_but["<xsl:value-of select="@name"/>"] = -->
-<!--                new top.__js_button("<xsl:value-of select="@omout"/>","<xsl:value-of select="@omover"/>"); -->
-<!--          //</ixsl:comment> -->
-<!--      </script> -->
-<!--      <a> -->
-<!--        <xsl:attribute name="onmouseover">top.__js_moveover(document,'<xsl:value-of select="@name"/>'); return true</xsl:attribute> -->
-<!--        <xsl:attribute name="onmouseout">top.__js_moveout(document,'<xsl:value-of select="@name"/>')</xsl:attribute> -->
-<!--        <xsl:if test="@target"> -->
-<!--          <xsl:attribute name="target"><xsl:value-of select="@target"/></xsl:attribute> -->
-<!--        </xsl:if> -->
-<!--        <xsl:if test="@onclick"> -->
-<!--          <xsl:attribute name="onclick"><xsl:value-of select="@onclick"/></xsl:attribute> -->
-<!--        </xsl:if> -->
-<!--        <ixsl:attribute name="href"> -->
-<!--          <xsl:choose> -->
-<!--            <xsl:when test="not(@href)"> -->
-<!--              <xsl:copy-of select="./node()"/> -->
-<!--            </xsl:when> -->
-<!--            <xsl:when test="starts-with(@href, 'http://')"> -->
-<!--              <xsl:value-of select="concat('/xml/deref?link=',@href)"/> -->
-<!--            </xsl:when> -->
-<!--            <xsl:when test="starts-with(@href, 'javascript:')"> -->
-<!--              <xsl:value-of select="@href"/> -->
-<!--            </xsl:when> -->
-<!--            <xsl:otherwise>/<ixsl:value-of select="$__sessid"/><xsl:value-of select="@href"/></xsl:otherwise> -->
-<!--          </xsl:choose> -->
-<!--        </ixsl:attribute> -->
-<!--        <img border="0"> -->
-<!--          <xsl:attribute name="src"><xsl:value-of select="@omout"/></xsl:attribute> -->
-<!--          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute> -->
-<!--          <xsl:call-template name="pfx:image_geom_impl"> -->
-<!--            <xsl:with-param name="src"><xsl:value-of select="@omout"/></xsl:with-param> -->
-<!--          </xsl:call-template> -->
-<!--        </img> -->
-<!--      </a> -->
-<!--    </xsl:template> -->
-
+  
+  
+  <!-- CAUTION This is much too broken. I will fix it when we need it again... (jtl) -->
+  <!-- -->
+  <!--    <xsl:template match="pfx:jsbuttondirect"> -->
+  <!--      <script language="JavaScript"> -->
+  <!--        <ixsl:comment> -->
+  <!--          top.__js_but["<xsl:value-of select="@name"/>"] = -->
+  <!--                new top.__js_button("<xsl:value-of select="@omout"/>","<xsl:value-of select="@omover"/>"); -->
+  <!--          //</ixsl:comment> -->
+  <!--      </script> -->
+  <!--      <a> -->
+  <!--        <xsl:attribute name="onmouseover">top.__js_moveover(document,'<xsl:value-of select="@name"/>'); return true</xsl:attribute> -->
+  <!--        <xsl:attribute name="onmouseout">top.__js_moveout(document,'<xsl:value-of select="@name"/>')</xsl:attribute> -->
+  <!--        <xsl:if test="@target"> -->
+  <!--          <xsl:attribute name="target"><xsl:value-of select="@target"/></xsl:attribute> -->
+  <!--        </xsl:if> -->
+  <!--        <xsl:if test="@onclick"> -->
+  <!--          <xsl:attribute name="onclick"><xsl:value-of select="@onclick"/></xsl:attribute> -->
+  <!--        </xsl:if> -->
+  <!--        <ixsl:attribute name="href"> -->
+  <!--          <xsl:choose> -->
+  <!--            <xsl:when test="not(@href)"> -->
+  <!--              <xsl:copy-of select="./node()"/> -->
+  <!--            </xsl:when> -->
+  <!--            <xsl:when test="starts-with(@href, 'http://')"> -->
+  <!--              <xsl:value-of select="concat('/xml/deref?link=',@href)"/> -->
+  <!--            </xsl:when> -->
+  <!--            <xsl:when test="starts-with(@href, 'javascript:')"> -->
+  <!--              <xsl:value-of select="@href"/> -->
+  <!--            </xsl:when> -->
+  <!--            <xsl:otherwise>/<ixsl:value-of select="$__sessid"/><xsl:value-of select="@href"/></xsl:otherwise> -->
+  <!--          </xsl:choose> -->
+  <!--        </ixsl:attribute> -->
+  <!--        <img border="0"> -->
+  <!--          <xsl:attribute name="src"><xsl:value-of select="@omout"/></xsl:attribute> -->
+  <!--          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute> -->
+  <!--          <xsl:call-template name="pfx:image_geom_impl"> -->
+  <!--            <xsl:with-param name="src"><xsl:value-of select="@omout"/></xsl:with-param> -->
+  <!--          </xsl:call-template> -->
+  <!--        </img> -->
+  <!--      </a> -->
+  <!--    </xsl:template> -->
+  
 </xsl:stylesheet>
 
 <!--

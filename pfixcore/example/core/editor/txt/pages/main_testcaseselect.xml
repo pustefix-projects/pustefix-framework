@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <!--<b>Directory with testcases is: <ixsl:value-of select="/formresult/testcases/@directory"/></b> -->
+        <br/><br/>
+          <!--<pfx:button activeclass="editor_submit" page="testcaseselect" target="_top" mode="force">Reload page</pfx:button>-->
+        <br/>
+          <ixsl:choose>
+          <ixsl:when test="/formresult/testcases/available/testcase">
+          <b>The following testcases exist for this product:</b>
+          <br/>
+          <pfx:forminput target="_top">	
+          <table border="0" class="editor_box">
+            <ixsl:for-each select="/formresult/testcases/available/testcase">
+            <ixsl:variable name="myname" select="."/>
+            <tr><td colspan="2">            <pfx:xinp type="check" name="tcselect.Select">   
+                <ixsl:attribute name="value"><ixsl:value-of select="$myname"/></ixsl:attribute>
+                  <ixsl:for-each select="/formresult/formvalues/param">
+                    <ixsl:variable name="myvalue" select="."/>
+                    <ixsl:if test="$myvalue = $myname">
+                      <ixsl:attribute name="checked">true</ixsl:attribute>
+                    </ixsl:if>
+                  </ixsl:for-each>
+                <ixsl:value-of select="$myname"/>
+              </pfx:xinp>
+              <br/>
+            </td>
+            </tr>
+            </ixsl:for-each>
+          <br/>
+          <tr>
+            <pfx:checkactive prefix="tcselect">
+            <td>
+              <pfx:xinp type="submit" class="editor_submit" value="Delete">
+                <pfx:argument name="tcselect.DoDelete">true</pfx:argument>
+								<pfx:command name="SELWRP">tcselect</pfx:command>
+              </pfx:xinp>
+              </td>
+              <td>
+            <pfx:xinp class="editor_submit" type="submit" value="Select">
+               <pfx:argument name="tcselect.DoSelect">true</pfx:argument>
+            </pfx:xinp>
+            </td>
+              </pfx:checkactive>
+          </tr>
+          </table>
+          </pfx:forminput>
+          </ixsl:when>
+          <ixsl:otherwise>
+	  				<table class="editor_box">
+            	<tr><td><p>No recorded testcases exist, please record something and reload this page.</p></td></tr>
+						</table>
+          </ixsl:otherwise>
+          </ixsl:choose>
+        <br/>
+      </lang>
+    </product>
+  </part>
+
+
+  
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

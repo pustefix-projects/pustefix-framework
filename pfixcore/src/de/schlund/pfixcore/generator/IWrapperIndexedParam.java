@@ -123,6 +123,10 @@ public class IWrapperIndexedParam {
     }
     
     public void addSCode(StatusCode scode, String idx) {
+        addSCode(scode, null, idx);
+    }
+    
+    public void addSCode(StatusCode scode, String[] args, String idx) {
         IWrapperParamInfo pinfo = getParamInfoForIndex(idx);
         pinfo.addSCode(scode);
         synchronized (errors) {

@@ -25,32 +25,59 @@ import javax.servlet.http.*;
 import org.apache.log4j.*;
 
 /**
+ * Describe class <code>PageRequest</code> here.
  *
- *
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
+ * @version 1.0
  */
-
 public class PageRequest {
     public  static final String            PAGEPARAM = "__page";
     private static final Category          CAT       = Category.getInstance(PageRequest.class.getName());
     private              PageRequestStatus status    = PageRequestStatus.UNDEF;
     private              String            pagename;
     
+    /**
+     * Describe <code>getName</code> method here.
+     *
+     * @return a <code>String</code> value
+     */
     public String getName() {
 	return pagename;
     }
 
+    /**
+     * Describe <code>toString</code> method here.
+     *
+     * @return a <code>String</code> value
+     */
     public String toString() {
 	return getName();
     }
 
+    /**
+     * Describe <code>setStatus</code> method here.
+     *
+     * @param status a <code>PageRequestStatus</code> value
+     */
     public void setStatus(PageRequestStatus status) {
         this.status = status;
     }
 
+    /**
+     * Describe <code>getStatus</code> method here.
+     *
+     * @return a <code>PageRequestStatus</code> value
+     */
     public PageRequestStatus getStatus() {
         return status;
     }
     
+    /**
+     * Describe <code>equals</code> method here.
+     *
+     * @param arg an <code>Object</code> value
+     * @return a <code>boolean</code> value
+     */
     public boolean equals(Object arg) {
 	if ((arg != null) && (arg instanceof PageRequest)) {
 	    return pagename.equals(((PageRequest) arg).getName());
@@ -59,6 +86,11 @@ public class PageRequest {
 	}
     }
 
+    /**
+     * Describe <code>hashCode</code> method here.
+     *
+     * @return an <code>int</code> value
+     */
     public int hashCode() {
 	if (pagename == null) {
 	    return 0;
@@ -67,6 +99,11 @@ public class PageRequest {
 	}
     }
 
+    /**
+     * Describe <code>isEmpty</code> method here.
+     *
+     * @return a <code>boolean</code> value
+     */
     public boolean isEmpty() {
         if (pagename == null) {
             return true;
@@ -75,6 +112,11 @@ public class PageRequest {
         }
     }
     
+    /**
+     * Creates a new <code>PageRequest</code> instance.
+     *
+     * @param preq a <code>PfixServletRequest</code> value
+     */
     public PageRequest(PfixServletRequest preq) {
         pagename = null;
         String       pathinfo = preq.getPathInfo();
@@ -87,6 +129,11 @@ public class PageRequest {
         }
     }
 
+    /**
+     * Creates a new <code>PageRequest</code> instance.
+     *
+     * @param name a <code>String</code> value
+     */
     public PageRequest(String name){
 	pagename = name;
     }

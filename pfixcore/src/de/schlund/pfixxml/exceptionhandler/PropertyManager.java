@@ -196,7 +196,7 @@ class PropertyManager {
             checkMailProps();
             checkRulesProps();
         } catch(PFConfigurationException e) {
-            throw new PFConfigurationException(e.getMessage(), e.getCause());
+            throw new PFConfigurationException(e.getMessage(), e.getExceptionCause());
         }
         initialised_=true;
     }
