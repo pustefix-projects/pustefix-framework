@@ -18,26 +18,27 @@
  */
 package de.schlund.pfixxml;
 
+
+
+
+
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.loader.*;
 import de.schlund.util.FactoryInit;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.TreeSet;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -53,13 +54,15 @@ import org.apache.log4j.xml.DOMConfigurator;
 public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     //~ Instance/static variables ..................................................................
-    private static String  PROP_DOCROOT = "pustefix.docroot";
-    private static String  PROP_LOG4J   = "pustefix.log4j.config";
-    private Object         LOCK         = new Object();
-    private Category       CAT          = Category.getInstance(FactoryInitServlet.class.getName());
-    private static boolean configured   = false;
-    private ArrayList      factories;
-
+    private static String   PROP_DOCROOT = "pustefix.docroot";
+    private static String   PROP_LOG4J   = "pustefix.log4j.config";
+    private Object          LOCK         = new Object();
+    private static Category CAT          = Category.getInstance(FactoryInitServlet.class.getName());
+    private static boolean  configured   = false;
+    private ArrayList       factories;
+    private static String   log4jconfig  = null;
+    private static long     log4jmtime   = -1;
+    
     //~ Methods ....................................................................................
 
     /**
@@ -80,6 +83,20 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         throw new ServletException("This servlet can't be called interactively");
     }
 
+    public static void tryReloadLog4j() {
+        if (log4jconfig != null) {
+            File l4jfile  = PathFactory.getInstance().createPath(log4jconfig).resolve();
+            long tmpmtime = l4jfile.lastModified();
+            if (tmpmtime > log4jmtime) {
+                CAT.error("\n\n################################\n" +
+                          "#### Reloading log4j config ####\n" +
+                          "################################\n");
+                DOMConfigurator.configure(l4jfile.getPath());
+                log4jmtime = tmpmtime;
+            }
+        }
+    }
+    
     /**
      * Initialize this servlet. Also call the 'init' method of all classes
      * listed in the configuration. These classes must implement
@@ -98,7 +115,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             } catch (FileNotFoundException e) {
                 throw new ServletException("*** [" + confname + "] Not found: " + e.toString());
             }
-             catch (IOException e) {
+            catch (IOException e) {
                 throw new ServletException("*** [" + confname + "] IO-error: " + e.toString());
             }
         }
@@ -110,11 +127,13 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                         throw new RuntimeException("*** FATAL: Need the docroot property in factory.prop! ***");
                     }
                     PathFactory.getInstance().init(docrootstr);
-                    String log4jconfig = properties.getProperty(PROP_LOG4J);
-                    if (log4jconfig == null & log4jconfig.equals("")) {
+                    log4jconfig = properties.getProperty(PROP_LOG4J);
+                    if (log4jconfig == null || log4jconfig.equals("")) {
                         throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.prop! ***");
                     }
-                    DOMConfigurator.configure(PathFactory.getInstance().createPath(log4jconfig).resolve().getPath());
+                    File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
+                    log4jmtime   = l4jfile.lastModified();
+                    DOMConfigurator.configure(l4jfile.getPath());
                 }
                 CAT.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");
@@ -180,7 +199,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         if (factories!=null) {
             ArrayList newFacs = new ArrayList();
             Iterator  it      = factories.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 FactoryInit fac       = (FactoryInit) it.next();
                 String      className = fac.getClass().getName();
                 FactoryInit facNew    = (FactoryInit) StateTransfer.getInstance().transfer(fac);
@@ -188,5 +207,5 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             }
             factories = newFacs;
         }
-     }
+    }
 }
