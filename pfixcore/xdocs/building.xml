@@ -53,16 +53,16 @@
       </subsection>
       <subsection name="Release a new version">
         <ol>
-            <li><p>Adjust the version number in <code>build.xml</code>, <code>project.xml</code>,
-              and <code>xdoc/index.html</code> .</p></li>
-            <li><p>Document important changes in <code>xdocs/changes.xml</code></p></li>
-            <li><p>Run <code>ant notag</code>  and test the results in pfixschlund</p></li>
+            <li><p>Adjust version number in <code>build.xml</code>, <code>project.xml</code>,
+              and <code>xdoc/index.xml</code>.</p></li>
+            <li><p>In <code>xdoc/changes.xml</code>: adjust version number and release date.
+              Document important changes in <code>xdocs/changes.xml</code></p></li>
+            <li><p>Run <code>ant notag</code> and test the results in pfixschlund</p></li>
             <li><p>Run <code>maven site</code> to see if the documentation builds properly</p></li>
             <li><code>cvs commit</code></li>
             <li><p>Run <code>ant dist</code> to build the distribution and tag the repository.</p></li>
-            <li><p>Upload the files in the <code>dist</code> directory to sourceforge. 
-              Release name is the version number without pustefix. Architecture is
-              <i>Platform independent</i>. </p></li>
+            <li><p>Upload to sourceforge: 
+              <code>maven sourceforge:deploy -Dmaven.username=XXX -Dmaven.sourceforge.password=XXX</code></p></li>
             <li><p>Bump the version number in <code>build.xml</code>.</p></li>
             <li><code>cvs commit</code></li>
             <li><p>Update website</p></li>
