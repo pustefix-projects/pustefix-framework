@@ -6,21 +6,21 @@
   </p>
 
   <p>
-    The downloadable files are called
-    <b><i>pfixcore</i></b>-&lt;TYPE>-&lt;VERSION>.&lt;SUFFIX>. This naming scheme was
-    choosen because a whole <pustefix/> system always contains your own
-    application classes and logic which use the core classes and
-    utilities supplied by <i>pfixcore</i>. The files to download are shown in the table below.
+    The downloadable filenames all start with <b><i>pfixcore</i></b>,
+    because a whole <pustefix/> system always contains your own
+    application classes and logic using the core classes and
+    utilities supplied by <i>pfixcore</i>. The files to download are
+    shown in the table below.
   </p>
 
   <table class="stdtable">
     <tr>
-      <td>
-        <i>Filename</i>
-      </td>
-      <td>
-        <i>Content</i>
-      </td>
+      <th>
+        Filename
+      </th>
+      <th>
+        Content
+      </th>
     </tr>
     <tr>
       <td>
@@ -61,10 +61,91 @@
       </td>
     </tr>
   </table>
-  
+
+  <h2>Prerequisites</h2>
+
   <p>
-    Please follow the instructions on the Sourceforge <a href="http://sourceforge.net/cvs/?group_id=72089">CVS page</a>
-    if you want to download the source repository for <pustefix/>. The name of the repository is <b><i>pfixcore</i></b>.
+    There are a few things you need to have installed prior to using <pustefix/>. See the table below for references.
   </p>
   
+  <table class="stdtable">
+    <tr>
+      <th>
+        Package/Library
+      </th>
+      <th>
+        Notes
+      </th>
+    </tr>
+    <tr>
+      <td>
+        A unixoid OS. 
+      </td>
+      <td>
+        Yes, java should be platform independent. Unfortunately the
+        whole build environment is unix specific, and the code itself
+        doesn't abstract away from path separators for example. There may
+        be even more places where the thing wouldn't work under win32.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://java.sun.com/">JDK &gt;= 1.4.1</a>
+      </td>
+      <td>
+        The Java Development Kit.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://oss.software.ibm.com/developerworks/opensource/jikes/">jikes</a>
+      </td>
+      <td>
+        Jikes is a blazingly fast java compiler from IBM. You need it in order for the build environment to work out of the box.
+        If you want to use javac, this should be no problem, but be prepared to poke (a little bit) in the Makefiles of the skeleton
+        application or the CVS checkout. 
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/builds/jakarta-tomcat-4.0/release/v4.0.6/src/">mod_jk</a>
+      </td>
+      <td>
+        A working installation of the Apache webserver (complete with
+        mod_rewrite) and a working mod_jk (the apache connection
+        module for tomcat - get the jakarta-tomcat-connectors package to compile it).
+        You need to have this module loaded, but
+        you need no further configuration, the build process (skeleton
+        application and CVS) will take care of providing you with a
+        sample config file that should at least get you started.
+      </td>
+    </tr>
+  </table>
+  
+  <h2>Non-Prerequisites</h2>
+  <p>Things you <i>don't</i> need:</p>
+  <ul>
+    <li>You don't need a standalone installation of tomcat,
+      everything you need is contained in the skeleton package and the
+      CVS checkout.  I suggest that even if you have your own tomcat
+      setup already, start by using the supplied version and, if all
+      goes well, you can try to move the configuration into your own
+      installation.
+    </li>
+    <li>
+      You don't need any additional jar files or classes besides what is supplied with your java installation.
+      Everything you need is in the skeleton package and the CVS checkout.
+    </li>
+  </ul>
+  
+  <h2>Using CVS</h2>
+  <p>
+    Please follow the instructions on the Sourceforge <a href="http://sourceforge.net/cvs/?group_id=72089">CVS page</a>
+    if you want to download the source repository for <pustefix/>. The name of the repository module is <b><i>pfixcore</i></b>.
+  </p>
+
+  <p>
+   
+    
+  </p>
 </div>
