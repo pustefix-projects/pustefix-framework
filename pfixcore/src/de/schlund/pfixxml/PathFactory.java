@@ -14,8 +14,7 @@ import java.util.Properties;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
  */
-public class PathFactory implements FactoryInit {
-    private static final String PROP_DOCROOT = "pustefix.docroot";
+public class PathFactory {
     private static PathFactory instance = new PathFactory(); 
     private File docroot;
     
@@ -51,11 +50,4 @@ public class PathFactory implements FactoryInit {
         System.out.println("Docroot is: " + docroot.getPath());
     }
 
-    public void init(Properties props) {
-        String docrootstr = props.getProperty(PROP_DOCROOT);
-        if (docrootstr == null || docrootstr.equals("")) {
-            throw new RuntimeException("**** Need the docroot property in factory.prop! ****");
-        }
-        init(docrootstr);
-    }
 }

@@ -8,7 +8,6 @@
 
   <!-- List of all factories to init -->
 
-  <prop name="factory.initialize.00">de.schlund.pfixxml.PathFactory</prop>
   <prop name="factory.initialize.01">de.schlund.pfixxml.loader.AppLoader</prop>
   <prop name="factory.initialize.02">de.schlund.util.statuscodes.StatusCodeFactory</prop>
   <prop name="factory.initialize.03">de.schlund.pfixxml.targets.SPCacheFactory</prop>

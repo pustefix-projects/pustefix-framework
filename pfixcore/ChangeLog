@@ -1,3 +1,9 @@
+2004-07-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PathFactory.java: remove the
+	init(Poperties) method, no longer implement FactoryInit
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: init PathFactory already here...
+
 2004-06-30  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml
