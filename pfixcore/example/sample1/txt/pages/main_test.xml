@@ -6,8 +6,7 @@
     <product name="default">
       <lang name="default">
         <center>
-          <pfx:button mode="force" nodata="true" pageflow="OrderFlow">
-            <pfx:argument name="__page">__STARTWITHFLOW</pfx:argument>
+          <pfx:button pageflow="OrderFlow" startwithflow="true">
             Next Page From OrderFlow 
           </pfx:button>
         </center>
