@@ -87,7 +87,7 @@ public class ContextResourceManager {
 
 	// Getting all Properties beginning with PROP_RESOURCE
 	TreeMap cr_create = PropertiesUtils.selectPropertiesSorted(context.getProperties(), PROP_RESOURCE);
-        HashSet cr_init   = new HashSet();
+        List    cr_init   = new LinkedList();
 	// Hope, I got properties
 	if (cr_create != null && !cr_create.isEmpty()) {
 	    // For each property...
