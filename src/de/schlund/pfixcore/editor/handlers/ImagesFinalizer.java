@@ -137,48 +137,4 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
         }
     }
     
-  /*  private void checkAccess(EditorSessionStatus esess, Element root) throws Exception {
-        StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.imagesupload");
-        EditorUser u = esess.getUser();
-        EditorProduct          eprod       = esess.getProduct();
-        ProjectPermissions perms = u.getUserInfo().getProjectPerms(eprod.getName());
-        
-        HashSet affected = getAffectedProductsForImage(esess.getCurrentImage().getPath());
-        
-        if(u.isAdmin()) {
-            root.setAttribute("permisssion", "granted");
-        } else if(perms == null) {
-            root.setAttribute("permission", "denied");
-            root.setAttribute("permission_info", "You don not have the permission to edit images of this product. No permissions found.");
-        } else if(!perms.isEditImages()) {
-            root.setAttribute("permission", "denied");
-            root.setAttribute("permission_info", "You don not have the permission to edit images of this product");
-        } else if(perms.isEditImages()) {
-            // check if image is uses by another product
-            Iterator iter = affected.iterator();
-            StringBuffer sb = new StringBuffer();
-            boolean denied = false;
-            while(iter.hasNext()) {
-                String name = ((EditorProduct)iter.next()).getName();
-                ProjectPermissions p = u.getUserInfo().getProjectPerms(name);
-                if(p == null || !p.isEditImages()) {
-                    denied = true;
-                    sb.append(name).append(" ");
-                }   
-            }
-            if(denied) {
-                root.setAttribute("permission", "denied");
-                String scode1 = sfac.getStatusCode("NO_PERM_SHARED").getDefaultMessage();
-                root.setAttribute("permission_info", scode1 + sb.toString() + ".");
-            }  else 
-                root.setAttribute("permission", "granted");
-        } else {
-            root.setAttribute("permission", "denied");
-            root.setAttribute("permission_info", "Permission denied for unkown reason.");
-        }    
-    }
-    */
-   
-    
-    
 }// ImagesFinalizer
