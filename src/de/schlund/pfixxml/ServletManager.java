@@ -62,18 +62,20 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
     private   static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
+    public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 
-    private SessionAdmin     sessionadmin     = SessionAdmin.getInstance();
-    private Category         LOGGER_VISIT     = Category.getInstance("LOGGER_VISIT");
-    private Category         CAT              = Category.getInstance(ServletManager.class);
-    private ExceptionHandler xhandler         = ExceptionHandler.getInstance();
-    private Map              exceptionConfigs = new Hashtable();
-    private long             common_mtime     = 0;
-    private long             servlet_mtime    = 0;
-    private long             loadindex        = 0;
+    private boolean          cookie_security_not_enforced = false;
+    private SessionAdmin     sessionadmin                 = SessionAdmin.getInstance();
+    private Category         LOGGER_VISIT                 = Category.getInstance("LOGGER_VISIT");
+    private Category         CAT                          = Category.getInstance(ServletManager.class);
+    private ExceptionHandler xhandler                     = ExceptionHandler.getInstance();
+    private Map              exceptionConfigs             = new Hashtable();
+    private long             common_mtime                 = 0;
+    private long             servlet_mtime                = 0;
+    private long             loadindex                    = 0;
     private Properties       properties;
     private File             commonpropfile;
     private File             servletpropfile;
@@ -160,9 +162,14 @@ public abstract class ServletManager extends HttpServlet {
                 CAT.debug("*** Client doesn't use cookies...");
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
                 if (need_cookies != null && need_cookies.booleanValue()) {
-                    CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " + session.getId());
-                    session.invalidate();
-                    has_session = false;
+                    if (cookie_security_not_enforced) {
+                        CAT.debug("    ... during the session cookies were ENABLED, but will continue because of cookie_security_not_enforced " +
+                                  session.getId());
+                    } else {
+                        CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " + session.getId());
+                        session.invalidate();
+                        has_session = false;
+                    }
                 } else {
                     CAT.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
                 }
@@ -550,12 +557,12 @@ public abstract class ServletManager extends HttpServlet {
         super.init(config);
         properties = new Properties(System.getProperties());
 
-        ServletContext ctx=config.getServletContext();
-        CAT.debug("*** Servlet container is '"+ctx.getServerInfo()+"'");
-        int major=ctx.getMajorVersion();
-        int minor=ctx.getMinorVersion();
-        if((major==2 && minor>=3)||(major>2)) {
-            CAT.warn("*** Servlet container with support for Servlet API "+major+"."+minor+" detected");
+        ServletContext ctx   = config.getServletContext();
+        CAT.debug("*** Servlet container is '" + ctx.getServerInfo() + "'");
+        int            major = ctx.getMajorVersion();
+        int            minor = ctx.getMinorVersion();
+        if ((major == 2 && minor >= 3) || (major > 2)) {
+            CAT.warn("*** Servlet container with support for Servlet API " + major + "." + minor + " detected");
         } else {
             throw new ServletException("*** Can't detect servlet container with support for Servlet API 2.3 or higher");
         }
@@ -573,7 +580,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         loadindex = 0;
         properties.setProperty(PROP_LOADINDEX, "" + loadindex);
-
+        initCookieSec();
         initExceptionConfigs();
     }
 
@@ -594,6 +601,7 @@ public abstract class ServletManager extends HttpServlet {
                 servlet_mtime = loadPropertyfile(properties, servletpropfile);
             }
             properties.setProperty(PROP_LOADINDEX, "" + loadindex);
+            initCookieSec();
             return true;
         } else {
             return false;
@@ -601,6 +609,20 @@ public abstract class ServletManager extends HttpServlet {
         
     }
 
+    // This is only for broken clients who suddenly stop supplying cookies in the middle of a
+    // session.  Windows XP internet configuration wizard (which speaks http) seems to be an example of a
+    // client that remembers the cookies over the first request/relocate/relocate cycle, but never sends a
+    // cookie again on the next request.
+    // You are strongly advised to NOT set the corresponding property to true, unless you deal with broken software.
+    private void initCookieSec() {
+        String csec = properties.getProperty(PROP_COOKIE_SEC_NOT_ENFORCED);
+        if (csec != null && csec.equals("true")) {
+            cookie_security_not_enforced = true;
+        } else {
+            cookie_security_not_enforced = false;
+        }
+    }
+    
     private long loadPropertyfile(Properties props, File propfile) throws ServletException {
         long mtime;
         try {

@@ -1,3 +1,10 @@
+2004-11-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: fix javadoc
+
+	* src/de/schlund/pfixxml/ServletManager.java: added the ability to specify with a property to NOT enforce a cookie check 
+	despite the session being marked already as using cookies. This is ONLY to cope with broken clients.
+
 2004-11-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:

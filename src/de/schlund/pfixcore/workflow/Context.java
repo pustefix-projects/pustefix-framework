@@ -950,6 +950,7 @@ public class Context implements AppContext {
      * current request, so that it can be incorporated into the XML result-tree.
      *
      * @param scode the <code>StatusCode</code>-object that should be stored in
+     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * the request. If it's null, nothing will be stored in the request.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
      */
@@ -967,6 +968,7 @@ public class Context implements AppContext {
      * @param scode the <code>StatusCode</code>-object that should be stored in
      * the request. If it's null, nothing will be stored in the request.
      * @param level the level associated with the specified <code>StatusCode</code>.
+     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
      */
     public void addPageMessage(StatusCode scode, String level, boolean isError) {
@@ -982,6 +984,7 @@ public class Context implements AppContext {
      * to the collection of message codes, for this request.
      * @param args arguments to the provided <code>StatusCode</code>.
      * @param level the value, that's used to this message's level. If this value
+     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * is <code>null</code> or an empty String, the value of
      * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
      */
