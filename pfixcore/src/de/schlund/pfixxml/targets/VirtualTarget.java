@@ -18,13 +18,17 @@
 */
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.TreeSet;
 
-import de.schlund.pfixxml.*;
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.Document;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
+import org.apache.log4j.NDC;
+
+import de.schlund.pfixxml.XMLException;
 
 /**
  * VirtualTarget.java
@@ -37,41 +41,59 @@ import org.w3c.dom.Document;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long    modtime   = 0l;
+    protected long modtime = 0l;
     protected TreeSet pageinfos = new TreeSet();
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
+     */
     public void addPageInfo(PageInfo info) {
-        synchronized(pageinfos) {
+        synchronized (pageinfos) {
             pageinfos.add(info);
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getPageInfos()
+     */
     public TreeSet getPageInfos() {
-        synchronized(pageinfos) {
+        synchronized (pageinfos) {
             return (TreeSet) pageinfos.clone();
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#setXMLSource(de.schlund.pfixxml.targets.Target)
+     */
     public void setXMLSource(Target source) {
         xmlsource = source;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#setXSLSource(de.schlund.pfixxml.targets.Target)
+     */
     public void setXSLSource(Target source) {
         xslsource = source;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
+     */
     public void addParam(String key, String val) {
-        synchronized(params) {
+        synchronized (params) {
             params.put(key, val);
         }
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getModTime()
+     */
     public long getModTime() {
-        if(modtime == 0l) {
-            synchronized(this) {
-                if(modtime == 0l) {
+        if (modtime == 0l) {
+            synchronized (this) {
+                if (modtime == 0l) {
                     File doc = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
-                    if(doc.exists() && doc.isFile()) {
+                    if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
                 }
@@ -80,6 +102,9 @@ public abstract class VirtualTarget extends TargetImpl {
         return modtime;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.Target#needsUpdate()
+     */
     public boolean needsUpdate() throws Exception {
         long mymodtime = getModTime();
         long xmlmod;
@@ -87,65 +112,101 @@ public abstract class VirtualTarget extends TargetImpl {
         boolean xmlup;
         boolean xslup;
         Target tmp;
-        tmp            = getXMLSource();
-        xmlup          = tmp.needsUpdate();
-        xmlmod         = tmp.getModTime();
-        tmp            = getXSLSource();
-        xslup          = tmp.needsUpdate();
-        xslmod         = tmp.getModTime();
-        if(xslup || xmlup)
+        tmp = getXMLSource();
+        xmlup = tmp.needsUpdate();
+        xmlmod = tmp.getModTime();
+        tmp = getXSLSource();
+        xslup = tmp.needsUpdate();
+        xslmod = tmp.getModTime();
+        if (xslup || xmlup)
             return true;
-        if((xmlmod > mymodtime) || (xslmod > mymodtime)
-           || getAuxDependencyManager().getMaxTimestamp() > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime)
             return true;
         return false;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetRW#storeValue(java.lang.Object)
+     */
     public void storeValue(Object obj) {
         SPCache cache = SPCacheFactory.getInstance().getCache();
         cache.setValue(this, obj);
     }
 
+  
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@"
-               + getTargetGenerator().getConfigname() + " <" + getXMLSource().getTargetKey()
-               + "> <" + getXSLSource().getTargetKey() + ">]";
+        return "[TARGET: " + getType() + " " + getTargetKey()
+            + "@" + getTargetGenerator().getConfigname()
+            + " <" + getXMLSource().getTargetKey() + "> <"
+            + getXSLSource().getTargetKey() + ">]";
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#setModTime(long)
+     */
     // still to implement from TargetImpl:
     //protected abstract Object  getValueFromDiscCache() throws Exception;
     protected void setModTime(long mtime) {
         modtime = mtime;
     }
 
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromSPCache()
+     */
     protected Object getValueFromSPCache() {
         SPCache cache = SPCacheFactory.getInstance().getCache();
         return cache.getValue(this);
     }
 
-    protected long getModTimeMaybeUpdate() throws Exception {
+    /**
+     * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
+     */
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
         long maxmodtime = 0l;
         long tmpmodtime;
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
-        tmpmodtime      = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
-        maxmodtime      = Math.max(tmpmodtime, maxmodtime);
-        tmpmodtime      = ((TargetImpl) getXSLSource()).getModTimeMaybeUpdate();
-        maxmodtime      = Math.max(tmpmodtime, maxmodtime);
-
+        tmpmodtime = ((TargetImpl) getXMLSource()).getModTimeMaybeUpdate();
+        maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        tmpmodtime = ((TargetImpl) getXSLSource()).getModTimeMaybeUpdate();
+        maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        storedException = null;
         // check all the auxilliary sources from auxsource
         maxmodtime = Math.max(getAuxDependencyManager().getMaxTimestamp(), maxmodtime);
-        if(maxmodtime > getModTime()) {
-            synchronized(this) {
-                if(maxmodtime > getModTime()) {
+        if (maxmodtime > getModTime()) {
+            synchronized (this) {
+                if (maxmodtime > getModTime()) {
                     try {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
-                    } catch(Exception e) {
-                        StringBuffer b = new StringBuffer(100);
-                        b.append("Error when generating: ").append(getTargetKey()).append(" from ").
-                            append(getXMLSource().getTargetKey()).append(" and ").append(getXSLSource().getTargetKey());
-                        CAT.error(b.toString(), e);
+                    } catch (TransformerException e) {
+                        CAT.error(
+                            "Error when generating: "
+                                + getTargetKey()
+                                + " from "
+                                + getXMLSource().getTargetKey()
+                                + " and "
+                                + getXSLSource().getTargetKey(),
+                            e);
+                        // Now we invalidate the mem- and disc cache to force
+                        // a complete rebuild of this target the next try
+                        storeValue(null);
+                        setModTime(-1);
+                        File cachefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+                        if (cachefile.exists()) {
+                            cachefile.delete();
+                        }
+
+                        TransformerException tex = (TransformerException) e;
+                        TargetGenerationException targetex = null;
+                        if (storedException != null) {
+                            targetex =
+                                new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
+                        } else {
+                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
+                        }
+                        targetex.setTargetkey(targetkey);
+                        throw targetex;
                     }
                 }
             }
@@ -156,15 +217,16 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws Exception {
-        PustefixXSLTProcessor xsltproc  = TraxXSLTProcessor.getInstance();
-        String                key       = getTargetKey();
-        Target                xmlsource = getXMLSource();
-        Target                xslsource = getXSLSource();
-        File                  cachefile = new File(getTargetGenerator().getDisccachedir() + key);
+    private void generateValue() throws XMLException, TransformerException, ParserConfigurationException, IOException {
+        PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+        String key = getTargetKey();
+        Target xmlsource = getXMLSource();
+        Target xslsource = getXSLSource();
+        File cachefile = new File(getTargetGenerator().getDisccachedir() + key);
         new File(cachefile.getParent()).mkdirs();
-        CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey()
-                  + " / " + xslsource.getTargetKey() + ")");
+        if (CAT.isDebugEnabled()) {
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey() + " / " + xslsource.getTargetKey() + ")");
+        }
 
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
         getAuxDependencyManager().reset();
@@ -178,11 +240,9 @@ public abstract class VirtualTarget extends TargetImpl {
         Object xmlobj = ((TargetRW) xmlsource).getCurrValue();
         Object xslobj = ((TargetRW) xslsource).getCurrValue();
         if (xmlobj == null)
-            throw new XMLException("**** xml source " + xmlsource.getTargetKey() +
-                                   xmlsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
         if (xslobj == null)
-            throw new XMLException("**** xsl source " + xslsource.getTargetKey() +
-                                   xslsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
 
         //FIXME!!! Do we want to do this right HERE????
         xsltproc.applyTrafoForOutput(xmlobj, xslobj, getParams(), new FileOutputStream(cachefile));

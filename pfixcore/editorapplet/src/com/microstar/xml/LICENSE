@@ -1,0 +1,29 @@
+It was a bit hard to come up with some facts regarding the exact license
+terms of the com.microstar.xml package. The XML parser is known
+as Ælfred, which is also used (in a modified and advanced form) in
+Saxon.  Ælfred was originally developed by David Megginson at
+Microstar (which no longer exists), and placed more or less in the
+public domain. Many other free projects use this code, too.
+
+According to saxons website, the following original copyright/license applies:
+
+-------------------------------------------------------------------------------
+AElfred, Version 1.2
+Microstar's Java-Based XML Parser
+Copyright (c) 1997, 1998 by Microstar Software Ltd.
+Home Page: http://www.microstar.com/XML/
+
+AElfred is free for both commercial and non-commercial use and
+redistribution, provided that Microstar's copyright and disclaimer are
+retained intact. You are free to modify AElfred for your own use and
+to redistribute AElfred with your modifications, provided that the
+modifications are clearly documented.
+
+DISCLAIMER
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+merchantability or fitness for a particular purpose. Please use it AT
+YOUR OWN RISK.
+-------------------------------------------------------------------------------
+
