@@ -1,3 +1,9 @@
+2004-05-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java: for now
+	remove the setting of the port number. Made something that should
+	work, but commented out until further testing.
+
 2004-05-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java (generateSynthetics): 

@@ -116,16 +116,17 @@ public class SessionHelper {
     }
 
     
-    public static String encodeURL(String scheme, String host,
-            HttpServletRequest req,  String sessid) {
+    public static String encodeURL(String scheme, String host, HttpServletRequest req, String sessid) {
         if (scheme == null) scheme = req.getScheme();
-        if (host == null) host = req.getServerName();
-        StringBuffer rcBuf = new StringBuffer();
+        if (host == null) host     = req.getServerName();
+        StringBuffer rcBuf         = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        rcBuf.append(":").append(req.getServerPort());
-        String oldSessionId = stripUriSessionId(null, req.getRequestURI(), rcBuf);
+        // if (scheme == null || !scheme.equals("https")) {
+        //     rcBuf.append(":").append(req.getServerPort());
+        // }
+        String       oldSessionId  = stripUriSessionId(null, req.getRequestURI(), rcBuf);
+        HttpSession  session       = req.getSession(false);
         
-        HttpSession session = req.getSession(false);
         if (sessid != null) {
             rcBuf.append(';').append(ENC_STR).append('=').append(sessid);
         } else if (session != null) {
