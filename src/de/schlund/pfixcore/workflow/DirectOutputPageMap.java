@@ -22,6 +22,9 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.util.*;
 import java.util.*;
 import org.apache.log4j.*;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.loader.Reloader;
+import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.pfixxml.PropertyObject;
 import de.schlund.pfixxml.PropertyObjectManager;
 
@@ -33,7 +36,7 @@ import de.schlund.pfixxml.PropertyObjectManager;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  * @version 1.0
  */
-public class DirectOutputPageMap implements PropertyObject {
+public class DirectOutputPageMap implements PropertyObject,Reloader {
     protected            HashMap  pagemap       = new HashMap();
     public  final static String   CLASSNAMEPROP = "classname";
     private final static Category CAT           = Category.getInstance(DirectOutputPageMap.class.getName());
@@ -64,6 +67,11 @@ public class DirectOutputPageMap implements PropertyObject {
                 pagemap.put(page, state);
             }
         }
+        
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            appLoader.addReloader(this);
+        }
     }
 
     /**
@@ -88,4 +96,17 @@ public class DirectOutputPageMap implements PropertyObject {
 	}
 	return ret;
     }
+    
+    public void reload() {
+        HashMap pageNew=new HashMap();
+        Iterator it=pagemap.keySet().iterator();
+        while(it.hasNext()) {
+            PageRequest page=(PageRequest)it.next();
+            DirectOutputState stOld=(DirectOutputState)pagemap.get(page);
+            DirectOutputState stNew=(DirectOutputState)StateTransfer.getInstance().transfer(stOld);
+            pageNew.put(page,stNew);
+        }
+        pagemap=pageNew;
+    }
+    
 }
