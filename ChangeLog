@@ -1,3 +1,11 @@
+2004-11-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: added the ability to
+	specify in a new created session that it doesn't use cookies
+	despite what the browser sends. This helps with situations where
+	the test cookie is there, but the secure cookie has been
+	denied. Fixed two code paths that seem to be affected by this.
+
 2004-11-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: fix javadoc
