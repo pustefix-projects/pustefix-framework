@@ -175,9 +175,9 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             ArrayList newFacs = new ArrayList();
             Iterator  it      = factories.iterator();
             while(it.hasNext()) {
-                FactoryInit fac       = (FactoryInit)it.next();
+                FactoryInit fac       = (FactoryInit) it.next();
                 String      className = fac.getClass().getName();
-                FactoryInit facNew    = (FactoryInit)StateTransfer.getInstance().transfer(fac);
+                FactoryInit facNew    = (FactoryInit) StateTransfer.getInstance().transfer(fac);
                 newFacs.add(facNew);
             }
             factories = newFacs;
