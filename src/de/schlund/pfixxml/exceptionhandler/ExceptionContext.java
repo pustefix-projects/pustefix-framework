@@ -307,9 +307,9 @@ class ExceptionContext {
         String message = throwable_.getMessage();
         if (message == null) {
             StackTraceElement[] strace = throwable_.getStackTrace();
-            if(strace.length > 1) {
-                message = strace[1].toString().trim();
-            } else if (strace.length == 1) {
+            if(strace.length > 0) {
+               // message = strace[1].toString().trim();
+            //} else if (strace.length == 1) {
                 // This case can happen when handling a OutofMemoryError, where
                 // the stracktrace has a length of only 1.
                 message = strace[0].toString().trim();
@@ -346,12 +346,12 @@ class ExceptionContext {
      * @return a Stringbuffer containing text. 
      */
     private StringBuffer createSTraceText() {
-        StringBuffer err = new StringBuffer();
+        //StringBuffer err = new StringBuffer();
         StringWriter strwriter = new StringWriter();
         PrintWriter p = new PrintWriter(strwriter);
         throwable_.printStackTrace(p);
         p.flush();
-        err.append(throwable_.getClass().getName()+": \n");
+        //err.append(throwable_.getClass().getName()+": \n");
         return strwriter.getBuffer();
     }
 
