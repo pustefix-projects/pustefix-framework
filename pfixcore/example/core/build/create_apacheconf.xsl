@@ -32,7 +32,9 @@ RewriteEngine on
   <xsl:apply-templates select="sslkey"/>
 </xsl:if>
 
-JkMount /xml/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
+<xsl:variable name="prefix" select="substring-before(substring-after($currentprj/defpath/node(), '/'), '/')"/>
+
+JkMount /<xsl:value-of select="$prefix"/>/* <xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
 
 <xsl:apply-templates select="$currentprj/errordoc"/>
 
