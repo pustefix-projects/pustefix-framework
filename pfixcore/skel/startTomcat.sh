@@ -16,7 +16,7 @@ echo "Using JPDA_ADDRESS:    $JPDA_ADDRESS"
 echo "Using JPDA_OPTS:       $JPDA_OPTS"
 echo "---------------------------"
 
-cd ./example/servletconf/tomcat/
+cd ./projects/servletconf/tomcat/
 LANG=C ./bin/catalina.sh $cmd
 
 
