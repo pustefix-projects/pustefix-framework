@@ -30,6 +30,31 @@
   	<attainGoal name="pfix:docs"/>
   </preGoal>
   
+  <preGoal name="site:sshdeploy">
+    <ant:echo>deleting old site: ${pom.siteDirectory}</ant:echo>
+    <ant:exec dir="." executable="${maven.ssh.executable}">
+      <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'rm -rf ${pom.siteDirectory}'"/>
+    </ant:exec>
+    <ant:echo>deleting old site: done</ant:echo>
+  </preGoal>
+  
+  <postGoal name="site:sshdeploy">
+    <ant:property name="site.current" location="${pom.siteDirectory}/../htdocs"/>
+    <ant:property name="site.old" location="${pom.siteDirectory}/../htdocs-old"/>
+    <ant:echo>backup current site</ant:echo>
+    <ant:exec dir="." executable="${maven.ssh.executable}">
+      <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'rm -rf ${site.old}'"/>
+    </ant:exec>
+    <ant:exec dir="." executable="${maven.ssh.executable}">
+      <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'mv ${site.current} ${site.old}'"/>
+    </ant:exec>
+    <ant:echo>replacing current site</ant:echo>
+    <ant:exec dir="." executable="${maven.ssh.executable}">
+      <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'mv ${pom.siteDirectory} ${site.current}'"/>
+    </ant:exec>
+    <ant:echo>done</ant:echo>
+  </postGoal>
+
   <goal name="pfix:docs">
     <ant:echo>Generating ${maven.docs.src}</ant:echo>
     <ant:delete dir="${maven.docs.src}"/>
