@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.util;
 
+import java.io.IOException;
 import java.util.*;
 import org.apache.log4j.*;
 
@@ -111,5 +112,26 @@ public class PropertiesUtils {
             }
         }
         return rc;
+    }
+    
+    public static int getInteger(Properties props, String key) throws IOException {
+        String value;
+        
+        value = getString(props, key);
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new IOException("number expected for property '" + key + "': " + value);
+        }
+    }
+
+    public static String getString(Properties props, String key) throws IOException {
+        String value;
+        
+        value = props.getProperty(key);
+        if (value == null) {
+            throw new IOException("property not found: " + key);
+        }
+        return value;
     }
 }
