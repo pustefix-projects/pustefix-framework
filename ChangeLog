@@ -1,3 +1,21 @@
+2003-10-15  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/auth/AuthManagerFactory.java:
+	this factory is now initialized lazy. 
+	* src/de/schlund/pfixcore/editor/EditorUser.java: adjusted to above
+	changes
+
+	* src/de/schlund/pfixxml/targets/LRUCache.java(getIterator): copy the
+	cache to a temporary hashmap, not a treemap. Do not cast cache-keys
+	to String.
+	* src/de/schlund/pfixxml/targets/TargetImpl.java(getCurrValue): call
+	new method doCacheStatistic to register hits and misses.
+	* src/de/schlund/pfixxml/targets/SPCacheStatistic.java: added class
+	to manage and create cachestatistic.
+	* src/de/schlund/pfixxml/CacheStatisticServlet.java: added servlet 
+	for retrieving cachestatistic.
+	* example/servletconf/projects.xml.in: added new servlet.
+	
 2003-10-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java (redirectToSecureSSLSession): Ugh.

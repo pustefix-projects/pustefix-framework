@@ -19,9 +19,9 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.apache.oro.util.CacheLRU;
@@ -49,10 +49,10 @@ public class LRUCache implements SPCache {
     }
     
     public Iterator getIterator() {
-        TreeMap tmphash = new TreeMap();
+        Map tmphash = new HashMap();
         synchronized (cache) {
             for (Iterator iter = cache.keys(); iter.hasNext(); ) {
-                String k = (String) iter.next();
+                Object k = iter.next();
                 tmphash.put(k, cache.getElement(k));
             }
         }

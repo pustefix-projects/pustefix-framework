@@ -50,6 +50,11 @@
       <class>de.schlund.pfixxml.FactoryInitServlet</class>
       <propfile><cus:docroot/>common/conf/factory.prop</propfile>
     </servlet>
+
+    <servlet name="cachestat">
+      <active>true</active>
+      <class>de.schlund.pfixxml.CacheStatisticServlet</class> 
+    </servlet>
   </project>
 
   <!-- some common definitions that are shared between all projects -->
