@@ -4,6 +4,41 @@
     <title>Changes</title>
   </properties>
   <body>
+    <release version="0.7.1" date="2004-10-11">
+      <action dev="mtld" type="add">
+        <p>
+          Added webservice support to Pustefix, which now makes it possible
+          to exchange data/access application state via SOAP by providing
+          special webservice capabilities. This is done by a close webservice
+          server integration on the server side (with Apache Axis as default
+          server) and a client side Javascript SOAP implementation supporting
+          all important browsers (with some special features, like automatically
+          generated Javascript webservice stubs).
+        </p>
+        <p>
+          Pustefix defines a webservice development process, which enables the
+          user to create and deploy new webservices in an easy and fast way,
+          without demanding in-depth knowledge about SOAP internals. This is 
+          done by a range of tools supporting this process.
+        </p>
+        <p>
+          Development of new webservices is a straightforward process: the
+          service is described by simply defining a Java interface and declaring
+          the service in the application's webservice configuration file, then
+          an Ant task automatically generates the WSDL description, the deployment
+          descriptor and the Javascript webservice stub. After creating the
+	  class implementing the service interface and extending the 
+          AbstractService class (which gives access to the application state via
+          the ContextResourceManager) the service is ready to use. 
+        </p>
+        <p>
+          A complete documentation of the webservice development process has
+          still to come, meanwhile interested people can have a look at the
+          <code>webservice</code> example application, containing a range of
+          examples, containing a simple Chat application. 
+        </p>
+      </action>
+    </release>
     <release version="0.7.1-pre" date="in cvs">
       <action dev="mlhartme" type="add">
         <p>Use Maven SourceForge Plugin for automatic deployment.</p>
