@@ -1,6 +1,6 @@
 2004-10-27  Jens Lautenbacher  <jtl@schlund.de>
 
-	* added xercesImpl-2.6.2 again. seems it's still needed :-(
+	* added xercesImpl-2.6.2 again. Seems it's still needed... :-(
 
 2004-10-26  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -20,7 +20,7 @@
 
 2004-10-22  Michael Hartmeier  <mhm@schlund.de>
 
-	* Dump status code propertie files, always use dyntax/statusmessages.xml.
+	* Dump status code property files, always use dyntxt/statusmessages.xml.
 	* Removed res.jar files. Instead, the compile target copies the res directory (if there
 	is one) into the build directory.
 	* Removed FactoryInit base class, the init method is called via reflection now.
