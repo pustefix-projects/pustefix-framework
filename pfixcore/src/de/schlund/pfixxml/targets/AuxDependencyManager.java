@@ -127,7 +127,7 @@ public class AuxDependencyManager implements DependencyParent {
         if (path == null) {
             throw new IllegalArgumentException("path null: part=" + part + " product=" + product);
         }
-        AuxDependency    aux    = null;
+        AuxDependency    child  = null;
         DependencyParent parent = null;
 
         if (part != null && part.equals("")) part = null;
@@ -138,7 +138,7 @@ public class AuxDependencyManager implements DependencyParent {
         CAT.info("*** [" + path.getRelative() + "][" + part + "][" + product + "][" +
                  ((parent_path == null)? "null" : parent_path.getRelative()) + "][" + parent_part + "][" + parent_product + "]");
 
-        aux = AuxDependencyFactory.getInstance().getAuxDependency(type, path, part, product);
+        child = AuxDependencyFactory.getInstance().getAuxDependency(type, path, part, product);
         
         if (parent_path != null && parent_part != null && parent_product != null) {
             CAT.debug("*** Found another AuxDependency as Parent...");
@@ -146,8 +146,8 @@ public class AuxDependencyManager implements DependencyParent {
                 getAuxDependency(DependencyType.TEXT, parent_path, parent_part, parent_product);
 
             // Check for any loops like Parent -> Aux -> Child_A -> ...-> Child_X -> Parent
-            if (!checkLoopFree(parent, aux)) {
-                throw new RuntimeException("*** FATAL *** Adding " + aux + " to Parent " + parent + " would result in a LOOP!");
+            if (!checkLoopFree(parent, child)) {
+                throw new RuntimeException("*** FATAL *** Adding " + child + " to Parent " + parent + " would result in a LOOP!");
             }
         } else if (parent_path == null && parent_part == null && parent_product == null) {
             CAT.debug("*** Has no AuxDependency as parent...");
@@ -160,15 +160,15 @@ public class AuxDependencyManager implements DependencyParent {
             // map. They will add it as a parent later on themself.
             // After that, we will Reset the children map of the
             // AuxDep. The children will add themself later on their own.
-            aux.reset();
+            child.reset();
             
             // Here we make sure that this AuxDep's parent will get it's children map rebuild.
             // The parent may be another AuxDependency or the Manager (see above).
-            parent.addChild(aux);
+            parent.addChild(child);
 
             // finally we take care of refcounting.
             DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
-            refcounter.ref(aux, target);
+            refcounter.ref(child, target);
         } else {
             throw new RuntimeException("AuxDep with parent path/part/product not all == null or all != null: "
                                        + parent_path + "/" + parent_part + "/" + parent_product);
@@ -183,7 +183,7 @@ public class AuxDependencyManager implements DependencyParent {
             for (Iterator i = auxset.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
                 aux.removeDependencyParent(this);
-                if (aux.isDynamic()) {
+                if (aux.getType().isDynamic()) {
                     i.remove();
                 }
             }
@@ -226,7 +226,7 @@ public class AuxDependencyManager implements DependencyParent {
 
         for (Iterator i = in.iterator(); i.hasNext(); ) {
             AuxDependency aux = (AuxDependency) i.next();
-            if (aux.isDynamic()) {
+            if (aux.getType().isDynamic()) {
                 Element depaux = doc.createElement(name);
                 String  type;
                 

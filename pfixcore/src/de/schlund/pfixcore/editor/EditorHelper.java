@@ -484,7 +484,7 @@ public class EditorHelper {
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "auxfile");
-            elem.setAttribute("dir", aux.getDir());
+            elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("count", "" + count++);
         }
@@ -513,7 +513,7 @@ public class EditorHelper {
         for (Iterator i = allimgs.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
-            elem.setAttribute("dir", aux.getDir());
+            elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
@@ -545,7 +545,7 @@ public class EditorHelper {
                 TreeSet sub = new TreeSet();
                 getAuxdepsForInclude(sub, aux, false, DependencyType.TEXT);
                 Element elem = resdoc.createSubNode(root, "include");
-                elem.setAttribute("dir", aux.getDir());
+                elem.setAttribute("dir", aux.getPath().getDir());
                 elem.setAttribute("path", aux.getPath().getRelative());
                 elem.setAttribute("part", aux.getPart());
                 elem.setAttribute("count", cnt.toString());
@@ -564,7 +564,7 @@ public class EditorHelper {
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "include");
-            elem.setAttribute("dir", aux.getDir());
+            elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("part", aux.getPart());
             elem.setAttribute("product", aux.getProduct());
@@ -579,7 +579,7 @@ public class EditorHelper {
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
-            elem.setAttribute("dir", aux.getDir());
+            elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
@@ -593,7 +593,7 @@ public class EditorHelper {
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             Element elem = resdoc.createSubNode(root, "image");
-            elem.setAttribute("dir", aux.getDir());
+            elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
             elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
@@ -601,7 +601,10 @@ public class EditorHelper {
     }
 
     private static void getAuxdepsForTarget(TreeSet bucket, Target target, boolean recurse, DependencyType type) {
-        AuxDependencyManager manager = target.getAuxDependencyManager();
+        if (!(target instanceof VirtualTarget)) {
+            return;
+        }
+        AuxDependencyManager manager = ((VirtualTarget) target).getAuxDependencyManager();
         if (manager != null) {
             TreeSet topaux = manager.getChildren();
             for (Iterator i = topaux.iterator(); i.hasNext();) {
@@ -642,8 +645,8 @@ public class EditorHelper {
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
             String docroot = tgen.getDocroot();
-            String dir = curr.getDir();
             Path path = curr.getPath();
+            String dir = path.getDir();
             String part = curr.getPart();
             String product = curr.getProduct();
 
@@ -663,8 +666,8 @@ public class EditorHelper {
         Element pathelem = null;
         for (Iterator i = includes.iterator(); i.hasNext();) {
             AuxDependency curr = (AuxDependency) i.next();
-            String dir = curr.getDir();
             Path path = curr.getPath();
+            String dir = path.getDir();
             String part = curr.getPart();
             String product = curr.getProduct();
             if (!olddir.equals(dir) || olddir.equals("")) {
@@ -693,8 +696,8 @@ public class EditorHelper {
             Element pathelem = null;
             for (Iterator i = includes.iterator(); i.hasNext();) {
                 AuxDependency curr = (AuxDependency) i.next();
-                String dir = curr.getDir();
                 Path path = curr.getPath();
+                String dir = path.getDir();
                 String part = curr.getPart();
                 String product = curr.getProduct();
                 if (!olddir.equals(dir) || olddir.equals("")) {

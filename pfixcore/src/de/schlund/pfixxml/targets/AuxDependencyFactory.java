@@ -18,7 +18,6 @@
 */
 
 package de.schlund.pfixxml.targets;
-import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -31,7 +30,6 @@ import java.util.*;
  */
 
 public class AuxDependencyFactory {
-
     private static AuxDependencyFactory instance     = new AuxDependencyFactory();
     private static TreeMap              includeparts = new TreeMap();
     
@@ -45,20 +43,10 @@ public class AuxDependencyFactory {
         String        key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         AuxDependency ret = (AuxDependency) includeparts.get(key);
         if (ret == null) {
-            ret = createAuxDependencyForType(type, path, part, product);
+            ret = type.newInstance(path, part, product);
             includeparts.put(key, ret);
         }
         return ret;
-    }
-
-    private AuxDependency createAuxDependencyForType(DependencyType type, Path path, String part, String product) {
-        Class theclass = type.getAuxDependencyClass();
-        try {
-            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), path.getClass(), String.class, String.class});
-            return (AuxDependency) constructor.newInstance(new Object[]{type, path, part, product});
-        } catch (Exception e) {
-            throw new RuntimeException("cannot instantiate " + theclass.getName(), e);
-        }
     }
 
     public TreeSet getAllAuxDependencies() {

@@ -29,7 +29,7 @@ import com.icl.saxon.expr.XPathException;
 
 import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import de.schlund.pfixxml.targets.TargetImpl;
+import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
 /**
  * IncludeDocumentExtension.java
@@ -85,7 +85,7 @@ public final class IncludeDocumentExtension {
 			File incfile = path.resolve();
 			IncludeDocument iDoc = null;
 			Document doc;
-			TargetImpl target = (TargetImpl) TargetGeneratorFactory.getInstance().createGenerator(Path.create(docroot, targetgen).resolve()).getTarget(targetkey);
+			VirtualTarget target = (VirtualTarget) TargetGeneratorFactory.getInstance().createGenerator(Path.create(docroot, targetgen).resolve()).getTarget(targetkey);
 			if (!incfile.exists()) {
 				if (dolog) {
 					DependencyTracker.logTyped("text", path, part, DEFAULT, parent_path, parent_part, parent_product, target);

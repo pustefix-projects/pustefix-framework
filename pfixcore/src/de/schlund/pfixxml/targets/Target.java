@@ -30,7 +30,6 @@ import java.util.TreeSet;
 public interface Target {
     TargetType           getType();
     String               getTargetKey();
-    AuxDependencyManager getAuxDependencyManager();
     TargetGenerator      getTargetGenerator();
     Target               getXMLSource();
     Target               getXSLSource(); 

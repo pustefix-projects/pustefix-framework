@@ -103,8 +103,8 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
         for (Iterator i = images.iterator(); i.hasNext(); ) {
             AuxDependency curr = (AuxDependency) i.next();
             String docroot = tgen.getDocroot();
-            String dir  = curr.getDir();
             Path path = curr.getPath();
+            String dir  = path.getDir();
             String name = path.getName();
             try {
                 Element img = resdoc.createSubNode(root, "image");

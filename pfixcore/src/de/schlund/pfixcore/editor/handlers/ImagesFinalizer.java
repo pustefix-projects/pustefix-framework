@@ -119,8 +119,8 @@ public class ImagesFinalizer extends ResdocSimpleFinalizer {
         Element elem    = null;
         for (Iterator i = images.iterator(); i.hasNext(); ) {
             AuxDependency curr = (AuxDependency) i.next();
-            String dir  = curr.getDir();
             Path path = curr.getPath();
+            String dir  = path.getDir();
             String name = path.getName();
             if (!olddir.equals(dir) || olddir.equals("")) {
                 elem   = resdoc.createSubNode(root, "directory");

@@ -80,7 +80,7 @@ public class DependencyRefCounter {
             if (affaux != null) {
                 for (Iterator i = affaux.iterator(); i.hasNext(); ) {
                     AuxDependency aux = (AuxDependency) i.next();
-                    if (aux.isDynamic()) {
+                    if (aux.getType().isDynamic()) {
                         CAT.debug("--- Unrefing aux " + aux.getType() + " " + aux.getPath().getRelative() + "@" + aux.getPart());
                         HashSet targets = (HashSet) alldeps.get(aux);
                         targets.remove(target);
