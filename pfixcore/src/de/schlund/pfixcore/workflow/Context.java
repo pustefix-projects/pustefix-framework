@@ -56,35 +56,36 @@ public class Context implements AppContext {
     
     // new instance for every Context
     private ContextResourceManager rmanager;
-    private Navigation             navigation = null;
+    private Navigation             navigation                 = null;
     
     // values read from properties
-    private boolean                autoinvalidate_navi = true;
-    private boolean                in_adminmode        = false;
+    private boolean                autoinvalidate_navi        = true;
+    private boolean                in_adminmode               = false;
     private PageRequest            admin_pagereq;
 
     // the request state
     private PageRequest            currentpagerequest;
+    private PageRequest            initialpagerequest;
     private PageFlow               currentpageflow;
-
-    private HashMap                navigation_visible = null;
-    private String                 visit_id           = null;
+    
+    private HashMap                navigation_visible         = null;
+    private String                 visit_id                   = null;
     private boolean                needs_update;
     
-    private static Category LOG = Category.getInstance(Context.class.getName());
+    private static Category        LOG                        = Category.getInstance(Context.class.getName());
 
-    private final static String NOSTORE           = "nostore";
-    private final static String DEFPROP           = "context.defaultpageflow";
-    private final static String NAVPROP           = "xmlserver.depend.xml";
-    private final static String PROP_NAVI_AUTOINV = "navigation.autoinvalidate"; 
-    private final static String PROP_NEEDS_SSL    = "FORCE_SSL"; 
-    private final static String WATCHMODE         = "context.adminmode.watch";
-    private final static String ADMINPAGE         = "context.adminmode.page";
-    private final static String ADMINMODE         = "context.adminmode";
+    private final static String    NOSTORE                    = "nostore";
+    private final static String    DEFPROP                    = "context.defaultpageflow";
+    private final static String    NAVPROP                    = "xmlserver.depend.xml";
+    private final static String    PROP_NAVI_AUTOINV          = "navigation.autoinvalidate"; 
+    private final static String    PROP_NEEDS_SSL             = "FORCE_SSL"; 
+    private final static String    WATCHMODE                  = "context.adminmode.watch";
+    private final static String    ADMINPAGE                  = "context.adminmode.page";
+    private final static String    ADMINMODE                  = "context.adminmode";
 
     // log, if duration of state's isAccesible method is longer than these values
-    private static int MAXTIME_ISACCESSIBLE_DEBUG = 10;
-    private static int MAXTIME_ISACCESSIBLE_WARN = 100;
+    private static int             MAXTIME_ISACCESSIBLE_DEBUG = 10;
+    private static int             MAXTIME_ISACCESSIBLE_WARN  = 100;
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -103,7 +104,7 @@ public class Context implements AppContext {
     }
 
     public void reset() {
-        needs_update       = true;
+        needs_update = true;
         invalidateNavigation();
     }
     
@@ -127,10 +128,10 @@ public class Context implements AppContext {
 
         currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
         currentpagerequest = currentpageflow.getFirstStep();
-        
+
         checkForAdminMode();
         checkForNavigationReuse();
-
+        
         needs_update = false;
     }
 
@@ -282,8 +283,38 @@ public class Context implements AppContext {
     }
 
     /**
+     * <code>getCurrentPageFlow</code> returnes the currently active PageFlow.
+     *
+     * @return a <code>PageFlow</code> value
+     */
+    public PageFlow getCurrentPageFlow() {
+        return currentpageflow;
+    }
+
+    /**
+     * <code>getCurrentPageRequest</code> gets the currently active PageRequest.
+     *
+     * @return a <code>PageRequest</code> value
+     */
+    public PageRequest getCurrentPageRequest() {
+        return currentpagerequest;
+    }
+
+    /**
+     * <code>getInitialPageRequest</code> returns the PageRequest that was called requested initially
+     * for this request cycle. The current pagerequest as returned by getCurrentPageRequest() may be differnt for example
+     * while querying all pages for the navigation or during a pageflow run when one page of the flow after the other is
+     * queried if it want's to show itself.
+     *
+     * @return a <code>PageRequest</code> value
+     */
+    public PageRequest getInitialPageRequest() {
+        return initialpagerequest;
+    }
+
+    /**
      * <code>flowIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
-     * It returned true if the Context is currently running one of the defined workflows.
+     * It returned true if the Context is currently running one of the defined pageflows.
      *
      * @return a <code>boolean</code> value
      */
@@ -299,7 +330,7 @@ public class Context implements AppContext {
     * <code>flowIsStopped</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
     * It returned true if the Context is forced to stop at a page of the running workflow
     * (this happens when the pageflow returns true on calling flow.getStopAtFirstAfterCurrent().
-    * The workflow should not advance past the first accessible page AFTER the current page, in other words:
+    * The pageflow should not advance past the first accessible page AFTER the current page, in other words:
     * the first accessible page after the current page should work exactly the same as if directly
     * calling it).
     *
@@ -346,30 +377,12 @@ public class Context implements AppContext {
     }
     
     /**
-     * <code>getCurrentPageFlow</code> returnes the currently active PageFlow.
-     *
-     * @return a <code>PageFlow</code> value
-     */
-    protected PageFlow getCurrentPageFlow() {
-        return currentpageflow;
-    }
-
-    /**
      * <code>setCurrentPageFlow</code> sets the currently active PageFlow.
      *
      * @param flow a <code>PageFlow</code> value
      */
     protected void setCurrentPageFlow(PageFlow flow) {
         currentpageflow = flow;
-    }
-
-    /**
-     * <code>getCurrentPageRequest</code> gets the currently active PageRequest.
-     *
-     * @return a <code>PageRequest</code> value
-     */
-    public PageRequest getCurrentPageRequest() {
-        return currentpagerequest;
     }
 
     /**
@@ -414,8 +427,8 @@ public class Context implements AppContext {
         
     }
 
-    private void recursePages(NavigationElement[] pages, Element parent,
-                              Document doc, PfixServletRequest pfixreq, HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
+    private void recursePages(NavigationElement[] pages, Element parent,  Document doc, PfixServletRequest pfixreq,
+                              HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page = pages[i];
             String            name = page.getName();
@@ -647,11 +660,13 @@ public class Context implements AppContext {
         if (!page.isEmpty()) {
             page.setStatus(PageRequestStatus.DIRECT);
             setCurrentPageRequest(page);
+            initialpagerequest = page;
             setCurrentPageFlow(pageflowmanager.pageFlowToPageRequest(getCurrentPageFlow(), page, preq));
             LOG.debug("* Setting currentpagerequest to [" + page.getName() + "]");
             LOG.debug("* Setting currentpageflow to [" + getCurrentPageFlow().getName() + "]");
         } else {
             page = getCurrentPageRequest();
+            initialpagerequest = page;
             if (page != null) {
                 page.setStatus(PageRequestStatus.REUSE);
                 LOG.debug("* Reusing page [" + page.getName() + "]");
