@@ -63,7 +63,7 @@
 			</table>	
 		</form>     
        
-	   <a href="/xml/webservice;{$__sessid}?monitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
+	   <a href="/xml/wsmonitor" target="__WEB_SERVICE_MONITOR__">Web service monitor</a>
 	   
       </lang>
     </product>

@@ -1,12 +1,11 @@
 /*
- * de.schlund.pfixcore.webservice.ConfigProperties
+ * de.schlund.pfixcore.webservice.config.ConfigProperties
  */
-package de.schlund.pfixcore.webservice;
+package de.schlund.pfixcore.webservice.config;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.*;
 
@@ -39,7 +38,7 @@ public class ConfigProperties {
         loadProperties();
     }
 
-    protected void loadProperties() throws Exception {
+    private void loadProperties() throws Exception {
         for(int i=0;i<propFiles.length;i++) {
             if(propFiles[i]!=null && propFiles[i].exists()) {
                 Long modTime=(Long)modTimes.get(propFiles[i]);

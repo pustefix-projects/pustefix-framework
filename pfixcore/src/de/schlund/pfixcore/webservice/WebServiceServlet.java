@@ -11,19 +11,10 @@ import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import org.apache.axis.AxisEngine;
-import org.apache.axis.AxisFault;
-
-
-import org.apache.axis.MessageContext;
-
-import org.apache.axis.handlers.soap.SOAPService;
-import org.apache.axis.utils.Messages;
-
-
-
 import org.apache.axis.transport.http.AxisServlet;
 import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.webservice.config.*;
 
 /**
  * WebServiceServlet.java 
@@ -52,7 +43,8 @@ public class WebServiceServlet extends AxisServlet {
             File[] propFiles=new File[al.size()];
             for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
             ConfigProperties cfgProps=new ConfigProperties(propFiles);
-            WebServiceContext wsc=new WebServiceContext(cfgProps);
+            ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
+            WebServiceContext wsc=new WebServiceContext(srvConf);
             getServletContext().setAttribute(Constants.WEBSERVICE_CONTEXT,wsc);
            
         } catch(Exception x) {

@@ -39,12 +39,21 @@
     <xsl:value-of select="@externalservletname"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
   
+  <xsl:template match="webservice-global">
+	<xsl:variable name="wspref">
+		<xsl:text>webservice-global.</xsl:text>
+	</xsl:variable>
+	<xsl:value-of select="$wspref"/><xsl:text>requestpath=</xsl:text><xsl:value-of select="requestpath/text()"/><xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+  
   <xsl:template match="webservice">
 	<xsl:variable name="wspref">
 		<xsl:text>webservice.</xsl:text><xsl:value-of select="@name"/><xsl:text>.</xsl:text>
 	</xsl:variable>
 	<xsl:value-of select="$wspref"/><xsl:text>name=</xsl:text><xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
- 	<xsl:value-of select="$wspref"/><xsl:text>interface=</xsl:text><xsl:value-of select="@interface"/><xsl:text>&#xa;</xsl:text>
+ 	<xsl:if test="interface">
+		<xsl:value-of select="$wspref"/><xsl:text>interface.name=</xsl:text><xsl:value-of select="interface/@name"/><xsl:text>&#xa;</xsl:text>
+ 	</xsl:if>
 	<xsl:if test="context">
 		<xsl:value-of select="$wspref"/><xsl:text>context.name=</xsl:text><xsl:value-of select="context/@name"/><xsl:text>&#xa;</xsl:text>
 	</xsl:if>

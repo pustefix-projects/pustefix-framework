@@ -47,6 +47,7 @@ public class DataImpl extends AbstractService implements Data {
     }
     */
     
+    /**
     public String getDataSid(String sid) throws Exception {
         ContextData data=(ContextData)getContextResource(sid,ContextData.class.getName());
         return data.getData();
@@ -60,7 +61,7 @@ public class DataImpl extends AbstractService implements Data {
     public DataBean getDataBeanSid(String sid) throws Exception {
         ContextData data=(ContextData)getContextResource(sid,ContextData.class.getName());
         return data.getDataBean();
-    }
+    }*/
     
     public DataBean echoDataBeanSid(String sid,DataBean data) throws Exception {
         return data;

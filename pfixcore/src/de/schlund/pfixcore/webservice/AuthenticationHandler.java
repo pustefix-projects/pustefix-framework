@@ -18,6 +18,8 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 
+import de.schlund.pfixcore.webservice.config.*;
+
 public class AuthenticationHandler extends BasicHandler {
 
     
@@ -77,14 +79,15 @@ public class AuthenticationHandler extends BasicHandler {
         //handle request
         WebServiceContext context=getWebServiceContext(messageContext);
        
-        WebServiceConfig config=context.getWebServiceConfig(target);
-        if(config.getContextName()!=null) {
-            if(config.getSessionType()==Constants.SESSION_TYPE_SERVLET) {
+        ServiceConfiguration config=context.getServiceConfiguration();
+        ServiceConfig srvConf=config.getServiceConfig(target);
+        if(srvConf.getContextName()!=null) {
+            if(srvConf.getSessionType()==Constants.SESSION_TYPE_SERVLET) {
                 HttpSession session=getSession(messageContext);
                 if(session==null) throw AxisFault.makeFault(new Exception("Authentication failed: No valid session."));
                
                 getContextResourceManager(session);
-                Context pfxContext=(Context)session.getAttribute(config.getContextName()+"__CONTEXT__");
+                Context pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
                 ContextResourceManager crm=pfxContext.getContextResourceManager();
                 messageContext.setProperty(Constants.MSGCTX_PROP_CTXRESMAN,crm);
             }

@@ -211,6 +211,17 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
 
+  <target name="java2wsdl" depends="ant-tasks">
+    <pfx-java2wsdl 
+    	fqdn="${fqdn}" 
+    	tmpdir="${dir.projects}/.tmp_webservice"
+    	prjdir="${dir.projects}" 
+    	prjfile="${file.projects_xml}" 
+    	srcdir="${dir.src}" 
+    	webappsdir="${dir.tomcat}/webapps"
+    	message="foo"/>
+  </target>
+	
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
     <javac
      srcdir="${dir.src}"
@@ -340,6 +351,13 @@ or delete the DOCTYPE definition -->
      loaderref="pfx-loader"
      description="Creates dependencies in ${dir.projects}/.cache"
      />
+  	<taskdef
+  	     name="pfx-java2wsdl"
+  	     classname="de.schlund.pfixcore.webservice.Java2WSDLTask"
+  	     classpathref="cp.classpath"
+  	     loaderref="pfx-loader"
+  	     description="Generates WSDL from Web service interfaces"
+	/>
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
