@@ -6,7 +6,6 @@
   <page name="overview" title="Overview">
     <page name="xml" title="XML/XSLT"/>
     <page name="java" title="Java framework"/>
-    <page name="includeparts" title="Include parts"/>
   </page>
   <page name="udocs" title="Configuration">
     <page name="project" title="Project definition"/>
