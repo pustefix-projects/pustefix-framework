@@ -3,6 +3,9 @@
 	* src/de/schlund/pfixxml/*: code cleanup - removed unused variables
 	and organized imports.
 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java,
+	src/de/schlund/pfixxml/PfixServletRequest.java: added some javadoc
+
 2003-02-28  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/build/create_propfiles.xsl: bugfix
@@ -16,7 +19,7 @@
 
 	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: code cleanup
 
-	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java(x[s|m]ObjectFromDisc):
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java(x[s|m]lObjectFromDisc):
 	more information on errors.
 
 2003-02-26  Jens Lautenbacher  <jtl@schlund.de>

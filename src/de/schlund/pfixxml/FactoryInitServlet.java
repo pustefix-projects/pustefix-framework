@@ -42,9 +42,10 @@ import de.schlund.util.FactoryInit;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the VM.
- * It starts all VM-global factories.
- *
- *
+ * It starts all VM-global factories by calling their 'init' method from 
+ * the {@link FactoryInit} interface. These factories are located by
+ * analyzing the "servlet.propfile" parameter which points to a file where
+ * all factories are listed.
  */
 
 public class FactoryInitServlet extends HttpServlet {
@@ -52,15 +53,33 @@ public class FactoryInitServlet extends HttpServlet {
     private Category CAT        = Category.getInstance(FactoryInitServlet.class.getName());
     private static   boolean  configured = false;
 
+    /**
+     * Handle the HTTP-Post method. 
+     * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
+     * @throws ServletException on all
+     */
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         doGet(req, res);
     }
 
+    /**
+     * Handle the HTTP-Get method 
+     * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)
+     * @throws ServletException on call
+     */
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         throw new ServletException("This servlet can't be called interactively");
     }
-
-    public void init(ServletConfig Config) throws ServletException {
+    
+    /**
+     * Initialize this servlet. Also call the 'init' method of all classes
+     * listed in the configuration. These classes must implement
+     * the FactoryInit interface.
+     * @param config the servlet configuration 
+     * @see javax.servlet.Servlet#init(ServletConfig)
+     * @throws ServletException on errors
+     */
+	public void init(ServletConfig Config) throws ServletException  {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());
 
