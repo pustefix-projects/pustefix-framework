@@ -66,7 +66,7 @@ public class FileDownloadDOState implements DirectOutputState {
             throw new XMLException("*** Need property " + PROP_MIMETYPE + " ***");
         }
 
-        File file = new File(filename);
+        File file = PathFactory.getInstance().createPath(filename).resolve();
 
         if (file.exists() && file.canRead()) {
             return true;
