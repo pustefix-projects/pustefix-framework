@@ -8,7 +8,7 @@ SFWEB = /home/groups/p/pu/pustefix/htdocs
 USER  = $(shell cat CVS/Root  | cut -d ":" -f 3 | cut -d "@" -f 1)
 
 
-export CLASSPATH  = $(shell ../../bin/setClassPath.sh `pwd`/../..)
+export CLASSPATH  = $(shell pwd)/../../lib/saxon6_5_3.jar
 
 
 all: transform 
