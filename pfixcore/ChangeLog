@@ -1,5 +1,11 @@
 2003-10-31  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): Eeeek! this will use a complete 
+	wrong pageflow when generating the navigation (... to be exact: the workflow of the page we 
+	are currently working on, and not of the state that is currently inspected by the navigation builder)
+
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java (NAVI_GEN): new PageRequestStatus. May be useful.
+
 	* example/core/xsl/master.xsl.in: Eeeek. seem to finally have solved the stupid copying of namespaces
 	into the html.... wonder why I always thought this wouldn't work?????
 
