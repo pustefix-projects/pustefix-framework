@@ -304,7 +304,8 @@ public abstract class ServletManager extends HttpServlet {
                         return;
                     } else {
                         CAT.debug("   ... but the value is WRONG!");
-                        throw new RuntimeException("Wrong Session-ID for running secure session from cookie.");
+                        // throw new RuntimeException("Wrong Session-ID for running secure session from cookie.");
+                        CAT.error("Wrong Session-ID for running secure session from cookie.");
                     }
                 } else {
                     CAT.debug("*** NO matching SecureSessionCookie (not even a wrong one...)");
