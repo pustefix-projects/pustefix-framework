@@ -16,10 +16,14 @@
             
             #navigation   { padding: 0px; background-color: #aaccff; }
             #navigation a { text-decoration: none; color: #aa0000; }
-            .menuentry        { padding: 1px 15px 1px 5px; }
-            .menuentry:hover  { background-color: #88aa88; color: #ffffff; }
-            .submenuentry     {  background-color: #99bbee; padding: 1px 2px 1px 20px; text-align: right; }
-            .submenuentry:hover  { background-color: #88aa88; color: #ffffff; }
+            .menuentry        { padding: 1px 15px 1px 5px;
+                                border-bottom: solid 1px #aaccff; border-top: solid 1px #aaccff; }
+            .menuentry:hover  { background-color: #88aa88; color: #ffffff;
+                                border-bottom: solid 1px #88aa88; border-top: solid 1px #88aa88; }
+            .submenuentry     {  background-color: #99bbee; padding: 1px 2px 1px 20px; text-align: right;
+                                 border-bottom: solid 1px #99bbee; border-top: solid 1px #99bbee; }
+            .submenuentry:hover  { background-color: #88aa88; color: #ffffff;
+                                 border-bottom: solid 1px #88aa88; border-top: solid 1px #88aa88; }
 
             .selected         { background-color: #88aa88; color: #ffffff; border-bottom: solid 1px black; border-top: solid 1px black; }
             
@@ -28,16 +32,19 @@
             .mainbody       { background-color: #ffeedd; padding-left: 10px;}
             .navibody       { width: 120px; background-color:#aaccff; border-right: solid black 1px; }
             
-            h1 { background-color: #6688bb; color: #eeeeee; font-family: arial, helvetica; font-weight: bold; font-size: 16px; }
+            h1 { background-color: #6688bb; color: white; font-family: arial, helvetica; font-weight: bold; font-size: 16px; }
             h1:before { content: url("img/triangle.gif") }
 
             h2 { color: #6688bb; font-family: arial, helvetica; font-weight: bold; font-size: 14px; }
 
             .mainbody > div > p { padding-left: 10px; padding-right: 10px; }
             
-            .stdtable       { border-spacing: 0px; margin-right: 40px; margin-left: 40px; background: #ddcccc; }
+            .stdtable       { border-bottom: black solid 1px; border-spacing: 0px;
+                              margin-right: 40px; margin-left: 40px; background-color: #eedddd; }
             .stdtable tr    { vertical-align: top; }
-            .stdtable tr td { padding: 4px; border-bottom: 1px black solid; }
+            .stdtable tr th { padding: 4px; border-top: 1px black solid; font-size: 11px; text-align: left;
+                              background-color: #ddcccc; }
+            .stdtable tr td { padding: 4px; border-top: 1px black dotted; }
             
           </style>
         </head>
