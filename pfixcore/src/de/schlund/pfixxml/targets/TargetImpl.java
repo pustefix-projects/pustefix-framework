@@ -53,6 +53,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle that the target is always up to date (expect make generate!!!)
     private boolean onceGenerated = false;
+    // store  exception occured during transformation here. 
+    protected Exception storedException = null;
 
     //~ Methods ....................................................................................
 
@@ -208,4 +210,12 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected abstract long getModTimeMaybeUpdate() throws Exception;
 
     protected abstract void setModTime(long mtime);
+    /**
+     * Sets the storedException.
+     * @param storedException The storedException to set
+     */
+    public void setStoredException(Exception stored) {
+        this.storedException = stored;
+    }
+
 } // TargetImpl

@@ -27,8 +27,10 @@ import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.PublicXSLTProcessor;
 import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetFactory;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TargetType;
 import de.schlund.pfixxml.targets.TraxXSLTProcessor;
 import de.schlund.pfixxml.testenv.RecordManager;
 import de.schlund.pfixxml.testenv.RecordManagerFactory;
@@ -46,7 +48,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -57,6 +61,8 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -121,7 +127,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int    XML_ONLY_ALLOWED                              = 0;
     private static final int    XML_ONLY_RESTRICTED                           = 1;
     private static final int    XML_ONLY_PROHIBITED                           = 2;
-
+    
+    // error handling
+    private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl.in";
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -567,10 +575,27 @@ public abstract class AbstractXMLServer extends ServletManager {
         // Check if we are allowed and should just supply the xml doc
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
-            PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+            TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
+            Object stylevalue = null;
+            try {
+                stylevalue = generator.getTarget(stylesheet).getValue();
+            } catch(Exception e) {
+                // handle target creation errors here. Show the error page and return. 
+                if(e instanceof TransformerException ) {
+                    TransformerException tex = (TransformerException) e;
+                    CAT.error("fatal transformer exception! :"+tex.getMessage()+" Cause: "+(tex.getException() != null ? tex.getException().getMessage() : " none "));   
+                } else {
+                    CAT.error("fatal exception! :"+e.getMessage());
+                }
+                Document errordoc = createErrorTree(e, generator.getTarget(stylesheet));
+                errordoc = xsltproc.xmlObjectFromDocument(errordoc);
+                Object stvalue = ((Target)TargetFactory.getInstance().getTarget(TargetType.XSL_LEAF, generator, ERROR_STYLESHEET)).getValue();
+                xsltproc.applyTrafoForOutput(errordoc, stvalue, null, res.getOutputStream());
+                return;
+            }
             try {
                 xsltproc.applyTrafoForOutput(spdoc.getDocument(), 
-                                             generator.getTarget(stylesheet).getValue(), paramhash, 
+                                             stylevalue, paramhash, 
                                              res.getOutputStream());
             } catch (TransformerException e) {
                 CAT.warn("[Ignored TransformerException] : " + e.getMessage());
@@ -616,6 +641,83 @@ public abstract class AbstractXMLServer extends ServletManager {
             LOGGER_TRAIL.warn(logbuff.toString());
         }
     }
+
+    /**
+     * Method createErrorTree.
+     * @param e
+     * @return Document
+     */
+    private Document createErrorTree(Exception e, Target target) throws ParserConfigurationException {
+        DocumentBuilder docbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = docbuilder.newDocument();
+        Element e0 = doc.createElement("error_message");
+        
+        Element e1 = doc.createElement("title");
+        Text t1 = doc.createTextNode("Error when generating target");
+        e1.appendChild(t1);
+        e0.appendChild(e1);
+       
+        Element e2 = doc.createElement("error");
+        e2.setAttribute("key", "Type:");
+        Text t2 = doc.createTextNode(e.getClass().getName());
+        e2.appendChild(t2);
+        e0.appendChild(e2);
+       
+        Element e3 = doc.createElement("error");
+        e3.setAttribute("key", "Target:");
+        Text t3 = doc.createTextNode(target.getTargetKey());
+        e3.appendChild(t3);
+        e0.appendChild(e3); 
+       
+        Element e9 = doc.createElement("error");
+        e9.setAttribute("key", "Message:");
+        Text t9 = doc.createTextNode(e.getMessage());
+        e9.appendChild(t9);
+        e0.appendChild(e9);
+        
+        if(e instanceof TransformerException) {
+            TransformerException tex = (TransformerException) e;
+            Throwable ex = tex.getException();
+            if(ex != null) {
+                Element e4 = doc.createElement("error");
+                e4.setAttribute("key", "Cause:");
+                Text t4 = doc.createTextNode(ex.getClass().getName());
+                e4.appendChild(t4);
+                e0.appendChild(e4);
+                
+                Element e5 = doc.createElement("error");
+                e5.setAttribute("key", "Message:");
+                Text t5 = doc.createTextNode(ex.getMessage());
+                e5.appendChild(t5);
+                e0.appendChild(e5);
+                    
+                if(ex instanceof SAXParseException) {
+                    SAXParseException sex = (SAXParseException) ex; 
+                    Element e8 = doc.createElement("error");
+                    e8.setAttribute("key", "Id:");
+                    Text t8 = doc.createTextNode(sex.getSystemId());
+                    e8.appendChild(t8);
+                    e0.appendChild(e8);
+                    
+                    Element e6 = doc.createElement("error");
+                    e6.setAttribute("key", "Line:");
+                    Text t6 = doc.createTextNode(""+sex.getLineNumber());
+                    e6.appendChild(t6);
+                    e0.appendChild(e6);
+                    
+                    Element e7 = doc.createElement("error");
+                    e7.setAttribute("key", "Column:");
+                    Text t7 = doc.createTextNode(""+sex.getColumnNumber());
+                    e7.appendChild(t7);
+                    e0.appendChild(e7);
+                }
+            }
+        }
+        doc.importNode(e0, true);
+        doc.appendChild(e0);
+        return doc;
+    }
+
 
     /**
      * Check if the current request will retrieve plain xml.

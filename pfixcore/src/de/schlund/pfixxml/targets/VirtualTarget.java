@@ -19,11 +19,15 @@
 package de.schlund.pfixxml.targets;
 
 
-import de.schlund.pfixxml.*;
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.Document;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.TreeSet;
+
+import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.NDC;
+
+import de.schlund.pfixxml.XMLException;
 
 
 /**
@@ -142,10 +146,30 @@ public abstract class VirtualTarget extends TargetImpl {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
                     } catch(Exception e) {
+                        
                         StringBuffer b = new StringBuffer(100);
                         b.append("Error when generating: ").append(getTargetKey()).append(" from ").
                             append(getXMLSource().getTargetKey()).append(" and ").append(getXSLSource().getTargetKey());
                         CAT.error(b.toString(), e);
+                        // Now we invalidate the mem- and disc cache to force
+                        // a complete rebuild of this target the next try
+                        storeValue(null);
+                        new File(getTargetGenerator().getDisccachedir() + getTargetKey()).delete();
+                        
+                        if(e instanceof TransformerException) {
+                            TransformerException tex =  (TransformerException) e;
+                            Throwable th = tex.getException();
+                            if(th != null) {
+                                throw tex;
+                            } else {
+                                if(storedException != null) {
+                                    tex.initCause(storedException);
+                                }
+                                throw tex;
+                            }
+                        } else {
+                            throw e;
+                        }
                     }
                 }
             }
@@ -163,8 +187,10 @@ public abstract class VirtualTarget extends TargetImpl {
         Target                xslsource = getXSLSource();
         File                  cachefile = new File(getTargetGenerator().getDisccachedir() + key);
         new File(cachefile.getParent()).mkdirs();
-        CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey()
+        if(CAT.isDebugEnabled()) {
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey()
                   + " / " + xslsource.getTargetKey() + ")");
+        }
 
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
         getAuxDependencyManager().reset();

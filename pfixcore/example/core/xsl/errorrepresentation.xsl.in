@@ -1,0 +1,33 @@
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <xsl:template match="/">
+    <html>
+      <head>
+        <title>Error</title>
+      </head>
+      <body>
+        <center>
+          <table cellpadding="2" style="border: 1px solid black">
+            <xsl:apply-templates/>
+          </table>
+        </center>
+      </body>
+    </html>
+  </xsl:template>
+
+
+  <xsl:template match="title">
+    <th colspan="2">
+      <xsl:value-of select="text()"/>
+    </th>
+  </xsl:template>
+
+
+  <xsl:template match="error">
+    <tr>
+      <td><xsl:value-of select="@key"/></td>
+      <td><xsl:value-of select="text()"/></td>
+    </tr>
+  </xsl:template>
+
+</xsl:stylesheet>

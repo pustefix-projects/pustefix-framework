@@ -18,25 +18,17 @@
 */
 package de.schlund.pfixxml;
 
+import java.io.File;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+
 import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.XPathException;
-
-import de.schlund.pfixxml.targets.TraxXSLTProcessor;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
-
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.log4j.Category;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXParseException;
 
 
 /**
@@ -63,6 +55,8 @@ public final class IncludeDocumentExtension {
     
     //~ Methods ....................................................................................
 
+
+
     /**
      * Get the requested IncludeDocument from {@link IncludeDocumentFactory} and retrieve
      * desired information from it.</br>
@@ -82,11 +76,14 @@ public final class IncludeDocumentExtension {
     public static final NodeSetValue get(String path, String part, String product, String docroot, 
                                          String targetgen, String targetkey, String parent_path, 
                                          String parent_part, String parent_product) throws Exception {
+       
         boolean         dolog   = ! targetkey.equals(NOTARGET);
         int             length  = 0;
         File            incfile = new File(path);
         IncludeDocument iDoc    = null;
         Document        doc;
+        TargetImpl target = (TargetImpl) TargetGeneratorFactory.getInstance().createGenerator(targetgen).getTarget(targetkey);
+        
         if (! incfile.exists()) {
             if (dolog) {
                 DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
@@ -100,12 +97,9 @@ public final class IncludeDocumentExtension {
         } catch(Exception e) {
             if(dolog)
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
-            if(e instanceof SAXParseException) {
-                SAXParseException saxex = (SAXParseException) e;
-                return handleSAXError(part, saxex);
-            } else {
-                throw e;
-            }
+            
+            target.setStoredException(e);
+            throw e;
         }
         doc = iDoc.getDocument();
         
@@ -150,7 +144,9 @@ public final class IncludeDocumentExtension {
             }
             sb.delete(0, sb.length());
             sb.append("*** Part '").append(part).append("' is multiple times defined! Must be exactly 1");
-            throw new XMLException(sb.toString());
+            XMLException ex = new XMLException(sb.toString());
+            target.setStoredException(ex);
+            throw ex;
         }
         
         
@@ -222,7 +218,9 @@ public final class IncludeDocumentExtension {
                 sb.delete(0, sb.length());
                 sb.append("*** Part '").append(part).
                 	append("' has multiple default product branches! Must be 1.");
-                throw new XMLException(sb.toString());
+                XMLException ex = new XMLException(sb.toString());
+                target.setStoredException(ex);
+                throw ex;
             }
         } else if (length == 1) {
         	// specific product found
@@ -246,11 +244,13 @@ public final class IncludeDocumentExtension {
             sb.append("*** Product '").append(product).
             	append("' is defined multiple times under part '").append(part).append("@").
             	append(path).append("'");
-            throw new XMLException(sb.toString());
+            XMLException ex = new XMLException(sb.toString());
+            target.setStoredException(ex);
+            throw ex;
         }
     }
 
-    private static NodeSetValue handleSAXError(String part, SAXParseException e)
+  /*  private static NodeSetValue handleSAXError(String part, SAXParseException e)
         throws ParserConfigurationException, Exception, IOException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document d = builder.newDocument();
@@ -266,5 +266,5 @@ public final class IncludeDocumentExtension {
         TraxXSLTProcessor trax = new TraxXSLTProcessor();
         d = trax.xmlObjectFromDocument(d);
         return PFXPathEvaluator.evaluateAsNodeSetValue("/*", d);
-    }
+    }*/
 }// end of class IncludeDocumentExtension
