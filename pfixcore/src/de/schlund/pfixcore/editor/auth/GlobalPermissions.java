@@ -57,8 +57,8 @@ public class GlobalPermissions {
     
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("Admin                           ="+admin).append("\n");
-        sb.append("Edit DynIncludes default branch ="+isEditDynIncludesDefault()).append("\n");
+        sb.append("Admin               = "+admin).append("\n");
+        sb.append("DynIncludes default = "+isEditDynIncludesDefault()).append("\n");
         return sb.toString();
     }
 

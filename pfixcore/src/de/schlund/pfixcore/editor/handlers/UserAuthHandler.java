@@ -56,24 +56,9 @@ public class UserAuthHandler implements IHandler {
         String                 pass    = auth.getPass();
         boolean                loginok = esess.getLoginAllowed();
         StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.editor.auth");
-        StatusCode             scode;
- 
-
-        /*EditorUser eu = EditorUserFactory.getInstance().getEditorUser(user);
-        if (eu != null && UnixCrypt.matches(eu.getPwd(), pass)) {
-            if (loginok || eu.isAdmin()) {
-                esess.setUser(eu);
-            } else {
-                auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));
-            }
-        } else {
-            if (eu == null) {
-                CAT.debug("Didn't get user for name " + user);
-            } else {
-                CAT.debug("PWD doesn't match: " + pass );
-            }
-            auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
-        }*/
+        
+        if(CAT.isDebugEnabled())       
+            CAT.debug("Doing login for user '"+user+"'");
         
         EditorUser editor_user = null;
         
@@ -81,16 +66,28 @@ public class UserAuthHandler implements IHandler {
             editor_user = EditorUser.logIn(user, pass);
         } catch (WrongPasswordException e) {
             auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            if (CAT.isDebugEnabled())
+                CAT.debug("Login for user '"+user+"' denied: Wrong password.");
+            
             return;
         } catch (NoSuchUserException e) {
             auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            if(CAT.isDebugEnabled())
+                CAT.debug("Login for user '"+user+"' denied: User does not exist.");
+            
             return;
         }
         
         if (loginok ) {
             esess.setUser(editor_user);
+            if(CAT.isDebugEnabled())
+                CAT.debug("Login for user '"+user+"' successfull. Saving user in session. User logged in.");
+        
         } else {
-            auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));
+            auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));    
+            if(CAT.isDebugEnabled())
+                CAT.debug("Login for user '"+user+"' denied: Login currently not allowed.");
+        
         }
     }
         

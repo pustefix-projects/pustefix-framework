@@ -73,39 +73,29 @@ final public class EditorUser {
         if(passwd == null)
             throw new IllegalArgumentException("A NP as entered password is not allowed here.");
         
+    
+        if(CAT.isDebugEnabled()) 
+            CAT.debug("Retrieving user information for user '"+login+"'.");
         
-        if(CAT.isDebugEnabled()) {
-            CAT.debug("Login for "+login);
-        }
+            
+        EditorUserInfo info = getUserInfoByLogin(login);
+       
+        AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
         
-     /*   if(registry.containsKey(login)) {
-            EditorUser user = (EditorUser)registry.get(login);
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("User already logged in");
-            }
-            return user;
-        } else {*/
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("User not logged on. Using AuthManager");
-            }
-            EditorUserInfo info = getUserInfoByLogin(login);
-            if(info == null) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("Login denied: User does not exist!");
-                } 
-                return null;
-            }
-            AuthManager auth = AuthManagerFactory.getInstance().getAuthManager();
+        
+        if(CAT.isDebugEnabled())
+            CAT.debug("Doing login for user '"+login+"'.");
+                
+        auth.login(passwd, info);
+       
+       
+        if(CAT.isDebugEnabled())
+            CAT.debug("Login for user '"+login+"' successfull. Returing an instance of EditorUser.");
             
-            auth.login(passwd, info);
-            
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("User logged in");
-            }
-            EditorUser user = new EditorUser(info);
-          //  registry.put(login, user);
-            return user;
-        //}
+        EditorUser user = new EditorUser(info);
+        
+        return user;
+       
     }
     
     

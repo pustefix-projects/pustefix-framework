@@ -20,7 +20,7 @@
     <!-- Add all the stuff you want at that place in the customized master sheet -->
   </xsl:template>
 
-      <xsl:template match="cus:custom_ixsl">
+  <xsl:template match="cus:custom_ixsl">
     <!-- Add all the stuff you want at that place in the customized master sheet -->
     <ixsl:template match="*" mode="static_disp">
       <ixsl:param name="ind">&#160;&#160;</ixsl:param>
@@ -86,6 +86,71 @@
     <ixsl:template match="comment()" mode="static_disp">
       <br/> <font color="#999999">&lt;!--<ixsl:value-of select="."/>--&gt;</font>
     </ixsl:template>
+
+  <!--Permission stuff below --> 
+ 
+    <ixsl:template name="incl_perm_denied_usedby_other_prods_no_branch">
+      <ixsl:param name="prods"/>
+      <ixsl:call-template name="perm_denied_usedby_other_prods">
+        <ixsl:with-param name="type" select="'include'"/>
+        <ixsl:with-param name="prods" select="$prods"/>
+        <ixsl:with-param name="text" select="'You do not have the permission to edit includes of these products.'"/>
+      </ixsl:call-template>
+    </ixsl:template>
+
+    <ixsl:template name="incl_perm_denied_usedby_other_prods_but_branch">
+      <ixsl:param name="prods"/>
+      <ixsl:call-template name="perm_denied_usedby_other_prods">
+        <ixsl:with-param name="type" select="'include'"/>
+        <ixsl:with-param name="prods" select="$prods"/>
+        <ixsl:with-param name="text" select="'You do not have the permission to edit includes of these products, but you
+      can create a product specific branch.'"/>
+      </ixsl:call-template>
+    </ixsl:template>
+  
+  
+    <ixsl:template name="perm_denied_usedby_other_prods">
+      <ixsl:param name="prods"/>
+      <ixsl:param name="text"/>
+      <ixsl:param name="type"/>
+      <table class="core_errorbox_table" width="100%">
+        <tr valign="top">
+          <td class="core_errorbox_td">
+            <img src="/core/img/error.gif"/>
+          </td>
+          <td  class="core_errorlabel_text">
+            Permission denied!
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            This <ixsl:value-of select="$type"/> is used by the following products:
+          </td>
+        </tr> 
+        <tr>
+          <td colspan="2">
+            <ul>
+              <ixsl:copy-of select="$prods"/>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <ixsl:value-of select="$text"/>
+          </td>
+        </tr>
+      </table>
+    </ixsl:template> 
+ 
+    <ixsl:template name="image_perm_denied_usedby_other_prods">
+      <ixsl:param name="prods"/>
+      <ixsl:call-template name="perm_denied_usedby_other_prods">
+        <ixsl:with-param name="type" select="'image'"/>
+        <ixsl:with-param name="prods" select="$prods"/>
+        <ixsl:with-param name="text" select="'You are not allowed to edit this image.'"/>
+      </ixsl:call-template>
+    </ixsl:template>
+
   </xsl:template>
 
 

@@ -513,7 +513,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         TreeMap       paramhash  = constructParameters(spdoc, params);
         String        stylesheet = extractStylesheetFromSPDoc(spdoc);
         if (stylesheet == null) {
-            throw new XMLException("Wasn't able to extract any stylesheet specification... bailing out.");
+            throw new XMLException("Wasn't able to extract any stylesheet specification from page '"+
+                                    spdoc.getPagename()+"' ... bailing out.");
+                                                   
         }
         if (! doreuse) {
             if (CAT.isInfoEnabled()) {

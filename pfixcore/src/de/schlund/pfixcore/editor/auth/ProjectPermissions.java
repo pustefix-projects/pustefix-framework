@@ -85,9 +85,9 @@ public class ProjectPermissions {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("edit Includes     = "+includeedit).append("\n");
-        sb.append("edit Images       = "+imageedit).append("\n");
-        sb.append("edit dyn includes = "+defaultedit).append("\n");
+        sb.append("Includes     = "+includeedit).append("\n");
+        sb.append("Images       = "+imageedit).append("\n");
+        sb.append("DynIncludes  = "+defaultedit).append("\n");
         return sb.toString();
     }
 

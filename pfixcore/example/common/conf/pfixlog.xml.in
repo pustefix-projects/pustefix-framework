@@ -31,7 +31,7 @@
     <param name="File"><cus:docroot/>servletconf/log/pustefix-editor.log</param>
     <param name="MaxFileSize" value="10MB"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ISO8601} %m\n"/>
+      <param name="ConversionPattern" value="%d{ISO8601} %c [%M():%L] - %m\n"/>
     </layout>
   </appender>
 
@@ -156,6 +156,11 @@
   <category name="LOGGER_EDITOR" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_EDITOR"/>
+  </category>
+
+  <category name="de.schlund.pfixcore.editor" additivity="false">
+   <priority value="DEBUG"/>
+   <appender-ref ref="LOGGER_EDITOR"/>
   </category>
   
   <category name="LOGGER_SERIALIZER" additivity="false">

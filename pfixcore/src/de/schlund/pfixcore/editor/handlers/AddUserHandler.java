@@ -58,10 +58,18 @@ public class AddUserHandler implements IHandler {
 
         EditorUserInfo tmp = null;
         try {
+            if(CAT.isDebugEnabled())
+                CAT.debug("Retrieving user information for user '"+newid+"'.");
             tmp = EditorUser.getUserInfoByLogin(newid);
+            
+            if(CAT.isDebugEnabled())
+                CAT.debug("User '"+newid+"' already exists. Abort.");
             StatusCode scode = sfac.getStatusCode("USER_EXISTS");
             adduser.addSCodeId(scode);
         } catch(NoSuchUserException e) {
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("Creating new user '"+newid+"' with default permissions");
+            }
             tmp = new EditorUserInfo(newid);
             // here we set default permissions for the new user
             GlobalPermissions gp = new GlobalPermissions();

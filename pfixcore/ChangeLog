@@ -1,3 +1,34 @@
+2003-06-26  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	added pagename for XMLException thrown when stylesheet==null.
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java(init):
+	Print some timing infos to debug.
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java,
+	src/de/schlund/pfixxml/testenv/XMLSerializeUtil.java,
+	src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: Code cleanup.
+	
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java,
+	src/de/schlund/pfixxml/exceptionhandler/Cubbyhole.java: more debug messages.
+
+	* example/common/conf/pfixlog.xml.in: Added category de.schlund.pfixcore.editor
+	to log in LOGGER_EDITOR.
+
+	* Editor changes files:
+	example/core/editor/xsl/custommaster.xsl,
+	example/core/editor/xsl/metatags.xsl,
+	src/de/schlund/pfixcore/editor/EditorUser.java,
+	src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java,
+	src/de/schlund/pfixcore/editor/auth/FileAuthManager.java,
+	src/de/schlund/pfixcore/editor/auth/GlobalPermissions.java,
+	src/de/schlund/pfixcore/editor/auth/ProjectPermissions.java,
+	src/de/schlund/pfixcore/editor/handlers/AddUserHandler.java,
+	src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java,
+	src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java,
+	src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java: Bugfixes and code clean up.
+
 2003-06-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/loader/AppClassLoader.java

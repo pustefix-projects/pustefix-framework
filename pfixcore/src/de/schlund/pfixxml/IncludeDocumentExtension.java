@@ -253,21 +253,4 @@ public final class IncludeDocumentExtension {
         }
     }
 
-  /*  private static NodeSetValue handleSAXError(String part, SAXParseException e)
-        throws ParserConfigurationException, Exception, IOException {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document d = builder.newDocument();
-        Element ele1 = d.createElement("include_error");
-        ele1.setAttribute("part", part);
-        ele1.setAttribute("type", e.getClass().getName());
-        ele1.setAttribute("msg", e.getMessage());
-        ele1.setAttribute("id", e.getSystemId());
-        ele1.setAttribute("line", ""+e.getLineNumber());
-        ele1.setAttribute("column", ""+e.getColumnNumber());
-        d.importNode(ele1, true);
-        d.appendChild(ele1);
-        TraxXSLTProcessor trax = new TraxXSLTProcessor();
-        d = trax.xmlObjectFromDocument(d);
-        return PFXPathEvaluator.evaluateAsNodeSetValue("/*", d);
-    }*/
 }// end of class IncludeDocumentExtension

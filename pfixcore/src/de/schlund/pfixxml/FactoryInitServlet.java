@@ -121,19 +121,36 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class
                                       + "] <<<<");
                             AppLoader appLoader=AppLoader.getInstance();
+                            long start = 0;
+                            long stop = 0;
                             if(appLoader.isEnabled() && appLoader.isIncludedClass(the_class)) {
                                 Class clazz=appLoader.loadClass(the_class);
                                 FactoryInit factory=(FactoryInit)clazz.getMethod("getInstance",null).invoke(null,null);
-                                CAT.debug("     Object ID: " + factory);
+                                
+                                if(CAT.isDebugEnabled()) { 
+                                    CAT.debug("     Object ID: " + factory);
+                                    start = System.currentTimeMillis();
+                                }
                                 factory.init(properties);
+                                if(CAT.isDebugEnabled()) {
+                                    stop = System.currentTimeMillis();
+                                    CAT.debug("Init of "+factory+" took "+(stop-start)+" ms");
+                                } 
                                 if(factories==null) factories=new ArrayList();
                                 factories.add(factory);
                             } else {
                                 FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod(
                                                                         "getInstance", null).invoke(
                                                           null, null);
-                                CAT.debug("     Object ID: " + factory);
+                                if(CAT.isDebugEnabled()) { 
+                                    CAT.debug("     Object ID: " + factory);
+                                    start = System.currentTimeMillis();
+                                }
                                 factory.init(properties);
+                                if(CAT.isDebugEnabled()) {
+                                    stop = System.currentTimeMillis();
+                                    CAT.debug("Init of "+factory+" took "+(stop-start)+" ms");
+                                } 
                             }
                         } catch (Exception e) {
                             CAT.error(e.toString());
