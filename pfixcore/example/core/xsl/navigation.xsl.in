@@ -366,7 +366,6 @@
     </xsl:param>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $buttpage_impl]"/>
     <ixsl:choose>
-      <!-- <ixsl:when test="/formresult/navigation//page[@name = '{$buttpage_impl}']/@visible = '0'"> -->
       <ixsl:when>
         <xsl:attribute name="test">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each>/@visible = '0'</xsl:attribute>
         <span>
@@ -383,9 +382,10 @@
       </ixsl:when>
       <ixsl:otherwise>
         <xsl:choose>
-          <xsl:when test="not($mode = 'force')
-                    and (($mode = 'desc' and $thebuttpage//page[@name=$page])
-                    or ($page = $buttpage_impl))">
+<!--           <xsl:when test="not($mode = 'force') -->
+<!--                     and (($mode = 'desc' and $thebuttpage//page[@name=$page]) -->
+<!--                     or ($page = $buttpage_impl))"> -->
+          <xsl:when test="not($mode = 'force') and ($page = $buttpage_impl)">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>
@@ -410,21 +410,40 @@
             <a target="{$target_impl}">
               <xsl:attribute name="class">
                 <xsl:choose>
-                  <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
+                  <xsl:when test="$mode = 'desc' and $thebuttpage//page[@name=$page]">
+                    <xsl:choose>
+                      <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$activeclass"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:when>
                   <xsl:otherwise>
-                    <xsl:value-of select="$normalclass"/>
+                    <xsl:choose>
+                      <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="$normalclass"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:attribute>
-              <xsl:if test="$omover">
+              <xsl:if test="$omover and not($mode = 'desc' and $thebuttpage//page[@name=$page])">
                 <xsl:attribute name="onmouseover"><xsl:value-of select="$omover"/></xsl:attribute></xsl:if>
-              <xsl:if test="$omout">
-                <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
+              <xsl:if test="$omout and not($mode = 'desc' and $thebuttpage//page[@name=$page])">
+                  <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
               <xsl:if test="$target = '_popup'">
                 <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each><xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
               </xsl:if>
               <ixsl:attribute name="href"><xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/><xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if><xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each><xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$page"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>:<xsl:apply-templates select="./node()"/>:=_</xsl:for-each><xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each></ixsl:attribute>
-              <xsl:copy-of select="$normal"/>
+              <xsl:choose>
+                <xsl:when test="$mode = 'desc' and $thebuttpage//page[@name=$page]">
+                  <xsl:copy-of select="$active"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:copy-of select="$normal"/>
+                </xsl:otherwise>
+              </xsl:choose>
             </a>
           </xsl:otherwise> 
         </xsl:choose>
