@@ -40,7 +40,7 @@
     </ihandler>
   </pagerequest>
 
-  <pagerequest name="order" forcessl="true">
+  <pagerequest name="order">
     <ihandler>
       <interface prefix="shirt"   class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
       <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!ENTITY % boolean "(true|false|on|off|yes|no)">
-<!ENTITY % tasks "propertyfile | vsscheckin | sql | cvspass | p4reopen | csc | dirname | pfx-xslt | wlrun | p4label | p4revert | replaceregexp | get | jjtree | sleep | jarlib-display | dependset | zip | patch | jspc | style | test | tstamp | unwar | vsshistory | icontract | cvschangelog | pfx-generate | p4submit | ccmcheckin | p4change | bzip2 | p4delete | vssadd | javadoc | translate | signjar | vajload | jarlib-available | WsdlToDotnet | buildnumber | jpcovmerge | ejbjar | war | rename | sequential | serverdeploy | pfx-iwrp | property | move | copydir | cccheckin | wljspc | fixcrlf | sosget | pathconvert | record | p4sync | exec | p4edit | manifest | maudit | antlr | netrexxc | jpcovreport | execon | ccmcheckout | ant | xmlvalidate | xslt | iplanet-ejbc | ccmcheckintask | gzip | native2ascii | starteam | ear | input | rmic | checksum | mail | loadfile | vsscheckout | stylebook | soscheckin | mimemail | stlabel | gunzip | concat | cab | touch | parallel | splash | antcall | cccheckout | typedef | p4have | filter | xmlproperty | copy | antstructure | ccmcreatetask | rpm | delete | replace | mmetrics | waitfor | untar | loadproperties | available | echoproperties | pfx-webxml | vajexport | bunzip2 | copyfile | vsscreate | ejbc | unjar | wsdltodotnet | mkdir | condition | cvs | tempfile | junitreport | taskdef | echo | ccupdate | java | renameext | vsslabel | basename | javadoc2 | vsscp | tar | vajimport | setproxy | wlstop | p4counter | ilasm | soscheckout | apply | ccuncheckout | jarlib-resolve | cvstagdiff | jlink | javacc | jarlib-manifest | pvcs | chmod | jar | sound | mparse | blgenclient | uptodate | genkey | javah | ccmreconfigure | fail | unzip | javac | p4add | soslabel | jpcoverage | depend | vssget | deltree | ddcreator">
+<!ENTITY % tasks "propertyfile | vsscheckin | sql | cvspass | p4reopen | csc | dirname | pfx-xslt | wlrun | p4label | p4revert | replaceregexp | get | jjtree | sleep | jarlib-display | dependset | zip | patch | jspc | style | test | tstamp | unwar | vsshistory | icontract | cvschangelog | pfx-generate | p4submit | ccmcheckin | p4change | bzip2 | p4delete | vssadd | javadoc | translate | signjar | vajload | jarlib-available | WsdlToDotnet | buildnumber | jpcovmerge | ejbjar | war | rename | sequential | serverdeploy | pfx-iwrp | property | move | copydir | cccheckin | wljspc | fixcrlf | sosget | pathconvert | record | p4sync | exec | p4edit | manifest | maudit | antlr | netrexxc | jpcovreport | execon | ccmcheckout | ant | xmlvalidate | xslt | iplanet-ejbc | ccmcheckintask | gzip | native2ascii | starteam | ear | input | rmic | checksum | mail | loadfile | vsscheckout | stylebook | soscheckin | mimemail | stlabel | gunzip | concat | cab | touch | parallel | splash | antcall | cccheckout | typedef | p4have | filter | xmlproperty | copy | antstructure | ccmcreatetask | rpm | delete | replace | mmetrics | waitfor | untar | loadproperties | available | echoproperties | pfx-webxml | vajexport | bunzip2 | copyfile | vsscreate | ejbc | unjar | wsdltodotnet | mkdir | condition | cvs | tempfile | junitreport | taskdef | echo | ccupdate | java | renameext | vsslabel | basename | javadoc2 | vsscp | tar | vajimport | setproxy | wlstop | p4counter | ilasm | soscheckout | apply | ccuncheckout | jarlib-resolve | cvstagdiff | jlink | javacc | chmod | pvcs | jarlib-manifest | jar | sound | mparse | blgenclient | uptodate | genkey | javah | ccmreconfigure | fail | unzip | javac | p4add | jpcoverage | soslabel | depend | vssget | deltree | ddcreator">
 <!ENTITY % types "patternset | filterset | libfileset | filterreader | extension | fileset | dirset | filelist | filterchain | path | classfileset | description | xmlcatalog | selector | mapper | substitution | extensionSet | regexp">
 
 <!ELEMENT project (target | property | taskdef | typedef | %types;)*>
@@ -3598,48 +3598,6 @@
           usertokenmanager %boolean; #IMPLIED
           errorreporting %boolean; #IMPLIED>
 
-<!ELEMENT jarlib-manifest (options | attribute | depends | extension)*>
-<!ATTLIST jarlib-manifest
-          id ID #IMPLIED
-          taskname CDATA #IMPLIED
-          description CDATA #IMPLIED
-          destfile CDATA #IMPLIED>
-
-<!ELEMENT options (fileset | libfileset | extension)*>
-<!ATTLIST options
-          id ID #IMPLIED
-          refid IDREF #IMPLIED
-          description CDATA #IMPLIED>
-
-<!ELEMENT depends (fileset | libfileset | extension)*>
-<!ATTLIST depends
-          id ID #IMPLIED
-          refid IDREF #IMPLIED
-          description CDATA #IMPLIED>
-
-<!ELEMENT pvcs (pvcsproject)*>
-<!ATTLIST pvcs
-          id ID #IMPLIED
-          updateonly %boolean; #IMPLIED
-          force CDATA #IMPLIED
-          workspace CDATA #IMPLIED
-          pvcsbin CDATA #IMPLIED
-          pvcsproject CDATA #IMPLIED
-          filenameformat CDATA #IMPLIED
-          userid CDATA #IMPLIED
-          repository CDATA #IMPLIED
-          ignorereturncode %boolean; #IMPLIED
-          linestart CDATA #IMPLIED
-          taskname CDATA #IMPLIED
-          promotiongroup CDATA #IMPLIED
-          label CDATA #IMPLIED
-          description CDATA #IMPLIED>
-
-<!ELEMENT pvcsproject EMPTY>
-<!ATTLIST pvcsproject
-          id ID #IMPLIED
-          name CDATA #IMPLIED>
-
 <!ELEMENT chmod (mapper | include | srcfile | exclude | targetfile | patternset | env | fileset | arg)*>
 <!ATTLIST chmod
           id ID #IMPLIED
@@ -3668,6 +3626,48 @@
           file CDATA #IMPLIED
           relative %boolean; #IMPLIED
           parallel %boolean; #IMPLIED>
+
+<!ELEMENT pvcs (pvcsproject)*>
+<!ATTLIST pvcs
+          id ID #IMPLIED
+          updateonly %boolean; #IMPLIED
+          force CDATA #IMPLIED
+          workspace CDATA #IMPLIED
+          pvcsbin CDATA #IMPLIED
+          pvcsproject CDATA #IMPLIED
+          filenameformat CDATA #IMPLIED
+          userid CDATA #IMPLIED
+          repository CDATA #IMPLIED
+          ignorereturncode %boolean; #IMPLIED
+          linestart CDATA #IMPLIED
+          taskname CDATA #IMPLIED
+          promotiongroup CDATA #IMPLIED
+          label CDATA #IMPLIED
+          description CDATA #IMPLIED>
+
+<!ELEMENT pvcsproject EMPTY>
+<!ATTLIST pvcsproject
+          id ID #IMPLIED
+          name CDATA #IMPLIED>
+
+<!ELEMENT jarlib-manifest (options | attribute | depends | extension)*>
+<!ATTLIST jarlib-manifest
+          id ID #IMPLIED
+          taskname CDATA #IMPLIED
+          description CDATA #IMPLIED
+          destfile CDATA #IMPLIED>
+
+<!ELEMENT options (fileset | libfileset | extension)*>
+<!ATTLIST options
+          id ID #IMPLIED
+          refid IDREF #IMPLIED
+          description CDATA #IMPLIED>
+
+<!ELEMENT depends (fileset | libfileset | extension)*>
+<!ATTLIST depends
+          id ID #IMPLIED
+          refid IDREF #IMPLIED
+          description CDATA #IMPLIED>
 
 <!ELEMENT jar (patternset | exclude | include | custom | present | none | not | manifest | metainf | or | contains | depend | fileset | size | majority | filename | selector | includesfile | zipgroupfileset | zipfileset | date | excludesfile | depth | and)*>
 <!ATTLIST jar
@@ -3869,28 +3869,6 @@
           failonerror %boolean; #IMPLIED
           commandlength CDATA #IMPLIED>
 
-<!ELEMENT soslabel EMPTY>
-<!ATTLIST soslabel
-          id ID #IMPLIED
-          password CDATA #IMPLIED
-          comment CDATA #IMPLIED
-          nocompress %boolean; #IMPLIED
-          version CDATA #IMPLIED
-          username CDATA #IMPLIED
-          sosserverpath CDATA #IMPLIED
-          label CDATA #IMPLIED
-          vssserverpath CDATA #IMPLIED
-          soscmd CDATA #IMPLIED
-          verbose %boolean; #IMPLIED
-          localpath CDATA #IMPLIED
-          nocache %boolean; #IMPLIED
-          projectpath CDATA #IMPLIED
-          description CDATA #IMPLIED
-          taskname CDATA #IMPLIED
-          recursive %boolean; #IMPLIED
-          file CDATA #IMPLIED
-          soshome CDATA #IMPLIED>
-
 <!ELEMENT jpcoverage (arg | socket | fileset | jvmarg | classpath | triggers | filters)*>
 <!ATTLIST jpcoverage
           id ID #IMPLIED
@@ -3922,6 +3900,28 @@
           event CDATA #IMPLIED
           action CDATA #IMPLIED
           param CDATA #IMPLIED>
+
+<!ELEMENT soslabel EMPTY>
+<!ATTLIST soslabel
+          id ID #IMPLIED
+          password CDATA #IMPLIED
+          comment CDATA #IMPLIED
+          nocompress %boolean; #IMPLIED
+          version CDATA #IMPLIED
+          username CDATA #IMPLIED
+          sosserverpath CDATA #IMPLIED
+          label CDATA #IMPLIED
+          vssserverpath CDATA #IMPLIED
+          soscmd CDATA #IMPLIED
+          verbose %boolean; #IMPLIED
+          localpath CDATA #IMPLIED
+          nocache %boolean; #IMPLIED
+          projectpath CDATA #IMPLIED
+          description CDATA #IMPLIED
+          taskname CDATA #IMPLIED
+          recursive %boolean; #IMPLIED
+          file CDATA #IMPLIED
+          soshome CDATA #IMPLIED>
 
 <!ELEMENT vssget EMPTY>
 <!ATTLIST vssget
