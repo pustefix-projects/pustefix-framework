@@ -43,7 +43,6 @@ import de.schlund.pfixcore.editor.EditorHelper;
 import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.FileLockFactory;
 import de.schlund.pfixcore.editor.PfixcoreNamespace;
-import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.editor.interfaces.IncludesUpload;
 import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.editor.resources.EditorSessionStatus;

@@ -25,7 +25,6 @@ import org.apache.log4j.*;
 import de.schlund.pfixxml.XMLException;
 
 import javax.xml.parsers.*;
-import javax.xml.transform.TransformerException;
 
 /**
  * LeafTarget.java

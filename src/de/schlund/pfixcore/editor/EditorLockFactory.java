@@ -19,9 +19,7 @@
 
 package de.schlund.pfixcore.editor;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
 import java.util.*;
 import org.apache.log4j.*;
 

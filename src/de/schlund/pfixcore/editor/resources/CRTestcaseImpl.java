@@ -1,6 +1,5 @@
 package de.schlund.pfixcore.editor.resources;
 
-import java.awt.List;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -28,14 +28,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.workflow.AuthContext;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestProperties;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a

@@ -89,8 +89,8 @@ class PFXHandler {
             }
         }
         if (propman_.isInitialised() && gconf_.isUseme()) {
-            for (Enumeration enum = instancecontainerlist_.elements(); enum.hasMoreElements();) {
-                InstanceCheckerContainer checker = (InstanceCheckerContainer) enum.nextElement();
+            for (Enumeration enm = instancecontainerlist_.elements(); enm.hasMoreElements();) {
+                InstanceCheckerContainer checker = (InstanceCheckerContainer) enm.nextElement();
                 result = checker.doesMatch(th);
                 pfutil_.debug("The InstanceCheckerContainer("+checker.getType() +") returned: " + pfutil_.strByResult(result));
                 if (result == PFUtil.MATCH) {

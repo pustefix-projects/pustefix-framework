@@ -25,7 +25,7 @@ public class TestcaseDeleteHandler implements IHandler {
         
         String[] ids = tcd.getSelect();
         ContextResourceManager crm = context.getContextResourceManager();
-        CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
         crtc.removeTestcase(ids);
     }
 

@@ -39,10 +39,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.util.UnixCrypt;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.testenv.XMLSerializeUtil;
 
 /**
  * Implementation of the <code>AuthManager</code> interface. Uses

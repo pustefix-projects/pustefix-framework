@@ -20,10 +20,7 @@
 package de.schlund.pfixcore.editor;
 
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
-
 import java.util.*;
-import java.io.*;
 
 /**
  *
@@ -33,7 +30,7 @@ public class FileLockFactory {
     private        HashMap         filelocks = new HashMap();
     private static FileLockFactory instance  = new FileLockFactory();
 
-    private FileLockFactory() {};
+    private FileLockFactory() {}
     
     public static FileLockFactory getInstance() {
         return instance;

@@ -197,13 +197,13 @@ public class SPCacheStatistic implements FactoryInit {
             String productname = getProductnameForTargetGenerator(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
-            String hitrate = formatHitrate((double) hits, (double) misses);
+            String hitrate = formatHitrate(hits, misses);
             sb.append("|" + productname + ":" + hits + "," + misses + "," + hitrate);
             totalmisses += misses;
             totalhits += hits;
         }
 
-        String hitrate = formatHitrate((double) totalhits, (double) totalmisses);
+        String hitrate = formatHitrate(totalhits, totalmisses);
         sb.insert(0, "TOTAL:" + totalhits + "," + totalmisses + "," + hitrate);
 
         return sb.toString();
@@ -252,7 +252,7 @@ public class SPCacheStatistic implements FactoryInit {
             AdvanceCacheStatistic stat = (AdvanceCacheStatistic) targetgentoinfomap.get(tgen);
             long hits = stat.getHits();
             long misses = stat.getMisses();
-            String hitrate = formatHitrate((double) hits, (double) misses) + "%";
+            String hitrate = formatHitrate(hits, misses) + "%";
             ele_tg.setAttribute("hitrate", hitrate);
             ele_tg.setAttribute("hits", "" + hits);
             ele_tg.setAttribute("misses", "" + misses);
@@ -267,7 +267,7 @@ public class SPCacheStatistic implements FactoryInit {
      **/
     private void attachTargets2XML(Document doc, TargetsInSPCache targetsincache, TargetGenerator tgen, Element ele_tg) {
         if (targetsincache.containsTargetGenerator(tgen)) {
-            List targets = (List) targetsincache.getTargetsForTargetGenerator(tgen);
+            List targets = targetsincache.getTargetsForTargetGenerator(tgen);
             for (Iterator j = targets.iterator(); j.hasNext();) {
                 Element entry_ele = doc.createElement("target");
                 Target t = (Target) j.next();
@@ -318,7 +318,7 @@ public class SPCacheStatistic implements FactoryInit {
 
         ele_currentcache.setAttribute("hits", "" + totalhits);
         ele_currentcache.setAttribute("misses", "" + totalmisses);
-        String hitrate = formatHitrate((double) totalhits, (double) totalmisses) + "%";
+        String hitrate = formatHitrate(totalhits, totalmisses) + "%";
         ele_currentcache.setAttribute("hitrate", hitrate);
     }
 
@@ -415,7 +415,7 @@ final class TargetsInSPCache {
                 Target target = (Target) obj;
                 TargetGenerator tgen = target.getTargetGenerator();
                 if (containsTargetGenerator(tgen)) {
-                    List list = (List) getTargetsForTargetGenerator(tgen);
+                    List list = getTargetsForTargetGenerator(tgen);
                     list.add(target);
                 } else {
                     ArrayList list = new ArrayList();

@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -50,9 +51,9 @@ class ExceptionContext {
 
     //~ Instance/static variables ..............................................
 
-    private final String COUNTRY_ = "DE";
-    private final String LANGUAGE_ = "de";
-    private final String TIMEZONE_ = "Europe/Berlin";
+    private static final String COUNTRY_ = "DE";
+    private static final String LANGUAGE_ = "de";
+    private static final String TIMEZONE_ = "Europe/Berlin";
     private static Category CAT = Category.getInstance(ExceptionContext.class.getName());
     private String date_ = null; // timestamp
     private Throwable throwable_ = null; //
@@ -367,14 +368,15 @@ class ExceptionContext {
         HttpSession session = pfrequest_.getSession(false);
         StringBuffer err = new StringBuffer();
         err.append("\n==== Session keys and values: ========================\n");
-        String[] snames = session.getValueNames();
-        for (int i = 0; i < snames.length; i++) {
-            err.append("Sessionkey: " + snames[i]);
-            Object o = session.getValue(snames[i]);
+        Enumeration enm = session.getAttributeNames();
+        while (enm.hasMoreElements()) {
+            String sname = (String) enm.nextElement();
+            err.append("Sessionkey: " + sname);
+            Object o = session.getAttribute(sname);
             err.append(" [" + o.getClass().getName() + "]\n");
             err.append("Value:      " + o.toString());
             err.append("\n");
-            if (i < (snames.length - 1))
+            if (enm.hasMoreElements())
                 err.append("------------------------------------------------------\n");
         }
         return err;

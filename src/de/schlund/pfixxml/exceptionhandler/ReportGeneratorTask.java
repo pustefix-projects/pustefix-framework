@@ -93,8 +93,8 @@ class ReportGeneratorTask extends TimerTask {
     */
     private ArrayList getReports() {
         ArrayList list = new ArrayList();
-        for(Enumeration enum=icheckers_.elements(); enum.hasMoreElements();) {
-            InstanceCheckerContainer ich=(InstanceCheckerContainer) enum.nextElement();
+        for(Enumeration enm=icheckers_.elements(); enm.hasMoreElements();) {
+            InstanceCheckerContainer ich=(InstanceCheckerContainer) enm.nextElement();
             ArrayList reports = ich.getReports();
             if(reports != null && !reports.isEmpty())
                 list.addAll(reports);

@@ -28,8 +28,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixxml.serverutil.SessionHelper;
-
 /**
  * @author jtl
  *

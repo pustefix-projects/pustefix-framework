@@ -23,13 +23,6 @@ import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import de.schlund.util.statuscodes.*;
-import java.util.*;
-import java.net.URLEncoder;
 
 /**
  * DocumentationHandler.java
@@ -58,12 +51,8 @@ public class DocumentationHandler implements IHandler {
 
         
         if (doc.getId() != null) {
-			esess.setCurrentDocumentationId(URLEncoder.encode(doc.getId()));
+			esess.setCurrentDocumentationId(CoreDocumentation.encode(doc.getId()));
 		}
-			
-        
-        
-        
 	}
 
 	/**

@@ -19,10 +19,6 @@
 
 package de.schlund.pfixcore.example;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.util.*;
-import org.w3c.dom.*;
-import java.util.*;
 /**
  * ContextTShirt.java
  *

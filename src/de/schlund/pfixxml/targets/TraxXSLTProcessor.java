@@ -48,8 +48,6 @@ import com.icl.saxon.om.Builder;
 import com.icl.saxon.om.DocumentInfo;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
-import de.schlund.util.*;
-
 
 /**
  * This class implements the singleton pattern and handles all XSLT transformations

@@ -21,8 +21,6 @@ package de.schlund.pfixxml.targets;
 import java.util.*;        
 import java.io.File;
 
-import de.schlund.util.*;
-
 /**
  * AbstractDependency.java
  *

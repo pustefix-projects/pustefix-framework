@@ -199,7 +199,7 @@ public abstract class VirtualTarget extends TargetImpl {
                             cachefile.delete();
                         }
 
-                        TransformerException tex = (TransformerException) e;
+                        TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
                             targetex =
@@ -222,12 +222,12 @@ public abstract class VirtualTarget extends TargetImpl {
     private void generateValue() throws XMLException, TransformerException, ParserConfigurationException, IOException {
         PustefixXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
         String key = getTargetKey();
-        Target xmlsource = getXMLSource();
-        Target xslsource = getXSLSource();
+        Target tmpxmlsource = getXMLSource();
+        Target tmpxslsource = getXSLSource();
         File cachefile = new File(getTargetGenerator().getDisccachedir() + key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + xmlsource.getTargetKey() + " / " + xslsource.getTargetKey() + ")");
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
         }
 
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
@@ -239,17 +239,17 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Object xmlobj = ((TargetRW) xmlsource).getCurrValue();
-        Object xslobj = ((TargetRW) xslsource).getCurrValue();
+        Object xmlobj = ((TargetRW) tmpxmlsource).getCurrValue();
+        Object xslobj = ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
-            throw new XMLException("**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xml source " + tmpxmlsource.getTargetKey() + tmpxmlsource.getType() + " doesn't have a value!");
         if (xslobj == null) 
-            throw new XMLException("**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
-        TreeMap params = getParams();
-        AbstractXMLServer.addDocroot(params, getTargetGenerator().getDocroot());
+            throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
+        TreeMap tmpparams = getParams();
+        AbstractXMLServer.addDocroot(tmpparams, getTargetGenerator().getDocroot());
 
         //FIXME!!! Do we want to do this right HERE????
-        xsltproc.applyTrafoForOutput(xmlobj, xslobj, params, new FileOutputStream(cachefile));
+        xsltproc.applyTrafoForOutput(xmlobj, xslobj, tmpparams, new FileOutputStream(cachefile));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

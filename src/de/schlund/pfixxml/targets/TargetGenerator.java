@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.XMLException;
-import de.schlund.util.*;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -429,9 +428,9 @@ public class TargetGenerator {
         if (args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 try {
-                    File confile = new File(args[i]);
-                    if (confile.exists() && confile.canRead() && confile.isFile()) {
-                        gen = TargetGeneratorFactory.getInstance().createGenerator(confile);
+                    File file = new File(args[i]);
+                    if (file.exists() && file.canRead() && file.isFile()) {
+                        gen = TargetGeneratorFactory.getInstance().createGenerator(file);
                         gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();

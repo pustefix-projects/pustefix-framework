@@ -1,6 +1,5 @@
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.util.Timer;
 import java.util.TimerTask;
 

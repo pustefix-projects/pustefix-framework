@@ -23,9 +23,6 @@ import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import java.util.*;
 

@@ -1,5 +1,6 @@
 package de.schlund.pfixcore.editor;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import org.w3c.dom.Document;
@@ -12,6 +13,14 @@ import org.w3c.dom.NodeList;
  * Window>Preferences>Java>Templates.
  */
 public class CoreDocumentation {
+    public static final String encode(String str) {
+        final String ENCODING = "UTF-8";
+        try {
+            return URLEncoder.encode(str, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(ENCODING + ": " + e);
+        }
+    }
 
     private String id;
     private String match;
@@ -24,8 +33,7 @@ public class CoreDocumentation {
     private String value;
 
     public CoreDocumentation(String param) {
-
-        this.id = URLEncoder.encode(param);
+        this.id = encode(param);
         this.stylesheet = param.substring(0, param.indexOf("@"));
 
     }
@@ -95,23 +103,23 @@ public class CoreDocumentation {
     }
 
     public String getValue() {
-        String value = "[ ";
+        String result = "[ ";
 
-        if (!this.getMatch().equals("")) {
-            value = value + " Match=\"" + this.getMatch() + "\" ";
+        if (!getMatch().equals("")) {
+            result = result + " Match=\"" + this.getMatch() + "\" ";
         }
 
-        if (!this.getName().equals("")) {
-            value = value + "Name=\"" + this.getName() + "\" ";
+        if (!getName().equals("")) {
+            result = result + "Name=\"" + this.getName() + "\" ";
         }
 
-        if (!this.getMode().equals("")) {
-            value = value + "Mode=\"" + this.getMode() + "\" ";
+        if (!getMode().equals("")) {
+            result = result + "Mode=\"" + this.getMode() + "\" ";
         }
 
-        value = value + " ] ";
+        result = result + " ] ";
 
-        return value;
+        return result;
 
     }
 

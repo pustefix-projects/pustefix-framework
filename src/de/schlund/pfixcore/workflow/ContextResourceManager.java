@@ -19,11 +19,8 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.loader.*;
 import de.schlund.pfixcore.util.*;
-import java.lang.*;
-import java.lang.reflect.*;
 import java.util.*;
 import javax.servlet.*;
 import org.apache.log4j.*;

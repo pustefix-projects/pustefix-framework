@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.generator.casters;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixxml.*;
-import de.schlund.util.statuscodes.*;
 import java.util.*;
 
 /**

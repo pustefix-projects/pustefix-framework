@@ -18,11 +18,9 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import java.util.Properties;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.workflow.Context;
 
 /**
  * Default implementation of the ResdocFinalizer interface.

@@ -1,16 +1,11 @@
 package de.schlund.pfixcore.util;
-import com.icl.saxon.expr.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.xpath.*;
-import de.schlund.util.*;
-
 import java.io.*;
 import java.util.*;
 import javax.xml.parsers.*;
 import org.apache.log4j.xml.*;
 import org.apache.xml.serialize.*;
-import org.apache.xpath.*;
 import org.w3c.dom.*;
 
 /**
@@ -109,13 +104,11 @@ public class CheckIncludes {
         String allincarg = args[2];
         String allimgarg = args[3];
 
-        File   dir = new File(".");
+        String dir = new File(".").getCanonicalPath() + "/";
 
-        String pwd = dir.getCanonicalPath() + "/";
-
-        DOMConfigurator.configure(pwd + "core/conf/generator_quiet.xml");
+        DOMConfigurator.configure(dir + "core/conf/generator_quiet.xml");
         
-        CheckIncludes instance = new CheckIncludes(pwd, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
+        CheckIncludes instance = new CheckIncludes(dir, output, new File(allprjarg), new File(allincarg), new File(allimgarg));
         instance.doCheck();
 
     }

@@ -20,8 +20,6 @@
 package de.schlund.pfixxml.targets;
 import java.util.*;
 
-import de.schlund.util.*;
-
 /**
  * FileDependency.java
  *

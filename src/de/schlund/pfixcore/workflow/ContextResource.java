@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.workflow;
 
-import java.util.*;
 import de.schlund.pfixxml.*;
 import org.w3c.dom.*;
 

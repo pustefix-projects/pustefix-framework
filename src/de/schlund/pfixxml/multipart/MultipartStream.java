@@ -108,7 +108,7 @@ public class MultipartStream extends InputStream {
                 boundaryArray = new int[tmpArr.length];                
             }
             for (int i = 0; i < boundaryArray.length; i++) {
-                boundaryArray[i] = (int)tmpArr[i];
+                boundaryArray[i] = tmpArr[i];
             }
             if (buf == null || buf.length < (boundaryArray.length + 1)) {
                 buf = new int[boundaryArray.length + 1];

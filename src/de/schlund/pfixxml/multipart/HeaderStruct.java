@@ -99,9 +99,9 @@ public class HeaderStruct {
         StringBuffer buf = new StringBuffer();
         buf.append("name:   ").append(name).append('\n');
         buf.append("value:  ").append(value).append('\n');
-        Enumeration enum = params.getNames();
-        while (enum.hasMoreElements()) {
-            String pName = (String)enum.nextElement();
+        Enumeration enm = params.getNames();
+        while (enm.hasMoreElements()) {
+            String pName = (String)enm.nextElement();
             buf.append("pname: '" + pName + "' pvalue: '" + params.get(pName) + "'\n");
         }
         return buf.toString();

@@ -127,15 +127,15 @@ public class XsltGenericTask extends MatchingTask {
 
         try {
             executeSetup();
-            StringBuffer sb = new StringBuffer(300);
-            sb.append("style=\"");
-            sb.append(stylefile);
-            sb.append("\" srcdir=\"");
-            sb.append(srcdirResolved);
-            sb.append("\" destdir=");
-            sb.append(destdirResolved);
-            sb.append("\" using " + getTransformer());
-            log(sb.toString(), Project.MSG_DEBUG);
+            StringBuffer tmp = new StringBuffer(300);
+            tmp.append("style=\"");
+            tmp.append(stylefile);
+            tmp.append("\" srcdir=\"");
+            tmp.append(srcdirResolved);
+            tmp.append("\" destdir=");
+            tmp.append(destdirResolved);
+            tmp.append("\" using " + getTransformer());
+            log(tmp.toString(), Project.MSG_DEBUG);
             // delme log("Transforming from directory \""+srcdirResolved+"\" to \""+destdirResolved+"\" with style \""+stylefile+"\" using "+transformer, Project.MSG_VERBOSE);        
             doTransformations();
         } finally {

@@ -5,11 +5,7 @@ import com.icl.saxon.expr.Expression;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.StandaloneContext;
 import com.icl.saxon.om.NodeInfo;
-
-import java.util.ArrayList;
-
 import org.apache.log4j.Category;
-
 import org.w3c.dom.Node;
 
 

@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.generator;
 
 import java.util.*;
-import javax.servlet.http.*;
 import de.schlund.util.statuscodes.*;
 import org.apache.log4j.*;
 

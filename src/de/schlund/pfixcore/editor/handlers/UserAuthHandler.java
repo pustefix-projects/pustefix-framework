@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.editor.handlers;
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.editor.EditorException;
 import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.auth.NoSuchUserException;
 import de.schlund.pfixcore.editor.auth.WrongPasswordException;
@@ -31,7 +30,6 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**

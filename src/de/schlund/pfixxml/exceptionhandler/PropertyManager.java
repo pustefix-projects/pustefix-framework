@@ -174,8 +174,8 @@ class PropertyManager {
             }
             String[] tos=new String[v.size()];
             int i       =0;
-            for(Enumeration enum=v.elements(); enum.hasMoreElements();) {
-                String ele=(String) enum.nextElement();
+            for(Enumeration enm=v.elements(); enm.hasMoreElements();) {
+                String ele=(String) enm.nextElement();
                 tos[i++]=ele.trim();
             }
             String host = properties_.getProperty("rule.mail.host");
@@ -354,8 +354,8 @@ class PropertyManager {
         } catch(MalformedPerl5PatternException e) {
             throw new PFConfigurationException(currentrule+"Wrong Perl5 pattern", e);
         }
-        for(Enumeration enum=v.elements(); enum.hasMoreElements();) {
-            String str=(String) enum.nextElement();
+        for(Enumeration enm=v.elements(); enm.hasMoreElements();) {
+            String str=(String) enm.nextElement();
             try {
                 new InternetAddress(str.trim());
             } catch(AddressException ex) {

@@ -19,12 +19,7 @@
 
 package de.schlund.pfixxml.serverutil;
 
-import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixcore.util.*;
-import java.io.*;
-import java.text.*;
 import java.util.*;
-import javax.servlet.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;
 
@@ -42,7 +37,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
     private        HashMap      parentinfo     = new HashMap();
     private        HashMap      parentinfo_rev = new HashMap();
     
-    private SessionAdmin() {};
+    private SessionAdmin() {}
 
     public String toString() {
         String allsess ="[Number of active Sessions: " + sessioninfo.keySet().size() + "]\n";
@@ -94,7 +89,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
         }
     }
     
-    public void valueBound(HttpSessionBindingEvent event) {};
+    public void valueBound(HttpSessionBindingEvent event) {}
     public void valueUnbound(HttpSessionBindingEvent event) {
         HttpSession session = event.getSession();
         String      id      = session.getId();

@@ -18,18 +18,12 @@
 */
 package de.schlund.pfixxml;
 
-
-
-
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;
-
-import java.lang.reflect.Array;
-
 
 /**
  * PfixServletRequest.java
@@ -465,8 +459,8 @@ public class PfixServletRequest {
         if (type != null && type.toLowerCase().startsWith(MultipartHandler.MULTI_FORM_DATA)) {
             allnames.addAll(handleMulti(req, properties));
         }
-        for (Enumeration enum = req.getParameterNames(); enum.hasMoreElements();) {
-            String key = (String) enum.nextElement();
+        for (Enumeration enm = req.getParameterNames(); enm.hasMoreElements();) {
+            String key = (String) enm.nextElement();
             allnames.add(key);
             String[] data = req.getParameterValues(key);
             CAT.debug("* [NORMAL] Found parameters for key '" + key + "' count=" + data.length);
@@ -514,8 +508,8 @@ public class PfixServletRequest {
         } catch (Exception e) {
             multiPartExceptions.add(e);
         }
-        for (Enumeration enum = multi.getParameterNames(); enum.hasMoreElements();) {
-            String key = (String) enum.nextElement();
+        for (Enumeration enm = multi.getParameterNames(); enm.hasMoreElements();) {
+            String key = (String) enm.nextElement();
             names.add(key);
             List       values = multi.getAllParameter(key);
             PartData[] data = (PartData[]) values.toArray(new PartData[]{});

@@ -20,9 +20,6 @@
 package de.schlund.pfixcore.workflow;
 
 
-import de.schlund.pfixcore.util.*;
-import de.schlund.pfixxml.ResultDocument;
-import java.util.*;
 import org.apache.log4j.Category;
 
 import java.lang.reflect.Constructor;
@@ -39,7 +36,7 @@ public class FlowStepActionFactory {
     private static FlowStepActionFactory instance = new FlowStepActionFactory();
     private static String                JUMPTO   = "jumpto";
     
-    private FlowStepActionFactory() {};
+    private FlowStepActionFactory() {}
         
     public static FlowStepActionFactory getInstance() {
         return instance;

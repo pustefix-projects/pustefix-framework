@@ -20,10 +20,7 @@
 package de.schlund.pfixcore.editor.handlers;
 
 import org.apache.log4j.*;
-import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
-import de.schlund.pfixcore.editor.auth.GlobalPermissions;
-import de.schlund.pfixcore.editor.auth.ProjectPermissions;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;

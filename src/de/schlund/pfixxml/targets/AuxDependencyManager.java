@@ -25,8 +25,6 @@ import org.apache.log4j.*;
 import org.w3c.dom.*;
 import org.apache.xml.serialize.*;
 
-import de.schlund.util.*;
-
 import javax.xml.parsers.*;
 
 /**

@@ -143,7 +143,7 @@ public class AppLoader implements FactoryInit,Runnable {
     }
     
     protected void includeTraverseClass(String clazz) {
-        travIncludes.add(clazz);;
+        travIncludes.add(clazz);
     }
   
     protected void setPolicy(int type,int action) {

@@ -39,8 +39,8 @@ public class XsltWebXmlTask extends XsltGenericTask {
     }
 
     protected void doTransformations() {
-        StringBuffer sb = new StringBuffer(100);
-        sb.append("Created web.xml for ");
+        StringBuffer tmp = new StringBuffer(100);
+        tmp.append("Created web.xml for ");
         int created = 0;
         try {
             if ( infile != null || outfile != null ) {
@@ -68,8 +68,8 @@ public class XsltWebXmlTask extends XsltGenericTask {
                 }
                 NodeList        nl        = doc.getElementsByTagName("project");
                 for (int j = 0; j < nl.getLength(); j++) {
-                    Element project  = (Element) nl.item(j);
-                    String  name = project.getAttribute("name");
+                    Element currproject  = (Element) nl.item(j);
+                    String  name = currproject.getAttribute("name");
                     log("found project "+name+" in "+in, Project.MSG_DEBUG);
                     getTransformer().setParameter(new XsltParam("prjname", name));
                     String outdir = "webapps/" + name + "/WEB-INF";
@@ -80,16 +80,16 @@ public class XsltWebXmlTask extends XsltGenericTask {
                     count = doTransformationMaybe();
                     if ( count > 0 ) {
                         if ( created > 0 ) {
-                            sb.append(", ");
+                            tmp.append(", ");
                         }
-                        sb.append(name);
+                        tmp.append(name);
                         created = created + count;
                     }
                 }
             }
         } finally {
             if ( created > 0 ) {
-                log(sb.toString(), Project.MSG_INFO);
+                log(tmp.toString(), Project.MSG_INFO);
             }
             scanner = null;
             infilenames = null; /* input filenames relative to srcdirResolved */

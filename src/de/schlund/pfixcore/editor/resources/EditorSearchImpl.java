@@ -20,7 +20,6 @@
 package de.schlund.pfixcore.editor.resources;
 
 import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;

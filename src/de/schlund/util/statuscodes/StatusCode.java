@@ -1,13 +1,11 @@
 package de.schlund.util.statuscodes;
 
-import  java.util.*;
-
 /**
  * StatusCode - a class that encapsulates all information necessary for status or error codes
  * StatusCode instances where produced by a instance of the StatusCodeFactory which guaranties that
  * the StatusCode is unique
  * 
- * @author Wolfram Müller
+ * @author Wolfram Mï¿½ller
  *
  */
 
@@ -33,21 +31,21 @@ public class StatusCode {
      */
     public String getStatusCode() {
         return scid;
-    };
+    }
 
     /**
      * gets the domain of the StatusCode
      */
     public String getStatusCodeDomain() {
         return scdomain;
-    };
+    }
 
     /**
      * gets the default Message 
      */
     public String getDefaultMessage() {
         return scmsg;
-    };
+    }
 
     /**
      * gets the StatusCode with domain

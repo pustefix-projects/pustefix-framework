@@ -1,39 +1,16 @@
 package de.schlund.pfixcore.editor.handlers;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.Navigation.*;
 import de.schlund.pfixcore.workflow.app.*;
 
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-
-import java.util.*;
-import java.io.*;
-
-import org.apache.xpath.*;
-
 import org.w3c.dom.*;
-
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.FactoryInit;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
-import org.apache.xpath.*;
 
 /**
  * @author zaich
@@ -126,18 +103,18 @@ public class DocumentationFinalizer extends ResdocSimpleFinalizer {
         ResultDocument resdoc = container.getAssociatedResultDocument();
         EditorProduct eprod = esess.getProduct();
         TargetGenerator tgen = eprod.getTargetGenerator();
-        String currdoc = esess.getCurrentDocumentationId();
+        String tmpdoc = esess.getCurrentDocumentationId();
 
-        if (currdoc != null) {
+        if (tmpdoc != null) {
 
-            Element elStylesheet = resdoc.addTextChild(root, "stylesheet", eprod.getDocumentation().getSimpleStylesheet(currdoc));
+            Element elStylesheet = ResultDocument.addTextChild(root, "stylesheet", eprod.getDocumentation().getSimpleStylesheet(tmpdoc));
 					
-            Element elMode = resdoc.addTextChild(root, "mode", eprod.getDocumentation().getMode(currdoc));
+            Element elMode = ResultDocument.addTextChild(root, "mode", eprod.getDocumentation().getMode(tmpdoc));
 				
-            Element elModus = resdoc.addTextChild(root, "modus", eprod.getDocumentation().getModus(currdoc));
+            Element elModus = ResultDocument.addTextChild(root, "modus", eprod.getDocumentation().getModus(tmpdoc));
 
-            NodeList nlist = eprod.getDocumentation().getDocumentationNode(currdoc);
-            Document doc = eprod.getDocumentation().getCurrentDoc(currdoc);
+            NodeList nlist = eprod.getDocumentation().getDocumentationNode(tmpdoc);
+            Document doc = eprod.getDocumentation().getCurrentDoc(tmpdoc);
 
             root.setAttribute("active", "true");
 

@@ -21,18 +21,14 @@ package de.schlund.pfixcore.editor.handlers;
 
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
-import de.schlund.pfixcore.editor.auth.ProjectPermissions;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.*;
 import de.schlund.util.statuscodes.*;
 import java.io.*;
-import java.util.*;
 import org.apache.log4j.*;
 
 

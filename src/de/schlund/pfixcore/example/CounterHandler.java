@@ -19,11 +19,9 @@
 
 package de.schlund.pfixcore.example;
 
-import de.schlund.pfixxml.*;
 import de.schlund.pfixcore.example.iwrapper.*;
 import de.schlund.pfixcore.generator.*;
 import de.schlund.pfixcore.workflow.*;
-import de.schlund.util.statuscodes.*;
 import org.apache.log4j.*;
 
 /**

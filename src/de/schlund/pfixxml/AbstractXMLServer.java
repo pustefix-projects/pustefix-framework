@@ -22,7 +22,6 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.testenv.*;
-import de.schlund.util.*;
 
 import java.io.*;
 import java.net.SocketException;
@@ -425,7 +424,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
             if (session.getAttribute(SESS_LANG) != null) {
-                params.put(XSLPARAM_LANG, (String)session.getAttribute(SESS_LANG));
+                params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
             }
             if ((value = preq.getRequestParam(PARAM_EDITMODE)) != null) {
                 if (value.getValue() != null) {
@@ -435,7 +434,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (session.getAttribute(PARAM_EDITMODE) != null) {
                 // first we check if the properties prohibit editmode
                 if (editmodeAllowed) {
-                    params.put(PARAM_EDITMODE, (String)session.getAttribute(PARAM_EDITMODE));
+                    params.put(PARAM_EDITMODE, session.getAttribute(PARAM_EDITMODE));
                 }
             }
         }

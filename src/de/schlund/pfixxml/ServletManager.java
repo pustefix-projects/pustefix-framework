@@ -134,16 +134,6 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug(">>>>> Cookie: " + tmp.getName() + " -> " + tmp.getValue());
                 }
             }
-            // Enumeration enum = req.getHeaderNames();
-            // TreeSet     hset = new TreeSet();
-            // for ( ; enum.hasMoreElements(); ) {
-            //     hset.add(enum.nextElement());
-            // }
-            // for (Iterator iter = hset.iterator(); iter.hasNext();) {
-            //     String name = (String) iter.next();
-            //     String value = req.getHeader(name);
-            //     CAT.debug("*** [HEADER " + name + " => " + value + "] ***");
-            // }
         }
 
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished

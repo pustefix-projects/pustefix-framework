@@ -133,13 +133,13 @@ public class ResultDocument {
     }
 
     public static Element addTextChild(Element element, String name, String text) {
-        Document doc = element.getOwnerDocument();
+        Document owner = element.getOwnerDocument();
         if (text == null) {
             return null;
         }
 	
-        Element tmp = doc.createElement(name);
-        tmp.appendChild(doc.createTextNode(text));
+        Element tmp = owner.createElement(name);
+        tmp.appendChild(owner.createTextNode(text));
         element.appendChild(tmp);
         return tmp;
     }
@@ -166,13 +166,13 @@ public class ResultDocument {
     
     public static Element addTextIncludeChild(Element element, String name,
                                               String incfile, String part) {
-        Document doc = element.getOwnerDocument();
+        Document owner = element.getOwnerDocument();
         
-        Element include = doc.createElementNS(PFIXCORE_NS, "pfx:include");
+        Element include = owner.createElementNS(PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
 	
-        Element tmp = doc.createElement(name);
+        Element tmp = owner.createElement(name);
         tmp.appendChild(include);
         element.appendChild(tmp);
         return tmp;
