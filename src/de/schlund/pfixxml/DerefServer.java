@@ -54,22 +54,30 @@ public class DerefServer extends ServletManager {
             return;
         }
         
+        OutputStream       out    = res.getOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
         if (session == null) {
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
-            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-            res.setHeader("Pragma", "no-cache");
-            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-            res.setHeader("Location", link.getValue());
-            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            // DON'T DO IT LIKE THIS! this will not remove the referer header!
+            // res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+            // res.setHeader("Pragma", "no-cache");
+            // res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            // res.setHeader("Location", link.getValue());
+            // res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            writer.write("<html><head>");
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link.getValue() + "\">");
+            writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"" + link.getValue() + "\">" + link.getValue() + "</a>");
+            writer.write("</small></center></body></html>");
         } else {
-            OutputStream       out     = res.getOutputStream();
-            OutputStreamWriter writer  = new OutputStreamWriter(out, res.getCharacterEncoding());
-            String             thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
+            String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
             
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + thelink + "\">");
-            writer.write("</head><body bgcolor=\"#ffffff\"><a href=" + thelink + ">" + thelink + "</a></body></html>");
-            writer.flush();
+            writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"" + thelink + "\">" + thelink + "</a>");
+            writer.write("</small></center></body></html>");
         }
+        writer.flush();
     }
 }

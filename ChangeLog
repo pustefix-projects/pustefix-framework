@@ -1,5 +1,8 @@
 2004-10-19  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/DerefServer.java: Eeeek. SC_MOVED_TEMPORARILY doesn't kill off
+	the referer... this is an emberassing one :-(
+
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed the cache
 	control stuff to something that may or may not be better suited to
 	a) always request a new copy when really clicking on the link b) serve
