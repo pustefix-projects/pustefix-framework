@@ -38,6 +38,11 @@ public class StringLength extends SimpleCheck implements IWrapperParamPostCheck 
         this.minLength = Integer.parseInt(minLength);
     }
     
+    public void put_max_length(String maxLength) {
+        this.maxLength = Integer.parseInt(maxLength);
+    }
+
+    /** @deprecated due to typo in method name.*/
     public void put_max_lentgth(String maxLength) {
         this.maxLength = Integer.parseInt(maxLength);
     }
