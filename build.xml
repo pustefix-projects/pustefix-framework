@@ -28,6 +28,8 @@
   <property name="file.projects_xml"      location="${dir.projects}/servletconf/projects.xml"/>
   <property name="genlog"                 value="quiet" description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
   <property name="file.log4jconfig"       location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
+  <property name="name.testskel"          value="testskel"/>
+  <property name="dir.testskel"           location="${name.testskel}"/>
   <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
   <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
   <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
@@ -121,7 +123,7 @@
   </target>
   
   <target name="generate" depends="targetdefs, stylesheets, compile, installjars">
-    <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}"/>
+    <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
   </target>
 
   <!--
@@ -141,15 +143,17 @@
     />    
   <target name="compile" depends="generate-src, jni" description="compiles all .java files">
     <javac 
-      srcdir="${dir.src}"
+	  srcdir="${dir.src}"
       destdir="${dir.build}"
       debug="${debug}"
       classpathref="cp.buildpath"
-      />    
+	  excludes="${excludes.src}"
+      >
+    </javac>
   </target>
   
   <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
-    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl"/>
+    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
   
   <target name="jni" depends="pre-compile">
@@ -382,6 +386,21 @@
     <echo file="${dir.metainf}/${name.cvsautotag}">${autotagmessage}
     </echo>
   </target>
+  
+  <target name="test-skeleton" description="extracts skel.jar, copies sample files, runs ant">
+    <delete dir="${dir.testskel}"/>
+    <mkdir dir="${dir.testskel}"/>
+    <untar src="${file.pfixcore_skel_tgz}" dest="${dir.testskel}" compression="gzip"/>
+    <copy todir="${dir.testskel}/skel/src">
+      <fileset dir="${dir.src}" includes="de/schlund/pfixcore/example/**"/>
+    </copy>
+    <copy todir="${dir.testskel}/skel/projects">
+      <fileset dir="${dir.projects}" includes="sample1/**"/>
+    </copy>
+    <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
+    </exec>
+  </target>
+  
   <!--
   dev:
   @echo "Setting link to $(BUILDDIR)/de in example/servletconf/tomcat/classes."
@@ -599,3 +618,7 @@
   </target>
   
 </project>
+
+<!-- Cut 'n' Paste
+excludes="de/schlund/pfixxml/exceptionhandler/**, de/schlund/pfixxml/loader/**"
+-->
