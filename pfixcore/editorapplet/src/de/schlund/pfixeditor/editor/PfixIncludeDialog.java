@@ -714,7 +714,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                 
                 String neuImgPfad = pfad.substring(0, pfad.length()-1);
                 
-                String imgEl = "<pfx:image path=\"" + neuImgPfad + "\" />";
+                String imgEl = "<pfx:image src=\"" + neuImgPfad + "\" />";
                 
                 String url = getHost() + neuImgPfad;
                 
