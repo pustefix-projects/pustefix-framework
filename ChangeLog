@@ -1,3 +1,11 @@
+2003-10-29  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* build.xml:
+	* build.xml, skel/build.xml:
+	Added DTD generation and DOCTYPE declaration
+	Added target "fixtabs" to convert hard tabs to softtabs of length 4 in the build.xml files
+	Added target "checkfiles" to replace checkfiles.sh
+
 2003-10-28  Adam Habermann  <adam.habermann@schlund.de>
 	
 	* build.xml:

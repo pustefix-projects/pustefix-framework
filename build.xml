@@ -331,7 +331,53 @@
         <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
         </exec>
     </target>
-    
+
+    <target name="checkfiles">
+        <!-- find the input files and write them to line separated files -->
+        <pathconvert property="checkfiles.ALLPROJECTS" pathsep="&#10;">
+            <path>
+                <fileset dir="${dir.projects}">
+                    <include name="**/depend.xml"/>
+                </fileset>
+            </path>
+            <map from="${dir.projects}/" to=""/>
+        </pathconvert>
+        <echo message="${checkfiles.ALLPROJECTS}" file="${dir.projects}/.ALLPROJECTS"/>
+        <pathconvert property="checkfiles.ALLINCFILES" pathsep="&#10;">
+            <path>
+                <fileset dir="${dir.projects}" casesensitive="false">
+                    <include name="**/txt/**/*.xml"/>
+                </fileset>
+            </path>
+            <map from="${dir.projects}/" to=""/>
+        </pathconvert>
+        <echo message="${checkfiles.ALLINCFILES}" file="${dir.projects}/.ALLINCFILES"/>
+        <pathconvert property="checkfiles.ALLIMAGES" pathsep="&#10;">
+            <path>
+                <fileset dir="${dir.projects}" casesensitive="false">
+                    <include name="**/img/**/*.gif" />
+                    <include name="**/img/**/*.jp*g"/>
+                </fileset>
+            </path>
+            <map from="${dir.projects}/" to=""/>
+        </pathconvert>
+        <echo message="${checkfiles.ALLIMAGES}" file="${dir.projects}/.ALLIMAGES"/>
+        <!-- we must fork a java vm here to set the current dir -->
+        <java
+            classname="de.schlund.pfixcore.util.CheckIncludes"
+            classpathref="cp.classpath"
+            dir="${dir.projects}"
+            fork="true"
+            failonerror="true"
+            >
+            <arg file="${dir.projects}/CHECKOUTPUT.xml"/>
+            <arg file="${dir.projects}/.ALLPROJECTS"/>
+            <arg file="${dir.projects}/.ALLINCFILES"/>
+            <arg file="${dir.projects}/.ALLIMAGES"/>
+        </java>
+        <echo message="Output written to ${dir.projects}/CHECKOUTPUT.xml" level="info"/>
+    </target>    
+
     <target name="propfiles" depends="ant-tasks" description="creates **/*.prop">
         <pfx-xslt 
             style="${dir.projects}/core/build/create_propfiles.xsl"
@@ -517,4 +563,5 @@
 
 <!-- Cut 'n' Paste
 excludes="de/schlund/pfixxml/exceptionhandler/**, de/schlund/pfixxml/loader/**"
+
 -->
