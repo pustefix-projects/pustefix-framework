@@ -410,7 +410,7 @@
                     Optional, default is <b>false</b>. The <code>IHandler</code> method <code>isActive()</code> is <b>NOT</b>
                     called on handlers with <code>activeignore</code> set to <b>true</b>. In other words: the handler is ignored
                     when the system tries to find out if the page is accessible or not. See also the comment for the <code>policy</code>
-                    tag above.
+                    attribute above.
                   </td>
                 </tr>
               </table>
