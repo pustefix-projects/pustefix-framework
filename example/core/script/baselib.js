@@ -37,95 +37,150 @@ Array.prototype.unmapKeys = function() {
 
 var __js_Cookie = {
   // Data for the highlevel functions
-    base : "data",
-    days : 365,
-    splitter : "|",
-    path : "/",
-    
-    // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
-    maxstr : 4000,
-    maxarr : 10,
-    
-    set : function(name, value) {
-        var c   = this.prep_sub();
-        c[name] = value;
-        var d = c.unmapKeys();
-        var s = "";
-        var j = 0;
-        for (var i=0; i<d.length; i++) {
-            if ((s.length + d[i].length) > this.maxstr) {
-                this.create(this.base + this.norm_sub(j), s, this.days);
-                
-                s = d[i] + this.splitter;
-                j++;
-            } else {
-                s += d[i] + this.splitter;
-            };
-        };
-        
-        if (s != "") {
-            this.create(this.base + this.norm_sub(j), s, this.days);
-            j++;
-        };
+  base : "data",
+  days : 365,
+  splitter : "|",
+  path : "/",
 
-        if (j < this.maxarr)
-            for (var i = j; i < this.maxarr; i++) this.erase(this.base + this.norm_sub(i));
-    },
+  // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
+  maxstr : 4000,
+  maxarr : 20,
+  maxarrhard : 20,
 
-    get : function(name) {
-        var c = this.prep_sub()[name];
-        if (c && typeof c != "undefied") return c;
-        return null;
-    },
+  set : function(name, value)
+  {
+    var c = this.get_sub().split(this.splitter)
 
-    norm_sub : function(i) {
-        return String(i < 10 ? "0" + i : i);
-    },
+    var n = [];
 
-    get_sub : function() {
-        var s = "";
-        for (var i = 0; i < 20; i++)
-        {
-            var r = this.read(this.base + this.norm_sub(i))
-                if(r) s+=r;
-        };
-        return s;
-    },
+    for (var i = 0; i<c.length; i++)
+    {
+    	if (c[i] == "") continue;
+    	
+    	var d = c[i].split(":");
+    	
+    	if (d[0] != name)
+    	  // copy other values
+    	  n[i] = c[i];
+    	else
+    	  // move value set to first position
+        n.unshift(name + ":" + value);
+    };
 
-    prep_sub : function() {
-        return this.get_sub().split(this.splitter).mapKeys();
-    },
+    // copy to destination array
+    d=n;
 
-    // Low Level Internal Functions
-    create : function(name, value, days) {
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
-            var expires = "; expires=" + date.toGMTString();
-        } else {
-            var expires = "";
-        };
-        document.cookie = name + "=" + value + expires + "; path=" + this.path;
-    },
+    // Neue Daten optimiert abspeichern
+    var s = "";
+    var j=0;
+    for (var i=0; i<d.length; i++)
+    {
+      // mit neuem zu gross
+      if ((s.length + d[i].length) > this.maxstr)
+      {
+        // also speichern und leeren
+        this.create(this.base + this.norm_sub(j), s, this.days);
 
-    read : function(name) {
-        var ne = name + "=";
-        var ca = document.cookie.split(";");
-        
-        for (var i=0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ")
-                c = c.substring(1,c.length);
-            if (c.indexOf(ne) == 0)
-                return c.substring(ne.length,c.length);
-        };
-        return null;
-    },
+        // Wert ersetzen
+        s = d[i] + this.splitter;
+        j++;
 
-    erase : function(name) {
-        this.create(name,"",-1);
+        // Wert vergessen, wenn kein Platz mehr vorhanden
+        if (j>maxarr) break;
+      }
+      else
+      {
+        // Wert anhängen
+        s += d[i] + this.splitter;
+      };
+    };
+
+    // Übrige Werte speichern
+    if (s!="" && j<=this.maxarr)
+    {
+      this.create(this.base + this.norm_sub(j), s, this.days);
+      j++;
+    };
+
+    // Überflüssige Cookies entfernen
+    // Auch die Löschen, die vor einer Rekonfiguration von maxarr angelegt worden sind
+    for(var i=j; i<this.maxarrhard; i++) this.erase(this.base + this.norm_sub(i));
+      
+    return true;
+  },
+
+  get : function(name)
+  {
+    var c = this.prep_sub()[name];
+    if (c && typeof c != "undefined") return c;
+    return null;
+  },
+
+  norm_sub : function(i)
+  {
+    return String(i < 10 ? "0" + i : i);
+  },
+
+  get_sub : function()
+  {
+    var s="";
+
+    for (var i=0; i<20; i++)
+    {
+      var r = this.read(this.base + this.norm_sub(i))
+      if(r) s+=r;
+    };
+
+    return s;
+  },
+
+  prep_sub : function()
+  {
+    // Cookies einlesen und als (assoziatives) Array zurückgeben
+    return this.get_sub().split(this.splitter).mapKeys();
+  },
+
+  // Low Level Internal Functions
+  create : function(name, value, days)
+  {
+    if (days)
+    {
+      var date = new Date();
+      date.setTime(date.getTime()+(days*24*60*60*1000));
+      var expires = "; expires="+date.toGMTString();
     }
-}
+    else
+    {
+      var expires = "";
+    };
+
+    document.cookie = name+"="+value+expires+"; path=" + this.path;
+  },
+
+  read : function(name)
+  {
+    var ne = name + "=";
+    var ca = document.cookie.split(";");
+
+    for (var i=0; i < ca.length; i++)
+    {
+      var c = ca[i];
+
+      while (c.charAt(0) == " ")
+        c = c.substring(1,c.length);
+
+      if (c.indexOf(ne) == 0)
+        return c.substring(ne.length,c.length);
+    };
+
+    return null;
+  },
+
+  erase : function(name)
+  {
+    this.create(name,"",-1);
+  }
+};
 
 function __js_Browser() {
   // features
@@ -160,7 +215,7 @@ function __js_Browser() {
   this.ie55       = (this.ie && document.fireEvent && !this.dom2) ? true : false;
   this.ie5        = (this.ie && !document.fireEvent) ? true : false
   // We don't detect this so we assume no :-(
-  this.ie5mac     = false; 
+  this.ie5mac     = false;
   this.ie4        = (this.ie && !this.ie6 && !this.ie55 && !this.ie5 && !this.ie5mac) ? true : false;
 }
 
