@@ -8,7 +8,6 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import de.schlund.pfixxml.targets.Path;
 import de.schlund.pfixxml.util.Xml;
@@ -52,18 +51,7 @@ public class IncludeDocument {
         modTime  = tmp.lastModified();
 
         if (mutable) {
-            try {
-                doc = Xml.parse(tmp);
-            } catch (SAXParseException ex) {
-                StringBuffer buf = new StringBuffer(100);
-                buf.append("Caught SAXParseException!\n");
-                buf.append("  Message  : ").append(ex.getMessage()).append("\n");
-                buf.append("  SystemID : ").append(ex.getSystemId()).append("\n");
-                buf.append("  Line     : ").append(ex.getLineNumber()).append("\n");
-                buf.append("  Column   : ").append(ex.getColumnNumber()).append("\n");
-                CAT.error(buf.toString());
-                throw ex;
-            }
+            doc = Xml.parse(tmp);
         } else {
             doc = Xslt.xmlObjectFromDisc(tmp);
         }

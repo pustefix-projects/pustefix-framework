@@ -22,7 +22,6 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -234,12 +233,11 @@ public class TestcaseStep {
                     throw new TestClientException("IOException occured!", e);
                 }
                 result.setDuration(duration);
-                result.setServerResponse(convertServerResponseToDocument(response_stream));
+                result.setServerResponse(Xml.parse(response_stream));
                 result.setStatuscode(status_code);
             }
         }
         return result;
-
     }
     
     
@@ -313,11 +311,5 @@ public class TestcaseStep {
         }
         String uri = ((Element) value).getFirstChild().getNodeValue();
         return uri;
-    }
-
-    /** Convert the inputstream from the server into a XML-document */
-    private Document convertServerResponseToDocument(InputStream istream)
-        throws SAXException, IOException {
-        return Xml.parse(istream);
     }
 }

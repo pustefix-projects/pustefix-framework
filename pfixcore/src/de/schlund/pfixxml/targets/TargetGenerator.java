@@ -20,7 +20,6 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +33,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.IncludeDocumentFactory;
@@ -163,15 +161,7 @@ public class TargetGenerator {
         CAT.warn("\n***** CAUTION! ***** loading config " + confile + "...");
         Document config;
 
-        try {
-            config = Xml.parse(confile);
-        } catch (SAXException e) {
-            CAT.error("\nConfigfile '" + confile + "' couldn't be parsed by XML parser: \n" + e.toString());
-            throw e;
-        } catch (IOException e) {
-            CAT.error("\nConfigfile '" + confile + "' I/O Error: \n" + e.toString());
-            throw e;
-        }
+        config = Xml.parse(confile);
 
         Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");

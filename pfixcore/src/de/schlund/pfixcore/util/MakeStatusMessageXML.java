@@ -111,7 +111,6 @@ public class MakeStatusMessageXML {
                     // load statusmessages xml file
                     CAT.warn( ">>> parsing statusmessages xml-file ...");
                     doc = Xml.parse(statusmessagefile);
-                    // doc.normalize();
                     maker.updateFile(scfac, allscodes, doc, messagefile);
                 } catch (Exception e) {
                     CAT.error("FATAL1: " + e.toString());

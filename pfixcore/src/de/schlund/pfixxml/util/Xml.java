@@ -124,7 +124,32 @@ public final class Xml {
         return parse(new InputSource(src));
     }
     public static synchronized Document parse(InputSource src) throws IOException, SAXException {
-        return builder.parse(src);
+        try {
+            return builder.parse(src);
+        } catch (SAXParseException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught SAXParseException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(e.getSystemId()).append("\n");
+            buf.append("  Line     : ").append(e.getLineNumber()).append("\n");
+            buf.append("  Column   : ").append(e.getColumnNumber()).append("\n");
+            CAT.error(buf.toString(), e);
+            throw e;
+        } catch (SAXException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught SAXException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(src.getSystemId()).append("\n");
+            CAT.error(buf.toString(), e);
+            throw e;
+        } catch (IOException e) {
+            StringBuffer buf = new StringBuffer(100);
+            buf.append("Caught IOException!\n");
+            buf.append("  Message  : ").append(e.getMessage()).append("\n");
+            buf.append("  SystemID : ").append(src.getSystemId()).append("\n");
+            CAT.error(buf.toString(), e);
+            throw e;
+        }
     }
 
     

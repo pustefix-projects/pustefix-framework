@@ -92,7 +92,7 @@ public class Xslt {
             try {
                 return xmlObjectFromSource(domsrc);
             } catch (TransformerException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("a dom tree is always well-formed xml", e);
             }
         }
     }
