@@ -1,3 +1,10 @@
+2003-08-12  Joerg Haecker <haecker@schlund.de>
+
+	* lib/saxon-6_5_2: removed
+	* lib/saxon6_5_3: added
+	* Saxon 6_5_3 is a bugfix release. If any problems
+	occur, please let me know.
+
 2003-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.3.9
