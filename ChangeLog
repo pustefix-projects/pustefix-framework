@@ -2,7 +2,7 @@
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
 	(handleSubmittedData): now also insert the CRs when the state
-	want's to continue AND the corresponding FlowStep has Actions
+	wants to continue AND the corresponding FlowStep has Actions
 	that may need the DOM for their tests. 
 
 	* src/de/schlund/pfixcore/workflow/PageFlow.java: use FlowSteps
