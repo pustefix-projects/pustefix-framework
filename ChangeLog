@@ -1,3 +1,12 @@
+2003-07-22 Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixIncludeDialog.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletInfo.java
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+
+	Layout changing and BugFixed. Undo/Redo should work now
+	
+
 
 2003-07-21  Volker Zaich <zaich@schlund.de>
 	

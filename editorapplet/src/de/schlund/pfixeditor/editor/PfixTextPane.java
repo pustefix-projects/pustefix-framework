@@ -70,6 +70,8 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
     }
 
 
+  
+
 
 
     public void insertTag(String include) {
@@ -89,9 +91,14 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
 
         String neu = saveString + include + endString;
 
-        setText(neu);
+        // setText(neu);
+        try {
+           docNeed. insertString(curPos, include, null);  
+        } catch (Exception e) {
+            System.out.println("Document not found");
+            
+        }                
         setCaretPosition(curPos);
-        hilightAll();
                     
         
     }
@@ -188,9 +195,12 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
         }
 
         if (!(finalTag.equals(""))) {
-            String textNeu = saveString + finalTag + endString;
-            setText(textNeu);
-            // this.checkString();
+            try {
+                docNeed. insertString(curPos, finalTag, null);  
+            } catch (Exception e) {
+                System.out.println("Document not found");
+            }
+
             setCaretPosition(curPos);
         }
     }
