@@ -53,9 +53,3 @@
   <standardpage name="ssltest" xml="sample1/xml/one_frame.xml"/>
 
 </make>
-
-<!--
-Local Variables: 
-mode: xml 
-End: 
---> 
