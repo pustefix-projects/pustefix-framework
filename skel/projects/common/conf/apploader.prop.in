@@ -39,9 +39,11 @@
       
       <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
+      <!--
       <prop name="apploader.package.include.2">de.schlund.pfixschlund</prop>
       <prop name="apploader.package.include.3">de.schlund.pfixcore.editor</prop>
-      
+      -->
+
       <!--add packages which don't have to be traversed for state transfer-->
       <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
       <prop name="apploader.traverse.excludepackage.2">org.apache.log4j</prop>

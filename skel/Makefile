@@ -44,6 +44,11 @@ generate_src:
 	@echo ROOT: generating src. 
 	make -f Makefile.iwrp generate_src
 
+jni:
+	@echo
+	@echo "*** Building native part of AppLoader"
+	make -f Makefile.jni	
+
 clean:
 	@echo 
 	@echo cleaning up!
