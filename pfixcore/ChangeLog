@@ -1,3 +1,11 @@
+2003-05-12 Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java(main):
+	System.exit() on all exceptions other than TargetGenerationException.
+
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:
+	fixed crash if tested server crashes.
+
 2003-05-11 Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java
