@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.apache.log4j.Category;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor.EditorHelper;
@@ -46,7 +45,6 @@ final public class EditorUserInfo {
     private String pwd;
     private GlobalPermissions global_perm;
     private HashMap project_perm = new HashMap();
-    private static Category CAT = Category.getInstance(EditorUserInfo.class.getName());
 
     /**
      * Create a new <code>EditorUserInfo</code>.
@@ -294,7 +292,6 @@ final public class EditorUserInfo {
                     //throw new XMLException("Permission denied! You are trying to edit the default branch, but"+
                     //   " you do not have the proper permissions!\n"+toString());
                     ret = false;
-                } else {
                 }
             } else {
                 //throw new XMLException("PermissionDenied! You are trying to edit a specific branch, but"+

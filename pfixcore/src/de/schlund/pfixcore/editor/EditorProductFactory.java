@@ -18,12 +18,6 @@
  */
 package de.schlund.pfixcore.editor;
 
-
-
-
-
-
-
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
@@ -171,7 +165,6 @@ public class EditorProductFactory implements FactoryInit {
     }
     
     private static EditorDocumentation createDocumentation(Element common, Element project) throws Exception {
-        NodeList nliste;
         String[] argument;
         List lst;
 

@@ -40,8 +40,6 @@ import org.w3c.dom.*;
  */
 
 public class CommonsFinalizer extends ResdocSimpleFinalizer {
-    private static String PROD_DEFAULT = "default";
-
     protected void renderDefault(IWrapperContainer container) throws Exception {
         Context                context      = container.getAssociatedContext();
         ContextResourceManager crm          = context.getContextResourceManager();

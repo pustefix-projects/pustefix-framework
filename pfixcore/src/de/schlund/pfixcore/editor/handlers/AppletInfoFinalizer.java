@@ -44,8 +44,6 @@ import org.w3c.dom.*;
  */
 
 public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
-    
-    private String currdoc = null;
     private static Category LOG = Category.getInstance(ResdocSimpleFinalizer.class.getName());
     
     protected void renderDefault(IWrapperContainer container) throws Exception {
@@ -53,7 +51,6 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
         Context                context     = container.getAssociatedContext();
         ContextResourceManager crm         = context.getContextResourceManager();
         EditorSessionStatus    esess       = EditorRes.getEditorSessionStatus(crm);
-        EditorSearch           esearch     = EditorRes.getEditorSearch(crm);
         ResultDocument         resdoc      = container.getAssociatedResultDocument();
         TargetGenerator        tgen        = esess.getProduct().getTargetGenerator();
         AuxDependency          currinclude = esess.getCurrentInclude();

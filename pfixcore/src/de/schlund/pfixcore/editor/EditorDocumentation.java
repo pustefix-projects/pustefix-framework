@@ -40,7 +40,6 @@ import org.w3c.dom.NodeList;
  */
 public class EditorDocumentation {
     private static Category LOG                 = Category.getInstance(EditorProductFactory.class.getName());
-    private long   creationTime                 = 0;
 
     private HashMap hashmap                     = new HashMap();
     private NodeList nlist                         = null;
@@ -241,7 +240,6 @@ public class EditorDocumentation {
         CoreDocumentation coreDoc = null;
         String stylesheet = "";
 
-        Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
         stylesheet = coreDoc.getStyleSheet();
 
@@ -255,7 +253,6 @@ public class EditorDocumentation {
         CoreDocumentation coreDoc = null;
         String mode = "";
 
-        Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
         mode = coreDoc.getMode();
 
@@ -268,7 +265,6 @@ public class EditorDocumentation {
         CoreDocumentation coreDoc = null;
         String modus = "";
 
-        Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
         modus = coreDoc.getModus();
 
@@ -281,7 +277,6 @@ public class EditorDocumentation {
         this.checkFile();    
         CoreDocumentation coreDoc = null;
         
-        Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
         return coreDoc.getDocument();
     }
@@ -295,7 +290,6 @@ public class EditorDocumentation {
         CoreDocumentation coreDoc = null;
         NodeList tmpnlist = null;
 
-        Collection menge = hashmap.entrySet();
         coreDoc = (CoreDocumentation) hashmap.get(key);
 
         tmpnlist = coreDoc.getNodeList();
