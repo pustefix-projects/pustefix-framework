@@ -738,18 +738,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
-        addDocroot(paramhash, targetconf.getBase());
         return paramhash;
     }
 
-    // TODO: kind of a hack because - better make sure the map always contains docroot ...
-    public static void addDocroot(Map map, File value) {
-        final String NAME = "docroot";
-
-        if (map.get(NAME) == null) {
-            map.put(NAME, value.getAbsolutePath() + File.separator);
-        }
-    }
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
         String pagename = spdoc.getPagename();

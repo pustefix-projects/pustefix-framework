@@ -223,7 +223,8 @@ public abstract class VirtualTarget extends TargetImpl {
         File   cachefile    = new File(cachepath.resolve(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" + tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" +
+                      tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
         }
         // we reset the auxilliary dependencies here, as they will be rebuild now, too 
         getAuxDependencyManager().reset();
@@ -237,11 +238,12 @@ public abstract class VirtualTarget extends TargetImpl {
         Document  xmlobj = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
         Templates templ  = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
-            throw new XMLException("**** xml source " + tmpxmlsource.getTargetKey() + tmpxmlsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xml source " +
+                                   tmpxmlsource.getTargetKey() + " (" + tmpxmlsource.getType() + ") doesn't have a value!");
         if (templ == null) 
-            throw new XMLException("**** xsl source " + tmpxslsource.getTargetKey() + tmpxslsource.getType() + " doesn't have a value!");
+            throw new XMLException("**** xsl source " +
+                                   tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap tmpparams = getParams();
-        AbstractXMLServer.addDocroot(tmpparams, cachepath.getBase());
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();

@@ -1,3 +1,19 @@
+2004-07-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	no longer set docroot in the parameter hash.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	remove getDocroot() method.
+	
+	* example/core/xsl/metatags.xsl.in: 
+	* example/core/xsl/master.xsl.in: remove $docroot. 
+
+	* example/core/xsl/customizestylesheet.xsl: *
+	example/core/xsl/customizemaster.xsl: no longer handle
+	docroot. remove cus:docroot. no more special handling of xsl:include or xsl:import.
+
+	* example/core/editor/xsl/metatags.xsl: remove last dead instances of $docroot.  
+
 2004-07-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PathFactory.java: remove the
