@@ -53,6 +53,10 @@ public class StatusCodeFactory {
         return (StatusCode) PartIndex.getInstance().lookup(getPart(code));
     }
 
+    public boolean statusCodeExists(String code) {
+        return (testStatusCode(String code) == null) ? false : true;
+    }
+    
     public StatusCode getStatusCode(String code) throws StatusCodeException {
         StatusCode scode;
         
