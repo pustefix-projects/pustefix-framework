@@ -11,6 +11,11 @@
 
 2003-08-01  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/navigation.xsl.in: pfx:button, pfx:jsbutton, pfx:button_impl:
+	Added attribute "accesskey" (and handling of it): use the specified accesskey in the 
+	generated link. This will use a default specified in the navigation structure from depend.xml:
+	<page name="foo" handler="/xml/blah" accesskey="D"/> if it's there and no accesskey attribute is given.
+
 	* src/de/schlund/pfixxml/multipart/MultipartHandler.java (parseRequest): 
 	fixed handling of file upload: now we check if the "filename"
 	param is set in the Content-Disposition header and don't simply

@@ -97,6 +97,13 @@
           automatically adds this parameter whenever you use &lt;pfx:argument&gt; tags in the button. Occasionally this is not what you want.
           Use this attribut to suppress this behaviour.</description>
       </param>
+      <param required="0">
+        <name>accesskey</name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description>This attribute sets an accesskey in the generated link. Note that you can add a default attribute "accesskey"
+        in the navigation structure for the page.</description>
+      </param>
       <children>
         <name>pfx:active</name>
         <description>content of the link in the active mode (not clickable)</description>        
@@ -191,6 +198,7 @@
           </xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
+      <xsl:with-param name="accesskey" select="@accesskey"/>
       <xsl:with-param name="normalclass"><xsl:value-of select="@normalclass"/></xsl:with-param>
       <xsl:with-param name="activeclass"><xsl:value-of select="@activeclass"/></xsl:with-param>
       <xsl:with-param name="invisibleclass"><xsl:value-of select="@invisibleclass"/></xsl:with-param>
@@ -222,6 +230,13 @@
         <description>Name of the mouse-over picture</description>
         <standard></standard>
         <possible_values></possible_values>        
+      </param>
+      <param required="0">
+        <name>accesskey</name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description>This attribute sets an accesskey in the generated link. Note that you can add a default attribute "accesskey"
+        in the navigation structure for the page.</description>
       </param>
       <example>
         <input>
@@ -292,6 +307,7 @@
           </xsl:call-template>
         </img>
       </xsl:with-param>
+      <xsl:with-param name="accesskey" select="@accesskey"/>
       <xsl:with-param name="normalclass"><xsl:value-of select="@normalclass"/></xsl:with-param>
       <xsl:with-param name="activeclass"><xsl:value-of select="@activeclass"/></xsl:with-param>
       <xsl:with-param name="invisibleclass"><xsl:value-of select="@invisibleclass"/></xsl:with-param>
@@ -315,6 +331,7 @@
     <cus:documentation>
       <description>Called by &lt;pfx:button&gt; and &lt;pfx:jsbutton&gt;</description>
     </cus:documentation>
+    <xsl:param name="accesskey"/>
     <xsl:param name="omover"/>
     <xsl:param name="omout"/>
     <xsl:param name="buttpage"/>
@@ -365,6 +382,12 @@
       </xsl:choose>
     </xsl:param>
     <xsl:variable name="thebuttpage" select="$navitree//page[@name = $buttpage_impl]"/>
+    <xsl:variable name="accesskeyimpl">
+      <xsl:choose>
+        <xsl:when test="$accesskey"><xsl:value-of select="$accesskey"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="$thebuttpage/@accesskey"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
     <ixsl:choose>
       <ixsl:when>
         <xsl:attribute name="test">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each>/@visible = '0'</xsl:attribute>
@@ -408,6 +431,9 @@
               <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
             </xsl:variable>
             <a target="{$target_impl}">
+              <xsl:if test="not($accesskeyimpl = '')">
+                <xsl:attribute name="accesskey"><xsl:value-of select="$accesskeyimpl"/></xsl:attribute>
+              </xsl:if>
               <xsl:attribute name="class">
                 <xsl:choose>
                   <xsl:when test="$mode = 'desc' and $thebuttpage//page[@name=$page]">
