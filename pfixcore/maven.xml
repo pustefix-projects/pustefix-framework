@@ -22,9 +22,29 @@
     </j:choose>
   </goal>
   
-  <preGoal name="compile">
-    <ant:echo>Before compile</ant:echo>
+  <preGoal name="pdf:pdf">
+  	<attainGoal name="pfix:docs"/>
   </preGoal>
+  
+  <preGoal name="xdoc:jelly-transform">
+  	<attainGoal name="pfix:docs"/>
+  </preGoal>
+  
+  <goal name="pfix:docs">
+    <ant:echo>Generating ${maven.docs.src}</ant:echo>
+    <ant:delete dir="${maven.docs.src}"/>
+    <ant:copy todir="${maven.docs.src}">
+      <ant:fileset dir="${pfix.docs.src}">
+        <ant:exclude name="**/*.xml"/>
+        <ant:exclude name="src/**"/>
+      </ant:fileset>
+    </ant:copy>
+    <!-- TODO: 'Major hack.' Stolen from the Latka plugin.jelly. All of this could be avoided by putting
+         xalan into $MAVEN_HOME/lib/endorsed directory in the distribution, but never mind -->
+    ${systemScope.setProperty('javax.xml.transform.TransformerFactory','org.apache.xalan.processor.TransformerFactoryImpl')}
+    <ant:xslt basedir="${pfix.docs.src}" destdir="${maven.docs.src}" includes="**/*.xml" 
+              extension=".xml" style="${pfix.docs.src}/style/customtags.xsl"/>
+  </goal>
 
   <postGoal name="site">
     <attainGoal name="pdf"/>
