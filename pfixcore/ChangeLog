@@ -1,3 +1,10 @@
+2003-08-22  Joerg Haecker <haecker@schlund.de> / Martin Leidig <mleidig@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: added new template 
+	handling serveraliases correctly for Tomcat. Tomcat doesn't
+	support a whitespace separated list of serveraliases as Apache does.
+	Tomcat wants each serveralias within an 'Alias' element.
+
 2003-08-15  Joerg Haecker <haecker@schlund.de> / Jens Lautenbacher <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/EditorProductFactory.java (getAllEditorProducts):
