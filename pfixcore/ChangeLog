@@ -1,3 +1,9 @@
+2003-03-31  Martin Leidig  <mleidig@schlund.de>
+        * example/core/build/create_propfiles.xsl: fixed some bugs concerning transformation
+        of new property file format, i.e. getting prefix for pagerequest parameters within
+        custom choose/test elements, adding support for choose/test elements within
+        servletinfo tag.
+
 2003-03-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/testenv/RecordManager.java
