@@ -243,6 +243,6 @@
 
 <!--
 Local Variables:
-mode: xml
+mode: xsl
 End:
 -->
