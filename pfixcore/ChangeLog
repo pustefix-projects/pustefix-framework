@@ -1,15 +1,25 @@
+2004-10-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: More security related work. 
+	The ServletManager will now prohibit the following cases:
+	- A valid secure session is used but the request was not made under SSL
+	- A valid secure session is used and the browser handles cookies but 
+	the __PFIX_SECURE_SSL_SESS__ cookie isn't found or it doesn't match the session id.
+
+	Both cases will result in the secure session being invalidated.
+
 2004-10-28  Benjamin Reitzammer  <benjamin@schlund.de>
 
 	* Implemented the new pagemessages feature: Context has several new methods
-    called addPageMessage(). With these you can associate a Statuscode with the
-    next displayed page, no matter which page this is (this works with all
-    pageflow/jumptopage stuff pustefix can do). Depending on the level, that's
-    supplied with the StatusCode, the StatusCodes are wrapped in an according
-    CSS class and a header is displayed too.
-    To finally show the messages on a page, simply include use the <pfx:pagemessages />
-    tag anywhere on your page, where you want messages to be shown.
-    Take a look at the Context's Javadoc for details how to add StatusCodes
-    tp pages.
+	called addPageMessage(). With these you can associate a Statuscode with the
+	next displayed page, no matter which page this is (this works with all
+	pageflow/jumptopage stuff pustefix can do). Depending on the level, that's
+	supplied with the StatusCode, the StatusCodes are wrapped in an according
+	CSS class and a header is displayed too.
+	To finally show the messages on a page, simply include use the <pfx:pagemessages />
+	tag anywhere on your page, where you want messages to be shown.
+	Take a look at the Context's Javadoc for details how to add StatusCodes
+	to pages.
 
 2004-10-27  Jens Lautenbacher  <jtl@schlund.de>
 

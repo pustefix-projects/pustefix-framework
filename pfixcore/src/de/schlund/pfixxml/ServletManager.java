@@ -20,8 +20,6 @@
 package de.schlund.pfixxml;
 
 
-
-
 import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
@@ -137,7 +135,7 @@ public abstract class ServletManager extends HttpServlet {
             while (loader.isLoading()) {
                 try {
                     Thread.sleep(100);
-                } catch(InterruptedException x) {
+                } catch (InterruptedException x) {
                     //
                 }
             }
@@ -150,19 +148,45 @@ public abstract class ServletManager extends HttpServlet {
         boolean     force_reuse_visit_id     = false;
         boolean     does_cookies             = doCookieTest(req, res);
         if (req.isRequestedSessionIdValid()) {
-            session     = req.getSession(false);
-            has_session = true;
+            session        = req.getSession(false);
+            has_session    = true;
+            Boolean secure = (Boolean) session.getAttribute(SESSION_IS_SECURE);
             CAT.debug("*** Found valid session with ID " + session.getId());
             if (runningUnderSSL(req)) {
                 CAT.debug("*** Found running under SSL");
-                Boolean secure = (Boolean)session.getAttribute(SESSION_IS_SECURE);
                 if (secure != null && secure.booleanValue()) {
                     CAT.debug("    ... and session is secure.");
-                    has_ssl_session_secure = true;
+                    if (does_cookies) {
+                        CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
+                        Cookie cookie = getSecureSessionCookie(req);
+                        if (cookie != null) {
+                            CAT.debug("*** Found a matching cookie ...");
+                            if (cookie.getValue().equals(session.getId())) {
+                                CAT.debug("   ... and the value is correct!");
+                                has_ssl_session_secure = true;
+                            } else {
+                                CAT.debug("   ... but the value is WRONG!");
+                                CAT.error("*** Wrong Session-ID for running secure session from cookie. " +
+                                          "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue() + " SessID: " + session.getId());
+                                session.invalidate();
+                                has_session = false;
+                            }
+                        } else {
+                            CAT.debug("*** Found NO matching cookie at all. ***");
+                            CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
+                                      "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
+                            session.invalidate();
+                            has_session = false;
+                        }
+                    }
                 } else {
                     CAT.debug("    ... but session is insecure!");
                     has_ssl_session_insecure = true;
                 }
+            } else if (secure != null && secure.booleanValue()) {
+                CAT.debug("*** Found secure session but NOT running under SSL => Destroying session.");
+                session.invalidate();
+                has_session = false;
             }
         } else if (req.getRequestedSessionId() != null) {
             CAT.debug("*** Found old and invalid session in request");
@@ -191,8 +215,7 @@ public abstract class ServletManager extends HttpServlet {
                 // without _any_ id, giving the balancer the possibility to choose a different server. (this can be 
                 // overridden by supplying the parameter __forcelocal=1 to the request). All this makes only sense of 
                 // course if we are running in a cluster of servers behind a balancer that chooses the right server
-                // based on the session id included in the URL.  This redirect is important when switching from "A" to
-                // "B" machines
+                // based on the session id included in the URL.
                 String forcelocal = req.getParameter(PARAM_FORCELOCAL);
                 if (forcelocal != null && (forcelocal.equals("1") || forcelocal.equals("true") || forcelocal.equals("yes"))) {
                     CAT.debug("    ... but found __forcelocal parameter to be set.");
@@ -256,7 +279,6 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
-
 
         //preq.initPerfLog();
         preq.startLogEntry();
@@ -334,7 +356,8 @@ public abstract class ServletManager extends HttpServlet {
         if (visit_id != null) {
             // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
             // Now we register the new session with saved traillog
-            SessionAdmin.getInstance().registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
+            SessionAdmin.getInstance().registerSession(session, traillog, infostruct.getData().getServerName(),
+                                                       infostruct.getData().getRemoteAddr());
         } else {
             // Register a new session now.
             registerSession(req, session);
@@ -566,27 +589,27 @@ public abstract class ServletManager extends HttpServlet {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
-        	CAT.error("Exception in process", e);
-        	ExceptionConfig exconf = getExceptionConfigForThrowable(e);
-        	
-        	if(exconf != null && exconf.getProcessor()!= null) { 
-        		if ( preq.getLastException() != null ) {
+            CAT.error("Exception in process", e);
+            ExceptionConfig exconf = getExceptionConfigForThrowable(e);
+            
+            if(exconf != null && exconf.getProcessor()!= null) { 
+                if ( preq.getLastException() != null ) {
                     return;
-        		}
-        		ExceptionProcessor eproc = exconf.getProcessor();
-        		eproc.processException(e, exconf, preq,
-                        getServletConfig().getServletContext(),
-                        req, res, properties);
-
-        	} else {
-        		// This is the default case when no
-        		// exceptionprocessors are defined.
-        		xhandler.handle(e, preq, properties);
-        	}
+                }
+                ExceptionProcessor eproc = exconf.getProcessor();
+                eproc.processException(e, exconf, preq,
+                                       getServletConfig().getServletContext(),
+                                       req, res, properties);
+                
+            } else {
+                // This is the default case when no
+                // exceptionprocessors are defined.
+                xhandler.handle(e, preq, properties);
+            }
             throw new ServletException("callProcess failed", e);
         }
     }
-
+    
     /**
      * 
      * @return null if no processor is responsible for the passed throwable
@@ -604,7 +627,7 @@ public abstract class ServletManager extends HttpServlet {
                 CAT.error(e);
                 throw new ServletException("Unable to instantiate class: "+key, e);
             }
-            if(clazz.isInstance(th)) {
+            if (clazz.isInstance(th)) {
                 // bingo
                 return (ExceptionConfig) exceptionConfigs.get(key);
             }
@@ -624,69 +647,68 @@ public abstract class ServletManager extends HttpServlet {
         int len = PROP_EXCEPTION.length();
 
     	Enumeration props = properties.propertyNames();
-    	while( props.hasMoreElements()) {
-        	String propName = (String) props.nextElement();
+    	while (props.hasMoreElements()) {
+            String propName = (String) props.nextElement();
+            
+            if (propName.startsWith(PROP_EXCEPTION)) {
+                String          propValue = properties.getProperty(propName);
+                StringTokenizer tokenizer = new StringTokenizer(propName, ".");
+                if (tokenizer.countTokens() < 3)
+                    throw new ServletException("Exception configuration has wrong format: " + propName);
+                tokenizer.nextToken();
+                
+                String          exConfName = tokenizer.nextToken();
+                ExceptionConfig exConf     = (ExceptionConfig) tmpExConf.get(exConfName);
 
-        	if ( propName.startsWith(PROP_EXCEPTION) ) {
-              String propValue = properties.getProperty(propName);
+                CAT.debug("Property found for exception processing: " + propName + "=" + propValue);
 
-              StringTokenizer tokenizer = new StringTokenizer(propName, ".");
-              if ( tokenizer.countTokens() < 3 )
-                  throw new ServletException("Exception configuration has wrong format: "+ propName);
+                if (exConf == null) {
+                    exConf = new ExceptionConfig();
+                    tmpExConf.put(exConfName, exConf);
+                }
 
-              tokenizer.nextToken();
-              String exConfName = tokenizer.nextToken();
-              ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(exConfName);
-
-              CAT.debug("Property found for exception processing: "+propName +"="+propValue);
-
-              if ( exConf == null ) {
-                  exConf = new ExceptionConfig();
-                  tmpExConf.put(exConfName, exConf);
-              }
-
-              try {
-                  String attrName = tokenizer.nextToken();
-                  CAT.debug(attrName);
-                  if ( "type".equals(attrName) ) {
-                      exConf.setType(propValue);
-                  } else if ( "forward".equals(attrName) ) {
-                      exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
-                  } else if ( "page".equals(attrName) ) {
-                      exConf.setPage(propValue);
-                  } else if ( "processor".equals(attrName) ) {
-                      Class procClass = Class.forName(propValue);
-                      ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
-                      exConf.setProcessor(exProc);
-                  }
-              } catch (ClassCastException ex) {
-                  throw new ServletException("INVALID CONF: Class "+propValue+" is not an instance of 'ExceptionProcessor'");
-              } catch (IllegalAccessException ex) {
-                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-              } catch (SecurityException ex) {
-                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-              } catch (ClassNotFoundException ex) {
-                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-              } catch (InstantiationException ex) {
-                  throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
-              }
-        	}
+                try {
+                    String attrName = tokenizer.nextToken();
+                    CAT.debug(attrName);
+                    if ("type".equals(attrName) ) {
+                        exConf.setType(propValue);
+                    } else if ("forward".equals(attrName) ) {
+                        exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
+                    } else if ("page".equals(attrName) ) {
+                        exConf.setPage(propValue);
+                    } else if ("processor".equals(attrName) ) {
+                        Class procClass = Class.forName(propValue);
+                        ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
+                        exConf.setProcessor(exProc);
+                    }
+                } catch (ClassCastException ex) {
+                    throw new ServletException("INVALID CONF: Class "+propValue + " is not an instance of 'ExceptionProcessor'");
+                } catch (IllegalAccessException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
+                } catch (SecurityException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
+                } catch (InstantiationException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class " + propName, ex);
+                }
+            }
     	}
-
-        CAT.debug("Finished reading properties for Exception configuration! \n"+tmpExConf);
+        
+        CAT.debug("Finished reading properties for Exception configuration! \n" + tmpExConf);
 
         exceptionConfigs.clear();
 
         // validate the ExceptionConfig-instances and save them, keyed by their type-attribute
-        for(Iterator values = tmpExConf.values().iterator(); values.hasNext();) {
+        for (Iterator values = tmpExConf.values().iterator(); values.hasNext();) {
             ExceptionConfig exConfig = (ExceptionConfig) values.next();
-            if ( exConfig.validate() == false )
+            if (exConfig.validate() == false)
                 throw new ServletException("INVALID ExceptionConfig: \n"+ exConfig);
             else
                 exceptionConfigs.put(exConfig.getType(), exConfig);
         }
-
-        if ( CAT.isDebugEnabled() ) {
+        
+        if (CAT.isDebugEnabled()) {
             CAT.debug("Complete ExceptionConfig is:");
             CAT.debug("\n"+ exceptionConfigs);
         }
@@ -695,10 +717,8 @@ public abstract class ServletManager extends HttpServlet {
 
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
-    //--
-
     // TODO: replace constants - ask tomcat 
-    public static final int HTTP_PORT = 80;
+    public static final int HTTP_PORT       = 80;
     public static final int APACHE_SSL_PORT = 443;
     public static final int TOMCAT_SSL_PORT = 8443;
     
