@@ -23,8 +23,6 @@ function wfxToolbar( config ) {
 wfxToolbar.prototype.registerEditor = function ( wfxEditor ) {
 
   this._editor       = wfxEditor;
-
-  //  alert("registerEditor(): editor: " + this._editor);
 };
 
 //#****************************************************************************
@@ -188,11 +186,18 @@ wfxToolbar.prototype.generate = function( elid, className ) {
 			       _stopEvent(wfx.is_ie ? window.event : ev);
 			     }
 			   });
-      var img = document.createElement("img");
-      img.src = thistb.imgURL(btn[1]);
-      img.style.width = "18px";
-      img.style.height = "18px";
-      el.appendChild(img);
+      if( btn[1] == "checkbox" ) {
+	var checkbox = document.createElement("input");
+	checkbox.type = "checkbox";
+	checkbox.id = "wfxtoolbar__el__" + btn[0];
+	el.appendChild(checkbox);
+      } else {
+	var img = document.createElement("img");
+	img.src = thistb.imgURL(btn[1]);
+	img.style.width = "18px";
+	img.style.height = "18px";
+	el.appendChild(img);
+      }
     }
 
     if (el) {
@@ -228,12 +233,14 @@ wfxToolbar.prototype.generate = function( elid, className ) {
 	tb_cell.className = "label";
 	tb_cell.innerHTML = label;
       } else {
-	createButton(code);
+	if(code=="syntaxhighlighting") {
+	  
+	} else {
+	  createButton(code);
+	}
       }
     }
   }
-  
-//  alert(toolbar.innerHTML);
 };
 
 //#****************************************************************************
@@ -317,18 +324,19 @@ wfxToolbar.Config = function () {
 		this.toolbarURL = "";
 	}
 
-	this.imgURL = "/core/img/editor/";
+	this.imgURL = "images/";
 
 	/** CUSTOMIZING THE TOOLBAR
 	 */
 
 	this.toolbar = [
-			[ "undo", "redo" ],
+			[ "syntaxrehighlighting", "undo", "redo" ],
 			];
 
 	this.btnList = {
-	  undo: [ "Undoes your last action", "/core/img/editor/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
-	  redo: [ "Redoes your last action", "/core/img/editor/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
+	  syntaxrehighlighting: [ "syntaxrehighlighting", "checkbox", false, function(e) {alert("syntaxrehighlighting");} ],
+	  undo: [ "Undo", "images/ed_undo.gif", false, function(e) {e.execCommand("undo");} ],
+	  redo: [ "Redo", "images/ed_redo.gif", false, function(e) {e.execCommand("redo");} ]
 	};
 };
 
