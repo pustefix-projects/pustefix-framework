@@ -67,7 +67,7 @@ public class LockManagerFinalizer extends ResdocSimpleFinalizer {
                 elem.setAttribute("sect", user.getUserInfo().getSect());
                 elem.setAttribute("product", prod.getComment());
                 elem.setAttribute("type", "" + aux.getType());
-                elem.setAttribute("auxpath", "" + aux.getPath());
+                elem.setAttribute("auxpath", "" + aux.getPath().getRelative());
                 if (aux.getType() == DependencyType.TEXT) {
                     elem.setAttribute("auxpart", "" + aux.getPart());
                     elem.setAttribute("auxproduct", "" + aux.getProduct());
