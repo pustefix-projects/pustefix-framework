@@ -2,9 +2,3 @@
 <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
   <pfx:maincontent path="sample1/txt/pages" part="content"/>
 </pfx:document>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
