@@ -32,15 +32,10 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     </xsl:choose>
     }
     
-    public String toString() {
-        StringBuffer sb = new StringBuffer(255);
-        sb.append("\n***All wrapper-data for <xsl:value-of select="$classname"/>***\n");
-        <xsl:for-each select="/interface/param">
-        sb.append("<xsl:value-of select="@name"/>="+gimmeParamInfoForKey("<xsl:value-of select="@name"/>").getValue()).append("\n");
-        </xsl:for-each>
-        return sb.toString();
-    }
     
+    <xsl:call-template name="generatetostring">
+      <xsl:with-param name="classname" select="$classname"/> 
+    </xsl:call-template>
     
     protected synchronized void registerParamInfos() {
         super.registerParamInfos();
@@ -247,5 +242,44 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
       <xsl:with-param name="node" select="$node"/>
     </xsl:call-template>
   </xsl:template>
+
+
+  <xsl:template name="generatetostring">
+    <xsl:param name="classname"/>
+    public String toString() {
+        StringBuffer sb = new StringBuffer(255);
+        sb.append("\n***All wrapper-data for <xsl:value-of select="$classname"/>***\n");
+        <xsl:for-each select="/interface/param">
+          <xsl:variable name="freq">
+            <xsl:choose>
+              <xsl:when test="@frequency = 'multiple'">[]</xsl:when>
+              <xsl:otherwise></xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="pname" select="@name"/>
+          <xsl:variable name="ptype" select="@type"/>
+            
+           <xsl:choose>
+            <xsl:when test="@frequency = 'multiple'">
+              <xsl:variable name="arrayname"><xsl:value-of select="$pname"/>Arr</xsl:variable>
+              <xsl:value-of select="$ptype"/>[] <xsl:value-of select="$arrayname"/>= (<xsl:value-of select="$ptype"/>[])gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getValueArr(); 
+        if(<xsl:value-of select="$arrayname"/> == null) {
+            sb.append("<xsl:value-of select="$pname"/>[]=NULL");
+        } else {
+            for(int i=0; i &lt; <xsl:value-of select="$arrayname"/>.length; i++) {
+               sb.append("<xsl:value-of select="$pname"/>["+i+"]="+<xsl:value-of select="$arrayname"/>[i]).append("\n");
+            }
+        }
+            </xsl:when>
+            <xsl:otherwise>
+        sb.append("<xsl:value-of select="$pname"/>="+gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getValue()).append("\n");
+            </xsl:otherwise>
+           </xsl:choose> 
+        </xsl:for-each>
+        return sb.toString();
+    }
+  
+  </xsl:template>
+
 
 </xsl:stylesheet>
