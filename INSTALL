@@ -114,19 +114,26 @@ Prerequisites:
     directory and take a short look to the README_EXAMPLES.txt included in the 
     tar afterwards.
     
+7)	Creating your own pustefix project is really simple. If you're in 
+	the skel dir just type in "./newproject.sh" 
+	and follow the command-line
+	instructions. 
+	Afterwards run ant, restart apache, restart tomcat and type in
+		http://myprojectname.HOSTNAME.DOMAIN
+		
+	To see how it works you should take a short look in 
+	de.schlund.pfixcore.util.basicapp. 
+	If you start with InitNewPfixProject.java (in the package basics) it should 
+	be easy to understand the way to go
+    
     Have Fun.
 
 
 FINAL NOTE:
 
 You could now start building your own applications, but unfortunately
-there is still not much  documentation about how to achieve this. In the
-future it is planned to provide an application that will help with
-creating new projects and will serve as a tutorial
-and provide the needed documentation to understand the whole system.
-I hope this will happen soon :-/
-
-For now, I suggest you refer to the mailing list (see pustefix.sf.net).
+there is still not much  documentation about how to achieve this. Therefore 
+I suggest you refer to the mailing list (see pustefix.sf.net).
 
 Just one warning for people trying to use the editor app as an example
 for their own application: The editor works, but is quite old and in a

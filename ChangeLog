@@ -1,3 +1,27 @@
+
+2004-06-01  Ralf Rapude    <rapude@schlund.de>
+	* A project generator has been integrated in pfixcore
+	- Therefore a new package exists: de.schlund.pfixcore.util.basicapp
+	- It consists of different packages with all necessary classes
+	- Each dom to change is represented by its own object in 
+	  de.schlund.pfixcore.util.basicapp.projectdom
+	  
+	* Two new files will be found in /example/conf
+	- newproject.prop.in can be used for project properties
+	- newprjlog.xml.in configures log4j
+	
+	* The directory "prjtemplates" in example/core has been created. All 
+	  xml files to generate a new project can be found there. To avoid problems
+	  with ant the suffix tmpl is used.
+	
+	* To generate a project in pfixcore or in the skel use the newproject.sh. 
+	  This file (with a different project path) also exists in the skel folder.
+	
+	* follow the command-line instructions
+	
+	* Afterwards run ant, restart apache and type in 
+	  http://projectname.HOSTNAME.DOMAIN
+
 2004-06-03  Michael Hartmier  <mhm@schlund.de>
 	* src/de/schlund/pfixcore/editor/EditorHelper.java,
 	* src/de/schlund/pfixcore/util/XsltGenericTask.java,
@@ -33,6 +57,7 @@
 	* src/de/schlund/pfixxml/targets/TargetImpl.java
 	improved exception message
 
+>>>>>>> 1.401
 2004-06-01  Niels Schelbach    <niels@schlund.de>
 	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java
 	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
