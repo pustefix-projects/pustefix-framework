@@ -408,7 +408,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void splitIWrappers() throws Exception {
-        reqdata = (RequestData) (new RequestDataImpl(context, preq));
+        reqdata = new RequestDataImpl(context, preq);
         checkGroupDisplayStatus();
         boolean group_wanted = ((Boolean) preq.getSession(false).getAttribute(GROUP_STATUS)).booleanValue();
         boolean group_defined = hasGroupDefinition();
