@@ -1,3 +1,12 @@
+2003-10-27  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* build.xml, skel/build.xml: Incorporated compilation/generation exclusion
+	- by taking property "excludes.src" into account within tasks "compile, generate-src"
+	- by taking property "excludes.projects" into account within task "generate"
+	* build.xml: added target "test-skeleton", to verify skel builds without errors
+	* skel/build.xml: Added mkdir ${dir.projects}/htdocs to task "init" to prevent apache from failing to start.
+	Added target "check-permissions" to ensure executability of shell scripts.
+
 2003-10-27  Sebastian Werner  <sw@schlund.de>
 	* example/core/script/baselib.js: Fixed bug in add-function for cookie handling. Now should
 	work correctly.

@@ -23,6 +23,7 @@
     <property name="dir.metainf"              location="META-INF"/>
     <property name="dir.projects"             location="projects"/>
     <property name="dir.docroot"              location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
+    <property name="dir.htdocs"               location="${dir.projects}/htdocs"                                 description="DocumentRoot for apache, defaults to dir.projects/htdocs"/>
     <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                   value="quiet"                                                description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
     <property name="file.log4jconfig"         location="${dir.projects}/core/conf/generator_${genlog}.xml"/>
@@ -75,9 +76,11 @@
         <!-- Create time stamp in ISO 8601 alike format.
              17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
         <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
-        <!-- Create the build directory structure used by compile -->
+        <!-- Create the build directory structure needed for compile -->
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.src}"/>
+        <!-- apache fails to start if its serverroot does not exist -->
+        <mkdir dir="${dir.htdocs}"/>
         <!-- if running with -v pathconvert already logs what it is doing, no need to echo again -->
         <pathconvert property="echo.cp.buildpath" refid="cp.buildpath" pathsep="&#013;"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
@@ -120,12 +123,12 @@
         </exec>
     </target>
     
-    <target name="generate" depends="targetdefs, stylesheets, compile, installjars">
-        <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}"/>
+    <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions">
+        <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
     </target>
 
     <target name="all" 
-            depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+            depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
             description="builds all files required to run"
     />    
     <target name="compile" depends="generate-src, jni" description="compiles all .java files">
@@ -134,11 +137,12 @@
             destdir="${dir.build}"
             debug="${debug}"
             classpathref="cp.buildpath"
+            excludes="${excludes.src}"
         />    
     </target>
     
     <target name="generate-src" depends="ant-tasks" description="generates interfaces wrappers .by transforming .iwrp to .java files">
-        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl"/>
+        <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
     </target>
     
     <target name="jni">
@@ -209,6 +213,13 @@
                 <exclude name="**/*" if="core-data.uptodate"/>
             </patternset>
         </untar>
+    </target>
+    
+    <target name="check-permissions">
+    	<apply executable="chmod" os="Linux">
+    		<arg line="a+x"/>
+    		<fileset dir="${basedir}" includes="apploader.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh"/>
+    	</apply>
     </target>
     
     <!-- Makefile
