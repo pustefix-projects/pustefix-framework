@@ -108,11 +108,11 @@ public class ContextResourceManager implements Reloader {
 		// Now create an object of the requested class 
 		try {
 		    CAT.debug("Creating object with name [" + classname + "]");
-                    AppLoader appLoader=AppLoader.getInstance();
+                    AppLoader appLoader = AppLoader.getInstance();
                     if (appLoader.isEnabled()) {
-                        cr = (ContextResource)appLoader.loadClass(classname).newInstance();
+                        cr = (ContextResource) appLoader.loadClass(classname).newInstance();
                     } else {
-                        cr = (ContextResource)Class.forName(classname).newInstance();
+                        cr = (ContextResource) Class.forName(classname).newInstance();
                     }
 		} catch (Exception e) {
 		    throw new ServletException("Exception while creating object " +
@@ -180,25 +180,23 @@ public class ContextResourceManager implements Reloader {
         
 	// Check for all implemented interfaces, if it equals the interface that
 	// we want, than break.
-
-    if (wantedinterface.isInstance(obj)) {
-        CAT.debug("Got requested interface " + interfacename + "! Bingo!");
-    }
-	else  {
-	    // Uh, the requested interface is not implemented by the
-	    // object, that's not nice!
-	    throw new ServletException("The class [" + obj.getClass().getName() +
-				       "] doesn't implemented requested interface " +
-				       interfacename);
-	}
         
-	// Now check if the interface is already registered...
-	if (resources.containsKey(interfacename)) {
-	    throw new ServletException("Interface [" + interfacename +
-				       "] already registered for instance of [" +
-				       resources.get(interfacename).getClass().getName()
-				       + "]");
-	}
+        if (wantedinterface.isInstance(obj)) {
+            CAT.debug("Got requested interface " + interfacename + "! Bingo!");
+        } else {
+            // Uh, the requested interface is not implemented by the
+            // object, that's not nice!
+            throw new ServletException("The class [" + obj.getClass().getName() +
+                                       "] doesn't implemented requested interface " +
+                                       interfacename);
+        }
+        
+        // Now check if the interface is already registered...
+        if (resources.containsKey(interfacename)) {
+            throw new ServletException("Interface [" + interfacename +
+                                       "] already registered for instance of [" +
+                                       resources.get(interfacename).getClass().getName() + "]");
+        }
     }
     
     /**
