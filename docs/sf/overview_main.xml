@@ -22,7 +22,7 @@
     on disc). If you don't have enough memory to hold your site in
     RAM, you can specify other cache objects. E.g. we supply a LRU
     cache that can be configured to hold only the last N generated
-    objects. Learn more about the XML/XSLT generator on <a href="xml.html">this page</a>.
+    objects in memory. Learn more about the XML/XSLT generator on <a href="xml.html">this page</a>.
   </p>
   
   <stdimg src="img/overview.png">
