@@ -500,11 +500,15 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (isInfoEnabled()) {
             CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
         }
-        if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
-            OutputStream       out          = res.getOutputStream();
-            OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
-            writer.write("\n<!-- GET_DOM: " + getdomtime +  " HDL_DOC: " + handletime + " -->");
-            writer.flush();
+        try {
+            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
+                OutputStream       out          = res.getOutputStream();
+                OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
+                writer.write("\n<!-- GET_DOM: " + getdomtime +  " HDL_DOC: " + handletime + " -->");
+                writer.flush();
+            }
+        } catch (Exception e) {
+            // ignore
         }
     }
 
