@@ -19,18 +19,41 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixxml.targets.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.PageInfoFactory;
+import de.schlund.pfixxml.targets.PageTargetTree;
+import de.schlund.pfixxml.targets.PublicXSLTProcessor;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TraxXSLTProcessor;
+import de.schlund.pfixxml.testenv.RecordManager;
 
 /**
  *
@@ -51,6 +74,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     static { dbfac.setNamespaceAware(true); }
 
     public  static final String SESS_LANG        = "__SELECTED_LANGUAGE__";
+    public static final String SESS_RECORDMODE   = "__RECORD_MODE__";
     public  static final String XML_CONTENT_TYPE = "text/xml; charset=iso-8859-1";
 
     public  static final String PARAM_XMLONLY    = "__xmlonly";
@@ -60,7 +84,8 @@ public abstract class AbstractXMLServer extends ServletManager {
     public  static final String PARAM_FRAME      = "__frame";
     public  static final String PARAM_NOSTORE    = "__nostore";
     public  static final String PARAM_REUSE      = "__reuse"; // internally used
-
+	public static final String PARAM_RECORDMODE  = "__recordmode";
+	
     public  static final String XSLPARAM_LANG    = "lang";
     public  static final String XSLPARAM_SESSID  = "__sessid";
     public  static final String XSLPARAM_URI     = "__uri";
@@ -79,7 +104,12 @@ public abstract class AbstractXMLServer extends ServletManager {
     public  static final String PROP_NOEDIT      = "xmlserver.noeditmodeallowed";
     public  static final String PROP_NOXML       = "xmlserver.noxmlonlyallowed";
     public  static final String PROP_RENDER_EXT  = "xmlserver.output.externalrenderer";
-    
+	private static final String PROP_RECORDMODE_KEY  = "xmlserver.recordmode_allowed";
+	private static final String PROP_RECORDMODE_ENABLED_VALUE  = "true";
+	private static final String PROP_RECORDMODE_LOGDIR  = "xmlserver.recordmode_logdir";
+	private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY = "targetgenerator.skip_getmodtimemaybeupdate";
+   	private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE = "true";
+   
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
      * class of servlets.
@@ -97,6 +127,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private        boolean  render_external = false;
     private static Category LOGGER_TRAIL    = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT             = Category.getInstance(AbstractXMLServer.class.getName());
+    private boolean recordmodeAllowed = false;
+    private String recordmodeLogDir = null;
+    
     /**
      * Init method of all servlets inheriting from AbstractXMLServers.
      * It calls super.init(Config) as a first step.
@@ -119,6 +152,51 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((servletname = getProperties().getProperty(PROP_NAME)) == null) {
             throw(new ServletException("Need property '" + PROP_NAME + "'"));
         }
+
+		// analyze the RECORDMODE property
+		if(getProperties().getProperty(PROP_RECORDMODE_KEY) == null) {
+			String msg = "Need property '" + PROP_RECORDMODE_KEY + "'"; 
+			CAT.fatal(msg);
+			throw new ServletException(msg); 
+		} else {
+			String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
+			recordmodeAllowed = 
+				tmp.toUpperCase().equals(PROP_RECORDMODE_ENABLED_VALUE.toUpperCase()) ? 
+				true : false;
+			if(CAT.isDebugEnabled()) {
+				CAT.debug("RecordModeAllowed is: "+recordmodeAllowed);
+			}
+		}
+        
+        if(recordmodeAllowed) {
+        // analyze the RECORDMODE_LOGDIR property
+        	if(getProperties().getProperty(PROP_RECORDMODE_LOGDIR) == null) {
+        		CAT.fatal("Need property '" + PROP_RECORDMODE_LOGDIR + "'");
+        		throw new ServletException("Need property '" + PROP_RECORDMODE_LOGDIR + "'");
+        	} else {
+        		recordmodeLogDir = getProperties().getProperty(PROP_RECORDMODE_LOGDIR);
+        		if(CAT.isDebugEnabled()) {
+        			CAT.debug("RecordMode logdir is: "+recordmodeLogDir);
+        		}
+        	}
+        }
+        
+        // analyze the SKIP_GETMODTIMEMAYBEUPDATE property
+        boolean skip_getmodtimemaybeupdate = false;
+        if(getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY) == null) {
+        	String msg = "Need property '" + PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY + "'";
+        	CAT.fatal(msg);
+        	throw new ServletException(msg);
+        } else {
+        	String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
+        	skip_getmodtimemaybeupdate = 
+        		tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? 
+        		true : false;
+        	if(CAT.isDebugEnabled()) {
+        		CAT.debug("SKIP_GETMODTIMEMAYBEUPDATE: "+skip_getmodtimemaybeupdate);
+        	}
+        }
+        
         
         try {
             generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
@@ -126,6 +204,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             CAT.error("Error: ",e);
             throw(new ServletException("Couldn't get TargetGenerator: " + e.toString()));
         }
+        // tell targetgenerator to skip getModTimeMaybeUpdate or not
+        generator.setIsGetModTimeMaybeUpdateSkipped(skip_getmodtimemaybeupdate);
+        
+        
         
         String render_external_prop = getProperties().getProperty(PROP_RENDER_EXT);
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
@@ -140,11 +222,13 @@ public abstract class AbstractXMLServer extends ServletManager {
             return true;
         } else {
             try {
-                generator.tryReinit();
+                // This is a fake. We also return true when only depend.xml change, but the properties not.
+                // But we can only signal one type of "reload" event with the return value of this method,
+                // so it's better to reload the properties one time too often.
+                return generator.tryReinit();
             } catch (Exception e) {
                 throw new ServletException("When trying to reinit generator: " + e);
             }
-            return false;
         }
     }
     
@@ -185,10 +269,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean           doreuse    = doReuse(preq);
         ContainerUtil     conutil    = getContainerUtil();
         SPDocument        spdoc      = null;
-        Date              timestamp  = null;
         RequestParam      value;
         long              currtime;
-
+		boolean           recording_enabled = false;
+		String            record_logdir = "0";
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
         // they will be stored in the params properties and will be applied as stylesheet
@@ -212,6 +296,25 @@ public abstract class AbstractXMLServer extends ServletManager {
                     spdoc = (SPDocument) conutil.getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
                 }
             }
+            
+            // do this only if recordmode is allowed
+            if(recordmodeAllowed) {
+            	// Look for the __recordmode parameter and store it in the session 
+            	// if its there. 
+            	if((value = preq.getRequestParam(PARAM_RECORDMODE)) != null) {
+            		if(value.getValue() != null) {
+            			conutil.setSessionValue(session, SESS_RECORDMODE, value.getValue());
+            		}
+            	}
+            	// get the parameter from the session
+            	if((record_logdir = (String)conutil.getSessionValue(session, SESS_RECORDMODE)) != null) {
+            		recording_enabled = record_logdir.equals("0") ? false : true;
+            		if(CAT.isInfoEnabled()) {
+            			CAT.info("Recording enabled="+recording_enabled+" directory ="+record_logdir);
+            		}
+            	}	
+            }
+            
             // Now look for the parameter __editmode, and store it in the
             // session if it's there. Get the parameter from the session, and hand it over to the
             // Stylesheet params. Do the same for the parameter __language.
@@ -244,6 +347,21 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (spdoc == null) {
             currtime = System.currentTimeMillis();
             spdoc = getDom(preq);
+            // start recording if allowed and enabled
+            if(recordmodeAllowed && recording_enabled) {
+            	CAT.warn("Recording enabled!");
+            	// create counter if none exists
+            	if(conutil.getSessionValue(session, "RECORD_COUNTER") == null) {
+            		conutil.setSessionValue(session, "RECORD_COUNTER", new Integer(0));
+            	}
+            	Integer count = (Integer)conutil.getSessionValue(session, "RECORD_COUNTER");
+            	RecordManager.getInstance().doRecord(count.intValue(), 
+            											recordmodeLogDir +"/"+record_logdir, 
+            											preq.getRequestURI(res), preq, spdoc, 
+            											session.getId());
+            	// Increase counter
+            	conutil.setSessionValue(session, "RECORD_COUNTER", new Integer(count.intValue()+1));
+            }
             if (CAT.isDebugEnabled()) {
                 CAT.debug("* Document for XMLServer is" + spdoc);
             }
@@ -362,7 +480,11 @@ public abstract class AbstractXMLServer extends ServletManager {
                                              generator.getTarget(stylesheet).getValue(),
                                              paramhash, res.getOutputStream());
             } catch (TransformerException e) {
-                CAT.warn("[Ignored TransformerException] ", e);
+                CAT.warn("[Ignored TransformerException] : "+e.getMessage());
+                if(CAT.isInfoEnabled()) {
+                	CAT.warn("[Ignored TransformerException]", e);
+            	}
+                
             }
                         
         } else if (plain_xml) {
@@ -404,6 +526,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             LOGGER_TRAIL.warn(logbuff.toString());
         }
     }
+    
+    
     
     private TreeMap constructParameters(SPDocument spdoc, Properties gen_params) {
         TreeMap    paramhash = new TreeMap();

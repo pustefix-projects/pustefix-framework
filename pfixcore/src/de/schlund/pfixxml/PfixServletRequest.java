@@ -37,10 +37,11 @@ import org.apache.log4j.*;
  */
 
 public class PfixServletRequest {
-    public static final String PROP_TMPDIR      = "pfixservletrequest.tmpdir";
-    public static final String PROP_MAXPARTSIZE = "pfixservletrequest.maxpartsize";
-    public static       String DEF_TMPDIR       = "/tmp";
-    public static       String DEF_MAXPARTSIZE  = "" + (10 * 1024 * 1024); // 10 MB
+    private static final String DATA_PREFIX      = "__DATA:";
+    public  static final String PROP_TMPDIR      = "pfixservletrequest.tmpdir";
+    public  static final String PROP_MAXPARTSIZE = "pfixservletrequest.maxpartsize";
+    public  static       String DEF_TMPDIR       = "/tmp";
+    public  static       String DEF_MAXPARTSIZE  = "" + (10 * 1024 * 1024); // 10 MB
     private ArrayList          exceptions = new ArrayList();
     private HashMap            parameters = new HashMap();
     private Category           CAT        = Category.getInstance(this.getClass());
@@ -206,13 +207,15 @@ public class PfixServletRequest {
     // ------------------------------- //
     
     private void getRequestParams(HttpServletRequest req, Properties properties) {
-        String type = req.getContentType();
+        String  type     = req.getContentType();
+        HashSet allnames = new HashSet();
         if (type != null && type.toLowerCase().startsWith(MultipartHandler.MULTI_FORM_DATA)) {
-            handleMulti(req, properties);
+            allnames.addAll(handleMulti(req, properties));
         }
 
         for (Enumeration enum = req.getParameterNames(); enum.hasMoreElements(); ) {
             String   key  = (String) enum.nextElement();
+            allnames.add(key);
             String[] data = req.getParameterValues(key);
             CAT.debug("* [NORMAL] Found parameters for key '" + key + "' count=" + data.length);
             RequestParam[] multiparams = (RequestParam[]) parameters.get(key);
@@ -237,10 +240,17 @@ public class PfixServletRequest {
             }
             parameters.put(key, params);
         }
+
+        for (Iterator i = allnames.iterator(); i.hasNext();) {
+            String paramname = (String) i.next();
+            checkParameterNameForEmbeddedData(paramname);
+        }
+        
     }
 
-    private void handleMulti(HttpServletRequest req, Properties properties) {
-        String tmpdir = properties.getProperty(PROP_TMPDIR);
+    private HashSet handleMulti(HttpServletRequest req, Properties properties) {
+        String  tmpdir = properties.getProperty(PROP_TMPDIR);
+        HashSet names  = new HashSet();
         if (tmpdir == null || tmpdir.equals("")) {
             tmpdir = DEF_TMPDIR;
         }
@@ -259,6 +269,7 @@ public class PfixServletRequest {
         
         for (Enumeration enum = multi.getParameterNames(); enum.hasMoreElements(); ) {
             String     key    = (String) enum.nextElement();
+            names.add(key);
             List       values = multi.getAllParameter(key);
             PartData[] data   = (PartData[])values.toArray(new PartData[] {});
             CAT.debug("* [MULTI] Found parameters for key '" + key + "' count=" + data.length);
@@ -268,6 +279,69 @@ public class PfixServletRequest {
             }
             parameters.put(key, data);
         }
+        return names;
     }
+
+
+    private void checkParameterNameForEmbeddedData(String name) {
+        HashMap embpar = new HashMap();
+        int     index  = 0;
+        while (name.indexOf(DATA_PREFIX, index) >= 0) {
+            int keystart = name.indexOf(DATA_PREFIX, index) + DATA_PREFIX.length();
+            int keyend   = name.indexOf(":", keystart);
+            if (keyend < 0) {
+                CAT.warn("    * [EMB/" + name + "] No trailing ':' was found after the key. Ignoring key.");
+                break;
+            }
+            String key = name.substring(keystart, keyend);
+            CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
+
+            int valuestart = keyend +1 ;
+            int valueend   = name.indexOf(":", valuestart);
+            if (valueend < 0) {
+                CAT.warn("    * [EMB/" + name + "] No trailing ':' was found after the value. Ignoring key/value pair.");
+                break;
+            }
+            String value = name.substring(valuestart, valueend);
+            CAT.debug("    * [EMB/" + name + "]  >> Value is " + value);
+
+            ArrayList list = (ArrayList) embpar.get(key);
+            if (list == null) {
+                list = new ArrayList();
+                embpar.put(key, list);
+            }
+            list.add(value);
+            
+            index = valueend;
+        }
+
+        for (Iterator i = embpar.keySet().iterator(); i.hasNext();) {
+            String    pkey  = (String) i.next();
+            ArrayList pvals = (ArrayList) embpar.get(pkey);
+            if (pvals != null) {
+                RequestParam[] oldvals = (RequestParam[]) parameters.get(pkey);
+                RequestParam[] newvals;
+                if (oldvals == null) {
+                    newvals = new RequestParam[pvals.size()];
+                } else {
+                    newvals = new RequestParam[pvals.size() + oldvals.length];
+                }
+                
+                for (int j = 0; j < pvals.size(); j++) {
+                    newvals[j] = new SimpleRequestParam((String) pvals.get(j));
+                }
+                if (oldvals != null) {
+                    CAT.debug("          **** [EMB] already having parameter data for key '" + pkey + "'..." );
+                    for (int k = pvals.size(); k < (pvals.size() + oldvals.length); k++) {
+                        newvals[k] = oldvals[k - pvals.size()];
+                    }
+                }
+                parameters.put(pkey, newvals);
+            }
+        }
+        
+    }
+
+    
     
 }// PfixServletRequest
