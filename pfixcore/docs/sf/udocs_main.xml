@@ -21,12 +21,13 @@
         <code>DOCROOT/servletconf/projects.xml.in</code>) that handles
         properties common to all projects. Additionally, there is, for each project,
         a file called <code>DOCROOT/MyProject/conf/project.xml.in</code> that contains the
-        project specific information. See <a href="prop.html#list">here</a> for a list of
-        used java property files.
+        project specific information.
       </p>
       <p>
-        The build system builds the final <code>DOCROOT/servletconf/projects.xml</code> file
-        by merging the project specific and the environment-wide files.
+        The build system builds the final
+        <code>DOCROOT/servletconf/projects.xml</code> file by merging
+        the project specific and the environment-wide files. See <a
+        href="project.html#list">here</a> for more information.
       </p>
     </li>
     <li>
@@ -36,7 +37,9 @@
         that you have defined for your project in the associated
         <code>project.xml</code> file.  Again, there is also a common
         property file used for all servlets
-        (<code>DOCROOT/common/conf/pustefix.prop.in</code>).
+        (<code>DOCROOT/common/conf/pustefix.prop.in</code>). See <a
+        href="prop.html#list">here</a> for a list of used java
+        property files.
       </p>
     </li>
     <li>

@@ -38,6 +38,7 @@
       <a href="apploader.html">documentation has been written.</a> 
     </li>
     <li>Some other small fixes. Refer to the ChangeLog for more detailed news.</li>
+    <li>We have started to move the build process from make to ant. Nothing yet in CVS, but stay tuned.</li>
   </ul>
   
   <h2>ChangeLog</h2>

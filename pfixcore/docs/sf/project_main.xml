@@ -1,3 +1,50 @@
 <div>
-  coming soon...
+  <h1>Project definition</h1>
+  <p>For each project in your <pustefix/> environment you need to create a definition file that contains all the
+    information about your project that is needed to automatically generate other configuration files for various sbsystems.</p>
+  <ul>
+    <li>The <b>apache</b> config file, containing the definition for each of the projects of your environment:<br/>
+      <code>servletconf/tomcat/apache.conf</code></li>
+    <li>The config files for <b>mod_jk</b>:<br/>
+      <code>servletconf/tomcat/jk.conf</code> and <code>servletconf/tomcat/workers.prop</code>.
+    </li>
+    <li>The config file for the <b>tomcat</b> servlet container:<br/>
+      <code>servletconf/tomcat/conf/server.xml</code></li>
+    <li>The config files for every <b>webapp</b> (each project is mapped to a webapp):<br/>
+      <code>servletconf/tomcat/webapps/[project name]/WEB-INF/web.xml</code>
+    </li>
+    <li>The config file that tells the <a href="editor.html"><pustefix/> editor</a> about all the projects that
+      can be edited in your environment:<br/>
+      <code>common/conf/products.prj</code></li>
+  </ul>
+
+  <p>This information is contained in a site wide file
+    <code>servletconf/projects.xml.in</code> which contains information
+    every environment needs. Each project also needs to supply a file to tell the
+    system it's own configuration. These files are at <code>[project
+      name]/conf/project.xml.in</code>. All those files, together with the
+    site wide file are used as the source for creating the above
+    mentioned config files.
+  </p>
+
+  <h2>The site wide configuration <i>servletconf/projects.xml.in</i></h2>
+
+  <p>The site wide projects.xml.in file contains two "projects" that are
+    needed for <pustefix/> itself to work properly.  The first of these
+    is the <a href="editor.html">editor</a> project. The other project
+    is used to start a servlet automatically when the system
+    starts. This servlet itself is not able to act on any userinput,
+    it's only purpose is to start a bunch of factories that implement
+    functionality shared by other, "real" projects.</p>
+  
+  <p>If you need other servlets for administrative purposes (e.g. to
+    gather some sort of statisitics about the system as a whole) you can
+    add these servlets to this project.</p>
+  
+  <h2>The project specific configuration <i>[project name]/conf/project.xml.in</i></h2>
+
+  <p>
+    
+  </p>
+  
   </div>
