@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  targetNamespace="http://pustefix.sourceforge.net/properties200401" 
+  targetNamespace="http://pustefix.sourceforge.net/properties200401"
   xmlns:prop="http://pustefix.sourceforge.net/properties200401" elementFormDefault="qualified" attributeFormDefault="unqualified"
   >
-  
+
   <!--
   CVS Revision: $Revision$
   -->
-  
+
   <!--
-  TODO: 
+  TODO:
   * make ihandler and authhandler mutually exclusive
   -->
 
@@ -49,15 +49,15 @@
         </custest>
       </cuschoose>
     </servletinfo>
-  -->  
-  
-  
-  <!-- <servletinfo> -->  
+  -->
+
+
+  <!-- <servletinfo> -->
   <xs:complexType name="servletinfoType" abstract="true">
     <xs:attribute name="name" use="required"/>
     <xs:attribute name="depend" use="required"/>
   </xs:complexType>
-  
+
   <xs:complexType name="directoutputserverservletinfoType">
     <xs:complexContent>
       <xs:extension base="prop:servletinfoType">
@@ -87,7 +87,7 @@
     <xs:attribute name="allow" type="xs:boolean" default="false"/>
     <xs:attribute name="modes" type="xs:normalizedString"/>
   </xs:complexType>
-  
+
   <xs:element name="ssl" type="prop:sslType"/>
   <xs:complexType name="sslType">
     <xs:attribute name="force" type="xs:boolean" use="required"/>
@@ -100,7 +100,7 @@
 			<xs:minLength value="2"/>
 		</xs:restriction>
 	</xs:simpleType>
-	
+
   <xs:element name="adminmode" type="prop:adminmodeType"/>
   <xs:complexType name="adminmodeType">
     <xs:attribute name="watch" use="required"/>
@@ -116,10 +116,10 @@
   <xs:complexType name="defaultihandlerstateType">
     <xs:attribute name="class" use="required"/>
   </xs:complexType>
-  <!-- </servletinfo> -->  
-  
-  
-  
+  <!-- </servletinfo> -->
+
+
+
   <!--
   <pagerequest name="OrderHostingRedirectConfig">
     <state class="de.schlund.pfixschlund.ucm.contract.ContractOrderState"/>
@@ -153,7 +153,7 @@
     <xs:attribute name="defaultflow" use="required"/>
     <xs:attribute name="authpage"/>
   </xs:complexType>
-  
+
   <xs:element name="resource" type="prop:resourceType"/>
   <xs:complexType name="resourceType">
     <xs:sequence>
@@ -162,7 +162,7 @@
     </xs:sequence>
     <xs:attribute name="class" use="required"/>
   </xs:complexType>
-  
+
   <xs:element name="implements" type="prop:implementsType"/>
   <xs:complexType name="implementsType">
     <xs:attribute name="class" use="required"/>
@@ -172,14 +172,33 @@
   <!-- <pageflow> -->
   <xs:element name="pageflow" type="prop:pageflowType"/>
   <xs:complexType name="pageflowType">
-    <xs:sequence>
-      <xs:element ref="prop:flowstep" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="default">
+          <xs:complexType>
+            <xs:group ref="prop:pageflowGroup"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="variant" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:group ref="prop:pageflowGroup"/>
+            <xs:attribute name="name" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:group ref="prop:pageflowGroup"/>
+    </xs:choice>
     <xs:attribute name="name" use="required"/>
     <xs:attribute name="final"/>
     <xs:attribute name="stopnext" type="xs:boolean" default="false"/>
   </xs:complexType>
-  
+
+  <xs:group name="pageflowGroup">
+    <xs:sequence>
+      <xs:element ref="prop:flowstep" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:group>
+
   <xs:element name="flowstep" type="prop:flowstepType"/>
   <xs:complexType name="flowstepType">
     <xs:sequence>
@@ -189,7 +208,7 @@
     <xs:attribute name="name" use="required"/>
     <xs:attribute name="stophere"/>
   </xs:complexType>
-  
+
   <xs:element name="oncontinue" type="prop:oncontinueType"/>
   <xs:complexType name="oncontinueType">
     <xs:sequence>
@@ -212,9 +231,9 @@
     <xs:anyAttribute processContents="lax"/>
   </xs:complexType>
   <!-- </pageflow> -->
-  
 
-  
+
+
   <!--
   <xs:element name="" type="prop:"/>
   <xs:complexType name="">
@@ -223,100 +242,119 @@
     </xs:sequence>
     <xs:attribute name=""/>
   </xs:complexType>
-  -->  
+  -->
 
   <!-- <pagerequest> -->
   <xs:element name="pagerequest" type="prop:pagerequestType"/>
   <xs:complexType name="pagerequestType">
-    <xs:sequence>
-
-      <xs:element name="ssl" minOccurs="0">
-        <xs:complexType>
-          <xs:attribute name="force" type="xs:boolean" use="required"/>
-          <xs:attribute name="modes" type="xs:normalizedString"/>
-        </xs:complexType>
-      </xs:element>
-      
-      <xs:element name="state" minOccurs="0">
-        <xs:complexType>
-          <xs:attribute name="class" use="required"/>
-        </xs:complexType>
-      </xs:element>
-      
-      <xs:element name="finalizer" minOccurs="0">
-        <xs:complexType>
-          <xs:attribute name="class" use="required"/>
-        </xs:complexType>
-      </xs:element>
-      
-      <xs:choice>
-        <xs:element name="input"  minOccurs="0">
+    <xs:choice>
+      <xs:sequence>
+        <xs:element name="default">
           <xs:complexType>
-            <xs:sequence>
-              <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="prefix" use="required"/>
-                  <xs:attribute name="class" use="required"/>
-                  <xs:attribute name="continue" default="false" type="xs:boolean"/>
-                  <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
-                  <xs:attribute name="alwaysretrieve" default="false" type="xs:boolean"/>
-                  <xs:attribute name="logging" default="false" type="xs:boolean"/>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="policy" default="ANY">
-              <xs:simpleType>
-                <xs:restriction base="xs:token">
-                  <xs:enumeration value="ANY"/>
-                  <xs:enumeration value="ALL"/>
-                  <xs:enumeration value="NONE"/>
-                </xs:restriction>
-              </xs:simpleType>
-            </xs:attribute>
+            <xs:group ref="prop:pagerequestGroup"/>
           </xs:complexType>
         </xs:element>
-        <xs:element name="auth" minOccurs="0">
+        <xs:element name="variant" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:group ref="prop:pagerequestGroup"/>
+            <xs:attribute name="name" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:group ref="prop:pagerequestGroup"/>
+    </xs:choice>
+    <xs:attribute name="name" use="required"/>
+    <xs:attribute name="nostore" type="xs:boolean"/>
+    <xs:attribute name="copyfrom"/>
+  </xs:complexType>
+
+  <xs:group name="pagerequestGroup">
+      <xs:sequence>
+
+        <xs:element name="ssl" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="force" type="xs:boolean" use="required"/>
+            <xs:attribute name="modes" type="xs:normalizedString"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="state" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="class" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="finalizer" minOccurs="0">
+          <xs:complexType>
+            <xs:attribute name="class" use="required"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:choice>
+          <xs:element name="input"  minOccurs="0">
             <xs:complexType>
               <xs:sequence>
-                <xs:element name="authinterface" maxOccurs="1">
+                <xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
                   <xs:complexType>
                     <xs:attribute name="prefix" use="required"/>
                     <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="continue" default="false" type="xs:boolean"/>
+                    <xs:attribute name="activeignore" default="false" type="xs:boolean"/>
+                    <xs:attribute name="alwaysretrieve" default="false" type="xs:boolean"/>
+                    <xs:attribute name="logging" default="false" type="xs:boolean"/>
                   </xs:complexType>
                 </xs:element>
-                <xs:element name="auxinterface" minOccurs="0" maxOccurs="unbounded">
+              </xs:sequence>
+              <xs:attribute name="policy" default="ANY">
+                <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                    <xs:enumeration value="ANY"/>
+                    <xs:enumeration value="ALL"/>
+                    <xs:enumeration value="NONE"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:attribute>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="auth" minOccurs="0">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="authinterface" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="auxinterface" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:attribute name="prefix" use="required"/>
+                      <xs:attribute name="class" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+          </xs:element>
+        </xs:choice>
+
+        <xs:element name="output" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
                   <xs:complexType>
-                    <xs:attribute name="prefix" use="required"/>
                     <xs:attribute name="class" use="required"/>
+                    <xs:attribute name="node" use="required"/>
                   </xs:complexType>
                 </xs:element>
               </xs:sequence>
             </xs:complexType>
         </xs:element>
-      </xs:choice>
-      
-      <xs:element name="output" minOccurs="0">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="resource" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="class" use="required"/>
-                  <xs:attribute name="node" use="required"/>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-          </xs:complexType>
-      </xs:element>
-      
-      <xs:element ref="prop:properties" minOccurs="0"/>
 
-    </xs:sequence>
-    <xs:attribute name="name" use="required"/>
-    <xs:attribute name="nostore" type="xs:boolean"/>
-    <xs:attribute name="copyfrom"/>
-  </xs:complexType>
+        <xs:element ref="prop:properties" minOccurs="0"/>
+
+      </xs:sequence>
+  </xs:group>
   <!-- </pagerequest> -->
-  
+
   <!-- <exception> -->
   <!-- the desired behaviour for page and forward cannot be expressed -->
   <!-- within the schema. The "use"-attribut of xs:attributes for exact the same element cannot differ -->
@@ -340,7 +378,7 @@
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
-    
+
   <xs:element name="prop" type="prop:propType"/>
   <xs:complexType name="propType" mixed="true">
     <xs:sequence>
@@ -349,7 +387,7 @@
     </xs:sequence>
     <xs:attribute name="name" use="required"/>
   </xs:complexType>
-  
+
   <xs:element name="choose" type="prop:chooseType"/>
   <xs:complexType name="chooseType">
     <xs:sequence>
@@ -376,8 +414,8 @@
   </xs:complexType>
   <!-- </properties> -->
 
-  
-  
+
+
   <xs:element name="directoutputserver" type="prop:directoutputserverType"/>
   <xs:complexType name="directoutputserverType">
     <xs:sequence>
@@ -391,9 +429,9 @@
   <xs:element name="foreigncontext" type="prop:foreigncontextType"/>
   <xs:complexType name="foreigncontextType">
     <xs:attribute name="externalservletname"/>
-  </xs:complexType> 
-  
-  <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>    
+  </xs:complexType>
+
+  <xs:element name="directoutputpagerequest" type="prop:directoutputpagerequestType"/>
   <xs:complexType name="directoutputpagerequestType">
     <xs:sequence>
       <xs:element ref="prop:directoutputstate"/>
@@ -401,13 +439,13 @@
     </xs:sequence>
     <xs:attribute name="name" use="required"/>
   </xs:complexType>
-  
-  <xs:element name="directoutputstate" type="prop:directoutputstateType"/> 
+
+  <xs:element name="directoutputstate" type="prop:directoutputstateType"/>
   <xs:complexType name="directoutputstateType">
     <xs:attribute name="class"/>
   </xs:complexType>
-    
-  
+
+
   <xs:element name="standardprops" type="prop:standardpropsType"/>
   <xs:complexType name="standardpropsType">
     <xs:sequence>
@@ -415,8 +453,8 @@
     </xs:sequence>
     <xs:attribute name="version" type="xs:token" use="required"/>
   </xs:complexType>
-  
-  
+
+
   <!--
   <xs:group name="cuspagerequestGroup">
     <xs:choice>
@@ -440,19 +478,19 @@
       </xs:element>
     </xs:choice>
   </xs:group>
-  <xs:element name="pagerequest" type="prop:pagerequestType"/>  
+  <xs:element name="pagerequest" type="prop:pagerequestType"/>
   <xs:complexType name="pagerequestType">
     <xs:attribute name="name" use="required"></xs:attribute>
     <xs:attribute name="nostore" type="xs:boolean"></xs:attribute>
     <xs:attribute name="copyfrom"></xs:attribute>
   </xs:complexType>
   -->
-  
-  
-  
-  
-  
-  
+
+
+
+
+
+
   <!--
   <xs:element name="servletinfo" type="prop:servletinfoCuschooseType"></xs:element>
   <xs:complexType name="servletinfoCuschooseType">
@@ -478,9 +516,9 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  -->  
-  
-  
+  -->
+
+
   <!--
   <xs:complexType name="cuseditmodeType">
     <xs:choice>
@@ -489,7 +527,7 @@
       </xs:element>
     </xs:choice>
   </xs:complexType>
-  -->  
-  
+  -->
+
 
 </xs:schema>
