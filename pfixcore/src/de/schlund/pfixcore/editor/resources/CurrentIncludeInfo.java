@@ -18,9 +18,6 @@ class CurrentIncludeInfo {
     private AuxDependency currentInclude;
     private HashSet affectedProducts;
 
-    /**
-     * @return
-     */
     public HashSet getAfftectedProducts(EditorSessionStatus esess) throws Exception  {
         if(affectedProducts == null) {
             affectedProducts = EditorHelper.getAffectedProductsForInclude(currentInclude);
@@ -28,9 +25,6 @@ class CurrentIncludeInfo {
         return affectedProducts;
     }
 
-    /**
-     * @return
-     */
     public AuxDependency getCurrentInclude() {
         return currentInclude;
     }

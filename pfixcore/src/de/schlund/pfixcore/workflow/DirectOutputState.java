@@ -29,7 +29,7 @@ import javax.servlet.http.*;
  * {@link State} interface that is implemented by classes that produce a DOM tree as their response.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 public interface DirectOutputState {
     /**

@@ -32,7 +32,7 @@ import org.apache.log4j.*;
  * Created: Sun Oct  7 13:28:11 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
+ * @version $Id$
  *
  *
  */

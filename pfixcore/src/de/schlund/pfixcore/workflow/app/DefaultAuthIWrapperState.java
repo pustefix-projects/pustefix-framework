@@ -34,7 +34,7 @@ import java.util.*;
  * Created: Wed Dec 07 19:23:49 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
+ * @version $Id$
  *
  *
  */

@@ -26,7 +26,7 @@ import org.apache.log4j.*;
  * Describe class <code>PageRequest</code> here.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 public class PageRequest {
     public  static final String            PAGEPARAM = "__page";

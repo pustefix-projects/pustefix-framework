@@ -30,9 +30,7 @@ import java.util.Properties;
  * Created: Wed Oct 10 10:31:49 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
- *
- *
+ * @version $Id$
  */
 
 public class DefaultIWrapperState extends StaticState {

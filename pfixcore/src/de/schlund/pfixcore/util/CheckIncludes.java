@@ -15,7 +15,7 @@ import org.w3c.dom.*;
  * Created: Tue Apr  8 15:42:11 2003
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 
 public class CheckIncludes {

@@ -80,6 +80,22 @@
       <artifactId>servletapi</artifactId>
       <version>2.3</version>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.6.1</version>
+      <properties>
+        <endorsed>true</endorsed>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.4.1</version>
+      <properties>
+        <endorsed>true</endorsed>
+      </properties>
+    </dependency>
   </dependencies>
 
   <developers>

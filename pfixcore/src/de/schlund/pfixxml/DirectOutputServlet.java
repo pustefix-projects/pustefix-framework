@@ -59,7 +59,7 @@ import de.schlund.pfixcore.workflow.PageRequestProperties;
  * The value must be the servlet name of the ContextXMLServer whose Context you want to use.
  *  
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 public class DirectOutputServlet extends ServletManager {
     private static String                PROP_EXT_CONTEXT = "foreigncontextservlet.foreignservletname";
