@@ -135,8 +135,14 @@ public class Path implements Comparable {
         return relative.hashCode();
     }
     
-    /** use getRelative to get the path without additional text */
+    /**
+     * Returns a string representation in the form:
+     * <code>getClass().getName()+"[base=\""+getBase()+"\"; relative=\""+getRelative()+"\"]"</code>
+     * 
+     * Use {@link #getBase()} and {@link #getRelative()} to get the path without additional text.
+     */
     public String toString() {
-        return "path " + getRelative();
+        return getClass().getName()+"[base=\""+getBase()+"\"; relative=\""+getRelative()+"\"]";
     }
+
 }
