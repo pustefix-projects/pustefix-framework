@@ -88,4 +88,9 @@ h2 {
 .attrval { color: #22aa00; }
 
 
-.comment { background-color: #eeeeee; margin-left: 60px; margin-right: 60px; }
+.comment { 
+  background-color: #eeeeee; margin-left: 60px; margin-right: 60px; 
+  padding: 2px; border-top: dotted 1px black; border-bottom: dotted 1px black;}
+
+.comment > p:first-child { margin-top: 0px; }
+.comment > p { margin-bottom: 0px; }

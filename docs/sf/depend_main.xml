@@ -54,13 +54,10 @@
       </xmlcodeOFF>
       <navigation>
         <xmlcodeOFF>
-          <table class="stdtable">
-            <tr>
-              <td>This tag has only <code>page</code> nodes as
-              children. The tree of pages matches the hierarchy of the
-              project's sitetree.</td>
-            </tr>
-          </table>
+          <div class="comment">
+            This tag has only <code>page</code> nodes as
+            children. The tree of pages matches the hierarchy of the
+            project's sitetree.</div>
         </xmlcodeOFF>
         <page name="foo" handler="/xml/static">
           <page name="sub_foo1" handler="/xml/static"/>
@@ -116,28 +113,63 @@
         <standardpage name="another_page_name" xml="a_base_xml_file.xml">...</standardpage>
         ...
         <xmlcodeOFF>
-          <table class="stdtable">
-            <tr>
-              <td>
-                <p>The only other tags allowed besides the
-                  <code>navigation</code> tag are <code>target</code>
-                  and <code>standardpage</code>. <b>The latter is only a
-                  convenience tag that can be expressed fully in terms
-                  of <code>target</code> tags</b> (Expanding the
-                  <code>standardpage</code> tag is one of the duties
-                  of the transformation [<code>depend.xml.in</code>
-                  => <code>depend.xml</code>] mentioned above).
-                </p>
-                <p>See below for a detailed explanation of targets and their configuration</p>
-              </td>
-            </tr>
-          </table>
+          <div class="comment">
+            <p>The only other tags allowed besides the
+              <code>navigation</code> tag are <code>target</code>
+              and <code>standardpage</code>. <b>The latter is only a
+                convenience tag that can be expressed fully in terms
+                of <code>target</code> tags</b> (Expanding the
+              <code>standardpage</code> tag is one of the duties
+              of the transformation [<code>depend.xml.in</code>
+              => <code>depend.xml</code>] mentioned above).</p>
+            <p> See below for a detailed explanation of targets and their configuration</p>
+          </div>
         </xmlcodeOFF>
       </navigation>
     </make>
   </xmlcode>
 
+  <h2>Targets</h2>
+
+  <xmlcode>
+    <target name="master.xsl" type="xsl">
+      <depxml name="core/xsl/master.xsl"/>
+      <depxsl name="core/editor/xsl/custommaster.xsl"/>
+      <depaux name="core/xsl/default_copy.xsl"/>
+      <depaux name="core/xsl/include.xsl"/>
+      <depaux name="core/xsl/navigation.xsl"/>
+      <depaux name="core/xsl/utils.xsl"/>
+      <depaux name="core/xsl/forminput.xsl"/>
+      <param name="product" value="editor"/>
+      <param name="lang"    value="en"/>
+    </target>
+  </xmlcode>
+
+  <h2>Standard page definition</h2>
   
+  <xmlcode>
+    <standardpage name="home"  xml="core/editor/xml/two_frames.xml"/>
+    <xmlcodeOFF>
+      <div class="comment">
+        after performing the transformtion <code>depend.xml.in</code> => <code>depend.xml</code>
+        (automatically done by the build system in the skeleton package and the CVS checkout) this becomes
+      </div>
+      <br/>
+    </xmlcodeOFF>
+    <target name="home.xsl" type="xsl">
+      <depxml name="home.xml"/>
+      <depxsl name="master.xsl"/>
+      <param name="page" value="home"/>
+      <param name="docroot" value="/home/jtl/projects/pfixcore/example"/>
+    </target><xmlcodeOFF/>
+    <target name="home.xml" type="xml">
+      <depxml name="core/editor/xml/two_frames.xml"/>
+      <depxsl name="metatags.xsl"/>
+      <param name="page" value="home"/>
+      <param name="docroot" value="/home/jtl/projects/pfixcore/example"/>
+    </target>
+  </xmlcode>
+
 </div>
 
   
