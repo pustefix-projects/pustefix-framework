@@ -25,7 +25,6 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.util.FactoryInit;
 
 /**
  * @author jh
@@ -33,7 +32,7 @@ import de.schlund.util.FactoryInit;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class PerfEventTypeConfig implements FactoryInit {
+public class PerfEventTypeConfig {
     private static PerfEventTypeConfig instance = new PerfEventTypeConfig();
     private static Logger LOG = Logger.getLogger(PerfEventTypeConfig.class);
     private boolean initialised = false;

@@ -275,7 +275,7 @@ public abstract class IWrapperImpl implements IWrapper {
             buff.append("|" + name + ":");
             for (int i = 0; i < scodes.length; i++) {
                 StatusCode code = scodes[i];
-                buff.append(code.getStatusCodeWithDomain());
+                buff.append(code.getPart());
                 if (i < (scodes.length - 1)) {
                     buff.append(";");
                 }

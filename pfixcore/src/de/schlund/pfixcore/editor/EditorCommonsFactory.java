@@ -38,7 +38,6 @@ import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.FactoryInit;
 
 /**
  * EditorCommonsFactory.java
@@ -50,7 +49,7 @@ import de.schlund.util.FactoryInit;
  * @version $Id$
  */
 
-public class EditorCommonsFactory implements FactoryInit {
+public class EditorCommonsFactory {
     private static final Category               CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
     private static final EditorCommonsFactory   instance = new EditorCommonsFactory();
     private        TreeSet                allincs  = new TreeSet();

@@ -18,13 +18,8 @@
  */
 package de.schlund.pfixxml;
 
-
-
-
-
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.loader.*;
-import de.schlund.util.FactoryInit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -150,10 +145,10 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             long      stop      = 0;
                             if (appLoader.isEnabled() && appLoader.isReloadableClass(the_class)) {
                                 Class       clazz   = appLoader.loadClass(the_class);
-                                FactoryInit factory = (FactoryInit) clazz.getMethod("getInstance",null).invoke(null,null);
+                                Object      factory = clazz.getMethod("getInstance",null).invoke(null,null);
                                 CAT.debug("     Object ID: " + factory);
                                 start               = System.currentTimeMillis();
-                                factory.init(properties);
+                                clazz.getMethod("init", new Class[] { Properties.class } ).invoke(factory, new Object[] { properties });
                                 stop                = System.currentTimeMillis();
                                 CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
                                 if (factories == null) {
@@ -161,10 +156,11 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                                 }
                                 factories.add(factory);
                             } else {
-                                FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod("getInstance", null).invoke(null, null);
+                                Class clazz = Class.forName(the_class);
+                                Object factory = clazz.getMethod("getInstance", null).invoke(null, null);
                                 CAT.debug("     Object ID: " + factory);
                                 start               = System.currentTimeMillis();
-                                factory.init(properties);
+                                clazz.getMethod("init", new Class[] { Properties.class }).invoke(factory, new Object[] { properties });
                                 stop                = System.currentTimeMillis();
                                 CAT.debug("Init of " + factory + " took " + (stop - start) + " ms");
                             }
@@ -199,10 +195,10 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         if (factories!=null) {
             ArrayList newFacs = new ArrayList();
             Iterator  it      = factories.iterator();
-            while (it.hasNext()) {
-                FactoryInit fac       = (FactoryInit) it.next();
+            while(it.hasNext()) {
+                Object fac            = it.next();
                 String      className = fac.getClass().getName();
-                FactoryInit facNew    = (FactoryInit) StateTransfer.getInstance().transfer(fac);
+                Object facNew         = StateTransfer.getInstance().transfer(fac);
                 newFacs.add(facNew);
             }
             factories = newFacs;

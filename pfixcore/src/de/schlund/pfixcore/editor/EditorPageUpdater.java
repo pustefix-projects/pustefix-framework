@@ -19,7 +19,6 @@
 
 package de.schlund.pfixcore.editor;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.util.FactoryInit;
 import de.schlund.pfixcore.util.Meminfo;
 import java.util.*;
 import org.apache.log4j.*;
@@ -35,7 +34,7 @@ import org.apache.log4j.*;
  *
  */
 
-public class EditorPageUpdater implements FactoryInit, Runnable {
+public class EditorPageUpdater implements Runnable {
     private static EditorPageUpdater instance = new EditorPageUpdater();
     private static Category          CAT      = Category.getInstance(EditorPageUpdater.class.getName());
     private        HashSet           targets  = new HashSet();

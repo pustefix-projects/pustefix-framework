@@ -22,7 +22,6 @@ import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.util.*;
-import de.schlund.util.FactoryInit;
 import java.util.*;
 import org.apache.log4j.Category;
 import org.w3c.dom.*;
@@ -38,7 +37,7 @@ import org.w3c.dom.*;
  *
  *
  */
-public class EditorProductFactory implements FactoryInit {
+public class EditorProductFactory {
 
     //~ Instance/static variables ..................................................................
 

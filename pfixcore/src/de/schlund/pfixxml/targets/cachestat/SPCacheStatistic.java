@@ -40,7 +40,6 @@ import de.schlund.pfixxml.targets.SharedLeaf;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.FactoryInit;
 
 /**
  * Class managing information on the hits
@@ -50,7 +49,7 @@ import de.schlund.util.FactoryInit;
  * @author Joerg Haecker <haecker@schlund.de>
  *  
  */
-public class SPCacheStatistic implements FactoryInit {
+public class SPCacheStatistic {
     
     private static SPCacheStatistic theInstance = new SPCacheStatistic();
     private static int REGISTER_MISS = 0;

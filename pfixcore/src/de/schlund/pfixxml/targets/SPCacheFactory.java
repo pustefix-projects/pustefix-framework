@@ -24,8 +24,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Category;
 
-import de.schlund.util.FactoryInit;
-
 /**
  * SPCacheFactory.java
  *
@@ -44,7 +42,7 @@ import de.schlund.util.FactoryInit;
  *
  */
 
-public class SPCacheFactory implements FactoryInit {
+public class SPCacheFactory {
     private static Category CAT= Category.getInstance(SPCacheFactory.class.getName());
     private static SPCacheFactory instance= new SPCacheFactory();
 

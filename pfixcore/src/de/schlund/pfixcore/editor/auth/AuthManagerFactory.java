@@ -22,8 +22,6 @@ import java.util.Properties;
 
 import org.apache.log4j.Category;
 
-import de.schlund.util.FactoryInit;
-
 /**
  * This class creates an implementation of the <code>AuthManager</code>
  * interface depending on the properties passed by <code>FactoryInit</code>.
@@ -31,7 +29,7 @@ import de.schlund.util.FactoryInit;
  * 
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
-public class AuthManagerFactory implements FactoryInit {
+public class AuthManagerFactory {
     private static AuthManagerFactory instance = new AuthManagerFactory();
     private static final Category CAT = Category.getInstance(AuthManagerFactory.class.getName());
 

@@ -19,7 +19,6 @@
 
 package de.schlund.pfixxml.loader;
 
-import de.schlund.util.FactoryInit;
 import de.schlund.pfixxml.serverutil.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -34,7 +33,7 @@ import org.apache.log4j.Category;
  * 
  * @author mleidig
  */
-public class AppLoader implements FactoryInit,Runnable {
+public class AppLoader implements Runnable {
  
     private Category                CAT           = Category.getInstance(getClass().getName());
     private static AppLoader        instance      = new AppLoader();
