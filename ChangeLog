@@ -62,187 +62,185 @@
 	(genKey): new method.
 
 2004-05-18 	Ralf Rapude <rapude@schlund.de>
-	* There are three new directories in the example dir called simplepage,
+	- There are three new directories in the example dir called simplepage,
 	simplelink and simpleform.
 	Each consists of a simple application for pustefix in order to deliver basic
 	functionalities as a turorial.
 
-	* A new target called "dist-examples" has been added to the build.xml. It
+	- A new target called "dist-examples" has been added to the build.xml. It
 	builds a tar to the dist directory containing the example projects and
 	also a src folder with all appropriate files. This target will be
 	also called if you run "ant notag" or "ant dist".
 	Ant realclean will delete all generated files from "example" as well as from
 	src/de/skelexamples.
 
-	* A README_EXAMPLES.txt has been added to the example directory. This file
+	- A README_EXAMPLES.txt has been added to the example directory. This file
 	supplies basic informations related to the examples.
 
-	* INSTALL has a new topic (No 6). It is a short hint to the
+	- INSTALL has a new topic (No 6). It is a short hint to the
 	new sample applications.
 
-	* There's now a package "skelexamples" in the src folder.
+	- There's now a package "skelexamples" in the src folder.
 	The java files for the examples are stored in this folder and also
 	the DemoText.iwrp will generate the related file in this folder.
 
 
 2004-05-18  Michael Hartmeier <mhm@schlund.de>
-
-	* various fixed to eleminate jikes- and eclipse warnings:
-	 o removed unused imports
-	 o make final Strings static to save space
-	 o renamed local variable if it shadowed a field
-	 o removed unnecessary casts
-	 o removed unnecessary semicolons
-	 o renamed enum variabled to enm (to prepare for Java 1.5)
-	 o deprecated methods:
-	 o replaced URLEncoder.encode(String) by URLEncoder.encode(String, "UTF-8")
-	 o replaced HttpSession.getValue/putValue by getAttribute/setAttribute
-	* affected files:
-	example/core/build/iwrapper.xsl
-	src/de/schlund/pfixcore/editor/CoreDocumentation.java
-	src/de/schlund/pfixcore/editor/EditorDocumentation.java
-	src/de/schlund/pfixcore/editor/EditorHelper.java
-	src/de/schlund/pfixcore/editor/EditorLockFactory.java
-	src/de/schlund/pfixcore/editor/EditorPageUpdater.java
-	src/de/schlund/pfixcore/editor/FileLockFactory.java
-	src/de/schlund/pfixcore/editor/PfixcoreNamespace.java
-	src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java
-	src/de/schlund/pfixcore/editor/auth/FileAuthManager.java
-	src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/CancelEditUserHandler.java
-	src/de/schlund/pfixcore/editor/handlers/CommonsBranchHandler.java
-	src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java
-	src/de/schlund/pfixcore/editor/handlers/CommonsUploadHandler.java
-	src/de/schlund/pfixcore/editor/handlers/DeleteLockHandler.java
-	src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/DocumentationHandler.java
-	src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java
-	src/de/schlund/pfixcore/editor/handlers/EditorStdHandler.java
-	src/de/schlund/pfixcore/editor/handlers/HomeFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java
-	src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java
-	src/de/schlund/pfixcore/editor/handlers/IncludesBranchHandler.java
-	src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java
-	src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java
-	src/de/schlund/pfixcore/editor/handlers/LockManagerFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/LoginStatusHandler.java
-	src/de/schlund/pfixcore/editor/handlers/LogoutHandler.java
-	src/de/schlund/pfixcore/editor/handlers/PagesFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/PagesHandler.java
-	src/de/schlund/pfixcore/editor/handlers/ProductSelectFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/ProductSelectHandler.java
-	src/de/schlund/pfixcore/editor/handlers/SearchFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/TargetsFinalizer.java
-	src/de/schlund/pfixcore/editor/handlers/TargetsHandler.java
-	src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
-	src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
-	src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
-	src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
-	src/de/schlund/pfixcore/editor/handlers/UpdateProductPagesHandler.java
-	src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java
-	src/de/schlund/pfixcore/editor/handlers/UserForEditHandler.java
-	src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
-	src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
-	src/de/schlund/pfixcore/editor/resources/EditorSearchImpl.java
-	src/de/schlund/pfixcore/example/ContextAdultInfo.java
-	src/de/schlund/pfixcore/example/ContextCounter.java
-	src/de/schlund/pfixcore/example/ContextTShirt.java
-	src/de/schlund/pfixcore/example/ContextTShirtImpl.java
-	src/de/schlund/pfixcore/example/ContextTogglePicImpl.java
-	src/de/schlund/pfixcore/example/ContextTrouser.java
-	src/de/schlund/pfixcore/example/ContextTrouserImpl.java
-	src/de/schlund/pfixcore/example/CounterHandler.java
-	src/de/schlund/pfixcore/example/CounterSetHandler.java
-	src/de/schlund/pfixcore/example/MsgFlowStepAction.java
-	src/de/schlund/pfixcore/example/OverviewState.java
-	src/de/schlund/pfixcore/example/TShirtHandler.java
-	src/de/schlund/pfixcore/example/TrouserHandler.java
-	src/de/schlund/pfixcore/generator/IHandlerFactory.java
-	src/de/schlund/pfixcore/generator/IWrapperImpl.java
-	src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java
-	src/de/schlund/pfixcore/generator/IWrapperParamInfo.java
-	src/de/schlund/pfixcore/generator/casters/ToLowerCase.java
-	src/de/schlund/pfixcore/util/CheckIncludes.java
-	src/de/schlund/pfixcore/util/MakeStatusMessageXML.java
-	src/de/schlund/pfixcore/util/PropertiesUtils.java
-	src/de/schlund/pfixcore/util/TargetGeneratorTask.java
-	src/de/schlund/pfixcore/util/UnixCrypt.java
-	src/de/schlund/pfixcore/util/XsltGenericTask.java
-	src/de/schlund/pfixcore/util/XsltIWrapperTask.java
-	src/de/schlund/pfixcore/util/XsltTransformer.java
-	src/de/schlund/pfixcore/util/XsltWebXmlTask.java
-	src/de/schlund/pfixcore/workflow/AuthContext.java
-	src/de/schlund/pfixcore/workflow/Context.java
-	src/de/schlund/pfixcore/workflow/ContextResource.java
-	src/de/schlund/pfixcore/workflow/ContextResourceManager.java
-	src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java
-	src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java
-	src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java
-	src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java
-	src/de/schlund/pfixcore/workflow/Navigation.java
-	src/de/schlund/pfixcore/workflow/NavigationFactory.java
-	src/de/schlund/pfixcore/workflow/ObservableContextResource.java
-	src/de/schlund/pfixcore/workflow/PageFlowManager.java
-	src/de/schlund/pfixcore/workflow/PageRequest.java
-	src/de/schlund/pfixcore/workflow/PageRequestProperties.java
-	src/de/schlund/pfixcore/workflow/State.java
-	src/de/schlund/pfixcore/workflow/StateFactory.java
-	src/de/schlund/pfixcore/workflow/StateImpl.java
-	src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
-	src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java
-	src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
-	src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java
-	src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java
-	src/de/schlund/pfixxml/AbstractXMLServer.java
-	src/de/schlund/pfixxml/AppContext.java
-	src/de/schlund/pfixxml/ContextXMLServer.java
-	src/de/schlund/pfixxml/DependencyTracker.java
-	src/de/schlund/pfixxml/DirectOutputServlet.java
-	src/de/schlund/pfixxml/ImageInfo.java
-	src/de/schlund/pfixxml/IncludeDocument.java
-	src/de/schlund/pfixxml/PfixServletRequest.java
-	src/de/schlund/pfixxml/ResultDocument.java
-	src/de/schlund/pfixxml/ServletManager.java
-	src/de/schlund/pfixxml/SessionCleaner.java
-	src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java
-	src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java
-	src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java
-	src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java
-	src/de/schlund/pfixxml/exceptionhandler/ReportGeneratorTask.java
-	src/de/schlund/pfixxml/exceptionhandler/STraceCleanupTask.java
-	src/de/schlund/pfixxml/loader/AppLoader.java
-	src/de/schlund/pfixxml/loader/AppLoaderConfig.java
-	src/de/schlund/pfixxml/loader/CommandClient.java
-	src/de/schlund/pfixxml/multipart/HeaderStruct.java
-	src/de/schlund/pfixxml/multipart/MultipartHandler.java
-	src/de/schlund/pfixxml/multipart/MultipartStream.java
-	src/de/schlund/pfixxml/serverutil/SessionAdmin.java
-	src/de/schlund/pfixxml/serverutil/SessionHelper.java
-	src/de/schlund/pfixxml/targets/AbstractDependency.java
-	src/de/schlund/pfixxml/targets/AuxDependency.java
-	src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
-	src/de/schlund/pfixxml/targets/AuxDependencyManager.java
-	src/de/schlund/pfixxml/targets/FileDependency.java
-	src/de/schlund/pfixxml/targets/LeafTarget.java
-	src/de/schlund/pfixxml/targets/ProductIncludePart.java
-	src/de/schlund/pfixxml/targets/SPCacheFactory.java
-	src/de/schlund/pfixxml/targets/StaticFileDependency.java
-	src/de/schlund/pfixxml/targets/TargetGenerator.java
-	src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java
-	src/de/schlund/pfixxml/targets/VirtualTarget.java
-	src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
-	src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java
-	src/de/schlund/util/statuscodes/StatusCode.java
-	src/de/schlund/util/statuscodes/StatusCodeFactory.java
+	* example/core/build/iwrapper.xsl
+	* src/de/schlund/pfixcore/editor/CoreDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorDocumentation.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/EditorLockFactory.java
+	* src/de/schlund/pfixcore/editor/EditorPageUpdater.java
+	* src/de/schlund/pfixcore/editor/FileLockFactory.java
+	* src/de/schlund/pfixcore/editor/PfixcoreNamespace.java
+	* src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java
+	* src/de/schlund/pfixcore/editor/auth/FileAuthManager.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/CancelEditUserHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsBranchHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsUploadHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/DeleteLockHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/DocumentationFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/DocumentationHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/EditorStdHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/HomeFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesBranchHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/LockManagerFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/LoginStatusHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/LogoutHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/PagesFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/ProductSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/ProductSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/SearchFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TargetsFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TargetsHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/UpdateProductPagesHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/UserForEditHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* src/de/schlund/pfixcore/editor/resources/EditorSearchImpl.java
+	* src/de/schlund/pfixcore/example/ContextAdultInfo.java
+	* src/de/schlund/pfixcore/example/ContextCounter.java
+	* src/de/schlund/pfixcore/example/ContextTShirt.java
+	* src/de/schlund/pfixcore/example/ContextTShirtImpl.java
+	* src/de/schlund/pfixcore/example/ContextTogglePicImpl.java
+	* src/de/schlund/pfixcore/example/ContextTrouser.java
+	* src/de/schlund/pfixcore/example/ContextTrouserImpl.java
+	* src/de/schlund/pfixcore/example/CounterHandler.java
+	* src/de/schlund/pfixcore/example/CounterSetHandler.java
+	* src/de/schlund/pfixcore/example/MsgFlowStepAction.java
+	* src/de/schlund/pfixcore/example/OverviewState.java
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	* src/de/schlund/pfixcore/example/TrouserHandler.java
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java
+	* src/de/schlund/pfixcore/generator/IWrapperParamInfo.java
+	* src/de/schlund/pfixcore/generator/casters/ToLowerCase.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java
+	* src/de/schlund/pfixcore/util/PropertiesUtils.java
+	* src/de/schlund/pfixcore/util/TargetGeneratorTask.java
+	* src/de/schlund/pfixcore/util/UnixCrypt.java
+	* src/de/schlund/pfixcore/util/XsltGenericTask.java
+	* src/de/schlund/pfixcore/util/XsltIWrapperTask.java
+	* src/de/schlund/pfixcore/util/XsltTransformer.java
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java
+	* src/de/schlund/pfixcore/workflow/AuthContext.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/ContextResource.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java
+	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java
+	* src/de/schlund/pfixcore/workflow/Navigation.java
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java
+	* src/de/schlund/pfixcore/workflow/ObservableContextResource.java
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java
+	* src/de/schlund/pfixcore/workflow/PageRequest.java
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java
+	* src/de/schlund/pfixcore/workflow/State.java
+	* src/de/schlund/pfixcore/workflow/StateFactory.java
+	* src/de/schlund/pfixcore/workflow/StateImpl.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java
+	* src/de/schlund/pfixcore/workflow/app/ResdocSimpleFinalizer.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/AppContext.java
+	* src/de/schlund/pfixxml/ContextXMLServer.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/ImageInfo.java
+	* src/de/schlund/pfixxml/IncludeDocument.java
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	* src/de/schlund/pfixxml/ResultDocument.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/SessionCleaner.java
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java
+	* src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java
+	* src/de/schlund/pfixxml/exceptionhandler/ReportGeneratorTask.java
+	* src/de/schlund/pfixxml/exceptionhandler/STraceCleanupTask.java
+	* src/de/schlund/pfixxml/loader/AppLoader.java
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java
+	* src/de/schlund/pfixxml/loader/CommandClient.java
+	* src/de/schlund/pfixxml/multipart/HeaderStruct.java
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java
+	* src/de/schlund/pfixxml/multipart/MultipartStream.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+	* src/de/schlund/pfixxml/targets/AbstractDependency.java
+	* src/de/schlund/pfixxml/targets/AuxDependency.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/FileDependency.java
+	* src/de/schlund/pfixxml/targets/LeafTarget.java
+	* src/de/schlund/pfixxml/targets/ProductIncludePart.java
+	* src/de/schlund/pfixxml/targets/SPCacheFactory.java
+	* src/de/schlund/pfixxml/targets/StaticFileDependency.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java
+	* src/de/schlund/util/statuscodes/StatusCode.java
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java
+	various fixes to eleminate jikes- and eclipse warnings:
+	- removed unused imports
+	- make final Strings static to save space
+	- renamed local variable if it shadowed a field
+	- removed unnecessary casts
+	- removed unnecessary semicolons
+	- renamed enum variabled to enm (to prepare for Java 1.5)
+	- deprecated methods:
+	- replaced URLEncoder.encode(String) by URLEncoder.encode(String, "UTF-8")
+	- replaced HttpSession.getValue/putValue by getAttribute/setAttribute
 
 2004-05-17  Michael Hartmeier <mhm@schlund.de>
 
-	* all paths in .cache are relative now, and file:// has been stripped
-	* relative paths are represented by instances of de.schlund.pfixxml.targets.Path
-	* use chained exceptions to improve error messages (e.g in AbstractXMLServer)
+	- all paths in .cache are relative now, and file:// has been stripped
+	- relative paths are represented by instances of de.schlund.pfixxml.targets.Path
+	- use chained exceptions to improve error messages (e.g in AbstractXMLServer)
 
 2004-05-17  Jens Lautenbacher  <jtl@schlund.de>
 
