@@ -1,3 +1,9 @@
+2003-10-20  Sebastian Werner <sw@schlund.de>
+	* example/core/script/baselib.js: 
+	Bugfix for cookie handling: better store algorithmus; no more 
+	asso-array used to store new values; move new/changed cookies 
+	to the begin to allow correct expiration
+
 2003-10-20  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/CacheStatisticServlet.java:
