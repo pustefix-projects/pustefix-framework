@@ -1,5 +1,21 @@
 2003-03-20  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/serverutil/NoCopySessionData.java: new
+	dummy interface. Use to mark all classes whose objects shouldn't
+	be copied from one session to another, new one (for the jump
+	NON_SSL => SSL)
+	* src-jserv/de/schlund/pfixxml/serverutil/jserv/ModernJServUtil.java (copySessionData): 
+	* src-tomcat4/de/schlund/pfixxml/serverutil/tomcat4/TomcatUtil.java (copySessionData): use this here for an instance of check.
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): implement the interface.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): call SessionCleaner.storeSPDocument() to store the doc into the session. 
+	Use editmodeAllowed as the last parameter so the stored SPDocuments will not be removed when also editMode is allowed (this is for 
+	development purposes: in development mode we want to have the stored SPDocument always there for debugging)
+
+	* src/de/schlund/pfixxml/SessionCleaner.java (SessionCleanerTask): new class. This class starts a Timer thread that removes 
+	stored SPDocuments from sessions after a certain timeout (currently 30 secs). This should greatly improve our memory usage, as these docs won't 
+	hang around 'till the session finally expires when the user stops clicking.
+
 	* example/core/xsl/forminput.xsl.in: really make selective display of errors via paramref work.
 
 2003-03-19  Jens Lautenbacher  <jtl@schlund.de>

@@ -138,6 +138,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private boolean         render_external   = false;
     private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
+    private boolean         editmodeAllowed   = false;
     private boolean         recordmodeAllowed = false;
     private String          recordmodeLogDir  = null;
     private int             isXMLOnlyAllowed  = XML_ONLY_PROHIBITED;
@@ -176,6 +177,13 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((servletname = getProperties().getProperty(PROP_NAME)) == null) {
             throw (new ServletException("Need property '" + PROP_NAME + "'"));
         }
+        String noedit = getProperties().getProperty(PROP_NOEDIT);
+        if ((noedit == null) || noedit.equals("0") || noedit.equals("false") || noedit.equals("")) {
+            editmodeAllowed = false;
+        } else {
+            editmodeAllowed = true;
+        }
+
         handleRecordModeProps();
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
         handleXMLOnlyProps();
@@ -418,11 +426,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             if (conutil.getSessionValue(session, PARAM_EDITMODE) != null) {
                 // first we check if the properties prohibit editmode
-                String noedit = getProperties().getProperty(PROP_NOEDIT);
-                if ((noedit == null) || noedit.equals("0") || noedit.equals("false")
-                    || noedit.equals("")) {
-                    params.put(PARAM_EDITMODE, 
-                               (String) conutil.getSessionValue(session, PARAM_EDITMODE));
+                if (editmodeAllowed) {
+                    params.put(PARAM_EDITMODE, (String) conutil.getSessionValue(session, PARAM_EDITMODE));
                 }
             }
         }
@@ -466,11 +471,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             RequestParam store = preq.getRequestParam(PARAM_NOSTORE);
             if (session != null && (store == null || store.getValue() == null || ! store.getValue().equals("1"))) {
-                long stamp = System.currentTimeMillis();
-                spdoc.setTimestamp(stamp);
-                synchronized (session) {
-                    conutil.setSessionValue(session, servletname + SUFFIX_SAVEDDOM, spdoc);
-                }
+                SessionCleaner.getInstance().storeSPDocument(spdoc, session, conutil, servletname + SUFFIX_SAVEDDOM, editmodeAllowed);
             }
         }
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());

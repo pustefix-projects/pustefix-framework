@@ -42,7 +42,7 @@
           </pfx:forminput>
           <pfx:include part="switch"/>&#160;&#160;<pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
-          <b>Euro sign <font face="arial">€</font> is written &apos;&amp;#128;&apos;!!</b>
+          <b>Euro sign <font face="arial">&#128;</font> is written &apos;&amp;#128;&apos;!!</b>
         </center>
         <pfx:include part="sample_layers"/>
       </lang>
