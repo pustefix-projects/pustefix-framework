@@ -13,6 +13,7 @@
     <page name="depend" title="Page definition"/>
   </page>
   <page name="misc" title="Miscellaneous">
+    <page name="apploader" title="AppLoader"/>
     <page name="testclient" title="Test client"/>
   </page>
   <page name="editor" title="Pustefix Editor">

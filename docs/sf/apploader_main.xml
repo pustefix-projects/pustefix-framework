@@ -1,0 +1,103 @@
+<div>
+
+<h1>The AppLoader</h1>
+
+<h2>About</h2>
+
+<p>Pustefix provides a special classloading mechanism which enables it to reload modified classes during development. Unlike other mechanisms, which are restricted to the reload of specific serializable components or the use of Java's debugging facilities, requiring the application to run in slow debug mode and permitting only limited code modifications, the Pustefix AppLoader can reload any class, preserve its instances' state without serialization and doesn't slow down program execution.</p>
+
+<p>
+The Pustefix AppLoader is intended only for use in development. While on one hand it provides an easy-to-use and flexible way to test code modifications without the need of a time-consuming application restart and stepping again through the application's workflow to see where the changes apply, on the other hand it can't be considered as fail-safe and is not designed to serve as a hot deployment mechanism in production environments.</p>
+
+<h2>Design</h2>
+
+<p>
+The Pustefix AppLoader is based on Java's classloading mechanism, which enables applications to reload classes at runtime, and the Reflection API, which gives access to the fields of a class, resp. its instances. The basic concept is to load all application specific classes with a customized classloader and to make all their instances accessible through the AppLoader by registering the root objects of the application's object tree. 
+When code modifications are detected, the complete object tree gets traversed recursively, for instances of an application specific type the classes are reloaded by a new classloader, empty instances are created and populated with the state of their prior instances via Reflection.
+</p>
+
+<h2>Usage</h2>
+
+<p>
+The Pustefix distribution contains the shell script <code>apploader.sh</code> (located in the root directory), which gives you runtime control over the AppLoader, e.g. simply type <code>./apploader.sh reload</code> to reload the classes after you made some modifications. Your application, resp. new incoming requests, will be blocked until the reload finished. Success or any exceptions, occurred while reloading, are reported to you on the commandline. Detailed error information can be found in the logfile <code>pustefix-apploader.log</code> (located in the <code>DOCROOT/servletconf/log</code> directory).
+</p>
+<p>
+You have to be aware of the AppLoader's basic concept and its limitations to be able to understand its behaviour and to interpret the resulting output. For example, when you have removed an instance field, the AppLoader tries to set its old value at the new instance of the reloaded class and will inevitably fail. This is no problem for the AppLoader by itself, he just leaves it out and continues, but it might be a problem for you, because your application's integrity and consistency are jeopardized. In this case you will be warned by the AppLoader and get the recommendation to do a restart.  
+</p>
+<p>
+A restart is done by typing <code>./apploader.sh restart</code>. A restart differs from a reload in additionally invalidating all sessions and thus losing the state of all session dependant objects. While this can be a way to deal with the state inconsistency problem showed before, you have to be aware that a restart doesn't suffice for major modifications at classes, whose instances are not session dependant, resp. not newly created for new sessions. At this point the only way out is a complete Tomcat restart.
+</p>
+
+<h2>Configuration</h2>
+
+<p>
+The AppLoader configuration is done by the property file <code>apploader.prop.in</code> (located in the <code>DOCROOT/common/conf</code> directory). Below you can see an excerpt, covering only the important configuration options and omitting the various advanced and experimental features.
+</p>
+
+<xmlcode>
+
+<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
+
+  <xmlcodeOFF>
+    <div class="comment">
+      You should use customization tags to ensure that the AppLoader is disabled in the production environment.	  
+    </div>
+  </xmlcodeOFF>
+
+  <cus:choose>
+
+    <cus:test mode="prod">
+      
+      <xmlcodeOFF>
+        <div class="comment">
+          Set <code>apploader.mode</code> to <code>on</code>/<code>off</code> to enable/disable the AppLoader.
+        </div>
+      </xmlcodeOFF>
+      <prop name="apploader.mode">off</prop>
+    </cus:test>
+    <cus:test>
+      <prop name="apploader.mode">on</prop>
+      <xmlcodeOFF>
+        <div class="comment">
+          Set <code>apploader.repository</code> to the directory where the reloadable classes are located, resp. to your IDE's build directory.
+        </div>
+      </xmlcodeOFF>
+      <prop name="apploader.repository"><cus:docroot/>/servletconf/tomcat/classes</prop>
+
+      <xmlcodeOFF>
+        <div class="comment">
+          Set <code>apploader.package.include</code> to the package names containing the reloadable classes, which normally is the root package of all application classes/packages.
+        </div>
+      </xmlcodeOFF>
+      <prop name="apploader.package.include.1">locale.mycompany.myproject</prop>
+      <prop name="apploader.package.include.2">locale.mycompany.mytest</prop>
+
+      <xmlcodeOFF>
+        <div class="comment">
+          Set <code>apploader.traverse.excludepackage</code> to the package names containing non-reloadable classes which don't have to be traversed looking for references to reloadable classes. The more are excluded, the faster the AppLoader runs, but the higher is the risk, that some reloadable classes are ignored.
+        </div>
+      </xmlcodeOFF>
+      <prop name="apploader.traverse.excludepackage.1">java.lang</prop>
+      <prop name="apploader.traverse.excludepackage.2">org.apache.log4j</prop>
+
+      <xmlcodeOFF>
+        <div class="comment">
+          Set <code>apploader.traverse.includeclass</code> to the class names of classes from excluded packages, to override the exclusion, resp. include them. 
+	</div>
+      </xmlcodeOFF>
+      <prop name="apploader.traverse.includeclass.1">java.lang.Object</prop>
+      <prop name="apploader.traverse.includeclass.2">java.lang.Thread</prop>
+
+    </cus:test>
+
+  </cus:choose>
+
+</properties>
+</xmlcode>
+
+<h2>Limitations</h2>
+
+<h2>FAQs</h2>
+
+</div>  
