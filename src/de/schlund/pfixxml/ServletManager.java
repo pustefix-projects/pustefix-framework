@@ -265,7 +265,7 @@ public abstract class ServletManager extends HttpServlet {
         preq.startLogEntry();
         callProcess(preq, req, res);
         PerfEventType et = PerfEventType.XMLSERVER_CALLPROCESS;
-        et.setMessage(preq);
+        //et.setMessage(preq);
         preq.endLogEntry(et);
         //preq.endLogEntry("CALLPROCESS", 0);
         preq.printLog();

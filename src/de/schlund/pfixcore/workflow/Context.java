@@ -494,7 +494,7 @@ public class Context implements AppContext {
         currentpreq.startLogEntry();
         boolean retval     = state.needsData(this, currentpreq);
         PerfEventType et = PerfEventType.PAGE_NEEDSDATA;
-        et.setMessage(page.toString());
+        et.setPage(page.toString());
         currentpreq.endLogEntry(et);
        // currentpreq.endLogEntry("NEEDS_DATA (" + page + ")", 10);
         currentpagerequest = saved;
@@ -512,7 +512,7 @@ public class Context implements AppContext {
         currentpreq.startLogEntry();
         boolean retval = state.isAccessible(this, currentpreq);
         PerfEventType et = PerfEventType.PAGE_ISACCESSIBLE;
-        et.setMessage(page.toString());
+        et.setPage(page.toString());
         currentpreq.endLogEntry(et);
         
         //currentpreq.endLogEntry("IS_ACCESSIBLE (" + page + ")", 10);
@@ -753,7 +753,7 @@ public class Context implements AppContext {
             currentpreq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, null, warn_buffer, debug_buffer);
             PerfEventType et = PerfEventType.CONTEXT_CREATENAVICOMPLETE;
-            et.setMessage(currentpreq);
+            et.setPage(spdoc.getPagename());
             currentpreq.endLogEntry(et);
             //currentpreq.endLogEntry("CREATE_NAVI_COMPLETE", 25);
         } else {
@@ -765,7 +765,7 @@ public class Context implements AppContext {
             currentpreq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, navigation_visible, warn_buffer, debug_buffer);
             PerfEventType et = PerfEventType.CONTEXT_CREATENAVIREUSE;
-            et.setMessage("England go home");
+            et.setPage(spdoc.getPagename());
             currentpreq.endLogEntry(et);
             //currentpreq.endLogEntry("CREATE_NAVI_REUSE", 2);
         }

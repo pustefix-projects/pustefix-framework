@@ -18,8 +18,12 @@
 */
 package de.schlund.pfixxml;
 
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.multipart.*;
 import de.schlund.pfixxml.serverutil.SessionHelper;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.*;
 import javax.servlet.http.*;
@@ -123,6 +127,8 @@ public class PfixServletRequest {
         }
     }
     
+   
+    
     public synchronized void endLogEntry(PerfEventType p) {
         if(!PFXPERF.isDebugEnabled()) {
             return;
@@ -139,10 +145,11 @@ public class PfixServletRequest {
                 p.setDuration(now - stime);
                 if (now - stime >= p.getDelay()) {
                     String    msg = "[event name=\"" + p.getTag() + 
-                                    "\" location=\"" + p.getMessage() + 
+                                    "\" page=\"" + p.getPage() +
+                                    "\" class=\"" + p.getHandlingClass() +
                                     "\" totaltime=\"" + (now - stime)+
                                     "\" allowedtime=\"" + p.getDelay() +
-                                    "\" overdrawtime=\"" + ((now - stime) - p.getDelay()) +"\"]";
+                                    "\"]";
                     PerfEvent evn = new PerfEvent(now, msg, PerfEvent.END);
                     perflog.add(evn);
                 } else {
@@ -186,7 +193,6 @@ public class PfixServletRequest {
             return;
         }
         StringBuffer sb = new StringBuffer(255);
-        int depth = 0;
         for(int i=0; i<perflog.size(); i++) {
             PerfEvent entry = (PerfEvent)perflog.get(i);
             if(entry.getType() == PerfEvent.START) {
@@ -212,7 +218,20 @@ public class PfixServletRequest {
         }
         String str = sb.toString();
         if(!str.equals("")) {
-            PFXPERF.debug(sb.toString());
+            StringBuffer sb2 = new StringBuffer();
+            sb2.append("[servletrequest servername=\""+getServerName()+"\"");
+            sb2.append(" sessionid=\""+(getSession(false) == null ? "NULL" : getSession(false).getId()));
+            
+            String localhost= null;
+            try {
+                localhost = InetAddress.getLocalHost().getHostName();
+            } catch (UnknownHostException e) {
+                CAT.error(e);
+                localhost = "UNKOWN";
+            }
+            sb2.append("\" machine=\""+localhost+"\"");
+            sb2.append(" ]|");
+            PFXPERF.debug(sb2.toString()+sb.toString()+"\n");
         }
     }
 

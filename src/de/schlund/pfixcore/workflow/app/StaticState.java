@@ -110,7 +110,7 @@ public class StaticState extends StateImpl {
                     context.startLogEntry();
                     cr.insertStatus(resdoc, resdoc.createNode(nodename));
                     PerfEventType et = PerfEventType.CONTEXTRESOURCE_INSERTSTATUS;
-                    et.setMessage(classname);
+                    et.setClass(classname);
                     context.endLogEntry(et);
                    // context.endLogEntry("INSERT_CR (" + classname + ")", 5);
                 }

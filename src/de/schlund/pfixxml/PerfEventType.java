@@ -6,7 +6,6 @@
  */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.workflow.PageRequest;
 
 /**
  * @author jh
@@ -104,9 +103,11 @@ public class PerfEventType {
     
     private String tag;
     private long delay;
-    private String msg;
+    //private String msg;
     private String extra;
     private long duration;
+    private String page;
+    private String clazz;
     
     private PerfEventType(String t, long d) {
         this.tag = t;
@@ -120,7 +121,16 @@ public class PerfEventType {
         return delay;
     }
     
-    public void setMessage(String message) {
+    
+    public void setPage(String page) {
+        this.page = page;
+    }
+    
+    public void setClass(String clazz) {
+        this.clazz = clazz;
+    }
+    
+    /*public void setMessage(String message) {
         this.msg = message;
     }
     
@@ -135,7 +145,7 @@ public class PerfEventType {
         } else {
             msg = "Null";
         }
-    }
+    }*/
     
     public void setAdditionalInfo(String info) {
         this.extra = info;
@@ -145,9 +155,11 @@ public class PerfEventType {
         return extra;
     }
         
-    public String getMessage() {
+   /* public String getMessage() {
         return msg;
-    }
+    }*/
+    
+    
     
     public void setDuration(long d) {
         duration = d;
@@ -157,8 +169,21 @@ public class PerfEventType {
         return duration;
     }
     
+  
     public String toString() {
         return "Tag: "+tag;
+    }
+    /**
+     * @return
+     */
+    public String getPage() {    
+        return this.page;
+    }
+    /**
+     * @return
+     */
+    public String getHandlingClass() {
+        return this.clazz;
     }
 
 }
