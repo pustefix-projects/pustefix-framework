@@ -264,7 +264,8 @@
   
   <!-- place param within <properties> in resources-->
   <xsl:template match="resource">
-    <xsl:text>&#10;</xsl:text>
+    <xsl:call-template name="copypreceding"/>
+
     <resource>
       <xsl:copy-of select="@*"/>    
       <xsl:apply-templates select="*[not(self::param | self::cus:choose[cus:test/param])]"/>
@@ -274,7 +275,8 @@
         </properties><xsl:text>&#xa;</xsl:text>
       </xsl:if>
     </resource>
-    <xsl:text>&#10;</xsl:text>
+
+    <xsl:call-template name="copyfollowing"/>
   </xsl:template>
   
   
