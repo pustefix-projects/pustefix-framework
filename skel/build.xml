@@ -24,7 +24,7 @@
     <property name="dir.res"                  location="res"/>
     <property name="dir.dist"                 location="dist"/>
     <property name="dir.skel"                 location="skel"/>
-    <property name="dir.javadoc"              location="apidocs"/>
+    <property name="dir.javadoc"              location="docs/api"/>
     <property name="dir.jni"                  location="${dir.lib}/jni"/>
     <property name="dir.metainf"              location="META-INF"/>
     <property name="dir.projects"             location="projects"/>
@@ -217,6 +217,27 @@
         <ant dir="${dir.jni}" target="clean"/>
     </target>
     
+    <target name="doc" depends="clean-doc, properties" description="generates javadoc">
+        <mkdir dir="${dir.javadoc}"/>
+        <javadoc
+			source="${javac.source}"
+			sourcepath="${dir.src}"
+            destdir="${dir.javadoc}"
+            version="true"
+            author="true"
+            windowtitle="de.schlund ${project.name}"
+            doctitle="&lt;h3&gt;Last update: ${DSTAMP} ${TSTAMP}&lt;/h3&gt;"
+        	maxmemory="128m"
+            classpathref="cp.classpath"
+            >
+            <packageset dir="${dir.src}"/>
+        </javadoc>
+    </target>
+
+    <target name="clean-doc">
+        <delete dir="${dir.javadoc}"/>
+    </target>
+
     <target name="installjars">
         <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
         as ${dir.build} is specified as location it always resolves to an absolute path;
@@ -605,7 +626,6 @@ generate-src:   Generates .java from .iwrp files
 compile:        Compiles all java files.
 generate:       Generates all top level targets to 
                 ${dir.projects}/.cache
-help:           What you are reading at the moment
 run/debug:      Runs tomcat. Advantage over ./startTomcat.sh:
                 Ensures all files are build before
                 starting tomcat. Drawback: As tomcat is started
