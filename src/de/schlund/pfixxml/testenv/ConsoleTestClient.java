@@ -43,8 +43,8 @@ public class ConsoleTestClient {
             CAT.error(e.getMessage());
             e.printStackTrace();
             CAT.error("Nested Exception:");
-            CAT.error(e.getCause().getMessage());
-            e.getCause().printStackTrace();
+            CAT.error(e.getExceptionCause().getMessage());
+            e.getExceptionCause().printStackTrace();
             CAT.error("\n**********************************************");
         }
     }

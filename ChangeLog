@@ -29,6 +29,10 @@
 	* src/de/schlund/pfixxml/testenv/RecordManager.java
 	* src/de/schlund/pfixxml/testenv/TestClient.java: changes
 
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartFinalizer.java: removed
+
 2003-04-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/servletconf/projects.xml: 
