@@ -13,12 +13,12 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
-import net.sf.saxon.om.AbstractNode;
-import net.sf.saxon.om.NodeInfo;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import com.icl.saxon.om.AbstractNode;
+import com.icl.saxon.om.NodeInfo;
 import junit.framework.TestCase;
 
 public class XsltTest extends TestCase {

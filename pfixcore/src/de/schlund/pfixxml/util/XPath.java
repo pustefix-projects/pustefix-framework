@@ -1,12 +1,18 @@
 package de.schlund.pfixxml.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.transform.TransformerException;
-import net.sf.saxon.dom.DocumentWrapper;
-import net.sf.saxon.dom.NodeWrapper;
-import net.sf.saxon.xpath.XPathEvaluator;
+import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.traversal.NodeIterator;
+import com.icl.saxon.Context;
+import com.icl.saxon.expr.Expression;
+import com.icl.saxon.expr.NodeSetValue;
+import com.icl.saxon.expr.StandaloneContext;
+import com.icl.saxon.om.NodeEnumeration;
+import com.icl.saxon.om.NodeInfo;
 
 
 /**
@@ -14,18 +20,36 @@ import org.w3c.dom.Node;
  *   @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
  */
 public final class XPath {
+    // TODO: xalan cannot evaluable saxon trees an vice versa ...
+    
     public static List select(Node context, String xpath) throws TransformerException {
-        List lst;
-        XPathEvaluator evaluator;
-        DocumentWrapper sourceWrapper;
-        NodeWrapper contextWrapper;
+        List result;
         
-        sourceWrapper = new DocumentWrapper(getDocument(context), "foo");
-        contextWrapper = sourceWrapper.wrap(context);
-        evaluator = new XPathEvaluator();
-        evaluator.setSource(sourceWrapper);
-        evaluator.setContextNode(contextWrapper);
-        return evaluator.evaluate(xpath);
+        result = new ArrayList();
+        if (context instanceof NodeInfo) {
+        	NodeInfo   cNode   = (NodeInfo) context;
+        	Expression exp     = Expression.make(xpath, new StandaloneContext());
+        	Context    ctx = new Context();
+        	ctx.setContextNode(cNode);
+        	ctx.setPosition(1);
+        	ctx.setLast(1);
+        	NodeSetValue nodeSet = exp.evaluateAsNodeSet(ctx);
+        	NodeEnumeration enm = nodeSet.enumerate();
+        	while (enm.hasMoreElements()) {
+        	    result.add(enm.nextElement());
+        	}
+    	} else {
+    	    NodeIterator iter = XPathAPI.selectNodeIterator(context, xpath);
+    	    Node node;
+    	    while (true) {
+    	        node = iter.nextNode();
+    	        if (node == null) {
+    	            break;
+    	        }
+    	        result.add(node);
+    	    }
+    	}
+        return result;
     }
 
     public static Node selectNode(Node context, String xpath) throws TransformerException {
@@ -41,13 +65,17 @@ public final class XPath {
 
     /** computes the 'effective boolean value' **/
     public static boolean test(Node context, String test) throws TransformerException {
-        List lst;
-        
-        lst = select(context, "boolean(" + test + ")");
-        if (lst.size() != 1) {
-            throw new RuntimeException();
+        if (context instanceof NodeInfo) {
+        	NodeInfo   cNode   = (NodeInfo) context;
+        	Expression exp     = Expression.make(test, new StandaloneContext());
+        	Context    ctx = new Context();
+        	ctx.setContextNode(cNode);
+        	ctx.setPosition(1);
+        	ctx.setLast(1);
+        	return exp.evaluateAsBoolean(ctx);
+        } else {
+            return XPathAPI.eval(context, test).bool();
         }
-        return ((Boolean) lst.get(0)).booleanValue();
     }
 
     private static Document getDocument(Node node) {

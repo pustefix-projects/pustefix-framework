@@ -1,3 +1,15 @@
+2004-08-03  Michael Hartmeier  <mhm@schlund.de>
+	* .classpath
+	* lib/saxon-8.0.mhm.jar
+	* lib/saxon6_5_3.jar
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/util/XPath.java
+	* src/de/schlund/pfixxml/util/Xml.java
+	* src/de/schlund/pfixxml/util/Xslt.java
+	* tests/junit/de/schlund/pfixxml/util/XsltTest.java:
+	switch back to saxon 6
+
 2004-19-05  Michael Hartmeier  <mhm@schlund.de>
 	* tests/junit/de/schlund/pfixxml/util/html.xml
 	* tests/junit/de/schlund/pfixxml/util/html.xsl

@@ -25,15 +25,14 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import net.sf.saxon.value.EmptySequence;
+import com.icl.saxon.Context;
+import com.icl.saxon.expr.EmptyNodeSet;
+import com.icl.saxon.om.NodeInfo;
 
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.XPath;
-
-import net.sf.saxon.expr.XPathContext;
-import net.sf.saxon.om.NodeInfo;
 
 /**
  * IncludeDocumentExtension.java
@@ -75,7 +74,7 @@ public final class IncludeDocumentExtension {
      * @return a list of nodes understood by the current transformer(currently saxon)
      * @throws Exception on all errors
      */
-    public static final Object get(XPathContext context, String path_str, String part, String product,
+    public static final Object get(Context context, String path_str, String part, String product,
                                    String targetgen, String targetkey,
                                    String parent_part_in, String parent_product_in, String computed_inc) throws Exception {
 
@@ -114,7 +113,7 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEFAULT,
                                                parent_path, parent_part, parent_product, target);
                 }
-                return EmptySequence.getInstance();
+                return new EmptyNodeSet();
             }
             // get the includedocument
             try {
@@ -151,7 +150,7 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEFAULT,
                                                parent_path, parent_part, parent_product, target);
                 }
-                return EmptySequence.getInstance();
+                return new EmptyNodeSet();
             } else if (length > 1) {
                 // too many parts. Error!
                 if (dolog) {
@@ -209,9 +208,9 @@ public final class IncludeDocumentExtension {
                             append("' is not accessible under part '").append(part).append("@").append(path).
                             append("', and a default product is not defined either.");
                         CAT.warn(sb.toString());
-                        return EmptySequence.getInstance();
+                        return new EmptyNodeSet();
                     } else {
-                        return ok? ns.get(0) : EmptySequence.getInstance();
+                        return ok? ns.get(0) : new EmptyNodeSet();
                     }
                 } else {
                     // too many default products found. Error!
@@ -236,7 +235,7 @@ public final class IncludeDocumentExtension {
                         ok = false;
                     }
                 }
-                return ok? (Object) ns.get(0) : EmptySequence.getInstance();
+                return ok? (Object) ns.get(0) : new EmptyNodeSet();
             } else {
                 // too many specific products found. Error!
                 if (dolog) {
@@ -263,12 +262,12 @@ public final class IncludeDocumentExtension {
         }
     }
 
-    public static final String makeSystemIdRelative(XPathContext context) {
+    public static final String makeSystemIdRelative(Context context) {
         return makeSystemIdRelative(context, "dummy");
     }
 
-    public static final String makeSystemIdRelative(XPathContext context, String dummy) {
-        NodeInfo citem   = (NodeInfo) context.getContextItem();
+    public static final String makeSystemIdRelative(Context context, String dummy) {
+        NodeInfo citem   = context.getContextNodeInfo();
         String   sysid   = citem.getSystemId();
         String   docroot = PathFactory.getInstance().createPath("dummy").getBase().getPath();
 
@@ -281,8 +280,8 @@ public final class IncludeDocumentExtension {
         return sysid;
     }
 
-    public static boolean isIncludeDocument(XPathContext context) {
-        NodeInfo citem   = (NodeInfo) context.getContextItem();
+    public static boolean isIncludeDocument(Context context) {
+        NodeInfo citem   = (NodeInfo) context.getContextNodeInfo();
         return ((Document) citem.getDocumentRoot()).getDocumentElement().getNodeName().equals("include_parts");
     }
 }// end of class IncludeDocumentExtension

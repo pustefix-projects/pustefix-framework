@@ -24,11 +24,11 @@ import java.util.*;
 import javax.xml.transform.*;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.*;
-import net.sf.saxon.*;
-import net.sf.saxon.tinytree.TinyDocumentImpl;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 public class Xslt {
     private static final Category           CAT        = Category.getInstance(Xslt.class.getName());

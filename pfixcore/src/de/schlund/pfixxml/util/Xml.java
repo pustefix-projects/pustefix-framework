@@ -36,8 +36,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
-import net.sf.saxon.tinytree.TinyDocumentImpl;
-import net.sf.saxon.xpath.XPathException;
 import org.apache.log4j.Category;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.xerces.parsers.SAXParser;
@@ -52,6 +50,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
+import com.icl.saxon.expr.XPathException;
+import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 public final class Xml {
     private static final Category               CAT     = Category.getInstance(Xml.class.getName());

@@ -20,22 +20,17 @@
 package de.schlund.pfixxml;
 
 
-import java.io.File;
-
 import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.util.Path;
 
 import org.apache.log4j.Category;
-
-import net.sf.saxon.expr.XPathContext;
-
-import net.sf.saxon.om.NodeInfo;
+import com.icl.saxon.Context;
 
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
     /** xslt extension */
-    public static String logImage(XPathContext context, String path,
+    public static String logImage(Context context, String path,
                                   String parent_part_in, String parent_product_in,
                                   String targetGen, String targetKey) throws Exception {
 
