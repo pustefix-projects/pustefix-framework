@@ -308,7 +308,7 @@ public final class RecordManager {
             file = new File(new_filename);
         }
         try {
-            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getName(), 2, false);
+            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getAbsolutePath(), 2, false);
         } catch (FileNotFoundException e) {
             throw new RecordManagerException("Unable to serialize! File not found.", e);
         } catch (IOException e) {
@@ -352,11 +352,13 @@ public final class RecordManager {
             String         name   = req_param_names[i];
             RequestParam[] values = pfreq.getAllRequestParams(name);
             for (int j = 0; j < values.length; j++) {
-                Element e    = doc.createElement("param");
-                Text    text = doc.createTextNode(values[j].getValue());
-                e.setAttribute("name", name);
-                e.appendChild(text);
-                ele_params.appendChild(e);
+                if (!values[j].isSynthetic()) {
+                    Element e    = doc.createElement("param");
+                    Text    text = doc.createTextNode(values[j].getValue());
+                    e.setAttribute("name", name);
+                    e.appendChild(text);
+                    ele_params.appendChild(e);
+                }
             }
         }
         ele.appendChild(ele_params);

@@ -455,6 +455,7 @@ public class PfixServletRequest {
                 }
                 for (int j = 0; j < pvals.size(); j++) {
                     newvals[j] = new SimpleRequestParam((String) pvals.get(j));
+                    newvals[j].setSynthetic(true);
                 }
                 if (oldvals != null) {
                     CAT.debug("          **** [EMB] already having parameter data for key '" + pkey

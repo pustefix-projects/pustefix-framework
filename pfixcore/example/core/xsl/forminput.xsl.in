@@ -426,15 +426,17 @@
     
   </xsl:template>
 
-<!--  <xsl:template match="pfx:argument"/>
-  <xsl:template match="pfx:command"/>-->
+<!--   <xsl:template match="pfx:argument"/> -->
+<!--   <xsl:template match="pfx:command"/> -->
+<!--   <xsl:template match="pfx:anchor"/> -->
 
   <xsl:template name="generate_coded_name">
     <cus:documentation>
-      <description>Called by pfx:button, pfx:jsbutton etc. Generates the parameters for pfx:argument and pfx:command</description>
+      <description>Called by pfx:button, pfx:jsbutton etc. Generates the parameters for pfx:argument, pfx:command and pfx:anchor</description>
     </cus:documentation>
     <ixsl:attribute name="name">
       <xsl:for-each select="./pfx:argument">__DATA:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each>
+      <xsl:for-each select="./pfx:anchor">__DATA:__anchor:<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/>:</xsl:for-each>
       <xsl:for-each select="./pfx:command">__CMD[<xsl:choose>
           <xsl:when test="@page">
             <xsl:value-of select="@page"/>
@@ -467,11 +469,12 @@
 
       <children>
         <name>pfx:argument</name>
-        <description>see pfx:argument</description>        
       </children>
       <children>
         <name>pfx:command</name>
-        <description>see pfx:command</description>        
+      </children>
+      <children>
+        <name>pfx:anchor</name>
       </children>
 
       <example>
@@ -487,7 +490,7 @@
     <input border="0"> 
       <xsl:copy-of select="./@*"/>
       <xsl:call-template name="pfx:image_geom_impl"/>
-      <xsl:if test="./pfx:argument or ./pfx:command">
+      <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
         <xsl:call-template name="generate_coded_name"/>
       </xsl:if> 
       <xsl:apply-templates/>
@@ -508,7 +511,10 @@
 
       <children>
         <name>pfx:command</name>
-        <description></description>        
+      </children>
+
+      <children>
+        <name>pfx:anchor</name>
       </children>
 
       <example>
@@ -526,7 +532,7 @@
       <xsl:copy-of select="./@*"/>
       <xsl:choose>
         <xsl:when test="not(@value)">
-          <xsl:if test="./pfx:argument or ./pfx:command">
+          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
             <xsl:call-template name="generate_coded_name"/>
           </xsl:if> 
           <xsl:attribute name="value">
@@ -534,7 +540,7 @@
           </xsl:attribute>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:if test="./pfx:argument or ./pfx:command">
+          <xsl:if test="./pfx:argument or ./pfx:command or ./pfx:anchor">
             <xsl:call-template name="generate_coded_name"/>
           </xsl:if> 
           <xsl:apply-templates/>

@@ -103,7 +103,7 @@ public class AuxDependencyManager implements DependencyParent {
         }
     }
 
-    public synchronized void saveAuxdepend() throws Exception {
+    public synchronized void saveAuxdepend() throws ParserConfigurationException, IOException  {
         CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
         String path = target.getTargetGenerator().getDisccachedir() + target.getTargetKey() + ".aux";
         

@@ -18,17 +18,19 @@
 */
 package de.schlund.pfixxml;
 
+import java.io.File;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.XPathException;
 
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.xpath.PFXPathEvaluator;
-
-import java.io.File;
-
-import org.apache.log4j.Category;
-
-import org.w3c.dom.Document;
 
 
 /**
@@ -55,6 +57,8 @@ public final class IncludeDocumentExtension {
     
     //~ Methods ....................................................................................
 
+
+
     /**
      * Get the requested IncludeDocument from {@link IncludeDocumentFactory} and retrieve
      * desired information from it.</br>
@@ -74,11 +78,14 @@ public final class IncludeDocumentExtension {
     public static final NodeSetValue get(String path, String part, String product, String docroot, 
                                          String targetgen, String targetkey, String parent_path, 
                                          String parent_part, String parent_product) throws Exception {
+       
         boolean         dolog   = ! targetkey.equals(NOTARGET);
         int             length  = 0;
         File            incfile = new File(path);
         IncludeDocument iDoc    = null;
         Document        doc;
+        TargetImpl target = (TargetImpl) TargetGeneratorFactory.getInstance().createGenerator(targetgen).getTarget(targetkey);
+        
         if (! incfile.exists()) {
             if (dolog) {
                 DependencyTracker.log("text", path, part, DEFAULT, parent_path, parent_part, 
@@ -89,10 +96,13 @@ public final class IncludeDocumentExtension {
         // get the includedocument
         try {
             iDoc = IncludeDocumentFactory.getInstance().getIncludeDocument(path, false);
-        } catch(Exception e) {
+        } catch(SAXException saxex) {
             if(dolog)
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
-            throw e;
+            
+            
+            target.setStoredException(saxex);
+            throw saxex;
         }
         doc = iDoc.getDocument();
         
@@ -137,7 +147,9 @@ public final class IncludeDocumentExtension {
             }
             sb.delete(0, sb.length());
             sb.append("*** Part '").append(part).append("' is multiple times defined! Must be exactly 1");
-            throw new XMLException(sb.toString());
+            XMLException ex = new XMLException(sb.toString());
+            target.setStoredException(ex);
+            throw ex;
         }
         
         
@@ -209,7 +221,9 @@ public final class IncludeDocumentExtension {
                 sb.delete(0, sb.length());
                 sb.append("*** Part '").append(part).
                 	append("' has multiple default product branches! Must be 1.");
-                throw new XMLException(sb.toString());
+                XMLException ex = new XMLException(sb.toString());
+                target.setStoredException(ex);
+                throw ex;
             }
         } else if (length == 1) {
         	// specific product found
@@ -233,7 +247,27 @@ public final class IncludeDocumentExtension {
             sb.append("*** Product '").append(product).
             	append("' is defined multiple times under part '").append(part).append("@").
             	append(path).append("'");
-            throw new XMLException(sb.toString());
+            XMLException ex = new XMLException(sb.toString());
+            target.setStoredException(ex);
+            throw ex;
         }
     }
+
+  /*  private static NodeSetValue handleSAXError(String part, SAXParseException e)
+        throws ParserConfigurationException, Exception, IOException {
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document d = builder.newDocument();
+        Element ele1 = d.createElement("include_error");
+        ele1.setAttribute("part", part);
+        ele1.setAttribute("type", e.getClass().getName());
+        ele1.setAttribute("msg", e.getMessage());
+        ele1.setAttribute("id", e.getSystemId());
+        ele1.setAttribute("line", ""+e.getLineNumber());
+        ele1.setAttribute("column", ""+e.getColumnNumber());
+        d.importNode(ele1, true);
+        d.appendChild(ele1);
+        TraxXSLTProcessor trax = new TraxXSLTProcessor();
+        d = trax.xmlObjectFromDocument(d);
+        return PFXPathEvaluator.evaluateAsNodeSetValue("/*", d);
+    }*/
 }// end of class IncludeDocumentExtension

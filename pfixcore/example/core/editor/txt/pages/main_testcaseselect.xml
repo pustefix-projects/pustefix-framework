@@ -5,57 +5,67 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <!--<b>Directory with testcases is: <ixsl:value-of select="/formresult/testcases/@directory"/></b> -->
         <br/><br/>
-          <!--<pfx:button activeclass="editor_submit" page="testcaseselect" target="_top" mode="force">Reload page</pfx:button>-->
         <br/>
-          <ixsl:choose>
+        <ixsl:choose>
           <ixsl:when test="/formresult/testcases/available/testcase">
-          <b>The following testcases exist for this product:</b>
-          <br/>
-          <pfx:forminput target="_top">	
-          <table border="0" class="editor_box">
-            <ixsl:for-each select="/formresult/testcases/available/testcase">
-            <ixsl:variable name="myname" select="."/>
-            <tr><td colspan="2">            <pfx:xinp type="check" name="tcselect.Select">   
-                <ixsl:attribute name="value"><ixsl:value-of select="$myname"/></ixsl:attribute>
-                  <ixsl:for-each select="/formresult/formvalues/param">
-                    <ixsl:variable name="myvalue" select="."/>
-                    <ixsl:if test="$myvalue = $myname">
-                      <ixsl:attribute name="checked">true</ixsl:attribute>
-                    </ixsl:if>
-                  </ixsl:for-each>
-                <ixsl:value-of select="$myname"/>
-              </pfx:xinp>
-              <br/>
-            </td>
-            </tr>
-            </ixsl:for-each>
-          <br/>
-          <tr>
-            <pfx:checkactive prefix="tcselect">
-            <td>
-              <pfx:xinp type="submit" class="editor_submit" value="Delete">
-                <pfx:argument name="tcselect.DoDelete">true</pfx:argument>
-								<pfx:command name="SELWRP">tcselect</pfx:command>
-              </pfx:xinp>
-              </td>
-              <td>
-            <pfx:xinp class="editor_submit" type="submit" value="Select">
-               <pfx:argument name="tcselect.DoSelect">true</pfx:argument>
-            </pfx:xinp>
-            </td>
-              </pfx:checkactive>
-          </tr>
-          </table>
-          </pfx:forminput>
+            <table border="0" width="50%" align="center">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">The following testcases exist for this product:</span>
+                </td>
+              </tr>
+            </table>
+            <pfx:forminput target="_top">	
+              <table border="0" width="50%" class="editor_box" align="center" cellpadding="0" cellspacing="0">
+                <ixsl:for-each select="/formresult/testcases/available/testcase">
+                  <ixsl:variable name="myname" select="./text()"/>
+                  <tr>
+                    <ixsl:attribute name="class">
+                      <ixsl:choose>
+                        <ixsl:when test="(count(preceding-sibling::testcase) mod 2) = 0">editor_even_row</ixsl:when>
+                        <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
+                      </ixsl:choose>
+                    </ixsl:attribute>
+                    <td>
+                      &#160;<ixsl:value-of select="$myname"/>
+                    </td>
+                    <td align="right">
+                      <pfx:xinp type="check" name="tcselect.Select">   
+                        <ixsl:attribute name="value"><ixsl:value-of select="$myname"/></ixsl:attribute>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                </ixsl:for-each>
+                <pfx:checkactive prefix="tcselect">
+                  <tr>
+                    <td colspan="2"><hr/></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pfx:button normalclass="editor_submit" page="home">Back</pfx:button>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                      <pfx:xinp type="submit" class="editor_submit" value="Delete selected">
+                        <pfx:argument name="tcselect.DoDelete">true</pfx:argument>
+                        <pfx:command name="SELWRP">tcselect</pfx:command>
+                      </pfx:xinp>&#160;&#160;
+                      <pfx:xinp class="editor_submit" type="submit" value="Run selected">
+                        <pfx:argument name="tcselect.DoSelect">true</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                </pfx:checkactive>
+              </table>
+            </pfx:forminput>
           </ixsl:when>
           <ixsl:otherwise>
-	  				<table class="editor_box">
-            	<tr><td><p>No recorded testcases exist, please record something and reload this page.</p></td></tr>
-						</table>
+            <table class="editor_box" align="center">
+              <tr><td><b>No recorded testcases exist, please record one or more testcases and come back.</b><br/><br/></td></tr>
+              <tr><td align="right"><pfx:button normalclass="editor_submit" page="home">Back</pfx:button></td></tr>
+            </table>
           </ixsl:otherwise>
-          </ixsl:choose>
+        </ixsl:choose>
         <br/>
       </lang>
     </product>

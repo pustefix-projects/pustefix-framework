@@ -96,7 +96,33 @@
       <xsl:otherwise><b>[?]</b></xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+ 
+  <!--<xsl:template name="include_error">
+    <cus:documentation>
+      <description>This template will be executed if exceptions occur
+      in class de.schlund.pfixxml.IncludeDocumentExtension. 
+      </description>
+    </cus:documentation>
+    <xsl:param name="errors"/>
+    <center>
+      <table cellpadding="2" style="border: 1px solid black">
+        <th colspan="2">Exception when getting part '<xsl:value-of select="$errors/@part"/>'!</th>
+        <tr><td>Type:</td><td><xsl:value-of select="$errors/@type"/></td></tr>
+        <tr><td>Message:</td><td><xsl:value-of select="$errors/@msg"/></td></tr>
+        <xsl:if test="$errors/@id">
+          <tr><td>SystemId:</td><td><xsl:value-of select="$errors/@id"/></td></tr>
+        </xsl:if>
+        <xsl:if test="$errors/@line">
+          <tr><td>Line:</td><td><xsl:value-of select="$errors/@line"/></td></tr>
+        </xsl:if>
+        <xsl:if test="$errors/@column">
+          <tr><td>Column:</td><td><xsl:value-of select="$errors/@column"/></td></tr>
+        </xsl:if>
+      </table>
+    </center>
+  </xsl:template>-->
+
+ 
   <xsl:template name="pfx:missinc">
     <cus:documentation>
       <description>Called by &lt;pfx:include&gt;. This template will be executed
@@ -188,6 +214,12 @@
         </xsl:choose>
         <!-- -->
         <xsl:choose>
+          <!--<xsl:when test="$incnodes and $incnodes[name() = 'include_error']">
+             Exception occured in extension function 
+            <xsl:call-template name="include_error">
+              <xsl:with-param name="errors" select="$incnodes"/>
+            </xsl:call-template>
+          </xsl:when>-->
           <xsl:when test="$incnodes and $incnodes[name() = 'product']">
             <xsl:choose>
               <xsl:when test="$incnodes/lang">
@@ -292,7 +324,7 @@
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
-                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="concat($docroot,'/',$href)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi:<xsl:value-of select="concat($docroot,'/',$href)"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="concat($docroot,'/',$href)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="concat($docroot,'/',$href)"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                 <img border="0" src="/core/img/edit.gif"
                      alt="Edit include: '{$part}' in file '{$href}'"
                      title="Edit include: '{$part}' in file '{$href}'"/>
@@ -300,7 +332,7 @@
             </ixsl:if>
           </xsl:when>
           <xsl:when test="$__target_key='__NONE__' and $__editmode = 'admin'">
-            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={concat($docroot,'/',$href)}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi:{concat($docroot,'/',$href)}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
+            <a href="" onclick="window.open('/xml/edit/commons;{$__sessid}?extcom.Path={concat($docroot,'/',$href)}&amp;extcom.Part={$part}&amp;extprod.Name={$product}&amp;__anchor=left_navi|{concat($docroot,'/',$href)}','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);">
               <img border="0" src="/core/img/edit.gif" alt="Edit include: '{$part}' in file '{$href}'" title="Edit include: '{$part}' in file '{$href}'"/>
             </a>
           </xsl:when>

@@ -5,37 +5,45 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <b>You have selected to following testcases:</b>
-        <table>
-          <ixsl:for-each select="/formresult/testcases/selected/testcase">
-          <tr>
-            <td colspan="2">
-              <table border="0" class="editor_box">
-                <th><ixsl:value-of select="."/></th>
-                <tr>
-                  <td>
-                    temporary directory: <ixsl:value-of select="./@tmp_directory"/>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          </ixsl:for-each>
-          <tr>
-            <td align="left">
-              <pfx:button normalclass="editor_submit" page="testcaseselect">
-                Back
-              </pfx:button>
-            </td>
-            <td align="right">
-              <pfx:forminput target="_top">
-                <pfx:xinp class="editor_submit" type="submit" value="Start">
-                  <pfx:argument name="tcstart.DoStart">true</pfx:argument>
-                </pfx:xinp>
-              </pfx:forminput>
-            </td>
-          </tr>
-        </table>
+        <br/><br/>
+        <pfx:forminput target="_top">
+          <table align="center" width="50%">
+            <tr>
+              <td>
+                <table>
+                  <tr>
+                    <td colspan="2">
+                      <span style="color: #ffffff; font-weight: bold;">        
+                        You have selected the following testcases:
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+                <table width="100%" align="center" class="editor_box">
+                  <ixsl:for-each select="/formresult/testcases/selected/testcase">
+                    <tr>
+                      <td colspan="2">
+                        <table border="0" class="editor_box" width="100%">
+                          <tr><td align="center"><b><ixsl:value-of select="."/></b></td></tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </ixsl:for-each>
+                  <tr>
+                    <td align="left">
+                      <pfx:button normalclass="editor_submit" page="testcaseselect">Back</pfx:button>
+                    </td>
+                    <td align="right">
+                      <pfx:xinp class="editor_submit" type="submit" value="Start">
+                        <pfx:argument name="tcstart.DoStart">true</pfx:argument>
+                      </pfx:xinp>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </pfx:forminput>
       </lang>
       </product>
   </part>

@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -107,8 +108,9 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @throws exception on all errors
      */
     public final void applyTrafoForOutput(Object xmlobj, Object xslobj, Map params, 
-                                          OutputStream out) throws Exception {
+                                          OutputStream out) throws TransformerException   {
         Templates   xsl   = (Templates) xslobj;
+       
         Transformer trafo = xsl.newTransformer();
         long        start = 0;
         if (params != null) {
@@ -150,7 +152,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
      * @throws Exception on all errors 
      */
-    public final Document xmlObjectFromDocument(Document doc) throws Exception {
+    public final Document xmlObjectFromDocument(Document doc) throws TransformerException {
         return tinyTreeFromDocument(doc);
     }
 
@@ -162,18 +164,22 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      */
     public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException {
         TransformerFactory transFac      = TransformerFactory.newInstance();
+        transFac.setErrorListener(new PFErrorListener());
         StreamSource       stream_source = new StreamSource("file://" + path);
         Object             val           = null;
         try {
             val = transFac.newTemplates(stream_source);
         } catch (TransformerConfigurationException e) {
             StringBuffer sb = new StringBuffer();
-            sb.append("TransformerException in xslObjectFromDisc!\n");
+            sb.append("TransformerConfigurationException in xslObjectFromDisc!\n");
             sb.append("Path: ").append(path).append("\n");
             sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
             Throwable cause = e.getException();
+            if(cause == null)
+                cause = e.getCause();
             sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
             CAT.error(sb.toString());
+            //System.out.println(e.getLocator().getSystemId());
             throw e;
         }
         stream_source = null;
@@ -217,7 +223,7 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
     /**
      * Document me!
      */
-    private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws Exception {
+    private final TinyDocumentImpl tinyTreeFromDocument(Document doc) throws TransformerException  {
         if (doc == null) {
             // thats a request to an unkown page!
             // return null, cause we  want a 404 and no NPExpection
@@ -249,5 +255,46 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
         domsource  = null;
         controller = null;
         return tiny;
+    }
+    
+    
+}
+
+
+
+/**
+ * Implementation of ErrorListener interface.
+ */
+class PFErrorListener implements ErrorListener {
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#warning(javax.xml.transform.TransformerException)
+     */
+    public void warning(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("warning", arg0);
+        throw arg0;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#error(javax.xml.transform.TransformerException)
+     */
+    public void error(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("error", arg0);
+        throw arg0;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.xml.transform.ErrorListener#fatalError(javax.xml.transform.TransformerException)
+     */
+    public void fatalError(TransformerException arg0) throws TransformerException {
+        // TODO Auto-generated method stub
+       // print("fatal", arg0);
+        throw arg0;
+    }
+
+    private void print(String msg, TransformerException ex) {
+        System.out.println(msg+": hallo:"+ex.getMessage()+"-->"+ex.getLocationAsString()+"-->"+ex.getException());
     }
 }

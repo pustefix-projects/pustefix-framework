@@ -18,11 +18,15 @@
 */
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.*;
 
+import de.schlund.pfixxml.XMLException;
 
 /**
  * TargetImpl.java
@@ -39,20 +43,21 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     //~ Instance/static variables ..................................................................
 
     // set in from constructor
-    protected TargetType      type;
+    protected TargetType type;
     protected TargetGenerator generator;
-    protected String          targetkey;
+    protected String targetkey;
     // only needed to init in constructor for virtual targets
     protected AuxDependencyManager auxdepmanager = null;
-    protected TreeMap              params    = null;
-    protected Target               xmlsource = null;
-    protected Target               xslsource = null;
-    protected Category             CAT       = Category.getInstance(this.getClass().getName());
-    protected Category             TREE      = Category.getInstance(
-                                                       this.getClass().getName() + ".TREE");
+    protected TreeMap params = null;
+    protected Target xmlsource = null;
+    protected Target xslsource = null;
+    protected Category CAT = Category.getInstance(this.getClass().getName());
+    protected Category TREE = Category.getInstance(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle that the target is always up to date (expect make generate!!!)
     private boolean onceGenerated = false;
+    // store  exception occured during transformation here. 
+    protected Exception storedException = null;
 
     //~ Methods ....................................................................................
 
@@ -91,7 +96,11 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
-    public Object getValue() throws Exception {
+    /**
+     * @see de.schlund.pfixxml.targets.Target#getValue()
+     */
+    public Object getValue()
+        throws TargetGenerationException, XMLException, ParserConfigurationException, IOException {
         // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
         // but: if the target is not in memory- and disk-cache (has not been generated) we
         // must call getModTimeMaybeUpdate to make it work
@@ -100,11 +109,13 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             if (CAT.isDebugEnabled()) {
                 CAT.debug("skip_getmodtimemaybeupdate is on. Trying to skip getModTimeMaybeUpdate...");
             }
-            if (! onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
+            if (!onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
                 if (CAT.isDebugEnabled()) {
-                    CAT.debug("Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
+                    CAT.debug(
+                        "Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
                 }
                 getModTimeMaybeUpdate();
+
             } // target generated -> nop 
             else {
                 if (CAT.isDebugEnabled()) {
@@ -113,12 +124,20 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             }
         } // do not skip getModTimeMaybeUpdate 
         else {
-        	if (CAT.isDebugEnabled()) {
-            	CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
-           	}
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+            }
             getModTimeMaybeUpdate();
         }
-        return getCurrValue();
+        Object obj = null;
+        try {
+            obj = getCurrValue();
+        } catch (TransformerException e) {
+            TargetGenerationException tex = new TargetGenerationException("Exception in getCurrValue !", e);
+            tex.setTargetkey(getTargetKey());
+            throw tex;
+        }
+        return obj;
     }
 
     public abstract void addPageInfo(PageInfo info);
@@ -139,20 +158,21 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public abstract String toString();
 
-    public Object getCurrValue() throws Exception {
+    public Object getCurrValue() throws TransformerException {
         Object obj = getValueFromSPCache();
         // look if the target exists in memory cache and if the file in disk cache is newer.
         if (obj == null || isDiskCacheNewerThenMemCache()) {
             synchronized (this) {
                 obj = getValueFromSPCache();
                 if (obj == null || isDiskCacheNewerThenMemCache()) {
-                	if(CAT.isDebugEnabled()) {
-	                	if(CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
-	                		CAT.debug("File in disk cache is newer then in memory cache. Rereading target from disk...");
-	                	}
-                	}
-                    obj = getValueFromDiscCache();
+                    if (CAT.isDebugEnabled()) {
+                        if (CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
+                            CAT.debug(
+                                "File in disk cache is newer then in memory cache. Rereading target from disk...");
+                        }
+                    }
                     
+                    obj = getValueFromDiscCache();
                     // Caution! setCacheValue is not guaranteed to store anything at all, so it's NOT
                     // guaranteed that the sequence
                     //           storeValue(tmp); tmp2 = getValueFromSPCache; return tmp2
@@ -160,15 +180,15 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // Example: A NullCache will silently ignore all store requests, so a call to this method
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
-                  	
-               		// after the newer file on disk is reread and stored in memory cache it isnt't
-               		// newer any more, so set the mod time of the target to the mod time of the
-               		// file in disk cache
-               		if(isDiskCacheNewerThenMemCache()) {
-                    	setModTime(new File(getTargetGenerator().getDisccachedir() + getTargetKey()).lastModified());
+
+                    // after the newer file on disk is reread and stored in memory cache it isnt't
+                    // newer any more, so set the mod time of the target to the mod time of the
+                    // file in disk cache
+                    if (isDiskCacheNewerThenMemCache()) {
+                        setModTime(new File(getTargetGenerator().getDisccachedir() + getTargetKey()).lastModified());
                     }
 
-                   	// now the target is generated
+                    // now the target is generated
                     onceGenerated = true;
                 }
             }
@@ -186,26 +206,44 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
-	public boolean isDiskCacheNewerThenMemCache() {
-		long target_mod_time = getModTime();
-		File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
-		long disk_mod_time = thefile.lastModified();
-		if(CAT.isDebugEnabled()) {
-			CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + getTargetKey() +" ("+disk_mod_time+") is "+ 
-				(disk_mod_time > target_mod_time ? " newer " : "older")+ " than target("+target_mod_time+")");
-		}
-		// return true if file in diskcache newer than target
-		return disk_mod_time > target_mod_time ? true : false;
-	}
+    public boolean isDiskCacheNewerThenMemCache() {
+        long target_mod_time = getModTime();
+        File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+        long disk_mod_time = thefile.lastModified();
+        if (CAT.isDebugEnabled()) {
+            CAT.debug(
+                "File in DiskCache "
+                    + getTargetGenerator().getDisccachedir()
+                    + getTargetKey()
+                    + " ("
+                    + disk_mod_time
+                    + ") is "
+                    + (disk_mod_time > target_mod_time ? " newer " : "older")
+                    + " than target("
+                    + target_mod_time
+                    + ")");
+        }
+        // return true if file in diskcache newer than target
+        return disk_mod_time > target_mod_time ? true : false;
+    }
 
     //
     // implementation
     //
     protected abstract Object getValueFromSPCache();
 
-    protected abstract Object getValueFromDiscCache() throws Exception;
+    protected abstract Object getValueFromDiscCache() throws TransformerException;
 
-    protected abstract long getModTimeMaybeUpdate() throws Exception;
+    protected abstract long getModTimeMaybeUpdate()
+        throws TargetGenerationException, XMLException, ParserConfigurationException, IOException;
 
     protected abstract void setModTime(long mtime);
+    /**
+     * Sets the storedException.
+     * @param storedException The storedException to set
+     */
+    public void setStoredException(Exception stored) {
+        this.storedException = stored;
+    }
+
 } // TargetImpl
