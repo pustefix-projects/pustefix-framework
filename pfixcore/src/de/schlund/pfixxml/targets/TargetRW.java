@@ -30,6 +30,7 @@ interface TargetRW extends Target {
     void   setXMLSource(Target source);
     void   setXSLSource(Target source);
     void   addParam(String key, String val);
+    void   resetParams();
     void   addPageInfo(PageInfo info);
     Object getCurrValue() throws TransformerException;
     void   storeValue(Object obj);  

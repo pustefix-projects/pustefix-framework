@@ -32,15 +32,12 @@ package de.schlund.pfixcore.workflow;
  */
 
 public class PageRequestStatus {
-    public static final PageRequestStatus WORKFLOW      = new PageRequestStatus("WORKFLOW");
-    public static final PageRequestStatus WORKFLOW_STOP = new PageRequestStatus("WORKFLOW_STOP");
-    public static final PageRequestStatus REUSE         = new PageRequestStatus("REUSE");
-    public static final PageRequestStatus DIRECT        = new PageRequestStatus("DIRECT");
-    public static final PageRequestStatus FINAL         = new PageRequestStatus("FINAL");
-    public static final PageRequestStatus AUTH          = new PageRequestStatus("AUTH");
-    public static final PageRequestStatus AUTH_WORKFLOW = new PageRequestStatus("AUTH_WORKFLOW");
-    public static final PageRequestStatus NAVI_GEN      = new PageRequestStatus("NAVI_GEN");
-    public static final PageRequestStatus UNDEF         = new PageRequestStatus("UNDEF");
+    public static final PageRequestStatus NAVIGATION = new PageRequestStatus("NAVIGATION");
+    public static final PageRequestStatus WORKFLOW   = new PageRequestStatus("WORKFLOW");
+    public static final PageRequestStatus DIRECT     = new PageRequestStatus("DIRECT");
+    public static final PageRequestStatus FINAL      = new PageRequestStatus("FINAL");
+    public static final PageRequestStatus AUTH       = new PageRequestStatus("AUTH");
+    public static final PageRequestStatus UNDEF      = new PageRequestStatus("UNDEF");
     
     private String tag;
     

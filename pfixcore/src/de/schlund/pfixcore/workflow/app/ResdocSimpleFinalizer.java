@@ -72,21 +72,16 @@ public class ResdocSimpleFinalizer implements ResdocFinalizer {
     }
 
     /**
-     * <code>onSuccess</code> is called when there has been no error handling the request.
+     * <code>onSuccess</code> is called when there has been no error handling a request that submitted data.
      * If you really know what you are doing you can add additional output to the ResultDocument here,
      * but this is almost always a bad idea.
-     * The default implementation simply checks if the SPDocument in the container's associated ResultDocument is not
-     * "null" (which can be the case whenever the State wants to signal that the pageflow should
-     * continue, so no output should be generated)
-     * and calls {@link renderDefault(IWrapperContainer container)} in that case.
+     * The default implementation simply calls the {@link renderDefault(IWrapperContainer container)} method.
      *
      * @param container an <code>IWrapperContainer</code> value
      * @see de.schlund.pfixcore.workflow.app.ResdocFinalizer#onSuccess(IWrapperContainer) 
      */
     public void onSuccess(IWrapperContainer container) throws Exception {
-        if (container.getAssociatedResultDocument().getSPDocument() != null) {
-            renderDefault(container);
-        }
+        renderDefault(container);
     }
 
     /**

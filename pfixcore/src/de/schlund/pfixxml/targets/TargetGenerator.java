@@ -122,13 +122,13 @@ public class TargetGenerator {
         if (confile.lastModified() > config_mtime) {
             CAT.warn(
                 "\n\n###############################\n"
-                    + "#### Reloading depend file: "
-                    + confile.getAbsoluteFile()
-                    + "\n"
-                    + "###############################\n");
-            refcounter = new DependencyRefCounter();
-            pagetree = new PageTargetTree();
-            alltargets = new HashMap();
+                + "#### Reloading depend file: "
+                + confile.getAbsoluteFile()
+                + "\n"
+                + "###############################\n");
+            refcounter   = new DependencyRefCounter();
+            pagetree     = new PageTargetTree();
+            alltargets   = new HashMap();
             config_mtime = confile.lastModified();
             loadConfig();
             return true;
@@ -155,7 +155,7 @@ public class TargetGenerator {
             throw e;
         }
 
-        Element makenode = (Element) config.getElementsByTagName("make").item(0);
+        Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
         disccachedir = makenode.getAttribute("cachedir") + "/";
@@ -178,16 +178,16 @@ public class TargetGenerator {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
-            Element node = (Element) targetnodes.item(i);
-            String name = node.getAttribute("name");
-            String type = node.getAttribute("type");
+            Element      node   = (Element) targetnodes.item(i);
+            String       name   = node.getAttribute("name");
+            String       type   = node.getAttribute("type");
             TargetStruct struct = new TargetStruct(name, type);
-            HashMap params = new HashMap();
-            HashSet depaux = new HashSet();
-            Element xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
-            Element xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
-            NodeList allaux = node.getElementsByTagName("depaux");
-            NodeList allpar = node.getElementsByTagName("param");
+            HashMap      params = new HashMap();
+            HashSet      depaux = new HashSet();
+            Element      xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
+            Element      xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
+            NodeList     allaux = node.getElementsByTagName("depaux");
+            NodeList     allpar = node.getElementsByTagName("param");
             if (xmlsub != null) {
                 String xmldep = xmlsub.getAttribute("name");
                 if (xmldep != null) {
@@ -211,26 +211,22 @@ public class TargetGenerator {
                 throw new XMLException("Defined VirtualTarget '" + name + "' without [depxsl]");
             }
             for (int j = 0; j < allaux.getLength(); j++) {
-                Element aux = (Element) allaux.item(j);
-                String auxname = aux.getAttribute("name");
+                Element aux     = (Element) allaux.item(j);
+                String  auxname = aux.getAttribute("name");
                 depaux.add(auxname);
             }
             struct.setDepaux(depaux);
             for (int j = 0; j < allpar.getLength(); j++) {
-                Element par = (Element) allpar.item(j);
-                String parname = par.getAttribute("name");
-                String value = par.getAttribute("value");
+                Element par     = (Element) allpar.item(j);
+                String  parname = par.getAttribute("name");
+                String  value   = par.getAttribute("value");
                 params.put(parname, value);
             }
             struct.setParams(params);
             allstructs.put(name, struct);
         }
-        CAT.warn(
-            "\n=====> Preliminaries took "
-                + (System.currentTimeMillis() - start)
-                + "ms. Now looping over "
-                + allstructs.keySet().size()
-                + " targets");
+        CAT.warn("\n=====> Preliminaries took " + (System.currentTimeMillis() - start) +
+                 "ms. Now looping over " + allstructs.keySet().size() + " targets");
         start = System.currentTimeMillis();
         for (Iterator i = allstructs.keySet().iterator(); i.hasNext();) {
             TargetStruct struct = (TargetStruct) allstructs.get(i.next());
@@ -242,29 +238,17 @@ public class TargetGenerator {
         CAT.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(
-        TargetStruct struct,
-        HashMap allstructs,
-        HashSet depxmls,
-        HashSet depxsls)
-        throws Exception {
-        String key = struct.getName();
-        String type = struct.getType();
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls) throws Exception {
+        String     key     = struct.getName();
+        String     type    = struct.getType();
         TargetType reqtype = TargetType.getByTag(type);
-        TargetRW tmp = getTargetRW(key);
+        TargetRW   tmp     = getTargetRW(key);
 
         if (tmp != null) {
             if (reqtype == tmp.getType()) {
                 return tmp;
             } else {
-                throw new XMLException(
-                    "Already have a target '"
-                        + key
-                        + "' with type "
-                        + tmp.getType()
-                        + ". Requested type was '"
-                        + reqtype
-                        + "'");
+                throw new XMLException("Already have a target '" + key + "' with type " + tmp.getType() + ". Requested type was '" + reqtype + "'");
             }
         } else {
             String xmldep = struct.getXMLDep();
@@ -278,16 +262,14 @@ public class TargetGenerator {
             if (!allstructs.containsKey(xmldep)) {
                 xmlsource = createTarget(TargetType.XML_LEAF, xmldep);
             } else {
-                xmlsource =
-                    createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls);
-            }
+                xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls);
+            } 
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
                 xslsource = createTarget(TargetType.XSL_LEAF, xsldep);
             } else {
-                xslsource =
-                    createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
+                xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls);
             }
 
             tmp = createTarget(reqtype, key);
@@ -300,9 +282,11 @@ public class TargetGenerator {
                 String name = (String) i.next();
                 manager.addDependency(DependencyType.FILE, name, null, null, null, null, null);
             }
-
-            HashMap params = struct.getParams();
-            String pageparam = null;
+            
+            HashMap params    = struct.getParams();
+            String  pageparam = null;
+            // we want to remove already defined params (needed when we do a reload)
+            tmp.resetParams();
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
                 String name = (String) i.next();
                 String value = (String) params.get(name);
@@ -318,12 +302,8 @@ public class TargetGenerator {
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
                 if (pageparam == null) {
-                    CAT.warn(
-                        "*** WARNING *** Target '"
-                            + key
-                            + "' is top-level, but has no 'page' parameter set! Will use 'Unnamed_"
-                            + unnamedcount
-                            + "' instead");
+                    CAT.warn("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' parameter set! Will use 'Unnamed_"
+                             + unnamedcount + "' instead");
                     pageparam = "Unamed_" + unnamedcount++;
                 }
                 PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam);
@@ -357,14 +337,8 @@ public class TargetGenerator {
                 alltargets.put(tmp.getTargetKey(), tmp);
             }
         } else if (tmp != tmp2) {
-            throw new RuntimeException(
-                "Requesting Target '"
-                    + key
-                    + "' of type "
-                    + tmp.getType()
-                    + ", but already have a Target of type "
-                    + tmp2.getType()
-                    + " with the same key in this Generator!");
+            throw new RuntimeException("Requesting Target '" + key + "' of type " + tmp.getType() + ", but already have a Target of type "
+                                       + tmp2.getType() + " with the same key in this Generator!");
         }
         return tmp;
     }
@@ -478,13 +452,8 @@ public class TargetGenerator {
             Target current = getTarget((String) e.next());
             if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
                 StringBuffer buf = new StringBuffer();
-                buf.append(">>>>> Generating ")
-                    .append(getDisccachedir())
-                    .append(current.getTargetKey())
-                    .append(" from ")
-                    .append(current.getXMLSource().getTargetKey())
-                    .append(" and ")
-                    .append(current.getXSLSource().getTargetKey());
+                buf.append(">>>>> Generating ").append(getDisccachedir()).append(current.getTargetKey())
+                    .append(" from ").append(current.getXMLSource().getTargetKey()).append(" and ") .append(current.getXSLSource().getTargetKey());
                 System.out.println(buf.toString());
                 
                 boolean needs_update = false;
@@ -498,7 +467,6 @@ public class TargetGenerator {
                     }
                 }
                 System.out.println("done.");
-                
             }
         }
     }
@@ -530,8 +498,7 @@ public class TargetGenerator {
 class TargetGenerationReport {
     private HashMap hash = new HashMap();
     
-    TargetGenerationReport() {
-    }
+    TargetGenerationReport() {}
     
     void addError(Exception e, String key) {
         if(hash.get(key) == null) {
@@ -541,14 +508,13 @@ class TargetGenerationReport {
         } else {
             ((ArrayList) hash.get(key)).add(e);
         }
-        
     }
     
     public String toString() {
-        StringBuffer buf = new StringBuffer(255);
-        String prod_break = "'============================================================================================'\n";
-        String ex_break = "|----------------------------------------------------------------------------------\n";
-        if(hash.isEmpty()) {
+        StringBuffer buf        = new StringBuffer(255);
+        String       prod_break = "'============================================================================================'\n";
+        String       ex_break   = "|----------------------------------------------------------------------------------\n";
+        if (hash.isEmpty()) {
             StringBuffer sb = new StringBuffer();            
             sb.append(prod_break);
             sb.append("| No exceptions\n");
@@ -575,6 +541,4 @@ class TargetGenerationReport {
         }
         return buf.toString();
     }
-
-    
 }

@@ -46,22 +46,21 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     //~ Instance/static variables ..................................................................
 
     // set in from constructor
-    protected TargetType type;
-    protected TargetGenerator generator;
-    protected String targetkey;
+    protected TargetType           type;
+    protected TargetGenerator      generator;
+    protected String               targetkey;
     // only needed to init in constructor for virtual targets
-    protected AuxDependencyManager auxdepmanager = null;
-    protected TreeMap params = null;
-    protected Target xmlsource = null;
-    protected Target xslsource = null;
-    protected Category CAT = Category.getInstance(this.getClass().getName());
-    protected Category TREE = Category.getInstance(this.getClass().getName() + ".TREE");
+    protected AuxDependencyManager auxdepmanager   = null;
+    protected TreeMap              params          = null;
+    protected Target               xmlsource       = null;
+    protected Target               xslsource       = null;
+    protected Category             CAT             = Category.getInstance(this.getClass().getName());
+    protected Category             TREE            = Category.getInstance(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle that the target is always up to date (expect make generate!!!)
-    private boolean onceGenerated = false;
+    private boolean                onceGenerated   = false;
     // store  exception occured during transformation here. 
-    protected Exception storedException = null;
-
+    protected Exception            storedException = null;
     
     //~ Methods ....................................................................................
 
@@ -121,7 +120,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         }
     }
 
-   
+    public void resetParams() {
+        params = null;
+    }
+    
     /**
      * @see de.schlund.pfixxml.targets.Target#getValue()
      */

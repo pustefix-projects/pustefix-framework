@@ -18,13 +18,10 @@
 */
 
 package de.schlund.pfixcore.workflow.app;
-import java.util.Properties;
 
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.PropertyObjectManager;
-import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixxml.*;
+import java.util.Properties;
 
 /**
  * DefaultIWrapperState.java
@@ -51,6 +48,23 @@ public class DefaultIWrapperState extends StaticState {
         IHandlerContainer container = getIHandlerContainer(context);
         return (container.isPageAccessible(context) && container.areHandlerActive(context));
     }
+
+    /**
+     * @see de.schlund.pfixcore.workflow.State#needsData(Context, PfixServletRequest)
+     */
+    public boolean needsData(Context context, PfixServletRequest preq) throws Exception {
+        CAT.debug(">>> Checking needsData()...");
+        IWrapperContainer container = getIWrapperContainer(context);
+        container.initIWrappers(context, preq, new ResultDocument());
+
+        boolean retval = container.needsData();
+        if (retval) {
+            CAT.debug("    TRUE! now going to retrieve the current status.");
+        } else {
+            CAT.debug("    FALSE! continue with pageflow check.");
+        }
+        return retval;
+    }
     
     /**
      * @see de.schlund.pfixcore.workflow.State#getDocument(Context, PfixServletRequest)
@@ -67,10 +81,10 @@ public class DefaultIWrapperState extends StaticState {
         preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
         
         if (isSubmitTrigger(context, preq)) {
-            CAT.debug(">>> In SubmitHandling... ");
+            CAT.debug(">>> In SubmitHandling...");
             preq.startLogEntry();
             container.handleSubmittedData();
-            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 500);
+            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 300);
             if (container.errorHappened()) {
                 CAT.debug("    => Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
@@ -83,14 +97,13 @@ public class DefaultIWrapperState extends StaticState {
                     preq.startLogEntry();
                     container.retrieveCurrentStatus();
                     preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
-                    rfinal.onSuccess(container);
                 } else {
                     CAT.debug("... Container says he is ready:");
                     CAT.debug("    => end of submit reached successfully.");
                     if (context.isCurrentPageRequestInCurrentFlow()) {
                         CAT.debug(">>> Page is part of current pageflow:");
-                        CAT.debug("    => signal to continue with pagflow by setting SPDocument to null...");
-                        container.getAssociatedResultDocument().setSPDocument(null);
+                        CAT.debug("    => signal to continue with pagflow by setting success flag to true...");
+                        container.getAssociatedResultDocument().setContinue(true);
                     } else {
                         CAT.debug(">>> Page is NOT part of current pageflow:");
                         CAT.debug("    => retrieving current status and stay here...");
@@ -98,34 +111,30 @@ public class DefaultIWrapperState extends StaticState {
                         container.retrieveCurrentStatus();
                         preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
                     }
-                    rfinal.onSuccess(container);
                 }
+                rfinal.onSuccess(container);
             }
-        } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
-            CAT.debug(">>> In DirectTriggerHandling:");
-            CAT.debug("    => retrieving current status.");
+        } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
+            CAT.debug(">>> Retrieving current status...");
             preq.startLogEntry();
             container.retrieveCurrentStatus();
-            preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
-            rfinal.onRetrieveStatus(container);
-        } else if (context.flowIsRunning()) {
-            CAT.debug(">>> In FlowHandling...");
-            if (container.needsData()) {
-                CAT.debug("    => needing data, retrieving current status.");
-                preq.startLogEntry();
-                container.retrieveCurrentStatus();
-                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
-                rfinal.onRetrieveStatus(container);
+            if (isDirectTrigger(context,preq)) {
+                CAT.debug("    => REASON: DirectTrigger");
+                preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
+            } else if (context.finalPageIsRunning()) {
+                CAT.debug("    => REASON: FinalPage");
+                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FINAL", 5);
             } else {
-                CAT.debug("    => no need to handle, returning NULL.");
-                container.getAssociatedResultDocument().setSPDocument(null);
+                CAT.debug("    => REASON: WorkFlow");
+                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
             }
+            rfinal.onRetrieveStatus(container);
         } else {
-            throw new XMLException("This should not happen: No direct trigger, no submit trigger and no workflow???");
+            throw new XMLException("This should not happen: No submit trigger, no direct trigger, no final page and no workflow???");
         }
-        // We need to check because in the success case, the SPDocument
-        // may well be set to null to trigger workflow continuation
-        if (resdoc.getSPDocument() != null) {
+        // We need to check because in the success case, there's no need to 
+        // add anything to the SPDocument, as we will advance in the pageflow anyway
+        if (!resdoc.wantsContinue()) {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
