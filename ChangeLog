@@ -1,3 +1,8 @@
+2005-03-23  Tanjev Stuhr  <tanjev.stuhr@schlund.de>
+
+        * src/de/schlund/pfixcore/generator/casters/ToByte.java: added new caster.
+        * example/common/dyntxt/statusmessages.xml: added new statusmessage (for new caster).
+
 2005-03-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.5-pre
