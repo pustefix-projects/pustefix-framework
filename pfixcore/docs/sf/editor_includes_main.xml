@@ -1,5 +1,5 @@
 <div>
-  <h1>The Includes page</h1>
+  <h1>The <i>Includes</i> page</h1>
   
   <p>The left frame contains all includes of the current project. To edit one
     include, select it and the right frame will display detailed information.</p>

@@ -1,7 +1,7 @@
 <div>
-<h1>The DynIncludes page</h1>
+  <h1>The <i>DynIncludes</i> page</h1>
   <p>The left frame lists all dynamic includes used in your product. Select such a dynamic include
-  from the list for editing.</p>
+    from the list for editing.</p>
   <table>
     <tr valign="top">
       <td>
