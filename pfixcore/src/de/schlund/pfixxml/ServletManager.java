@@ -154,7 +154,7 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("*** Found valid session with ID " + session.getId());
             // Much of the advanced security depends on having cookies enabled.
             // We need to make sure that this isn't defeated by just disabling cookies.
-            // So we register in every session created if the creator has cookies enabled,
+            // So we mark every session whenever the client has cookies enabled,
             // and don't allow further uses of this session without cookies
             if (!does_cookies) {
                 CAT.debug("*** Client doesn't use cookies...");
@@ -170,47 +170,48 @@ public abstract class ServletManager extends HttpServlet {
                 CAT.debug("*** Client uses cookies: Mark the session accordingly.");
                 session.setAttribute(SESSION_COOKIES_MARKER, Boolean.TRUE);
             }
-            // The next two checks have to make sure again that has_session is still true 
-            if (has_session && runningUnderSSL(req)) {
-                CAT.debug("*** Found running under SSL");
-                if (secure != null && secure.booleanValue()) {
-                    CAT.debug("    ... and session is secure.");
-                    if (does_cookies) {
-                        CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
-                        String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE);
-                        CAT.debug("*** Session expects to see the cookie value " + sec_testid);
-                        Cookie cookie = getSecureSessionCookie(req);
-                        if (cookie != null) {
-                            CAT.debug("*** Found a matching cookie ...");
-                            if (cookie.getValue().equals(sec_testid)) {
-                                CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
-                                has_ssl_session_secure = true;
+            if (has_session) {
+                if (runningUnderSSL(req)) {
+                    CAT.debug("*** Found running under SSL");
+                    if (secure != null && secure.booleanValue()) {
+                        CAT.debug("    ... and session is secure.");
+                        if (does_cookies) {
+                            CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
+                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE);
+                            CAT.debug("*** Session expects to see the cookie value " + sec_testid);
+                            Cookie cookie = getSecureSessionCookie(req);
+                            if (cookie != null) {
+                                CAT.debug("*** Found a matching cookie ...");
+                                if (cookie.getValue().equals(sec_testid)) {
+                                    CAT.debug("   ... and the value is correct! (" + cookie.getValue() + ")");
+                                    has_ssl_session_secure = true;
+                                } else {
+                                    CAT.debug("   ... but the value is WRONG!");
+                                    CAT.error("*** Wrong Session-ID for running secure session from cookie. " +
+                                              "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue() + " SessID: " + session.getId());
+                                    session.invalidate();
+                                    has_session = false;
+                                }
                             } else {
-                                CAT.debug("   ... but the value is WRONG!");
-                                CAT.error("*** Wrong Session-ID for running secure session from cookie. " +
-                                          "IP:" + req.getRemoteAddr() + " Cookie: " + cookie.getValue() + " SessID: " + session.getId());
+                                CAT.debug("*** Found NO matching cookie at all. ***");
+                                CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
+                                          "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
                                 session.invalidate();
                                 has_session = false;
                             }
                         } else {
-                            CAT.debug("*** Found NO matching cookie at all. ***");
-                            CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
-                                      "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
-                            session.invalidate();
-                            has_session = false;
+                            // We don't do cookies, so we simply have to believe it...
+                            has_ssl_session_secure = true;
                         }
                     } else {
-                        // We don't do cookies, so we simply have to believe it...
-                        has_ssl_session_secure = true;
+                        CAT.debug("    ... but session is insecure!");
+                        has_ssl_session_insecure = true;
                     }
-                } else {
-                    CAT.debug("    ... but session is insecure!");
-                    has_ssl_session_insecure = true;
+                } else if (secure != null && secure.booleanValue()) {
+                    CAT.debug("*** Found secure session but NOT running under SSL => Destroying session.");
+                    session.invalidate();
+                    has_session = false;
                 }
-            } else if (has_session && secure != null && secure.booleanValue()) {
-                CAT.debug("*** Found secure session but NOT running under SSL => Destroying session.");
-                session.invalidate();
-                has_session = false;
             }
         } else if (req.getRequestedSessionId() != null) {
             CAT.debug("*** Found old and invalid session in request");
