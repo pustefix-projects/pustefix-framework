@@ -1,3 +1,28 @@
+2003-01-24  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	new class, which adds support for sharing objects (built from 
+	properties) between contexts
+	* src/de/schlund/pfixxml/PropertyObject.java: 
+	new interface, classes have to implement it to get managed by 
+	PropertyObjectManager
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	inserted call of PropertyObjectManager's resetPropertyObjects 
+	method (tryReloadProperties)
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	PageFlowManager, PageRequestProperties and PageMap aren't newly 
+	created any more, now the context gets them from 
+	PropertyObjectManager (reset_internal)
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, removed dispensable synchronized statements
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, moved Properties construction into init method
+	* src/de/schlund/pfixcore/workflow/PageMap: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, references PageRequestProperties via PropertyObjectManager
+
 2003-01-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_serverxml.xsl: added customizable maxProcessors
