@@ -626,38 +626,13 @@ wfxEditor.prototype._editorEvent = function(ev) {
   //  this._dbg.value += ev.type + ", " + ev.keyCode;
   //---------------------------------------------------------------------------
 
-  //-----------
-  // scrolling
-  //-----------
-
-  var scrollTop;
-  if(wfx.is_ie) {
-    scrollTop = this._doc.documentElement.scrollTop;
-  } else {
-    scrollTop = this._editor.pageYOffset;
-  }
-  this._showColumn.value = scrollTop;
-
-  if( scrollTop != this._scrollTop ) {
-    // scroll offset has changed
-    this._scrollTop = scrollTop;
-
-    // update linebar
-    if(wfx.is_ie) {
-      this._linebar.document.documentElement.scrollTop = scrollTop;
-    } else {
-      this._linebar.scroll( 0, scrollTop );
-    }
-  }
-  //---------------------------------------------------------------------------
-
   if( ev.type == "mousedown" || ev.type == "scroll" ) {
     // no other actions if mousedown (e.g. allow mouse selection in IE)
-    return;
+    //    return;
   }
   //---------------------------------------------------------------------------
-
-  if (keyEvent) {
+ 
+  if (keyEvent && !(ev.type == "mousedown" || ev.type == "scroll") ) {
     // other keys here
     switch (ev.keyCode) {
     case 13: // KEY enter
@@ -864,6 +839,34 @@ wfxEditor.prototype._editorEvent = function(ev) {
   }
   //---------------------------------------------------------------------------
   
+  //-----------
+  // scrolling
+  //-----------
+
+  
+  setTimeout( function() {
+    var scrollTop;
+    if(wfx.is_ie) {
+      scrollTop = editor._doc.documentElement.scrollTop;
+    } else {
+      scrollTop = editor._editor.pageYOffset;
+    }
+    editor._showColumn.value = scrollTop;
+    
+    if( scrollTop != editor._scrollTop ) {
+      // scroll offset has changed
+      editor._scrollTop = scrollTop;
+
+      // update linebar
+      if(wfx.is_ie) {
+	editor._linebar.document.documentElement.scrollTop = scrollTop;
+      } else {
+	editor._linebar.scroll( 0, scrollTop );
+      }
+    }
+  }, 50);
+  //---------------------------------------------------------------------------
+
   // update the toolbar state after some time
   if (editor._timerToolbar) {
     clearTimeout(editor._timerToolbar);
@@ -1689,14 +1692,14 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 	if( nodeStart.nodeType == 1 ) {
 	  // element node (br)
 
-	  if( nodeStart.nextSibling != null ) {
-	    //	    rng.setStartBefore( nodeStart.nextSibling );
-	    //	    rng.setEndAfter(   nodeStart.nextSibling );
-	    rng.selectNode(nodeStart.nextSibling);
-	  } else {
+//	  if( nodeStart.nextSibling != null ) {
+//	    //	    rng.setStartBefore( nodeStart.nextSibling );
+//	    //	    rng.setEndAfter(   nodeStart.nextSibling );
+//	    rng.selectNode(nodeStart.nextSibling);
+//	  } else {
 	    rng.setStartAfter( nodeStart );
 	    rng.setEndAfter(   nodeStart );
-	  }
+	    //	  }
 
 	} else if( nodeStart.nodeType == 3 ) {
 	  // text node
@@ -1736,7 +1739,6 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 
 	var sel = this._editor.getSelection();
 	sel.removeAllRanges();
-	rng.collapse(true);
 	sel.addRange(rng);
       }
     } catch(e) {
