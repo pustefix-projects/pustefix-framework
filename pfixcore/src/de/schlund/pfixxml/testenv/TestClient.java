@@ -1,33 +1,21 @@
 package de.schlund.pfixxml.testenv;
 
-import com.icl.saxon.TransformerFactoryImpl;
-
-import com.sun.net.ssl.KeyManager;
-import com.sun.net.ssl.SSLContext;
-import com.sun.net.ssl.TrustManager;
-import com.sun.net.ssl.X509TrustManager;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-
 import java.net.InetAddress;
 import java.net.Socket;
-
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLSocketFactory;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,23 +40,21 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
-
 import org.apache.log4j.Category;
-
 import org.apache.xerces.dom.DocumentImpl;
-
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
-
 import org.apache.xpath.XPathAPI;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import com.icl.saxon.TransformerFactoryImpl;
+import com.sun.net.ssl.KeyManager;
+import com.sun.net.ssl.SSLContext;
+import com.sun.net.ssl.TrustManager;
+import com.sun.net.ssl.X509TrustManager;
 
 
 /**
@@ -207,8 +193,20 @@ public class TestClient {
                 Document tmp_out       = doTransform(current_output_tree, config[j].getStyleSheet());
                 String   tmp_fname_cur = tmpDir + "/_current" + j;
                 String   tmp_fname_rec = tmpDir + "/_recorded" + j;
-                writeDocument(tmp_out, tmp_fname_cur);
-                writeDocument(tmp_rec, tmp_fname_rec);
+                try {
+                    XMLSerializeUtil.getInstance().serializeToFile(tmp_out, tmp_fname_cur, 2, false);
+                } catch (FileNotFoundException e) {
+                    throw new TestClientException("Unable to serialize! File not found.", e);
+                } catch (IOException e) {
+                    throw new TestClientException("Unable to serialize! IOException.", e);
+                }
+                try {
+                    XMLSerializeUtil.getInstance().serializeToFile(tmp_rec, tmp_fname_rec, 2, false);
+                } catch (FileNotFoundException e) {
+                    throw new TestClientException("Unable to serialize! File not found.", e);
+                } catch (IOException e) {
+                    throw new TestClientException("Unable to serialize! IOException.", e);
+                }
                 if (CAT.isDebugEnabled()) {
                     CAT.debug("  Diffing " + tmp_fname_cur + " and " + tmp_fname_rec + " ...");
                 } else if (CAT.isInfoEnabled()) {
@@ -384,57 +382,9 @@ public class TestClient {
         ((Element) node).setAttribute("serial", "0");
     }
 
-    /** serialize document into file */
-    private void writeDocument(Document doc, String path) throws TestClientException {
-        if (doc == null) {
-            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
-                                               + "Can't serialize a " + doc
-                                               + " document to a file!");
-        }
-        if (path == null || path.equals("")) {
-            throw new IllegalArgumentException("The parameter 'null' or '\"\"' is not allowed here! "
-                                               + "Can't serialize a document to " + path + "!");
-        }
-        XMLSerializer ser        = new XMLSerializer();
-        OutputFormat  out_format = new OutputFormat("xml", "ISO-8859-1", true);
-        out_format.setIndent(2);
-        out_format.setPreserveSpace(false);
-        ser.setOutputFormat(out_format);
-        FileWriter file_writer = null;
-        try {
-            file_writer = new FileWriter(path);
-        } catch (IOException e) {
-            throw new TestClientException("IOException occured!", e);
-        }
-        ser.setOutputCharStream(file_writer);
-        try {
-            ser.serialize(doc);
-        } catch (IOException e) {
-            throw new TestClientException("IOException ocuured!", e);
-        }
-    }
+    
 
-    /** serialize document into a string */
-    private String documentToString(Document doc) throws TestClientException {
-        if (doc == null) {
-            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
-                                               + "Can't serialize a " + doc
-                                               + " document to a string!");
-        }
-        XMLSerializer ser        = new XMLSerializer();
-        OutputFormat  out_format = new OutputFormat("xml", "ISO-8859-1", true);
-        out_format.setIndent(2);
-        out_format.setPreserveSpace(false);
-        ser.setOutputFormat(out_format);
-        StringWriter string_writer = new StringWriter();
-        ser.setOutputCharStream(string_writer);
-        try {
-            ser.serialize(doc);
-        } catch (IOException e) {
-            throw new TestClientException("IOExcpetion during serialization!", e);
-        }
-        return string_writer.getBuffer().toString();
-    }
+   
 
     /** start GNU diff process */
     private String doDiff(String path1, String path2) throws TestClientException {

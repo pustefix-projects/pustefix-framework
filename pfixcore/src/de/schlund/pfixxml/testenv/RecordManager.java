@@ -1,21 +1,25 @@
 package de.schlund.pfixxml.testenv;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import java.io.*;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
-import javax.servlet.http.*;
+import org.apache.log4j.Category;
+import org.apache.xerces.dom.DocumentImpl;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
-import javax.xml.parsers.*;
-
-import org.apache.log4j.*;
-
-import org.apache.xerces.dom.*;
-
-import org.apache.xml.serialize.*;
-
-import org.w3c.dom.*;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 
 /**
@@ -292,7 +296,24 @@ public final class RecordManager {
         step.appendChild(imp2);
         Node imp3 = doc.importNode(stylesheet_node, true);
         step.appendChild(imp3);
-        writeDocument(doc, basedir + "/" + logdir + "/" + "testdata." + count);
+        
+        String fname = basedir + "/" + logdir + "/" + "testdata." + count;
+        File file = new File(fname);
+        int  i = 0;
+        while (file.exists()) {
+            String new_filename = file.getName() + "_" + i++;
+            if (CAT.isInfoEnabled()) {
+                CAT.info(file.getName() + " exists. Trying " + new_filename);
+            }
+            file = new File(new_filename);
+        }
+        try {
+            XMLSerializeUtil.getInstance().serializeToFile(doc, file.getName(), 2, false);
+        } catch (FileNotFoundException e) {
+            throw new RecordManagerException("Unable to serialize! File not found.", e);
+        } catch (IOException e) {
+            throw new RecordManagerException("Unable to serialize! IOException.", e);
+        }
     }
 
     /**
@@ -363,42 +384,6 @@ public final class RecordManager {
         return ele;
     }
 
-    /**
-     * Writes a XML document to a specified filename. Does nothing if the 
-     * file alreay exists.
-     * @param the Document to write
-     * @param the target filename
-     * @throws RecordManagerException on all non-recoverable errors.
-     */
-    private void writeDocument(Document doc, String filename) throws RecordManagerException {
-        if (CAT.isDebugEnabled()) {
-            CAT.debug("Writing file: " + filename);
-        }
-        File file = new File(filename);
-        int  i = 0;
-        while (file.exists()) {
-            String new_filename = filename + "_" + i++;
-            if (CAT.isInfoEnabled()) {
-                CAT.info(file.getName() + " exists. Trying " + new_filename);
-            }
-            file = new File(new_filename);
-        }
-        OutputFormat out_format = new OutputFormat("xml", "ISO-8859-1", true);
-        out_format.setIndent(2);
-        out_format.setPreserveSpace(false);
-        FileOutputStream out_stream;
-        try {
-            out_stream = new FileOutputStream(file);
-        } catch (FileNotFoundException e) {
-            throw new RecordManagerException("IOException occured during serialization!: " + file, 
-                                             e);
-        }
-        XMLSerializer ser = new XMLSerializer(out_stream, out_format);
-        try {
-            ser.serialize(doc);
-        } catch (IOException e) {
-            throw new RecordManagerException("IOException occured during serialization!: " + file, 
-                                             e);
-        }
-    }
+   
+ 
 }
