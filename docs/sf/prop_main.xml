@@ -255,7 +255,7 @@
             </tr>
           </table>
         </xmlcodeOFF>
-      
+        
         <resource class="AContextResource">
           <xmlcodeOFF>
             <div class="comment">
@@ -334,7 +334,7 @@
         </xmlcodeOFF>
       </pageflow>
       <xmlcodeOFF/>
-      <pagerequest name="APageName" nostore="true|false" forcessl="true|false">
+      <pagerequest name="APageName" nostore="true|false">
         <xmlcodeOFF>
           <table class="stdtable">
             <tr>
@@ -366,26 +366,23 @@
                 main pages. See also the section on <code>param</code>s below.
               </td>
             </tr>
-            <tr>
-              <td>
-                <code>forcessl</code>
-              </td>
-              <td>
-                <b>Optional</b>. If given, and
-                set to <code>true</code>, the page will only run under
-                SSL if jumped to via a link or a submit of form data. If
-                the session currently does not run under SSL, the system
-                will make sure to redirect to a secure session prior to
-                handling the request. After a session is running under
-                SSL, there is no way back (so all other pages will run
-                securely regardless if the specify the
-                <code>forcessl</code> attribute or not). Note that you
-                can force the servlet as a whole to run only under SSL
-                by  <a href="#ssl">setting the <code>ssl</code> node's
-                  <code>force</code> attribute</a> to true.
-              </td>
-            </tr>
           </table>
+        </xmlcodeOFF>
+        <ssl force="true|false"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <p>The node is optional. If given, and the attribute <code>force</code>
+              is set to <code>true</code>, the page will only run under
+              SSL when jumped to via a link or a submit of form data. If
+              the session currently does not run under SSL, the system
+              will make sure to redirect to a secure session prior to
+              handling the request. After a session is running under
+              SSL, there is no way back (so all other pages will run
+              securely regardless if they have a <code>ssl</code> node or not). Note that you
+              can force the servlet as a whole to run only under SSL
+              by  <a href="#ssl">specifying the <code>ssl</code> subnode of the 
+                <code>servletinfo</code> node</a>.
+          </div>
         </xmlcodeOFF>
         <state class="AClassName"/>                              
         <xmlcodeOFF>

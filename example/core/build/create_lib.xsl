@@ -33,6 +33,10 @@
     <xsl:apply-templates select="document($path)/node()"/>
   </xsl:template>
 
+  <xsl:template match="cus:attribute">
+    <xsl:attribute name="{@name}"><xsl:apply-templates/></xsl:attribute>
+  </xsl:template>
+  
   <xsl:template match="cus:test"><xsl:apply-templates/></xsl:template>
 
   <xsl:template match="cus:choose" name="choose">

@@ -41,6 +41,7 @@
   </pagerequest>
 
   <pagerequest name="order">
+    <cus:choose><cus:test mode="prod"><ssl force="true"/></cus:test></cus:choose>
     <ihandler>
       <interface prefix="shirt"   class="de.schlund.pfixcore.example.iwrapper.TShirt"/>
       <interface prefix="counter" class="de.schlund.pfixcore.example.iwrapper.Counter"/>
@@ -62,6 +63,7 @@
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->
   <!-- It does the isAccessible() part on it's own. -->
   <pagerequest name="overview">
+    <cus:choose><cus:test mode="prod"><ssl force="true"/></cus:test></cus:choose>
     <state class="de.schlund.pfixcore.example.OverviewState"/>
     <output>
       <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
@@ -77,7 +79,7 @@
         <param name="responseheader.Cache-Control">max-age=3600</param>
       </cus:test>
       <cus:test>
-        <param name="responseheader.Cache-Control">max-age=30</param>
+        <param name="responseheader.Cache-Control">max-age=60</param>
       </cus:test>
     </cus:choose>
   </pagerequest>
