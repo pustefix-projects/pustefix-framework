@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface>
+  <ihandler class="de.schlund.pfixcore.editor.handlers.LogoutHandler"/>
+  <param name="Action" type="String">
+    <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
+      <cparam name="regexp" value="/^(full|product)$/"/>
+    </precheck>
+  </param>
+</interface> 
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

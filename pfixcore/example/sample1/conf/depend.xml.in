@@ -1,0 +1,49 @@
+<!-- -*- mode: xml -*- -->
+<make cachedir=".cache/sample1"
+      xmlns:cus="http://www.schlund.de/pustefix/customize">
+  
+  <navigation>
+    <page name="home"     handler="/xml/config"/>
+    <page name="order"    handler="/xml/config"/>
+    <page name="overview" handler="/xml/config"/>
+    <page name="admin"    handler="/xml/config"/>
+    <page name="ssltest"  handler="/xml/secure"/>
+  </navigation>
+
+  <!-- ========= master =============== -->
+
+  <target name="master.xsl" type="xsl">
+    <depxml name="core/xsl/master.xsl"/>
+    <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/include.xsl"/>
+    <depaux name="core/xsl/navigation.xsl"/>
+    <depaux name="core/xsl/utils.xsl"/>
+    <depaux name="core/xsl/forminput.xsl"/>
+    <depxsl name="sample1/xsl/custommaster.xsl"/>
+    <param name="product" value="sample1"/>
+    <param name="lang" value="en"/>
+  </target>
+
+  <!-- ========= metatags =============== -->
+
+  <target name="metatags.xsl" type="xsl">
+    <depaux name="core/xsl/include.xsl"/>
+    <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/utils.xsl"/>
+    <depxml name="sample1/xsl/metatags.xsl"/>
+    <depxsl name="sample1/xsl/custommetatags.xsl"/>
+    <param name="product" value="sample1"/>
+    <param name="lang" value="en"/>
+  </target>
+
+  <standardpage name="home" xml="sample1/xml/two_frames.xml"/>
+
+  <standardpage name="order" xml="sample1/xml/two_frames.xml"/>
+
+  <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
+
+  <standardpage name="admin" xml="sample1/xml/one_frame.xml"/>
+
+  <standardpage name="ssltest" xml="sample1/xml/one_frame.xml"/>
+
+</make>

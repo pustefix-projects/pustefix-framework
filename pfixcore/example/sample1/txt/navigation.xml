@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="top">
+    <product name="default">
+      <lang name="default">
+        <center><br/>
+          <pfx:button page="home">Home</pfx:button> 
+          <pfx:button page="order">Order</pfx:button> 
+          <pfx:button page="overview">Overview</pfx:button> 
+        </center>
+      </lang>
+    </product>
+  </part>
+
+    
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

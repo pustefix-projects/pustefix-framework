@@ -1,0 +1,95 @@
+This document describes the format for those documents serving as
+the structure defining xml source of the finally transformed documents
+(normally those can be found in the directory <DOCROOT>/<PROJECT_NAME>/xml.
+
+The explanation keeps an eye on the expected useage patterns of these
+docs.
+
+
+There are basically two kind of "pages" you deliver with Pustefix.
+
+1) Pages that have no frames and may deliver html or any other text based
+   format.
+
+2) Pages that contain an arbitrary amount of frames
+   and framesets. Those always deliver html.
+
+
+The structure of a Type 1 document is as shown below:
+
+-----------------------------------------------------------------
+For a html delivering page without frames:
+
+  <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+    <html>
+      <pfx:head>                                                                     
+        [ Here comes everything that you normally put into the html <head> tag        
+          The <pfx:head> is only special in that it automatically inserts code to     
+          load the needed Pustefix JavaScript Baselibrary. ]
+      </pfx:head>
+      <body>                                                                        
+        [ The body content ]                                                         
+      </body>         
+    </html>
+  </pfx:document>
+
+If you don't want to deliver html, just ommit the <html> tag. The
+following could be used to  implement a CSS stylesheet.
+
+  <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+    .foo { color: #ffff00; font-family: Helvetica; }   
+  </pfx:document>
+
+
+The rule of thumb is: Whatever you put between <pfx:document> is up to
+you and will be delivered just as you write it there. Just remember that
+the <html> is not automatically inserted for you, you have to write it
+yourself.
+
+---------------------------------------------------------------
+
+The structure of a Type 2 document is shown now. You will see that
+there are only subtle differences. A document is a Type 2 doc by
+definition whenever there is a <pfx:frameset> (and possibly a
+<pfx:head> node) node as the only direct children of <pfx:document>.
+
+  <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core">
+    <pfx:head/>
+      [ Again, put anything you want to appear in the head of the _top
+      frame! This means page title, script stuff or stylesheets. And
+      again this is only called <pfx:head> instead of just <head> because of
+      the magic it does with respect to the basic script library.]
+    </pfx:head>
+    <pfx:frameset rows="20,*">
+      <pfx:frame name="navi">
+        <html>
+  	<head>
+            [ We don't need a special <pfx:head here> as this is just
+            a subframe. But maybe we want CSS.]
+          </head>
+  	<body>
+            [ go on as you like... ]
+  	</body>
+        </html>
+      </pfx:frame>
+      <pfx:frame name="main">
+        <html>
+  	<head>
+            [ We don't need a special <pfx:head here> as this is just
+            a subframe. But maybe we want CSS.]
+          </head>
+  	<body>
+            [ go on as you like... ]
+  	</body>
+        </html>
+      </pfx:frame>
+    </pfx:frameset>
+  </pfx:document>
+
+As you can see there is NO <html> tag just below <pfx:document>. This
+is the one important difference between Type 1) and Type 2). As a rule
+you could say that you only have to insert the <html> yourself
+whereever the "real" content is. In a Type 1) doc this is the whole
+content of the <pfx:document> tag, so we need to set it there. But for
+a Type 2) doc, the "real" content is contained as the content of the
+<pfx:frame> tags, so you need to set it there.

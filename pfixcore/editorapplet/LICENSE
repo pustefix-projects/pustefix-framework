@@ -1,0 +1,12 @@
+The original code used in PFIXCORE is normally placed under the GNU LESSER
+GENERAL PUBLIC LICENSE (LGPL).  See the file LGPL.txt in the parent dir for
+details.
+
+BUT for the editorapplet contained in this directory and the subdirectories,
+we used very much code from other projects which use the GPL as their license.
+
+To comply with this license, all original code for the EDITORAPPLET is also 
+released under the GPL.
+
+(TODO: list the projects we use code from here and the license they use)
+

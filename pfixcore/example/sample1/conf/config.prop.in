@@ -1,0 +1,81 @@
+<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <prop name="xmlserver.depend.xml"><cus:docroot/>sample1/conf/depend.xml</prop>
+  <prop name="xmlserver.servlet.name">pfixcore_project:sample1::servlet:config</prop>
+  <prop name="xmlserver.noeditmodeallowed">false</prop>
+
+  <prop name="context.class">de.schlund.pfixcore.workflow.Context</prop>
+
+  <prop name="context.resource.1.de.schlund.pfixcore.example.ContextCounterImpl">de.schlund.pfixcore.example.ContextCounter</prop>
+  <prop name="context.resource.2.de.schlund.pfixcore.example.ContextTShirtImpl">de.schlund.pfixcore.example.ContextTShirt</prop>
+  <prop name="context.resource.3.de.schlund.pfixcore.example.ContextTrouserImpl">de.schlund.pfixcore.example.ContextTrouser</prop>
+  <prop name="context.resource.4.de.schlund.pfixcore.example.ContextAdultInfoImpl">de.schlund.pfixcore.example.ContextAdultInfo</prop>
+  <prop name="context.resource.5.de.schlund.pfixcore.example.ContextTogglePicImpl">de.schlund.pfixcore.example.ContextTogglePic</prop>
+
+  <prop name="context.adminmode.watch">default</prop>
+  <prop name="context.adminmode.page">admin</prop>
+  
+  <prop name="pagerequest.admin.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  
+  <!-- *** PageFlows *** -->
+
+  <prop name="context.defaultpageflow">OrderFlow</prop>
+
+  <prop name="context.pageflow.OrderFlow.0">home</prop>
+  <prop name="context.pageflow.OrderFlow.1">order</prop>
+  <prop name="context.pageflow.OrderFlow.2">overview</prop>
+
+  <!-- *** PageRequest and associated properties *** -->
+
+  <prop name="pagerequest.home.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
+  <prop name="pagerequest.home.interface.1.info">de.schlund.pfixcore.example.iwrapper.AdultInfo</prop>
+  
+  <prop name="pagerequest.order.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
+  <!-- all the following properties can only be used with DefaultIWrapperState !!! -->
+  <prop name="pagerequest.order.interface.1.shirt">de.schlund.pfixcore.example.iwrapper.TShirt</prop>
+  <prop name="pagerequest.order.interface.2.counter">de.schlund.pfixcore.example.iwrapper.Counter</prop>
+  <prop name="pagerequest.order.interface.3.trouser">de.schlund.pfixcore.example.iwrapper.Trouser</prop>
+  <prop name="pagerequest.order.interface.4.pic">de.schlund.pfixcore.example.iwrapper.TogglePic</prop>
+  <prop name="pagerequest.order.group.01-Shirt">shirt counter pic</prop> 
+  <prop name="pagerequest.order.group.02-Trouser">trouser</prop>
+  <!-- These properties can be used with StaticState and descendants -->
+  <prop name="pagerequest.order.resdocfinalizer.insert.cr_counter">de.schlund.pfixcore.example.ContextCounter</prop>
+  <prop name="pagerequest.order.resdocfinalizer.insert.cr_togglepic">de.schlund.pfixcore.example.ContextTogglePic</prop>
+  <!-- The next property can be set additonally for StaticState and descendants (default is shown) -->
+  <!-- <prop name="pagerequest.order.resdocfinalizer>de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer</prop> -->
+  <!-- The next properties can be set additonally for DefaultIWrapperState (default is shown) -->
+  <!-- <prop name="pagerequest.order.iwrappercontainer.policy">ANY</prop> -->
+  <!-- <prop name="pagerequest.order.iwrappercontainer">de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer</prop> -->
+  <!-- <prop name="pagerequest.order.ihandlercontainer">de.schlund.pfixcore.workflow.app.IHandlerSimpleContainer</prop> -->
+  <!-- <prop name="pagerequest.order.forcegroupdisplay">false</prop> -->
+  <!-- <prop name="pagerequest.order.restrictedcontinue"></prop> -->
+  
+  <!-- Here we have a simple state which extends StaticState and by -->
+  <!-- that can make use of a ResdocFinalizer to render ContextResources. -->
+  <!-- It does the isAccessible() part on it's own. -->
+  <prop name="pagerequest.overview.classname">de.schlund.pfixcore.example.OverviewState</prop>
+  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_adultinfo">de.schlund.pfixcore.example.ContextAdultInfo</prop>
+  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_tshirt">de.schlund.pfixcore.example.ContextTShirt</prop>
+  <prop name="pagerequest.overview.resdocfinalizer.insert.cr_trouser">de.schlund.pfixcore.example.ContextTrouser</prop>
+
+  <!-- *** some additional properties needed for this application *** -->
+
+  <prop name="contexttshirt.feature.0">Waterproof</prop>
+  <prop name="contexttshirt.feature.1">Extra warm</prop>
+  <prop name="contexttshirt.feature.2">Windproof</prop>
+  
+  <prop name="contexttrouser.feature.0">Waterproof</prop>
+  <prop name="contexttrouser.feature.1">Extra warm</prop>
+  <prop name="contexttrouser.feature.2">Windproof</prop>
+
+
+
+  
+</properties>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
+

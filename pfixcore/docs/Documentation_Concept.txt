@@ -1,0 +1,118 @@
+Konzept zur Erstellung eines Dokumentationssystem der Pustefix-Tags
+
+
+Anforderung:
+Ziel ist es, sämtliche in Pustefix auftreten Bausteine (xsl-template-tags) zu
+dokumentieren. Davon betroffen sind sowohl die xsl-Stylesheets in Pfixcore
+(e.g. navigation.xsl, utils.xsl), als auch die in den einzelnen Pfixschlund
+Projekten verwendeten Stylesheets (e.g. metatags.xsl). Die Dokumentation
+wird direkt in die Stylesheets unter die entsprechenden Tags als XML-Baum
+hinzugefügt. Im ersten Schritt werden alle bisherigen *.xsl-Files in xsl.in
+umbenannt. Die Dokumentation wird in die xsl.in-Files geschrieben und aus
+diesen später rausgelesen. Durch make werden die xsl.in - Files in die
+ursprünglichen *.xsl-Files transformiert, welche den Dokumentationsbaum
+natürlich nicht mehr beinhalten.
+
+
+Darstellung:
+Die Dokumentation wird über den Editor aufgerufen und ist in 2 Frames
+geteilt. Auf der linken Seite erscheint eine übersicht über alle Tags
+die zu dem entsprechenden Projekt gehören, in der rechten Hälfte steht
+die eigentliche Dokumentation zu dem entsprechend ausgewählten Text.
+
+
+Die Dokumentation: (XML-Baum)
+
+Dokumentations-Bäume beginnen mit einem <cus:documentation>
+
+Weiter Knoten sind:
+
+<description/>
+Hier wird eine ausführliche Beschreibung des Pustefix-Tags erwartet.
+
+Unter dem Knoten <param> werden die wichtigsten Parameter ausgeführt.
+
+Das können sein:
+ - Parameter, die unbedingt erwartet werden
+ - Parameter, die wenn sie nicht gesetzt sind, einen Standard-Wert besitzen
+ - sonstige Parameter (wie z.B. onmout + onmover by pfx:jscript)
+
+Parameter, die einfach nur durchkopiert werden, müssen hier nicht zwingend
+angegeben werden.
+
+Parameter-Eigenschaften sind: 
+Name des Parameters
+<param_value>
+Parameter benötigt ?
+<required>required|optional</required>
+Mögliche Werte:                             
+<posible_values>(e.g. true|false)</posible_values>
+Standard-Wert:
+<standard_value/>
+Eine kurze Beschreibung des Parameters (optional)
+<description/> 
+
+Pustefix-Tags können auch sogenannte Child-Tags beinhalten, wie z.B.
+<pfx:command> und <pfx:argument> bei <pfx:button>
+
+Diese werden unter den Knoten <child/> zusammengefasst.
+
+Es ist auch möglich, mehrere Beispiele zu den einzelnen Tags darzustellen.
+
+Ein Beispiel besteht immer aus einem Input und einem Output. Input gibt
+an, wie der Entwickler das entsprechende Tag eingibt und Output stellt den
+HTML-Code dar.
+
+<example>
+ <input/>
+ <output/>
+</example>
+
+
+>Anzeigen des gesamten Inhalt eines XSL-Tags ??<
+
+
+Beispiel:
+<xsl:template match="pfx:blank">
+ <cus:documentation>
+ <description>Inserts a transparent .gif of the specified 
+              width and height (default  width=1 height=1)
+  </description>
+
+  <param>
+     <param_value>src</param_value>
+     <standard_value>/core/img/blank.gif</standard_value>         
+  </param>
+  ..
+  ..
+
+  <example>
+    <input><pfx:blank></input>
+    <output><img src="/core/img/blank.gif" width="1" height="1" border="0" alt=""></output>
+  </example>
+ </cus:documentation>
+[...]
+<xsl:template match>
+
+
+Weitere Anmerkungen:
+- Die einzelnen Tags erhalten einen eindeutigen Namen.
+  Dieser in eckigen Klammern dargestellte Name enthält die Informationen:
+  Match|Name|Mode. Der Name des Tags wird automatisch generiert.
+  (e.g. [ Match="pfx:blank" ])
+
+- Gibt es zu einem Tag noch keine Dokumentation, so erscheint in der linken
+  Navigationsleiste ein blaues ! vor dem Namen. Der Link ist nicht aktiviert.
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface>
+  <ihandler class="de.schlund.pfixcore.editor.handlers.ImagesUploadHandler"/>
+  <param name="Backup" type="String" occurance="optional"/>
+  <param name="HaveBackup" type="Boolean" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+  <param name="HaveUpload" type="Boolean" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+  <param name="UplImage" type="java.io.File" occurance="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToFile"/>
+  </param>
+</interface> 
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- Using this standard-tree for documentating the pustefix-tags -->
+
+   <cus:documentation> 
+     <description></description>
+      <param required="0">
+        <name></name>
+        <standard></standard>
+        <possible_values></possible_values>
+        <description></description>
+      </param>
+
+      <children>
+        <name></name>
+        <description></description>        
+      </children>
+
+
+      <example>
+        <input>
+          <xmlcode></xmlcode>
+        </input>
+        <output>
+          <xmlcode></xmlcode>
+        </output>
+      </example>
+
+      
+    </cus:documentation>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
