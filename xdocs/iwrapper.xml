@@ -40,21 +40,22 @@
             <td>extends</td>
             <td>
               <b>Optional</b>. You can specify another IWrapper that
-              is to be extended by this definition file. Parameter not
-              already specified in the original class are added, know
-              parameter definitions are overwritten. If the
+              is to be extended by this definition file. Parameters not
+              already specified in the original class are added, known
+              parameter definitions are overridden. If the
               <code>&lt;ihandler&gt;</code> node is not given, the
               IHandler of the parent IWrapper is used (which is not
-              often a useful thing to do).
+              often a useful thing to do, because the IHandler of the parent
+              will usually not know how to handle parameters added by the child).
             </td>
           </tr>
         </table>
       </xmlnote>
       <ihandler class="some.de.schlund.pfixcore.generator.IHandler.class"/>
       <xmlnote>
-          <p>Unless a <code>extends</code> attribute has been given to
-	  the <code>interface</code> node, this node is
-          <b>mandatory</b>. The <code>class</code> attribute
+          <p>Unless an <code>extends</code> attribute has been given to
+	  			the <code>interface</code> node, this node is <b>mandatory</b>.
+          The <code>class</code> attribute
           references the associated  <code>IHandler</code> class.</p>
       </xmlnote>
       
