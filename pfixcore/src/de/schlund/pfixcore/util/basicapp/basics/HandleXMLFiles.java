@@ -128,6 +128,10 @@ public class HandleXMLFiles {
             // the skin.xml also
             } else if (tmpDoc.equals(AppValues.SKIN_TMPL)) {
                 wrtDoc                   = AppValues.SKINXSL;
+
+            // and the metatags.xsl will also appear
+            } else if (tmpDoc.equals(AppValues.METATAGS_TMPL)) {
+                wrtDoc                   =AppValues.METATAGSXSL;
             }
             
             // writing the dom to a file
@@ -206,6 +210,14 @@ public class HandleXMLFiles {
               // or maybe also the project.xml.in
             } else if (fileName.equals(AppValues.PROJECTXMLIN)) {
                 file = new File(pathToConf + fileName);
+            
+            // and last but not least the metatags.xsl
+            } else if (fileName.equals(AppValues.METATAGSXSL)) {
+                buffy.append(AppValues.BASICPATH);
+                buffy.append(projectName);
+                buffy.append(AppValues.XSLFOLDER);
+                file = new File(buffy.toString() + fileName);
+                buffy.setLength(0);
             }
             
             // the output will happen anyway ;o)

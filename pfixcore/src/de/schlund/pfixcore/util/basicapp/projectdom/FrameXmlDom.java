@@ -65,7 +65,7 @@ public final class FrameXmlDom {
         buffy.append(AppValues.CONTENTXML);
         
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.FRAMETAG_INCLUDE,
-                AppValues.FRAMEATT_HREF, buffy.toString());
+                AppValues.FRAMEATT_HREF, buffy.toString(), false);
     }
     
     

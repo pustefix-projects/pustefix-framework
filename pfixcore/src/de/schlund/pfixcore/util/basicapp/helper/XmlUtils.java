@@ -39,25 +39,34 @@ public class XmlUtils {
      * Changing the attribute of a document in order to apply
      * the changes made by the user
      * @param domDoc The current document
+     * @param tagName The name of the tag changing the related attribute
      * @param attribute The attribtute to change
+     * @param secNodeListItem TODO
      * @param docName The name of the document in order to
      * avoid problems if a node occurs in different files with the
      * same name
-     * @param tagName The name of the tag changing the related attribute
      */
     public static Document changeAttributes(Document domDoc, String tagName, 
-            String attribute, String newValue) {
+            String attribute, String newValue, boolean secNodeListItem) {
         System.out.println("Changing the attribute " + attribute);
         
         NodeList nodeList = domDoc.getElementsByTagName(tagName);
         String myNodeName = null;
+        Element element   = null;
+
+        if (!secNodeListItem) {
         
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Element element   = (Element)nodeList.item(i);
-            myNodeName = element.getNodeName();            
-            if (myNodeName.equals(tagName)) {
-                element.setAttribute(attribute, newValue);
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                element = (Element)nodeList.item(i);
+                myNodeName = element.getNodeName();            
+                
+                if (myNodeName.equals(tagName)) {
+                    element.setAttribute(attribute, newValue);
+                }
             }
+        } else {
+            element = (Element)nodeList.item(1);
+            element.setAttribute(attribute, newValue);
         }
         
         System.out.println("Changing attribute has been successfull");

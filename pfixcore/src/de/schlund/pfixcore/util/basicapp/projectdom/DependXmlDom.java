@@ -77,17 +77,17 @@ public final class DependXmlDom {
         // change attribute make
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_MAKE,
                  AppValues.DEPENDATT_CACHE, 
-                 AppValues.DEPENDATT_CACHEPREFIX + projectName);
+                 AppValues.DEPENDATT_CACHEPREFIX + projectName, false);
         
         // change attribute project
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_MAKE,
                  AppValues.DEPENDATT_PROJECT, 
-                 projectName);
+                 projectName, false);
         
         // change attribute language
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_MAKE,
                  AppValues.DEPENDATT_LANG, 
-                 projectLang);
+                 projectLang, false);
         
         // change attribute handler in the page tag for the default servlet
         String defServletHandler = ((ServletObject)(project.getServletList().get(0))).getServletName();
@@ -95,20 +95,29 @@ public final class DependXmlDom {
         buffy.append(defServletHandler);
         
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_PAGE,
-                 AppValues.DEPENDATT_HANDLER, buffy.toString());
+                 AppValues.DEPENDATT_HANDLER, buffy.toString(), false);
         
         buffy.setLength(0);
         
-        // change attribute stylesheet in the include tag
+        // change attribute stylesheet in the include tag for standardmaster
         buffy.append(projectName);
         buffy.append(AppValues.XSLFOLDER);
         buffy.append(AppValues.SKINXSL);
         
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_INCLUDE,
-                 AppValues.DEPENDATT_STYLESHEET, buffy.toString());
+                 AppValues.DEPENDATT_STYLESHEET, buffy.toString(), false);
         
         buffy.setLength(0);
         
+        // change attribute stylesheet in the include tag for standardmetatags
+        buffy.append(projectName);
+        buffy.append(AppValues.XSLFOLDER);
+        buffy.append(AppValues.METATAGSXSL);
+        
+        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_INCLUDE,
+                 AppValues.DEPENDATT_STYLESHEET, buffy.toString(), true);
+        
+        buffy.setLength(0);
         
         // change the attribute xml in the standardpage tag
         buffy.append(projectName);
@@ -116,7 +125,7 @@ public final class DependXmlDom {
         buffy.append(AppValues.FRAMEXML);
         
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_STDPAGE,
-                 AppValues.DEPENDATT_XML, buffy.toString());
+                 AppValues.DEPENDATT_XML, buffy.toString(), false);
         buffy.setLength(0);
         
         // setting the amount of servlets in depend.xml
