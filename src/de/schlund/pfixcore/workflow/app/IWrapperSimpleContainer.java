@@ -32,6 +32,7 @@ import java.util.*;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
+import java.lang.reflect.Array;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -83,6 +84,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private static final String  GROUP_PREV         = "PREV";  
     private static final String  SELECT_GROUP       = "SELGRP";  
     private static final String  SELECT_WRAPPER     = "SELWRP";  
+    private static final String  DESEL_WRAPPER      = "DESELWRP";  
+    private static final String  SUGGEST_CONT       = "SUGGESTCONT";  
     private static final String  WRAPPER_LOGDIR     = "interfacelogging";
     private static final String  WRAPPER_LOGLIST    = "loginterfaces";
 
@@ -207,8 +210,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
 
   
     /**
-     * Use this method to query if the IWrapperContainer wants to continue with submitting data,
-     * or if it assumes this whole page to be completed.
+     * Use this method to query if the IWrapperContainer wants to continue with submitting data (thereby staying on the page),
+     * or if it assumes this whole page to be completed (and give control to the context to continue with the pageflow).
      *
      * @return a <code>boolean</code> value
      * @exception Exception if an error occurs
@@ -217,11 +220,17 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public boolean stayAfterSubmit() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
+        String[] suggestcontinue = reqdata.getCommands(SUGGEST_CONT);
+        if (suggestcontinue != null && suggestcontinue.length > 0 && suggestcontinue[0].equals("true")) {
+            CAT.debug("*** Allow continue because SUGGEST_CONT command has been given.");
+            return false;
+        }
+        
         if (!is_splitted) splitIWrappers();
         
         if (selectedwrappers != currentgroup) {
             if (contwrappers != null && contwrappers.containsAll(selectedwrappers)) {
-                CAT.debug("*** No more submit because all selected wrappers are members of the restriced_continue group!");
+                CAT.debug("*** Allow continue because all selected wrappers are members of the restriced_continue group!");
                 return false;
             }
             return true;
@@ -448,6 +457,21 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 selected.addIWrapper(selwrap);
             }
         }
+
+        String[] deselwrappers = reqdata.getCommands(DESEL_WRAPPER);
+        if (deselwrappers != null && deselwrappers.length > 0) {
+            HashSet    deselset = new HashSet(Arrays.asList(deselwrappers));
+            IWrapper[] all      = currentgroup.getIWrappers();
+            for (int i = 0; i < all.length; i++) {
+                IWrapper tmp = all[i];
+                if (deselset.contains(tmp.gimmePrefix())) {
+                    CAT.debug("  >> Restrict NOT to Wrapper: " + tmp.gimmePrefix());
+                } else {
+                    selected.addIWrapper(all[i]);
+                }
+            }
+        }
+        
         if (selected.isEmpty()) {
             selectedwrappers = currentgroup;
         } else {

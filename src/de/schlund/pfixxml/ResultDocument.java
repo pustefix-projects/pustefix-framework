@@ -48,7 +48,7 @@ public class ResultDocument {
     protected ResultForm resultform = null;
     protected Document   doc;
     protected SPDocument spdoc;
-    protected boolean    do_continue = false;
+    // protected boolean    do_continue = false;
     
     public ResultDocument() {
         init();
@@ -67,13 +67,13 @@ public class ResultDocument {
         doc.appendChild(formresult);
     }
 
-    public void setContinue(boolean do_continue) {
-        this.do_continue = do_continue;
-    }
+//     public void setContinue(boolean do_continue) {
+//         this.do_continue = do_continue;
+//     }
     
-    public boolean wantsContinue() {
-        return do_continue;
-    }
+//     public boolean wantsContinue() {
+//         return do_continue;
+//     }
     
     public void addUsedNamespace(String prefix, String uri) {
         formresult.setAttribute("xmlns:" + prefix, uri);

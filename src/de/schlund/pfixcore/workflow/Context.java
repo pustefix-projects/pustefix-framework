@@ -53,6 +53,7 @@ public class Context implements AppContext {
     private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
     private final static String   PARAM_FLOW          = "__pageflow";
     private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
+    private final static String   PARAM_FORCESTOP     = "__forcestop";
     private final static String   DEF_MESSAGE_LEVEL   = "info";
 
     // from constructor
@@ -85,11 +86,12 @@ public class Context implements AppContext {
     private boolean            pageflow_requested_by_user;
     private boolean            startwithflow;
     private ArrayList          cookielist;
+    private boolean            prohibitcontinue;
+    private boolean            needs_update;
     
     private HashMap messageSCodes      = new HashMap();
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
-    private boolean needs_update;
 
     /**
      * <code>init</code> sets up the Context for operation.
@@ -121,6 +123,7 @@ public class Context implements AppContext {
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
         currentpreq                = preq;
+        prohibitcontinue           = false;
         jumptopagerequest          = null;
         jumptopageflow             = null;
         on_jumptopage              = false;
@@ -130,6 +133,12 @@ public class Context implements AppContext {
         
         if (needs_update) {
             do_update();
+        }
+
+        RequestParam fstop = currentpreq.getRequestParam(PARAM_FORCESTOP);
+        if (fstop != null && fstop.getValue().equals("true")) {
+            // We already decide here to stay on the page, what ever the state wants...
+            prohibitContinue();
         }
 
         RequestParam swflow = currentpreq.getRequestParam(PARAM_STARTWITHFLOW);
@@ -247,9 +256,9 @@ public class Context implements AppContext {
         }
     }
 
-    public PageRequest getJumpToPageRequest() {
-        return jumptopagerequest;
-    }
+//     public PageRequest getJumpToPageRequest() {
+//         return jumptopagerequest;
+//     }
 
     public void setJumpToPageFlow(String flowname) {
         if (jumptopagerequest != null) {
@@ -264,9 +273,9 @@ public class Context implements AppContext {
         }
     }
 
-    public PageFlow getJumpToPageFlow() {
-        return jumptopageflow;
-    }
+//     public PageFlow getJumpToPageFlow() {
+//         return jumptopageflow;
+//     }
 
     /**
      * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
@@ -346,6 +355,14 @@ public class Context implements AppContext {
         return false;
     }
 
+    public void prohibitContinue() {
+        prohibitcontinue = true;
+    }
+
+    public boolean getProhibitContinue() {
+        return prohibitcontinue;
+    }
+    
     /**
      * <code>finalPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returned true if the Context is currently running a FINAL page of a defined workflow.
@@ -414,7 +431,7 @@ public class Context implements AppContext {
                 currentpagerequest = authpage;
                 resdoc             = documentFromCurrentStep();
                 currentpagerequest = saved;
-                if (resdoc.wantsContinue()) {
+                if (!prohibitcontinue) {
                     LOG.debug("===> [" + authpage + "]: Authorisation granted");
                 } else {
                     LOG.debug("===> [" + authpage + "]: Authorisation failed");
@@ -422,7 +439,7 @@ public class Context implements AppContext {
             } else {
                 LOG.debug("===> [" + authpage + "]: Already authorised");
             }
-            if (resdoc != null && !resdoc.wantsContinue()) {
+            if (resdoc != null && prohibitcontinue) {
                 // getting a document here means we need to show the authpage
                 if (resdoc.getSPDocument() == null) {
                     throw new XMLException("*** FATAL: " + authpage + " returns a 'null' SPDocument! ***");
@@ -586,13 +603,13 @@ public class Context implements AppContext {
             }
 
             resdoc = documentFromCurrentStep();
-            if (resdoc.wantsContinue() && !pageMessageIsError() &&
+            if (!prohibitcontinue &&
                 currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest);
                 step.applyActionsOnContinue(this, resdoc);
             }
 
-            if (!resdoc.wantsContinue() || pageMessageIsError()) {
+            if (prohibitcontinue) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
             } else if (jumptopagerequest != null) {
@@ -881,9 +898,8 @@ public class Context implements AppContext {
 
                 Iterator iter = messageSCodes.keySet().iterator();
                 while (iter.hasNext()) {
-                    PageMessage pm           = (PageMessage) iter.next();
-                    StatusCode  scode        = pm.getStatusCode();
-                    List        levelAndArgs = (List) messageSCodes.get(pm);
+                    StatusCode  scode        = (StatusCode) iter.next();
+                    List        levelAndArgs = (List) messageSCodes.get(scode);
                     String      level        = (String)   levelAndArgs.remove(0);
                     String[]    args         = (String[]) levelAndArgs.toArray(new String[0]);
                     Element     msg          = doc.createElement("message");
@@ -952,16 +968,6 @@ public class Context implements AppContext {
         return currentpreq.getLastException();
     }
 
-    public boolean pageMessageIsError() {
-        for (Iterator iter = messageSCodes.keySet().iterator(); iter.hasNext();) {
-            PageMessage pm = (PageMessage) iter.next();
-            if (pm.isError()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
      * as it accesses a non-thread-safe field of this class.
@@ -970,12 +976,11 @@ public class Context implements AppContext {
      * current request, so that it can be incorporated into the XML result-tree.
      *
      * @param scode the <code>StatusCode</code>-object that should be stored in
-     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * the request. If it's null, nothing will be stored in the request.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode)
      */
-    public void addPageMessage(StatusCode scode, boolean isError) {
-        addPageMessage(scode, null, null, isError);
+    public void addPageMessage(StatusCode scode) {
+        addPageMessage(scode, null, null);
     }
 
     /**
@@ -988,11 +993,10 @@ public class Context implements AppContext {
      * @param scode the <code>StatusCode</code>-object that should be stored in
      * the request. If it's null, nothing will be stored in the request.
      * @param level the level associated with the specified <code>StatusCode</code>.
-     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * @see de.schlund.pfixxml.PfixServletRequest#addPageMessage(StatusCode, String)
      */
-    public void addPageMessage(StatusCode scode, String level, boolean isError) {
-        addPageMessage(scode, level, null, isError);
+    public void addPageMessage(StatusCode scode, String level) {
+        addPageMessage(scode, level, null);
     }
 
     /**
@@ -1004,11 +1008,10 @@ public class Context implements AppContext {
      * to the collection of message codes, for this request.
      * @param args arguments to the provided <code>StatusCode</code>.
      * @param level the value, that's used to this message's level. If this value
-     * @param isError true if the Context should handle the message as an error by not leaving the current page.
      * is <code>null</code> or an empty String, the value of
      * {@link #DEF_MESSAGE_LEVEL DEF_MESSAGE_LEVEL} is used
      */
-    public void addPageMessage(StatusCode scode, String level, String[] args, boolean isError) {
+    public void addPageMessage(StatusCode scode, String level, String[] args) {
         if (scode == null)
             return;
         
@@ -1020,24 +1023,6 @@ public class Context implements AppContext {
         if (args != null)
             list.addAll(Arrays.asList(args));
         
-        messageSCodes.put(new PageMessage(scode, isError), list);
-    }
-
-    private class PageMessage {
-        StatusCode scode;
-        boolean    isError;
-
-        PageMessage(StatusCode scode, boolean isError) {
-            this.scode   = scode;
-            this.isError = isError;
-        }
-
-        StatusCode getStatusCode() {
-            return scode;
-        }
-        
-        boolean isError() {
-            return isError;            
-        }
+        messageSCodes.put(scode, list);
     }
 }
