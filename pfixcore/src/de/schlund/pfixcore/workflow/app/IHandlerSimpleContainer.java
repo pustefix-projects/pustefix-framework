@@ -31,7 +31,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
-
+import de.schlund.pfixxml.loader.*;
 
 /**
  * This class is a default implementation of the <code>IHandlerContainer</code> interface.
@@ -44,7 +44,7 @@ import de.schlund.pfixcore.workflow.Context;
  *
  */
 
-public class IHandlerSimpleContainer implements IHandlerContainer {
+public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     /** Store all created handlers here*/
     private HashSet    handlers;
     /** Store all handlers here which do not have a 'ihandlercontainer.ignore' property*/
@@ -101,6 +101,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
                     activeset.add(handler);
                 }
             }
+        }
+        AppLoader appLoader=AppLoader.getInstance();
+        if(appLoader.isEnabled()) {
+            appLoader.addReloader(this);
         }
     }
 
@@ -200,6 +204,23 @@ public class IHandlerSimpleContainer implements IHandlerContainer {
         return false;
     }
     
-    
+    public void reload() {
+        HashSet handlersNew=new HashSet();
+        Iterator it=handlers.iterator();
+        while(it.hasNext()) {
+            IHandler ihOld=(IHandler)it.next();
+            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
+            handlersNew.add(ihNew);
+        }
+        handlers=handlersNew;
+        HashSet activeNew=new HashSet();
+        it=activeset.iterator();
+        while(it.hasNext()) {
+             IHandler ihOld=(IHandler)it.next();
+             IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
+             activeNew.add(ihNew);
+         }
+         activeset=activeNew;
+    }
     
 }// IHandlerSimpleContainer

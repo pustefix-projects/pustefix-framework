@@ -1,3 +1,57 @@
+2003-05-09  Martin Leidig <mleidig@schlund.de>
+
+	Added dynamic class reloading support. New files:
+
+	* apploader.sh:
+	shell script to control class reloading mechanism from commandline
+	* example/common/conf/apploader.prop.in:
+	class reloading mechanism configuration file
+	* src/de/schlund/pfixxml/loader/AppClassLoader.java:
+	adapted classloader implementation
+	* src/de/schlund/pfixxml/loader/AppLoader.java:
+	application loader
+	* src/de/schlund/pfixxml/loader/AppLoaderConfig.java:
+	manages configuration
+	* src/de/schlund/pfixxml/loader/AppLoaderConfigException.java:
+	handles configuration errors
+	* src/de/schlund/pfixxml/loader/CommandClient.java:
+	commandline tool, called by shell script
+	* src/de/schlund/pfixxml/loader/CommandListener.java:
+	listens for reloading commands via socket
+	* src/de/schlund/pfixxml/loader/CommandProcessor.java:
+	processes reloading commands
+	* src/de/schlund/pfixxml/loader/IllegalCommandException.java:
+	handles command errors
+	* src/de/schlund/pfixxml/loader/Reloader.java:
+	interface for reload event listeners
+	* src/de/schlund/pfixxml/loader/StateTransfer.java:
+	transfers object state
+	* src/de/schlund/pfixxml/loader/StateTransferException.java:
+	handles state transfer errors
+
+	Changes:
+
+	* Makefile:
+	now only resources are deployed as jar file in tomcat's lib directory,
+	classes are made available with a symbolic link in tomcat's classes 
+	directory
+	* Makefile.local:
+	added new entry for loader directory
+	* example/common/conf/factory.prop.in:
+	start application loader as factory
+	* example/common/conf/pfixlog.xml.in:
+	log application loader messages in own file
+	* src/de/schlund/pfixcore/generator/IHandlerFactory.java
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	* src/de/schlund/pfixcore/workflow/PageMap.java
+	* src/de/schlund/pfixcore/workflow/StateFactory.java
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java
+	* src/de/schlund/pfixxml/FactoryInitServlet.java:
+	the above classes register themselves as reloading entry points and 
+	provide an according reload method
+	
+
 2003-05-09  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixHighlight.java

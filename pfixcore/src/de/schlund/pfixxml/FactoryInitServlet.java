@@ -19,13 +19,14 @@
 package de.schlund.pfixxml;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
-
+import de.schlund.pfixxml.loader.*;
 import de.schlund.util.FactoryInit;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -49,14 +50,14 @@ import org.apache.log4j.xml.DOMConfigurator;
  * analyzing the "servlet.propfile" parameter which points to a file where
  * all factories are listed.
  */
-public class FactoryInitServlet extends HttpServlet {
+public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     //~ Instance/static variables ..................................................................
 
     private Object         LOCK       = new Object();
     private Category       CAT        = Category.getInstance(FactoryInitServlet.class.getName());
     private static boolean configured = false;
-
+    private ArrayList factories;
     //~ Methods ....................................................................................
 
     /**
@@ -119,11 +120,21 @@ public class FactoryInitServlet extends HttpServlet {
                         try {
                             CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class
                                       + "] <<<<");
-                            FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod(
+                            AppLoader appLoader=AppLoader.getInstance();
+                            if(appLoader.isEnabled() && appLoader.isIncludedClass(the_class)) {
+                                Class clazz=appLoader.loadClass(the_class);
+                                FactoryInit factory=(FactoryInit)clazz.getMethod("getInstance",null).invoke(null,null);
+                                CAT.debug("     Object ID: " + factory);
+                                factory.init(properties);
+                                if(factories==null) factories=new ArrayList();
+                                factories.add(factory);
+                            } else {
+                                FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod(
                                                                         "getInstance", null).invoke(
                                                           null, null);
-                            CAT.debug("     Object ID: " + factory);
-                            factory.init(properties);
+                                CAT.debug("     Object ID: " + factory);
+                                factory.init(properties);
+                            }
                         } catch (Exception e) {
                             CAT.error(e.toString());
                             ThrowableInformation info     = new ThrowableInformation(e);
@@ -146,6 +157,24 @@ public class FactoryInitServlet extends HttpServlet {
             }
             configured = true;
             CAT.debug("***** INIT of FactoryInitServlet done *****");
+            
+            AppLoader appLoader=AppLoader.getInstance();
+            if(appLoader.isEnabled()) appLoader.addReloader(this);   
         }
     }
+    
+    public void reload() {
+        if(factories!=null) {
+            ArrayList newFacs=new ArrayList();
+            Iterator it=factories.iterator();
+            while(it.hasNext()) {
+                FactoryInit fac=(FactoryInit)it.next();
+                String className=fac.getClass().getName();
+                FactoryInit facNew=(FactoryInit)StateTransfer.getInstance().transfer(fac);
+                newFacs.add(facNew);
+            }
+            factories=newFacs;
+        }
+     }
+   
 }
