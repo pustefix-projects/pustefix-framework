@@ -1,50 +1,73 @@
+2004-04-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_depend.xsl: implement a new format
+	for the depend.xml.in (see docs for details). Main achievments:
+	metatags now handled similar to master: customizable template
+	stylesheets that will be included by a core/xsl/metatags.xsl.
+	parameters or (runtime) stylesheets for pages are now directly 
+	given in the standardpage tag (or a new "global" section) 
+
+	* example/core/xsl/customizemaster.xsl:
+	* example/core/xsl/master.xsl.in: changed accordingly
+
+	* example/core/editor/conf/depend.xml.in: 
+	* example/sample1/conf/depend.xml.in: use the new format
+	(standardmaster, standardmetatags etc.)
+
+	* example/core/xsl/metatags.xsl.in: new file. aggregate the common
+	header of all metatags.xsl files into one core file.
+
+	* example/sample1/xsl/metatags.xsl: 
+	* example/core/editor/xsl/metatags.xsl: remove framework header,
+	be only a client xsl included by core/xsl/metatags.xsl
+
 2004-04-26  Benjamin Reitzammer <benjamin@schlund.de>
 
-    * example/core/build/create_propfiles.xsl
-      added exception-template to incorparate exception-configuration into the
-      servlet-property-files.
+	* example/core/build/create_propfiles.xsl
+	added exception-template to incorparate exception-configuration into the
+	servlet-property-files.
+	
+	* src/de/schlund/pfixcore/workflow/Context.java:
+	added getLastException()-method which simply calls getLastException()
+	on the current request.
+	
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+	added getLastException/setLastException which stores/retrieves the
+	provided parameter (a Throwable-instance) in/from the original request
+	
+	* src/de/schlund/pfixxml/ServletManager.java:
+	added initExceptionConfigs()-method for initialization of declarative
+	exception handling and the hook that calls the configured
+	ExceptionProcessors for appropriate exceptions (processException()-method).
+	If no exceptions are configured with the exception-tag, the behaviour
+	of this class is unchanged.
+	
+	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionConfig
+	Objects of this class encapsulate the configuration for one type
+	of exception done via the exception-tag; they are constructed during
+	servlet initialization in initExceptionConfigs().
+	
+	* src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor
+	the interface that all classes must implement, that should act as an
+	ExceptionProcessor (configured via the processor-attribute of the
+	exception-tag).
 
-    * src/de/schlund/pfixcore/workflow/Context.java:
-      added getLastException()-method which simply calls getLastException()
-      on the current request.
-
-    * src/de/schlund/pfixxml/PfixServletRequest.java:
-      added getLastException/setLastException which stores/retrieves the
-      provided parameter (a Throwable-instance) in/from the original request
-
-    * src/de/schlund/pfixxml/ServletManager.java:
-      added initExceptionConfigs()-method for initialization of declarative
-      exception handling and the hook that calls the configured
-      ExceptionProcessors for appropriate exceptions (processException()-method).
-      If no exceptions are configured with the exception-tag, the behaviour
-      of this class is unchanged.
-
-    * src/de/schlund/pfixxml/exceptionprocessor/ExceptionConfig
-      Objects of this class encapsulate the configuration for one type
-      of exception done via the exception-tag; they are constructed during
-      servlet initialization in initExceptionConfigs().
-
-    * src/de/schlund/pfixxml/exceptionprocessor/ExceptionProcessor
-      the interface that all classes must implement, that should act as an
-      ExceptionProcessor (configured via the processor-attribute of the
-      exception-tag).
-
-    * src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor
-      the default ExceptionProcessor, which is used, when the processor-attribute
-      of the exception-tag is absent.
+	* src/de/schlund/pfixxml/exceptionprocessor/PageForwardingExceptionProcessor
+	the default ExceptionProcessor, which is used, when the processor-attribute
+	of the exception-tag is absent.
 
 
 2004-04-26  Niels Schelbach <niels@schlund.de>
 
-        * src/de/schlund/pfixxml/targets/TargetGenerator.java:
-          added extern control ability of generation process. Callback
-          methods will be called after finishing a single target, to
-          inform previously registered TargetGenerationListener's
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java:
+	added extern control ability of generation process. Callback
+	methods will be called after finishing a single target, to
+	inform previously registered TargetGenerationListener's
 
-        * src/de/schlund/pfixxml/targets/TargetGeneratorListener.java:
-          new interface for callback methods, called after finishing a single
-          target or when a TargetGenerationException occured. There is a further
-          method to ask wether to stop process or continue generating
+	* src/de/schlund/pfixxml/targets/TargetGeneratorListener.java:
+	new interface for callback methods, called after finishing a single
+	target or when a TargetGenerationException occured. There is a further
+	method to ask wether to stop process or continue generating
 
 
 2004-04-23  Jens Lautenbacher  <jtl@schlund.de>
@@ -139,7 +162,7 @@
 2004-04-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java:
-        new method : public static boolean isConfigured()
+	new method : public static boolean isConfigured()
 
 2004-04-07  Adam Habermann  <adam.habermann@schlund.de>
 

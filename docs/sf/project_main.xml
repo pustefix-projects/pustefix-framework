@@ -45,141 +45,144 @@
 
   <p>
 
-  <xmlcode>
-    &lt;?xml version="1.0" encoding="ISO-8859-1" ?>
-    <project name="test" xmlns:cus="http://www.schlund.de/pustefix/customize">
-      <active>true</active>
-      <comment>Test Application</comment>
+    <xmlcode>
+      <project name="test" xmlns:cus="http://www.schlund.de/pustefix/customize">
+        <active>true</active>
+        <comment>Test Application</comment>
         <xmlcodeOFF>
           <div class="comment">
-            This tag is only required for the <a href="editor.html">editor</a>.</div>
+            The content of this tag is used in the <a href="editor.html">editor</a> to list all defined projects.</div>
         </xmlcodeOFF>
-      <depend><cus:docroot/>MyProject/conf/depend.xml</depend>
-         <xmlcodeOFF>
-	   <div class="comment">
-	   The location of the depend file must be specified for the <a href="editor.html">editor</a>.</div>
-	   <div class="comment" style="border: 1px red solid; background: #eeaaaa;">
-	     <b>This section is for generating apache.conf in the
-	     servletconf/tomcat directory.</b>
-	     <div>
-	       <xmlcode>
-		 <xmlcodeINV>
-		   <virtualhost><cus:fqdn/></virtualhost>
-		   <servername>myproject.<cus:fqdn/></servername>
-		   <serveralias>myproject.<cus:machine/></serveralias>
-		   <defpath>/xml/defaultservlet</defpath>
-		   <xmlcodeOFF>
-		     <div class="comment">
-		       name of default servlet if user didn't name one 
-		       explicitly in the url (the "xml" tells the server that it's a servlet 
-		       and should be handled by tomcat)     
-		     </div>
-		   </xmlcodeOFF>
-		   <documentroot>/projects/MyProject/htdocs</documentroot>
-		   <xmlcodeOFF>
-		     <div class="comment">
-		       The Apache DocumentRoot for static content, e.g.
-		       other html pages or pdf files... required because otherwise the apache might
-		       use its own documentroot and the user could access things he shoudln't.
-		       You can use an empty directoy, for example like this:	    
-		     </div>
-		   </xmlcodeOFF>
-		   <passthrough>MyProject/img</passthrough>
-		   <xmlcodeOFF>
-		     <div class="comment">
-		       Specify directories which shall not be resolved by tomcat here.
-		     </div>
-		   </xmlcodeOFF>
-		   <literalapache>
-		     <xmlcodeOFF>
-		       <div class="comment">
-			 Enter additional stuff for the apache.conf file here. 
-		       </div>
-		     </xmlcodeOFF>
-		   </literalapache>
-		   <ports>
-		     <port number="80"/>
-		     <port number="443" ssl="true">
-		       <sslkey>/etc/httpd/conf/ssl.key/server.key</sslkey>
-		       <sslcrt>/etc/httpd/conf/ssl.crt/server.crt</sslcrt>
-		     </port>
-		     <xmlcodeOFF>
-		       <div class="comment">
-			 If you don't want to use SSL, you can remove the SSL 
-			 section.
-		       </div>
-		     </xmlcodeOFF>
-		   </ports>
-		 </xmlcodeINV>
-	       </xmlcode>
-	     </div>
-	   </div>
-      </xmlcodeOFF>
-
-      <xmlcodeOFF>
-	<div class="comment">
-	  Specify at least one servlet here.
-	  Create a config file for every servlet you define, as described 
-	  <a href="prop.html#single">here</a>. 
-	</div>
-      </xmlcodeOFF>
-
-      <servlet name="myservlet" useineditor="true">
-	<xmlcodeOFF>
-	  <table class="stdtable">
-	    <tr>
-	      <th>Attribute</th>
-	      <th>Notes</th>
-	    </tr>
-	    <tr>
-	      <td>useineditor</td>
-	      <td>set to true for every servlet that handles pages belonging directly to the project
-	      (That means for example not the servlet that starts up the <a href="editor.html">editor</a>, as the pages delivered
-	      by this servlet belong to the <a href="editor.html">editor</a> project)
-	      </td>
-	    </tr>
-	  </table>
-	</xmlcodeOFF>
-
-	<active>true</active>
-	<class>de.schlund.pfixxml.ContextXMLServer</class>
-	<xmlcodeOFF>
+        <depend><cus:docroot/>MyProject/conf/depend.xml</depend>
+        <xmlcodeOFF>
 	  <div class="comment">
-	    All project-specific servlets are handled by the <code>ContextXMLServer</code> class. 
+	    The location of the depend file must be specified for the <a href="editor.html">editor</a>.</div><br/>
+	  <div class="comment" style="border: 1px red solid; background: #eeaaaa;">
+	    <b>This section is for generating apache.conf in the
+	      servletconf/tomcat directory.</b>
+	    <div>
+	      <xmlcode>
+		<xmlcodeINV>
+		  <virtualhost>SomeVirtualHostName</virtualhost>
+		  <servername>SomeServerName</servername>
+		  <serveralias>SomeServerAlias</serveralias>
+		  <defpath>/xml/SomeDefinedServlet</defpath>
+		  <xmlcodeOFF>
+		    <div class="comment">
+		      The defpath tag names a default servlet if the user didn't specify one 
+		      explicitly in the url (the "xml" part is the mount point of the ServletContext
+                      in which all servlets are running)
+		    </div>
+		  </xmlcodeOFF>
+		  <documentroot>/Path/To/DocumentRoot</documentroot>
+		  <xmlcodeOFF>
+		    <div class="comment">
+		      The apache DocumentRoot for static content, e.g. html pages or pdf
+		      files. Required because otherwise apache uses its default DocumentRoot which
+		      may not be desirable from a security point of view. If you don't have any
+		      static content to server. you can use an empty directoy
+		    </div>
+		  </xmlcodeOFF>
+		  <passthrough>MyProject/img</passthrough>
+		  <xmlcodeOFF>
+		    <div class="comment">
+		      Specify directories which shall not be relative to the DocumentRoot
+		      here. This is used for directories containing images, as they are served by
+		      apache directly.
+		    </div>
+		  </xmlcodeOFF>
+		  <literalapache>
+		    <xmlcodeOFF>
+		      <div class="comment">
+			Enter arbitrary additional stuff for the apache.conf file here. 
+		      </div>
+		    </xmlcodeOFF>
+		  </literalapache>
+		  <ports>
+		    <port number="80"/>
+		    <port number="443" ssl="true">
+		      <sslkey>/etc/httpd/conf/ssl.key/server.key</sslkey>
+		      <sslcrt>/etc/httpd/conf/ssl.crt/server.crt</sslcrt>
+		    </port>
+		    <xmlcodeOFF>
+		      <div class="comment">
+			If you don't want to use SSL, you can remove the SSL 
+			section.
+		      </div>
+		    </xmlcodeOFF>
+		  </ports>
+		</xmlcodeINV>
+	      </xmlcode>
+	    </div>
 	  </div>
-	</xmlcodeOFF>
-	
-	<propfile><cus:docroot/>MyProject/conf/myservlet.prop</propfile>
-	<xmlcodeOFF>
-	  <div class="comment">
-	    By convention, the properties file for a servlet resides
-	    in <code>MyProject/conf/</code> and is named
-	    <code>myservlet.prop.in</code>, where "myservlet" stands
-	    for the actual name of the servlet.
-	  </div>
-	</xmlcodeOFF>
-      </servlet>
-      
-      <xmlcodeOFF>
-	<div class="comment">
-	  The edit and deref servlets should always be present (they&apos;re useful)! 
-	  You don't need to create config files for these.
-	</div>
-      </xmlcodeOFF>
-      
-      <servlet name="edit">
-	<active>true</active>
-	<class>de.schlund.pfixxml.ContextXMLServer</class>
-	<propfile><cus:docroot/>core/editor/conf/config.prop</propfile>
-      </servlet>
-      <servlet name="deref">
-	<active>true</active>
-	<class>de.schlund.pfixxml.DerefServer</class>
-      </servlet>
-    </project>
-  </xmlcode>
+        </xmlcodeOFF>
 
+        <xmlcodeOFF>
+	  <div class="comment">
+	    Specify at least one servlet here. Create a config file for every servlet you define, as described 
+	    <a href="prop.html#single">here</a>. 
+	  </div>
+        </xmlcodeOFF>
+
+        <servlet name="myservlet" useineditor="true">
+	  <xmlcodeOFF>
+	    <table class="stdtable">
+	      <tr>
+	        <th>Attribute</th>
+	        <th>Notes</th>
+	      </tr>
+	      <tr>
+	        <td>useineditor</td>
+	        <td>set to true for every servlet that handles pages belonging directly to the project
+	          (That means for example not the servlet that starts up the <a href="editor.html">editor</a>, as the pages delivered
+	          by this servlet belong to the <a href="editor.html">editor</a> project)
+	        </td>
+	      </tr>
+	    </table>
+	  </xmlcodeOFF>
+
+	  <active>true</active>
+	  <class>de.schlund.pfixxml.ContextXMLServer</class>
+	  <xmlcodeOFF>
+	    <div class="comment">
+	      All project-specific servlets that produce pages from a XSLT transformation are usually
+	      instances of the <code>ContextXMLServer</code> class.
+	    </div>
+	  </xmlcodeOFF>
+	  
+	  <propfile><cus:docroot/>MyProject/conf/myservlet.prop</propfile>
+	  <xmlcodeOFF>
+	    <div class="comment">
+	      By convention, the properties file for a servlet resides
+	      in <code>MyProject/conf/</code> and is named
+	      <code>myservlet.prop</code>, where "myservlet" stands for the actual name of the
+	      servlet. Note that the actual file you have to create is <code>myservlet.prop.in</code>,
+	      the build system takes care to produce the final property file from your configuration.
+	    </div>
+	  </xmlcodeOFF>
+        </servlet>
+        
+        <xmlcodeOFF>
+	  <div class="comment">
+	    The edit and deref servlets must always be present. The <code>edit</code> servlet is the
+	    Pustefix CMS, and the <code>deref</code> servlet is used to create links to external
+	    websites without transmitting Referer-headers which may contain the private session id.
+            You don't need to create config files for these.
+	  </div>
+        </xmlcodeOFF>
+        
+        <servlet name="edit">
+	  <active>true</active>
+	  <class>de.schlund.pfixxml.ContextXMLServer</class>
+	  <propfile><cus:docroot/>core/editor/conf/config.prop</propfile>
+        </servlet>
+        <servlet name="deref">
+	  <active>true</active>
+	  <class>de.schlund.pfixxml.DerefServer</class>
+        </servlet>
+      </project>
+    </xmlcode>
 
   </p>
   
-  </div>
+</div>
