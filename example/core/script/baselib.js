@@ -14,6 +14,119 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+Array.prototype.mapKeys = function() {
+    var c = new Array();
+    for (var i = 0; i < this.length; i++) {
+        var p = this[i].split(":");
+        if (typeof p[0] != "undefined") c[p[0]] = p[1];
+    };
+    return c;
+};
+
+Array.prototype.unmapKeys = function() {
+    var c = new Array();
+    var i = 0;
+    for (attr in this) {
+        var t = typeof this[attr];
+        if (t != "string" && t != "number") continue;
+        c[i] = attr + ":" + this[attr];
+        i++;
+    };
+    return c;
+};
+
+var __js_Cookie = {
+  // Data for the highlevel functions
+    base : "data",
+    days : 365,
+    splitter : "|",
+    path : "/",
+    
+    // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
+    maxstr : 4000,
+    maxarr : 10,
+    
+    set : function(name, value) {
+        var c   = this.prep_sub();
+        c[name] = value;
+        var d = c.unmapKeys();
+        var s = "";
+        var j = 0;
+        for (var i=0; i<d.length; i++) {
+            if ((s.length + d[i].length) > this.maxstr) {
+                this.create(this.base + this.norm_sub(j), s, this.days);
+                
+                s = d[i] + this.splitter;
+                j++;
+            } else {
+                s += d[i] + this.splitter;
+            };
+        };
+        
+        if (s != "") {
+            this.create(this.base + this.norm_sub(j), s, this.days);
+            j++;
+        };
+
+        if (j < this.maxarr)
+            for (var i = j; i < this.maxarr; i++) this.erase(this.base + this.norm_sub(i));
+    },
+
+    get : function(name) {
+        var c = this.prep_sub()[name];
+        if (c && typeof c != "undefied") return c;
+        return null;
+    },
+
+    norm_sub : function(i) {
+        return String(i < 10 ? "0" + i : i);
+    },
+
+    get_sub : function() {
+        var s = "";
+        for (var i = 0; i < 20; i++)
+        {
+            var r = this.read(this.base + this.norm_sub(i))
+                if(r) s+=r;
+        };
+        return s;
+    },
+
+    prep_sub : function() {
+        return this.get_sub().split(this.splitter).mapKeys();
+    },
+
+    // Low Level Internal Functions
+    create : function(name, value, days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days*24*60*60*1000));
+            var expires = "; expires=" + date.toGMTString();
+        } else {
+            var expires = "";
+        };
+        document.cookie = name + "=" + value + expires + "; path=" + this.path;
+    },
+
+    read : function(name) {
+        var ne = name + "=";
+        var ca = document.cookie.split(";");
+        
+        for (var i=0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == " ")
+                c = c.substring(1,c.length);
+            if (c.indexOf(ne) == 0)
+                return c.substring(ne.length,c.length);
+        };
+        return null;
+    },
+
+    erase : function(name) {
+        this.create(name,"",-1);
+    }
+}
+
 function __js_Browser() {
   // features
   this.all        = document.all ? true : false;
@@ -141,12 +254,7 @@ function __js_Layer(layer_id) {
         
         var fromcookie =  "nocookie";
         if (navigator.cookieEnabled == true && store != "false") {
-            var cookie = document.cookie;
-            if (cookie.indexOf("LR_" + this.getId() + "=true") >= 0) {
-                fromcookie =  "true";
-            } else if (cookie.indexOf("LR_" + this.getId() + "=false") >= 0) {
-                fromcookie = "false";
-            }
+            fromcookie = __js_Cookie.get(this.getId());;
         }
         if (fromcookie == "true") {
             this.show();
@@ -161,7 +269,7 @@ function __js_Layer(layer_id) {
         }
         this.initialized = true;
     };
-        
+    
     this.getId       = function () { return this.id; };
     this.getFrame    = function () { return this.frame; };
     this.getChildren = function () { return this.children; };
@@ -175,7 +283,7 @@ function __js_Layer(layer_id) {
 
     this.__change = function (cookievis, elemvis, switchoffvis) {
         if (navigator.cookieEnabled == true && this.store != "false") {
-            document.cookie = "LR_" + this.getId() + "=" + cookievis + "; path=/";
+            __js_Cookie.set(this.getId(), String(cookievis));
         }
         this.element.style.display = elemvis;
         this.visible = cookievis;
