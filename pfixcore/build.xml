@@ -618,17 +618,17 @@ or delete the DOCTYPE definition -->
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="files"   expression="${projectxmlins}"/>
- 	  <param name="fqdn"    expression="${fqdn}"/>
+      <param name="fqdn"    expression="${fqdn}"/>
       <param name="uid"     expression="${uid}"/>
       <param name="machine" expression="${machine}"/>
-      <param name="mode"    expression="${makemode}"/>    	
+      <param name="mode"    expression="${makemode}"/>      
     </pfx-xslt>
   </target>
 
   <target name="web_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
     <!-- old target name in Makefile was "zoneprops" -->
     <pfx-webxml
-      style="${dir.projects}/core/build/create_customtomcatweb.xsl"
+      style="${dir.projects}/core/build/create_webxml.xsl"
       srcdir="${dir.projects}"
       destdir="${dir.tomcat}"
       extension=".xml"
