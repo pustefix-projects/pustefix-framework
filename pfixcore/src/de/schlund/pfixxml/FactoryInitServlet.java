@@ -171,6 +171,11 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
         }
     }
     
+    public static boolean isConfigured() {
+    	return configured;
+    }
+    
+    
     public void reload() {
         if (factories!=null) {
             ArrayList newFacs = new ArrayList();

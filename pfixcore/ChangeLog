@@ -1,3 +1,8 @@
+2004-04-08  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/FactoryInitServlet.java: 
+        new method : public static boolean isConfigured()
+
 2004-04-07  Adam Habermann  <adam.habermann@schlund.de>
 
 	* skel/build.xml: changed targets "core-data-check" and "core-data" to 
