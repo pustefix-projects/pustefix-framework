@@ -19,16 +19,30 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.exceptionhandler.*;
-import de.schlund.pfixxml.multipart.*;
-import de.schlund.pfixxml.serverutil.*;
-import java.io.*;
-import java.security.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Properties;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
+import de.schlund.pfixxml.serverutil.ContainerUtil;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 
  /*
  *
@@ -122,6 +136,7 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("====> URI:   " + req.getRequestURI());
             CAT.debug("====> Query: " + req.getQueryString());
             CAT.debug("----> needsSession=" + needsSession() + " needsSSL=" + needsSSL() + " allowSessionCreate=" + allowSessionCreate());
+			CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
             Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {

@@ -1,106 +1,152 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <!-- Servletspezifische Properties -->
-  <prop name="xmlserver.depend.xml"><cus:docroot/>core/editor/conf/depend.xml</prop>
-  <prop name="xmlserver.servlet.name">pfixcore_project:core_editor_servlet:1</prop>
-  <prop name="xmlserver.noeditmodeallowed">true</prop>
-
-  <prop name="context.class">de.schlund.pfixcore.workflow.AuthContext</prop>
-  
-  <prop name="context.resource.1.de.schlund.pfixcore.editor.resources.EditorSessionStatusImpl">de.schlund.pfixcore.editor.resources.EditorSessionStatus</prop>
-  <prop name="context.resource.2.de.schlund.pfixcore.editor.resources.EditorSearchImpl">de.schlund.pfixcore.editor.resources.EditorSearch</prop>
-
   <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
+  <prop name="sessioncleaner.timeout">10</prop>
   
-  <prop name="context.defaultpageflow">Editor</prop>
+  <servletinfo depend="core/editor/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
+    <editmode allow="false"/>
+  </servletinfo>
 
-  <prop name="context.pageflow.Editor.01">prodselect</prop>
-  <prop name="context.pageflow.Editor.02">home</prop>
-  <prop name="context.pageflow.Editor.99">logout</prop>
-
-  <prop name="context.pageflow.EditLoginUser.01">editoruserdata</prop>
-  <prop name="context.pageflow.EditLoginUser.99">prodselect</prop>
-
-  <prop name="context.pageflow.UserAdmin.01">editorusermanager</prop>
-  <prop name="context.pageflow.UserAdmin.02">editoruserdata</prop>
-
-  <prop name="authcontext.authpage">editoruserauth</prop>
-
-  <prop name="pagerequest.documentation.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.documentation.interface.1.select">de.schlund.pfixcore.editor.interfaces.Documentation</prop>
-  <prop name="pagerequest.documentation.resdocfinalizer">de.schlund.pfixcore.editor.handlers.DocumentationFinalizer</prop>
+  <context defaultflow="Editor" authpage="editoruserauth">
+    <resource class="de.schlund.pfixcore.editor.resources.EditorSessionStatusImpl">
+      <implements class="de.schlund.pfixcore.editor.resources.EditorSessionStatus"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor.resources.EditorSearchImpl">
+      <implements class="de.schlund.pfixcore.editor.resources.EditorSearch"/>
+    </resource>
+  </context>
   
-  <prop name="pagerequest.editoruserauth.classname">de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</prop>
-  <prop name="pagerequest.editoruserauth.interface.auth">de.schlund.pfixcore.editor.interfaces.UserAuth</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.01.extprod">de.schlund.pfixcore.editor.interfaces.ProductSelect</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.02.extpage">de.schlund.pfixcore.editor.interfaces.Pages</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.03.exttarget">de.schlund.pfixcore.editor.interfaces.Targets</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.04.extimg">de.schlund.pfixcore.editor.interfaces.Images</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.05.extinc">de.schlund.pfixcore.editor.interfaces.Includes</prop>
-  <prop name="pagerequest.editoruserauth.auxinterface.06.extcom">de.schlund.pfixcore.editor.interfaces.Commons</prop>
-
-  <prop name="pagerequest.prodselect.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.prodselect.interface.1.edituser">de.schlund.pfixcore.editor.interfaces.UserForEdit</prop>
-  <prop name="pagerequest.prodselect.interface.2.login">de.schlund.pfixcore.editor.interfaces.LoginStatus</prop>
-  <prop name="pagerequest.prodselect.interface.3.prodsel">de.schlund.pfixcore.editor.interfaces.ProductSelect</prop>
-  <prop name="pagerequest.prodselect.restrictedcontinue">prodsel edituser</prop>
-  <prop name="pagerequest.prodselect.resdocfinalizer">de.schlund.pfixcore.editor.handlers.ProductSelectFinalizer</prop>
-
-  <prop name="pagerequest.home.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.home.interface.1.update">de.schlund.pfixcore.editor.interfaces.UpdateProductPages</prop>
-  <prop name="pagerequest.home.resdocfinalizer">de.schlund.pfixcore.editor.handlers.HomeFinalizer</prop>
+  <pageflow name="Editor">
+    <flowstep name="prodselect"/>
+    <flowstep name="home"/>
+    <flowstep name="logout"/>
+  </pageflow>
   
-  <prop name="pagerequest.pages.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.pages.interface.1.psel">de.schlund.pfixcore.editor.interfaces.Pages</prop>
-  <prop name="pagerequest.pages.resdocfinalizer">de.schlund.pfixcore.editor.handlers.PagesFinalizer</prop>
+  <pageflow name="EditLoginUser">
+    <flowstep name="editoruserdata"/>
+    <flowstep name="prodselect"/>
+  </pageflow>
+
+  <pageflow name="UserAdmin">
+    <flowstep name="editorusermanager"/>
+    <flowstep name="editoruserdata"/>
+  </pageflow>
   
-  <prop name="pagerequest.targets.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.targets.interface.1.tsel">de.schlund.pfixcore.editor.interfaces.Targets</prop>
-  <prop name="pagerequest.targets.resdocfinalizer">de.schlund.pfixcore.editor.handlers.TargetsFinalizer</prop>
+  <pagerequest name="editoruserauth">
+    <authhandler>
+      <authinterface prefix="auth"      class="de.schlund.pfixcore.editor.interfaces.UserAuth"/>
+      <auxinterface  prefix="extprod"   class="de.schlund.pfixcore.editor.interfaces.ProductSelect"/>
+      <auxinterface  prefix="extpage"   class="de.schlund.pfixcore.editor.interfaces.Pages"/>
+      <auxinterface  prefix="exttarget" class="de.schlund.pfixcore.editor.interfaces.Targets"/>
+      <auxinterface  prefix="extimg"    class="de.schlund.pfixcore.editor.interfaces.Images"/>
+      <auxinterface  prefix="extinc"    class="de.schlund.pfixcore.editor.interfaces.Includes"/>
+      <auxinterface  prefix="extcom"    class="de.schlund.pfixcore.editor.interfaces.Commons"/>
+    </authhandler>
+  </pagerequest>
 
-  <prop name="pagerequest.images.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.images.interface.1.imgsel">de.schlund.pfixcore.editor.interfaces.Images</prop>
-  <prop name="pagerequest.images.interface.2.upload">de.schlund.pfixcore.editor.interfaces.ImagesUpload</prop>
-  <prop name="pagerequest.images.resdocfinalizer">de.schlund.pfixcore.editor.handlers.ImagesFinalizer</prop>
+  <pagerequest name="documentation">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.DocumentationFinalizer"/>
+    <ihandler>
+      <interface prefix="select" class="de.schlund.pfixcore.editor.interfaces.Documentation"/>
+    </ihandler>
+  </pagerequest>
 
-  <prop name="pagerequest.includes.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.includes.interface.1.create">de.schlund.pfixcore.editor.interfaces.IncludesBranch</prop>
-  <prop name="pagerequest.includes.interface.2.incsel">de.schlund.pfixcore.editor.interfaces.Includes</prop>
-  <prop name="pagerequest.includes.interface.3.uplinc">de.schlund.pfixcore.editor.interfaces.IncludesUpload</prop>
-  <prop name="pagerequest.includes.resdocfinalizer">de.schlund.pfixcore.editor.handlers.IncludesFinalizer</prop>
+  <pagerequest name="prodselect">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.ProductSelectFinalizer"/>
+    <ihandler>
+      <interface prefix="edituser" class="de.schlund.pfixcore.editor.interfaces.UserForEdit"   continue="true"/>
+      <interface prefix="login"    class="de.schlund.pfixcore.editor.interfaces.LoginStatus"/>
+      <interface prefix="prodsel"  class="de.schlund.pfixcore.editor.interfaces.ProductSelect" continue="true"/>
+    </ihandler>
+  </pagerequest>
 
-  <prop name="pagerequest.search.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.search.interface.1.search">de.schlund.pfixcore.editor.interfaces.Search</prop>
-  <prop name="pagerequest.search.resdocfinalizer">de.schlund.pfixcore.editor.handlers.SearchFinalizer</prop>
-
-  <prop name="pagerequest.commons.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.commons.interface.1.comsel">de.schlund.pfixcore.editor.interfaces.Commons</prop>
-  <prop name="pagerequest.commons.interface.2.create">de.schlund.pfixcore.editor.interfaces.CommonsBranch</prop>
-  <prop name="pagerequest.commons.interface.3.uplcom">de.schlund.pfixcore.editor.interfaces.CommonsUpload</prop>
-  <prop name="pagerequest.commons.resdocfinalizer">de.schlund.pfixcore.editor.handlers.CommonsFinalizer</prop>
-
-  <prop name="pagerequest.editoruserdata.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.editoruserdata.interface.1.cancel">de.schlund.pfixcore.editor.interfaces.CancelEditUser</prop>
-  <prop name="pagerequest.editoruserdata.interface.2.change">de.schlund.pfixcore.editor.interfaces.EditUserData</prop>
-  <prop name="pagerequest.editoruserdata.resdocfinalizer">de.schlund.pfixcore.editor.handlers.EditorUserDataFinalizer</prop>
-  <prop name="pagerequest.editoruserdata.restrictedcontinue">change cancel</prop>
+  <pagerequest name="home">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.HomeFinalizer"/>
+    <ihandler>
+      <interface prefix="update" class="de.schlund.pfixcore.editor.interfaces.UpdateProductPages"/>
+    </ihandler>
+  </pagerequest>
   
-  <prop name="pagerequest.lockmanager.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.lockmanager.interface.1.delete">de.schlund.pfixcore.editor.interfaces.DeleteLock</prop>
-  <prop name="pagerequest.lockmanager.resdocfinalizer">de.schlund.pfixcore.editor.handlers.LockManagerFinalizer</prop>
-
-  <prop name="pagerequest.editorusermanager.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.editorusermanager.interface.1.adduser">de.schlund.pfixcore.editor.interfaces.AddUser</prop>
-  <prop name="pagerequest.editorusermanager.interface.2.deluser">de.schlund.pfixcore.editor.interfaces.DeleteUser</prop>
-  <prop name="pagerequest.editorusermanager.interface.3.seluser">de.schlund.pfixcore.editor.interfaces.UserForEdit</prop>
-  <prop name="pagerequest.editorusermanager.resdocfinalizer">de.schlund.pfixcore.editor.handlers.EditorUserManagerFinalizer</prop>
-  <prop name="pagerequest.editorusermanager.restrictedcontinue">seluser adduser</prop>
+  <pagerequest name="pages">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.PagesFinalizer"/>
+    <ihandler>
+      <interface prefix="psel" class="de.schlund.pfixcore.editor.interfaces.Pages"/>
+    </ihandler>
+  </pagerequest>
   
-  <prop name="pagerequest.sessionmanager.classname">de.schlund.pfixcore.editor.handlers.SessionManagerState</prop>
+  <pagerequest name="targets">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.TargetsFinalizer"/>
+    <ihandler>
+      <interface prefix="tsel" class="de.schlund.pfixcore.editor.interfaces.Targets"/>
+    </ihandler>
+  </pagerequest>
 
-  <!-- Dummy pages -->
-  <prop name="pagerequest.logout.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
-  <prop name="pagerequest.logout.interface.1.exit">de.schlund.pfixcore.editor.interfaces.Logout</prop>
+  <pagerequest name="images">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.ImagesFinalizer"/>
+    <ihandler>
+      <interface prefix="imgsel" class="de.schlund.pfixcore.editor.interfaces.Images"/>
+      <interface prefix="upload" class="de.schlund.pfixcore.editor.interfaces.ImagesUpload"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="includes">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.IncludesFinalizer"/>
+    <ihandler>
+      <interface prefix="create" class="de.schlund.pfixcore.editor.interfaces.IncludesBranch"/>
+      <interface prefix="incsel" class="de.schlund.pfixcore.editor.interfaces.Includes"/>
+      <interface prefix="uplinc" class="de.schlund.pfixcore.editor.interfaces.IncludesUpload"/>
+    </ihandler>
+  </pagerequest>
+
+  <pagerequest name="search">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.SearchFinalizer"/>
+    <ihandler>
+      <interface prefix="search" class="de.schlund.pfixcore.editor.interfaces.Search"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="commons">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.CommonsFinalizer"/>
+    <ihandler>
+      <interface prefix="comsel" class="de.schlund.pfixcore.editor.interfaces.Commons"/>
+      <interface prefix="create" class="de.schlund.pfixcore.editor.interfaces.CommonsBranch"/>
+      <interface prefix="uplcom" class="de.schlund.pfixcore.editor.interfaces.CommonsUpload"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="editoruserdata">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.EditorUserDataFinalizer"/>
+    <ihandler>
+      <interface prefix="cancel" class="de.schlund.pfixcore.editor.interfaces.CancelEditUser" continue="true"/>
+      <interface prefix="change" class="de.schlund.pfixcore.editor.interfaces.EditUserData"   continue="true"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="lockmanager">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.LockManagerFinalizer"/>
+    <ihandler>
+      <interface prefix="delete" class="de.schlund.pfixcore.editor.interfaces.DeleteLock"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="editorusermanager">
+    <finalizer class="de.schlund.pfixcore.editor.handlers.EditorUserManagerFinalizer"/>
+    <ihandler>
+      <interface prefix="adduser" class="de.schlund.pfixcore.editor.interfaces.AddUser"     continue="true"/>
+      <interface prefix="deluser" class="de.schlund.pfixcore.editor.interfaces.DeleteUser"/>
+      <interface prefix="seluser" class="de.schlund.pfixcore.editor.interfaces.UserForEdit" continue="true"/>
+    </ihandler>
+  </pagerequest>
+  
+  <pagerequest name="sessionmanager">
+    <state class="de.schlund.pfixcore.editor.handlers.SessionManagerState"/>
+  </pagerequest>
+
+  <pagerequest name="logout">
+    <ihandler>
+      <interface prefix="exit" class="de.schlund.pfixcore.editor.interfaces.Logout"/>
+    </ihandler>
+  </pagerequest>
   
 </properties>
 
