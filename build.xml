@@ -17,6 +17,7 @@ or delete the DOCTYPE definition -->
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
   <property name="project.version"        value="0.7.1-pre" description="the version to use for pfixcore-*.jar and pfixcore-data-*.jar"/>
   <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
+  <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
   <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
   <property name="name.pfixcore_data_tgz" value="${project.name}-data-${project.version}.tar.gz"/>
   <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
