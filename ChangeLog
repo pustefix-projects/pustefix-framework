@@ -1,3 +1,7 @@
+2004-07-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* started 0.6.6-pre
+
 2004-07-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* released 0.6.5
@@ -67,12 +71,12 @@
 
 2004-07-05  Joerg Haecker <haecker@schlund.de>
 
-        * lib/rmiobj.jar: removed 
-        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValue.java
-        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java
-        * src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueVisitor.java
-        * src/de/schlund/pfixxml/exceptionprocessor/util/TextCreatorVisitor.java
-        * src/de/schlund/pfixxml/exceptionprocessor/util/XMLCreatorVisitor.java
+	* lib/rmiobj.jar: removed 
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValue.java
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueVisitor.java
+	* src/de/schlund/pfixxml/exceptionprocessor/util/TextCreatorVisitor.java
+	* src/de/schlund/pfixxml/exceptionprocessor/util/XMLCreatorVisitor.java
 
 2004-07-02  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -87,17 +91,17 @@
 
 2004-07-01  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
-        ensure, that exception is also printed in logfile.
-        * src/de/schlund/pfixxml/PerfEventTypeConfig.java: more logging if
-        init  failed.
-        * lib/rmiobj.jar: new jar with exception-formatting utilities.
-
-        * src/de/schlund/pfixxml/PerfEventTypeConfig.java: new class
-        getting delay times from factory.prop.in
-        * src/de/schlund/pfixxml/PerfEventType.java: adjusted to
-        above changes.
-        * example/common/conf/factory.prop.in: added delays for perf-logging.
+	* src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
+	ensure, that exception is also printed in logfile.
+	* src/de/schlund/pfixxml/PerfEventTypeConfig.java: more logging if
+	init  failed.
+	* lib/rmiobj.jar: new jar with exception-formatting utilities.
+	
+	* src/de/schlund/pfixxml/PerfEventTypeConfig.java: new class
+	getting delay times from factory.prop.in
+	* src/de/schlund/pfixxml/PerfEventType.java: adjusted to
+	above changes.
+	* example/common/conf/factory.prop.in: added delays for perf-logging.
 
 2004-06-30  Joerg Haecker <haecker@schlund.de>
 
@@ -158,7 +162,7 @@
 	well-formedness) are performed on the included configuration.
 
 
-2004-06-21  J�rg H�cker <haecker@schlund.de>
+2004-06-21  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
 	Do not catch TargetGenerationExcpetions any more, they
