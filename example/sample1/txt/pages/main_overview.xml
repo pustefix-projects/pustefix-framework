@@ -4,10 +4,10 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-  <center>
-    <overviewinfo/>
-  </center>
-</lang>
+        <center>
+          <overviewinfo/>
+        </center>
+      </lang>
     </product>
   </part>
   

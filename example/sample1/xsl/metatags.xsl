@@ -4,6 +4,7 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
   
   <xsl:template match="overviewinfo">
+    <ixsl:value-of select="/formresult/adultinfo/info/text()"/>
     <table width="500" class="boxed" bgcolor="#ffcccc">
       <tr>
         <td colspan="3">
