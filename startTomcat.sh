@@ -10,6 +10,7 @@ else
     debug=""
 fi
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mleidig/workspace/pfixcore/jni/build
 export JAVA_OPTS="-mx200M $debug"
 export JSSE_HOME="`pwd`/lib/jsse"
 

@@ -1,3 +1,49 @@
+2003-08-08  Martin Leidig  <mleidig@schlund.de>
+
+	Made major AppLoader changes. Now native code is used to set final
+        fields and create uninitialized objects. It comes as part of pfixcore,
+        but has to be extracted and compiled on its target platform.
+
+        Added:
+
+	* src/de/schlund/pfixxml/loader/ObjectBuilder.java:
+        Responsible for setting final fields and allocating objects. This is
+        done by native methods. The necessary shared library is loaded on
+        demand.
+	* src/de/schlund/pfixxml/loader/ObjectBuilderException.java:
+        Exception type for ObjectBuilder exceptions.
+        * jni/Makefile:
+        Makefile for building native part of AppLoader.
+        * jni/src/de_schlund_pfixxml_loader_ObjectBuilder.c:
+        Implementation of C header generated from ObjectBuilder.java via javah.
+        It has functions for static field access and object allocation, which
+        use the according functions provided by JNI.
+        * jni/Makefile.pkg:
+        Makefile for building native part of AppLoader within other projects.
+
+        Changed:
+
+        * Makefile:
+        Added support for JNI part of AppLoader (jni target calls jni/Makefile
+        for building, jar target adds jni package to jar file)
+        * startTomcat.sh:
+        LD_LIBRARY_PATH environment variable is set, so that shared library can
+        be found, when it's loaded on demand.
+        * src/de/schlund/pfixxml/loader/AppClassLoader.java:
+        A list of all loaded application classes is provided at call.
+        * src/de/schlund/pfixxml/loader/AppLoader.java:
+        After reloading the referenced objects all classes, which were loaded
+        by the AppClassLoader, but had no transferred instance, are identified
+        and also transferred (newly created and set values of static fields).
+        * src/de/schlund/pfixxml/loader/AppLoaderConfig.java:
+        * src/de/schlund/pfixxml/loader/Profiler.java:
+        Pure cosmetics.
+        * src/de/schlund/pfixxml/loader/StateTransfer.java:
+        Removed java version dependent, reflection abusing, object allocation
+        stuff. Creation of uninitialized objects and setting of final member
+        fields now are done with the ObjectBuilder's native methods. The
+        classes of all transferred objects are provided at call.
+
 2003-08-07  Sebastian Werner   <sw@schlund.de>
 	* core/xsl/forminput.xsl.in
 	* core/xsl/include.xsl.in

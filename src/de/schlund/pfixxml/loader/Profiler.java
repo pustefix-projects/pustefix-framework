@@ -19,6 +19,8 @@
 
 package de.schlund.pfixxml.loader;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.*;
 import java.util.*;
 import org.apache.log4j.Category;
@@ -262,7 +264,9 @@ public class Profiler {
                     if(!fields[i].isAccessible()) fields[i].setAccessible(true);
                     sb.append("[F]"+name+"  [T]"+fields[i].getType().getName()+"\n");
                 } catch(Exception x) {
-                    x.printStackTrace();
+                    StringWriter sw=new StringWriter();
+                    x.printStackTrace(new PrintWriter(sw));
+                    sb.append(": "+sw.getBuffer().toString());
                 }
             }    
             clazz=clazz.getSuperclass();

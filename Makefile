@@ -22,7 +22,10 @@ PFIXSREQCLASS = de/schlund/pfixxml/PfixServletRequest.class
 
 ALLJAVA     = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.java") $(ALLWRAPPERS:.iwrp=.java)
 
-.PHONY : java-common java-tomcat clean doc docpriv cleandoc dist notag clean-rebuild
+JNIDIR = jni
+JNIPKG = jni.tar.gz
+
+.PHONY : java-common java-tomcat jni clean doc docpriv cleandoc dist notag clean-rebuild
 
 all: compile dev 
 	@cd example && make -f Makefile all
@@ -30,7 +33,7 @@ all: compile dev
 generate: compile dev
 	@cd example && make -f Makefile generate
 
-compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-common
+compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-common jni
 
 java-common: generate_src
 	@echo
@@ -54,6 +57,10 @@ $(BUILDDIR)/$(PFIXSREQCLASS): $(SRCROOT)/$(PFIXSREQCLASS:.class=.java)
                  -d $(shell pwd)/${BUILDDIR} -sourcepath $(shell pwd)/${SRCROOT} $<
 	@echo "*** ...Done!"
 
+jni:
+	@echo "*** Building JNI part of AppLoader..."
+	@cd jni && make -f Makefile
+
 # generate IWrappers...
 generate_src:
 	@echo
@@ -70,6 +77,7 @@ clean:
 	@find $(SUBDIRS) -type f -name "*~" | xargs rm -f
 	@cd example && make -f Makefile clean
 	@rm -f example/servletconf/tomcat/lib/*.jar
+	@cd $(JNIDIR) && make -f Makefile clean
 
 realclean: clean cleandoc
 
@@ -133,6 +141,7 @@ jar:
 	@${JAR} cvf dist/$(PROJECT)-$(VERSION).jar `find META-INF -type f | grep -v "CVS/"`
 	@(cd $(BUILDDIR); ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar *)
 	@(cd res; ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar `find . -type f | grep -v "CVS/"`)
+	@(cd $(JNIDIR); ${JAR} uvf ../dist/$(PROJECT)-$(VERSION).jar $(JNIPKG))
 
 dev:
 	@echo "Setting link to $(BUILDDIR)/de in example/servletconf/tomcat/classes."

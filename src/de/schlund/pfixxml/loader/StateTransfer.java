@@ -21,9 +21,6 @@ package de.schlund.pfixxml.loader;
  
 import java.lang.reflect.*;
 import java.util.*;
-import java.io.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import org.apache.log4j.Category;
 
 /**
@@ -46,12 +43,21 @@ public class StateTransfer {
     //cache scanned non AppLoader type objects
     private HashSet refs=new HashSet();
     
+    //cache classes of transferred objects
+    private HashSet appClasses=new HashSet();
+    
     private ArrayList exceptions=new ArrayList();
     private int incType=-1;
+    
+    private ObjectBuilder builder;
 
     private StateTransfer() {
-        initVersionDeps();
         debug=CAT.isDebugEnabled();
+        try {
+            builder=ObjectBuilder.getInstance();
+        } catch(ObjectBuilderException x) {
+            CAT.error("Can't transfer state.",x);
+        }
     }
 
     public static StateTransfer getInstance() {
@@ -61,8 +67,13 @@ public class StateTransfer {
     public void reset() {
         transferred.clear();
         refs.clear();
+        appClasses.clear();
         exceptions.clear();
         incType=-1;
+    }
+
+    protected HashSet getAppClasses() {
+        return appClasses;
     }
 
     public void addTransferred(Object oldObj,Object newObj) {
@@ -80,7 +91,7 @@ public class StateTransfer {
     public boolean isReferenced(Object obj) {
         return refs.contains(new Integer(System.identityHashCode(obj)));
     }
-
+    
     public Object transfer(Object obj) {
         return transfer(obj,null);
     }
@@ -88,20 +99,88 @@ public class StateTransfer {
     protected Object transfer(Object oldObj,Object predecObj) {
         if(oldObj==null) return null;
 		AppLoader loader=AppLoader.getInstance();
+        //Transfer classes
         if(oldObj instanceof Class) {
-        	Class c=(Class)oldObj;
-        	if(c.getClassLoader() instanceof AppClassLoader) {
-        		if(debug) CAT.debug("Transfer java.lang.Class instance of class '"+c.getName()+"'.");
+        	Class oldClass=(Class)oldObj;
+        	if(oldClass.getClassLoader() instanceof AppClassLoader) {
+        		if(debug) CAT.debug("Transfer java.lang.Class instance of class '"+oldClass.getName()+"'.");
         		Object newObj=getTransferred(oldObj);
         		if(newObj!=null) return newObj;
         		try {
-                    newObj=Class.forName(c.getName(),false,loader.getAppClassLoader());
-        		} catch(ClassNotFoundException x) {
-					addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
-						 c.getName(),"Class was removed or renamed."));
-        		};
-        		return newObj;
-        	}
+                    Class newClass=Class.forName(oldClass.getName(),false,loader.getAppClassLoader());
+                    newObj=newClass;
+                    addTransferred(oldClass,newClass);
+                    appClasses.add(oldClass);
+                    //Transfer static fields
+                    while(oldClass!=null) {
+                        Field[] fields=oldClass.getDeclaredFields();
+                        int proc=0;
+                        for(int i=0;i<fields.length;i++) {
+                            if(Modifier.isStatic(fields[i].getModifiers())) {
+                                String name=fields[i].getName();
+                                Field field=null;
+                                try {
+                                    field=newClass.getDeclaredField(name);
+                                    proc++;
+                                    if(!Modifier.isStatic(field.getModifiers())) {
+                                        addException(new StateTransferException(StateTransferException.MEMBER_TYPE_CHANGED,
+                                            oldClass.getName(),"Member '"+fields[i].getName()+"' is no longer static."));
+                                        continue;
+                                    }
+                                    if(debug) CAT.debug("Transfer static field '"+name+"' of class '"+oldClass.getName()+"'.");
+                                    if(Modifier.isFinal(field.getModifiers())) {
+                                        if(debug) CAT.debug("Final field -> set via JNI");
+                                        if(Modifier.isStatic(field.getModifiers())) {
+                                            setOBStaticField(newClass,oldClass,fields[i]);
+                                        } else {
+                                            setOBField(newObj,oldObj,fields[i]);    
+                                        }
+                                    } else {
+                                        if(!fields[i].isAccessible()) fields[i].setAccessible(true);
+                                        if(!field.isAccessible()) field.setAccessible(true);
+                                        Object value=fields[i].get(null);
+                                        value=transfer(value);
+                                        field.set(null,value);
+                                    }
+                                } catch(NoSuchFieldException x) {
+                                    addException(new StateTransferException(StateTransferException.MEMBER_REMOVED,
+                                        oldClass.getName(),"Member '"+fields[i].getName()+"' was removed or renamed."));
+                                } catch(IllegalAccessException x) {
+                                    addException(new StateTransferException(StateTransferException.MEMBER_FINAL,
+                                    oldClass.getName(), "Member '"+fields[i].getName()+"' is final."));
+                                } catch(IllegalArgumentException x) {
+                                    Class newType=field.getType();
+                                    Class oldType=fields[i].getType();
+                                    if(!newType.equals(oldType)) {
+                                        addException(new StateTransferException(StateTransferException.MEMBER_TYPE_CHANGED,
+                                            oldClass.getName(),"Member '"+fields[i].getName()+"' changed type from '"+oldType+"' to '"+newType+"'."));
+                                    } else {
+                                        addException(new StateTransferException(StateTransferException.MEMBER_TYPE_CONVERSION,
+                                        oldClass.getName(),"Member value for '"+fields[i].getName()+"' can't be converted due to type mismatch."));
+                                    }
+                                }
+                            }
+                        }
+                        Field[] newFields=newClass.getDeclaredFields();
+                        if(proc<newFields.length) {
+                            for(int i=0;i<newFields.length;i++) {
+                                try {
+                                    oldClass.getDeclaredField(newFields[i].getName());
+                                } catch(NoSuchFieldException x) {
+                                    addException(new StateTransferException(StateTransferException.MEMBER_ADDED,
+                                        newClass.getName(),"Member '"+newFields[i].getName()+"' was added."));
+                                }
+                            }
+                        }
+                        oldClass=oldClass.getSuperclass();
+                        newClass=newClass.getSuperclass();
+                    }
+                    return newObj;
+                } catch(ClassNotFoundException x) {
+                    addException(new StateTransferException(StateTransferException.CLASS_REMOVED,
+                        oldClass.getName(),"Class was removed or renamed."));
+                }
+            }
         	return oldObj;
         }
         Class oldClass=oldObj.getClass();
@@ -115,6 +194,7 @@ public class StateTransfer {
             try {
                 newClass=loader.loadClass(oldClass.getName());
                 newObj=createInstance(newClass,predecObj);
+                appClasses.add(oldClass);
                 addTransferred(oldObj,newObj);
                 //refs.add(newObj);
                 while(oldClass!=null) {
@@ -134,8 +214,18 @@ public class StateTransfer {
                                 CAT.debug("Transfer field '"+name+"' of class '"+oldClass.getName()+"'.");
                             } 
                            	value=transfer(value,newObj);
-                            if(!field.isAccessible()) field.setAccessible(true);     
-                            field.set(newObj,value);
+                            int mod=field.getModifiers();
+                            if(Modifier.isFinal(mod)) {
+                                if(debug) CAT.debug("Final field -> set via JNI");
+                                if(Modifier.isStatic(field.getModifiers())) {
+                                    setOBStaticField(newClass,oldClass,fields[i]);
+                                } else {
+                                    setOBField(newObj,oldObj,fields[i]);    
+                                }
+                            } else {
+                                if(!field.isAccessible()) field.setAccessible(true);     
+                                field.set(newObj,value);
+                            }
                         } catch(NoSuchFieldException x) {
                             addException(new StateTransferException(StateTransferException.MEMBER_REMOVED,
                                 oldClass.getName(),"Member '"+fields[i].getName()+"' was removed or renamed."));
@@ -358,137 +448,9 @@ public class StateTransfer {
     }
 
     protected Object createInstance(Class clazz,Object predecObj) {
-        Class decClazz=clazz.getDeclaringClass();
-        Constructor con=null;
-        Object obj=null;
-        try {
-            if(decClazz!=null) {
-                //create instance of nested class
-                boolean isStatic=Modifier.isStatic(clazz.getModifiers());
-                if(isStatic) {
-                    //static nested class:
-                    con=clazz.getDeclaredConstructor(null);
-                    if(!con.isAccessible()) con.setAccessible(true);
-                    obj=con.newInstance(null);
-                } else {
-                    //inner class:
-                    con=clazz.getDeclaredConstructor(new Class[] {decClazz});
-                    if(!con.isAccessible()) con.setAccessible(true);
-                    obj=con.newInstance(new Object[] {predecObj});
-                }
-            } else {
-                con=clazz.getDeclaredConstructor(null);
-                if(!con.isAccessible()) con.setAccessible(true);
-                obj=con.newInstance(null);
-            }
-//         NOTE: We always add a default constructor via BCEL when loading the class, so all
-//               that native stuff shouldn't be needed any more 
-        } catch(NoSuchMethodException x) {
-             if(debug) CAT.debug("Class '"+clazz.getName()+"' hasn't empty or default constructor. Allocate object with native method.");
-             return allocateNewObject(clazz);
-        } catch(Exception x) {
-            addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
-        }
+        Object obj=builder.allocateObject(clazz);
         return obj;
     }
-
-    //java vendor/version dependant code for creating instances of classes which don't have a no-arg constructor
-    
-    final int SUN_IBM_1_3=0;
-    final int SUN_IBM_1_4=1;
-    int javaVersion;
-    
-    protected void initVersionDeps() {
-        String version=System.getProperty("java.version").toLowerCase();
-        String vendor=System.getProperty("java.vendor").toLowerCase();
-        if(!(vendor.startsWith("sun") || vendor.startsWith("ibm"))) {
-            CAT.warn("StateTransfer doesn't support Java vendor '"+vendor+"'. Try to use settings for 'Sun/IBM'.");
-            vendor="sun";
-        }
-        if(!(version.startsWith("1.3") || version.startsWith("1.4"))) {
-            CAT.warn("StateTransfer doesn't support Java version '"+version+"'. Try to use settings for '1.4.x'.");
-            version="1.4";
-        }
-        if(version.startsWith("1.3")) {
-            javaVersion=SUN_IBM_1_3;           
-        } else if(version.startsWith("1.4")) {
-            javaVersion=SUN_IBM_1_4;
-        }
-        if(javaVersion==SUN_IBM_1_4) {
-            try { 
-                Class c=Class.forName(refFacClass);
-                PrivilegedAction pa=(PrivilegedAction)c.newInstance();
-                refFac=AccessController.doPrivileged(pa);
-            } catch(Exception x) {
-                CAT.error("StateTransfer can't be initialized for Java version '1.4.x' of vendor 'Sun/IBM'. Try to use settings for 'Sun/IBM 1.3.x'.",x);
-                javaVersion=SUN_IBM_1_3;
-            }
-        }
-    }
-    
-     protected Object allocateNewObject(Class clazz) {
-         if(javaVersion==SUN_IBM_1_3) {
-             return allocateNewObjectNative(clazz);
-         } else {
-             return allocateNewObjectSuper(clazz);
-         }
-     }
-     
-     //version: 1.3.x
-     //vendor: Sun, IBM
-     
-     protected Object allocateNewObjectNative(Class clazz) {
-         try {
-             Class ois=ObjectInputStream.class;
-             Method meth=ois.getDeclaredMethod("allocateNewObject",new Class[] {Class.class,Class.class});
-             meth.setAccessible(true);
-             Object obj=meth.invoke(null,new Object[] {clazz,Object.class});
-             return obj;
-         } catch(Exception x) {
-             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
-         }
-         return null;
-     }
-     
-     //version: 1.4.x
-     //vendor: Sun, IBM
-     
-     String refFacClass="sun.reflect.ReflectionFactory$GetReflectionFactoryAction";
-     Object refFac;
-     
-     protected Object allocateNewObjectSuper(Class c) {
-         try {
-             Constructor con=getNoArgConstructor(c);
-             Class params[]=new Class[] {Class.class,Constructor.class};
-             Method meth=refFac.getClass().getDeclaredMethod("newConstructorForSerialization",params);
-             Object args[]=new Object[] {c,con};
-             con=(Constructor)meth.invoke(refFac,args);
-             if(!con.isAccessible()) con.setAccessible(true);
-             Object obj=con.newInstance(new Object[0]);
-             return obj;
-         } catch(Exception x) {
-             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,c.getName(),x));
-         }
-         return null;
-     }
- 
-     protected Constructor getNoArgConstructor(Class c) {
-         try {
-             Constructor con=c.getDeclaredConstructor(new Class[0]);
-             int mods=con.getModifiers();
-             if(!Modifier.isPrivate(mods)) return con;
-         } catch(NoSuchMethodException x) {}
-         Class sc=c.getSuperclass();
-         return getNoArgConstructor(sc);
-        
-         /**
-         try {
-             Constructor con=Object.class.getDeclaredConstructor(new Class[0]);
-             return con;
-         } catch(NoSuchMethodException x) {}
-         return null;
-         */
-     }
 
     //exceptions
     
@@ -530,6 +492,74 @@ public class StateTransfer {
         if(type==StateTransferException.MEMBER_FINAL || type==StateTransferException.NULLHASH_EXCEPTION) 
             return AppLoader.INCONSISTENCY_POSSIBLE;
         return AppLoader.INCONSISTENCY_PROBABLE;
+    }
+
+    protected void setOBField(Object newObj,Object oldObj,Field oldFld) throws IllegalAccessException {
+        String name=oldFld.getName();
+        String sign=builder.getTypeSignature(oldFld);
+        if(!oldFld.isAccessible()) oldFld.setAccessible(true);
+        char start=sign.charAt(0);
+        if(start=='[') {
+            Object value=oldFld.get(oldObj);
+            value=transfer(value,null);
+            builder.setObjectField(newObj,name,sign,value);
+        } else {
+            if(start=='L') {
+                Object value=oldFld.get(oldObj);
+                value=transfer(value,null);
+                builder.setObjectField(newObj,name,sign,value);
+            } else if(start=='Z') {
+                builder.setBooleanField(newObj,name,sign,oldFld.getBoolean(oldObj));
+            } else if(start=='B') {
+                builder.setByteField(newObj,name,sign,oldFld.getByte(oldObj));
+            } else if(start=='C') {
+                builder.setCharField(newObj,name,sign,oldFld.getChar(oldObj));
+            } else if(start=='S') {
+                builder.setShortField(newObj,name,sign,oldFld.getShort(oldObj));
+            } else if(start=='I') {
+                builder.setIntField(newObj,name,sign,oldFld.getInt(oldObj));
+            } else if(start=='J') {
+                builder.setLongField(newObj,name,sign,oldFld.getLong(oldObj));
+            } else if(start=='F') {
+                builder.setFloatField(newObj,name,sign,oldFld.getFloat(oldObj));
+            } else if(start=='D') {
+                builder.setDoubleField(newObj,name,sign,oldFld.getDouble(oldObj));
+            }
+        }
+    }
+    
+    protected void setOBStaticField(Class newClass,Class oldClass,Field oldFld) throws IllegalAccessException {
+        String name=oldFld.getName();
+        String sign=builder.getTypeSignature(oldFld);
+        if(!oldFld.isAccessible()) oldFld.setAccessible(true);
+        char start=sign.charAt(0);
+        if(start=='[') {
+            Object value=oldFld.get(null);
+            value=transfer(value,null);
+            builder.setStaticObjectField(newClass,name,sign,value);
+        } else {
+            if(start=='L') {
+                Object value=oldFld.get(null);
+                value=transfer(value,null);
+                builder.setStaticObjectField(newClass,name,sign,oldFld.get(null));
+            } else if(start=='Z') {
+                builder.setStaticBooleanField(newClass,name,sign,oldFld.getBoolean(null));
+            } else if(start=='B') {
+                builder.setStaticByteField(newClass,name,sign,oldFld.getByte(null));
+            } else if(start=='C') {
+                builder.setStaticCharField(newClass,name,sign,oldFld.getChar(null));
+            } else if(start=='S') {
+                builder.setStaticShortField(newClass,name,sign,oldFld.getShort(null));
+            } else if(start=='I') {
+                builder.setStaticIntField(newClass,name,sign,oldFld.getInt(null));
+            } else if(start=='J') {
+                builder.setStaticLongField(newClass,name,sign,oldFld.getLong(null));
+            } else if(start=='F') {
+                builder.setStaticFloatField(newClass,name,sign,oldFld.getFloat(null));
+            } else if(start=='D') {
+                builder.setStaticDoubleField(newClass,name,sign,oldFld.getDouble(null));
+            }
+        }
     }
 
 }
