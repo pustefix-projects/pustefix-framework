@@ -73,7 +73,9 @@
       <xsl:attribute name="name">
 	<xsl:apply-templates select="servername/node()"/>
       </xsl:attribute>
-      <Alias><xsl:apply-templates select="serveralias/node()"/></Alias>
+      <xsl:call-template name="create_tomcat_aliases">
+        <xsl:with-param name="all_aliases"><xsl:apply-templates select="serveralias/node()"/></xsl:with-param>
+      </xsl:call-template>
       <Valve className="org.apache.catalina.valves.AccessLogValve"
 	     directory="logs" prefix="access_log." suffix=".txt" pattern="common"/>
       
@@ -89,8 +91,27 @@
     </Host>
       
   </xsl:template>
-  
+
+  <xsl:template name="create_tomcat_aliases">
+    <xsl:param name="all_aliases"/>
+    <xsl:variable name="alias_string" select="normalize-space($all_aliases)"/>
+    <xsl:choose>
+      <xsl:when test="not(contains($alias_string, ' '))">
+        <Alias><xsl:value-of select="$alias_string"/></Alias>
+      </xsl:when>
+      <xsl:otherwise>
+       <Alias><xsl:value-of select="substring-before($alias_string,' ')"/></Alias>
+       <xsl:call-template name="create_tomcat_aliases">
+         <xsl:with-param name="all_aliases" select="substring-after($alias_string, ' ')"/>
+       </xsl:call-template> 
+      </xsl:otherwise> 
+    </xsl:choose>
+  </xsl:template>
+
+
 </xsl:stylesheet>
+
+
 
 <!--
 Local Variables:
