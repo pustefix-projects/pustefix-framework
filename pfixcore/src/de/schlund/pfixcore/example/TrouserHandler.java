@@ -55,7 +55,10 @@ public class TrouserHandler implements IHandler {
             if (set.contains(new Integer(1))) {
                 // The combination of feature 1 and color No. 2 is invalid (maybe out of stock) 
                 StatusCode scode = sfac.getStatusCode("FEATURECOLOR_OUTOF_STOCK");
-                trouser.addSCodeColor(scode);
+                String[]   args  = new String[2];
+                args[0] = "1";
+                args[1] = "2";
+                trouser.addSCodeWithArgsColor(scode, args);
                 return;
             }
         }
