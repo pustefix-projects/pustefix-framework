@@ -51,20 +51,20 @@ import org.apache.log4j.Category;
  */
 
 public abstract class ServletManager extends HttpServlet {
-    public  static final String STORED_REQUEST     = "__STORED_PFIXSERVLETREQUEST__";
-    public  static final String SESSION_IS_SECURE  = "__SESSION_IS_SECURE__";
-    public  static final String VISIT_ID           = "__VISIT_ID__";
-    public  static final String SESSION_ID_URL     = "__SESSION_ID_URL__";
-    public  static final String PARAM_FORCELOCAL   = "__forcelocal";
-    public  static final String PROP_LOADINDEX     = "__PROPERTIES_LOAD_INDEX";
-    public  static final String DEF_CONTENT_TYPE   = "text/html; charset=iso-8859-1";
-    private static final String SECURE_SESS_COOKIE = "__PFIX_SECURE_SSL_SESS__";
-    private static final String TEST_COOKIE        = "__PFIX_TEST__";
-    private static final String SESSID_COOKIE      = "__PFIX_CURRENT_SESS__";
-    public  static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
-    private static final String PROP_EXCEPTION     = "exception";
-    private static       String TIMESTAMP_ID       = "";
-    private static       int    INC_ID             = 0;
+    public    static final String VISIT_ID                      = "__VISIT_ID__";
+    public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
+    protected static final String DEF_CONTENT_TYPE              = "text/html; charset=iso-8859-1";
+    private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
+    private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
+    private   static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
+    private   static final String SECURE_SESS_COOKIE            = "__PFIX_SECURE_SSL_SESS__";
+    private   static final String TEST_COOKIE                   = "__PFIX_TEST__";
+    private   static final String SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
+    private   static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
+    private   static final String PARAM_FORCELOCAL              = "__forcelocal";
+    private   static final String PROP_EXCEPTION                = "exception";
+    private   static       String TIMESTAMP_ID                  = "";
+    private   static       int    INC_ID                        = 0;
 
     private SessionAdmin     sessionadmin     = SessionAdmin.getInstance();
     private Category         LOGGER_VISIT     = Category.getInstance("LOGGER_VISIT");
@@ -152,7 +152,26 @@ public abstract class ServletManager extends HttpServlet {
             has_session    = true;
             Boolean secure = (Boolean) session.getAttribute(SESSION_IS_SECURE);
             CAT.debug("*** Found valid session with ID " + session.getId());
-            if (runningUnderSSL(req)) {
+            // Much of the advanced security depends on having cookies enabled.
+            // We need to make sure that this isn't defeated by just disabling cookies.
+            // So we register in every session created if the creator has cookies enabled,
+            // and don't allow further uses of this session without cookies
+            if (!does_cookies) {
+                CAT.debug("*** Client doesn't use cookies...");
+                Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
+                if (need_cookies != null && need_cookies.booleanValue()) {
+                    CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " + session.getId());
+                    session.invalidate();
+                    has_session = false;
+                } else {
+                    CAT.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
+                }
+            } else {
+                CAT.debug("*** Client uses cookies: Mark the session accordingly.");
+                session.setAttribute(SESSION_COOKIES_MARKER, Boolean.TRUE);
+            }
+            // The next two checks have to make sure again that has_session is still true 
+            if (has_session && runningUnderSSL(req)) {
                 CAT.debug("*** Found running under SSL");
                 if (secure != null && secure.booleanValue()) {
                     CAT.debug("    ... and session is secure.");
@@ -188,7 +207,7 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug("    ... but session is insecure!");
                     has_ssl_session_insecure = true;
                 }
-            } else if (secure != null && secure.booleanValue()) {
+            } else if (has_session && secure != null && secure.booleanValue()) {
                 CAT.debug("*** Found secure session but NOT running under SSL => Destroying session.");
                 session.invalidate();
                 has_session = false;
@@ -385,7 +404,7 @@ public abstract class ServletManager extends HttpServlet {
             cookie.setMaxAge(0);
             res.addCookie(cookie);
         }
-        String sec_testid = req.getRemoteAddr() + "_" + Math.random();
+        String sec_testid = req.getRemoteAddr() + ":" + Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
         CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
         session.setAttribute(SECURE_SESS_COOKIE, sec_testid);
         cookie = new Cookie(SECURE_SESS_COOKIE, sec_testid);
@@ -423,7 +442,6 @@ public abstract class ServletManager extends HttpServlet {
         // only used for the jump to SSL so we can get the cookie to check the identity of the caller.
         String      parentid      = req.getRequestedSessionId();
         HttpSession session       = req.getSession(true);
-        // registerSession(req, session);
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
