@@ -22,27 +22,20 @@ package de.schlund.pfixxml;
 
 
 import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.testenv.RecordManager;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
+import de.schlund.pfixxml.testenv.*;
+import java.io.*;
 import java.net.SocketException;
 import java.util.*;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 
 /**
@@ -390,12 +383,14 @@ public abstract class AbstractXMLServer extends ServletManager {
      * @exception Exception
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        Properties    params  = new Properties();
-        HttpSession   session = preq.getSession(false);
-        boolean       doreuse = doReuse(preq);
-        SPDocument    spdoc   = null;
-        RequestParam  value;
-        long          currtime;
+        Properties   params  = new Properties();
+        HttpSession  session = preq.getSession(false);
+        boolean      doreuse = doReuse(preq);
+        SPDocument   spdoc   = null;
+        RequestParam value;
+        long         currtime;
+        long         getdomtime = -1;
+        long         handletime = -1;
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
         // they will be stored in the params properties and will be applied as stylesheet
@@ -457,11 +452,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         
         if (spdoc == null) {
-            currtime = System.currentTimeMillis();
-
+            currtime   = System.currentTimeMillis();
             preq.startLogEntry();
-            spdoc = getDom(preq);
+            spdoc      = getDom(preq);
             preq.endLogEntry("GETDOM", 0);
+            getdomtime = System.currentTimeMillis() - currtime;
             
             // start recording if allowed and enabled
             if(recordmodeAllowed) {
@@ -472,8 +467,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 CAT.debug("* Document for XMLServer is" + spdoc);
             }
             if (isInfoEnabled()) {
-                CAT.info(">>> Complete getDom(...) took " + (System.currentTimeMillis() - currtime)
-                         + "ms");
+                CAT.info(">>> Complete getDom(...) took " + getdomtime + "ms");
             }
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map            anchormap;
@@ -502,9 +496,15 @@ public abstract class AbstractXMLServer extends ServletManager {
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         currtime = System.currentTimeMillis();
         handleDocument(preq, res, spdoc, params, doreuse);
+        handletime = System.currentTimeMillis() - currtime;
         if (isInfoEnabled()) {
-            CAT.info(">>> Complete handleDocument(...) took "
-                     + (System.currentTimeMillis() - currtime) + "ms");
+            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
+        }
+        if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
+            OutputStream       out          = res.getOutputStream();
+            OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
+            writer.write("\n<!-- GET_DOM: " + getdomtime +  " HDL_DOC: " + handletime + " -->");
+            writer.flush();
         }
     }
 

@@ -80,15 +80,31 @@ public class DefaultIWrapperState extends StaticState {
                 if (container.continueSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page...\n" +
                               "=> retrieving current status.");
-                    preq.startLogEntry();
                     container.retrieveCurrentStatus();
-                    preq.endLogEntry("CONTAINER_RETRIEVE_CURRENT_STATUS", 10);
-                    rfinal.onRetrieveStatus(container);
+                    rfinal.onSuccess(container);
                 } else {
-                    CAT.debug("... Container says he is ready: End of submit successfully...\n" +
-                              "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
+                    CAT.debug("... Container says he is ready: End of submit reached successfully.");
+                    if (context.isCurrentPageRequestInCurrentFlow()) {
+                        CAT.debug("Page is part of current pageflow...\n" +
+                                  "=> signal to continue with pagflow by setting SPDocument to null...");
+                        container.getAssociatedResultDocument().setSPDocument(null);
+                    } else {
+                        CAT.debug("Page is NOT part of current pageflow...\n" +
+                                  "=> retrieving current status and stay here...");
+                        container.retrieveCurrentStatus();
+                    }
                     rfinal.onSuccess(container);
                 }
+                //if (container.continueSubmit()) {
+                //    CAT.debug("... Container says he wants to stay on this page...\n" +
+                //              "=> retrieving current status.");
+                //    container.retrieveCurrentStatus();
+                //    rfinal.onRetrieveStatus(container);
+                //} else {
+                //    CAT.debug("... Container says he is ready: End of submit successfully...\n" +
+                //              "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
+                //    rfinal.onSuccess(container);
+                //}
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
             CAT.debug(">>> In DirectTriggerHandling...\n" +

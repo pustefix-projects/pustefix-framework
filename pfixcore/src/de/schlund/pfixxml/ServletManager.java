@@ -233,12 +233,12 @@ public abstract class ServletManager extends HttpServlet {
         
         // End of initialization. Now we handle all cases where we need to redirect.
 
-        if (force_jump_back_to_ssl) {
+        if (force_jump_back_to_ssl && allowSessionCreate()) {
             forceRedirectBackToInsecureSSL(preq, req, res);
             return;
             // End of request cycle.
         }
-        if (force_reuse_visit_id) {
+        if (force_reuse_visit_id && allowSessionCreate()) {
             forceNewSessionSameVisit(preq, req, res);
             return;
             // End of request cycle.
@@ -248,12 +248,12 @@ public abstract class ServletManager extends HttpServlet {
             return;
             // End of request cycle.
         }
-        if (needsSession() && needsSSL(preq) && !has_ssl_session_secure) {
+        if (needsSession() && allowSessionCreate() && needsSSL(preq) && !has_ssl_session_secure) {
             redirectToInsecureSSLSession(preq, req, res);
             return;
             // End of request cycle.
         }
-        if (!has_session && needsSession() && !needsSSL(preq)) {
+        if (!has_session && needsSession() && allowSessionCreate() && !needsSSL(preq)) {
             redirectToSession(preq, req, res);
             return;
             // End of request cycle.
