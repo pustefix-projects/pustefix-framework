@@ -1,3 +1,8 @@
+2003-09-23  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/build/iwrapper.xsl: added generation of toString
+	method for wrapper which prints all String values of all params.
+
 2003-09-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/utils.xsl.in: (pfx:layer_ref): add autoclose

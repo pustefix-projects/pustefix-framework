@@ -32,6 +32,16 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     </xsl:choose>
     }
     
+    public String toString() {
+        StringBuffer sb = new StringBuffer(255);
+        sb.append("\n***All wrapper-data for <xsl:value-of select="$classname"/>***\n");
+        <xsl:for-each select="/interface/param">
+        sb.append("<xsl:value-of select="@name"/>="+gimmeParamInfoForKey("<xsl:value-of select="@name"/>").getValue()).append("\n");
+        </xsl:for-each>
+        return sb.toString();
+    }
+    
+    
     protected synchronized void registerParamInfos() {
         super.registerParamInfos();
         IWrapperParamInfo      pinfo;
