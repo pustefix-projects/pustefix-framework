@@ -1,4 +1,7 @@
-2004-06-07  Adam Habermann  <adam.habermann@schlund.de>
+2004-06-18  Michael Hartmier  <mhm@schlund.de>
+    * example/core/editor/xsl/metatags.xsl: fix image preview
+    
+2004-06-17  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
 	target "generate": print memory and ANT_OPTS hint before generating

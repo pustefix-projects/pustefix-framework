@@ -847,9 +847,7 @@
                 </ixsl:when>
                 <ixsl:otherwise>
                   <img border="0">
-                    <ixsl:attribute name="src">
-                      <ixsl:value-of select="@path"/>?<ixsl:value-of select="@modtime"/>
-                    </ixsl:attribute>
+                    <ixsl:attribute name="src">../../<ixsl:value-of select="@path"/>?<ixsl:value-of select="@modtime"/></ixsl:attribute>
                   </img>
                 </ixsl:otherwise>
               </ixsl:choose>
@@ -1390,9 +1388,7 @@
                         </ixsl:when>
                         <ixsl:otherwise>
                           <img border="0">
-                            <ixsl:attribute name="src">
-                              <ixsl:value-of select="/formresult/currentimageinfo/@path"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/>
-                            </ixsl:attribute>
+                            <ixsl:attribute name="src">../../<ixsl:value-of select="/formresult/currentimageinfo/@path"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/></ixsl:attribute>
                           </img>
                         </ixsl:otherwise>
                       </ixsl:choose>
