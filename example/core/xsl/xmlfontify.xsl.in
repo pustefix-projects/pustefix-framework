@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+
+  <xsl:template match="/">
+    <html>
+      <head>
+        <title>Last DOM</title>
+        <style type="text/css">
+          body {font-family: monospace; }
+          .bracket            {color: #0000cc;}
+          .attribute          {color: #0000cc; font-weight: bold;}
+          .tag                {color: #dd5522; font-weight: bold;}
+          .value              {color: #22aa00;}
+          .comment            {color: #666666;}
+          .dimmed             {color: #aaaaaa;}
+          .error              {background-color: #ffff00;}
+        </style>
+      </head>
+      <body>
+        <xsl:apply-templates mode="static_disp" select="/"/>
+      </body>
+    </html>
+  </xsl:template>
+
+  <xsl:template match="*" mode="static_disp">
+    <xsl:param name="ind">&#160;&#160;</xsl:param>
+    <xsl:param name="break">true</xsl:param>
+    <xsl:variable name="dim">
+      <xsl:choose>
+        <xsl:when test="ancestor-or-self::navigation">true</xsl:when>
+        <xsl:when test="ancestor-or-self::iwrappergroups">true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="error">
+      <xsl:choose>
+        <xsl:when test="ancestor-or-self::formerrors">true</xsl:when>
+        <xsl:otherwise>false</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="tagclass"> 
+      <xsl:choose> 
+        <xsl:when test="$dim = 'false'">
+          <xsl:choose>
+            <xsl:when test="$error = 'false'">tag</xsl:when>
+            <xsl:otherwise>tag error</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>dimmed</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="attrclass">
+      <xsl:choose> 
+        <xsl:when test="$dim = 'false'">attribute</xsl:when>
+        <xsl:otherwise>dimmed</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="valueclass">
+      <xsl:choose>
+        <xsl:when test="$dim = 'false'">value</xsl:when>
+        <xsl:otherwise>dimmed</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:if test="$break='false'">
+      <br/>
+    </xsl:if>
+    <xsl:value-of select="$ind"/>
+    <span class="bracket">
+      <xsl:text>&lt;</xsl:text>
+    </span>
+    <span class="{$tagclass}"><xsl:value-of select="name()"/></span>
+    <xsl:for-each select="@*">
+      <xsl:text>&#160;</xsl:text>
+      <span class="{$attrclass}"><xsl:value-of select="name()"/></span>
+      <xsl:text>="</xsl:text><span class="{$valueclass}"><xsl:value-of select="."/></span>
+      <xsl:text>"</xsl:text>
+    </xsl:for-each>
+    <span class="bracket"><xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
+    <xsl:apply-templates mode="static_disp">
+      <xsl:with-param name="ind">
+        <xsl:value-of select="$ind"/>&#160;&#160;&#160;&#160;</xsl:with-param>
+      <xsl:with-param name="break">false</xsl:with-param>
+    </xsl:apply-templates>
+    <xsl:if test="not(count(./node()) = 0)">
+      <xsl:if test="count(./*) > 0">
+        <br/>
+        <xsl:value-of select="$ind"/>
+      </xsl:if>
+      <span class="bracket">&lt;/</span>
+      <span class="{$tagclass}"><xsl:value-of select="name()"/></span>
+      <span class="bracket">&gt;</span>
+    </xsl:if>
+  </xsl:template>
+  
+  <xsl:template match="text()" mode="static_disp">
+    <xsl:value-of select="normalize-space(current())"/>
+  </xsl:template>
+
+  <xsl:template match="comment()" mode="static_disp">
+    <br/> <span class="comment">&lt;!--<xsl:value-of select="."/>--&gt;</span>
+  </xsl:template>
+
+  
+
+</xsl:stylesheet>
