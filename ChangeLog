@@ -1,3 +1,27 @@
+2004-05-18 	Ralf Rapude <rapude@schlund.de>
+	* There are three new directories in the example dir called simplepage,
+	simplelink and simpleform. 
+	Each consists of a simple application for pustefix in order to deliver basic
+	functionalities as a turorial.
+	
+	* A new target called "dist-examples" has been added to the build.xml. It 
+	builds a tar to the dist directory containing the example projects and
+	also a src folder with all appropriate files. This target will be 
+	also called if you run "ant notag" or "ant dist".
+	Ant realclean will delete all generated files from "example" as well as from
+	src/de/skelexamples.
+	
+	* A README_EXAMPLES.txt has been added to the example directory. This file 
+	supplies basic informations related to the examples.
+	
+	* INSTALL has a new topic (No 6). It is a short hint to the 
+	new sample applications.
+	
+	* There's now a package "skelexamples" in the src folder. 
+	The java files for the examples are stored in this folder and also 
+	the DemoText.iwrp will generate the related file in this folder.
+
+
 2004-05-18  Michael Hartmeier <mhm@schlund.de>
 
 	* various fixed to eleminate jikes- and eclipse warnings:
