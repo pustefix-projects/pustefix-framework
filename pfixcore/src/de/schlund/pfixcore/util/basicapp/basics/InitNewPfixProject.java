@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.util.basicapp.basics;
 
 import de.schlund.pfixcore.util.basicapp.helper.AppWorker;
+import de.schlund.pfixcore.util.basicapp.objects.Project;
 
 /**
  * Just a main for running the app
@@ -34,7 +35,7 @@ public final class InitNewPfixProject {
         // init log4j
         AppWorker.initLogging();
         // The main settings for a new Project
-        CreateBasicSettings settings = new CreateBasicSettings();
+        CreateProjectSettings settings = new CreateProjectSettings();
         settings.runGetSettings();
         // Creating the Project
         CreateProject createPrj = new CreateProject(settings.getCurrentProject());
@@ -45,7 +46,8 @@ public final class InitNewPfixProject {
         
         System.out.println("\nYour project has been successfully created.");
         System.out.println("To see how it works type in \"ant\".");
-        System.out.println("Afterwards restart Tomcat.");
-        System.out.println("Then type in \"http://projectname.HOSTNAME.DOMAIN\"");
+        System.out.println("Afterwards restart Apache httpd and Tomcat.");
+        System.out.println("Then type in \"http://" + Project.getStaticPrjName() + 
+                ".HOSTNAME.DOMAIN\"");
     }
 }

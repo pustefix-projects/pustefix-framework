@@ -32,11 +32,12 @@ import org.apache.log4j.Logger;
 public class ServletObject {
     private static final Logger LOG = Logger.getLogger(ServletObject.class);
     private String servletName = null;
-    private String servletPath = null;
     private int objId          = 0;
+    private int counter        = 0;
     
     public ServletObject(int objId) {
         LOG.debug("A new Servlet Object has been created. Id = " + objId);
+        counter++;
         this.objId = objId;
     }
     
@@ -61,16 +62,9 @@ public class ServletObject {
         return objId;
     }
     /**
-     * @return Returns the servletPath.
+     * returns the counter
      */
-    public String getServletPath() {
-        return servletPath;
+    public int getCounter() {
+        return counter;
     }
-    /**
-     * @param servletPath The servletPath to set.
-     */
-    public void setServletPath(String servletPath) {
-        LOG.debug("The ServletPath for Servlet " + objId + " is: " + servletPath);
-        this.servletPath = servletPath;
-    }//<-- End Getter and setter
 }

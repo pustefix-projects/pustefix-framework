@@ -37,20 +37,22 @@ public final class ConfigXmlDom {
     /** A String Buffer to get e.g. correctPaths */
     private StringBuffer buffy = new StringBuffer();
     /** The current Project */
-    Project project            = null;
+    private Project project            = null;
     private String projectName = null;
+    /** defines the current pagename and is a suffix for home*/
+    private int homeCounter;
     
-   
+      
     /**
      * Constructor initializes the Project Object
      * and the dom for the current document
      * @param project The current project
      * @param domDoc the current Dom given by HandleXmlFiles
      */
-    public ConfigXmlDom(Project project, Document domDoc) {
+    public ConfigXmlDom(Project project, Document domDoc, int counter) {
         this.domDoc = domDoc;
         projectName = project.getProjectName();
-     
+        homeCounter = counter;
         prepareConfigProp();
     }
     
@@ -63,14 +65,15 @@ public final class ConfigXmlDom {
      * @return The new dom
      */
     private void prepareConfigProp() {
+        String curPageName = AppValues.PAGEDEFAULT + homeCounter;
         // setting the current path
         buffy.append(projectName);
         buffy.append(AppValues.CONFFOLDER);
         buffy.append(AppValues.DEPENDXML);
         
-        // change attribute depend
+        // change attribute depend -> tag=servletinfo
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                AppValues.CONFIGATT_DEPEND, buffy.toString());
+                 AppValues.CONFIGATT_DEPEND, buffy.toString());
         buffy.setLength(0);
         
         // change attribute name
@@ -78,8 +81,16 @@ public final class ConfigXmlDom {
         buffy.append(projectName);
         buffy.append(AppValues.CONFIGATT_NAMEPOSTFIX);
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
-                AppValues.CONFIGATT_NAME, buffy.toString());
+                 AppValues.CONFIGATT_NAME, buffy.toString());
         buffy.setLength(0);
+        
+        // change attribute name -> tag is flowstep
+        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_FLOWSTEP,
+                 AppValues.CONFIGATT_NAME, curPageName);
+        
+        // change attribute name -> tag is pagerequest
+        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_PAGEREQUEST,
+                 AppValues.CONFIGATT_NAME, curPageName);
     }
     
     

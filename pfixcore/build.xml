@@ -484,7 +484,6 @@
             <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
             <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
             <tarfileset dir="${basedir}" includes="INSTALL" prefix="skel"/>
-            <tarfileset dir="${basedir}" includes="newproject.sh" prefix="skel"/>
             <tarfileset dir="${dir.toconf}" includes="newproject.prop.in newprjlog.xml.in" prefix="skel/projects/common/conf"/>
         </tar>
     </target>    
