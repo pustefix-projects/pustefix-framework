@@ -19,17 +19,10 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-/*
- *
- */
-
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Exception thrown when exceptionhandler is not configured properly.
+ * <br/>
+ *@author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class PFConfigurationException extends Exception {
 

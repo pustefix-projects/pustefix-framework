@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.text.SimpleDateFormat;
@@ -40,7 +37,7 @@ import de.schlund.pfixcore.util.email.EmailSenderException;
 /**
  * Generates a report mail by collecting data from all 
  * instancecheckercontainer.
- * 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class ReportGeneratorTask extends TimerTask {

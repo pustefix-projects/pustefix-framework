@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.net.InetAddress;
@@ -35,6 +32,7 @@ import java.util.Vector;
 /**
  * Removes all <see>STraceContainerChecker</see> from their <see>InstanceContainerChecker</see> 
  * if they did not match for too long. 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class STraceCleanupTask extends TimerTask {

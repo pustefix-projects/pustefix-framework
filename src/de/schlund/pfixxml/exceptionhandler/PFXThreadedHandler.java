@@ -17,14 +17,11 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 /**
  * A threaded wrapper-class for the <see>PFXHandler</see>.
- * 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class PFXThreadedHandler extends PFXHandler implements Runnable {

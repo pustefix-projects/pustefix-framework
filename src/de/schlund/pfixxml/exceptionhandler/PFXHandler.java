@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.util.Enumeration;
@@ -34,7 +31,7 @@ import de.schlund.pfixcore.util.email.EmailSenderException;
 /** 
  * This class handles all incoming exceptions. It decides if an exception is delivered directly or 
  * is queued for later delivery.  
- * 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  *
  */

@@ -17,9 +17,6 @@
 *
 */
 
-/*
- *
- */
 package de.schlund.pfixxml.exceptionhandler;
 
 import java.util.Enumeration;
@@ -32,7 +29,7 @@ import org.apache.log4j.spi.ThrowableInformation;
  *
  * This class handles incoming exceptions which can be checked by their type or additionally 
  * by their stacktrace.
- * 
+ * <br/>
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class InstanceCheckerContainer {
