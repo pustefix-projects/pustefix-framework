@@ -67,6 +67,7 @@
   </xsl:template>
 
   <xsl:template match="xmlcodeOFF" mode="static_disp">
+    <br/><br/>
     <xsl:apply-templates/>
   </xsl:template>
   
