@@ -1,4 +1,7 @@
-2004-07-26 Michael Hartmier  <mhm@schlund.de>
+2004-07-26 Michael Hartmeier  <mhm@schlund.de>
+	* example/core/build/create_serverxml.xsl: fix tomcat admin configuration
+
+2004-07-26 Michael Hartmeier  <mhm@schlund.de>
 	* .cvsignore
 	* maven.xml
 	* project.properties
