@@ -20,6 +20,68 @@
     </cus:documentation>
   </xsl:template>
 
+  <xsl:template match="pfx:visited">
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>The content of the tag will be used if the reference page has already been visited</description>
+      <param required="0">
+        <name>page</name>
+        <values><string/></values>
+        <description>Use the page attribute to reference the page to check for the visited status.
+        If this is empty, the value of a supplied xsl:param "pagename" is used or the current pagename if no
+        parameter is supplied.
+        </description>
+      </param>
+    </cus:documentation>
+    <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
+    <xsl:variable name="pagename_impl">
+      <xsl:choose>
+        <xsl:when test="@page">
+          <xsl:value-of select="@page"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$thepagename"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
+    <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
+    <ixsl:if test="{$page_path}/@visited = '1'">
+      <xsl:apply-templates/>
+    </ixsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:unvisited">
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>The content of the tag will be used if the reference page has not already been visited</description>
+      <param required="0">
+        <name>page</name>
+        <values><string/></values>
+        <description>Use the page attribute to reference the page to check for the visited status.
+        If this is empty, the value of a supplied xsl:param "pagename" is used or the current pagename if no
+        parameter is supplied.
+        </description>
+      </param>
+    </cus:documentation>
+    <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
+    <xsl:variable name="pagename_impl">
+      <xsl:choose>
+        <xsl:when test="@page">
+          <xsl:value-of select="@page"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$thepagename"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="thebuttpage" select="$navitree//page[@name = $pagename_impl]"/>
+    <xsl:variable name="page_path">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
+    <ixsl:if test="not({$page_path}/@visited = '1')">
+      <xsl:apply-templates/>
+    </ixsl:if>
+  </xsl:template>
+  
   <xsl:template match="pfx:button">
     <cus:documentation>
       <responsible>JTL</responsible>
@@ -36,6 +98,11 @@
       </param>
       <param required="0">
         <name>invisibleclass</name>
+        <values><string default="core_button_inivisble"/></values>
+        <description>css class in the invisible mode (whenever the link is not clickable, e.g. when the target page is inaccessible)</description>
+      </param>
+      <param required="0">
+        <name>visitedclass</name>
         <values><string default="core_button_inivisble"/></values>
         <description>css class in the invisible mode (whenever the link is not clickable, e.g. when the target page is inaccessible)</description>
       </param>
@@ -163,10 +230,14 @@
       <xsl:with-param name="normal">
         <xsl:choose>
           <xsl:when test="./pfx:normal">
-            <xsl:apply-templates select="./pfx:normal/node()"/>
+            <xsl:apply-templates select="./pfx:normal/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="./node()"/>
+            <xsl:apply-templates select="./node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
@@ -176,17 +247,23 @@
             <xsl:apply-templates select="./pfx:active/node()"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="./node()"/>
+            <xsl:apply-templates select="./node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
       <xsl:with-param name="invisible">
         <xsl:choose>
           <xsl:when test="./pfx:invisible">
-            <xsl:apply-templates select="./pfx:invisible/node()"/>
+            <xsl:apply-templates select="./pfx:invisible/node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="./node()"/>
+            <xsl:apply-templates select="./node()">
+              <xsl:with-param name="thepagename" select="@page"/>
+            </xsl:apply-templates>
           </xsl:otherwise>
         </xsl:choose>
       </xsl:with-param>
@@ -382,9 +459,9 @@
         <xsl:otherwise><xsl:value-of select="$thebuttpage/@accesskey"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:variable name="path_to_page">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
     <ixsl:choose>
-      <ixsl:when>
-        <xsl:attribute name="test">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each>/@visible = '0'</xsl:attribute>
+      <ixsl:when test="{$path_to_page}/@visible = '0'">
         <span>
           <xsl:attribute name="class">
             <xsl:choose>
@@ -399,9 +476,6 @@
       </ixsl:when>
       <ixsl:otherwise>
         <xsl:choose>
-<!--           <xsl:when test="not($mode = 'force') -->
-<!--                     and (($mode = 'desc' and $thebuttpage//page[@name=$page]) -->
-<!--                     or ($page = $buttpage_impl))"> -->
           <xsl:when test="not($mode = 'force') and ($page = $buttpage_impl)">
             <span>
               <xsl:attribute name="class">

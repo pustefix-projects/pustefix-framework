@@ -1,3 +1,13 @@
+2004-02-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: remember all pages that have been visited, set the 
+	attribute "visited" to 0,1 accordingly in the navigation.
+
+	* example/core/xsl/navigation.xsl.in: pfx:visited / pfx:unvisited:
+	new templates: show the content if the referenced page (via @page
+	OR via a suppplied parameter $pagename OR as default $page) has
+	been already visited (or not resp.)
+
 2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Eeeek. don't "break" the for loop when a state

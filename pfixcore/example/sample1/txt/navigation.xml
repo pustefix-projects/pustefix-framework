@@ -5,9 +5,9 @@
     <product name="default">
       <lang name="default">
         <center><br/>
-          <pfx:button page="home">Home</pfx:button> 
-          <pfx:button page="order">Order</pfx:button> 
-          <pfx:button page="overview">Overview</pfx:button> 
+          <pfx:button page="home"> <pfx:visited>Home</pfx:visited> <pfx:unvisited>HOME</pfx:unvisited> </pfx:button> 
+          <pfx:button page="order"> <pfx:visited>Order</pfx:visited> <pfx:unvisited>ORDER</pfx:unvisited> </pfx:button> 
+          <pfx:button page="overview"> <pfx:visited>Overview</pfx:visited> <pfx:unvisited>OVERVIEW</pfx:unvisited> </pfx:button> 
         </center>
       </lang>
     </product>
