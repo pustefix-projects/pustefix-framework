@@ -15,7 +15,7 @@
   <shortDescription>Web application framework</shortDescription>
   
   <url>http://pustefix.sourceforge.net</url>
-  <inceptionYear>2002</inceptionYear><!-- when pfix was first published -->
+  <inceptionYear>2002</inceptionYear>
   <package>de.schlund</package>
   <logo>/images/logo.gif</logo>
 
@@ -23,9 +23,9 @@
 
   <siteAddress>pustefix.sourceforge.net</siteAddress>
   
-  <!-- TODO: we rename this (to $pom.sideDirectory/../htdocs) in a postGoal because maven doesn't properly 
+  <!-- TODO: we rename this (to $pom.siteDirectory/../htdocs) in a postGoal because maven doesn't properly 
        replace existing directories -->
-  <siteDirectory>/home/groups/p/pu/pustefix/test/htdocs-new</siteDirectory>
+  <siteDirectory>/home/groups/p/pu/pustefix/htdocs-new</siteDirectory>
 
   <repository>
     <!-- TODO: using the devel connection avoids sourceforge's 3+ hours delay -->
