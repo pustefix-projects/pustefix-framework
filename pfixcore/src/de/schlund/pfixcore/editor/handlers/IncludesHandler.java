@@ -29,6 +29,8 @@ import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
+
+import org.apache.log4j.Category;
 import org.w3c.dom.*;
 
 /**
@@ -43,6 +45,7 @@ import org.w3c.dom.*;
  */
 
 public class IncludesHandler extends EditorStdHandler {
+    private static Category CAT = Category.getInstance(IncludesHandler.class.getName());
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm      = context.getContextResourceManager();
@@ -61,23 +64,42 @@ public class IncludesHandler extends EditorStdHandler {
                                                                                     path, part, realprod);
 
         if (allinc.contains(incdef) && !allinc.contains(incprod)) {
-            esess.getLock(incdef); 
             esess.setCurrentInclude(incdef);
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            if(allowed)
+                esess.getLock(incdef);
+            else {
+                if(CAT.isDebugEnabled()) 
+                    CAT.debug("User is not allowed to edit this include. No lock required."); 
+            }
         } else if (!allinc.contains(incdef) && allinc.contains(incprod)) {
-            esess.getLock(incprod); 
             esess.setCurrentInclude(incprod);
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
+            if(allowed)
+                esess.getLock(incprod);
+            else 
+                CAT.warn("User is not allowed to edit this include. No lock required.");
+            
         } else if (allinc.contains(incdef) && allinc.contains(incprod)) {
             // This can be the case when a prod.spec. branch has just been created/deleted but not
             // all targets have been updated yet. We need to look into the part to make sure.
             Object LOCK = FileLockFactory.getInstance().getLockObj(incprod.getPath());
             synchronized (LOCK) {
                 Node partnode = EditorHelper.getIncludePart(tgen, incprod);
+                esess.setCurrentInclude(incprod);
+                boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess);
                 if (partnode == null) {
-                    esess.getLock(incdef); 
+                    if(allowed)
+                        esess.getLock(incdef);
+                    else
+                        CAT.warn("User is not allowed to edit this include. No lock required."); 
                     esess.setCurrentInclude(incdef);
                 } else {
-                    esess.getLock(incprod); 
-                    esess.setCurrentInclude(incprod);
+                    if(allowed)
+                        esess.getLock(incprod);
+                    else
+                        CAT.warn("User is not allowed to edit this include. No lock required."); 
+                    
                 }
             }
         } else {

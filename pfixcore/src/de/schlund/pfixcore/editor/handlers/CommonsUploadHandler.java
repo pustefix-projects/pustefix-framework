@@ -59,29 +59,13 @@ public class CommonsUploadHandler extends XMLUploadHandler {
         if(CAT.isDebugEnabled())
             CAT.debug("checkAccess start");
         EditorUserInfo user = esess.getUser().getUserInfo();
-        GlobalPermissions gp = user.getGlobalPerms();
-        ProjectPermissions pp = user.getProjectPerms(esess.getProduct().getName());
+        
         String prod = getCurrentInclude(esess).getProduct();
-        if(gp.isEditDynIncludesDefault()) {
-            if(pp.isEditDynIncludes()) {}
-            else {
-                if(prod.equals("default")) {}
-                else {
-                    throw new XMLException("PermissionDenied! You are trying to edit a specific branch, but"+
-                        " you do not have the proper permissions!\n"+user.toString());
-                }
-            }
-        } else {
-            if(pp.isEditDynIncludes()) {
-                if(prod.equals("default")) {
-                    throw new XMLException("Permission denied! You are trying to edit the default branch, but"+
-                        " you do not have the proper permissions!\n"+user.toString()); 
-                } else {}
-            } else {
-                throw new XMLException("PermissionDenied! You are trying to edit a specific branch, but"+
-                    " you do not have the proper permissions!\n"+user.toString());
-            }
-        }
+        
+        if(! user.isDynIncludeEditAllowed(esess.getProduct().getName(), prod)) {
+            throw new XMLException("Permission denied!");
+        }  
+      
         if(CAT.isDebugEnabled())
             CAT.debug("checkAccess end. Permission granted.");
     }

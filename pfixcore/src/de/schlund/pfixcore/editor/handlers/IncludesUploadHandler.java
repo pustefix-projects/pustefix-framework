@@ -73,20 +73,13 @@ public class IncludesUploadHandler extends XMLUploadHandler {
     public void checkAccess(EditorSessionStatus esess) throws XMLException {
         if(CAT.isDebugEnabled())
             CAT.debug("checkAccess start");
-        HashSet affected_products = null;
-        try {
-            affected_products = EditorHelper.getAffectedProductsForInclude(esess, getCurrentInclude(esess).getPath(), getCurrentInclude(esess).getPart());
-        } catch (Exception e) {
-            throw new XMLException("Error when getting affected products for include! "+e.getMessage());
+           
+        EditorUserInfo user = esess.getUser().getUserInfo();    
+            
+        if(! user.isIncludeEditAllowed(esess)) {
+            throw new XMLException("Permission denied!");
         }
-        
-        for(Iterator iter = affected_products.iterator(); iter.hasNext(); ) {
-            String name = ((EditorProduct) iter.next()).getName();
-            ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(name);
-            if(! p.isEditIncludes()) {
-                throw new XMLException("Permission DENIED! "+esess.getUser().getUserInfo().toString());
-            }
-        }
+      
         if(CAT.isDebugEnabled()) 
             CAT.debug("checkAccess end. Permission granted.");    
     }

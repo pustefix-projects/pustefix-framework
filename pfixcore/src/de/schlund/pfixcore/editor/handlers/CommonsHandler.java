@@ -29,6 +29,8 @@ import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
 import de.schlund.util.statuscodes.*;
 import java.util.*;
+
+import org.apache.log4j.Category;
 import org.w3c.dom.*;
 
 /**
@@ -43,6 +45,7 @@ import org.w3c.dom.*;
  */
 
 public class CommonsHandler extends EditorStdHandler {
+    private static Category CAT = Category.getInstance(CommonsHandler.class.getName());
 
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm      = context.getContextResourceManager();
@@ -62,11 +65,26 @@ public class CommonsHandler extends EditorStdHandler {
                 AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, realprod);
             
             if (allcoms.contains(incprod)) {
-                esess.getLock(incprod); 
                 esess.setCurrentCommon(incprod);
+                String editor_product = esess.getProduct().getName();
+                String incl_product = esess.getCurrentCommon().getProduct();
+                if(esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product)) {
+                    esess.getLock(incprod); 
+                } else {
+                    if(CAT.isDebugEnabled()) 
+                        CAT.debug("User is not allowed to edit this dyninclude. No lock required!");
+                }
+                
             } else {
-                esess.getLock(incdef); 
                 esess.setCurrentCommon(incdef);
+                String editor_product = esess.getProduct().getName();
+                String incl_product = esess.getCurrentCommon().getProduct();
+                if(esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product)) 
+                    esess.getLock(incdef);
+                else {
+                    if(CAT.isDebugEnabled())
+                        CAT.debug("User is not allowed to edit this dyninclude. No lock required!");
+                }
             }
         } else {
             StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.commons");

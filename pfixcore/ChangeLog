@@ -1,3 +1,16 @@
+2003-07-08  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/EditorUser.java,
+	src/de/schlund/pfixcore/editor/auth/AuthManagerFactory.java: more debug output
+
+	* Editor: Now we do not lock the include any more if permission
+	denied.
+	* src/de/schlund/pfixcore/editor/auth/EditorUserInfo.java: added
+	is(Include|DynInclude|Image)EditAllowed.
+	* (Commons|Includes)Handler: only lock if permission is granted.
+	* (Commons|Includes|Images)UploadHandler: uses XXXEditAllowed
+	from EditorUserInfo.
+
 2003-07-08  Volker Zaich <zaich@schlund.de>
 
 	* example/core/editor/conf/config.prop.in 
