@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Getting started</title>
+  </properties>
+  <body>
+    <section name="Getting started">
+      <p>TODO: polish and merge with download.xml</p>
+      <p>This section describes how to get the pustefix up and running.</p>
+      <ol>
+        <li><p>Type "ant" to generate all neccesary files and compile all classes.</p></li>
+        <li><p>You may want to type "ant generate" for pre-processing all the templates
+          up-front. This speeds up the first hit of a page in the sample
+          applications as the page doesn't need to be build from scratch then.</p></li>
+        <li><p>Start tomcat:<source>./startTomcat.sh</source> 
+          Note: To stop Tomcat, just press Control-C.</p></li>
+        <li><p>To see if everything works, you can try to open the editor
+          application. Point your browser to 
+          <sample>http://cmsskel.HOSTNAME.DOMAIN</sample></p></li>
+        <li><p>You will find some basic applications in the example.tar.gz.
+        Just unpack the file with "tar xvzf example.tar.gz" in your skel/projects 
+        directory and take a short look to the README_EXAMPLES.txt included in the 
+        tar afterwards.</p></li>
+      </ol>
+    </section>    
+    <section name="Creating project">
+      <p>Creating your own pustefix project is really simple. </p>
+      <ol>
+        <li><p>Enter the skel directory</p></li>
+        <li><p>Run
+            <source>./newproject.sh</source> 
+          and follow the instructions.</p></li>
+        <li><p>Run
+	    <source>ant</source>
+          to build your new project.</p></li>
+        <li><p>Start or restart tomcat and point your browser to 
+            <source>http://myprojectname.HOSTNAME.DOMAIN</source>
+           </p></li>
+      </ol>
+		
+      <p>To see how it works you should take a short look in 
+      <code>de.schlund.pfixcore.util.basicapp.</code>. If you start with
+      InitNewPfixProject.java (in the package basics) it should 
+      be easy to understand the way to go.</p>
+    
+      <p>You could now start building your own applications, but unfortunately
+      there is still not much  documentation about how to achieve this. Therefore 
+      I suggest you refer to the mailing list (see pustefix.sf.net).</p>
+
+      <p>Just one warning for people trying to use the editor app as an example
+      for their own application: The editor works, but is quite old and in a
+      lot of ways can't be considered anymore a good example on how to
+      write a pustefix application. Of course we should rewrite the editor
+      to better conform to the pustefix programming model, but this will take
+      time.</p>
+    </section>
+    <section name="Host configuration">
+      <p>You machine has to meet the following criteria to run pustefix applications:</p>
+      <ul>
+        <li><p>Your host ip must not be <code>127.0.0.1</code>. (TODO: why, what happens if not.)
+         You can see your machines ip address by running <source>ping hostname</source></p></li>.
+        <li><p>Pustefix uses virtual hosts. To make this work, your dns has to map <code>*.HORSTNAME</code>
+        to your machine's ip adress. Test this by running<source>ping foo.horstname</source>.</p></li>
+      </ul>
+    </section>
+        
+    <section name="Apache configuration">
+      <p>To run pustefix applications in productions environments, you might want to embed tomcat 
+      in an apache web server. This section describes to do this on Linux machines.</p>
+
+      <ol>
+        <li><p>Install Apache 2. </p></li>
+        <li><p>Install mod_jk. 
+          rpm packages can be found at <a href="http://jpackage.org">jpackage.org</a></p></li>
+        <li><p>Add the following lines to your apache.conf, right before the <code>rewrite</code>
+          module configuration: <source>
+  LoadModule jk_module modules/mod_jk.so
+</source></p></li>
+        <li><p>Append the following lines to your apache.conf. Substitute the capitalized fragments to
+          reflect your configuration.<source>
+  # ...
+  
+  # at the end
+  NameVirtualHost HOSTNAME.DOMAIN:80
+  NameVirtualHost HOSTNAME.DOMAIN:443
+  # config for mod_jk
+  Include /YOUR_ENVIRONMENT/projects/servletconf/tomcat/jk.conf
+  # virtual hosts for tomcat:
+  Include /YOUR_ENVIRONMENT/projects/servletconf/tomcat/apache.conf
+</source></p>
+        </li>
+        <li><p>Make sure that mod_ssl is installed. Otherwise, apache will complain that about the above
+          <code>apache.conf</code> include.</p></li>
+        <li><p>Modern apache installations often have an <code>httpd.conf.d</code> directory where to
+          put links to config files that should be included automatically. In this case you can link the 
+          two files there instead of including them via your http.conf</p></li>
+        <li><p>Restart apache</p></li>
+      </ol>
+      <p>Note: There have been problems with restarting or stopping/starting an embedded tomcat. 
+      Somtimes a restart of Apache is needed, too, so mod_jk can catch up and reopen the connections to
+      Tomcat. (TODO: Is this still the case? I have not experienced
+      these problems for quite some time now).</p>
+    </section>
+  </body>
+</document>

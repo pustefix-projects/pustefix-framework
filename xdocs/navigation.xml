@@ -10,7 +10,9 @@
     
     <menu name="Quick Links">
       <item name="News" href="/index.html"/>
+      <item name="Getting started" href="/start.html"/>
       <item name="Download" href="/download.html"/>
+      <item name="Changes" href="/changes-report.html"/>
     </menu>
     <menu name="Architecture">
       <item name="Overview" href="/overview.html"/>
@@ -18,7 +20,7 @@
       <item name="Java framework" href="/java.html"/>
       <item name="Context &amp; States" href="/context.html"/>
     </menu>
-    <menu name="Configuration">
+    <menu name="Reference">
       <item name="Overview" href="/udocs.html"/>
       <item name="Project definition" href="/proj.html"/>
       <item name="Servlet definition" href="/prop.html"/>

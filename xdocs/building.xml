@@ -6,6 +6,16 @@
 
   <body>
     <section name="Building pustefix">
+      <subsection name="Directory tree">
+        <p>Important directories</p>
+        <ul>
+          <li><p><b>src</b> Java source of the core</p></li>
+          <li><p><b>docs</b> Outdated documentation.</p></li>
+          <li><p><b>xdocs</b> Documentation in xdoc format. xdoc is Maven's documentation
+          format. It's derived from Apache's anakia format, which in turn is derived
+          from the stylebook format used for most of the Jakarta website.</p></li>
+        </ul>
+      </subsection>
       <subsection name="Core">
         <p>Pustefix core features an <a href="http://ant.apache.org">Ant</a> build.</p>
 	    <p>To build the core with all projects:</p>
