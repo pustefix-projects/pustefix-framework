@@ -1,3 +1,6 @@
+2004-08-10  Benjamin Reitzammer <benjamin@schlund.de>
+	* skel/build.xml now uses XsltCustomWebxmlTask to produce web.xml files
+
 2004-09-09  Michael Hartmeier  <mhm@schlund.de>
 	* .classpath
 	* lib/saxon-8.0.mhm.jar
@@ -20,26 +23,26 @@
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java:
 	expect relative path name for log directory.
 
-	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: expect relative path name  
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java: expect relative path name
 
 	* example/sample1/conf/direct.prop.in: removed docroot
 	* example/sample1/conf/config.prop.in: removed docroot
 
 	* example/core/build/create_propfiles.xsl: code cleanup
 
-	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java:
 	no longer set docroot in the parameter hash.
-	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java:
 	remove getDocroot() method.
-	
-	* example/core/xsl/metatags.xsl.in: 
-	* example/core/xsl/master.xsl.in: remove $docroot. 
+
+	* example/core/xsl/metatags.xsl.in:
+	* example/core/xsl/master.xsl.in: remove $docroot.
 
 	* example/core/xsl/customizestylesheet.xsl: *
 	example/core/xsl/customizemaster.xsl: no longer handle
 	docroot. remove cus:docroot. no more special handling of xsl:include or xsl:import.
 
-	* example/core/editor/xsl/metatags.xsl: remove last dead instances of $docroot.  
+	* example/core/editor/xsl/metatags.xsl: remove last dead instances of $docroot.
 
 2004-08-09  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -127,12 +130,12 @@
 	load Templates objects remains. For every "base directory"
 	(usually one currently) there will be a new factory created with
 	it's own FileResolver. The class uses the Path class more consitently.
-	
+
 	* src/de/schlund/pfixxml/util/Xml.java
 	* src/de/schlund/pfixxml/testenv/TestcaseStepResult.java:
 	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java:
 	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java:
-	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java:
 	* src/de/schlund/pfixxml/AbstractXMLServer.java: only use the new
 	interface of Xslt.java
 
@@ -299,8 +302,8 @@
            XPath  performs xpath processing
            Xslt   performs xslt processing
 	add junit 3.8.1 and tests for Xml, Xslt and XPath
-	use saxon for xpath computations - all dependencies on org.apache.xpath 
-	(aka jdk 1.4's Xalan) have been eliminated; as a side-effect, pfixcore 
+	use saxon for xpath computations - all dependencies on org.apache.xpath
+	(aka jdk 1.4's Xalan) have been eliminated; as a side-effect, pfixcore
 	compiles with jdk 1.5 now
 
 end of saxon_8 merge
@@ -308,13 +311,13 @@ end of saxon_8 merge
 2004-08-06 Michael Hartmeier  <mhm@schlund.de>
 
 	* configure and enable "checkstyle" report for website generation
-	* fix problems reported by checkstyle 
+	* fix problems reported by checkstyle
           (most important: missing copyrights and tabs in java sources)
 
 2004-08-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* lib/tomcat/README: new file to tell people about the purpose of
-	the lib/tomcat directory and where to get a apache package.  
+	the lib/tomcat directory and where to get a apache package.
 	* build.xml: no longer include tomcat into the skeleton tar.gz.
 
 2004-08-04 Michael Hartmeier  <mhm@schlund.de>
@@ -425,14 +428,14 @@ end of saxon_8 merge
 
 2004-07-20 Michael Hartmier  <mhm@schlund.de>
 	- switched to tomcat 5:
-	  the 'example/servletconf/tomcat' directory is not longer checked-in, 
-          instead it's generated automatically from lib/tomcat/jakarta-tomcat-*.tgz. 
+	  the 'example/servletconf/tomcat' directory is not longer checked-in,
+          instead it's generated automatically from lib/tomcat/jakarta-tomcat-*.tgz.
 	  Thus, we can upgrade to a new version by replacing the tgz file.
         - tomcat configuration changes:
 	  - http and https connectors are configured: you can run a standalone tomcat without apache
-          - tomcat manager is configured and can be accessed from web apps via a console button 
+          - tomcat manager is configured and can be accessed from web apps via a console button
           - server.xml is generated with relative paths
-        - examples/core/build/ changes: 
+        - examples/core/build/ changes:
           - the xsl "container" parmeter has been removed
           - the defpath declaration is used for apache.conf and server.xml generation now
 	- fix redirect code for ports != 80/443
