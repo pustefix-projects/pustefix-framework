@@ -3,8 +3,6 @@ package de.schlund.pfixcore.webservice;
 import org.apache.axis.MessageContext;
 import de.schlund.pfixxml.loader.AppLoader;
 
-import org.apache.axis.providers.java.RPCProvider;
-
 public class SetClassLoaderHandler extends ResetClassLoaderHandler {
 
    public void invoke(MessageContext msgContext) { 

@@ -4,7 +4,6 @@
 package de.schlund.pfixcore.webservice;
 
 import org.apache.axis.MessageContext;
-
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 

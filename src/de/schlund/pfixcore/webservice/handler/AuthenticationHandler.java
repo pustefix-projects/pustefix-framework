@@ -1,18 +1,9 @@
 package de.schlund.pfixcore.webservice.handler;
 
-import java.util.Enumeration;
-
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
-import org.apache.axis.handlers.BasicHandler;
-import org.apache.axis.transport.http.HTTPConstants;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.ServletContext;
 import javax.xml.namespace.QName;
-
-import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
