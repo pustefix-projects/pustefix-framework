@@ -216,7 +216,7 @@ wfxEditor.prototype.rehighlight = function() {
     
     this._doc.body.innerHTML = '<pre>' + content + '</pre>';
   } catch(e) {
-    alert(e);
+    alert("Exception:\n" + e);
   }
 
   //------------
@@ -258,7 +258,7 @@ wfxEditor.prototype.isWellFormedXML = function( xml, err ) {
       return false;
     }
   } catch(e) {
-    alert("Exception: " + e);
+    alert("Exception:\n" + e);
     return false;
   }
 
@@ -818,7 +818,7 @@ wfxEditor.prototype._editorEvent = function(ev) {
 	  }
 
 	} catch(e) {
-	  alert(e);
+	  alert("Exception:\n" + e);
 	}
 
 	//------------
@@ -1744,8 +1744,13 @@ wfxEditor.prototype.restoreRange = function( offsetStart, offsetEnd, dbg ) {
   wfxEditor.currentOffset = 0;
   wfxEditor.reachedOffset = false;
 
-  //  alert("this.restoreRange( ~, ~, " + offsetStart +", " + offsetEnd + " )");
+  //alert("this.restoreRange( ~, ~, " + offsetStart +", " + offsetEnd + " )");
   wfxEditor.restoreRange(this._doc.body, false, offsetStart, offsetEnd, dbg);
+
+  if( wfxEditor.nodeStart == null ) {
+    wfxEditor.nodeStart = this._doc.body.firstChild;
+    wfxEditor.offsetStart = 0;
+  }
 };
 
 //*****************************************************************************
@@ -1764,7 +1769,7 @@ wfxEditor.prototype.restoreRangeByNewlines = function( offsetStart, offsetEnd, d
 wfxEditor.restoreRange = function(root, outputRoot, offsetStart, offsetEnd, thisdbg) {
   
   //  alert("wfxEditor.restoreRange( ~, ~, " + offsetStart +", " + offsetEnd + " )");
-
+  //  alert(root.nodeName);
   thisdbg = 0;
 
   switch (root.nodeType) {
@@ -1872,7 +1877,7 @@ wfxEditor.restoreRangeByNewlines = function(root, outputRoot, offsetStart, offse
 wfxEditor.prototype.setRange = function( nodeStart, offsetStart, 
 					 nodeEnd,   offsetEnd ) {
 
-  //  alert("setRange( nodeStart.nodeType:" + nodeStart.nodeType +", offsetStart:"+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
+  //  alert("setRange( nodeStart.nodeType:" + nodeStart.nodeName +", offsetStart:"+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")");
 
   //    this._dbg.value += "setRange( " + nodeStart +"(" + nodeStart.nodeValue + "), "+ offsetStart +", "+ nodeEnd +", "+   offsetEnd + ")\n";
 
@@ -1936,7 +1941,7 @@ wfxEditor.prototype.setRange = function( nodeStart, offsetStart,
 	sel.addRange(rng);
       }
     } catch(e) {
-      alert(e);
+      alert("Exception:\n" + e);
     }
 };
 
@@ -2170,6 +2175,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
     if( cancelRehighlighting ) {
       editor._dbg.value += "c1\n";
+      insideRehighlighting = false;
       return;
     }
     //---------------------------------------------------------------------------
@@ -2182,10 +2188,18 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     content = editor.col2tag(editor.getHTML());
     bench( "col2tag(getHTML())", null, 2);
     //    alert(wfxEditor.str2chr(content));
+
+//    if( content == "[[[sfxStart]]]" ) {
+//      // empty content
+//      editor._doc.body.innerHTML = '<pre></pre>';
+//      insideRehighlighting = false;
+//      return;
+//    }
     //---------------------------------------------------------------------------
 
     if( cancelRehighlighting ) {
       editor._dbg.value += "c2\n";
+      insideRehighlighting = false;
       return;
     }
     //---------------------------------------------------------------------------
@@ -2200,6 +2214,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     //-------------------------------------------------------------------------
     if( cancelRehighlighting ) {
       editor._dbg.value += "c3\n";
+      insideRehighlighting = false;
       return;
     }
     //-------------------------------------------------------------------------
@@ -2237,6 +2252,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c4\n";
+	insideRehighlighting = false;
 	return;
       }
       //-------------------------------------------------------------------------
@@ -2252,6 +2268,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c5\n";
+	insideRehighlighting = false;
 	return;
       }
       //-------------------------------------------------------------------------
@@ -2267,6 +2284,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c6\n";
+	insideRehighlighting = false;
 	return;
       }
       //-------------------------------------------------------------------------
@@ -2282,6 +2300,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c7\n";
+	insideRehighlighting = false;
 	return;
       }
       //-------------------------------------------------------------------------
@@ -2294,6 +2313,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 
       if( cancelRehighlighting ) {
 	editor._dbg.value += "c8\n";
+	insideRehighlighting = false;
 	return;
       }
 
@@ -2306,7 +2326,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
     
 
     } catch(e) {
-      alert(e);
+      alert("Exception:\n" + e);
     }
 
     bench( null, 2);
@@ -2657,7 +2677,7 @@ wfxEditor.prototype.findAndReplace = function( fstr, rstr ) {
     rng.moveToElementText(this._bodynode);
     //     rng.collapse(true);
 
-    alert(rng.innerText);
+    //    alert(rng.innerText);
 
     html = rng.htmlText;
 
@@ -2672,7 +2692,7 @@ wfxEditor.prototype.findAndReplace = function( fstr, rstr ) {
         rng.setStart( startNode, 0);
         rng.setEnd( startNode, 1);
       } catch(e) {
-	alert(e);
+	alert("Exception:\n" + e);
       }
     }
   
@@ -2719,7 +2739,7 @@ wfxEditor.offsetEnd   = -1;
 
 wfxEditor.tabWidth    = 2;
 
-wfxEditor.timeInterval   = 5000;   // msec of rehighlighting frequency
+wfxEditor.timeInterval   = 200;   // msec of rehighlighting frequency
 wfxEditor.timeEvent      = 50;    // minimum msec between (key)events
 //---------------------------------------------------------------------------
 
