@@ -1,0 +1,24 @@
+What goes here?
+--@author SPP
+
+The projects/ dir contains the xml/xsl parts of all projects within the pfixtutorial. 
+To keep it simple there is only one project here. There are some directories that
+contain files that are needed by all projects, you can simply copy the 
+bin/, common/, core/ and servletconf/ directories from another project. You can find the complete
+core/ directory in the file pfixcore-data-0.2.2.tar.gz
+
+bin/					some scripts
+common/		stuff that is used by multiple or all projects
+core/				the pustefix core stylesheets
+servletconf/		servlet configuration files
+
+The ptutorial/ dir is the directory for the sample project of the tutorial. For further
+information see the tutorial file there.
+
+The Makefile in this directory can be copied, you do not have to adapt it!
+
+The servletconf/projects.xml has to be adapted to your project. Simply substitute all occurrences of 
+"pfixtutorial" with the name of your project  
+
+Do not forget to link the generated apache.conf into your apaches conf.d/ directory 
+otherwise it will not be accessible.

@@ -1,0 +1,56 @@
+<!-- -*- mode: xml -*- -->
+<make cachedir=".cache/pfixtutorial"
+      xmlns:cus="http://www.schlund.de/pustefix/customize">
+  
+  <navigation>
+    <!-- each 'page' in txt/pages/ is associated with one of the servlets -->
+    <page name="home"		handler="/xml/tutorial"/>
+    <page name="basic"		handler="/xml/tutorial"/>
+    <page name="pages"    handler="/xml/tutorial"/>
+    <page name="servlets"  handler="/xml/tutorial"/>
+    <page name="xmltutorial"    handler="/xml/tutorial"/>
+    <page name="javatutorial"  handler="/xml/tutorial"/>
+    <page name="project"  handler="/xml/tutorial"/>
+    <page name="form"  handler="/xml/tutorial">
+      <page name="javatutorial"  handler="/xml/tutorial"/>
+    </page>
+    <page name="links"  handler="/xml/tutorial"/>
+  </navigation>
+
+  <!-- ========= master =============== -->
+
+  <target name="master.xsl" type="xsl">
+    <depxml name="core/xsl/master.xsl"/>
+    <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/include.xsl"/>
+    <depaux name="core/xsl/navigation.xsl"/>
+    <depaux name="core/xsl/utils.xsl"/>
+    <depaux name="core/xsl/forminput.xsl"/>
+    <depxsl name="pfixtutorial/xsl/custommaster.xsl"/>
+    <param name="product" value="pfixtutorial"/>
+    <param name="lang" value="en"/>
+  </target>
+
+  <!-- ========= metatags =============== -->
+
+  <target name="metatags.xsl" type="xsl">
+    <depaux name="core/xsl/include.xsl"/>
+    <depaux name="core/xsl/default_copy.xsl"/>
+    <depaux name="core/xsl/utils.xsl"/>
+    <depxml name="pfixtutorial/xsl/metatags.xsl"/>
+    <depxsl name="pfixtutorial/xsl/custommetatags.xsl"/>
+    <param name="product" value="pfixtutorial"/>
+    <param name="lang" value="en"/>
+  </target>
+
+  <!-- this is just a short version for a target which makes it more comfortable to make pages -->
+  <standardpage name="home" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="basic" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="pages" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="servlets" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="xmltutorial" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="javatutorial" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="project" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="form" xml="pfixtutorial/xml/sample_layout.xml"/>
+  <standardpage name="links" xml="pfixtutorial/xml/sample_layout.xml"/>
+</make>

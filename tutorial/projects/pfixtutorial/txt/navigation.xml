@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="top">
+    <product name="default">
+      <lang name="default">
+        <center><br/>
+        <pfx:button page="home">Home</pfx:button> &#160;
+        <pfx:button page="basic">Installation</pfx:button> &#160;
+        <pfx:button page="project">Configuration</pfx:button> &#160;
+        <pfx:button page="xmltutorial">BasicXML</pfx:button> &#160;
+        <pfx:button page="pages">StaticPages</pfx:button> &#160;
+        <pfx:button page="form">Forms</pfx:button> &#160;
+        <pfx:button page="servlets">Servlets</pfx:button> &#160;
+        <pfx:button page="javatutorial">Java</pfx:button>? &#160;
+        <pfx:button page="links">Links</pfx:button>
+        </center><br/>
+      </lang>
+    </product>
+  </part>
+
+    
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

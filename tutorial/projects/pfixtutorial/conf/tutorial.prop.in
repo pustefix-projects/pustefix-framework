@@ -1,0 +1,45 @@
+<properties xmlns:cus="http://www.schlund.de/pustefix/customize">
+
+  <!-- some properties that have to be set for servlets -->
+  <prop name="xmlserver.depend.xml"><cus:docroot/>pfixtutorial/conf/depend.xml</prop>
+  <prop name="xmlserver.servlet.name">forbarqux</prop>
+  <prop name="xmlserver.noeditmodeallowed">false</prop>
+  <prop name="servlet.needsSSL">false</prop>
+
+  <prop name="context.class">de.schlund.pfixcore.workflow.Context</prop>
+  <prop name="context.resource.1.de.schlund.pfixtutorial.ContextAdultInfoImpl">de.schlund.pfixtutorial.ContextAdultInfo</prop>
+
+  <!-- *** PageFlows *** -->
+  <!-- this is a basic page flow which always needs at least one page, add more if you like -->
+
+  <prop name="context.defaultpageflow">HomeFlow</prop>
+  <prop name="context.pageflow.HomeFlow.0">home</prop>
+
+  <prop name="context.pageflow.form.0">form</prop>
+  <prop name="context.pageflow.form.FINAL">servlets</prop>
+
+  <!-- *** PageRequest and associated properties *** -->
+
+  <prop name="pagerequest.home.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.basic.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.pages.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.servlets.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.xmltutorial.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.javatutorial.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>
+  <prop name="pagerequest.project.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>  
+  <prop name="pagerequest.links.classname">de.schlund.pfixcore.workflow.app.StaticState</prop>  
+
+  <prop name="pagerequest.form.classname">de.schlund.pfixcore.workflow.app.DefaultIWrapperState</prop>
+  <prop name="pagerequest.form.interface.1.info">de.schlund.pfixtutorial.iwrapper.AdultInfo</prop>
+  <!--prop name="pagerequest.form.resdocfinalizer.insert.cr_adultinfo">de.schlund.pfixtutorial.ContextAdultInfo</prop-->
+
+  <prop name="pagerequest.servlets.resdocfinalizer.insert.cr_adultinfo">de.schlund.pfixtutorial.ContextAdultInfo</prop>
+
+</properties>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->
+
