@@ -261,7 +261,7 @@
         <!-- replaced by new versions (with new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
-            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm -v {} ;"/>
+            <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
         </exec>
         <!-- As version might have been updated,
              delete all *-res.jar files but the current *-res.jar version -->

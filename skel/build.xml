@@ -262,7 +262,7 @@
         <!-- replaced by new versions (with new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
-            <arg line="-iname *.jar -a -type l -a -xtype f -exec rm {} ;"/>
+            <arg line="-iname *.jar -a -type l -exec rm {} ;"/>
         </exec>
         <!-- don't delete the *-res.jar file here, let it be updated by task jar -->
         <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
