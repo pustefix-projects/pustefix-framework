@@ -633,7 +633,9 @@ public class Context implements AppContext {
             }
 
             // Now, check for possibly needed authorization
-            boolean forceauth = StateImpl.requestParamSaysTrue(currentpreq.getRequestParam(State.SENDAUTHDATA));
+            RequestParam sdreq     = currentpreq.getRequestParam(State.SENDAUTHDATA);
+            boolean      forceauth = (sdreq != null && sdreq.isTrue());
+
             document = checkAuthorization(forceauth);
             if (document != null) {
                 return document;

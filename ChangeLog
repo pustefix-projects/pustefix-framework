@@ -1,5 +1,10 @@
 2005-03-04  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/RequestParam.java: added convenience method isTrue().
+	* src/de/schlund/pfixxml/SimpleRequestParam.java (isTrue): implemented to check for "true", "1", "yes". 
+	* src/de/schlund/pfixcore/workflow/Context.java: use it.
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: use it.
+
 	* src/de/schlund/pfixcore/workflow/Context.java (isJumptToPageSet): new method.
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: ask context if jumptopage is set, 

@@ -35,6 +35,13 @@ public class SimpleRequestParam implements RequestParam {
     private RequestParamType type  = RequestParamType.SIMPLE;
     private boolean          synthetic = false;
 
+    public boolean isTrue() {
+        if (value != null) {
+            return (value.equals("true") || value.equals("1") || value.equals("yes"));
+        }
+        return false;
+    }
+
     public boolean isSynthetic() {
         return synthetic;
     }
