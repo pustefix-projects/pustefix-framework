@@ -31,34 +31,15 @@
   <p>The structure of the config file is show below:
   </p>
 
-  <a name="record_dir"/>
+  <a name="depend_xml"/>
   
   <xmlcode>
-    <make cachedir="..." recorddir="..." project="MyProject" lang="en">
+    <make project="MyProject" lang="en">
       <xmlnote>
         <table>
           <tr>
             <th>Attribute</th>
             <th>Notes</th>
-          </tr>
-          <tr>
-            <td>cachedir</td>
-            <td>
-              <p>This attribute designates a directory where the generated stylesheets are saved to.</p>
-              <p>NOTE: The attribute is <b>mandatory</b>; you must give a path relative to the <b>docroot</b> here!</p>
-            </td>
-          </tr>
-          <tr>
-            <td>record_dir</td>
-            <td>
-              <p>This attribute designates the directory that is used
-              to save recorded trails to (see the documentation for
-              the <a href="testclient.html">testclient</a> to learn
-              more about the use of this attribute).</p> <p>NOTE: The
-              attribute is <b>optional</b>, if given, it must be
-              either an absolute path name or a relative path which is
-              interpreted as being relative to the <b>docroot</b></p>
-            </td>
           </tr>
           <tr>
             <td>project</td>

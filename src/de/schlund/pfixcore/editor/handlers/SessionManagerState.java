@@ -54,12 +54,12 @@ public class SessionManagerState extends StateImpl {
                 sesselem.setAttribute("num", "" + count++);
                 sesselem.setAttribute("id", info.getSessionIdURI());
                 sesselem.setAttribute("sessid", info.getSession().getId());
-                sesselem.setAttribute("created", "" + info.getCreationTime());
-                sesselem.setAttribute("createdtext", dateform.format(new Date(info.getCreationTime())));
-                sesselem.setAttribute("lastaccess", "" + info.getLastAccess());
+                sesselem.setAttribute("created", "" + info.getData().getCreation());
+                sesselem.setAttribute("createdtext", dateform.format(new Date(info.getData().getCreation())));
+                sesselem.setAttribute("lastaccess", "" + info.getData().getLastAccess());
                 sesselem.setAttribute("hits", "" + info.getNumberOfHits());
-                if (info.getLastAccess() != -1) {
-                    sesselem.setAttribute("lastaccesstext", dateform.format(new Date(info.getLastAccess())));
+                if (info.getData().getLastAccess() != -1) {
+                    sesselem.setAttribute("lastaccesstext", dateform.format(new Date(info.getData().getLastAccess())));
                 }
 
                 Element stepelem = null;

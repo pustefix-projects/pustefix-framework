@@ -1,3 +1,11 @@
+2004-09-30  Michael Hartmeier  <mhm@schlund.de>
+	Added Jmx support (which is disabled by default) and use it for test case recording:
+	o removed most of the recording code and documentation, it's in a separate project now
+	o extract a new sub-object from SessionInfoStruct holding serializable data (which
+	  can be transferred to jmx clients)
+	o xslt parameter removed: __recordmode, recordmode_allowed
+	o removed from pustefix.prop.in: xmlserver.noxmlonlyallowed, recordmode_allowed 
+	
 2004-09-21  Michael Hartmeier  <mhm@schlund.de>
 	* build.xml
 	* skel/build.xml: eliminate duplicated core. skel/build.xml is the main build

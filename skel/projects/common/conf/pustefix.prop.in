@@ -18,10 +18,6 @@
   
   <cus:choose>
     <cus:test mode="prod">
-      <!--  Set this to false if you want to be able to just retrieve the xml tree -->
-      <prop name="xmlserver.noxmlonlyallowed">true</prop>
-      <!-- Set this to true if you want to enable the record mode of xmlserver -->
-      <prop name="xmlserver.recordmode_allowed">false</prop>
       <!-- Set this to true if you want to skip the check for changed stylesheets on every request -->
       <prop name="targetgenerator.skip_getmodtimemaybeupdate">true</prop>
       <!-- Set this to true if you want to prohibit editing. -->
@@ -30,10 +26,6 @@
       <prop name="sessioncleaner.timeout">20</prop>
     </cus:test>
     <cus:test>
-      <!--  Set this to false if you want to be able to just retrieve the xml tree -->
-      <prop name="xmlserver.noxmlonlyallowed">false</prop>
-      <!-- Set this true if you want to enable the record mode of xmlserver -->
-      <prop name="xmlserver.recordmode_allowed">true</prop>
       <!-- Set this to true if you want to skip the check for changed stylesheets on every request -->
       <prop name="targetgenerator.skip_getmodtimemaybeupdate">false</prop>
       <!-- Set this to false if you want to be able to do editing -->

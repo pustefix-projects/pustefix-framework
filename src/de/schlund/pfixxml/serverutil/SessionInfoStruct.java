@@ -30,8 +30,7 @@ import javax.servlet.http.*;
 public class SessionInfoStruct {
     private int           max_trail_elem = 25;
     private HttpSession   session;
-    private long          creationtime;
-    private long          lastaccess;
+    private SessionData   data;
     private long          numberofhits;
     private LinkedList    traillog;
     
@@ -43,23 +42,23 @@ public class SessionInfoStruct {
                      May be null.
     * @param conutil 
     */
-    public SessionInfoStruct(HttpSession session, LinkedList traillog) {
+    public SessionInfoStruct(HttpSession session, LinkedList traillog, String serverName, String remoteAddr) {
         this.session  = session;
-        creationtime  = new Date().getTime();
-        lastaccess    = -1L;
+        this.data = new SessionData(session.getId(), serverName, remoteAddr);
         numberofhits  = 0;
         if (traillog != null) {
             this.traillog = traillog;
         } else {
             this.traillog = new LinkedList();
         }
-        
-        
     }
     
+    public SessionData getData() {
+        return data;
+    }
     
     public void updateTimestamp(String servlet, String stylesheet) {
-        lastaccess = new Date().getTime();
+        data.updateTimestamp();
         numberofhits++;
         synchronized(traillog) {
             traillog.addLast(new TrailElement(servlet,stylesheet,numberofhits));
@@ -95,31 +94,6 @@ public class SessionInfoStruct {
     public HttpSession getSession() {
         return session;
     }
-
-    /**
-     * Get the value of creationtime.
-     * @return value of creationtime.
-     */
-    public long getCreationTime() {return creationtime;}
-    
-    /**
-     * Set the value of creationtime.
-     * @param v  Value to assign to creationtime.
-     */
-    public void setCreationTime(long  v) {this.creationtime = v;}
-    
-    /**
-     * Get the value of the last access to the session (access to subframes isn't counted)
-     * @return value of lastAccess.
-     */
-    public long getLastAccess() {return lastaccess;}
-    
-    /**
-     * Set the value of lastAccess.
-     * @param v  Value to assign to lastAccess.
-     */
-    public void setLastAccess(long  v) {this.lastaccess = v;}
-
 
     public class TrailElement {
         String servletname;

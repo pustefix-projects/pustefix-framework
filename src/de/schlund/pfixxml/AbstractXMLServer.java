@@ -18,11 +18,10 @@
  */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.jmx.JmxServer;
+import de.schlund.pfixxml.jmx.TrailLogger;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
-import de.schlund.pfixxml.testenv.RecordManager;
-import de.schlund.pfixxml.testenv.RecordManagerFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
@@ -74,8 +73,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String PARAM_FRAME              = "__frame";
     private static final String PARAM_NOSTORE            = "__nostore";
     private static final String PARAM_REUSE              = "__reuse"; // internally used
-    public static final String PARAM_RECORDMODE         = "__recordmode";
-    public static final String PARAM_VAL_RECORDMODE_OFF = "0";
     private static final String XSLPARAM_LANG            = "lang";
     private static final String XSLPARAM_SESSID          = "__sessid";
     private static final String XSLPARAM_URI             = "__uri";
@@ -92,16 +89,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     protected static final String PROP_RENDER_EXT          = "xmlserver.output.externalrenderer";
     protected static final String PROP_CLEANER_TO          = "sessioncleaner.timeout";
                                  
-    // xml output only, no tra n sformation
-    private static final String PROP_NOXML_KEY                    = "xmlserver.noxmlonlyallowed";
-    private static final String PROP_XMLONLY_NOT_ENABLED_VALUE    = "true";
-    private static final String PROP_XMLONLY_ENABLED_VALUE        = "false";
-    private static final String PROP_XMLONLY_RESTRICTED_VALUE     = "restricted";
-    private static final String PROP_XMLONLY_RESTRICTED_HOSTS_KEY = "xmlserver.xmlonlyallowed.host";
-    // record mode
-    private static final String PROP_RECORDMODE_KEY               = "xmlserver.recordmode_allowed";
-    private static final String PROP_RECORDMODE_ALLOWED_VALUE     = "true";
-   
     // skip stat on all targets
     private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY           = "targetgenerator.skip_getmodtimemaybeupdate";
     private static final String PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE = "true";
@@ -112,7 +99,6 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private static final String PROP_PROHIBITDEBUG = "xmlserver.prohibitdebug";
     private static final String PROP_PROHIBITINFO  = "xmlserver.prohibitinfo";
-    
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -134,9 +120,6 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static Category LOGGER_TRAIL      = Category.getInstance("LOGGER_TRAIL");
     private static Category CAT               = Category.getInstance(AbstractXMLServer.class.getName());
     private boolean         editmodeAllowed   = false;
-    private boolean         recordmodeAllowed = false;
-    private int             isXMLOnlyAllowed  = XML_ONLY_PROHIBITED;
-    private String[]        xmlOnlyValidHosts = null;
 
     private int scleanertimeout = 300;
 
@@ -186,12 +169,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             allowInfo = false;
         
         String noedit = getProperties().getProperty(PROP_NOEDIT);
-        if (noedit != null && (noedit.equals("false") || noedit.equals("0"))) {
-            editmodeAllowed = true;
-        } else {
-            editmodeAllowed = false;
-        }
-        String timeout;
+        editmodeAllowed = (noedit != null && (noedit.equals("false") || noedit.equals("0")));
+
+		String timeout;
         if ((timeout = getProperties().getProperty(PROP_CLEANER_TO)) != null) {
             try {
                 scleanertimeout = new Integer(timeout).intValue();
@@ -200,11 +180,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
-        handleRecordModeProps();
-        
         boolean skip_getmodtimemaybeupdate = handleSkipGetModTimeMaybeUpdateProps();
-        
-        handleXMLOnlyProps();
         
         try {
             generator = TargetGeneratorFactory.getInstance().createGenerator(targetconf);
@@ -225,78 +201,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
             sb.append("                   timeout = ").append(timeout).append("\n");
-            sb.append("        recordmode allowed = ").append(recordmodeAllowed).append("\n");
-            String str = null;
-            if (isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
-                str = "allowed";
-            } else if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
-                str = "restricted";
-            } else if (isXMLOnlyAllowed == XML_ONLY_PROHIBITED) {
-                str = "prohibited";
-            } else str = "???";
-            sb.append("            xmlOnlyAllowed = ").append(str).append("\n");
-            if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
-                if (xmlOnlyValidHosts!=null) {
-                    for (int i=0; i<xmlOnlyValidHosts.length; i++) {
-                        sb.append("                       host = ").append(xmlOnlyValidHosts).append("\n");
-                    }
-                }
-            }
             sb.append("skip_getmodtimemaybeupdate = ").append(skip_getmodtimemaybeupdate).append("\n");
             sb.append("           render_external = ").append(render_external).append("\n");
             CAT.info(sb.toString());
-        }
-    }
-
-    /**
-     * Handle the properties concerning if a client can retrieve plain xml.
-     * Makes write access to the <see>isXMLOnlyAllowed</see> and to the
-     * <see>xmlOnlyValidHosts</see> fields if mode is restricted.
-     * @throws ServletException if the properties can not be found.
-     */
-    private void handleXMLOnlyProps() throws ServletException {
-        // analyze the NO_XMLONLY_ALLOWED property
-        if (getProperties().getProperty(PROP_NOXML_KEY) == null) {
-            String msg = "Need property '" + PROP_NOXML_KEY + "'";
-            CAT.fatal(msg);
-            throw new ServletException(msg);
-        } else {
-            String tmp = getProperties().getProperty(PROP_NOXML_KEY);
-            if (tmp.toUpperCase().equals(PROP_XMLONLY_NOT_ENABLED_VALUE.toUpperCase())) {
-                isXMLOnlyAllowed = XML_ONLY_PROHIBITED;
-            } else if (tmp.toUpperCase().equals(PROP_XMLONLY_ENABLED_VALUE.toUpperCase())) {
-                isXMLOnlyAllowed = XML_ONLY_ALLOWED;
-            } else if (tmp.toUpperCase().equals(PROP_XMLONLY_RESTRICTED_VALUE.toUpperCase())) {
-                isXMLOnlyAllowed = XML_ONLY_RESTRICTED;
-            }
-            if (isDebugEnabled()) {
-                CAT.debug("\nXML only is: "
-                          + (isXMLOnlyAllowed == XML_ONLY_ALLOWED ? "allowed" : "")
-                          + (isXMLOnlyAllowed == XML_ONLY_RESTRICTED ? "restricted" : "")
-                          + (isXMLOnlyAllowed == XML_ONLY_PROHIBITED ? "prohibited" : ""));
-            }
-            if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) { // get valid hosts form properties
-                TreeMap      map  = PropertiesUtils.selectPropertiesSorted(getProperties(), PROP_XMLONLY_RESTRICTED_HOSTS_KEY);
-                xmlOnlyValidHosts = new String[map.entrySet().size()];
-                Iterator     iter = map.keySet().iterator();
-                int          i    = 0;
-                StringBuffer sb   = null;
-                while (iter.hasNext()) {
-                    Object key = iter.next();
-                    xmlOnlyValidHosts[i] = map.get(key).toString();
-                    if (isDebugEnabled()) {
-                        if (sb == null) {
-                            sb = new StringBuffer();
-                        }
-                        sb.append("   " + xmlOnlyValidHosts[i]).append("\n");
-                    }
-                    i++;
-                }
-                if (isDebugEnabled()) {
-                    sb.insert(0, "\nValid hosts for xml only are: \n");
-                    CAT.debug(sb.toString());
-                }
-            }
         }
     }
 
@@ -320,26 +227,6 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
         return skip_getmodtimemaybeupdate;
-    }
-
-    /**
-     * Handle the properties concerning if the record mode is accessible.
-     * Sets the <see>recormodeAllowed</see> field if enabled.
-     * @throws ServletException if the properties can not be found.
-     */
-    private void handleRecordModeProps() throws ServletException {
-        // analyze the RECORDMODE property
-        if (getProperties().getProperty(PROP_RECORDMODE_KEY) == null) {
-            String msg = "Need property '" + PROP_RECORDMODE_KEY + "'";
-            CAT.fatal(msg);
-            throw new ServletException(msg);
-        } else {
-            String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
-            recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase()) ? true : false;
-            if (isDebugEnabled()) {
-                CAT.debug("RecordModeAllowed is: " + recordmodeAllowed);
-            }
-        }
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
@@ -396,10 +283,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         boolean      doreuse     = doReuse(preq);
         SPDocument   spdoc       = null;
         RequestParam value;
-        long         currtime;
-        long         preproctime = -1;
-        long         getdomtime  = -1;
-        long         handletime  = -1;
         
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
@@ -419,7 +302,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             params.put(XSLPARAM_SERVER_NAME, preq.getServerName());
         
         if (session != null) {
-            params.put(XSLPARAM_SESSID, 
+            params.put(XSLPARAM_SESSID,
                        session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
@@ -451,23 +334,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
-        // Set stylesheet parameters for editconsole
-        if (recordmodeAllowed) {
-            String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
-            
-            if (name != null) {
-                params.put(PARAM_RECORDMODE, name);
-            }
-            params.put("recordmode_allowed", new Boolean(recordmodeAllowed).toString());
-        }
-
         // Now we will store the time needed from the creation of the request up to now
-        currtime    = System.currentTimeMillis();
         PerfEventType pet = PerfEventType.XMLSERVER_PREPROCESS;
-        //pet.setMessage(preq);
         preq.endLogEntry(pet);
-        preproctime = pet.getDuration();
-        // preproctime = currtime - preq.getCreationTimestamp();
        
         if (spdoc == null) {
             preq.startLogEntry();
@@ -475,20 +344,12 @@ public abstract class AbstractXMLServer extends ServletManager {
             String pagename = spdoc.getPagename();
             PerfEventType et = PerfEventType.XMLSERVER_GETDOM;
             et.setPage(pagename);
-                //preq.endLogEntry("GETDOM (" + pagename + ")", 0);
          
             preq.endLogEntry(et);
             
-            // start recording if allowed and enabled
-            if (recordmodeAllowed) {
-                RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);         
-                recorder.tryRecord(preq, res, spdoc, session);
-            }
+            TrailLogger.log(preq, spdoc, session);
             if (isDebugEnabled()) {
                 CAT.debug("* Generated document:" + spdoc);
-            }
-            if (isInfoEnabled()) {
-                CAT.info(">>> Complete getDom(...) took " + getdomtime + "ms");
             }
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map            anchormap;
@@ -496,7 +357,6 @@ public abstract class AbstractXMLServer extends ServletManager {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
             }
-            currtime = System.currentTimeMillis();
             if (spdoc.getDocument() == null) {
                 // thats a request to an unkown page!
                 // do nothing, cause we  want a 404 and no NPExpection
@@ -505,10 +365,6 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             } else {
                 spdoc.setDocument(Xml.parse(spdoc.getDocument()));
-            }
-            if (isInfoEnabled()) {
-                CAT.info(">>> Complete xmlObjectFromDocument(...) took "
-                         + (System.currentTimeMillis() - currtime) + "ms");
             }
 
             if (!spdoc.getNostore()) {
@@ -522,30 +378,12 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             // this will remain at -1 when we don't have to enter the businesslogic codepath
             // (whenever there is a stored spdoc already)
-            getdomtime = System.currentTimeMillis() - currtime;
         }
-        currtime = System.currentTimeMillis();
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         handleDocument(preq, res, spdoc, params, doreuse);
-        handletime = System.currentTimeMillis() - currtime;
-        if (isInfoEnabled()) {
-            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
-        }
-        try {
-            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
-                OutputStream       out          = res.getOutputStream();
-                OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
-                writer.write("\n<!-- PRE_PROC: " + preproctime +
-                             " GET_DOM: " + getdomtime +
-                             " HDL_DOC: " + handletime + " -->");
-                writer.flush();
-            }
-        } catch (Exception e) {
-            // ignore
-        }
     }
 
-    protected void handleDocument(PfixServletRequest preq, HttpServletResponse res, 
+    protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
                                   SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
         // Check the document for supplied headers...
         HashMap headers = spdoc.getResponseHeader();
@@ -679,7 +517,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             } else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
                 CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-            } else 
+            } else
                 throw e;
         }
     }
@@ -701,7 +539,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
         root.appendChild(imported);
-        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc), 
+        TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc),
                                                                 new StreamResult(res.getOutputStream()));
     }
 
@@ -723,7 +561,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             return RENDER_EXTERNAL;
         }
         xmlonly = pfreq.getRequestParam(PARAM_XMLONLY);
-        if (isXMLOnlyAllowed == XML_ONLY_PROHIBITED || xmlonly == null) {
+        if (xmlonly == null) {
             return RENDER_NORMAL;
         }
         value = xmlonly.getValue();
@@ -734,24 +572,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
+        if (editmodeAllowed || JmxServer.getInstance().isKnownClient(pfreq.getRemoteAddr())) {
             return rendering;
-        } else if (isXMLOnlyAllowed == XML_ONLY_RESTRICTED) {
-            String client_ip = pfreq.getRemoteAddr();
-            for (int i = 0; i < xmlOnlyValidHosts.length; i++) {
-                if (client_ip.equals(xmlOnlyValidHosts[i])) {
-                    if (isInfoEnabled()) {
-                        CAT.info("\nEnabling plain xml for client " + client_ip);
-                    }
-                    return rendering;
-                } else {
-                    CAT.warn("\n The host " + client_ip
-                             + " is NOT allowed to retrieve plain XML!");
-                }
-            }
-            return RENDER_NORMAL;
         } else {
-            throw new IllegalStateException("" + isXMLOnlyAllowed);
+            return RENDER_NORMAL;
         }
     }
 

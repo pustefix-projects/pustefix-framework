@@ -623,7 +623,6 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.strip"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
-    <available file="lib/tomcat/jmx.jar" property="jmx.found"/>
     <antcall target="tomcat.jmx"/>
   </target>
 
@@ -691,9 +690,9 @@ or delete the DOCTYPE definition -->
     </genkey>
   </target>
 
-  <target name="tomcat.jmx" if="jmx.found">
+  <target name="tomcat.jmx">
     <!-- work-around bug 29056 -->
-    <copy file="lib/tomcat/jmx.jar" todir="${dir.tomcat}/bin" overwrite="true"/>
+    <copy file="lib/jmxri-1.2.1.jar" tofile="${dir.tomcat}/bin/jmx.jar" overwrite="true"/>
   </target>
 
   <description>
