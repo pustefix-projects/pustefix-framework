@@ -37,8 +37,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     //~ Instance/static variables ..................................................................
 
-    private static String PROP_PROHIBIT_EDIT = "prohibitEdit";
-    private static String DO_PROHIBIT_EDIT = "yes";
     // set in from constructor
     protected TargetType      type;
     protected TargetGenerator generator;
@@ -51,9 +49,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected Category             CAT       = Category.getInstance(this.getClass().getName());
     protected Category             TREE      = Category.getInstance(
                                                        this.getClass().getName() + ".TREE");
-	// determine if the target has been generated. This affects production mode only, where
-	// we do not need to handle that the target is always up to date.
-	private boolean onceGenerated = false;
+    // determine if the target has been generated. This affects production mode only, where
+    // we do not need to handle that the target is always up to date (expect make generate!!!)
+    private boolean onceGenerated = false;
 
     //~ Methods ....................................................................................
 
@@ -93,41 +91,30 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
 
     public Object getValue() throws Exception {
-        // Idea: if editmode is prohibited we do not need to call getModeTimeMaybeUpdate
+        // Idea: if skip_getmodtimemaybeupdate is set we do not need to call getModeTimeMaybeUpdate
         // but: if the target is not in memory- and disk-cache (has not been generated) we
         // must call getModTimeMaybeUpdate to make it work
-        if (params.get(PROP_PROHIBIT_EDIT) != null) {
-            if (params.get(PROP_PROHIBIT_EDIT).toString().toLowerCase().equals(DO_PROHIBIT_EDIT.toLowerCase())) {
-                // prohibit-edit is on!
+        if (generator.isGetModTimeMaybeUpdateSkipped()) {
+            // skip getModTimeMaybeUpdate!
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("skip_getmodtimemaybeupdate is on. Trying to skip getModTimeMaybeUpdate...");
+            }
+            if (! onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
                 if (CAT.isDebugEnabled()) {
-                    CAT.debug("Prohibit edit is on. Trying to skip getModTimeMaybeUpdate...");
-                }
-                
-                if (!onceGenerated) { // Target not in memory- and disc-cache -> getModTimeMaybeUpdate
-                    if (CAT.isDebugEnabled()) {
-                        CAT.debug("Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
-                    }
-                    getModTimeMaybeUpdate();
-                } // cache hit -> nop 
-                else {
-                    if (CAT.isDebugEnabled()) {
-                        CAT.debug("Target has been generated! Skipping getModTimeMaybeUpdate...");
-                    }
-                }
-            } // prohibit-edit found, but unkown key -> getModTimeMaybeUpdate 
-            else {
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("Param " + PROP_PROHIBIT_EDIT
-                             + "found but key is unkown. Calling getModTimeMaybeUpdate...");
+                    CAT.debug("Cant't skip getModTimeMaybeUpdate cause target has not been generated! Generating now !!");
                 }
                 getModTimeMaybeUpdate();
+            } // target generated -> nop 
+            else {
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("Target has been generated! Skipping getModTimeMaybeUpdate...");
+                }
             }
-        } // prohibit-edit is null -> getModTimeMaybeUpdate 
+        } // do not skip getModTimeMaybeUpdate 
         else {
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("Param " + PROP_PROHIBIT_EDIT
-                         + " not found. Calling getModTimeMaybeUpdate...");
-            }
+        	if (CAT.isDebugEnabled()) {
+            	CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+           	}
             getModTimeMaybeUpdate();
         }
         return getCurrValue();
@@ -165,7 +152,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // Example: A NullCache will silently ignore all store requests, so a call to this method
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
-                    // now the target is generated 
+                    // now the target is generated
                     onceGenerated = true;
                 }
             }

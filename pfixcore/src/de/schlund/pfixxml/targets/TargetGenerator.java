@@ -50,8 +50,8 @@ public class TargetGenerator {
     private        long                   config_mtime = 0;
     private        String                 disccachedir;
     private        String                 docroot;
-    
-    
+    private 	   boolean                isGetModTimeMaybeUpdateSkipped = false;
+        
     // needed during load.
     private int unnamedcount = 0;
 
@@ -391,6 +391,7 @@ public class TargetGenerator {
                     File confile = new File(args[i]);
                     if (confile.exists() && confile.canRead() && confile.isFile()) {
                         gen = TargetGeneratorFactory.getInstance().createGenerator(args[i]);
+                        gen.setIsGetModTimeMaybeUpdateSkipped(false);
                         System.out.println("---------- Doing " + args[i] + "...");
                         gen.generateAll();
                         System.out.println("---------- ...done [" + args[i] + "]");
@@ -423,4 +424,20 @@ public class TargetGenerator {
             }
         }
     }
+    /**
+     * Returns the isGetModTimeMaybeUpdateSkipped.
+     * @return boolean
+     */
+    public boolean isGetModTimeMaybeUpdateSkipped() {
+        return isGetModTimeMaybeUpdateSkipped;
+    }
+
+    /**
+     * Sets the isGetModTimeMaybeUpdateSkipped.
+     * @param isGetModTimeMaybeUpdateSkipped The isGetModTimeMaybeUpdateSkipped to set
+     */
+    public void setIsGetModTimeMaybeUpdateSkipped(boolean isGetModTimeMaybeUpdateSkipped) {
+        this.isGetModTimeMaybeUpdateSkipped = isGetModTimeMaybeUpdateSkipped;
+    }
+
 }

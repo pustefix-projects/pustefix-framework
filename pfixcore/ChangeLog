@@ -3,10 +3,24 @@
 	* src/de/schlund/pfixcore/util/MultiTransform.java:
 	More detailed message on errors.
 
+	* example/common/conf/pustefix.prop.in: added properties
+	for skipping getModTimeMaybeUpdate.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(initValues): analyze above
+	properties and configure TargetGenerator accordingly.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	ignored transformer exceptions are not printed with whole stack trace
+	any more.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: added flag
+	with getter and setter determining if getModTimeMaybeUpdate should be
+	skipped.(Note: in the main method getModTimeMaybeUpdate must not be
+	skipped!!)
+
 	* src/de/schlund/pfixxml/targets/TargetImpl.java(getValue):
-	does not call getModTimeMaybeUpdate if prohibitedit is set
+	does not call getModTimeMaybeUpdate if above property is set
 	and target was generated once (indicated by flag 
-	onceGenerated). Should increase performance in production mode.
+	onceGenerated). Increases performance in production mode.
 
 2003-02-15  Jens Lautenbacher  <jtl@schlund.de>
 
