@@ -138,11 +138,11 @@ public class AppLoaderConfig {
             //repository
             name="apploader.repository";
             val=getProperty(props, name);
-            File file=new File(val);
+            File file=PathFactory.getInstance().createPath(val).resolve();
             if(file.exists()) {
                 loader.setRepository(file);
             } else {
-                throw new AppLoaderConfigException("Property '"+name+"' needs existing directory as value.");
+                throw new AppLoaderConfigException("Property '"+name+"' needs existing directory as value: " + val);
             }
             //package
             name="apploader.package.include.";
