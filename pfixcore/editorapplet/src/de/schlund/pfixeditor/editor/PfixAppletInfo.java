@@ -95,7 +95,7 @@ public class PfixAppletInfo {
          String preString = location.substring(0, location.lastIndexOf("/"));
          String afterString = location.substring(location.lastIndexOf(";"), location.length());
          
-         String urlLocation = preString + "/AppletInfo" + afterString +  "?__xmlonly=1&__nostore=1";
+         String urlLocation = preString + "/AppletInfo" + afterString +  "&__xmlonly=1&__nostore=1";
          System.out.println("URRRLLLL NEU " + urlLocation);
          
          return urlLocation;
