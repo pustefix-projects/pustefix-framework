@@ -1,3 +1,7 @@
+2003-10-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/script/baselib.js: small bugfixes. 
+
 2003-10-20  Sebastian Werner <sw@schlund.de>
 	* example/core/script/baselib.js: 
 	Bugfix for cookie handling: better store algorithmus; no more 

@@ -44,7 +44,7 @@ var __js_Cookie = {
 
   // Official specs allows 4000 Bytes/Cookie and 20 Cookies/Page
   maxstr : 4000,
-  maxarr : 20,
+  maxarr : 10,
   maxarrhard : 20,
 
   set : function(name, value)
@@ -125,7 +125,7 @@ var __js_Cookie = {
   {
     var s="";
 
-    for (var i=0; i<20; i++)
+    for (var i=0; i<this.maxarrhard; i++)
     {
       var r = this.read(this.base + this.norm_sub(i))
       if(r) s+=r;
