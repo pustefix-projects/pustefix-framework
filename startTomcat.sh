@@ -1,24 +1,23 @@
 #!/bin/sh
 
-echo ---------------------------
-
 if [ "$1" == "-d" ] ; then 
-   echo Remote debug, will wait for connect to localhost:5000
-   debug="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=5000"
+   cmd="jpda run"
 else
-    echo No remote debug, enable it with $0 "-d"
-    debug=""
+   cmd="run"
 fi
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`/jni/build
-export JAVA_OPTS="-mx200M $debug"
-export JSSE_HOME="`pwd`/lib/jsse"
-
-echo "starting tomcat with java-opts '$JAVA_OPTS'"
-
-echo ---------------------------
+export JAVA_OPTS="-mx200M"
+echo "---------------------------"
+echo "catalina.sh $cmd"
+echo "Using JAVA_OPTS:       $JAVA_OPTS"
+echo "Using JPDA_TRANSPORT:  $JPDA_TRANSPORT"
+echo "Using JPDA_ADDRESS:    $JPDA_ADDRESS"
+echo "Using JPDA_OPTS:       $JPDA_OPTS"
+echo "---------------------------"
 
 cd ./example/servletconf/tomcat/
-LANG=C ./bin/catalina.sh run
+LANG=C ./bin/catalina.sh $cmd
+
 
 

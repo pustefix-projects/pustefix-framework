@@ -26,6 +26,8 @@
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <xsl:if test="not(string($adminport) = '')"><xsl:attribute name="port"><xsl:value-of select="$adminport"/></xsl:attribute></xsl:if>
       
+      <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" debug="0"/>
+      <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" debug="0"/>
       <GlobalNamingResources>
         <Resource name="UserDatabase" auth="Container" type="org.apache.catalina.UserDatabase"
                   description="User database that can be updated and saved">
