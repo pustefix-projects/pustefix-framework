@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import de.schlund.jmsexceptionhandler.rmiobj.ExceptionDataValue;
+import de.schlund.jmsexceptionhandler.rmiobj.TextCreatorVisitor;
 import de.schlund.jmsexceptionhandler.rmiobj.XMLCreatorVisitor;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.targets.TargetGenerationException;
@@ -46,20 +47,27 @@ public class UniversalExceptionProcessor implements ExceptionProcessor {
 			HttpServletRequest req, HttpServletResponse res, Properties props)
 			throws IOException, ServletException {
 		Document doc = null;
-		
+		String text = null;
+        
 		if(exception instanceof TargetGenerationException) {
 			TargetGenerationException tex = (TargetGenerationException) exception;
 			try {
 				doc = tex.toXMLRepresentation();
+                text = tex.toStringRepresentation();
 			} catch (ParserConfigurationException e) {
 				throw new ServletException(e);
 			}
 		} else {
 			ExceptionDataValue data = ExceptionDataValueHelper.createExceptionDataValue(exception, pfixReq);
-			XMLCreatorVisitor v = new XMLCreatorVisitor();
-			data.accept(v);
-			doc = v.getDocument();
+			XMLCreatorVisitor xv = new XMLCreatorVisitor();
+			data.accept(xv);
+            TextCreatorVisitor tv = new TextCreatorVisitor();
+            data.accept(tv);
+			doc = xv.getDocument();
+            text = tv.getText();
 		}
+        
+        LOG.error(text);
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("Got following DOM for error-representation: "+

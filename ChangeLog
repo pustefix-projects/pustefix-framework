@@ -1,5 +1,11 @@
 2004-07-01  Joerg Haecker <haecker@schlund.de>
 
+        * src/de/schlund/pfixxml/exceptionprocessor/UniversalExceptionProcessor.java:
+        ensure, that exception is also printed in logfile.
+        * src/de/schlund/pfixxml/PerfEventTypeConfig.java: more logging if
+        init  failed.
+        * lib/rmiobj.jar: new jar with exception-formatting utilities.
+
         * src/de/schlund/pfixxml/PerfEventTypeConfig.java: new class
         getting delay times from factory.prop.in
         * src/de/schlund/pfixxml/PerfEventType.java: adjusted to
