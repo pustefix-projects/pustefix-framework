@@ -409,7 +409,7 @@ public class PfixServletRequest {
     private void checkParameterNameForEmbeddedData(String name) {
         //avoid duplicate key/value pairs for input buttons with image type by
         //excluding the according duplicate parameter names from embedded data check
-        if(name.endsWith(":.x")||name.endsWith(":.y")) return;
+        // if(name.endsWith(":.x")||name.endsWith(":.y")) return;
         HashMap embpar = new HashMap();
         int     index = 0;
         while (name.indexOf(DATA_PREFIX, index) >= 0) {
