@@ -120,6 +120,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int    XML_ONLY_ALLOWED                              = 0;
     private static final int    XML_ONLY_RESTRICTED                           = 1;
     private static final int    XML_ONLY_PROHIBITED                           = 2;
+
+    private static final String PROP_PROHIBITDEBUG = "xmlserver.prohibitdebug";
+    private static final String PROP_PROHIBITINFO  = "xmlserver.prohibitinfo";
     
     // error handling
     private static final String ERROR_STYLESHEET = "core/xsl/errorrepresentation.xsl";
@@ -148,6 +151,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private String[]        xmlOnlyValidHosts = null;
 
     private int             scleanertimeout   = 300;
+
+    private boolean         allowInfo         = true;
+    private boolean         allowDebug        = true;
     
     //~ Initializers ...............................................................................
 
@@ -183,6 +189,14 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw (new ServletException("Need property '" + PROP_NAME + "'"));
         }
 
+        String prohibitDebug = getProperties().getProperty(PROP_PROHIBITDEBUG);
+        if (prohibitDebug != null && (prohibitDebug.equals("true") || prohibitDebug.equals("1")))
+            allowDebug = false;
+        
+        String prohibitInfo  = getProperties().getProperty(PROP_PROHIBITINFO);
+        if (prohibitInfo != null && (prohibitInfo.equals("true") || prohibitInfo.equals("1")))
+            allowInfo = false;
+        
         String noedit = getProperties().getProperty(PROP_NOEDIT);
         if (noedit != null && (noedit.equals("false") || noedit.equals("0"))) {
             editmodeAllowed = true;
@@ -216,7 +230,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if ((render_external_prop != null) && render_external_prop.equals("true")) {
             render_external = true;
         }
-        if(CAT.isInfoEnabled()) {
+        if(isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
             sb.append("\n").append("AbstractXMLServer properties after initValues(): \n");
             sb.append("                targetconf = ").append(targetconf).append("\n");
@@ -267,7 +281,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             } else if (tmp.toUpperCase().equals(PROP_XMLONLY_RESTRICTED_VALUE.toUpperCase())) {
                 isXMLOnlyAllowed = XML_ONLY_RESTRICTED;
             }
-            if (CAT.isDebugEnabled()) {
+            if (isDebugEnabled()) {
                 CAT.debug("\nXML only is: "
                          + (isXMLOnlyAllowed == XML_ONLY_ALLOWED ? "allowed" : "")
                          + (isXMLOnlyAllowed == XML_ONLY_RESTRICTED ? "restricted" : "")
@@ -283,7 +297,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 while (iter.hasNext()) {
                     Object key = iter.next();
                     xmlOnlyValidHosts[i] = map.get(key).toString();
-                    if (CAT.isDebugEnabled()) {
+                    if (isDebugEnabled()) {
                         if (sb == null) {
                             sb = new StringBuffer();
                         }
@@ -291,7 +305,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                     }
                     i++;
                 }
-                if (CAT.isDebugEnabled()) {
+                if (isDebugEnabled()) {
                     sb.insert(0, "\nValid hosts for xml only are: \n");
                     CAT.debug(sb.toString());
                 }
@@ -314,7 +328,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             String tmp = getProperties().getProperty(PROP_SKIP_GETMODTIMEMAYBEUPADTE_KEY);
             skip_getmodtimemaybeupdate = tmp.toUpperCase().equals(PROP_SKIP_GETMODTIMEMAYBEUPADTE_ENABLED_VALUE.toUpperCase()) ? true : false;
-            if (CAT.isDebugEnabled()) {
+            if (isDebugEnabled()) {
                 CAT.debug("SKIP_GETMODTIMEMAYBEUPDATE: " + skip_getmodtimemaybeupdate);
             }
         }
@@ -335,7 +349,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             String tmp = getProperties().getProperty(PROP_RECORDMODE_KEY);
             recordmodeAllowed = tmp.toUpperCase().equals(PROP_RECORDMODE_ALLOWED_VALUE.toUpperCase()) ? true : false;
-            if (CAT.isDebugEnabled()) {
+            if (isDebugEnabled()) {
                 CAT.debug("RecordModeAllowed is: " + recordmodeAllowed);
             }
         }
@@ -460,10 +474,10 @@ public abstract class AbstractXMLServer extends ServletManager {
                 RecordManager recorder = RecordManagerFactory.getInstance().createRecordManager(targetconf);
                 recorder.tryRecord(preq, res, spdoc, session);
             }
-            if (CAT.isDebugEnabled()) {
+            if (isDebugEnabled()) {
                 CAT.debug("* Document for XMLServer is" + spdoc);
             }
-            if (CAT.isInfoEnabled()) {
+            if (isInfoEnabled()) {
                 CAT.info(">>> Complete getDom(...) took " + (System.currentTimeMillis() - currtime)
                          + "ms");
             }
@@ -476,7 +490,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
             currtime = System.currentTimeMillis();
             spdoc.setDocument(xsltproc.xmlObjectFromDocument(spdoc.getDocument()));
-            if (CAT.isInfoEnabled()) {
+            if (isInfoEnabled()) {
                 CAT.info(">>> Complete xmlObjectFromDocument(...) took "
                          + (System.currentTimeMillis() - currtime) + "ms");
             }
@@ -494,7 +508,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         currtime = System.currentTimeMillis();
         handleDocument(preq, res, spdoc, params, doreuse);
-        if (CAT.isInfoEnabled()) {
+        if (isInfoEnabled()) {
             CAT.info(">>> Complete handleDocument(...) took "
                      + (System.currentTimeMillis() - currtime) + "ms");
         }
@@ -524,7 +538,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                                                    
         }
         if (! doreuse) {
-            if (CAT.isInfoEnabled()) {
+            if (isInfoEnabled()) {
                 CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
             if (session != null) {
@@ -533,13 +547,13 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             // Only process cookies if we don't reuse
             if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
-                if (CAT.isDebugEnabled()) {
+                if (isDebugEnabled()) {
                     CAT.debug("*** Sending cookies ***");
                 }
                 // Now adding the Cookies from spdoc
                 for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
                     Cookie cookie = (Cookie) i.next();
-                    if (CAT.isDebugEnabled()) {
+                    if (isDebugEnabled()) {
                         CAT.debug("    Add cookie: " + cookie);
                     }
                     res.addCookie(cookie);
@@ -552,7 +566,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             for (Iterator i = headers.keySet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 String val = (String) headers.get(key);
-                if (CAT.isDebugEnabled()) {
+                if (isDebugEnabled()) {
                     CAT.debug("*** Setting custom supplied header: " + key + " -> " + val);
                 }
                 res.setHeader(key, val);
@@ -592,7 +606,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             } catch (TransformerException e) {
                 if(e.getException() instanceof SocketException) {
                     CAT.warn("[Ignored TransformerException] : " + e.getMessage());
-                    if (CAT.isInfoEnabled()) {
+                    if (isInfoEnabled()) {
                         CAT.info("[Ignored TransformerException]", e);
                     }
                 } else {
@@ -659,7 +673,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 String client_ip = pfreq.getRemoteAddr();
                 for (int i = 0; i < xmlOnlyValidHosts.length; i++) {
                     if (client_ip.equals(xmlOnlyValidHosts[i])) {
-                        if (CAT.isInfoEnabled()) {
+                        if (isInfoEnabled()) {
                             CAT.info("\nEnabling plain xml for client " + client_ip);
                         }
                         return true;
@@ -760,4 +774,14 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         return map;
     }
+
+
+    private boolean isDebugEnabled() {
+        return CAT.isDebugEnabled() && allowDebug;
+    }
+
+    private boolean isInfoEnabled() {
+        return CAT.isInfoEnabled() && allowInfo;
+    }
+
 }

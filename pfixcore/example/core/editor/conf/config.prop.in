@@ -1,5 +1,8 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
+  <prop name="xmlserver.prohibitdebug">true</prop>
+  <prop name="xmlserver.prohibitinfo">true</prop>
+
   <prop name="pfixcore.editor.backupdir">/home/<cus:uid/>/tmp/editor_backup</prop>
   <prop name="sessioncleaner.timeout">10</prop>
   
