@@ -29,7 +29,7 @@ import java.util.*;
  */
 
 public interface AppContext {
-    void       init(Properties props, ContainerUtil conutil) throws Exception;
+    void       init(Properties props, ContainerUtil conutil, String name) throws Exception;
     SPDocument handleRequest(PfixServletRequest preq) throws Exception;
     void       reset() throws Exception;
 }

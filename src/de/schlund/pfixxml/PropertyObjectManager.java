@@ -19,9 +19,8 @@
 
 package de.schlund.pfixxml;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
+import java.util.*;
+import org.apache.log4j.*;
 
 /**
  * This class manages shared objects, which are build from properties. 
@@ -30,50 +29,52 @@ import java.util.Properties;
  */
 public class PropertyObjectManager {
 
-	private static PropertyObjectManager instance=new PropertyObjectManager();
-	private HashMap propMaps;
-	
-	/**Returns PropertyObjectManager instance.*/
-	public static PropertyObjectManager getInstance() {
-		return instance;
-	}
-	
-	/**Constructor.*/
-	PropertyObjectManager() {
-		propMaps=new HashMap();
-	}
-	
-	/**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
-	public PropertyObject getPropertyObject(Properties props,String className) throws Exception {
-		return getPropertyObject(props,Class.forName(className));
-	}
-	
-	/**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
-	public PropertyObject getPropertyObject(Properties props,Class propObjClass) throws Exception {
-		HashMap propObjs=null;
-		synchronized (propMaps) {
-			propObjs=(HashMap)propMaps.get(props);
-			if(propObjs==null) {
-				propObjs=new HashMap();
-				propMaps.put(props,propObjs);
-			}
-		}
-		synchronized (propObjs) {
-			PropertyObject propObj=(PropertyObject)propObjs.get(propObjClass);
-			if(propObj==null) {
-				propObj=(PropertyObject)propObjClass.newInstance();
-				propObj.init(props);
-				propObjs.put(propObjClass,propObj);
-			}
-			return propObj;
-		}
-	}
-	
-	/**Removes PropertyObjects for Properties.They are newly created on demand, i.e. as a result of subsequent getPropertyObject calls.*/
-	public void resetPropertyObjects(Properties props) {
-		synchronized (propMaps) {
-			propMaps.remove(props);
-		}
-	}
+    private        Category CAT = Category.getInstance(this.getClass());
+    private static PropertyObjectManager instance=new PropertyObjectManager();
+    private        HashMap propMaps;
+    
+    /**Returns PropertyObjectManager instance.*/
+    public static PropertyObjectManager getInstance() {
+        return instance;
+    }
+    
+    /**Constructor.*/
+    PropertyObjectManager() {
+        propMaps=new HashMap();
+    }
+    
+    /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
+    public PropertyObject getPropertyObject(Properties props,String className) throws Exception {
+        return getPropertyObject(props,Class.forName(className));
+    }
+    
+    /**Returns PropertyObject according to Properties and Class parameters. If it doesn't already exist, it will be created.*/
+    public PropertyObject getPropertyObject(Properties props,Class propObjClass) throws Exception {
+        HashMap propObjs = null;
+        synchronized (propMaps) {
+            propObjs = (HashMap) propMaps.get(props);
+            if (propObjs == null) {
+                propObjs = new HashMap();
+                propMaps.put(props,propObjs);
+            }
+        }
+        synchronized (propObjs) {
+            PropertyObject propObj = (PropertyObject) propObjs.get(propObjClass);
+            if (propObj == null) {
+            CAT.warn("******* Creating new PropertyObject " + propObjClass.getName());
+                propObj = (PropertyObject) propObjClass.newInstance();
+                propObj.init(props);
+                propObjs.put(propObjClass,propObj);
+            }
+            return propObj;
+        }
+    }
+    
+    /**Removes PropertyObjects for Properties.They are newly created on demand, i.e. as a result of subsequent getPropertyObject calls.*/
+    public void resetPropertyObjects(Properties props) {
+        synchronized (propMaps) {
+            propMaps.remove(props);
+        }
+    }
 
 }
