@@ -14,7 +14,7 @@
     to local needs.</p>
 
   <p>The general structure of a <code>.prop.in</code> file is very easy:</p>
-  
+
   <xmlcode>
     <properties>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
@@ -54,7 +54,7 @@
       get the XML result instead of the rendered page. These features
       are turned off for security reasons when the mode is "prod".
     </li>
-    
+
     <li>The <code>docroot</code>, i.e. the directory where your
     project's configuration and XML/XSLT files are located in.</li>
 
@@ -184,7 +184,7 @@
       </td>
     </tr>
   </table>
-  
+
   <h1>Propery files for a single servlet instance</h1>
 
   <p>The <pustefix/>
@@ -216,7 +216,7 @@
         <ssl force="true|false"/>
         <xmlcodeOFF>
           <div class="comment">
-            <code>force</code> must be set to <b>true</b> if the 
+            <code>force</code> must be set to <b>true</b> if the
             servlet needs to run under SSL. The whole node is optional.
           </div>
         </xmlcodeOFF>
@@ -308,7 +308,7 @@
               </p>
             </div>
           </xmlcodeOFF>
-        </resource>                               
+        </resource>
       </context>
       <xmlcodeOFF><a name="stopnext"/></xmlcodeOFF>
       <pageflow name="AName" final="APageName" stopnext="true|false">
@@ -388,7 +388,7 @@
       <xmlcodeOFF>
         <a name="pagerequest"/>
       </xmlcodeOFF>
-      <pagerequest name="APageName" nostore="true|false">
+      <pagerequest name="APageName" nostore="true|false" copyfrom="APageName">
         <xmlcodeOFF>
           <table class="stdtable">
             <tr>
@@ -420,6 +420,18 @@
                 main pages. See also the section on <code>param</code>s below.
               </td>
             </tr>
+            <tr>
+              <td>
+                <code>copyfrom</code>
+              </td>
+              <td>
+                <b>Optional</b>. If given, and set to the name of a valid
+                <code>pagerequest</code>, all configuration from this
+                referenced <code>pagerequest</code> are used for the current page,
+                disregarding <b>all</b> configuration that is made in this pagerequest.
+                It's a plain and simple copy, no extending, no restricting!
+              </td>
+            </tr>
           </table>
         </xmlcodeOFF>
         <ssl force="true|false"/>
@@ -434,12 +446,12 @@
               SSL, there is no way back (so all other pages will run
               securely regardless if they have a <code>ssl</code> node or not). Note that you
               can force the servlet as a whole to run only under SSL
-              by  <a href="#ssl">specifying the <code>ssl</code> subnode of the 
+              by  <a href="#ssl">specifying the <code>ssl</code> subnode of the
                 <code>servletinfo</code> node</a>.
             </p>
           </div>
         </xmlcodeOFF>
-        <state class="AClassName"/>                              
+        <state class="AClassName"/>
         <xmlcodeOFF>
           <div class="comment">
             <p>The whole node is optional. If given, the
@@ -462,7 +474,7 @@
             </ol>
           </div>
         </xmlcodeOFF>
-        <finalizer class="AClassName"/>                       
+        <finalizer class="AClassName"/>
         <xmlcodeOFF>
           <div class="comment">
             <p>The whole node is optional.
@@ -646,7 +658,7 @@
             </div>
           </xmlcodeOFF>
         </authhandler>
-              
+
         <output>
           <xmlcodeOFF>
             <div class="comment">
@@ -670,13 +682,13 @@
               </tr>
               <tr>
                 <td><code>node</code></td>
-                <td><b>Mandatory</b>. <code>node</code> is the node in the output tree ("/formresult/<b>AName</b>") 
+                <td><b>Mandatory</b>. <code>node</code> is the node in the output tree ("/formresult/<b>AName</b>")
                   under which the ContextResource inserts it's data.</td>
               </tr>
             </table>
           </xmlcodeOFF>
         </output>
-        <xmlcodeOFF><a name="param"/></xmlcodeOFF>    
+        <xmlcodeOFF><a name="param"/></xmlcodeOFF>
         <param name="APropertyKey">AValue</param>
         <xmlcodeOFF>
           <div class="comment">
@@ -737,8 +749,8 @@
       </pagerequest>
       <prop name="AProperty">AValue</prop>
     </properties>
-  </xmlcode>    
-    
+  </xmlcode>
+
   <h2>de.schlund.pfixxml.DirectOutputServlet</h2>
 
   <p><a name="DOS"/>Occasionally you don't
@@ -763,7 +775,7 @@
     is a java class implementing
     <code>de.schlund.pfixcore.workflow.app.DirectOutputState</code>.
   </p>
-  
+
   <xmlcode>
     <properties>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
@@ -778,7 +790,7 @@
           </div>
         </xmlcodeOFF>
       </servletinfo>
-      
+
       <foreigncontext externalservletname="UniqueNameOfAnotherServlet"/>
       <xmlcodeOFF>
         <div class="comment">
@@ -794,7 +806,7 @@
           </p>
         </div>
       </xmlcodeOFF>
-      
+
       <directoutputpagerequest name="APageName">
         <directoutputstate class="AClassName"/>
         <xmlcodeOFF>
