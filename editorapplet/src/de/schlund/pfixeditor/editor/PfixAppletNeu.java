@@ -229,24 +229,29 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
         action = getActionByName(DefaultEditorKit.cutAction);
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-        action.putValue(Action.NAME, "Cut");
+        action.putValue(DefaultEditorKit.cutAction, new String("cut"));
         editMenu.add(action);
+
+
+        // editMenu.add(getActionByName(DefaultEditorKit.cutAction));
+
+        
 
         action = getActionByName(DefaultEditorKit.copyAction);
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-        action.putValue(Action.NAME, "Copy");
+        action.putValue(DefaultEditorKit.copyAction, "Copy");
         editMenu.add(action);
         
         action = getActionByName(DefaultEditorKit.pasteAction);
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-        action.putValue(Action.NAME, "Paste");
+        action.putValue(DefaultEditorKit.pasteAction, "Paste");
         editMenu.add(action);
 
         editMenu.addSeparator();
 
         action = getActionByName(DefaultEditorKit.selectAllAction);
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
-        action.putValue(Action.NAME, "Select all");
+        action.putValue(DefaultEditorKit.selectAllAction, "Select all");
         editMenu.add(action);
         
 
