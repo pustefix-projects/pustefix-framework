@@ -59,6 +59,7 @@ public class AppLoader implements FactoryInit,Runnable {
     private HashMap policies=new HashMap();
     private File repository;
     private Thread modThread;
+    private boolean isLoading;
     
     public static AppLoader getInstance() {
         return instance;
@@ -204,6 +205,7 @@ public class AppLoader implements FactoryInit,Runnable {
     }
     
     protected boolean restart() {
+        loadingStarted();
         boolean reloaded=reload();
         ArrayList sessions=new ArrayList();
         SessionAdmin admin=SessionAdmin.getInstance();
@@ -221,6 +223,7 @@ public class AppLoader implements FactoryInit,Runnable {
             session.invalidate();
         }
         CAT.info("Restarted application.");
+        loadingEnded();
         return reloaded;
     }
     
@@ -233,33 +236,61 @@ public class AppLoader implements FactoryInit,Runnable {
         }  
     }
     
-    
     protected boolean reload() {
+        loadingStarted();
         CAT.debug("Look for modified classes.");
         boolean modified=loader.modified();
         if(modified) {
             CAT.debug("Found modified classes.");
             forceReload();
+            loadingEnded();
             return true;
         } else {
-            CAT.info("No modified classes found. Reload is spared.");     
+            CAT.info("No modified classes found. Reload is spared.");    
+            loadingEnded(); 
             return false;  
         }
     }
     
     protected void forceReload() {
-            long t1=System.currentTimeMillis();
-            loader=new AppClassLoader(getClass().getClassLoader());
-            StateTransfer.getInstance().reset();
-            triggerReloaders();
-            long t2=System.currentTimeMillis();
-            CAT.info("Reloaded classes in "+(t2-t1)+" ms.");
+        boolean direct=true;
+        if(isLoading()) direct=false;
+        if(direct) loadingStarted(); 
+        long t1=System.currentTimeMillis();
+        loader=new AppClassLoader(getClass().getClassLoader());
+        StateTransfer.getInstance().reset();
+        triggerReloaders();
+        long t2=System.currentTimeMillis();
+        CAT.info("Reloaded classes in "+(t2-t1)+" ms.");
+        if(direct) loadingEnded();
+    }
+    
+    /**
+     * Set flag indicating that AppLoader is currently loading.
+     */
+    private synchronized void loadingStarted() {
+        isLoading=true;
+    }
+    
+    /**
+     * Set flag indicating that AppLoader has finished loading.
+     */
+    private synchronized void loadingEnded() {
+        isLoading=false;
+    }
+    
+    /**
+     * Returns if AppLoader is currently loading.
+     */
+    public synchronized boolean isLoading() {
+        return isLoading;
     }
     
     public String toString() {
         StringBuffer sb=new StringBuffer();
         sb.append("AppLoader[enabled="+enabled+"][listener="+listener+"][trigger="+trigger+"][interval="+interval+"]");
         sb.append("[policy="+policies+"][repository="+repository+"][includes="+incPacks+"]");
+        sb.append("[excludepackages="+travExcludes+"][includeclasses="+travIncludes+"]");
         return sb.toString();
     }
     

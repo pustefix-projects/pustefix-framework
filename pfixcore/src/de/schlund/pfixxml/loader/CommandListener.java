@@ -71,7 +71,7 @@ public class CommandListener implements Runnable {
                             if(response==null) {
                                 out.println("OK"); 
                             } else {
-                                out.println("OK "+response);
+                                out.println(response);
                             }
                         } catch(IllegalCommandException x) {
                             CAT.error(x);

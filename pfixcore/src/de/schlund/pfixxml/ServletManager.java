@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
+import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 
@@ -136,6 +137,13 @@ public abstract class ServletManager extends HttpServlet {
                     Cookie tmp = cookies[i];
                     CAT.debug(">>>>> Cookie: " + tmp.getName() + " -> " + tmp.getValue());
                 }
+            }
+        }
+        //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
+        AppLoader loader=AppLoader.getInstance();
+        if(loader.isEnabled()) {
+            while(loader.isLoading()) {
+                try {Thread.sleep(100);} catch(InterruptedException x) {}
             }
         }
         HttpSession session                  = null;

@@ -43,23 +43,28 @@ public class CommandProcessor {
 	   if(cmdStr.equals("reload")) {
 	       if(st.hasMoreTokens()) throw new IllegalCommandException(IllegalCommandException.NO_ARG,cmd);
 	       boolean reloaded=loader.reload();
-           if(reloaded && StateTransfer.getInstance().getInconsistencyType()==AppLoader.INCONSISTENCY_PROBABLE) {
-                HashSet classes=new HashSet();
-                Iterator it=StateTransfer.getInstance().getExceptions(AppLoader.INCONSISTENCY_PROBABLE);
-                while(it.hasNext()) {
-                    StateTransferException ste=(StateTransferException)it.next();
-                    String name=ste.getClassName();
-                    classes.add(name);
-                }
-                StringBuffer sb=new StringBuffer();
-                sb.append("[Warning]\nState consistency can't be ensured due to important changes affecting the following classes:\n");
-                it=classes.iterator();
-                while(it.hasNext()) {
-                    sb.append("'"+it.next()+"'");
-                    if(it.hasNext()) sb.append(", ");
-                }
-                sb.append("\nLook in the AppLoader's logfile for details. You are recommended to do a AppLoader restart.");
-                return sb.toString();
+           if(reloaded) {
+               StringBuffer sb=new StringBuffer();
+               sb.append("Reloaded.");
+               if(StateTransfer.getInstance().getInconsistencyType()==AppLoader.INCONSISTENCY_PROBABLE) {
+                   HashSet classes=new HashSet();
+                    Iterator it=StateTransfer.getInstance().getExceptions(AppLoader.INCONSISTENCY_PROBABLE);
+                    while(it.hasNext()) {
+                        StateTransferException ste=(StateTransferException)it.next();
+                        String name=ste.getClassName();
+                        classes.add(name);
+                    }
+                    sb.append("\n[Warning]\nState consistency can't be ensured due to important changes affecting the following classes:\n");
+                    it=classes.iterator();
+                    while(it.hasNext()) {
+                        sb.append("'"+it.next()+"'");
+                        if(it.hasNext()) sb.append(", ");
+                    }
+                    sb.append("\nLook in the AppLoader's logfile for details. You are recommended to do a AppLoader restart.");
+               } 
+               return sb.toString();
+           } else {
+               return "No modified classes found. Reload is spared.";
            }
            
 	   } else if(cmdStr.equals("restart")) {

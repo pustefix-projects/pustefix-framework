@@ -1,3 +1,17 @@
+2003-06-20  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/loader/AppLoader.java:
+	Added state indication support. The new method isLoading() returns
+	true while AppLoader is reloading.
+	* src/de/schlund/pfixxml/ServletManager.java (doGet):
+	If AppLoader is enabled and currently doing a reload, incoming 
+	requests are blocked until reloading is finished.
+	* src/de/schlund/pfixxml/loader/CommandProcessor.java:
+	Returns more detailed information about reloading process to 
+	command client.
+	* src/de/schlund/pfixxml/loader/CommandListener.java:
+	Changed output formatting.
+
 2003-06-18  Volker Zaich <zaich@schlund.de>
 	
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java:
