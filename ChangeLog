@@ -1,3 +1,12 @@
+2003-07-25 Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/loader/CommandProcessor.java
+	* src/de/schlund/pfixxml/loader/CommandClient.java
+	* apploader.sh
+
+	Did some commandline usage cosmetics. Added help command, which gives
+	an overview of all executable AppLoader commands.
+
 2003-07-22 Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixIncludeDialog.java
