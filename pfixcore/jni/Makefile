@@ -29,6 +29,10 @@ JNI_PKG=jni.tar.gz
 $(JNI_LIB): $(PFX_SOURCES)
 	@make dist 
 
+init:
+	@mkdir ${JNI_BLDDIR} 2>/dev/null
+	@mkdir ${JNI_INCDIR} 2>/dev/null
+
 headers:
 	@echo "*** Creating JNI header files"
 	${JAVAH} -classpath ${PFX_BLDDIR} -d ${JNI_INCDIR} ${PFX_CLASSES}
@@ -43,9 +47,9 @@ lib: headers
 endif
 
 ifneq ($(CC),)
-dist: clean lib pkg
+dist: clean init lib pkg
 else
-dist: clean lib pkg
+dist: clean init lib pkg
 	@echo "!!!!! WARNING !!!!! Distribution is built, but it can't be assured to compile/work correctly."
 endif
 
