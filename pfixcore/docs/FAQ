@@ -1,7 +1,0 @@
-------------
-Q: How do I generate the pages for a single project only?
-A: Enter your projects directory and type 'make CONFIGS=[path to depend.xml.in of your project] generate'.
-------------
-Q: How do I compile my projects for production environment?
-A: Just type 'make MAKE_MODE=prod'.
-------------
