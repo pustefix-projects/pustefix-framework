@@ -24,10 +24,10 @@
 
   <xmlcode>
     <standardprops version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
+      <xmlcodeNS ns="">http://pustefix.sourceforge.net/2004/properties</xmlcodeNS>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
       <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
+      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd</xmlcodeNS>
       <xmlnote>
           The <code>cus</code> namespace is needed to use the customization tags explained below.
       </xmlnote>
@@ -285,10 +285,10 @@
   <a name="editmode"/>
   <xmlcode>
     <contextxmlserver xmlns:cus="http://www.schlund.de/pustefix/customize"  version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
+      <xmlcodeNS ns="">http://pustefix.sourceforge.net/2004/properties</xmlcodeNS>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
       <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
+      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd</xmlcodeNS>
       <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
         <xmlnote>
             The attributes <code>depend</code> and <code>name</code> are <b>mandatory</b>.
@@ -922,10 +922,10 @@
 
   <xmlcode>
     <directoutputserver xmlns:cus="http://www.schlund.de/pustefix/customize" version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
+      <xmlcodeNS ns="">http://pustefix.sourceforge.net/2004/properties</xmlcodeNS>
       <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
       <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
+      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sourceforge.net/2004/properties http://pustefix.sourceforge.net/2004/properties.xsd</xmlcodeNS>
       <directoutputservletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
         <ssl force="true|false" modes="ListOfModes"/>
         <editmode allow="true|false" modes="ListOfModes"/><xmlnote>
