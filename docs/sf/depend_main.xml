@@ -26,7 +26,6 @@
   <xmlcode>
     <make cachedir="..." recorddir="...">
       <xmlcodeOFF>
-        <br/><br/>
         <table class="stdtable">
           <tr>
             <th>Attribute</th>
@@ -54,6 +53,15 @@
         </table>
       </xmlcodeOFF>
       <navigation>
+        <xmlcodeOFF>
+          <table class="stdtable">
+            <tr>
+              <td>This tag has only <code>page</code> nodes as
+              children. The tree of pages matches the hierarchy of the
+              projects sitetree.</td>
+            </tr>
+          </table>
+        </xmlcodeOFF>
         <page name="foo" handler="/xml/static">
           <page name="sub_foo1" handler="/xml/static"/>
           <page name="sub_foo2" handler="/xml/static"/>
@@ -63,6 +71,54 @@
           ...
         </page>
         ...
+        <xmlcodeOFF>
+          <table class="stdtable">
+            <tr>
+              <th>Attribute</th>
+              <th>Notes</th>
+            </tr>
+            <tr>
+              <td>
+                name
+              </td>
+              <td>
+                <p>
+                  The name of the page. This name is used throughout
+                  <pustefix/> to reference the page (e.g. when creating
+                  internal links and in other config files).
+                </p>
+                <p>
+                  NOTE: This attribute is <b>mandatory</b>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                handler
+              </td>
+              <td>
+                <p>This attribute tells the system which servlet is
+                  used to handle requests for this page. You can think
+                  of the <code>handler</code> attribute as a project wide servlet "name" 
+                  as defined in the <a href="project.html">project definition</a></p>
+                <p>
+                  NOTE: This attribute is <b>mandatory</b>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </xmlcodeOFF>
+        <target>...</target>
+        <stdpage>...</stdpage>
+        <xmlcodeOFF>
+          <table class="stdtable">
+            <tr>
+              <td>This tag has only <code>page</code> nodes as
+              children. The tree of pages matches the hierarchy of the
+              projects sitetree.</td>
+            </tr>
+          </table>
+        </xmlcodeOFF>
       </navigation>
     </make>
   </xmlcode>

@@ -1,7 +1,7 @@
 body { 
-  font-family: verdana, arial, helvetica; font-size: 10px; margin: 0px; padding: 0px; background-color: black;}
+  font-family: verdana, arial, helvetica, sans; font-size: 10px; margin: 0px; padding: 0px; background-color: black;}
 td { 
-  font-family: verdana, arial, helvetica; font-size: 10px; }
+  font-family: verdana, arial, helvetica, sans; font-size: 10px; }
 
 a:hover { background: #ee9999; color: black; }
 
@@ -39,6 +39,8 @@ a:hover { background: #ee9999; color: black; }
 
 .navibody { 
   width: 126px; background-color:#aaccff; border-right: solid black 1px; }
+
+code {  background-color: #ffffee; font-family: "Anadale Mono", "Courier New", "Courier", monospace, font-size: 11px; }
 
 h1 { 
   background-color: #6688bb; color: white; font-family: arial, helvetica;

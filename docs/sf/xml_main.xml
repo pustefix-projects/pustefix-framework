@@ -1,16 +1,22 @@
 <div>
   <p>
     The XML/XSLT System of <pustefix/> is responsible for generating the
-    final stylesheet that represent the static content of a page.  This
-    stylesheets is then used together with the DOM tree that holds the
-    result of the request as given by the business logic to produce the
+    final stylesheet that represents the static content of a page.  This
+    stylesheet is then used together with the DOM tree that holds the
+    result of the request (as given by the business logic) to produce the
     final HTML output.
   </p>
 
   <p>The figure below shows the typical transformations and files that
     are involved in producing the final stylesheet
-    <code>BazPage.xsl</code>. Note that we only discuss the common case
-    here, arbitrary complex and deep transformation trees are in fact possible.
+    <code>BazPage.xsl</code> (this is slightly simplified,
+    <code>master.xsl</code> and <code>metatags.xsl</code> are in fact
+    the product of yet another transformation, but the only thing these transformations
+    do is to customize the resulting stylesheets to your particulary environment
+    so they can be written without using e.g. absolute pathnames).</p>
+  <p>
+    Note that we only discuss the common case here, arbitrary complex
+    and deep transformation trees are in fact possible.
   </p>
     
   <stdimg src="img/targets.png">
