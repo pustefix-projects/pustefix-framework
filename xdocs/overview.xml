@@ -33,7 +33,7 @@
   </p>
   
   <subsection name="A high level view of the whole system">
-    <img src="images/overview.png"/>
+    <img src="images/overview.gif"/>
 
     <p>Note: The image above does not exactly reflect the class structure as it is realized in Pustefix.
       The functional elements described here may be split in many (or even mixed together in one) classes.
