@@ -23,6 +23,7 @@
     </resource>
   </context>
     
+  <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow">
     <flowstep name="home"/>
     <flowstep name="order"/>

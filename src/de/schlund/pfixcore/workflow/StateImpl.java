@@ -42,8 +42,10 @@ public abstract class StateImpl implements State {
         if (sdreq != null) {
             sd = sdreq.getValue();
         }
-        return (!context.flowIsRunning() && 
-                (sd == null || (!sd.equals("true") && !sd.equals("1") && !sd.equals("yes"))));
+        return (context.flowIsStopped() || (!context.flowIsRunning() && 
+                                             (sd == null || (!sd.equals("true") &&
+                                                             !sd.equals("1") &&
+                                                             !sd.equals("yes")))));
     }
     
     public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
@@ -67,7 +69,7 @@ public abstract class StateImpl implements State {
     // private
     
     private boolean isSubmitTriggerAny(Context context, String sd) {
-        return (!context.flowIsRunning() && !context.finalPageIsRunning() && sd != null &&
+        return (!context.flowIsStopped() && !context.flowIsRunning() && !context.finalPageIsRunning() && sd != null &&
                 (sd.equals("true") || sd.equals("1") || sd.equals("yes")));
     }
 

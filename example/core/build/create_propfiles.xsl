@@ -143,6 +143,8 @@
     <xsl:if test="@final">
       <xsl:value-of select="$prefix"/>FINAL=<xsl:value-of select="@final"/><xsl:text>&#xa;</xsl:text>
     </xsl:if>
+    <xsl:if test="@stopnext = 'true'">context.pageflowproperty.<xsl:value-of select="@name"/>.stopatfirstaftercurrent=true<xsl:text>&#xa;</xsl:text>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="context">

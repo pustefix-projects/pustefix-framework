@@ -276,6 +276,24 @@ public class Context implements AppContext {
     }
 
     /**
+    * <code>flowIsStopped</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
+    * It returned true if the Context is forced to stop at a page of the running workflow
+    * (this happens when the pageflow returns true on calling flow.getStopAtFirstAfterCurrent().
+    * The workflow should not advance past the first accessible page AFTER the current page, in other words:
+    * the first accessible page after the current page should work exactly the same as if directly
+    * calling it).
+    *
+    * @return a <code>boolean</code> value
+    */
+    public boolean flowIsStopped() {
+        if (getCurrentPageRequest().getStatus() == PageRequestStatus.WORKFLOW_STOP) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * <code>finalPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returned true if the Context is currently running a FINAL page of a defined workflow.
      *
@@ -351,7 +369,7 @@ public class Context implements AppContext {
         doc.getDocumentElement().appendChild(element);
         
         StringBuffer debug_buffer = new StringBuffer();
-        StringBuffer warn_buffer = new StringBuffer();
+        StringBuffer warn_buffer  = new StringBuffer();
         
         if (autoinvalidate_navi) {
             recursePages(navi.getNavigationElements(), element, doc, preq, null, warn_buffer, debug_buffer);
@@ -364,12 +382,14 @@ public class Context implements AppContext {
         // print the timing information on all isAccessibles
         if(LOG.isDebugEnabled()) {
             if(debug_buffer.length() > 0) {
-                LOG.debug("All isAccessibles which took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms:\n" + debug_buffer.toString());
+                LOG.debug("All calls to isAccessible() which took longer than " +
+                          MAXTIME_ISACCESSIBLE_DEBUG + " ms:\n" + debug_buffer.toString());
             }
         }
         
-        if(warn_buffer.length() > 0) { 
-            LOG.warn("All isAccessibles which took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms:\n" + warn_buffer.toString());
+        if (warn_buffer.length() > 0) { 
+            LOG.warn("All calls to isAccessible() which took longer than " +
+                     MAXTIME_ISACCESSIBLE_WARN + " ms:\n" + warn_buffer.toString());
         }
         
     }
@@ -407,12 +427,12 @@ public class Context implements AppContext {
                     long duration = System.currentTimeMillis() - isaccessible_start;  
                     
                     if(duration > MAXTIME_ISACCESSIBLE_WARN) {
-                        warn_buffer.append("IsAccessible for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms! Duration="+duration+"\n");
+                        warn_buffer.append("IsAccessible() for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_WARN+" ms! Duration="+duration+"\n");
                     }
                     
                     if(LOG.isDebugEnabled()) {
                         if(duration > MAXTIME_ISACCESSIBLE_DEBUG) {
-                            debug_buffer.append("IsAccessible for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms! Duration="+duration+"\n");
+                            debug_buffer.append("IsAccessible() for state at page '"+preq.getName()+"' took longer than "+MAXTIME_ISACCESSIBLE_DEBUG+" ms! Duration="+duration+"\n");
                         }
                     }
                     
@@ -487,7 +507,6 @@ public class Context implements AppContext {
         
         if (getCurrentPageFlow() != null) {
             workflow = getCurrentPageFlow().getAllSteps();
-
             PageRequest saved = getCurrentPageRequest();
 
             if (document != null) {
@@ -495,12 +514,19 @@ public class Context implements AppContext {
             } else {
                 LOG.debug("* [" + getCurrentPageRequest() + "] returned 'null', starting workflow process");
 
+                boolean after_current = false;
                 for (int i = 0; i < workflow.length; i++) {
                     PageRequest page = workflow[i];
-                    page.setStatus(PageRequestStatus.WORKFLOW);
                     if (page.equals(saved)) {
                         LOG.debug("* Skipping step [" + page + "] in workflow (been there already...)");
+                        after_current = true;
                     } else {
+                        if (getCurrentPageFlow().getStopAtFirstAfterCurrent() && after_current) {
+                            page.setStatus(PageRequestStatus.WORKFLOW_STOP);
+                        } else {
+                            page.setStatus(PageRequestStatus.WORKFLOW);
+                        }
+                        
                         LOG.debug("* Workflow is at step [" + i + " - " + page + "]");
                         setCurrentPageRequest(page);
                         document = documentFromCurrentStep(preq, true);
