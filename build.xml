@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
+<!DOCTYPE project PUBLIC "-//ANT//DTD project//EN" "ant.dtd">
+
 <project name="pfixcore" default="all" basedir=".">
   
   <!-- set global properties for this build -->
@@ -154,6 +156,29 @@
     <exec dir="${dir.jni}" executable="make" failonerror="true"><arg line="clean"/></exec>
   </target>
 
+  <target name="installjars" >
+    <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
+    as ${dir.build} is specified as location it always resolves to an absolute path;
+    does not work for filenames containing spaces -->
+    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
+    <mkdir dir="${dir.projects}/servletconf/tomcat/classes"/>
+    <exec executable="sh">
+      <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
+    </exec>
+    <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
+    <delete>
+      <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+    </delete>
+    <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-${project.version}-res.jar">
+      <fileset dir="${basedir}" includes="META-INF/**"/>
+      <fileset dir="${dir.res}"/>
+    </jar>
+    <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
+    <exec executable="sh">
+      <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+    </exec>
+  </target>
+  
   <target name="pre-compile" depends="init" description="compiles java files needed by ant-tasks and jni">
     <javac 
       srcdir="${dir.src}"
@@ -172,7 +197,8 @@
       classname="de.schlund.pfixcore.util.XsltGenericTask"
       classpathref="cp.classpath"
       description="Performs generic XSLT transformations"
-      />
+      ><classpath></classpath>
+	</taskdef>
     <taskdef 
       name="pfx-iwrp"
       classname="de.schlund.pfixcore.util.XsltIWrapperTask"
@@ -191,6 +217,7 @@
       classpathref="cp.classpath"
       description="Creates dependencies in ${dir.projects}/.cache"
       />
+    <antstructure output="ant.dtd"/>
   </target>
   
   <target name="clean" depends="clean-project" description="deletes ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src}">
@@ -298,29 +325,6 @@
       <fileset dir="${dir.projects}" includes="sample1/**"/>
     </copy>
     <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
-    </exec>
-  </target>
-  
-  <target name="installjars" >
-    <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
-    as ${dir.build} is specified as location it always resolves to an absolute path;
-    does not work for filenames containing spaces -->
-    <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/classes"/>
-    <mkdir dir="${dir.projects}/servletconf/tomcat/classes"/>
-    <exec executable="sh">
-      <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
-    </exec>
-    <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
-    <delete>
-      <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
-    </delete>
-    <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-${project.version}-res.jar">
-      <fileset dir="${basedir}" includes="META-INF/**"/>
-      <fileset dir="${dir.res}"/>
-    </jar>
-    <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
-    <exec executable="sh">
-      <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
     </exec>
   </target>
   
