@@ -9,7 +9,6 @@
         <permissions>
             <global admin="false" editDefaults="false"/>
             <project editDefaults="false" editImages="false" editIncludes="false" name="cmscore"/>
-            <project editDefaults="true" editImages="true" editIncludes="true" name="sample1"/>
         </permissions>
     </user>
 </userinfo>
