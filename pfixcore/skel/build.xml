@@ -195,6 +195,7 @@
             debug="${debug}"
             classpathref="cp.classpath"
             source="${javac.source}"
+			nowarn="${javac.nowarn}"
             excludes="${excludes.src}"
             >
         </javac>
@@ -701,6 +702,14 @@ Properties
                see http://ant.apache.org/manual/CoreTasks/javac.html
   environment: -
   default:     jikes         
+  mandatory:   no
+
+-Djavac.nowarn=
+  value:       true, false
+               Indicates whether the -nowarn switch should be passed to the compiler
+               see http://ant.apache.org/manual/CoreTasks/javac.html
+  environment: -
+  default:     false
   mandatory:   no
 
 -Ddebugopts=
