@@ -52,12 +52,29 @@
           <pfx:include part="theme-test"/><br/>
           <pfx:themeselect>
             <pfx:theme name="foo">
-              FOO
+              FOO THEME
             </pfx:theme>
             <pfx:theme name="default">
-              DEFAULT
+              DEFAULT THEME
             </pfx:theme>
           </pfx:themeselect>
+          <br/>
+          <pfx:langselect>
+            <pfx:lang name="en_*">
+              en_* lang
+            </pfx:lang>
+            <pfx:lang name="en_GB">
+              en_GB lang
+            </pfx:lang>
+            <pfx:lang name="de_DE">
+              de_DE lang
+            </pfx:lang>
+            <pfx:lang name="default">
+              default lang
+            </pfx:lang>
+          </pfx:langselect>
+          
+          <br/>
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>

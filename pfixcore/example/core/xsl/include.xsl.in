@@ -20,7 +20,78 @@
   <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
 
-
+  <xsl:template match="pfx:langselect">
+    <xsl:choose>
+      <xsl:when test="not($__target_key = '__NONE__')">
+        <xsl:choose>
+          <xsl:when test="not(./pfx:lang[not(@name = 'default')]) and ./pfx:lang[@name = 'default']">
+            <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <ixsl:choose>
+              <xsl:for-each select="./pfx:lang[not(@name = 'default') and string-length(@name) > 0 and
+                                    not(substring(@name, string-length(@name)) = '*')]">
+                <ixsl:when test="$lang = '{./@name}'">
+                  <xsl:apply-templates select="./node()"/>
+                </ixsl:when>
+              </xsl:for-each>
+              <xsl:for-each select="./pfx:lang[not(@name = 'default') and string-length(@name) > 1 and
+                                    substring(@name, string-length(@name)) = '*']">
+                <ixsl:when test="starts-with($lang, '{substring(@name, 0, string-length(@name))}')">
+                  <xsl:apply-templates select="./node()"/>
+                </ixsl:when>
+              </xsl:for-each>
+              <xsl:choose>
+                <xsl:when test="./pfx:lang[@name = 'default']">
+                  <ixsl:otherwise>
+                    <xsl:apply-templates select="./pfx:lang[@name = 'default']/node()"/>
+                  </ixsl:otherwise>
+                </xsl:when>
+                <xsl:otherwise>
+                  <ixsl:otherwise>
+                    <span>
+                      <div style="width: 100px; align: center; color:white; background-color:black;">
+                        <img src="/core/img/warning2.png"/><br/>
+                        <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
+                      </div>
+                    </span>
+                  </ixsl:otherwise>
+                </xsl:otherwise>
+              </xsl:choose>
+            </ixsl:choose>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="langnodes" select="./pfx:lang[@name = $lang]"/>
+        <xsl:variable name="deflangnodes" select="./pfx:lang[@name = 'default']"/>
+        <xsl:variable name="commonlangnodes"
+                      select="./pfx:lang[string-length(@name) > 1 and
+                              substring(@name, string-length(@name)) = '*' and
+                              starts-with($lang, substring(@name, 0, string-length(@name)))]"/>
+        <xsl:choose>
+          <xsl:when test="$langnodes">
+            <xsl:apply-templates select="$langnodes/node()"/>
+          </xsl:when>
+          <xsl:when test="$commonlangnodes">
+            <xsl:apply-templates select="$commonlangnodes/node()"/>
+          </xsl:when>
+          <xsl:when test="$deflangnodes">
+            <xsl:apply-templates select="$deflangnodes/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <span>
+              <div style="width: 100px; align: center; color:white; background-color:black;">
+                <img src="/core/img/warning2.png"/><br/>
+                <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$lang"/>]</span>
+              </div>
+            </span>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:template match="pfx:themeselect" name="recurse_themeselect">
     <xsl:param name="themestr" select="$themes"/>
     <xsl:param name="allthemes" select="./pfx:theme"/>
@@ -43,10 +114,10 @@
       </xsl:when>
       <xsl:otherwise>
         <span>
-        <div style="width: 100px; align: center; color:white; background-color:black;">
-          <img src="/core/img/warning2.png"/><br/>
-          <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$themes"/>]</span>
-        </div>
+          <div style="width: 100px; align: center; color:white; background-color:black;">
+            <img src="/core/img/warning2.png"/><br/>
+            <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$themes"/>]</span>
+          </div>
         </span>
       </xsl:otherwise>
     </xsl:choose>
