@@ -18,9 +18,13 @@
       </subsection>
       <subsection name="Core">
         <p>Pustefix core features an <a href="http://ant.apache.org">Ant</a> build.</p>
-	    <p>To build the core with all projects:</p>
-	    <source>ant</source>
-  	    <p>To get a list of available targets:</p>
+        <p>To build the core with all projects:</p>
+        <source>ant</source>
+        <p>You may want to run
+        <source>ant generate</source>
+        to pre-process all the templates up-front. This speeds up the first hit of a page
+        in applications since the page doesn't need to be build from scratch then.</p>
+        <p>To get a list of available targets:</p>
         <source>ant -projecthelp</source>
       </subsection>
       <subsection name="Web site">
@@ -30,44 +34,44 @@
           <li><p>Make sure that <code>currentVersion</code> in <code>project.xml</code>
             is set propertly.</p></li>
           <li><p>Optional: Run
-	        <source>maven xdoc</source>
-            to build the documentation from the <code>xdocs</code> directory. Check the result 
+            <source>maven xdoc</source>
+            to build the documentation from the <code>xdocs</code> directory. Check the result
             at <code>target/docs/index.html</code>. Fix problems and repeat if necessary.</p></li>
           <li><p>Run
-	        <source>maven site</source>
+            <source>maven site</source>
             to generate the website on your machine. Check the result (in particular: the
-            project reports) at <code>target/docs/index.html</code>. Fix problems and repeat if 
+            project reports) at <code>target/docs/index.html</code>. Fix problems and repeat if
             necessary.</p></li>
           <li><p>Run
             <source>maven site:sshdeploy -Dmaven.username=&lt;yourlogin&gt;</source>
-            to upload the website. Uses ssh to transfer the website into a temporary directory 
-            and - if successfull - replaces the existing site with a single <code>mv</code> command. 
+            to upload the website. Uses ssh to transfer the website into a temporary directory
+            and - if successfull - replaces the existing site with a single <code>mv</code> command.
             If you're asked for an ssh username you probably forgot to specify
-	        <code>-Dmaven.username</code>.
+            <code>-Dmaven.username</code>.
           </p></li>
         </ol>
       </subsection>
       <subsection name="Upgrade environment">
         <p>To replace the core in an existing environment:</p>
         <ol>
-			<li><p>In pfixcore: Adjust the version number in <code>build.xml</code>.</p></li>
-			<li><p>In pfixcore: Make sure that all changes in <code>build.xml</code> have
-			  been incorporated into <code>skel/build.xml</code>.</p></li>
-			<li><p>In pfixcore: Run
-			    <source>ant dist</source>
-			  (or <code>ant notag</code>) to build a distribution.</p></li>
-			<li><p>Make your that your environment contains current versions of <code>pfixcore/lib/*.jar</code>
-			  and <code>pfixcore/lib/tomcat/*</code>.</p></li>
-			<li><p>Update the build file:
-			    <source>cp pfixcore/skel/build.xml yourenv/build.xml</source>
-			  </p></li>
-			<li><p>Replace the core file in <core>yourenv/lib</core>:
-			    <source>
+            <li><p>In pfixcore: Adjust the version number in <code>build.xml</code>.</p></li>
+            <li><p>In pfixcore: Make sure that all changes in <code>build.xml</code> have
+              been incorporated into <code>skel/build.xml</code>.</p></li>
+            <li><p>In pfixcore: Run
+                <source>ant dist</source>
+              (or <code>ant notag</code>) to build a distribution.</p></li>
+            <li><p>Make your that your environment contains current versions of <code>pfixcore/lib/*.jar</code>
+              and <code>pfixcore/lib/tomcat/*</code>.</p></li>
+            <li><p>Update the build file:
+                <source>cp pfixcore/skel/build.xml yourenv/build.xml</source>
+              </p></li>
+            <li><p>Replace the core file in <core>yourenv/lib</core>:
+                <source>
  rm yourenv/lib/pfixcore-*
  cp pfixcore/dist/pfixcore-* yourenv/lib
 </source>
-			  </p></li>
-	     </ol>
+              </p></li>
+         </ol>
       </subsection>
     </section>
   </body>
