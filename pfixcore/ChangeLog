@@ -1,3 +1,8 @@
+2003-06-25  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixAppletNeu.java
+	Cosmetics
+	
 2003-06-24  Joerg Haecker <haecker@schlund.de>
 
 	* example/common/conf/apploader.prop.in: added support for editor.
