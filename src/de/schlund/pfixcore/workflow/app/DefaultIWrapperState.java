@@ -78,13 +78,19 @@ public class DefaultIWrapperState extends StaticState {
 
         preq.startLogEntry();
         container.initIWrappers(context, preq, resdoc);
-        preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
+        PerfEventType etw = PerfEventType.PAGE_INITIWRAPPERS;
+        etw.setMessage(context.getCurrentPageRequest().toString());
+        preq.endLogEntry(etw);
+       // preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
         
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
             preq.startLogEntry();
             container.handleSubmittedData();
-            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 300);
+            PerfEventType et = PerfEventType.PAGE_HANDLESUBMITTEDDATA;
+            et.setMessage(context.getCurrentPageRequest().toString());
+            preq.endLogEntry(et);
+            //preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 300);
             if (container.errorHappened()) {
                 CAT.debug("    => Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
@@ -100,7 +106,11 @@ public class DefaultIWrapperState extends StaticState {
                     CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
                     container.retrieveCurrentStatus();
-                    preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
+                    PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
+                    pet.setMessage(context.getCurrentPageRequest().toString());
+                    pet.setAdditionalInfo("SUCCESS_STAY");
+                    preq.endLogEntry(pet);
+                    //preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
                 } else {
                     CAT.debug("... Container says he is ready:");
                     CAT.debug("    => end of submit reached successfully.");
@@ -117,7 +127,11 @@ public class DefaultIWrapperState extends StaticState {
                         CAT.debug("    => retrieving current status and stay here...");
                         preq.startLogEntry();
                         container.retrieveCurrentStatus();
-                        preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
+                        PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
+                        pet.setMessage(context.getCurrentPageRequest().toString());
+                        pet.setAdditionalInfo("SUCESS_STAY_NOWF");
+                        preq.endLogEntry(pet);
+                       // preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
                     }
                 }
                 rfinal.onSuccess(container);
@@ -128,13 +142,25 @@ public class DefaultIWrapperState extends StaticState {
             container.retrieveCurrentStatus();
             if (isDirectTrigger(context,preq)) {
                 CAT.debug("    => REASON: DirectTrigger");
-                preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
+                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
+                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setAdditionalInfo("DIRECT");
+                preq.endLogEntry(pet);
+                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
             } else if (context.finalPageIsRunning()) {
                 CAT.debug("    => REASON: FinalPage");
-                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FINAL", 5);
+                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
+                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setAdditionalInfo("FINAL");
+                preq.endLogEntry(pet);
+                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FINAL", 5);
             } else {
                 CAT.debug("    => REASON: WorkFlow");
-                preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
+                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
+                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setAdditionalInfo("FLOW");
+                preq.endLogEntry(pet);
+                //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
             }
             rfinal.onRetrieveStatus(container);
         } else {

@@ -84,7 +84,7 @@ public class PfixServletRequest {
         if (perflog != null) {
             long now   = System.currentTimeMillis();
 
-            PerfEvent evn = new PerfEvent(now, ">>>", PerfEvent.START);
+            PerfEvent evn = new PerfEvent(now, "START ", PerfEvent.START);
             perflog.add(evn);
             perfstack.add(evn); // this will be decreased by stop events
         }
@@ -111,8 +111,35 @@ public class PfixServletRequest {
             }
         }
     }
+    
+    public synchronized void endLogEntry(PerfEventType p) {
+        if (perflog != null) {
+            long      now   = System.currentTimeMillis();
+            PerfEvent start = null;
+            if (perfstack.size() > 0) {
+                start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
+            }
+            if (start != null) {
+                long stime = start.getTime();
+                p.setDuration(now - stime);
+                if (now - stime >= p.getDelay()) {
+                    String    msg = "[event name=\"" + p.getTag() + 
+                                    "\" location=\"" + p.getMessage() + 
+                                    "\" totaltime=\"" + (now - stime)+
+                                    "\" allowedtime=\"" + p.getDelay() +
+                                    "\" overdrawtime=\"" + ((now - stime) - p.getDelay()) +"\"]";
+                    PerfEvent evn = new PerfEvent(now, msg, PerfEvent.END);
+                    perflog.add(evn);
+                } else {
+                    perflog.remove(start);
+                }
+            } else {
+                CAT.error("got end log event without a start log on the perfstack: "+p);
+            }
+        }
+    }
 
-    public void printLog() {
+    public void printLog2() {
         if (session != null && perflog != null) {
             int depth  = 0;
             for (int i = 0; i < perflog.size(); i++) {
@@ -133,6 +160,38 @@ public class PfixServletRequest {
                               indent.toString() + entry.getMessage());
             }
             PFXPERF.debug("--------------------------------------");
+        }
+    }
+    
+    public void printLog() {
+        StringBuffer sb = new StringBuffer(255);
+        int depth = 0;
+        for(int i=0; i<perflog.size(); i++) {
+            PerfEvent entry = (PerfEvent)perflog.get(i);
+            if(entry.getType() == PerfEvent.START) {
+                continue;
+            }
+                /*for(int j = 0; j < depth; j++) {
+                    sb.append("   ");
+                }
+                depth++;
+            } else {
+                for(int j = 0; j < depth; j++) {
+                    sb.append("   "); 
+                }
+                depth--;
+            }*/
+            String msg = entry.getMessage();
+            if(msg != null || !msg.equals("")) {
+                if(i != perflog.size() - 1)
+                    sb.append(entry.getMessage()+"|");
+                else 
+                    sb.append(entry.getMessage());
+            }
+        }
+        String str = sb.toString();
+        if(!str.equals("")) {
+            PFXPERF.debug(sb.toString());
         }
     }
 
@@ -164,6 +223,9 @@ public class PfixServletRequest {
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
         starttime   = System.currentTimeMillis();
+        initPerfLog();
+        startLogEntry();
+        
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();
@@ -195,9 +257,9 @@ public class PfixServletRequest {
 		request.setAttribute(ATTR_LASTEXCEPTION, lastException);
 	}
 
-    public long getCreationTimestamp() {
+    /*public long getCreationTimestamp() {
         return starttime;
-    }
+    }*/
 
     /**
      * Retrieve the server name form the orginal request

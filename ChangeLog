@@ -1,3 +1,27 @@
+2004-06-30  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/PerfEventType.java: new class
+        for typed performance logging events.
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+         -added method endLogEntry(PerfEventType)
+         -changed format of written perf-logfile
+         -removed method getCreationTimestamp, now
+        calling initPerfLog and startLogEntry in constructor
+	* src/de/schlund/pfixcore/workflow/Context.java:
+         -added method endLogEntry(PerfEventType)
+         -adjusted perf-logging with typed perf-events.
+	* src/de/schlund/pfixxml/ServletManager.java(doGet):
+         -adjusted perf-logging with typed perf-events.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(getDocument, process):
+         -adjusted perf-logging with typed perf-events.
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java(getDocument):
+         -adjusted perf-logging with typed perf-events.
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java(renderContextResources):
+         -adjusted perf-logging with typed perf-events.
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java(
+	areHandlerActive, isPageAccessible, needsData):
+         -adjusted perf-logging with typed perf-events.
+
 2004-06-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (flowBeforeNeedsData): 
