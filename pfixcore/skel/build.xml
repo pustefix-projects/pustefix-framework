@@ -77,6 +77,7 @@
         <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.src}"/>
         <!-- if running with -v pathconvert already logs what it is doing, no need to echo again -->
         <pathconvert property="echo.cp.buildpath" refid="cp.buildpath" pathsep="&#013;"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
