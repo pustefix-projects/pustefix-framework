@@ -69,6 +69,18 @@ public class ConfigProperties {
         return properties.getProperty(key);
     }
     
+    public Properties getProperties(String regex) {
+        Properties props=new Properties();
+        Iterator it=getPropertyKeys(regex);
+        while(it.hasNext()) {
+            String key=(String)it.next();
+            String val=properties.getProperty(key);
+            System.out.println("key: "+key+" val: "+val);
+            props.setProperty(key,val);
+        }
+        return props;
+    }
+    
     public String toString() {
         StringBuffer sb=new StringBuffer();
         ArrayList al=new ArrayList(properties.keySet());

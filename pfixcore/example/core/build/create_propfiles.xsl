@@ -54,6 +54,9 @@
  	<xsl:if test="interface">
 		<xsl:value-of select="$wspref"/><xsl:text>interface.name=</xsl:text><xsl:value-of select="interface/@name"/><xsl:text>&#xa;</xsl:text>
  	</xsl:if>
+	<xsl:if test="interface">
+		<xsl:value-of select="$wspref"/><xsl:text>implementation.name=</xsl:text><xsl:value-of select="implementation/@name"/><xsl:text>&#xa;</xsl:text>
+ 	</xsl:if>
 	<xsl:if test="context">
 		<xsl:value-of select="$wspref"/><xsl:text>context.name=</xsl:text><xsl:value-of select="context/@name"/><xsl:text>&#xa;</xsl:text>
 	</xsl:if>

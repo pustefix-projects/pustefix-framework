@@ -18,12 +18,7 @@
    <handler type="logging"/>
   </responseFlow>
  </globalConfiguration>
- <handler name="soapmonitor" type="java:org.apache.axis.handlers.SOAPMonitorHandler">
-  <parameter name="wsdlURL" value="/axis/SOAPMonitorService-impl.wsdl"/>
-  <parameter name="namespace" value="http://tempuri.org/wsdl/2001/12/SOAPMonitorService-impl.wsdl"/>
-  <parameter name="serviceName" value="SOAPMonitorService"/>
-  <parameter name="portName" value="Demo"/>
- </handler>
+ 
  <handler name="AuthHandler" type="java:de.schlund.pfixcore.webservice.AuthenticationHandler"/>
  
  <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>

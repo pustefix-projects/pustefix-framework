@@ -69,4 +69,24 @@ public class ServiceConfiguration {
         return srvsConf.values().iterator();
     }
     
+    public boolean changed(ServiceConfiguration sc) {
+        if(sc.getServiceGlobalConfig().changed(getServiceGlobalConfig())) return true;
+        Iterator it=getServiceConfig();
+        int cnt=0;
+        while(it.hasNext()) {
+            cnt++;
+            ServiceConfig conf=(ServiceConfig)it.next();
+            ServiceConfig scConf=sc.getServiceConfig(conf.getName());
+            if(scConf==null || scConf.changed(conf)) return true;
+        }
+        it=sc.getServiceConfig();
+        int scCnt=0;
+        while(it.hasNext()) {
+            scCnt++;
+            it.next();
+        }
+        if(cnt!=scCnt) return true;
+        return false;
+    }
+    
 }

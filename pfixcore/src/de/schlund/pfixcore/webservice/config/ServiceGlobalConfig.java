@@ -3,6 +3,11 @@
  */
 package de.schlund.pfixcore.webservice.config;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  * ServiceGlobalConfig.java 
  * 
@@ -38,6 +43,22 @@ public class ServiceGlobalConfig {
     
     public String toString() {
         return "[webservice-global[reqpath="+reqPath+"]]";
+    }
+    
+    public boolean changed(ServiceGlobalConfig sgc) {
+        if(!equals(getRequestPath(),sgc.getRequestPath())) return true;
+        return false;
+    }
+    
+    private boolean equals(String s1,String s2) {
+        if(s1==null && s2==null) return true;
+        if(s1==null || s2==null) return false;
+        return s1.equals(s2);
+    }
+    
+    public void saveProperties(File file) throws IOException {
+        Properties p=props.getProperties("webservice-global\\..*");
+        p.store(new FileOutputStream(file),"global properties");
     }
     
 }

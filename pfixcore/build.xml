@@ -211,11 +211,12 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
 
-  <target name="java2wsdl" depends="ant-tasks">
-    <pfx-java2wsdl 
+  <target name="generate-wsdesc" depends="ant-tasks">
+    <pfx-wsdesc 
     	fqdn="${fqdn}" 
     	tmpdir="${dir.projects}/.tmp_webservice"
-    	prjdir="${dir.projects}" 
+    	prjdir="${dir.projects}"
+    	wsddskel="${dir.projects}/common/conf/server-config.wsdd"
     	prjfile="${file.projects_xml}" 
     	srcdir="${dir.src}" 
     	webappsdir="${dir.tomcat}/webapps"
@@ -314,7 +315,7 @@ or delete the DOCTYPE definition -->
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
-     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
+     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/generate/*.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
@@ -352,8 +353,8 @@ or delete the DOCTYPE definition -->
      description="Creates dependencies in ${dir.projects}/.cache"
      />
   	<taskdef
-  	     name="pfx-java2wsdl"
-  	     classname="de.schlund.pfixcore.webservice.Java2WSDLTask"
+  	     name="pfx-wsdesc"
+  	     classname="de.schlund.pfixcore.webservice.generate.DescriptorTask"
   	     classpathref="cp.classpath"
   	     loaderref="pfx-loader"
   	     description="Generates WSDL from Web service interfaces"

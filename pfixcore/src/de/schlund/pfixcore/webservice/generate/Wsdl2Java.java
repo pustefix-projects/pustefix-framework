@@ -81,6 +81,9 @@ public class Wsdl2Java {
             emitter.setSkeletonWanted(skeletonDeploy);
             emitter.setVerbose(verbose);
             emitter.setDebug(debug);
+            
+           
+            
             emitter.setTypeMappingVersion(typeMappingVersion);
 	        if (namespaceMappingFile != null) {
 	            emitter.setNStoPkg(namespaceMappingFile.toString());

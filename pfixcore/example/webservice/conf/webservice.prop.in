@@ -6,18 +6,21 @@
 
 	<webservice name="Calculator">
 		<interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
+		<implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
 		<param name="p1" value="7"/>
 		<param name="p2" value="3"/>
 	</webservice>
 	
 	<webservice name="Counter">
 		<interface name="de.schlund.pfixcore.example.webservices.Counter"/>
+		<implementation name="de.schlund.pfixcore.example.webservices.CounterImpl"/>
 		<context name="pfixcore_project:webservice::servlet:config"/>
 		<session type="servlet"/>
 	</webservice>
 	
 	<webservice name="Data">
 		<interface name="de.schlund.pfixcore.example.webservices.Data"/>
+		<implementation name="de.schlund.pfixcore.example.webservices.DataImpl"/>
 		<context name="pfixcore_project:webservice::servlet:config"/>
 		<session type="servlet"/>
 	</webservice>

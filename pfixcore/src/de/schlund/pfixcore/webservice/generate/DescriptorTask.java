@@ -1,30 +1,37 @@
 /*
- * de.schlund.pfixcore.webservice.Java2WSDLTask
+ * de.schlund.pfixcore.webservice.DescriptorTask
  */
-package de.schlund.pfixcore.webservice;
+package de.schlund.pfixcore.webservice.generate;
+
+import org.apache.axis.deployment.wsdd.WSDDDocument;
+import org.apache.axis.deployment.wsdd.WSDDService;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.w3c.dom.*;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+
 import de.schlund.pfixcore.webservice.config.*;
-import de.schlund.pfixcore.webservice.generate.*;
 
 /**
- * Java2WSDLTask.java 
+ * DescriptorTask.java
  * 
  * Created: 28.07.2004
  * 
  * @author mleidig
  */
-public class Java2WSDLTask extends Task {
+public class DescriptorTask extends Task {
    
     private String msg;
 
@@ -34,35 +41,43 @@ public class Java2WSDLTask extends Task {
     private File prjfile;
     private File srcdir;
     private File webappsdir;
+    private File wsddSkel;
     
+    private DocumentBuilder docBuilder;
+    private Transformer trfSerializer;
+   
     
     public void execute() throws BuildException {
-        DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        dbf.setValidating(false);
+        
+        if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
+        
+        if(!wsddSkel.exists()) throw new BuildException("Web service deployment descriptor skeleton"+
+                wsddSkel.getAbsolutePath()+"doesn't exist.");
+        
         try {
-            DocumentBuilder db=dbf.newDocumentBuilder();
-            Document doc=db.parse(prjfile);
+
+            Document doc=loadDoc(prjfile);
             NodeList nl=doc.getElementsByTagName("project");
+              
+            //iterate over projects
             for(int i=0;i<nl.getLength();i++) {
+                
                 Element elem=(Element)nl.item(i);
                 String prjName=elem.getAttribute("name");
-                
                 File wsConfFile=new File(prjdir,prjName+File.separator+"conf"+File.separator+"webservice.prop");         
+                
+                //go on processing if webservices found
                 if(wsConfFile.exists()) {
                 
+                    File tmpDir=getTmpDir(prjName);
+                    
                     ConfigProperties cfgProps=new ConfigProperties(new File[] {wsConfFile});
                     ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
                     ServiceGlobalConfig globConf=srvConf.getServiceGlobalConfig();
                     
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
                     if(srvElem==null) throw new BuildException("Missing servername element in configuration of project '"+prjName+"'");
-                    String srvName=null;
-                    try {
-                        srvName=getServerName(srvElem);
-                    } catch(Exception x) {
-                        throw new BuildException("Error while processing servername element from configuration of project '"+prjName+"'",x);
-                    }
+                    String srvName=getServerName(prjName,srvElem);
                
                     String wsUrl="http://"+srvName+globConf.getRequestPath();   
                     
@@ -77,14 +92,15 @@ public class Java2WSDLTask extends Task {
                         
                         String wsName=conf.getName();
                         String wsItf=conf.getInterfaceName();
+                        String wsImpl=conf.getImplementationName();
                         String wsItfPkg=getPackageName(wsItf);
                         
                         String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
                         File wsItfFile=new File(srcdir,wsItfPath);
                         if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
                
-                        File wsdlFile=new File(appDir,wsName+".wsdl");
-                        if(!(wsdlFile.exists() && wsdlFile.lastModified()>wsItfFile.lastModified())) {
+                        File wsdlFile=new File(tmpDir,wsName+".wsdl");
+                        if(!(wsdlFile.exists() && wsdlFile.lastModified()>=wsItfFile.lastModified())) {
                                 String wsNS=createShortNamespace(wsName);
                                 //String wsNS=createLongNamespace(wsItf);
                                 Java2Wsdl task=new Java2Wsdl();
@@ -94,23 +110,61 @@ public class Java2WSDLTask extends Task {
                                 task.setLocation(wsUrl+"/"+wsName);
                                 //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
                                 task.generate();
+                                System.out.println("Created: "+wsdlFile.getAbsolutePath());
+                                conf.saveProperties(new File(tmpDir,wsName+".props"));
                         }
                         
-                        File wsddFile=new File(appDir,wsName+".wsdd");
-                        if(!(wsddFile.exists() && wsddFile.lastModified()>wsdlFile.lastModified())) {      
+                     
+                        File srvWsddFile=new File(tmpDir,"server-config.wsdd");
+                       
+                        
+                        
+                        
+                        System.out.println("###############:"+wsddSkel.getAbsolutePath());
+                        
+                        
+                        String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
+                        File wsddPath=new File(tmpDir,wsddPathPart);
+                        File wsddFile=new File(tmpDir,wsName+".wsdd");
+                        if(!(wsddFile.exists() && wsddFile.lastModified()>=wsdlFile.lastModified())) {      
                             Wsdl2Java task=new Wsdl2Java();
-                            task.setOutput(new File("/tmp/ws"));
+                            task.setOutput(tmpDir);
                             task.setDeployScope("Application");
                             task.setServerSide(true);
                             task.setURL(wsdlFile.getAbsolutePath());
                             task.setPackageName(wsItfPkg);
                             task.generate();
+                            
+                            File origWsddFile=new File(wsddPath,"deploy.wsdd");
+                            origWsddFile.renameTo(wsddFile);
+                            System.out.println("Created: "+wsddFile.getAbsolutePath());
+                            
+                            //Change automatically generated name of implementation class to configured name
+                            Document wsddDoc=loadDoc(wsddFile);
+                            WSDDDocument wsdd=new WSDDDocument(wsddDoc);
+                            WSDDService[] wsddServices=wsdd.getDeployment().getServices();
+                            for(int j=0;j<wsddServices.length;j++) {
+                                wsddServices[j].setParameter("className",wsImpl);
+                            }
+                            serialize(wsdd.getDOMDocument(),wsddFile);
+                            
+                            //Update server deployment descriptor
+                            
+                            
                         }
-                            
-                            
+                  
+                       
+                        
+                    }
                     
-                            
-                        }
+                   
+                   
+                    //Create server deployment descriptor
+                    
+                    //if(!(srvWsddFile.exists()) {
+                       // File skelWsddFile=new File()
+                    //}
+                    //Document srvWsddDoc=db.parse();
                     
                 }
                 
@@ -130,18 +184,22 @@ public class Java2WSDLTask extends Task {
             return "";
         }
     
-        private String getServerName(Element srvElem) throws Exception {
-            StringBuffer sb=new StringBuffer();
-            NodeList nl=srvElem.getChildNodes();
-            for(int i=0;i<nl.getLength();i++) {
-                Node n=nl.item(i);
-                if(n.getNodeType()==Node.TEXT_NODE) sb.append(n.getNodeValue().trim());
-                else if(n.getNodeType()==Node.ELEMENT_NODE) {
-                    if(n.getNodeName().equals("cus:fqdn")) sb.append(fqdn);
-                    else throw new Exception("Unsupported XML element: "+n.getNodeName());
-                } else throw new BuildException("Unsupported XML element: "+n.getNodeName());   
+        private String getServerName(String prjName,Element srvElem) throws BuildException {
+            try {
+                StringBuffer sb=new StringBuffer();
+                NodeList nl=srvElem.getChildNodes();
+                for(int i=0;i<nl.getLength();i++) {
+                    Node n=nl.item(i);
+                    if(n.getNodeType()==Node.TEXT_NODE) sb.append(n.getNodeValue().trim());
+                    else if(n.getNodeType()==Node.ELEMENT_NODE) {
+                        if(n.getNodeName().equals("cus:fqdn")) sb.append(fqdn);
+                        else throw new Exception("Unsupported XML element: "+n.getNodeName());
+                    } else throw new Exception("Unsupported XML element: "+n.getNodeName());   
+                }
+                return sb.toString();
+            } catch(Exception x) {
+                throw new BuildException("Error while processing servername element from configuration of project '"+prjName+"'",x);
             }
-            return sb.toString();
         }
     
         private String createShortNamespace(String id) {
@@ -169,20 +227,20 @@ public class Java2WSDLTask extends Task {
         }
         
         private void initTmpDir() throws BuildException {
-            if(tmpdir.exists()) {
-                if(tmpdir.isDirectory()) log("Warning!!! Temporary directory "+tmpdir.getAbsolutePath()+" already exists and will get emptied.");
-                else log("Warning!!! Temporary file "+tmpdir.getAbsolutePath()+" already exists and will be removed.");
-                delete(tmpdir);
+            if(!tmpdir.exists()) {
+                boolean ok=tmpdir.mkdir();
+                if(!ok) throw new BuildException("Can't create temporary directory "+tmpdir.getAbsolutePath());
             }
-            boolean ok=tmpdir.mkdir();
-            if(!ok) throw new BuildException("Can't create temporary directory "+tmpdir.getAbsolutePath());
         }
-    
-        private void finalizeTmpDir() {
-            if(tmpdir.exists()) {
-                boolean ok=delete(tmpdir);
-                if(!ok) throw new BuildException("Can't delete temporary directory "+tmpdir.getAbsolutePath());
+        
+        private File getTmpDir(String project) throws BuildException {
+            initTmpDir();
+            File dir=new File(tmpdir,project);
+            if(!dir.exists()) {
+                boolean ok=dir.mkdir();
+                if(!ok) throw new BuildException("Can't create temporary directory "+dir.getAbsolutePath());
             }
+            return dir;
         }
         
         private boolean delete(File file) {
@@ -195,6 +253,32 @@ public class Java2WSDLTask extends Task {
             return file.delete();
         }
         
+        private Document loadDoc(File file) throws BuildException {
+            try { 
+                if(docBuilder==null) {
+                    DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
+                    dbf.setNamespaceAware(true);
+                    dbf.setValidating(false);
+                    docBuilder=dbf.newDocumentBuilder();
+                }
+                Document doc=docBuilder.parse(file);
+                return doc;
+            } catch(Exception x) {
+                throw new BuildException("Can't load XML document from file "+file.getAbsolutePath(),x);
+            }
+        }
+        
+        private void serialize(Document doc,File file) throws BuildException {
+            try {
+                if(trfSerializer==null) {
+                    TransformerFactory tf=TransformerFactory.newInstance();
+                    trfSerializer=tf.newTransformer();
+                }
+                trfSerializer.transform(new DOMSource(doc),new StreamResult(new FileOutputStream(file)));
+            } catch(Exception x) {
+                throw new BuildException("Can't serialize XML document to file "+file.getAbsolutePath(),x);
+            }
+        }
     
         // The setter for the "message" attribute
         public void setMessage(String msg) {
@@ -222,6 +306,10 @@ public class Java2WSDLTask extends Task {
         
         public void setSrcdir(File srcdir) {
             this.srcdir=srcdir;
+        }
+        
+        public void setWsddskel(File wsddSkel) {
+            this.wsddSkel=wsddSkel;
         }
         
         public void setWebappsdir(File webappsdir) {
