@@ -1,6 +1,6 @@
 <div xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <h1>Property files in <pustefix/></h1>
+  <h1>Java property files in <pustefix/></h1>
 
   <h2>Overview</h2>
 
@@ -175,7 +175,11 @@
     </tr>
   </table>
   
-  <h1>Servlet propery files</h1>
+  <h1>Propery files for a single servlet instance</h1>
+
+  <p>The <pustefix/>
+    system knows about a number of specialized servlets. The
+    configuration of the two most important ones is explained here.</p>
 
   <h2>de.schlund.pfixxml.ContextXMLServer</h2>
 
