@@ -363,9 +363,10 @@
     </img>
     <cus:documentation>
       <responsible>JTL</responsible>
-      <description>Used to add images. Standard value for border is 0. If
-        you want to change this, add the border attribute. All other attributes are
-        copied into the resulting img tag.
+      <description>
+        Used to add images. Standard value for border is 0. If
+        you want to change this, add the border attribute. All
+        attributes are copied into the resulting img tag.
      </description>
      <param required="1">
         <name>src</name>
