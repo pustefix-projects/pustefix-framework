@@ -61,62 +61,43 @@ public class DefaultIWrapperState extends StaticState {
         ResdocFinalizer   rfinal     = getResdocFinalizer(context);
         ResultDocument    resdoc     = new ResultDocument();
         
-        if(CAT.isDebugEnabled()) {
-            CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
-        }
+        CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
+
         container.initIWrappers(context, preq, resdoc);
         
         if (isSubmitTrigger(context, preq)) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug(">>> In SubmitHandling... ");
-            }
+            CAT.debug(">>> In SubmitHandling... ");
             container.handleSubmittedData();
             if (container.errorHappened()) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("=> Can't continue, as errors happened during load/work.");
-                }
+                CAT.debug("=> Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
                 rfinal.onWorkError(container);
             } else {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("... No error happened during work ...");
-                }
+                CAT.debug("... No error happened during work ...");
                 if (container.continueSubmit()) {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("... Container says he wants to stay on this page...\n" +
-                            "=> retrieving current status.");
-                    }
+                    CAT.debug("... Container says he wants to stay on this page...\n" +
+                              "=> retrieving current status.");
                     container.retrieveCurrentStatus();
                     rfinal.onRetrieveStatus(container);
                 } else {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("... Container says he is ready: End of submit successfully...\n" +
-                            "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
-                    }
+                    CAT.debug("... Container says he is ready: End of submit successfully...\n" +
+                              "=> Finalizer.onSuccess() will decide if we stay on the page or continue with pageflow.");
                     rfinal.onSuccess(container);
                 }
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug(">>> In DirectTriggerHandling...\n" +
-                    "=> retrieving current status.");
-            }
+            CAT.debug(">>> In DirectTriggerHandling...\n" +
+                      "=> retrieving current status.");
             container.retrieveCurrentStatus();
             rfinal.onRetrieveStatus(container);
         } else if (context.flowIsRunning()) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug(">>> In FlowHandling...");
-            }
+            CAT.debug(">>> In FlowHandling...");
             if (container.needsData()) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("=> needing data, retrieving current status.");
-                }
+                CAT.debug("=> needing data, retrieving current status.");
                 container.retrieveCurrentStatus();
                 rfinal.onRetrieveStatus(container);
             } else {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("=> no need to handle, returning NULL.");
-                }
+                CAT.debug("=> no need to handle, returning NULL.");
                 container.getAssociatedResultDocument().setSPDocument(null);
             }
         } else {
