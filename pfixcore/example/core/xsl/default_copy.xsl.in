@@ -13,29 +13,11 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
   
   <xsl:template match="*">
-    <xsl:param name="_var0"/>
-    <xsl:param name="_var1"/>
-    <xsl:param name="_var2"/>
-    <xsl:param name="_var3"/>
-    <xsl:param name="_var4"/>
-    <xsl:param name="_var5"/>
-    <xsl:param name="_var6"/>
-    <xsl:param name="_var7"/>
-    <xsl:param name="_var8"/>
-    <xsl:param name="_var9"/>
+    <xsl:param name="__env"/>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
       <xsl:apply-templates>
-        <xsl:with-param name="_var0" select="$_var0"/>
-        <xsl:with-param name="_var1" select="$_var1"/>
-        <xsl:with-param name="_var2" select="$_var2"/>
-        <xsl:with-param name="_var3" select="$_var3"/>
-        <xsl:with-param name="_var4" select="$_var4"/>
-        <xsl:with-param name="_var5" select="$_var5"/>
-        <xsl:with-param name="_var6" select="$_var6"/>
-        <xsl:with-param name="_var7" select="$_var7"/>
-        <xsl:with-param name="_var8" select="$_var8"/>
-        <xsl:with-param name="_var9" select="$_var9"/>
+        <xsl:with-param name="__env" select="$__env"/>
       </xsl:apply-templates>
     </xsl:copy>
   </xsl:template>

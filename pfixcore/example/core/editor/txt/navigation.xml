@@ -45,7 +45,7 @@
                 <pfx:button activeclass="editor_box" normalclass="editor_submit" page="search" target="_top">Search</pfx:button>
               </td>
               <td class="navi_cell"> 
-                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="documentation" target="_top">Documentation</pfx:button>
+                <pfx:button activeclass="editor_box" normalclass="editor_submit" page="documentation" target="_top">Docs</pfx:button>
               </td> 
               
               <td align="right" nowrap="nowrap" width="99%">
