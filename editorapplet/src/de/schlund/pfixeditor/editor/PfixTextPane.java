@@ -134,32 +134,47 @@ public class PfixTextPane extends JTextPane implements UndoableEditListener {
                
               String tag = preString.substring(tagStart, tagEnd) + ">";
 
-                   if (tag.indexOf(" ") > 0) {
-                       int blank = tag.indexOf(" ");
-                       int endStr = tag.length();
-                       StringBuffer strNeu = new StringBuffer(tag);
-                       strNeu = strNeu.delete(blank, endStr-1);
-                       tag = strNeu.toString();                   
-                   }
-              
-              
-              if (stack.contains(tag)) {
-                  stack.removeElement(tag);
-              }
-              else {
-                  StringBuffer strBuf = new StringBuffer(tag);
-                  strBuf.insert(1, "/");
-                  finalTag = strBuf.toString();
+              // tag Break --> Tests if Tag already closed
+              int tagBreak = tag.indexOf("/");
+              Character carCommentStart = new Character(tag.charAt(1));
 
-                  if (finalTag.indexOf(" ") > 0) {
-                      int blank = finalTag.indexOf(" ");
-                      int endStr = finalTag.length();
-                      StringBuffer strNeu = new StringBuffer(finalTag);
-                      strNeu = strNeu.delete(blank, endStr-1);
-                      finalTag = strNeu.toString();                                            
-                  }                                      
-                  break;
+              if (!(carCommentStart.toString().equals("!"))) {
+                  if (tagBreak < 0) {
+                      if (tag.indexOf(" ") > 0) {
+                          int blank = tag.indexOf(" ");
+                          int endStr = tag.length();
+                          StringBuffer strNeu = new StringBuffer(tag);
+                          strNeu = strNeu.delete(blank, endStr-1);
+                          tag = strNeu.toString();                   
+                      }
+              
+              
+                      if (stack.contains(tag)) {
+                          stack.removeElement(tag);
+                      }
+                      else {
+                          StringBuffer strBuf = new StringBuffer(tag);
+                          strBuf.insert(1, "/");
+                          finalTag = strBuf.toString();
+                          
+                          if (finalTag.indexOf(" ") > 0) {
+                              int blank = finalTag.indexOf(" ");
+                              int endStr = finalTag.length();
+                              StringBuffer strNeu = new StringBuffer(finalTag);
+                              strNeu = strNeu.delete(blank, endStr-1);
+                              finalTag = strNeu.toString();                                            
+                          }                                      
+                          break;
+                      }
+                  
+                  }
+                   
               }
+                  
+             
+              
+
+
               
               
                 

@@ -1,3 +1,10 @@
+2003-05-09  Volker Zaich <zaich@schlund.de>
+
+	* editorapplet/src/de/schlund/pfixeditor/editor/PfixTextPane.java
+	Closing Tags should work now ! Comment-Tags and already-Closed-tags
+	will be ignored.
+
+	
 2003-05-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleXXXProps):
