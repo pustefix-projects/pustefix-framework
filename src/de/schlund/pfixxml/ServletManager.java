@@ -55,7 +55,6 @@ public abstract class ServletManager extends HttpServlet {
     public    static final String VISIT_ID                      = "__VISIT_ID__";
     public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     public    static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
-    protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
     private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
     private   static final String SECURE_SESS_COOKIE            = "__PFIX_SEC_";
@@ -66,8 +65,9 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
     private   static final String PROP_EXCEPTION                = "exception";
-    private   static final String SERVLET_ENCODING              = "servlet.encoding";
+    protected static final String DEF_CONTENT_TYPE              = "text/html";
     private   static final String DEFAULT_ENCODING              = "UTF-8";
+    private   static final String SERVLET_ENCODING              = "servlet.encoding";
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 
