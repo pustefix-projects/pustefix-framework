@@ -10,7 +10,7 @@ TC4_BUILDPATH    = ${CLASSPATH}:${PWD}/example/servletconf/tomcat/common/lib/ser
 JS_BUILDPATH     = ${CLASSPATH}:${PWD}/lib/jserv/jsdk.jar:${JDK_HOME}/jre/lib/rt.jar
 BUILDPATH        = ${JS_BUILDPATH}
 
-export JAVAC      = jikes +D ${JIKESOPTIONS}
+export JAVAC      = jikes -g +D ${JIKESOPTIONS}
 export JAVA       = java
 
 export JAVADOC    = ${JDK_HOME}/bin/javadoc
