@@ -211,13 +211,13 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="servletinfo/ssl">
+  <xsl:template match="servletinfo//ssl">
     <xsl:text>servlet.needsSSL=</xsl:text>
     <xsl:value-of select="./@force"/>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
-  <xsl:template match="pagerequest/ssl">
+  <xsl:template match="pagerequest//ssl">
     <xsl:text>pagerequest.</xsl:text><xsl:value-of select="../@name"/><xsl:text>.needsSSL=</xsl:text>
     <xsl:value-of select="./@force"/>
     <xsl:text>&#xa;</xsl:text>
