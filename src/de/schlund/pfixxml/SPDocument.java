@@ -140,10 +140,6 @@ public class SPDocument implements NoCopySessionData {
         return cookies;
     }
 
-    public void setCookies(ArrayList newcookies) {
-        cookies = newcookies;
-    }
-
     public String getXSLKey() {
         return xslkey;
     }
