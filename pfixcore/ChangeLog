@@ -1,7 +1,5 @@
 2003-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
-	* META-INF/pfixcore.version: released 0.3.9
-
 	* example/core/xsl/include.xsl.in: added pfx:attribute to define dynamic attributes for tags
 
 	* src/de/schlund/pfixcore/workflow/Context.java (pageIsSidestepPage): bugfix, dont bug out 
