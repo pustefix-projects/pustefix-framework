@@ -271,7 +271,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     /**
      * Handle the properties concerning if the targetgenerator should skip
-     * the update of modfied targets.
+     * the check for modfied dependencies of targets (and the update of the respective target).
      * @return true if enabled, else false
      * @throws ServletException if the properties can not be found. 
      */
@@ -315,7 +315,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
-            initValues();
+            initValues() // this also does generator.tryReinit();
             return true;
         } else {
             try {
@@ -344,8 +344,9 @@ public abstract class AbstractXMLServer extends ServletManager {
      * This is the method that is called for any servlet that inherits from ServletManager.
      * It calls getDom(req, res) to get the SPDocument doc.
      * This SPDocument is stored in the HttpSession so it can be reused if
-     * the request parameter __reuse is set to "1". In other words, <b>if</b> the
-     * request parameter __reuse is there and it is set to "1", getDom(req,res)
+     * the request parameter __reuse is set to a timestamp matching the timestamp of the saved SPDocument.
+     * In other words, <b>if</b> the request parameter __reuse is
+     * there and it is set to a matching timestamp, getDom(req,res)
      * will <b>not</b> be called, instead the saved Dom tree from the previous request
      * to this servlet will be used.
      *
@@ -680,9 +681,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         if (session != null) {
             RequestParam reuse = preq.getRequestParam(PARAM_REUSE);
             if (reuse != null && reuse.getValue() != null) {
-                SPDocument saved = (SPDocument) getContainerUtil().getSessionValue(session, 
-                                                                                   servletname
-                                                                                   + SUFFIX_SAVEDDOM);
+                SPDocument saved = (SPDocument) getContainerUtil().getSessionValue(session, servletname + SUFFIX_SAVEDDOM);
                 if (saved == null)
                     return false;
                 String stamp = saved.getTimestamp() + "";
