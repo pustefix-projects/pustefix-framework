@@ -38,9 +38,10 @@ import org.w3c.dom.Document;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long modtime = 0;
-    protected TreeSet pageinfos = new TreeSet();
-    protected AuxDependencyManager auxdepmanager   = null;
+    protected long                 modtime       = 0;
+    protected TreeSet              pageinfos     = new TreeSet();
+    protected AuxDependencyManager auxdepmanager = null;
+    protected boolean              forceupdate   = false;
     
     public AuxDependencyManager getAuxDependencyManager() {
         return auxdepmanager; 
@@ -117,14 +118,16 @@ public abstract class VirtualTarget extends TargetImpl {
         boolean xmlup;
         boolean xslup;
         Target  tmp;
-        
+
         tmp    = getXMLSource();
         xmlup  = tmp.needsUpdate();
         xmlmod = tmp.getModTime();
         tmp    = getXSLSource();
         xslup  = tmp.needsUpdate();
         xslmod = tmp.getModTime();
-        
+
+        if (forceupdate)
+            return true;
         if (xslup || xmlup)
             return true;
         if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp(false) > mymodtime)
@@ -190,9 +193,9 @@ public abstract class VirtualTarget extends TargetImpl {
         //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
         // }
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
-        if (maxmodtime > getModTime()) {
+        if ((maxmodtime > getModTime()) || forceupdate) {
             synchronized (this) {
-                if (maxmodtime > getModTime()) {
+                if ((maxmodtime > getModTime()) || forceupdate) {
                     try {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
@@ -248,19 +251,27 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Document  xmlobj = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
-        Templates templ  = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
+        Document  xmlobj    = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
+        Templates templ     = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
         if (xmlobj == null) 
             throw new XMLException("**** xml source " +
                                    tmpxmlsource.getTargetKey() + " (" + tmpxmlsource.getType() + ") doesn't have a value!");
         if (templ == null) 
             throw new XMLException("**** xsl source " +
                                    tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
-        TreeMap tmpparams = getParams();
+        TreeMap   tmpparams = getParams();
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.
         setModTime(cachefile.lastModified());
+        forceupdate = false;
     }
+
+
+    public void setForceUpdate() {
+        forceupdate = true;
+    }
+
+                         
 } // VirtualTarget

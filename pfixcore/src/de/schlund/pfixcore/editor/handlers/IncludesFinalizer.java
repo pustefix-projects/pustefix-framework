@@ -94,7 +94,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             boolean lock    = false;
             
             
-            long    mod     = currinclude.getModTime(false);
+            long    mod     = currinclude.getModTime();
             Path    path    = currinclude.getPath();
             String  part    = currinclude.getPart();
             String  product = currinclude.getProduct();

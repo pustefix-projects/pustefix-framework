@@ -457,7 +457,7 @@ public class EditorHelper {
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
-            elem.setAttribute("modtime", "" + aux.getModTime(false));
+            elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
     }
@@ -523,7 +523,7 @@ public class EditorHelper {
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
-            elem.setAttribute("modtime", "" + aux.getModTime(false));
+            elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
     }
@@ -537,7 +537,7 @@ public class EditorHelper {
             Element elem = resdoc.createSubNode(root, "image");
             elem.setAttribute("dir", aux.getPath().getDir());
             elem.setAttribute("path", aux.getPath().getRelative());
-            elem.setAttribute("modtime", "" + aux.getModTime(false));
+            elem.setAttribute("modtime", "" + aux.getModTime());
             elem.setAttribute("count", "" + j++);
         }
     }
