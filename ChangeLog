@@ -1,3 +1,17 @@
+2004-02-02  Adam Habermann  <adam.habermann@schlund.de>
+
+	* docs/sf/*:
+	Adjusted documentation to ant.
+	* build.xml, skel/build.xml:
+	Added <description> for displaying help via ant -projecthelp.
+	Added default value prohibitedit=no for makemode=stage.
+	Added property gen for specifiying include patterns for target generate,
+	so generate may be performed on just a subset of pustefix projects.
+	Removed target generate-mx, for not having to maintain two different
+	launch mechanisms for TargetGenerator.
+	* skel/INSTALL: removed, INSTALL is now included in build of skeleton.
+	* example/INSTALL, example/INSTALL.ps: removed, now INSTALL
+
 2004-01-28  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
