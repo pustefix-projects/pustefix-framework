@@ -45,8 +45,8 @@
     </j:if>
   </preGoal>
   <postGoal name="site">
-    <ant:copy file="${basedir}/example/core/schema/interfacewrapper200401.xsd" todir="${basedir}/target/docs"/>
-    <ant:copy file="${basedir}/example/core/schema/wsconfig200401.xsd" todir="${basedir}/target/docs"/>
+    <ant:copy file="${basedir}/example/core/schema/*.xsd" todir="${basedir}/target/docs"/>
+    <ant:copy file="${basedir}/example/core/schema/catalog.xml" todir="${basedir}/target/docs"/>
   </postGoal>
   
   <preGoal name="site:sshdeploy">
