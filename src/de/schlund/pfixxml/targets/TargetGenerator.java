@@ -51,18 +51,18 @@ import de.schlund.pfixxml.XMLException;
  */
 
 public class TargetGenerator {
-    private static Category CAT = Category.getInstance(TargetGenerator.class.getName());
-    private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-    private DependencyRefCounter refcounter = new DependencyRefCounter();
-    private PageTargetTree pagetree = new PageTargetTree();
-    private HashMap alltargets = new HashMap();
-    private String configname;
-    private File confile;
-    private long config_mtime = 0;
-    private String disccachedir;
-    private String docroot;
-    private boolean isGetModTimeMaybeUpdateSkipped = false;
-    private static TargetGenerationReport report = new TargetGenerationReport();
+    private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
+    private static DocumentBuilderFactory dbfac                          = DocumentBuilderFactory.newInstance();
+    private static TargetGenerationReport report                         = new TargetGenerationReport();
+    private DependencyRefCounter          refcounter                     = new DependencyRefCounter();
+    private PageTargetTree                pagetree                       = new PageTargetTree();
+    private HashMap                       alltargets                     = new HashMap();
+    private boolean                       isGetModTimeMaybeUpdateSkipped = false;
+    private long                          config_mtime                   = 0;
+    private String                        configname;
+    private File                          confile;
+    private String                        disccachedir;
+    private String                        docroot;
 
     // needed during load.
     private int unnamedcount = 0;
