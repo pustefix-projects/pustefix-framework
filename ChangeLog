@@ -1,5 +1,17 @@
 2004-04-14  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/navigation.xsl.in (button, jsbutton): Now
+	accept the attribute pageflow to designate the pageflow that
+	should be selected when the request is handled. It's no longer
+	needed to use the clumsy <pfx:argument name="__pageflow"> stuff
+	for this. As an added benefit, because there's no longer an
+	pfx:argument when only selecting a flow, it's no longer needed to 
+	specify nodata="true" to inhibit submit data handling in the states.
+
+	* example/core/xsl/forminput.xsl.in (forminput):
+	Handle (similar to the already present send-to-page) a new attribute send-to-pageflow 
+	to select the pageflow when the request is submitted.
+
 	* src/de/schlund/pfixcore/workflow/Context.java
 	(documentFromFlow): if the pagerequest is the special page
 	__STARTWITHFLOW, directly do a page flow run to determine the page that should 

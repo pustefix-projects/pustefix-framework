@@ -33,9 +33,8 @@
             <li><pfx:button normalclass="editor_submit" page="sessionmanager">List running sessions</pfx:button></li>
             <li><pfx:button normalclass="editor_submit" page="lockmanager">List active locks</pfx:button></li>
             <li>
-            <pfx:button mode="force" normalclass="editor_submit" page="prodselect" target="_top">
+            <pfx:button mode="force" normalclass="editor_submit" page="prodselect" pageflow="EditLoginUser" target="_top">
               <pfx:command name="SELWRP">edituser</pfx:command>
-              <pfx:argument name="__pageflow">EditLoginUser</pfx:argument>
               <pfx:argument name="edituser.User"><ixsl:value-of select="/formresult/cr_editorsession/user/@id"/></pfx:argument>
               Change your data
             </pfx:button>
@@ -69,8 +68,4 @@
     </product>
   </part>
   
-</include_parts><!--
-Local Variables:
-mode: xml
-End:
--->
+</include_parts>
