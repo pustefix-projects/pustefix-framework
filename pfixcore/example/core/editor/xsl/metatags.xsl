@@ -1154,17 +1154,25 @@
     <xsl:param name="upload"/>
     <xsl:param name="type"/>
     <pfx:checkactive prefix="{$upload}">
-      <input type="hidden" value="{$upload}.Content" name="upload"/>
-      <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
-      <input type="hidden" name="visible" value="true"/>
-      <xsl:call-template name="applet_show"/>
-      <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
-        <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-        <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
-      </pfx:xinp>
-      <ixsl:if test="/formresult/current{$type}info/backup/option">
-        <br/>
-        <table class="editor_box" width="100%">
+      <br/>
+      <table class="editor_box" width="100%">
+        <tr>
+          <td colspan="2">
+            <pfx:xinp class="editor_textarea" wrap="off" type="area" name="{$upload}.Content"/>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <pfx:xinp class="editor_submit"  type="submit" name="Upload Data" value="Upload Data">
+              <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+              <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
+              </pfx:xinp>
+          </td>
+        </tr>
+        <ixsl:if test="/formresult/current{$type}info/backup/option">
+          <tr>
+            <td colspan="2"><hr/></td>
+          </tr>
           <tr valign="top">
             <td>
               If you want to return to a previous version of the include, select one of the backups below.
@@ -1178,8 +1186,8 @@
               </pfx:xinp>
             </td>
           </tr>
-        </table>
-      </ixsl:if>
+        </ixsl:if>
+      </table>
     </pfx:checkactive>
   </xsl:template>
 

@@ -94,7 +94,7 @@
 
   <!-- make some classes quiet by default --> 
   <category name="PFXPERF" additivity="false">
-    <priority value="DEBUG"/>
+    <priority value="ERROR"/>
     <appender-ref ref="PFXPERF"/>
   </category>
 
@@ -129,14 +129,7 @@
   </category>
 
   <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
-    <cus:choose>
-      <cus:test uid="jtl">
-        <priority value="WARN"/>
-      </cus:test>
-      <cus:test>
-        <priority value="DEBUG"/>
-      </cus:test>
-    </cus:choose>
+    <priority value="DEBUG"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -255,9 +248,3 @@
   </root>
   
 </log4j:configuration>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
