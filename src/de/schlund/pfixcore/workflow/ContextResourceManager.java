@@ -34,7 +34,6 @@ import org.apache.log4j.*;
  *
  * @author jtl, thomas
  *
- *
  */
 
 public class ContextResourceManager implements Reloader {
@@ -63,25 +62,24 @@ public class ContextResourceManager implements Reloader {
      * from this object. All interfaces are declared by the full qualified
      * classname of the interface and separated by a comma. 
      * <br>
-     * An <b>wrong</b> example:<br>
-     * <code>context.rescoure.1.de.foo.FooImpl=Foo</code><br>
-     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl=Foo,Bar,Baz</code>
+     * An wrong example:<br>
+     * <code>context.rescoure.1.de.foo.FooImpl             = Foo</code><br>
+     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl = Foo,Bar,Baz</code>
      *
      * This example, written as above, would be invalid as no two ContextRessources
      * are allowed to act as an implementation for the same interface(Foo in this case).
      * Note that the classes may implement the same interface, they are just not allowed to act as
      * an implementation for the same interface in a ContextRessource declaration.
      *
-     * The <b>correct</b> example could be:<br>
-     * <code>context.rescoure.1.de.foo.FooImpl=Foo</code><br>
-     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl=Bar,Baz</code>
+     * The correct example could be:<br>
+     * <code>context.rescoure.1.de.foo.FooImpl             = Foo</code><br>
+     * <code>context.rescoure.2.de.foo.FooAndBarAndBazImpl = Bar,Baz</code>
      *
      * which is correct without any change in the code of the implementing classes.
      *
-     * @param props a <code>Properties</code> value
-     * @exception ServletException if an error occurs
      */
-    public void init(Context context) throws Exception{
+    
+     public void init(Context context) throws Exception{
         CAT.debug("initialize ContextResources...");
         // CAT.debug("Properties:\n" + context.getProperties());
         
@@ -164,7 +162,7 @@ public class ContextResourceManager implements Reloader {
         // Get the class of the requested interface and get all
         // implemented interfaces of the object
         try {
-            AppLoader appLoader=AppLoader.getInstance();
+            AppLoader appLoader = AppLoader.getInstance();
             if (appLoader.isEnabled()) {
                 wantedinterface = appLoader.loadClass(interfacename);
             } else {
@@ -182,7 +180,7 @@ public class ContextResourceManager implements Reloader {
         // we want, than break.
         
         if (wantedinterface.isInstance(obj)) {
-            CAT.debug("Got requested interface " + interfacename + "! Bingo!");
+            CAT.debug("Got requested interface " + interfacename);
         } else {
             // Uh, the requested interface is not implemented by the
             // object, that's not nice!
