@@ -181,6 +181,7 @@ public class WebServiceTask extends Task {
                                 task.setClassName(wsItf);
                                 task.setNamespace(wsNS);
                                 task.setLocation(wsUrl+"/"+wsName);
+                                task.setImplClassName(conf.getImplementationName());
                                 task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
                                 task.setUse(encUse);
                                 task.generate();

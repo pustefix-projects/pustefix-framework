@@ -37,4 +37,6 @@ public class Constants {
     public static final String CONTENT_TYPE_URLENCODED="application/x-www-form-urlencoded";
     
     
+    public static final String SOAPBINDING_TRANSPORT_HTTP="http://schemas.xmlsoap.org/soap/http";
+    
 }

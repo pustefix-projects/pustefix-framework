@@ -16,6 +16,7 @@ public class Java2Wsdl {
     private String className = "." ;
     private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
     private String use="encoded";
+    private String implClassName;
     
     public void generate() throws Exception {
         try {
@@ -28,6 +29,7 @@ public class Java2Wsdl {
             emitter.setCls(className);
             emitter.setDefaultTypeMapping(DefaultSOAPEncodingTypeMappingImpl.create());
             emitter.setIntfNamespace(namespace);
+            emitter.setImplCls(implClassName);
             //emitter.setImplNamespace(namespaceImpl); 
             emitter.setUse(use);
             emitter.setLocationUrl(location);
@@ -59,6 +61,10 @@ public class Java2Wsdl {
 
     public void setUse(String use) {
         this.use=use;
+    }
+    
+    public void setImplClassName(String implClassName) {
+        this.implClassName=implClassName;
     }
     
     

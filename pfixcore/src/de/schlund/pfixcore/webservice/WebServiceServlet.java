@@ -92,24 +92,18 @@ public class WebServiceServlet extends AxisServlet {
     
     
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
             ClassLoader newLoader=loader.getAppClassLoader();
             if(newLoader!=null) {
                 ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
-               
                 if(!newLoader.equals(currentLoader)) {
-                   
                     Thread.currentThread().setContextClassLoader(newLoader);
-                    org.apache.axis.utils.ClassUtils.removeClassLoader(de.schlund.pfixcore.example.webservices.CounterImpl.class.getName());
                     axisServer=null;
                     getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
-                    
                 }
             }
         }
-      
         if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
             super.doPost(new SOAPActionRequestWrapper(req),res);
         } else {
@@ -182,6 +176,21 @@ public class WebServiceServlet extends AxisServlet {
     }
     
     public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        
+        AppLoader loader=AppLoader.getInstance();
+        if(loader.isEnabled()) {
+          
+            ClassLoader newLoader=loader.getAppClassLoader();
+            if(newLoader!=null) {
+                ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
+               
+                Thread.currentThread().setContextClassLoader(newLoader);
+                
+                
+            }
+           
+        }
+        
         //TODO: source out html
         HttpSession session=req.getSession(false);
         if(session!=null && wsc.getConfiguration().getGlobalServiceConfig().getAdminEnabled()) {
