@@ -125,7 +125,7 @@ public class EditUserDataHandler implements IHandler {
                     String n = prods[i].getName();
                      
                     //edit dynincludes
-                    String ec = data.geteditcom(n);
+                    String ec = data.getEditcom(n);
                     if(ec!=null &&  ec.equals("true")) {
                         ProjectPermissions p = euser.getProjectPerms(n);
                         if(p!=null) {
@@ -147,7 +147,7 @@ public class EditUserDataHandler implements IHandler {
                     }
                     
                     //edit images
-                    String ei = data.geteditimg(n);
+                    String ei = data.getEditimg(n);
                     if(ei!= null && ei.equals("true")) {
                         ProjectPermissions p = euser.getProjectPerms(n);
                         if(p!=null) {
@@ -169,7 +169,7 @@ public class EditUserDataHandler implements IHandler {
                     }
                     
                     //edit includes
-                    String en = data.geteditincl(n);
+                    String en = data.getEditincl(n);
                     if(en!=null && en.equals("true")) {
                         ProjectPermissions p = euser.getProjectPerms(n);
                         if(p!=null) {
@@ -228,13 +228,13 @@ public class EditUserDataHandler implements IHandler {
             String name = allprj[i].getName();
             if(prjperms.containsKey(name)) {
                 ProjectPermissions p = (ProjectPermissions) prjperms.get(name);
-                data.setStringValeditcom(""+p.isEditDynIncludes(), name);
-                data.setStringValeditimg(""+p.isEditImages(), name);
-                data.setStringValeditincl(""+p.isEditIncludes(), name);  
+                data.setStringValEditcom(""+p.isEditDynIncludes(), name);
+                data.setStringValEditimg(""+p.isEditImages(), name);
+                data.setStringValEditincl(""+p.isEditIncludes(), name);  
             } else {
-                data.setStringValeditcom("false", name);
-                data.setStringValeditimg("false", name);
-                data.setStringValeditincl("false", name);
+                data.setStringValEditcom("false", name);
+                data.setStringValEditimg("false", name);
+                data.setStringValEditincl("false", name);
             }
         }
         

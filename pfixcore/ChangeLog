@@ -1,3 +1,9 @@
+2004-12-16  Niels Schelbach <niels@schlund.de>
+        * example/core/build/iwrapper.xsl:
+        * src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java: Changed generation of
+        iwrapper, so that paramnames are first letter uppercased for get set methods. Following
+        common java bean convention.
+         
 2004-12-14  Adam Habermann  <adam.habermann@schlund.de>
 	
 	* skel/build.xml:
