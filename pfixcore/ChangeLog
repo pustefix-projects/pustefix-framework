@@ -1,3 +1,7 @@
+2005-02-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: use DCL as a test. I know it's bad and has a race.
+
 2005-01-28  Martin Leidig  <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: Improved modification
