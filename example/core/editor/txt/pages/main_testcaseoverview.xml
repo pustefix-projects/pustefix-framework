@@ -7,7 +7,7 @@
        <ixsl:variable name="green">#1D7C06</ixsl:variable> 
        <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
         <br/><br/>
-        <table width="50%" align="center" class="editor_box">
+        <table align="center" class="editor_box" width="50%">
           <tr>
             <td>Note:</td> 
           </tr>
@@ -51,7 +51,7 @@
         
         <br/><br/>
         <ixsl:for-each select="/formresult/testcases/test_results/child::*">
-          <table width="50%" align="center" border="0">
+          <table align="center" border="0" width="50%">
             <tr>
               <td>
                 <span style="color: #ffffff; font-weight: bold;">Results for testcase <ixsl:value-of select="@id"/></span>
@@ -66,10 +66,10 @@
            <ixsl:otherwise>
             <tr>
               <td>
-                <table class="editor_box" width="100%" cellspacing="0" cellpadding="2">
+                <table cellpadding="2" cellspacing="0" class="editor_box" width="100%">
                   <tr>
-                    <td class="editor_head" align="center" nowrap="nowrap"><b>Step</b></td>
-                    <td class="editor_head" align="center" nowrap="nowrap"><b>Response</b></td>
+                    <td align="center" class="editor_head" nowrap="nowrap"><b>Step</b></td>
+                    <td align="center" class="editor_head" nowrap="nowrap"><b>Response</b></td>
                     <td class="editor_head"><b>Diff</b></td>
                   </tr>
                   <ixsl:for-each select="./child::*">
@@ -80,15 +80,15 @@
                       <td align="center">
                         <ixsl:value-of select="@statuscode"/>
                       </td>
-                      <td width="100%" nowrap="nowrap">
-                        <table bgcolor="#CCCCCC" width="100%" cellpadding="0" cellspacing="0" class="editor_box">
+                      <td nowrap="nowrap" width="100%">
+                        <table bgcolor="#CCCCCC" cellpadding="0" cellspacing="0" class="editor_box" width="100%">
                           <ixsl:choose>
                             <ixsl:when test="./child::*">
                               <ixsl:for-each select="./child::*">
                                 <tr>
                                   <ixsl:variable name="line" select="."/>
                                   <ixsl:choose>
-                                    <ixsl:when test="substring($line, 1, 1)='-'">
+                                    <ixsl:when test="substring($line, 1, 1)=&apos;-&apos;">
                                       <td>
                                         <font>
                                           <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
@@ -96,7 +96,7 @@
                                         </font>
                                       </td>
                                     </ixsl:when>
-                                    <ixsl:when test="substring($line, 1, 1)='+'">
+                                    <ixsl:when test="substring($line, 1, 1)=&apos;+&apos;">
                                       <td>
                                         <font>
                                           <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
@@ -144,6 +144,3 @@ Local Variables:
 mode: xml
 End:
 -->
-
-
-
