@@ -39,7 +39,7 @@
       <prop name="apploader.policy.inconsistency.probable">restart</prop>
       
       <!--directory where reloadable classes are stored-->
-      <prop name="apploader.repository"><cus:docroot/>/servletconf/tomcat/classes</prop>
+      <prop name="apploader.repository"><cus:docroot/>/servletconf/tomcat/shared/classes</prop>
       
       <!--add packages/classes which should be reloadable, i.e. loaded by AppLoader-->
       <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
