@@ -109,7 +109,7 @@
         </condition>
 
         <!-- Create time stamp in ISO 8601 alike format.
-        17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
+             17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
         <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
     </target>
     
@@ -212,6 +212,7 @@
             debug="${debug}"
             classpathref="cp.classpath"
             source="${javac.source}"
+			nowarn="${javac.nowarn}"
             excludes="${excludes.src}, de/skelexamples/**/*.*"
             >
         </javac>
@@ -850,6 +851,14 @@ Properties
                see http://ant.apache.org/manual/CoreTasks/javac.html
   environment: -
   default:     jikes         
+  mandatory:   no
+
+-Djavac.nowarn=
+  value:       true, false
+               Indicates whether the -nowarn switch should be passed to the compiler
+               see http://ant.apache.org/manual/CoreTasks/javac.html
+  environment: -
+  default:     false
   mandatory:   no
 
 -Ddebugopts=
