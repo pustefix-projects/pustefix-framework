@@ -89,12 +89,29 @@ public class EditorCommonsFactory implements FactoryInit {
         if (!inited) {
             for (Iterator iter = commonfiles.iterator(); iter.hasNext();) {
                 str = (String) iter.next();
-                readFile(Path.create(str));
+                readFile(toPath(str));
             }
             inited = true;
         }
     }
 
+    private static Path toPath(String str) { // TODO: dump if the factories knows docroot
+        File docroot;
+        String relative;
+        String name;
+        
+        docroot = new File(str);
+        relative = "";
+        do {
+            name = docroot.getName();
+            if (docroot.getName().equals("example")) {
+                return Path.create(docroot.getPath(), relative);
+            }
+            relative = File.separator + name + relative; 
+            docroot = docroot.getParentFile();
+        } while (docroot != null);
+        return Path.create(str);
+    }
 
     private void readFile(Path path) throws Exception {
         File comfile = path.resolve();

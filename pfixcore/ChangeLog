@@ -1,3 +1,11 @@
+2004-07-12  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/resources/EditorCommonsFactory: fix absolute 
+	path problem with dynincludes
+	* .classpath: remove libraries not available in lib
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatus.java: remove unused include
+	* project.properties, project.xml: remove rmiobj dependency 	
+	
 2004-07-09  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/projects/common/conf/factory.prop.in: Added SPCacheStatistic and PerfStat configuration
@@ -146,7 +154,7 @@
 	well-formedness) are performed on the included configuration.
 
 
-2004-06-21  Jörg Häcker <haecker@schlund.de>
+2004-06-21  Jï¿½rg Hï¿½cker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
 	Do not catch TargetGenerationExcpetions any more, they
