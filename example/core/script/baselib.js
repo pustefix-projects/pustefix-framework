@@ -79,7 +79,7 @@ var __js_Cookie = {
                 s = d[i];
                 j++;
                 
-                if (j>maxarr) break;
+                if (j>this.maxarr) break;
             } else {
                 if(s != "") s+= this.splitter;
                 s += d[i];
