@@ -1,3 +1,11 @@
+2003-04-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesBranchHandler.java: 
+	* src/de/schlund/pfixcore/editor/EditorUserFactory.java: 
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: more FileWriter=>FileOutputStream
+
 2003-04-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/utils.xsl.in: 

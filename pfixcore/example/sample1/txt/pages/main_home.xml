@@ -42,7 +42,7 @@
               </tr>
             </table>
           </pfx:forminput>
-          <pfx:include part="switch"/>&#160;&#160;<pfx:include part="buttons"/><br/><br/>
+          <pfx:include part="switch"/>  <pfx:include part="buttons"/><br/><br/>
           <pfx:include part="display"/><br/><br/>
           <b>Euro sign <font face="arial">&#128;</font> is written &apos;&amp;#128;&apos;!!</b>
         </center>
@@ -100,7 +100,7 @@
     <product name="default">
       <lang name="default">
         <pfx:switch><pfx:layer_ref name="A"/>Toggle Layer A</pfx:switch>
-        &#160;&#160;
+          
         <pfx:switch><pfx:layer_ref name="B"/>Toggle Layer B</pfx:switch>
       </lang>
     </product>
@@ -111,8 +111,8 @@
       <lang name="default">
         <pfx:elink href="http://www.gimp.org" target="_popup">
           <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
-          Goto Gimp!</pfx:elink>&#160;&#160;
-        <pfx:button page="ssltest">SSL TEST</pfx:button>&#160;&#160;
+          Goto Gimp!</pfx:elink>  
+        <pfx:button page="ssltest">SSL TEST</pfx:button>  
         <pfx:button page="install">Download INSTALL.ps</pfx:button>
       </lang>
     </product>
@@ -139,9 +139,7 @@
     </product>
   </part>
 
-</include_parts>
-
-<!--
+</include_parts><!--
 Local Variables:
 mode: xml
 End:
