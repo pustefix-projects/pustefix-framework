@@ -31,7 +31,7 @@ import org.apache.xpath.objects.XObject;
 import javax.xml.transform.TransformerException;
 
 /**
- * @author: jtl
+ * @author: jtl@schlund.de
  *
  *
  */
