@@ -109,7 +109,7 @@
   <p>Several property files in <pustefix/> are contructed this way. While
     the <code>prop</code> tag would be sufficant to enter every java
     property, there are convenience tags defined for the configuration
-    of the most often used servlets (see below).</p>
+    of the most commonly used servlets (see below).</p>
   <p>
     The table lists the property files that are used in a typical <pustefix/> system.
   </p>
@@ -174,6 +174,211 @@
 
   <h2>de.schlund.pfixxml.ContextXMLServer</h2>
 
+  <xmlcode>
+    <properties>
+      <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
+        <xmlcodeOFF>
+          <div class="comment">
+            The attributes <code>depend</code> and <code>name</code> are <b>mandatory</b>.
+            If <code>depend</code> starts with a '/' the value is used
+            unchanged, otherwise (which is the usual case) it's interpreted as a path relative
+            to the <b>docroot</b>
+          </div>
+        </xmlcodeOFF>
+        <editmode  allow="true"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>allow</code> needs to be set to <b>true</b>
+            if you want to be able to use the pustefix editor. The whole node is optional.
+          </div>
+        </xmlcodeOFF>
+        <ssl force="true"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>force</code> must be set to <b>true</b> if the 
+            servlet needs to run under SSL. The whole node is optional.
+          </div>
+        </xmlcodeOFF>
+        <adminmode watch="AName" page="APageName"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>watch</code> and <code>page</code> must both be given if the optional
+            <code>adminmode</code> node is used at all.
+          </div>
+        </xmlcodeOFF>
+      </servletinfo>
+      <xmlcodeOFF/>
+      <context defaultflow="AFlowName" class="AContextClass" authpage="APageName">
+        <xmlcodeOFF>
+          <table class="stdtable">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td><code>class</code></td>
+              <td>Optional. If given, use it as the classname for the <code>Context</code> Implementation to use. Else,
+                if <code>authpage</code> is given, use <code>de.schlund.pfixcore.workflow.AuthContext</code>. Else,
+                use <code>de.schlund.pfixcore.workflow.Context</code>. In other words: Normally there's no need to
+                explicitely supply this attribute.</td>
+            </tr>
+            <tr>
+              <td><code>defaultflow</code></td>
+              <td><b>Mandatory</b>. Must reference a valid <code>pageflow</code> (See below).</td>
+            </tr>
+            <tr>
+              <td><code>authpage</code></td> <td>Optional. It must be given, if the servlet should supply a
+                login/authentification page. If given, it must reference a valid <code>pagerequest</code> with
+                a <code>authhandler</code> child node.</td>
+            </tr>
+          </table>
+        </xmlcodeOFF>
+      
+        <resource class="AContextResource">
+          <xmlcodeOFF>
+            <div class="comment">
+              <code>class</code> is <b>mandatory</b>, must be a
+              <code>ContextResource</code>. There may be many
+              <code>ressource</code> tags given.
+            </div>
+          </xmlcodeOFF>
+          <implements class="An_Interface">
+            <xmlcodeOFF>
+              <div class="comment">
+                <code>class</code> is <b>mandatory</b>, must be an interface
+                implemented by the ContextResource. There may be more
+                than one <code>implements</code> tag for a
+                ContextResource, but each interface must the be unique
+                in the whole context. In other words: it's possible
+                for a ContextResource to implement more than one interface, mut not possible for one
+                interface to be impleded by two ContextResources used in the same Context definition.
+              </div>
+            </xmlcodeOFF>
+          </implements>
+        </resource>                               
+      </context>
+      <xmlcodeOFF/>
+      <pageflow name="AName" final="APageName">
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>name</code> is <b>mandatory</b>, must be a unique
+            name.  <code>final</code> is optional, must reference a
+            page with a valid <code>pagerequest</code> definition given in
+            this property file.  There may be many pageflows defined
+            for a servlet. A page may well be used in more than one pageflow.
+          </div>
+        </xmlcodeOFF>
+        <flowstep name="AnotherPageName"/>
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>name</code> is <b>mandatory</b>, must reference a valid <code>pagerequest</code>.
+            Usually there are many flowsteps defined in a pageflow.
+          </div>
+        </xmlcodeOFF>
+      </pageflow>
+      <xmlcodeOFF/>
+      <pagerequest name="APageName">
+        <xmlcodeOFF>
+          <div class="comment">
+            <code>name</code> is <b>mandatory</b>. It must be the name of a page defined in 
+            the corresponding depend.xml file.
+          </div>
+        </xmlcodeOFF>
+        <state class="AClassName"/>                              
+        <xmlcodeOFF>
+          <div class="comment">
+            <p>The whole node is optional. If given, the
+            <code>class</code> attribute must be the name of a java
+              class implementing the <code>de.schlund.pfixcore.workflow.State</code>
+              interface. The used <code>State</code> is determined as follows: </p>
+            <ol>
+              <li>If <code>state</code> is given, use the value of it's <code>class</code> attribute. Else:</li>
+              <li>If the <code>pagerequest</code> has a <code>authhandler</code> child,
+                use <code>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</code>. Else:</li>
+              <li>If the pagerequest has a <code>ihandler</code> child, use
+                <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code>. Else:</li>
+              <li>use "de.schlund.pfixcore.workflow.app.StaticState".</li>
+            </ol>
+          </div>
+        </xmlcodeOFF>
+        <finalizer class="AClassName"/>                       
+        <xmlcodeOFF>
+          <div class="comment">
+            <p>The whole node is optional.
+              It may only be given for a <code>State</code> that is either
+              <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code> or a descendent of it!</p>
+            <p>The <code>class</code> attribute is mandatory and denotes a class implementing
+              <code>de.schlund.pfixcore.workflow.app.ResdocFinalizer</code></p>
+          </div><br/>
+          <div class="comment" style="color: #cc0000;">
+            <b>Caution below: only one of <code>ihandler</code> or <code>authhandler</code> may be given as a child node!</b>
+          </div>
+        </xmlcodeOFF>
+        <ihandler policy="ANY|ALL">
+          <xmlcodeOFF>
+            <div class="comment">
+              <p>The whole node is optional.
+                <code>policy</code> is optional (default is <b>ANY</b>).
+                The policy decides when a whole page is considered to be accessible:
+              </p>
+              <ul>
+                <li>
+                  ANY: just one of the associated handlers needs to
+                  be active for the page to be accessible.</li>
+                <li>
+                  ALL: all the assiciated handlers need to be active for the
+                  page to be accessible.</li>
+              </ul>
+              <p>If one of the associated handlers returns <b>false</b> on calling <code>prerequisitesMet()</code>,
+                the page is of course still inaccessible.</p>
+            </div>
+          </xmlcodeOFF>
+          <interface prefix="A_PREFIX" class="A_IWRAPPER" activeignore="true" continue="true"/>
+          <!-- @prefix is mandatory -->
+            <!-- @class is mandatory. It must be a valid IWrapper -->
+            <!-- @activeignore is optional. All interfaces
+            which have @activeignore == "true" are listed in the property
+            "pagerequest.A_PAGE_NAME.ignoreforactive". -->
+            <!-- @continue is optional. All interfaces with @continue == "true"
+            are listed in the property
+            "pagerequest.A_PAGE_NAME.restrictedcontinue" -->
+          <!-- there can be many interfaces defined -->
+        </ihandler>
+              
+        <authhandler>
+          <!-- Only the pagerequest referred to via a @autpage property of context
+          MUST have, other pagerequest nodes MUST NOT have this subnode -->
+          
+          <authinterface prefix="A_PREFIX" class="A_IWRAPPER"/>
+          <!-- @prefix/@class are mandatory. This denotes the single
+          interface that is responsible for the authentication.
+          The whole node is mandatory! -->
+          <auxinterface prefix="A_PREFIX" class="A_IWRAPPER"/>
+          <!-- @prefix/@class are mandatory if <auxinterface> is given. -->
+          <!-- you can have many auxinterfaces. These denote IHandlers that are
+          called on the authentication page, but no error handling is done. --> 
+        </authhandler>
+              
+        <output>
+          <!-- the whole node is optional -->
+          <resource node="A_NODE" class="A_CR_INTERFACE"/>
+          <!-- @node/@class are mandatory.
+          @node is the node in the output tree ("/formresult/A_NODE") 
+          under which the ContextResource enters its data.
+          @class is one of the ContextResources defined via implements
+          above. -->
+          <!-- you can have many <resource> nodes. -->
+        </output>
+              
+        <param name="A_PROP_NAME">A_VALUE</param>
+        <!-- the whole node is optional. It will be transformed into the property
+        "pagerequest.A_PAGE_NAME.A_PROP_NAME=A_VALUE" -->
+        <!-- there can be many <param> nodes. -->
+      </pagerequest>
+
+    </properties>
+  </xmlcode>    
+    
   <h2>de.schlund.pfixxml.DirectOutputServlet</h2>
 
   
