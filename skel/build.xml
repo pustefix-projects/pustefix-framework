@@ -373,6 +373,7 @@
     
     <target name="realclean" depends="clean, clean-jni">
         <delete dir="${dir.projects}/.cache"/>
+        <delete dir="${dir.projects}/core"/>
     </target>
 
     <target name="core-data-check" unless="pfx.force">
