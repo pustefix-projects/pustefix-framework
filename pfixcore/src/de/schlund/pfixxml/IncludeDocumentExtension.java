@@ -48,12 +48,13 @@ import net.sf.saxon.om.NodeInfo;
 public final class IncludeDocumentExtension {
     //~ Instance/static variables
     // ..................................................................
-    private static Category CAT = Category.getInstance(IncludeDocumentExtension.class.getName());
-    private static final String DEFAULT = "default";
-    private static final String NOTARGET = "__NONE__";
+    private static Category     CAT        = Category.getInstance(IncludeDocumentExtension.class.getName());
+    private static final String DEFAULT    = "default";
+    private static final String NOTARGET   = "__NONE__";
     private static final String XPPARTNAME = "/include_parts/part[@name='";
     private static final String XPPRODNAME = "/product[@name = '";
-    private static final String XPNAMEEND = "']";
+    private static final String XPNAMEEND  = "']";
+    
     //~ Methods
     // ....................................................................................
     /**
@@ -62,22 +63,17 @@ public final class IncludeDocumentExtension {
      * document in the Includedocument is immutable, any attempts to modify it
      * will cause an exception.
      * 
-     * @param path
-     *                the path to the Includedocument in the file system relative
+     * @param path    the path to the Includedocument in the file system relative
      *                to docroot.
-     * @param part
-     *                the part in the Includedocument.
-     * @param docroot
-     *                the document root in the file system
+     * @param part    the part in the Includedocument.
+     * @param docroot the document root in the file system
      * @param targetgen
      * @param targetkey
      * @param parent_path
      * @param parent_part
      * @param parent_product
-     * @return a list of nodes understood by the current transformer(currently
-     *            saxon)
-     * @throws Exception
-     *                 on all errors
+     * @return a list of nodes understood by the current transformer(currently saxon)
+     * @throws Exception on all errors
      */
     public static final Object get(XPathContext context, String path_str, String part, String product,
                                    String docroot_str, String targetgen, String targetkey,

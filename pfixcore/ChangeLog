@@ -1,6 +1,7 @@
 2004-06-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/IncludeDocumentFactory.java: cleanup
+	* src/de/schlund/pfixxml/util/Xslt.java: cleanup
 
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
 	* ChangeLog
