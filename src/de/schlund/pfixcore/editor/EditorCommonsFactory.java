@@ -104,7 +104,7 @@ public class EditorCommonsFactory implements FactoryInit {
         relative = "";
         do {
             name = docroot.getName();
-            if (docroot.getName().equals("example")) {
+            if (name.equals("example") || name.equals("projects")) {
                 return Path.create(docroot.getPath(), relative);
             }
             relative = File.separator + name + relative; 
