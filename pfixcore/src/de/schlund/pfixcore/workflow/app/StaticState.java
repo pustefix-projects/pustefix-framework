@@ -38,7 +38,7 @@ import org.w3c.dom.*;
  */
 
 public class StaticState extends StateImpl {
-    public static final String PROP_INSERTCR = "resdocfinalizer.insert";
+    public static final String PROP_INSERTCR = "insertcr";
 
     public ResultDocument getDocument(Context context, PfixServletRequest preq) throws Exception {
         ResultDocument  resdoc = new ResultDocument();
