@@ -231,9 +231,9 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
 
-                    FileWriter    output = new FileWriter(currpath);
-                    OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-                    XMLSerializer ser    = new XMLSerializer(output, outfor);
+                    FileOutputStream output = new FileOutputStream(currpath);
+                    OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+                    XMLSerializer    ser    = new XMLSerializer(output, outfor);
                     outfor.setIndent(0);
                     outfor.setPreserveSpace(true);
                     ser.serialize(incdoc);                    

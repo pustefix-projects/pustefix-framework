@@ -227,7 +227,14 @@ public class MultiTransform {
                 System.out.print(".");
             }
         } else {
-            throw new RuntimeException("File error: " + infile + " ==> " + outfile);
+        	StringBuffer buf = new StringBuffer();
+        	buf.append("File error: ").append(infile).append(" ==> ").append(outfile).append("\n");
+        	buf.append(infile+" isFile: ").append(in.isFile()).append("\n");
+        	buf.append(infile+" canRead: ").append(in.canRead()).append("\n");
+        	buf.append(outfile+" exists: ").append(in.exists()).append("\n");
+        	buf.append(outfile+" canWrite: ").append(in.exists()).append("\n");
+        	
+            throw new RuntimeException(buf.toString());
         }
     }
 

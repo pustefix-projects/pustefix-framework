@@ -14,170 +14,115 @@
   <xsl:template match="pfx:command"></xsl:template>
   <xsl:template match="pfx:host">
     <cus:documentation>
-      <description>Always a child of pfx:elink. Use pfx:host, if you want to
-        create a dynamic link (e.g. with Informations from the result)
-      </description>
-
-
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:elink>
-              <pfx:host>[ixsl:value-of select="/formresult/foo/baz"/]</pfx:host>
-            </pfx:elink>
-          </xmlcode>
-        </input>
-        <output>
-        </output>
-      </example>
-      
+      <description>Always a child of &lt;pfx:elink&gt;. See there for usage information.</description>
     </cus:documentation>
   </xsl:template>
   
-  
   <xsl:template match="pfx:button">
     <cus:documentation>
-      <description>You can use this tag as a switch (for sending formulars) or as a link. The content of this Tag will be the link</description>
-
+      <description>You can use this tag as a switch (for sending formulars) or as a link. The content of this tag will be the link content</description>
       <param required="0">
         <name>activeclass</name>
         <standard>core_button_active</standard>
         <possible_values></possible_values>
-        <description>css class in the activemode (mode will be toggled by the servlet)</description>
+        <description>css class in the active mode (that means, when the page the button points to is the current page)</description>
       </param>
-
-
       <param required="0">
         <name>normalclass</name>
         <standard>core_button_normal</standard>
         <possible_values></possible_values>
-        <description>css class in the normalmode</description>
+        <description>css class in the normal mode (that means, it is possible to click the link)</description>
       </param>
-
-
-
       <param required="0">
-        <name>invisbileclass</name>
+        <name>invisibleclass</name>
         <standard></standard>
         <possible_values>core_button_inivisble</possible_values>
-        <description>css class in the invisiblemode</description>
+        <description>css class in the invisible mode (whenever the link is not clickable, e.g. when the target page is inaccessible)</description>
       </param>
-
-      <param required="1">
+      <param required="0">
         <name>page</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Using the page attribut to jump to another side. Pages in Pustefix
-         could be find in the Include-List in &#148;*/pages&#148;. You'll have to ignore the prefix &#148;Main_&#148;  and
-          the postfix &#148;*.xml&#148;</description>
+        <description>Use the page attribute to jump to another page as defined in the depend.xml.in file. If this is empty, the current page name is used.
+          Note that you need to give the mode=force attribute in this case if you want the link to be clickable. 
+        </description>
       </param>
-
       <param required="0">
         <name>target</name>
         <standard>parent</standard>
         <possible_values></possible_values>
         <description>The target in the frameset</description>
       </param>
-
-
       <param required="0">
         <name>mode</name>
         <standard></standard>
         <possible_values>desc|force</possible_values>
-        <description>Using mode="force": The button is always displayed as a link
-                     Using mode="desc" : The button is displayed is a simple text
+        <description>Using mode="force": The button is always displayed as a link, and the normalclass css is used.
+          Using mode="desc" : The button is considered to be in active mode (aka: NOT clickable) not only when the page attribute
+          points to the current page, but also when a subpage of the target page is the current page. The activeclass css is used in this case.
         </description>
       </param>
-
-
-
       <param required="0">
-        <name>frame</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>The name of the target Frame</description>
+        <name>frame</name> <standard></standard>
+        <possible_values></possible_values> <description>The name of
+        the target frame that should be loaded as defined in the
+        structural xml file for the page. Note that by using @target
+        and @frame you can load a certain frame definition into a
+        different target frame.</description>
       </param>
-
       <param required="0">
         <name>popupwidth</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Width of the PopUp Window</description>
+        <description>Width of the popup window</description>
       </param>
-
       <param required="0">
         <name>popupheigh</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Heihgt of the popup-window</description>
+        <description>Height of the popup window</description>
       </param>
-
-
       <param required="0">
         <name>popupid</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>name of the popup-window</description>
+        <description>The id of the popup window</description>
       </param>
-
       <param required="0">
         <name>nodata</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description></description>
+        <description>This attribute must be given to inhibit the submission of the __submittingdata=1 parameter. Normally the system
+          automatically adds this parameter whenever you use &lt;pfx:argument&gt; tags in the button. Occasionally this is not what you want.
+          Use this attribut to suppress this behaviour.</description>
       </param>
-
       <children>
         <name>pfx:active</name>
-        <description>appearance in the activemode
-          <xmlcode>
-            <pfx:button target="main" page="hallo">
-              <pfx:active>foo</pfx:active>
-              Documentation
-            </pfx:button>
-          </xmlcode>
-        </description>        
+        <description>content of the link in the active mode (not clickable)</description>        
       </children>
-
       <children>
         <name>pfx:normal</name>
-        <description>appearance in the normalmode
-          <xmlcode>
-            <pfx:button target="main" page="hallo">
-              <pfx:normal>foo</pfx:normal>
-              Documenation
-            </pfx:button>
-          </xmlcode>
-        </description>        
+        <description>content of the link in the normal mode (clickable)</description>        
       </children>
-
       <children>
         <name>pfx:invisible</name>
-        <description>Appearence in the invisiblemode
-          <xmlcode>
-            <pfx:button page="foo">
-              <pfx:invisible>Foo</pfx:invisible>
-                  Documentation
-            </pfx:button> 
-          </xmlcode>         
-        </description>        
+        <description>content of the link in the invisible mode (not clickable, because the target page is not accessible)</description>        
       </children>
-
       <children>
         <name>pfx:argument</name>
-        <description>Use pfx:argument, if you need Parameters in your href
+        <description>Use &lt;pfx:argument&gt;, if you need to submit parameters to the pustefix system.
           <xmlcode>
             <pfx:button page="foo">
               <pfx:argument name="pic.Toggle">true</pfx:argument>
               <pfx:argument name="foo">baz</pfx:argument>
-            </pfx:button>            
-          </xmlcode>          
-        </description>        
+            </pfx:button>
+          </xmlcode>
+        </description>
       </children>
-
       <children>
         <name>pfx:command</name>
-        <description>Use pfx:command, if you want to commit commandos (for Java e.g.)
+        <description>Use &lt;pfx:command&gt; to submit special commands to the pustefix system.
+          In almost all cases currently this will be the SELWRP command to select a subset of interface wrappers.
           <xmlcode>
             <pfx:button page="foo">
               <pfx:command name="SELWRP">counter</pfx:command>
@@ -185,34 +130,30 @@
           </xmlcode>
         </description>
       </children>
-
-
       <example>
         <input>
           <xmlcode>
             <pfx:button page="documentation" frame="top" activeclass="active" mode="desc">
               <pfx:argument name="pic.Toggle">true</pfx:argument>
               <pfx:argument name="foo">baz</pfx:argument>
-               Link
-            </pfx:button>            
+              Link
+            </pfx:button>
           </xmlcode>
         </input>
         <output>
+          If the current page is not "documentation" or any subpage of it:
           <xmlcode>
-            <a target="_parent" class="core_button_normal" href="/documentation;jsessionid=1234567896.foo?__frame=top&amp;__sendingdata=1&amp;pic.Toggle=true&amp;foo=baz">
-               Link
+            <a target="_parent" class="core_button_normal"
+               href="/documentation;jsessionid=1234567896.foo?__frame=top&amp;__sendingdata=1&amp;pic.Toggle=true&amp;foo=baz">
+              Link
             </a>
+          </xmlcode>
+          Any other case will result in this:
+          <xmlcode>
+            <span class="active">Link</span>
           </xmlcode>
         </output>
       </example>
-
-      
-     
-      
-
-
-
-      
     </cus:documentation>
     
     <xsl:call-template name="pfx:button_impl">
@@ -264,27 +205,19 @@
 
   <xsl:template match="pfx:jsbutton">
     <cus:documentation>
-      <description>Similar to the &lt;pfx:button&gt; Here you can add the JScript Mouse-Over Effect.
-        (e.g. Toggling the Picture)
-      </description>
-
-
+      <description>Similar to the &lt;pfx:button&gt;. This uses JavaScript mouse-over and mouse-out to create a rollover image.</description>
       <param required="0">
         <name>onmout</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Name of the mouseout-picture</description>
+        <description>Name of the mouse-out picture</description>
       </param>
-
-       <param required="0">
+      <param required="0">
         <name>omnover</name>
-        <description>Name of the mouseover-picture</description>
+        <description>Name of the mouse-over picture</description>
         <standard></standard>
         <possible_values></possible_values>        
-       </param>
-
-
-
+      </param>
       <example>
         <input>
           <xmlcode><pfx:jsbutton name="NameOfButton" omout="NameMouseOutPicture"   omover="NameMouseOverPicture" page="PageName"/></xmlcode>
@@ -292,18 +225,16 @@
         <output>
           <xmlcode>
             <script language="JavaScript"><!--
-        top.__js_but["NameOfButton"] =
-        new top.__js_button("NameMouseOutPicture","NameMouseOverPicture");
-        //--></script>
+              top.__js_but["NameOfButton"] = new top.__js_button("NameMouseOutPicture","NameMouseOverPicture");
+              //--></script>
             <a target="_parent" class="core_button_normal" onmouseover="top.__js_moveover(document,'NameOfButton'); return true" onmouseout="top.__js_moveout(document,'NameOfButton')" href="/PageName;jsessionid=12345.foo?__frame=_top">
               <img border="0" src="NameMouseOutPicture" name="NameOfButton"/>
             </a>
           </xmlcode>
         </output>
       </example>
-
-            
     </cus:documentation>  
+
     <xsl:param name="act_src">
       <xsl:choose>
         <xsl:when test="@active">
@@ -378,7 +309,7 @@
 
   <xsl:template name="pfx:button_impl">
     <cus:documentation>
-        <description>Called by pfx:button and pfx:jsbutton</description>
+      <description>Called by &lt;pfx:button&gt; and &lt;pfx:jsbutton&gt;</description>
     </cus:documentation>
     <xsl:param name="omover"/>
     <xsl:param name="omout"/>
@@ -495,59 +426,44 @@
       </ixsl:otherwise>
     </ixsl:choose>
   </xsl:template>
-   <xsl:template match="pfx:elink"> 
+
+  <xsl:template match="pfx:elink"> 
     <cus:documentation>     
       <description>Creates a link to an external page. If you want
-                   to create a dynamic link, leave href blank and
-                   use the child:pfx:host
+        to create a dynamic link, leave href blank and
+        use the child:pfx:host
       </description>
-
       <param required="1">
         <name>href</name>
         <standard></standard>
         <possible_values></possible_values>
         <description>protocol and uri of the external link</description>
       </param>
-
-
       <param required="0">
         <name>target</name>
         <standard></standard>
-        <possible_values>_blank|_values</possible_values>
-        <description>_popUp/_blank opens the new Page in a PopUp Window
-                     You can also use other targets </description>
+        <possible_values>_popup</possible_values>
+        <description>_popup/_blank opens the new page in a popup window. You can also use other targets</description>
       </param>
-
-
       <param required="0">
         <name>popupwidth</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Width of the PopUp Window</description>
+        <description>Width of the popup window</description>
       </param>
-
       <param required="0">
         <name>popupheigh</name>
         <standard></standard>
         <possible_values></possible_values>
-        <description>Heihgt of the popup-window</description>
+        <description>Height of the popup window</description>
       </param>
-
-
       <param required="0">
         <name>popupid</name>
         <standard></standard>
         <possible_values></possible_values>
         <description>name of the popup-window</description>
       </param>
-
       <children>
-        <name></name>
-        <description></description>        
-      </children>
-
-
-     <children>
         <name>pfx:argument</name>
         <description>Use pfx:argument, if you need Parameters in your href
           <xmlcode>
@@ -558,95 +474,63 @@
           </xmlcode>          
         </description>        
       </children>
-
       <children>
-        <name>pfx:command</name>
-        <description>Use pfx:command, if you want to commit commandos (for Java e.g.)
+        <name>pfx:host</name>
+        <description>Always a child of &lt;pfx:elink&gt;. Use &lt;pfx:host&gt;, if you want to
+          create a link to a server whose name can only be computed dynamically at runtime.
           <xmlcode>
-            <pfx:elink href="foo">
-              <pfx:command name="SELWRP">counter</pfx:command>
+            <pfx:elink href="http://www.yahoo.de">
+              <pfx:host><ixsl:value-of select="/formresult/dynhost/text()"/></pfx:host>
+              Dynamic Link
             </pfx:elink>
           </xmlcode>
         </description>
       </children>
-
-
-      <children>
-        <name>pfx:host</name>
-        <description>Always a child of pfx:elink. Use pfx:host, if you want to
-                 create a dynamic link (e.g. with Informations from the result)
-          <xmlcode>
-            <pfx:elink target="_popup" href="http://www.yahoo.de">
-              <pfx:host>[ixsl:value-of select="/formresult/@serial"/]</pfx:host>
-                <pfx:argument name="foo">baz</pfx:argument>
-                   Dynamic Link
-                </pfx:elink>
-          </xmlcode>
-        </description>
-        
-      </children>
-
-      
-      
-
       <example>
         <input>
           <xmlcode>
-           <pfx:elink href="http://www.gimp.org" target="_popup">
-               <pfx:argument name="foo">
-                 [ixsl:value-of select="/formresult/@serial"/]</pfx:argument>
-                   Goto Gimp!
+            <pfx:elink href="http://www.gimp.org" target="_popup">
+              <pfx:argument name="foo"><ixsl:value-of select="/formresult/foo/@id"/></pfx:argument>
+              Goto Gimp!
             </pfx:elink>
           </xmlcode>
         </input>
         <output>
-          <xmlcode><a href="/xml/deref?link=http://www.gimp.org%3ffoo%3d1043149190187" target="_blank" onclick="javascript:top.__js_popup('/xml/deref?link=http://www.gimp.org%3ffoo%3d1043149190187','','','');return(false);">
-            
-            Goto Gimp!</a></xmlcode>
+          <xmlcode><a href="/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR" target="_blank"
+                      onclick="javascript:top.__js_popup('/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR','','','');return(false);">
+              Goto Gimp!</a>
+          </xmlcode>
         </output>
       </example>
-
-
-
-
-      
-
-
-      
-
-
-      
-  
     </cus:documentation>
-
-   <xsl:choose>
+    
+    <xsl:choose>
       <xsl:when test="not(@href and ./pfx:host)">
         <xsl:choose>
           <xsl:when test="@href or ./pfx:host">
             <xsl:choose>
               <xsl:when test="not(contains(@href, '?'))">               
                 <xsl:variable name="href">
-                <xsl:if test="@href">
-                   <xsl:value-of select="concat('/xml/deref?link=',@href)"/>    
-                </xsl:if>            
-               <xsl:if test="./pfx:host">
+                  <xsl:if test="@href">
+                    <xsl:value-of select="concat('/xml/deref?link=',@href)"/>    
+                  </xsl:if>            
+                  <xsl:if test="./pfx:host">
                     <xsl:text>/xml/deref?link=</xsl:text>
                     <xsl:apply-templates select="./pfx:host/node()"/>   
-               </xsl:if>
-
-               <xsl:if test="./pfx:argument">
+                  </xsl:if>
+                  <xsl:if test="./pfx:argument">
                     <xsl:text>%3f</xsl:text>
                     <xsl:for-each select="pfx:argument">
                       <xsl:value-of select="@name"/>%3d<xsl:apply-templates select="./node()"/>
-                         <xsl:if test="following-sibling::pfx:argument">
-                             <xsl:text>%26</xsl:text>
-                         </xsl:if>
+                      <xsl:if test="following-sibling::pfx:argument">
+                        <xsl:text>%26</xsl:text>
+                      </xsl:if>
                     </xsl:for-each>
-             </xsl:if>
-             </xsl:variable>               
-             <a>
-              <xsl:copy-of select="@*"/>
-              <xsl:if test="@target = '_popup'">
+                  </xsl:if>
+                </xsl:variable>               
+                <a>
+                  <xsl:copy-of select="@*"/>
+                  <xsl:if test="@target = '_popup'">
                     <xsl:attribute name="target">_blank</xsl:attribute>
                     <ixsl:attribute name="onclick">
                       <xsl:text>javascript:top.__js_popup('</xsl:text>
@@ -659,80 +543,42 @@
                       <xsl:value-of select="@popupheight"/>
                       <xsl:text>');return(false);</xsl:text>
                     </ixsl:attribute>
-             </xsl:if>
-             <ixsl:attribute name="href">
+                  </xsl:if>
+                  <ixsl:attribute name="href">
                     <xsl:copy-of select="$href"/>
-             </ixsl:attribute>
-             <xsl:apply-templates/>
-           </a>
-       </xsl:when>
-         <xsl:otherwise>
-                 <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: Do not use a Questionmark in the Href-Attribute !</span>
-        </xsl:otherwise>
-       </xsl:choose>
+                  </ixsl:attribute>
+                  <xsl:apply-templates/>
+                </a>
+              </xsl:when>
+              <xsl:otherwise>
+                <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: Do not use a questionmark in the href attribute !</span>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
+          <xsl:otherwise>
+            <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: Need either @href or ./pfx:host child node</span>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:when>
       <xsl:otherwise>
-        <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: pfx:elink Need either @href or ./pfx:host child node</span>
+        <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: Need just one of @href or ./pfx:host child node - both were used</span>
       </xsl:otherwise>
     </xsl:choose>
-   </xsl:when>
-   <xsl:otherwise>
-      <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error:pfx:elink Need either @href or ./pfx:host child node - Both were used</span>
-  </xsl:otherwise>     
- </xsl:choose>          
-
   </xsl:template>
-    
   
-<!--   THIS IS BROKEN. I will fix it when we need it (jtl) -->
-<!--    <xsl:template match="pfx:metarefresh"> -->
-<!--      <meta http-equiv="refresh"> -->
-<!--        <ixsl:attribute name="content"> -->
-<!--          <ixsl:value-of select="concat('{@delay}; ', 'URL=/', $__sessid, '{@url}')"/> -->
-<!--        </ixsl:attribute> -->
-<!--      </meta> -->
-<!--    </xsl:template> -->
-
   <xsl:template match="pfx:wizardnavigation">
     <cus:documentation>
-      <!-- Macht die Wizard-Navigation, das heisst, das mehrere Handler auf einer Seite
-           nach und nach abgearbeitet werden -->
-      <description>Use wizard-navigation when you have more than one handler on
-                   a page....more later
-      </description>
-
-
-      <example>
-        <input>
-          <xmlcode>
-        <pfx:wizardnavigation>
-          <pfx:group>
-            .... when lastindex = 0;
-          </pfx:group>
-          <pfx:flat>
-           ...   when lastindex != 0;
-          </pfx:flat>
-        </pfx:wizardnavigation>
-          </xmlcode>
-          
-        </input>
-        <output>
-        </output>
-      </example>
-      
+      <description>will be documentated later</description>
       <children>
-        <!-- Alles was unter pfx:group ausgeführt wenn lastindex = 0 -->
         <name>pfx:group</name>
         <description></description>
       </children>  
-
       <children>
-        <!-- Alles was unter pfx:flat ausgeführt wenn lastindex != 0 -->
         <name>pfx:flat</name>
         <description></description>
       </children>  
-      
     </cus:documentation>  
+    
     <ixsl:choose>
       <ixsl:when test="/formresult/iwrappergroups/@lastindex = 0">
         <xsl:apply-templates select="./pfx:flat/node()"/>
@@ -745,42 +591,29 @@
 
   <xsl:template match="pfx:wizardprevious">
     <cus:documentation>
-      <!-- Wenn currentindex = 0 ist wird pfx:inactive genommen
-           Wenn currentindex > 0 wird pfx:active genommen
-           Dafuer wird auf das Span-Field ein Link gesetzt
-           der sich aehnlich zusammensetzt wie pfx:button
-           Ausserdem wird der current-Index um eins reduziert
-      -->
       <description>will be documentated later</description>
-
-
-     <children>
+      <children>
         <name>pfx:active</name>
         <description></description>        
       </children>
-
       <children>
         <name>pfx:inactive</name>
         <description></description>        
       </children>
-
-      
-     <example>
+      <example>
         <input>
           <xmlcode>
             <pfx:wizardprevious>
-               <pfx:active>&lt;&lt;Previous</pfx:active>
-               <pfx:inactive>&lt;&lt; Previous</pfx:inactive>
-           </pfx:wizardprevious>
-
+              <pfx:active>&lt;&lt;Previous</pfx:active>
+              <pfx:inactive>&lt;&lt; Previous</pfx:inactive>
+            </pfx:wizardprevious>
           </xmlcode>
         </input>
         <output>
         </output>
       </example> 
-     
-      
     </cus:documentation>  
+
     <xsl:variable name="frame_impl">
       <xsl:choose>
         <xsl:when test="ancestor-or-self::pfx:frame[position()=1]/@name">
@@ -821,45 +654,33 @@
   </xsl:template>
 
   <xsl:template match="pfx:wizardnext">
-    <!--
-          Ist eigentlich ziemlich einfach, nur die Funktionalität ist mir noch nicht so
-          ganz klar
-    -->
     <cus:documentation>
       <description>will be documentated later</description>
-      
-
       <children>
         <name>pfx:active</name>
         <description></description>        
       </children>
-
       <children>
         <name>pfx:inactive</name>
         <description></description>        
       </children>
-
-
-     <example>
+      <example>
         <input>
           <xmlcode>
-         <pfx:wizardnext>
-             <pfx:active>
+            <pfx:wizardnext>
+              <pfx:active>
                 <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Next &gt;&gt;">
-                   <pfx:command name="SELGRP">NEXT</pfx:command>
-                 </pfx:xinp>
+                  <pfx:command name="SELGRP">NEXT</pfx:command>
+                </pfx:xinp>
               </pfx:active>
-            <pfx:inactive>Next &gt;&gt;</pfx:inactive>
-         </pfx:wizardnext>
+              <pfx:inactive>Next &gt;&gt;</pfx:inactive>
+            </pfx:wizardnext>
           </xmlcode>
         </input>
         <output>
           <xmlcode></xmlcode>
         </output>
       </example>     
-
-        
-
     </cus:documentation>
     
     <ixsl:choose>
@@ -871,26 +692,18 @@
       </ixsl:otherwise>
     </ixsl:choose>
   </xsl:template>
-
-    <xsl:template match="pfx:wizardfinish">
-     <!--
-          Ist eigentlich ziemlich einfach, nur die Funktionalität ist mir noch nicht so
-          ganz klar
-    -->
+  
+  <xsl:template match="pfx:wizardfinish">
     <cus:documentation>    
       <description>will be documentated later</description>
-      
-
       <children>
         <name>pfx:active</name>
         <description></description>        
       </children>
-
       <children>
         <name>pfx:inactive</name>
         <description></description>        
       </children>
-
       <example>
         <input>
           <xmlcode>
@@ -905,9 +718,7 @@
         <output>
           <xmlcode></xmlcode>
         </output>
-
       </example>
-      
     </cus:documentation>
     
     <ixsl:choose>
@@ -919,11 +730,6 @@
       </ixsl:otherwise>
     </ixsl:choose>
   </xsl:template>
-
-
-
-
-  
 </xsl:stylesheet>
 
 <!-- 
