@@ -72,14 +72,6 @@ public class IncludesUploadHandler extends EditorStdHandler {
     public AuxDependency getCurrentInclude(EditorSessionStatus esess) {
         return esess.getCurrentInclude();
     }
-        
-    // NO LONGER DONE private String decodeAppletText(String txt){
-    // NO LONGER DONE     return URLDecoder.decode(txt);
-    // NO LONGER DONE }    
-    // NO LONGER DONE private String encodeAppletText(String txt){
-    // NO LONGER DONE     return URLEncoder.encode(txt);
-    // NO LONGER DONE }
-    
     
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         ContextResourceManager crm     = context.getContextResourceManager();
@@ -112,11 +104,7 @@ public class IncludesUploadHandler extends EditorStdHandler {
                         text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                         text = text.trim();
                         
-                        // NO LONGER DONE 
-                        // NO LONGER DONE // encode the text for the editor applet (passed as <PARAM>)                     
-                        // NO LONGER DONE text = encodeAppletText(text);                        
                     } else {
-                        //text = DEF_TEXT;
                         text=DEF_TEXT_APPLET;
                     }
                     upl.setStringValContent(text);
@@ -163,9 +151,6 @@ public class IncludesUploadHandler extends EditorStdHandler {
                     ns = ns + "xmlns:" + nsp.getPrefix() + "=\"" + nsp.getUri() + "\" ";
                 }
                 
-                // NO LONGER DONE//The text which comes from the editor applet is encoded, so decode it here
-                // NO LONGER DONEcontent = this.decodeAppletText(upl.getContent());
-                // NO LONGER DONE//System.err.println("decode Applet text:  \n----------------\n" + content+"\n-------------\n");
                 content = upl.getContent();
                 
                 content = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n" +
