@@ -19,6 +19,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,7 +41,11 @@ public class TestcaseStepResult {
     private Document serverResponse;
     private Document recordedReferenceDoc;
     private boolean serverError = false;
-
+    private long stepDuration = 0;
+    private long preProc = 0;
+    private long getDom = 0;
+    private long hdlDoc = 0;
+    
     public void setRecordedReferenceDoc(Document reference_data) {
         if (reference_data == null) {
             throw new IllegalArgumentException("A NP as referencedata is NOT allowed here!");
@@ -63,12 +70,31 @@ public class TestcaseStepResult {
             throw new IllegalArgumentException("A NP as response is not allowed here!");
         }
         serverResponse = response;
+        extractAdditionTimingInfo();
     }
 
-    public void setReferenceDoc(Document doc) {
+    public void setDuration(long duration) {
+        stepDuration = duration;
+    }
+    
+    public long getDuration() {
+        return stepDuration;
+    }
+    
+    public long getPreProcessingDuration() {
+        return preProc;
     }
 
-    public void createDiff(String tmpdir, int count, String style_dir, String stylesheet) throws Exception {
+    public long getGetDocumentDuration() {
+        return getDom;    
+    }
+
+    public long getHandleDocumentDuration() {
+        return hdlDoc;
+    }
+
+
+    public void createDiff(String tmpdir, String style_dir, String stylesheet) throws Exception {
         if (serverError) {
             diffString = ":-(";
             return;
@@ -76,8 +102,8 @@ public class TestcaseStepResult {
 
         doTransform(style_dir, stylesheet);
 
-        String ref_path = tmpdir + "/_recorded" + count;
-        String srv_path = tmpdir + "/_current" + count;
+        String ref_path = tmpdir + "/_recorded" + this.hashCode();
+        String srv_path = tmpdir + "/_current" + this.hashCode();
         XMLSerializeUtil.getInstance().serializeToFile(serverResponse, srv_path, 2, false);
         XMLSerializeUtil.getInstance().serializeToFile(recordedReferenceDoc, ref_path, 2, false);
         doDiff(srv_path, ref_path);
@@ -87,6 +113,27 @@ public class TestcaseStepResult {
         return diffString;
     }
 
+    public void extractAdditionTimingInfo()  {
+        String core_timing_info = serverResponse.getFirstChild().getNextSibling().getNodeValue();
+        Perl5Matcher perl = new Perl5Matcher();
+        Perl5Compiler perlcomp = new Perl5Compiler();
+        try {
+            perl.contains(core_timing_info, perlcomp.compile("PRE_PROC:[ *](\\d*)[ *]GET_DOM:[ *](\\d*)[ *]HDL_DOC:[ *](\\d*)"));
+        } catch (MalformedPatternException e) {
+            e.printStackTrace();
+        }
+        String pre_proc = perl.getMatch().group(1);
+        String get_dom = perl.getMatch().group(2);
+        String hdl_doc = perl.getMatch().group(3);
+
+       // System.out.println(pre_proc+"|"+get_dom+"|"+hdl_doc);
+
+        preProc = Integer.parseInt(pre_proc);
+        getDom = Integer.parseInt(get_dom);
+        hdlDoc = Integer.parseInt(hdl_doc);
+    }
+    
+    
     /** remove the serial number from the result document */
     private void removeSerialNumbers() {
         Node node1 = recordedReferenceDoc.getFirstChild();
@@ -95,6 +142,8 @@ public class TestcaseStepResult {
         Node node2 = serverResponse.getFirstChild();
         ((Element) node2).setAttribute("serial", "0");
     }
+    
+  
 
     /** start GNU diff process */
     private void doDiff(String path1, String path2) throws Exception {
@@ -134,6 +183,9 @@ public class TestcaseStepResult {
         // saxon
         TransformerFactoryImpl trans_fac = (TransformerFactoryImpl) TransformerFactory.newInstance();
         String path = style_dir + "/" + stylesheet;
+        
+       // System.out.println("Stylesheet--->"+path);
+        
         File styesheet = new File(path);
         if (styesheet.exists()) {
             if (CAT.isInfoEnabled()) {
@@ -144,12 +196,14 @@ public class TestcaseStepResult {
             try {
                 templates = trans_fac.newTemplates(stream_source);
             } catch (TransformerConfigurationException e) {
+                e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);
             }
             Transformer trafo = null;
             try {
                 trafo = templates.newTransformer();
             } catch (TransformerConfigurationException e) {
+                e.printStackTrace();
                 throw new TestClientException("TransformerConfigurationException occured!", e);
             }
 

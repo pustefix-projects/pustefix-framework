@@ -39,22 +39,24 @@ public class TestcaseStep {
     private static String XMLONLY_PARAM_VALUE = "1";
 
     private Document formInput;
-    private Document referenceData;
     private String targetHost;
     private int targetPort;
     private String targetProto;
     private String targetURL;
     
-    private TestcaseStepResult result;
     private HttpConnection httpConnection;
     private String sessionID;
-
-    public TestcaseStep(Document form_input) throws Exception { 
+    private Document recordedReferenceDoc;
+    private String styleSheet;
+    private String styleDir;
+    private String tmpDir;
+    
+    
+    public TestcaseStep(Document form_input) throws TestClientException { 
         if(form_input == null) {
             throw new IllegalArgumentException("A NP as forminput is not allowed here!");
         }
         
-        result = new TestcaseStepResult();
         formInput = form_input;
         
         targetHost = getHostnameFromInput();
@@ -71,15 +73,26 @@ public class TestcaseStep {
         httpConnection = con;
     }
 
-    public void doExecute() throws Exception {
+    public TestcaseStepResult doExecute() throws Exception {
         if(CAT.isDebugEnabled()) {
             CAT.debug("===================================================="); 
         }
         
-        getResultFromFormInput();
+        TestcaseStepResult result =  getResultFromFormInput();
+        result.setRecordedReferenceDoc(recordedReferenceDoc);
+        result.createDiff(tmpDir, styleDir, styleSheet);
+        
         if(CAT.isDebugEnabled()) {
             CAT.debug("===================================================="); 
         }
+        return result;
+    }
+    
+    public void setRecordedReferenceDoc(Document doc) {
+        if(doc == null) {
+            throw new IllegalArgumentException("A NP as document ist not allowed here");
+        }
+        recordedReferenceDoc = doc;
     }
 
     public String getHostname() {
@@ -102,13 +115,24 @@ public class TestcaseStep {
         return sessionID;
     }
     
-    public TestcaseStepResult getResult() {
-        return result;
+    public void setStylesheet(String name) {
+        styleSheet = name;
     }
+    
+    public void setStylesheetDir(String dir) {
+        styleDir = dir;
+    }
+    
+    public void setTempDir(String dir) {
+        tmpDir = dir;
+    }
+    
+    
+  
 
     /** get result from server after posting request data */
-    private void getResultFromFormInput() throws Exception {
-        
+    private TestcaseStepResult getResultFromFormInput() throws Exception {
+        TestcaseStepResult result = new TestcaseStepResult();
         NameValuePair[] post_params = getPostParamsFromInput();
         
         if(CAT.isDebugEnabled()) {
@@ -123,6 +147,7 @@ public class TestcaseStep {
         String currenturl = targetProto + "://" + targetHost + ":"+ targetPort + targetURL + ";jsessionid=" + sessionID;
  
         boolean redirect_needed = true;
+        long duration = 0;
         
         while (redirect_needed) {
             if(CAT.isDebugEnabled()) {
@@ -133,7 +158,9 @@ public class TestcaseStep {
             post.addParameters(post_params);
             
             try {
+                long start = System.currentTimeMillis();
                 status_code = post.execute(new HttpState(), httpConnection);
+                duration = System.currentTimeMillis() - start;
             } catch (HttpException e) {
                 if( e instanceof HttpRecoverableException) {
                     CAT.warn("Recieved statuscode "+status_code+" -> "+e.getMessage());
@@ -169,14 +196,14 @@ public class TestcaseStep {
                     if(conheader.getValue().equals("close")) {
                         CAT.error("Connection closed by server. Either the server does not support keep-alive or" +
                             "the testcase has more steps then keep-alive request are allowed by the server");
-                        return;
+                        return result;
                     }
                 }
                 
                 Header locheader = post.getResponseHeader("location");
                 if(locheader == null) {
                     CAT.error("Unable to get location information from header!");
-                    return;
+                    return result;
                 }
                 String redirect_location = locheader.getValue();
                 currenturl = redirect_location;
@@ -208,12 +235,17 @@ public class TestcaseStep {
                 } catch (IOException e) {
                     throw new TestClientException("IOException occured!", e);
                 }
+                result.setDuration(duration);
                 result.setServerResponse(convertServerResponseToDocument(response_stream));
                 result.setStatuscode(status_code);
             }
         }
+        return result;
 
     }
+    
+    
+   
 
     /** extract postparams from the recorded request data */
     private NameValuePair[] getPostParamsFromInput() throws TestClientException {

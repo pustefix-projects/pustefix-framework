@@ -50,7 +50,7 @@
         </table>
         
         <br/><br/>
-        <ixsl:for-each select="/formresult/testcases/test_results/child::*">
+        <ixsl:for-each select="/formresult/testcases/test_results">
           <table align="center" border="0" width="50%">
             <tr>
               <td>
@@ -67,12 +67,13 @@
             <tr>
               <td>
                 <table cellpadding="2" cellspacing="0" class="editor_box" width="100%">
+                   <tr><td colspan="3">Total: <ixsl:value-of select="./test/timing/@total"/></td></tr>
                   <tr>
                     <td align="center" class="editor_head" nowrap="nowrap"><b>Step</b></td>
                     <td align="center" class="editor_head" nowrap="nowrap"><b>Response</b></td>
                     <td class="editor_head"><b>Diff</b></td>
                   </tr>
-                  <ixsl:for-each select="./child::*">
+                  <ixsl:for-each select="./test/step">
                     <tr valign="top">
                       <td align="center">
                         <ixsl:value-of select="@id"/>
@@ -93,8 +94,8 @@
                       <td nowrap="nowrap" width="100%">
                         <table bgcolor="#CCCCCC" cellpadding="0" cellspacing="0" class="editor_box" width="100%">
                           <ixsl:choose>
-                            <ixsl:when test="./child::*">
-                              <ixsl:for-each select="./child::*">
+                            <ixsl:when test="./line">
+                              <ixsl:for-each select="./line">
                                 <tr>
                                   <ixsl:variable name="line" select="."/>
                                   <ixsl:choose>

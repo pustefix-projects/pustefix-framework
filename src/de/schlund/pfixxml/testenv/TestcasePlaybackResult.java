@@ -1,6 +1,7 @@
 package de.schlund.pfixxml.testenv;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Class encapsulating the result of a whole testcase after playback.
@@ -29,6 +30,38 @@ public class TestcasePlaybackResult {
     public int getNumStepResult() {
         return stepResults.size();
     }
+    
+    public long getTotalDuration() {
+        long ret = 0;
+        for(Iterator i = stepResults.iterator(); i.hasNext();) {
+            ret += ((TestcaseStepResult) i.next()).getDuration();
+        }  
+        return ret;
+    }
+    
+    public long getTotalPreProcessingDuration() {
+        long ret = 0;
+        for(Iterator i = stepResults.iterator(); i.hasNext();) {
+            ret +=  ((TestcaseStepResult)i.next()).getPreProcessingDuration();
+        }
+        return ret;
+    }
+    
+   public long getTotalGetDomDuration() {
+        long ret = 0;
+        for(Iterator i = stepResults.iterator(); i.hasNext();) {
+            ret += ((TestcaseStepResult)i.next()).getGetDocumentDuration();
+        }
+        return ret;
+   }
+   
+   public long getTotalHandleDocumentDuartion() {
+        long ret = 0;
+        for(Iterator i = stepResults.iterator(); i.hasNext();) {
+            ret += ((TestcaseStepResult)i.next()).getHandleDocumentDuration();
+        }
+        return ret;
+   }
    
 
     /**
