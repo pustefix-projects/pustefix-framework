@@ -448,8 +448,6 @@ or delete the DOCTYPE definition -->
      destdir="${dir.projects}"
      includes="**/*.prop.in"
      extension=""
-     validate="${validate}"
-     catalogfile="${catalogfile}"
      >
       <param name="docroot" expression="${dir.docroot}"/>
       <param name="fqdn"    expression="${fqdn}"/>
