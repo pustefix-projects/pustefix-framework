@@ -15,11 +15,19 @@ public class Constants {
     public final static int SESSION_TYPE_SERVLET=1;
     public final static int SESSION_TYPE_SOAPHEADER=1;
     
-    public final static int MONITOR_SCOPE_SESSION=0;
-    public final static int MONITOR_SCOPE_IP=1;
-    
     public static final String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
     public static final String MSGCTX_PROP_MONITORSTART="PFX_MONITORSTART";
     public static final String MSGCTX_PROP_MONITORENTRY="PFX_MONITORENTRY";
+    
+    public final static String MONITOR_SCOPE_SESSION="session";
+    public final static String MONITOR_SCOPE_IP="ip";
+    public final static String[] MONITOR_SCOPES={MONITOR_SCOPE_SESSION,MONITOR_SCOPE_IP};
+    
+    public final static String ENCODING_STYLE_RPC="rpc";
+    public final static String ENCODING_STYLE_DOCUMENT="document";
+    public final static String[] ENCODING_STYLES={ENCODING_STYLE_RPC,ENCODING_STYLE_DOCUMENT};
+    public final static String ENCODING_USE_ENCODED="encoded";
+    public final static String ENCODING_USE_LITERAL="literal";
+    public final static String[] ENCODING_USES={ENCODING_USE_ENCODED,ENCODING_USE_LITERAL};
     
 }

@@ -4,8 +4,9 @@
 package de.schlund.pfixcore.example.webservices;
 
 import java.util.Date;
-import javax.xml.parsers.*;
 import org.w3c.dom.*;
+
+import de.schlund.pfixcore.example.DataBean;
 
 /**
  * TypeTestImpl.java 
@@ -16,56 +17,60 @@ import org.w3c.dom.*;
  */
 public class TypeTestImpl implements TypeTest {
     
-    public int echo(int val) {
+    public String info() {
+        return "TypeTest";
+    }
+    
+    public int echoInt(int val) {
         return val;
     }
     
-    public int[] echo(int[] vals) {
+    public int[] echoIntArray(int[] vals) {
         return vals;
     }
     
-    public float echo(float val) {
+    public float echoFloat(float val) {
         return val;
     }
     
-    public float[] echo(float[] vals) {
+    public float[] echoFloatArray(float[] vals) {
         return vals;
     }
     
-    public double echo(double val) {
+    public double echoDouble(double val) {
         return val;
     }
     
-    public double[] echo(double[] vals) {
+    public double[] echoDoubleArray(double[] vals) {
         return vals;
     }
     
-    public Date echo(Date date) {
+    public Date echoDate(Date date) {
         return date;
     }
     
-    public Date[] echo(Date[] dates) {
+    public Date[] echoDateArray(Date[] dates) {
         return dates;
     }
     
-    public String echo(String str) {
+    public String echoString(String str) {
         return str;
     }
     
-    public String[] echo(String[] strs) {
+    public String[] echoStringArray(String[] strs) {
         return strs;
     }
     
-    public Element getElement() throws Exception {
-        DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
-        DocumentBuilder db=dbf.newDocumentBuilder();
-        Document doc=db.newDocument();
-        Element elem=doc.createElement("test");
-        elem.setAttribute("id","1");
-        Element subElem=doc.createElement("foo");
-        elem.appendChild(subElem);
-        subElem.appendChild(doc.createTextNode("fasdfasdfasdf"));
+    public Element echoElement(Element elem) throws Exception {
         return elem;
+    }
+    
+    public DataBean echoDataBean(DataBean data) {
+        return data;
+    }
+    
+    public DataBean[] echoDataBeanArray(DataBean[] data) {
+        return data;
     }
     
 }

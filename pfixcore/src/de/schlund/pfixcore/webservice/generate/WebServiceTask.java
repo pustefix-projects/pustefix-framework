@@ -16,6 +16,8 @@ import org.w3c.dom.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
@@ -51,6 +53,10 @@ public class WebServiceTask extends Task {
     private DocumentBuilder docBuilder;
     private Transformer trfSerializer;
     
+    private boolean shortNamespaces=true;
+    //SOAP RPC encoding style: encoded|literal
+    private String rpcStyle="literal";
+    
     public void execute() throws BuildException {
         
         if(!prjfile.exists()) throw new BuildException("Project configuration file "+prjfile.getAbsolutePath()+" doesn't exist");
@@ -82,13 +88,15 @@ public class WebServiceTask extends Task {
                     ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
                     ServiceGlobalConfig globConf=srvConf.getServiceGlobalConfig();
                     
+                    System.out.println(globConf.changed(new ServiceGlobalConfig(new ConfigProperties(new File[] {globPropsFile}))));
+                    
                     File appDir=new File(webappsdir,prjName);
                     if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
                     File webInfDir=new File(appDir,"WEB-INF");
                     if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
                     
                     File wsdlDir=tmpDir;
-                    if(globConf.isWSDLSupportEnabled()) {
+                    if(globConf.getWSDLSupportEnabled()) {
                         String wsdlRepo=globConf.getWSDLRepository();
                         if(wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
                         wsdlDir=new File(appDir,wsdlRepo);
@@ -114,16 +122,16 @@ public class WebServiceTask extends Task {
                     
                     WSDDRequestFlow reqFlow=null;
                     WSDDResponseFlow resFlow=null;
-                    if(globConf.loggingEnabled() || globConf.monitoringEnabled()) {
+                    if(globConf.getLoggingEnabled() || globConf.getMonitoringEnabled()) {
                         reqFlow=new WSDDRequestFlow();
                         resFlow=new WSDDResponseFlow();
-                        if(globConf.loggingEnabled()) {
+                        if(globConf.getLoggingEnabled()) {
                             WSDDHandler loggingHandler=new WSDDHandler();
                             loggingHandler.setType(new QName("LoggingHandler"));
                             reqFlow.addHandler(loggingHandler);
                             resFlow.addHandler(loggingHandler);
                         }
-                        if(globConf.monitoringEnabled()) {
+                        if(globConf.getMonitoringEnabled()) {
                             WSDDHandler monitorHandler=new WSDDHandler();
                             monitorHandler.setType(new QName("MonitoringHandler"));
                             reqFlow.addHandler(monitorHandler);
@@ -160,23 +168,32 @@ public class WebServiceTask extends Task {
                         if(!wsdlFile.exists() || wsdlFile.lastModified()<wsItfFile.lastModified() || !confPropsFile.exists() || 
                                 propsChanged || conf.changed(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
                             
+                                checkInterface(wsItf);
+                            
                                 wsdlCnt++;
-                                String wsNS=createShortNamespace(wsName);
-                                //String wsNS=createLongNamespace(wsItf);
+                                String wsNS=null;
+                                if(shortNamespaces) wsNS=createShortNamespace(wsName);
+                                else wsNS=createLongNamespace(wsItf);
                                 Java2Wsdl task=new Java2Wsdl();
                                 task.setOutput(wsdlFile);
                                 task.setClassName(wsItf);
                                 task.setNamespace(wsNS);
                                 task.setLocation(wsUrl+"/"+wsName);
-                                //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
+                                task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
+                                task.setUse(rpcStyle);
                                 task.generate();
                                 log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
                                 conf.saveProperties(new File(tmpDir,wsName+".props"));
                         }                
                      
-                        String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
-                        File wsddPath=new File(tmpDir,wsddPathPart);
-                        File wsddFile=new File(tmpDir,wsName+".wsdd");
+                        File wsddPath=null;
+                        if(shortNamespaces) {
+                            wsddPath=new File(tmpDir,wsName+"_pkg");
+                        } else {
+                            String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
+                            wsddPath=new File(tmpDir,wsddPathPart);
+                        }
+                        File wsddFile=wsddFile=new File(tmpDir,wsName+".wsdd");
                         if(!wsddFile.exists() || wsddFile.lastModified()<wsdlFile.lastModified()) {
                             
                             wsddCnt++;
@@ -185,10 +202,11 @@ public class WebServiceTask extends Task {
                             task.setDeployScope("Application");
                             task.setServerSide(true);
                             task.setURL(wsdlFile.getAbsolutePath());
-                            task.setPackageName(wsItfPkg);
+                            //task.setPackageName(wsItfPkg);
                             task.generate();
                             
                             File origWsddFile=new File(wsddPath,"deploy.wsdd");
+                            if(!origWsddFile.exists()) throw new BuildException("Can't locate deployment descriptor file "+origWsddFile.getAbsolutePath());
                             origWsddFile.renameTo(wsddFile);
                             log("Created deployment descriptor file "+wsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
                             
@@ -202,7 +220,7 @@ public class WebServiceTask extends Task {
                                 //Change automatically generated name of implementation class to configured name
                                 wsddServices[j].setParameter("className",wsImpl);
                                 
-                                if(globConf.monitoringEnabled()||globConf.loggingEnabled()) {
+                                if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
                                     wsddServices[j].setRequestFlow(reqFlow);
                                     wsddServices[j].setResponseFlow(resFlow);
                                 }
@@ -321,6 +339,23 @@ public class WebServiceTask extends Task {
         }
         
        
+        private void checkInterface(String className) throws BuildException {
+            try {
+                Class clazz=Class.forName(className);
+                if(!clazz.isInterface()) throw new BuildException("Web service interface class doesn't represent an interface type");
+                Method[] methods=clazz.getDeclaredMethods();
+                HashSet names=new HashSet();
+                for(int i=0;i<methods.length;i++) {
+                    String name=methods[i].getName();
+                    if(names.contains(name)) throw new BuildException("Web service interface class '"+className+"' contains "+
+                            "overloaded method '"+name+"'. Method overloading isn't allowed in web service interface definitions, "+
+                            "as future WSDL versions (1.2+) will no longer support operation overloading.");
+                    names.add(name);
+                }        
+            } catch(ClassNotFoundException x) {
+                throw new BuildException("Web service interface class "+className+" not found",x);
+            }
+        }
            
       
         

@@ -19,7 +19,7 @@
 	
 	<taskdef resource="axis-tasks.properties" classpathref="axis.classpath" />
 	
-	<target name="all" depends="deploy">
+	<target name="all" depends="wsdl2java">
 		
 		
 	</target>

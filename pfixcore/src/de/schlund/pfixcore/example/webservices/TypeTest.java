@@ -7,6 +7,9 @@ import java.util.Date;
 
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.example.DataBean;
+
+
 /**
  * TypeTest.java 
  * 
@@ -16,26 +19,32 @@ import org.w3c.dom.Element;
  */
 public interface TypeTest {
     
-    public int echo(int val);
+    public String info();
     
-    public int[] echo(int[] vals);
+    public int echoInt(int val);
     
-    public float echo(float val);
+    public int[] echoIntArray(int[] vals);
     
-    public float[] echo(float[] vals);
+    public float echoFloat(float val);
     
-    public double echo(double val);
+    public float[] echoFloatArray(float[] vals);
     
-    public double[] echo(double[] vals);
+    public double echoDouble(double val);
     
-    public Date echo(Date date);
+    public double[] echoDoubleArray(double[] vals);
     
-    public Date[] echo(Date[] dates);
+    public Date echoDate(Date date);
     
-    public String echo(String str);
+    public Date[] echoDateArray(Date[] dates);
     
-    public String[] echo(String[] strs);
+    public String echoString(String str);
     
-    public Element getElement() throws Exception;
+    public String[] echoStringArray(String[] strs);
+    
+    public Element echoElement(Element elem) throws Exception;
+    
+    public DataBean echoDataBean(DataBean data);
+    
+    public DataBean[] echoDataBeanArray(DataBean[] data);
     
 }

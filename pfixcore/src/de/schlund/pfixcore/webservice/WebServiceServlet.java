@@ -48,7 +48,7 @@ public class WebServiceServlet extends AxisServlet {
             ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
             wsc=new WebServiceContext(srvConf);
             getServletContext().setAttribute(wsc.getClass().getName(),wsc);
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().monitoringEnabled()) {
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getMonitoringEnabled()) {
                 MonitoringCache cache=new MonitoringCache();
                 wsc.setAttribute(cache.getClass().getName(),cache);
             }
@@ -136,7 +136,7 @@ public class WebServiceServlet extends AxisServlet {
         if(qs==null) {
             sendBadRequest(req,res,writer);
         } else if(qs.equalsIgnoreCase("WSDL")) {
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().isWSDLSupportEnabled()) {
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getWSDLSupportEnabled()) {
                 String pathInfo=req.getPathInfo();
                 String serviceName;
                 if (pathInfo.startsWith("/")) {
@@ -183,7 +183,7 @@ public class WebServiceServlet extends AxisServlet {
                 } else sendError(req,res,writer);
             } else sendForbidden(req,res,writer);
         } else if(qs.equalsIgnoreCase("monitor")) {
-            if(wsc.getServiceConfiguration().getServiceGlobalConfig().monitoringEnabled()) {
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().getMonitoringEnabled()) {
                 if(session!=null) sendMonitor(req,res,writer);
                 else sendForbidden(req,res,writer);
             }

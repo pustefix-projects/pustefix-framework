@@ -90,7 +90,7 @@ public class Wsdl2Java {
 	        }    
             emitter.setTimeout(timeout);
             
-            if(pkgName!=null) emitter.setPackageName(pkgName);
+            //if(pkgName!=null) emitter.setPackageName(pkgName);
             
             emitter.run(url);
             

@@ -1,8 +1,9 @@
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
-
+   
 	<webservice-global>
 		<requestpath>/xml/webservice</requestpath>
 		<wsdlsupport enabled="true" repository="/wsdl"/>
+		<encoding style="rpc" use="literal"/>
 		<monitoring enabled="true" scope="session"/>
 		<logging enabled="false"/>
 	</webservice-global>
@@ -33,7 +34,7 @@
 		<interface name="de.schlund.pfixcore.example.webservices.TypeTest"/>
 		<implementation name="de.schlund.pfixcore.example.webservices.TypeTestImpl"/>
 		<context name="pfixcore_project:webservice::servlet:config"/>
-		<session type="servlet"/>
+		<session type="none"/>
 	</webservice>
 	
   

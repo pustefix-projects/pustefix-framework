@@ -20,7 +20,7 @@ public class MonitoringHandler extends AbstractHandler {
     }
     
     public void invoke(MessageContext messageContext) throws AxisFault {
-        if(getWebServiceContext(messageContext).getServiceConfiguration().getServiceGlobalConfig().monitoringEnabled()) {
+        if(getWebServiceContext(messageContext).getServiceConfiguration().getServiceGlobalConfig().getMonitoringEnabled()) {
             HttpSession session=getSession(messageContext);
             if(session!=null) {
                 MonitoringCache cache=(MonitoringCache)getWebServiceContext(messageContext).getAttribute(MonitoringCache.class.getName());

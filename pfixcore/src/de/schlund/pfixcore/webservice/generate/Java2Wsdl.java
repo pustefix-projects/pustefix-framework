@@ -15,7 +15,8 @@ public class Java2Wsdl {
     private String output = "." ;
     private String className = "." ;
     private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
-
+    private String use="encoded";
+    
     public void generate() throws Exception {
         try {
             if(className==null || className.length() ==0) throw new Exception("No classname was specified");
@@ -28,6 +29,7 @@ public class Java2Wsdl {
             emitter.setDefaultTypeMapping(DefaultSOAPEncodingTypeMappingImpl.create());
             emitter.setIntfNamespace(namespace);
             //emitter.setImplNamespace(namespaceImpl); 
+            emitter.setUse(use);
             emitter.setLocationUrl(location);
             emitter.emit(output,Emitter.MODE_ALL);
         } catch(Exception x) {
@@ -55,6 +57,11 @@ public class Java2Wsdl {
         namespaceMap.put(pkg,ns);
     }
 
+    public void setUse(String use) {
+        this.use=use;
+    }
+    
+    
 }
 
 

@@ -46,6 +46,8 @@
 	<xsl:value-of select="$wspref"/><xsl:text>requestpath=</xsl:text><xsl:value-of select="requestpath/text()"/><xsl:text>&#xa;</xsl:text>
 	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.enabled=</xsl:text><xsl:value-of select="wsdlsupport/@enabled"/><xsl:text>&#xa;</xsl:text>
 	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.repository=</xsl:text><xsl:value-of select="wsdlsupport/@repository"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>encoding.style=</xsl:text><xsl:value-of select="encoding/@style"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>encoding.use=</xsl:text><xsl:value-of select="encoding/@use"/><xsl:text>&#xa;</xsl:text>
 	<xsl:value-of select="$wspref"/><xsl:text>monitoring.enabled=</xsl:text><xsl:value-of select="monitoring/@enabled"/><xsl:text>&#xa;</xsl:text>
 	<xsl:value-of select="$wspref"/><xsl:text>monitoring.scope=</xsl:text><xsl:value-of select="monitoring/@scope"/><xsl:text>&#xa;</xsl:text>
 	<xsl:value-of select="$wspref"/><xsl:text>logging.enabled=</xsl:text><xsl:value-of select="logging/@enabled"/><xsl:text>&#xa;</xsl:text>

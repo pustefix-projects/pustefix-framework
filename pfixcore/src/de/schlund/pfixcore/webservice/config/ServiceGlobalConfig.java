@@ -17,22 +17,25 @@ import de.schlund.pfixcore.webservice.Constants;
  * 
  * @author mleidig
  */
-public class ServiceGlobalConfig {
+public class ServiceGlobalConfig extends AbstractConfiguration {
 
     private final static String PROP_PREFIX="webservice-global.";
     private final static String PROP_REQUESTPATH=PROP_PREFIX+"requestpath";
     private final static String PROP_WSDLSUPPORT=PROP_PREFIX+"wsdlsupport.enabled";
     private final static String PROP_WSDLREPOSITORY=PROP_PREFIX+"wsdlsupport.repository";
+    private final static String PROP_ENCODINGSTYLE=PROP_PREFIX+"encoding.style";
+    private final static String PROP_ENCODINGUSE=PROP_PREFIX+"encoding.use";
     private final static String PROP_MONITORING=PROP_PREFIX+"monitoring.enabled";
     private final static String PROP_MONITORSCOPE=PROP_PREFIX+"monitoring.scope";
     private final static String PROP_LOGGING=PROP_PREFIX+"logging.enabled";
-
-    ConfigProperties props;
+    
     String reqPath;
     boolean wsdlSupport;
     String wsdlRepo;
+    String encStyle;
+    String encUse;
     boolean monitoring;
-    int monitorScope;
+    String monitorScope;
     boolean logging;
     
     public ServiceGlobalConfig(ConfigProperties props) throws ServiceConfigurationException {
@@ -43,18 +46,14 @@ public class ServiceGlobalConfig {
     private void init() throws ServiceConfigurationException {
         reqPath=props.getProperty(PROP_REQUESTPATH);
         if(reqPath==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_REQUESTPATH);
-        if(props.getProperty(PROP_WSDLSUPPORT)==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_WSDLSUPPORT);
-        wsdlSupport=new Boolean(props.getProperty(PROP_WSDLSUPPORT)).booleanValue();
+        wsdlSupport=getBooleanProperty(PROP_WSDLSUPPORT,true);
         wsdlRepo=props.getProperty(PROP_WSDLREPOSITORY);
         if(wsdlRepo==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_WSDLREPOSITORY);
-        if(props.getProperty(PROP_MONITORING)==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_MONITORING);
-        monitoring=new Boolean(props.getProperty(PROP_MONITORING)).booleanValue();
-        if(props.getProperty(PROP_MONITORSCOPE)==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_MONITORSCOPE);
-        if(props.getProperty(PROP_MONITORSCOPE).equalsIgnoreCase("session")) monitorScope=Constants.MONITOR_SCOPE_SESSION;
-        else if(props.getProperty(PROP_MONITORSCOPE).equalsIgnoreCase("ip")) monitorScope=Constants.MONITOR_SCOPE_IP;
-        else throw new ServiceConfigurationException(ServiceConfigurationException.ILLEGAL_PROPERTY_VALUE,PROP_MONITORSCOPE,props.getProperty(PROP_MONITORSCOPE));
-        if(props.getProperty(PROP_LOGGING)==null) throw new ServiceConfigurationException(ServiceConfigurationException.MISSING_PROPERTY,PROP_LOGGING);
-        logging=new Boolean(props.getProperty(PROP_LOGGING)).booleanValue();
+        encStyle=getStringProperty(PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,true);
+        encUse=getStringProperty(PROP_ENCODINGUSE,Constants.ENCODING_USES,true);
+        monitoring=getBooleanProperty(PROP_MONITORING,true);
+        monitorScope=getStringProperty(PROP_MONITORSCOPE,Constants.MONITOR_SCOPES,true);
+        logging=getBooleanProperty(PROP_LOGGING,true);
     }
     
     public void reload() throws ServiceConfigurationException {
@@ -69,19 +68,27 @@ public class ServiceGlobalConfig {
         return wsdlRepo;
     }
     
-    public boolean isWSDLSupportEnabled() {
+    public boolean getWSDLSupportEnabled() {
         return wsdlSupport;
     }
     
-    public boolean monitoringEnabled() {
+    public String getEncodingStyle() {
+        return encStyle;
+    }
+    
+    public String getEncodingUse() {
+        return encUse;
+    }
+    
+    public boolean getMonitoringEnabled() {
         return monitoring;
     }
     
-    public int getMonitoringScope() {
+    public String getMonitoringScope() {
         return monitorScope;
     }
     
-    public boolean loggingEnabled() {
+    public boolean getLoggingEnabled() {
         return logging;
     }
     
@@ -91,12 +98,14 @@ public class ServiceGlobalConfig {
     }
     
     public boolean changed(ServiceGlobalConfig sgc) {
+        System.out.println("check");
+        super.changed(sgc);
         if(!equals(getRequestPath(),sgc.getRequestPath())) return true;
-        if(isWSDLSupportEnabled()!=sgc.isWSDLSupportEnabled()) return true;
+        if(getWSDLSupportEnabled()!=sgc.getWSDLSupportEnabled()) return true;
         if(!equals(getWSDLRepository(),sgc.getWSDLRepository())) return true;
-        if(monitoringEnabled()!=sgc.monitoringEnabled()) return true;
+        if(getMonitoringEnabled()!=sgc.getMonitoringEnabled()) return true;
         if(getMonitoringScope()!=sgc.getMonitoringScope()) return true;
-        if(loggingEnabled()!=sgc.loggingEnabled()) return true;
+        if(getLoggingEnabled()!=sgc.getLoggingEnabled()) return true;
         return false;
     }
     
