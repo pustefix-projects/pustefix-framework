@@ -221,8 +221,9 @@
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
+
   <xsl:template match="pagerequest//ssl">
-    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="../@name"/><xsl:text>.needsSSL=</xsl:text>
+    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::pagerequest/@name"/><xsl:text>.needsSSL=</xsl:text>
     <xsl:value-of select="./@force"/>
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
