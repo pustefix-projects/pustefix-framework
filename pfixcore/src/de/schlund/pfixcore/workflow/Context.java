@@ -19,10 +19,11 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.*;
+import de.schlund.util.statuscodes.StatusCode;
 import java.util.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
@@ -291,6 +292,11 @@ public class Context implements AppContext {
         navigation_visible = new HashMap();
     }
 
+
+    public Cookie[] getRequestCookies() {
+        return currentpreq.getCookies();
+    }
+ 
     /**
      * <code>getCurrentSessionId</code> returns the visit_id.
      *

@@ -1,3 +1,8 @@
+2004-11-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SPDocument.java: removed setCookies method
+	* src/de/schlund/pfixcore/workflow/Context.java: added getRequestCookies method
+
 2004-11-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: excape "<" and ">" for
