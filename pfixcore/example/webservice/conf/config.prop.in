@@ -32,18 +32,19 @@
     <flowstep name="calculator"/>
     <flowstep name="counter"/>
     <flowstep name="data"/>
+	<flowstep name="typetest"/>
   </pageflow>
 
   <pagerequest name="calculator">
-    
   </pagerequest>
 
   <pagerequest name="counter">
-	
   </pagerequest>
- 
+  
   <pagerequest name="data">
-	
+  </pagerequest>
+  
+  <pagerequest name="typetest">
   </pagerequest>
  
   <pagerequest name="gencss" nostore="true">
@@ -57,20 +58,6 @@
       </cus:test>
     </cus:choose>
   </pagerequest>
-
-  <!-- *** some additional properties needed for this application *** -->
-
-  <!-- <prop name="interfacelogging"><cus:docroot/>webservice/log</prop> -->
-
-  <prop name="contexttshirt.feature.0">Waterproof</prop>
-  <prop name="contexttshirt.feature.1">Extra warm</prop>
-  <prop name="contexttshirt.feature.2">Windproof</prop>
-  
-  <prop name="contexttrouser.feature.0">Waterproof</prop>
-  <prop name="contexttrouser.feature.1">Extra warm</prop>
-  <prop name="contexttrouser.feature.2">Windproof</prop>
-
-
 
   
 </properties>

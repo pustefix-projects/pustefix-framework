@@ -16,9 +16,10 @@
         <body>
 			<div style="background:#000000;color:#FFFFFF;font-size:16pt;padding:5pt;padding-left:10pt;">
 				<span style="padding-right:20pt">Web service test application:</span>
-				<pfx:button page="calculator" activeclass="navi" normalclass="navi"> Calculator</pfx:button> 
-    			<pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button> 
-    			<pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button> 
+				<pfx:button page="calculator" activeclass="navi" normalclass="navi">Calculator</pfx:button>
+				<pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button>
+				<pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
+				<pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
 			</div>	
         </body>
       </html>
@@ -51,6 +52,10 @@
 			<ixsl:when test="$page='data'">
 				<script type="text/javascript" src="/data-soap.js"></script>
 				<script type="text/javascript" src="/data-wsdl.js"></script>
+			</ixsl:when>
+			<ixsl:when test="$page='typetest'">
+				<script type="text/javascript" src="/xml/wsscript/TypeTest.js"></script>
+				<script type="text/javascript" src="/typetest-pfxsoap.js"></script>		
 			</ixsl:when>
 			
 		  </ixsl:choose>

@@ -31,6 +31,10 @@ public interface TypeTest {
     
     public double[] echoDoubleArray(double[] vals);
     
+    public boolean echoBoolean(boolean val);
+    
+    public boolean[] echoBooleanArray(boolean[] vals);
+    
     public Calendar echoDate(Calendar date);
     
     public Calendar[] echoDateArray(Calendar[] dates);

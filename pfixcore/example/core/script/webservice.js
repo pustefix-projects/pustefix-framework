@@ -60,7 +60,7 @@ function xmlException(msg,src) {
    this.name="xmlException";
    this.desc="XML error";
 }
-coreWrongArgNoEx.extend(coreException);
+xmlException.extend(coreException);
 
 //*********************************
 //xmlUtilities
@@ -394,96 +394,136 @@ XMLWriter.prototype.getPrefix=function(nsuri) {
 	return prefix;
 }
 
+
+
+//==================================================================
+//soap (Pustefix SOAP classes)
+//==================================================================
+
+
 //*********************************
 //soapException
 //*********************************
-function soapException(message,source) {
-   this.message=message;
-   this.source=source;
+function soapException(msg,src) {
+	coreException.call(this,msg,src);
+   this.msg=msg;
+   this.src=src;
    this.name="soapException";
    this.desc="General error";
 }
-soapException.prototype.toString=function() {
-	return this.name+":"+this.desc+"["+this.source+"] "+this.message;
-}
+soapException.extend(coreException);
+
 
 //*********************************
 //soapSerializeEx
 //*********************************
-function soapSerializeEx(message,source) {
-	soapException.call(this,message,source);
+function soapSerializeEx(msg,src) {
+	soapException.call(this,msg,src);
 	this.name="SerializationException";
 	this.desc="Serialization failed";
 }
 soapSerializeEx.extend(soapException);
 
 
-
 //*********************************
-//SimpleTypeSerializer(QName xmlType)
+//soapSimpleSerializer(QName xmlType)
 //*********************************
-function SimpleTypeSerializer() {
+function soapSimpleSerializer() {
 	if(arguments.length==1) {
 		this.xmlType=arguments[0];
 	}
 }
-
 //serialize(value,name,typeInfo,writer)
-SimpleTypeSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+soapSimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
 	writer.startElement(name);
-	var prefix=writer.getPrefix(typeInfo.xmlType.namespaceUri);
+	var nsuri=typeInfo.xmlType.namespaceUri;
+	var prefix=writer.currentCtx.getPrefix(nsuri);
+	if(prefix==null) {
+		prefix=writer.getPrefix(nsuri);
+		writer.writeNamespaceDeclaration(nsuri);
+	}
 	writer.writeAttribute(QNAME_XSI_TYPE,prefix+":"+typeInfo.xmlType.localpart);
 	writer.writeChars(value);
 	writer.endElement(name);
 }
-
 //deserialize(typeInfo,element)
-SimpleTypeSerializer.prototype.deserialize=function(typeInfo,element) {
+soapSimpleSerializer.prototype.deserialize=function(typeInfo,element) {
 	return element.firstChild.nodeValue;
 }
 
 
 //*********************************
-//IntSerializer(QName xmlType)
+//soapIntSerializer(QName xmlType)
 //*********************************
-function IntSerializer(xmlType) {
-	SimpleTypeSerializer.call(this,xmlType);
+function soapIntSerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
 }
-
-IntSerializer.extend(SimpleTypeSerializer);
-
-IntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
-	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"IntSerializer.serialize");
-	if(isNaN(value)) throw new soapSerializeEx("Illegal value: "+value,"IntSerializer.serialize");
+soapIntSerializer.extend(soapSimpleSerializer);
+soapIntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"soapIntSerializer.serialize");
+	if(isNaN(value)) throw new soapSerializeEx("Illegal value: "+value,"soapIntSerializer.serialize");
 	this.superclass.serialize(value,name,typeInfo,writer);
 }
-
-IntSerializer.prototype.deserialize=function(typeInfo,element) {
+soapIntSerializer.prototype.deserialize=function(typeInfo,element) {
 	var val=parseInt(this.superclass.deserialize.call(this,typeInfo,element));
-	//val=parseInt("fadf");
-	//alert(val);
-	//if(isNaN(val)) throw new soapSerializeEx("Illegal value: "+val,"IntSerializer.deserialize");
+	if(isNaN(val)) throw new soapSerializeEx("Illegal value: "+val,"soapIntSerializer.deserialize");
 	return val;
 }
 
+
 //*********************************
-//FloatSerializer(QName xmlType)
+//soapFloatSerializer(QName xmlType)
 //*********************************
-function FloatSerializer(xmlType) {
-	SimpleTypeSerializer.call(this,xmlType);
+function soapFloatSerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
 }
-
-FloatSerializer.extend(SimpleTypeSerializer);
-
-FloatSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
-	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"FloatSerializer.serialize");
+soapFloatSerializer.extend(soapSimpleSerializer);
+soapFloatSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="number") throw new soapSerializeEx("Illegal type: "+(typeof value),"soapFloatSerializer.serialize");
+	if(isNaN(value)) throw new soapSerializeEx("Illegal value: "+value,"soapFloatSerializer.serialize");
 	this.superclass.serialize(value,name,typeInfo,writer);
 }
-
-FloatSerializer.prototype.deserialize=function(typeInfo,element) {
-	return parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
+soapFloatSerializer.prototype.deserialize=function(typeInfo,element) {
+	var val=parseFloat(this.superclass.deserialize.call(this,typeInfo,element));
+	if(isNaN(val)) throw new soapSerializeEx("Illegal value: "+val,"soapFloatSerializer.deserialize");
+	return val;
 }
 
+
+//*********************************
+//soapStringSerializer(QName xmlType)
+//*********************************
+function soapStringSerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
+}
+soapStringSerializer.extend(soapSimpleSerializer);
+soapStringSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="string") throw new soapSerializeEx("Illegal type: "+(typeof value),"soapStringSerializer.serialize");
+	this.superclass.serialize(value,name,typeInfo,writer);
+}
+soapStringSerializer.prototype.deserialize=function(typeInfo,element) {
+	return this.superclass.deserialize.call(this,typeInfo,element);
+}
+
+
+//*********************************
+//soapBooleanSerializer(QName xmlType)
+//*********************************
+function soapBooleanSerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
+}
+soapBooleanSerializer.extend(soapSimpleSerializer);
+soapBooleanSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="boolean") throw new soapSerializeEx("Illegal type: "+(typeof value),"soapBooleanSerializer.serialize");
+	this.superclass.serialize(value,name,typeInfo,writer);
+}
+soapBooleanSerializer.prototype.deserialize=function(typeInfo,element) {
+	var str=this.superclass.deserialize.call(this,typeInfo,element);
+	if(str=='true') val=true;
+	else if(str=='false') val=false;
+	else throw new soapSerializeEx("Illegal value: "+str,"soapBooleanSerializer.deserialize");
+	return val;
+}
 
 
 //*********************************
@@ -544,14 +584,15 @@ function TypeMapping() {
 
 //init()
 TypeMapping.prototype.init=function() {
-	this.builtin[xmltypes.XSD_BOOLEAN.hashKey()]=this.SER_SIMPLE;
+	
 	this.builtin[xmltypes.XSD_DATETIME.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltypes.XSD_FLOAT.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltypes.XSD_INT.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltypes.XSD_STRING.hashKey()]=this.SER_SIMPLE;
-	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY
-	this.mappings[xmltypes.XSD_INT.hashKey()]=new IntSerializer();
-	this.mappings[xmltypes.XSD_FLOAT.hashKey()]=new FloatSerializer();	
+	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
+	
+	this.mappings[xmltypes.XSD_BOOLEAN.hashKey()]=new soapBooleanSerializer();
+	this.mappings[xmltypes.XSD_INT.hashKey()]=new soapIntSerializer();
+	this.mappings[xmltypes.XSD_FLOAT.hashKey()]=new soapFloatSerializer();	
+	this.mappings[xmltypes.XSD_STRING.hashKey()]=new soapStringSerializer();
+	this.mappings[xmltypes.SOAP_STRING.hashKey()]=new soapStringSerializer();
 }
 
 //register(QName xmlType,Serializer serializer)
@@ -577,7 +618,7 @@ TypeMapping.prototype.getBuiltinSerializer=function(typeInfo) {
 	var serializer=null;
 	var serType=this.builtin[typeInfo.xmlType.hashKey()];
 	if(serType==this.SER_SIMPLE) {
-		serializer=new SimpleTypeSerializer(typeInfo.xmlType);
+		serializer=new soapSimpleSerializer(typeInfo.xmlType);
 	} else if(serType==this.SER_ARRAY) {
 		serializer=new ArraySerializer(typeInfo.xmlType);
 	} else {
@@ -684,7 +725,7 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
-  
+ 
   var resDoc;
   if( !this.userCallback ) {
     // sync
@@ -974,6 +1015,6 @@ soapStub.prototype._extractCallback=function(args,expLen) {
 
 soapStub.prototype._setURL=function(url) {
 	this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,"$1"+window.location.host+"$3");
-	//var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
-	//this._url+=session;
+	var session=window.location.href.replace(/.*(;jsessionid=[A-Z0-9]+\.[a-zA-Z0-9]+)(\?.*)?$/,"$1");
+	this._url+=session;
 }

@@ -14,7 +14,7 @@ var wsCalc=new wsCalculator();
 
 var t1=null;
 
-function foo(result,exception) {
+function pfxsoapCallback(result,exception) {
 	var d2=new Date();
    var t2=d2.getTime();
    var t=t2-t1;
@@ -33,7 +33,7 @@ function pfxsoapCall(method,val1,val2) {
 	var result=null;
 	
 	try {
-		if(method=="add") result=wsCalc.add(param1,param2,foo);
+		if(method=="add") result=wsCalc.add(param1,param2,pfxsoapCallback);
 		else if(method=="subtract") result=wsCalc.subtract(param1,param2);
 		else if(method=="multiply") result=wsCalc.multiply(param1,param2);
 		else if(method=="divide") result=wsCalc.divide(param1,param2);

@@ -5,6 +5,7 @@ package de.schlund.pfixcore.webservice.generate;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.wsdl.*;
@@ -82,6 +83,7 @@ public class Wsdl2Js {
             bais.close();
             return s;
         } catch(Exception x) {
+            x.printStackTrace();
             throw new Exception("Error while building schema model",x);
         }
     }
@@ -94,9 +96,10 @@ public class Wsdl2Js {
             Element docElem=(Element)doc.importNode(elem,true);
             docElem.setAttribute("xmlns:soapenc",Constants.XMLNS_SOAPENC);
             NodeList nl=docElem.getElementsByTagName("import");
+            for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation","file:///tmp/encoding.xml");
             //for(int i=0;i<nl.getLength();i++) ((Element)nl.item(i)).setAttribute("schemaLocation",Constants.XMLNS_SOAPENC);
             //ignore soapenc import
-            for(int i=0;i<nl.getLength();i++) docElem.removeChild(nl.item(i));
+            //for(int i=0;i<nl.getLength();i++) docElem.removeChild(nl.item(i));
             doc.appendChild(docElem);
             return doc;
         } catch(Exception x) {
@@ -118,7 +121,7 @@ public class Wsdl2Js {
             Definition def=wr.readWSDL(null,inSrc);
             
             //get schema types from wsdl definitions
-            ArrayList schemas=new ArrayList();
+            HashMap schemas=new HashMap();
             if(def.getTypes()!=null) {
                 Iterator xsdIt=def.getTypes().getExtensibilityElements().iterator();
                 while(xsdIt.hasNext()) {
@@ -126,7 +129,7 @@ public class Wsdl2Js {
                     if(exElem instanceof UnknownExtensibilityElement) {
                         Element elem=((UnknownExtensibilityElement)exElem).getElement();
                         Schema schema=buildSchemaModel(extractSchemaDoc(elem));
-                        schemas.add(schema);
+                        schemas.put(schema.getTargetNamespace(),schema);
                     }
                 }
             }
@@ -181,9 +184,23 @@ public class Wsdl2Js {
                         for(int i=0;i<jsParams.length;i++) {
                             Part part=inputMsg.getPart(jsParams[i].getName());
                             QName type=part.getTypeName();
-                            String info="";
+                            String info="\"\"";
                             if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
                                 info="new TypeInfo(new QName("+"XMLNS_XSD"+",\""+type.getLocalPart()+"\"))";
+                            } else if(type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
+                                info="new TypeInfo(new QName("+"XMLNS_SOAPENC"+",\""+type.getLocalPart()+"\"))";
+                            } else {
+                                Schema schema=(Schema)schemas.get(type.getNamespaceURI());
+                                ComplexType ct=schema.getComplexType(type.getLocalPart());
+                                
+                                if(ct!=null) {
+                                    System.out.println(type.getLocalPart()+" "+ct.isComplexContent());
+                                    System.out.println(ct.getBaseType());
+                                    java.util.Enumeration enum=ct.enumerate();
+                                    while(enum.hasMoreElements()) {
+                                        System.out.println(enum.nextElement());
+                                    }
+                                }
                             }
                             jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\","+info+")"));
                         }
@@ -195,9 +212,11 @@ public class Wsdl2Js {
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
                             QName type=part.getTypeName();
-                            String info="";
+                            String info="\"\"";
                             if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
-                                info="new TypeInfo(new QName(\""+type.getNamespaceURI()+"\",\""+type.getLocalPart()+"\"))";
+                                info="new TypeInfo(new QName("+"XMLNS_XSD"+",\""+type.getLocalPart()+"\"))";
+                            } else if(type.getNamespaceURI().equals(Constants.XMLNS_SOAPENC)) {
+                                info="new TypeInfo(new QName("+"XMLNS_SOAPENC"+",\""+type.getLocalPart()+"\"))";
                             }
                             jsBlock.addStatement(new JsStatement("call.setReturnType("+info+")"));
                         }

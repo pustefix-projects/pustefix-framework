@@ -12,14 +12,12 @@
   </global>
   
   <navigation>
-    <page name="calculator"     handler="/xml/config" accesskey="H"/>
-    <page name="counter"    handler="/xml/config" accesskey="O"/>
-    <page name="data" handler="/xml/config" accesskey="S"/>
-
+    <page name="calculator" handler="/xml/config"/>
+    <page name="counter" handler="/xml/config"/>
+    <page name="data" handler="/xml/config"/>
+	<page name="typetest" handler="/xml/config"/>
    
     <page name="gencss"   handler="/xml/config"/>
-
-   
   </navigation>
 
   <standardmaster>
@@ -30,9 +28,10 @@
     <include stylesheet="webservice/xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="calculator"     xml="webservice/xml/two_frames.xml"/>
-  <standardpage name="counter"    xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="calculator" xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="counter" xml="webservice/xml/two_frames.xml"/>
   <standardpage name="data" xml="webservice/xml/two_frames.xml"/>
+  <standardpage name="typetest" xml="webservice/xml/two_frames.xml"/>
 
   <standardpage name="gencss"   xml="webservice/xml/styles.xml">
     <param name="outputmethod" value="text"/>
