@@ -20,9 +20,11 @@
 
   <xsl:template match="xmlnote" mode="static_disp">
     <br/><br/>
-    <div class="xmlnote">
-      <xsl:apply-templates/>
-    </div>
+    <xsl:if test="./node()">
+      <div class="xmlnote">
+      	<xsl:apply-templates/>
+      </div>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="xmlcodeNS" mode="static_disp"/>
