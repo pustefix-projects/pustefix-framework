@@ -20,7 +20,12 @@
   <xsl:param name="prohibitEdit">no</xsl:param>
 
   <xsl:template match="pfx:pagemessages">
-    <ixsl:if test="/formresult/pagemessages/message">
+    <cus:documentation>
+      <responsible>reitzammer</responsible>
+      <description>
+        displays pagemessages, basically statuscodes that are not bound to a specific form field,
+      </description>
+    </cus:documentation>    <ixsl:if test="/formresult/pagemessages/message">
       <table id="core_pagemessages_box">
         <ixsl:for-each select="/formresult/pagemessages/message">
           <ixsl:sort select="@level"/>
@@ -28,7 +33,7 @@
             <td>
               <ixsl:attribute name="class">core_pagemessage_header_<ixsl:value-of select="@level"/></ixsl:attribute>
               <ixsl:call-template name="pfx:include">
-                <ixsl:with-param name="href" select="'core/dyntxt/messages_level.xml'" />
+                <ixsl:with-param name="href" select="'common/dyntxt/statusmessages.xml'" />
                 <ixsl:with-param name="part" select="concat('pfixcore.pagemessages.level.', @level)"/>
               </ixsl:call-template>
             </td>
