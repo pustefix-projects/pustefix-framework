@@ -71,6 +71,9 @@ var __js_Cookie = {
     var j=0;
     for (var i=0; i<d.length; i++)
     {
+      // ignore some erroneous values
+      if(typeof d[i] == "undefined") continue;
+    
       // mit neuem zu gross
       if ((s.length + d[i].length) > this.maxstr)
       {
