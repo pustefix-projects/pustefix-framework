@@ -37,15 +37,15 @@ public class IncludeDocument {
 
     //~ Instance/static variables ..................................................................
 
-    private Document doc;
+    private Document                          doc;
     // NOTE: here we want a XERCES-DocumentBuilderFactory
     private static DocumentBuilderFactoryImpl docBuilderFactory = new DocumentBuilderFactoryImpl();
-    private long                       modTime = 0;
-    private static String              INCPATH = "incpath";
-    private static Category            CAT     = Category.getInstance(IncludeDocument.class.getName());
-    private static DocumentBuilder docBuilder = null;
+    private long                              modTime           = 0;
+    private static String                     INCPATH           = "incpath";
+    private static Category                   CAT               = Category.getInstance(IncludeDocument.class.getName());
+    private static DocumentBuilder            docBuilder        = null;
+    
     //~ Constructors ...............................................................................
-
     static {
         try {
             docBuilder = docBuilderFactory.newDocumentBuilder();

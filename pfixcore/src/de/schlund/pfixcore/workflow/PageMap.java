@@ -52,25 +52,25 @@ public class PageMap implements PropertyObject, Reloader {
             }
         }
         AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) {
+        if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
     }
 
     public State getState(PageRequest page) {
-	return (State) pagemap.get(page);
+        return (State) pagemap.get(page);
     }
 
     public String toString() {
-	String ret = "";
-	for (Iterator i = pagemap.keySet().iterator(); i.hasNext(); ) {
-	    if (ret.length() > 0) {
-		ret += ", ";
-	    }
-	    PageRequest k = (PageRequest) i.next();
-	    ret += k + " -> " + ((State) pagemap.get(k)).getClass().getName();
-	}
-	return ret;
+        String ret = "";
+        for (Iterator i = pagemap.keySet().iterator(); i.hasNext(); ) {
+            if (ret.length() > 0) {
+                ret += ", ";
+            }
+            PageRequest k = (PageRequest) i.next();
+            ret += k + " -> " + ((State) pagemap.get(k)).getClass().getName();
+        }
+        return ret;
     }
     
     public void reload() {
