@@ -422,7 +422,7 @@
         <antcall target="skeleton" inheritall="true">
             <param name="autotagmessage" value="${dist.autotagmessage}"/>
         </antcall>
-        <cvs command="tag ${dist.autotagmessage}"/>
+        <cvs command="tag -c ${dist.autotagmessage}"/>
     </target>
 
     <target name="notag" depends="clean, dist-examples" description="Builds release files in dist directory without tagging cvs.">
