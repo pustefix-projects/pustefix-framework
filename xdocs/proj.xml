@@ -22,7 +22,7 @@
     <li>The config files for every <b>webapp</b> (each project is mapped to a webapp):<br/>
       <code>servletconf/tomcat/webapps/[project name]/WEB-INF/web.xml</code>
     </li>
-    <li>The config file that tells the <a href="editor.html">Pustefix editor</a> about all the projects that
+    <li>The config file that tells the <a href="editor/overview.html">Pustefix editor</a> about all the projects that
       can be edited in your environment:<br/>
       <code>common/conf/products.prj</code></li>
   </ul>
@@ -40,7 +40,7 @@
 
   <p>The site wide projects.xml.in file contains two "projects" that are
     needed for Pustefix itself to work properly.  The first of these
-    is the <a href="editor.html">editor</a> project. The other project
+    is the <a href="editor/overview.html">editor</a> project. The other project
     is used to start a servlet automatically when the system
     starts. This servlet itself is not able to act on any userinput,
     it's only purpose is to start a bunch of factories that implement
@@ -60,11 +60,11 @@
         <active>true</active>
         <comment>Test Application</comment>
         <xmlnote>
-            The content of this tag is used in the <a href="editor.html">editor</a> to list all defined projects.
+            The content of this tag is used in the <a href="editor/overview.html">editor</a> to list all defined projects.
         </xmlnote>
         <depend><cus:docroot/>MyProject/conf/depend.xml</depend>
         <xmlnote>
-	    The location of the depend file must be specified for the <a href="editor.html">editor</a>.<br/>
+	    The location of the depend file must be specified for the <a href="editor/overview.html">editor</a>.<br/>
 	  <div class="important">
 	    <b>This section is for generating apache.conf in the
 	      servletconf/tomcat directory.</b>
@@ -119,8 +119,8 @@
 	      <tr>
 	        <td>useineditor</td>
 	        <td>set to true for every servlet that handles pages belonging directly to the project
-	          (That means for example not the servlet that starts up the <a href="editor.html">editor</a>, as the pages delivered
-	          by this servlet belong to the <a href="editor.html">editor</a> project)
+	          (That means for example not the servlet that starts up the <a href="editor/overview.html">editor</a>, as the pages delivered
+	          by this servlet belong to the <a href="editor/overview.html">editor</a> project)
 	        </td>
 	      </tr>
 	    </table>
