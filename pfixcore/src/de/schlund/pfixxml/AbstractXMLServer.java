@@ -221,7 +221,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             sb.append("                targetconf = ").append(targetconf).append("\n");
             sb.append("               servletname = ").append(servletname).append("\n");
             sb.append("           editModeAllowed = ").append(editmodeAllowed).append("\n");
-            sb.append("                    timout = ").append(timeout).append("\n");
+            sb.append("                   timeout = ").append(timeout).append("\n");
             sb.append("        recordmode allowed = ").append(recordmodeAllowed).append("\n");
             String str = null;
             if(isXMLOnlyAllowed == XML_ONLY_ALLOWED) {

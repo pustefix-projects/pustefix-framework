@@ -1,3 +1,12 @@
+2003-04-10  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java
+	* src/de/schlund/pfixxml/testenv/ConsoleTestClient.java
+	* src/de/schlund/pfixxml/testenv/TestClient.java: some refactoring and
+	fixes
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: minor
+
 2003-04-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/CheckIncludes.java: new class. This is work in progress.
