@@ -10,7 +10,7 @@
   <page name="udocs" title="Userdocs">
     <page name="project" title="Project definition"/>
     <page name="prop" title="Servlet definition"/>
-    <page name="depend" title="Pages &amp; Targets"/>
+    <page name="depend" title="Page definition"/>
     <page name="editor" title="Pustefix Editor"/>
     <page name="testclient" title="Test client"/>
   </page>
