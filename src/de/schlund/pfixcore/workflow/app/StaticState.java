@@ -97,16 +97,18 @@ public class StaticState extends StateImpl {
                 for (Iterator i = crs.keySet().iterator(); i.hasNext();) {
                     String nodename  = (String) i.next();
                     String classname = (String) crs.get(nodename);
-                    if(CAT.isDebugEnabled()) {
+                    if (CAT.isDebugEnabled()) {
                         CAT.debug("*** Auto appending status for " + classname + " at node " + nodename);
                     }
+                    
                     ContextResource cr = crm.getResource(classname);
                     
                     if (cr == null) {
                         throw new XMLException("ContextResource not found: " + classname);
                     }
-                    
+                    context.startLogEntry();
                     cr.insertStatus(resdoc, resdoc.createNode(nodename));
+                    context.endLogEntry("INSERT_CR ()", 5);
                 }
             }
         }

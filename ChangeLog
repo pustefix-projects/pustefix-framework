@@ -1,3 +1,16 @@
+2004-01-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java: 
+	PerfEvent: new inner class
+	initPerfLog/startLogEntry/endLogEntry/printLog: new methods. This is is used to add performance logging.
+	* example/common/conf/pfixlog.xml.in: add corresponding PFXPERF category and appender.
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java: 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/ServletManager.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: use it here.
+	
 2004-01-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java: 
@@ -9,7 +22,7 @@
 	In target "jni" set unjar/untar attributes overwrite to false, so jni.tar.gz does not
 	get extracted out of pfixcore.jar and not get extracted to lib/jni on every build.
 	* build.xml, skel/build.xml:
-	Changed creation of ant.dtd to manual. Checking in ant.dtd. Added DOCTYPE Definition.
+	Changed creation of ant.dtd to manual. Checkins	g in ant.dtd. Added DOCTYPE Definition.
 
 2003-12-22  Jens Lautenbacher  <jtl@schlund.de>
 

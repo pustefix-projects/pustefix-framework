@@ -124,7 +124,11 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         synchronized (handlers) {
             for (Iterator i = handlers.iterator(); i.hasNext(); ) {
                 IHandler handler = (IHandler) i.next();
-                if (!handler.prerequisitesMet(context)) {
+                context.startLogEntry();
+                boolean  test    = handler.prerequisitesMet(context);
+                context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 2);
+
+                if (!test) {
                     return false;
                 }
             }
@@ -158,7 +162,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             synchronized (activeset) {
                 for (Iterator i = activeset.iterator(); i.hasNext(); ) {
                     IHandler handler = (IHandler) i.next();
-                    if (!handler.isActive(context)) {
+                    context.startLogEntry();
+                    boolean  test    = handler.isActive(context);
+                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 2);
+                    if (!test) {
                         retval = false;
                         break;
                     }
@@ -169,7 +176,10 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             synchronized (activeset) {
                 for (Iterator i = activeset.iterator(); i.hasNext(); ) {
                     IHandler handler = (IHandler) i.next();
-                    if (handler.isActive(context)) {
+                    context.startLogEntry();
+                    boolean  test    = handler.isActive(context);
+                    context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 2);
+                    if (test) {
                         retval = true;
                         break;
                     }
@@ -196,8 +206,13 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         synchronized (handlers) {
             for (Iterator i = handlers.iterator(); i.hasNext(); ) {
                 IHandler handler = (IHandler) i.next();
-                if (handler.isActive(context) && handler.needsData(context)) {
-                    return true;
+                if (handler.isActive(context)) {
+                    context.startLogEntry();
+                    boolean  test    = handler.needsData(context);
+                    context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 2);
+                    if (test) {
+                        return true;
+                    }
                 }
             }
         }
@@ -205,22 +220,22 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
     }
     
     public void reload() {
-        HashSet handlersNew=new HashSet();
-        Iterator it=handlers.iterator();
+        HashSet  handlersNew = new HashSet();
+        Iterator it          = handlers.iterator();
         while(it.hasNext()) {
-            IHandler ihOld=(IHandler)it.next();
-            IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
+            IHandler ihOld = (IHandler)it.next();
+            IHandler ihNew = (IHandler)StateTransfer.getInstance().transfer(ihOld);
             handlersNew.add(ihNew);
         }
-        handlers=handlersNew;
-        HashSet activeNew=new HashSet();
-        it=activeset.iterator();
+        handlers          = handlersNew;
+        HashSet activeNew = new HashSet();
+        it                = activeset.iterator();
         while(it.hasNext()) {
-             IHandler ihOld=(IHandler)it.next();
-             IHandler ihNew=(IHandler)StateTransfer.getInstance().transfer(ihOld);
-             activeNew.add(ihNew);
-         }
-         activeset=activeNew;
+            IHandler ihOld = (IHandler)it.next();
+            IHandler ihNew = (IHandler)StateTransfer.getInstance().transfer(ihOld);
+            activeNew.add(ihNew);
+        }
+        activeset = activeNew;
     }
     
 }// IHandlerSimpleContainer

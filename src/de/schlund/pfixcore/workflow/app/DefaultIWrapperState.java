@@ -49,8 +49,7 @@ public class DefaultIWrapperState extends StaticState {
      */
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
         IHandlerContainer container = getIHandlerContainer(context);
-        boolean test = container.isPageAccessible(context) && container.areHandlerActive(context);
-        return test;
+        return (container.isPageAccessible(context) && container.areHandlerActive(context));
     }
     
     /**
@@ -63,11 +62,15 @@ public class DefaultIWrapperState extends StaticState {
         
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
 
+        preq.startLogEntry();
         container.initIWrappers(context, preq, resdoc);
+        preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
         
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling... ");
+            preq.startLogEntry();
             container.handleSubmittedData();
+            preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 1000);
             if (container.errorHappened()) {
                 CAT.debug("=> Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
@@ -77,7 +80,9 @@ public class DefaultIWrapperState extends StaticState {
                 if (container.continueSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page...\n" +
                               "=> retrieving current status.");
+                    preq.startLogEntry();
                     container.retrieveCurrentStatus();
+                    preq.endLogEntry("CONTAINER_RETRIEVE_CURRENT_STATUS", 10);
                     rfinal.onRetrieveStatus(container);
                 } else {
                     CAT.debug("... Container says he is ready: End of submit successfully...\n" +
@@ -94,7 +99,9 @@ public class DefaultIWrapperState extends StaticState {
             CAT.debug(">>> In FlowHandling...");
             if (container.needsData()) {
                 CAT.debug("=> needing data, retrieving current status.");
+                preq.startLogEntry();
                 container.retrieveCurrentStatus();
+                preq.endLogEntry("CONTAINER_RETRIEVE_CURRENT_STATUS", 10);
                 rfinal.onRetrieveStatus(container);
             } else {
                 CAT.debug("=> no need to handle, returning NULL.");
