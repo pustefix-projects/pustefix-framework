@@ -65,13 +65,7 @@
           <pfx:include part="text"/>
         </center>
 
-        <pfx:editconsole/>
-        
         <pfx:include part="sample_layers"/>
-
-
-        
-
         
       </lang>
     </product>

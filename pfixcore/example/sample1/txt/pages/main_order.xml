@@ -29,7 +29,6 @@
             <br/>
             <pfx:include part="wizard"/>
           </pfx:forminput>
-          <pfx:editconsole/>
         </center>
         <pfx:progressbar>Please Wait...</pfx:progressbar>
       </lang>

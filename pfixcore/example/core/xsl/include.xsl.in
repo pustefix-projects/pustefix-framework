@@ -69,7 +69,7 @@
                 <form target="_top">
                   <pfx:xinp type="text" style="font-family: Arial,Helvetica,Sans; margin-left:3px; margin-right:1px; border: black solid 1px; color: #c00000;"
                                   name="__recordmode" size="4" maxlength="20"/>
-                  <pfx:xinp type="image" align="center" src="/core/img/player_play.png" title="Switch record mode ON"/>
+                  <pfx:xinp type="image" align="center" src="/core/img/record_start.gif" title="Switch record mode ON"/>
                 </form>
               </ixsl:otherwise>
             </ixsl:choose>
