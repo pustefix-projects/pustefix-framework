@@ -9,6 +9,10 @@
   xmlns:x="jelly:xml"
   xmlns:doc="doc">
 
+  <goal name="pfix:usage" description="http://pustefix.sf.net/building.html">
+    <!-- TODO: poor hack to get the above description printed as maven usage ... -->
+  </goal>
+
   <goal name="pfix:all">
     <ant:echo>ant target: ${target}</ant:echo>
     <!-- TODO: fails because javac does not know ant classes 
