@@ -1,3 +1,9 @@
+2004-09-15  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/* 
+ 	* example/core/editor/*:
+	remove testcase playback from editor, this is part of the testalizer now
+
 2004-09-14  Adam Habermann  <adam.habermann@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/interfaces/CommonsBranch.iwrp:
