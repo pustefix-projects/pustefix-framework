@@ -3,17 +3,11 @@
 
   <!-- shared properties for the pustefix projects -->
 
-  <!-- configuration of log4j -->
-  <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
-
   <!-- dump of the whole session on Exception -->
   <prop name="servlet.sessiondumponerror">true</prop>
 
   <!--  Set this to true if you want to skip the last transformation and only get a
-        xml document containing all needed information for an external renderer.
-        This is different from the output you get with the request parameter __xmlonly=1!
-        In that case you only get the DOM tree from the business logic but not
-        the xslt parameters needed for the actual transformation! -->
+        xml document containing all needed information for an external renderer -->
   <!-- <prop name="xmlserver.output.externalrenderer">true</prop> -->
   
   <cus:choose>
@@ -41,10 +35,6 @@
        go into adminmode when the switch's status changes to true -->
   <prop name="context.adminmode.default.status">off</prop>  
 
+  
 </properties>
 
-<!--
-Local Variables:
-mode: xml
-End:
--->
