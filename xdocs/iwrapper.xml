@@ -27,7 +27,9 @@
   </p>
   
   <xmlcode>
-    <interface extends="some.other.iwrapper.class">
+    <interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd" extends="some.other.iwrapper.class">
+      <xmlcodeNS ns="">http://pustefix.sourceforge.net/interfacewrapper200401</xmlcodeNS>
+      <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
       <xmlnote>
         <table>
           <tr>
@@ -155,15 +157,20 @@
             </pre>
         </xmlnote>
 
-        <default value="a_default_value">
+        <default>
           <xmlnote>
-              The whole node is optional, and can occur multiple
-              times. It allows to specify a default value (or
+              The whole node is optional. It allows to specify a default value (or
               multiple) for a parameter to use, when no value is
               supplied via the request. Note that this makes the
               destinction between optional and mandatory parameters
               nonsensical.
           </xmlnote>
+          <value>
+            a_default_value
+          </value>
+          <value>
+            an_other_default_value
+          </value>
         </default>
         
         <precheck class="a.prechecker.class">
