@@ -13,9 +13,12 @@ function pfxsoapPrint(method,time,error) {
 	var t=document.createTextNode(method+" ("+time+"ms) ");
 	p.appendChild(t);
 	if(error!=undefined) {
+		var msg="";
+		if(error.message) msg=error.message;
+                else msg=error.toString();
 		var s=document.createElement("span");
 		s.setAttribute("style","color:red;");
-		var st=document.createTextNode(error);
+		var st=document.createTextNode(msg);
 		s.appendChild(st);
 		p.appendChild(s);
 	}
@@ -292,11 +295,17 @@ function pfxsoapCall() {
    	try {
    		var doc=null;
    		var elem=null;
-     		if(document.implementation && document.implementation.createDocument) {
-       		doc=document.implementation.createDocument("","",null);
-         } else if(window.ActiveXObject) {
-            return new ActiveXObject(getDomDocumentPrefix()+".DomDocument");
-         }
+		try {
+     			if(document.implementation && document.implementation.createDocument) 
+				doc=document.implementation.createDocument("","",null);
+		} catch(dx) {}
+		if(doc==null) {
+			try {
+				if(window.ActiveXObject)
+            				doc=new ActiveXObject("MSXML.DomDocument");
+			} catch(dx) {}
+		}
+		if(doc==null) throw "Document creation not supported by browser";
          elem=doc.createElement("test");
          var sub=doc.createElement("foo");
          elem.appendChild(sub);

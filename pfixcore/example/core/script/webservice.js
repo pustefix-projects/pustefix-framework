@@ -79,12 +79,8 @@ XML_Exception.extend(CORE_Exception);
 //XML_Utilities
 //*********************************
 function XML_Utilities() {
+	this.scopeChecked=false;
 	this.scopeSupport=false;
-	try {
-		if( typeof document.firstChild.scopeName != "undefined") {
-      this.scopeSupport=true;
-    }
-	} catch(ex) {}
 }
 
 XML_Utilities.prototype.getChildrenByName=function(node,name) {
@@ -101,13 +97,17 @@ XML_Utilities.prototype.getChildrenByName=function(node,name) {
 XML_Utilities.prototype.getChildrenByNameNS=function(node,name) {
 	if(arguments.length!=2) throw new CORE_WrongArgNoEx("","XML_Utilities.getChildrenByNameNS");
 	if(node.childNodes==null || node.childNodes.length==0) return null;
+	if(!this.scopeChecked) {
+		if(typeof node.scopeName!="undefined") this.scopeSupport=true;
+		scopeChecked=true;
+	}
 	var nodes=new Array();
 	for(var i=0;i<node.childNodes.length;i++) {
-    if(this.scopeSupport) {
-    	if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
-	 } else {
-	 	if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
-	 }
+		if(this.scopeSupport) {
+    			if(node.childNodes[i].scopeName+":"+node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+	 	} else {
+	 		if(node.childNodes[i].nodeName==name) nodes.push(node.childNodes[i]);
+	 	}
 	}
 	return nodes;
 }
@@ -852,8 +852,6 @@ SOAP_Call.prototype.invoke=function() {
 	soapMsg.getSoapPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
 	
-	
-//alert(writer.xml);
   var resDoc;
   if( !this.userCallback ) {
     // sync

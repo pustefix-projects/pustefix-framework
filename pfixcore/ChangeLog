@@ -1,3 +1,19 @@
+2004-10-06  Martin Leidig  <mleidig@schlund.de>
+	
+	Improved SOAP error display handling for all examples:
+	* example/webservice/htdocs/calc-pfxsoap.js
+	* example/webservice/htdocs/counter-pfxsoap.js
+	* example/webservice/htdocs/data-pfxsoap.js
+
+	Added IE support for DOM-Element input parameters:
+	* example/webservice/htdocs/typetest-pfxsoap.js
+
+	Improved platform independent DOM namespace handling:
+	* example/core/script/webservice.js
+
+	Removed debugging output
+	* src/de/schlund/pfixcore/webservice/SOAPActionRequestWrapper.java
+
 2004-10-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* just some cosmetics

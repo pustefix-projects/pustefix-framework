@@ -59,10 +59,13 @@ function pfxsoapCall(method,val1,val2,val3,val4) {
    	var t=t2-t1;
    	if(method!="exchangeDataArray") pfxsoapPrint(result,t);
 	} catch(x) {
+		var msg="";
+                if(x.message) msg=x.message;
+                else msg=x.toString();
 		var d2=new Date();
    	var t2=d2.getTime();
    	var t=t2-t1;
-		pfxsoapPrintError(x.toString(),t);
+		pfxsoapPrintError(msg,t);
 	}
 
 	
