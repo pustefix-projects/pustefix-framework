@@ -25,6 +25,7 @@
                       <td colspan="2">
                         <table border="0" class="editor_box" width="100%">
                           <tr><td align="center"><b><ixsl:value-of select="."/></b></td></tr>
+                          <tr><td align="center">Number of steps: <ixsl:value-of select="./@number_of_steps"/></td></tr>
                         </table>
                       </td>
                     </tr>

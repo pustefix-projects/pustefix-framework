@@ -158,6 +158,12 @@ public class TestClient {
             styleDir = style_dir;
         }
     }
+    
+    public static int getNumberOfStepsForTestcase(String dir_to_testcase) {
+        File dir = new File(dir_to_testcase);
+        File[] files = dir.listFiles();
+        return files.length; 
+    }
 
     /** execute test */
     private TestcasePlaybackResult doTest(StepConfig[] config) throws TestClientException {

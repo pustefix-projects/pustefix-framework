@@ -51,8 +51,10 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
     }
     
     public void castValue(RequestParam[] param) {
-        for (int i = 0; i < param.length; i++) {
-            CAT.debug("*** IN param: " + param[i]);
+        if(CAT.isDebugEnabled()) {
+            for (int i = 0; i < param.length; i++) {
+                CAT.debug("*** IN param: " + param[i]);
+            }
         }
         reset();
         ArrayList out = new ArrayList();

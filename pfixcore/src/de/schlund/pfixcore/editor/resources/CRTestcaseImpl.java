@@ -74,6 +74,7 @@ public class CRTestcaseImpl implements CRTestcase {
                 String name = (String) iter.next();
                 Element e = ResultDocument.addTextChild(ele2, "testcase", name);
                 e.setAttribute("tmp_directory", getTemporaryDirectoryForTestcase(name));
+                e.setAttribute("number_of_steps", ""+TestClient.getNumberOfStepsForTestcase(dir + "/" + name));
                 ele2.appendChild(e);
             }
             elem.appendChild(ele2);
@@ -227,6 +228,8 @@ public class CRTestcaseImpl implements CRTestcase {
         }
         return tmp_dir + "/" + casename;
     }
+    
+  
 
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#doReset()
