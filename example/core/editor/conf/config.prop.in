@@ -187,6 +187,15 @@
       <interface prefix="exit" class="de.schlund.pfixcore.editor.interfaces.Logout"/>
     </ihandler>
   </pagerequest>
+
+
+  <pagerequest name="AppletInfo">
+    <ihandler class="de.schlund.pfixcore.editor.handlers.AppletInfoHandler" />
+    
+    <finalizer class="de.schlund.pfixcore.editor.handlers.AppletInfoFinalizer"/>
+    
+  </pagerequest>
+
   
 </properties>
 
