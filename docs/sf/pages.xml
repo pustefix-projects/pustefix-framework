@@ -18,7 +18,7 @@
   </page>
   <page name="editor" title="Pustefix Editor">
     <page name="editor_login" title="Login"/>
-    <page name="editor_prodsel" title="Projects &amp; admin."/>
+    <page name="editor_prodsel" title="Administration"/>
     <page name="editor_tools" title="Tools"/>
     <page name="editor_pages" title="Pages"/>
     <page name="editor_targets" title="Targets"/>
