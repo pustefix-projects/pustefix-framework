@@ -213,4 +213,16 @@
       <lang name="default" warning="NEVER CHANGE THIS NODE!">The entered value contains invalid characters or is otherwise invalid.</lang>
     </product>
   </part>
+
+  <!-- please note that level names in part names are _always_ lowercase -->
+  <part name="pfixcore.pagemessages.level.info">
+    <product name="default">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">NOTE:</lang>
+    </product>
+  </part>
+  <part name="pfixcore.pagemessages.level.warn">
+    <product name="default">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">WARNING:</lang>
+    </product>
+  </part>
 </include_parts>
