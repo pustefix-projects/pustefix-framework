@@ -53,7 +53,6 @@ import org.apache.log4j.Category;
  */
 
 public abstract class ServletManager extends HttpServlet {
-
     public  static final String STORED_REQUEST     = "__STORED_PFIXSERVLETREQUEST__";
     public  static final String SESSION_IS_SECURE  = "__SESSION_IS_SECURE__";
     public  static final String VISIT_ID           = "__VISIT_ID__";
@@ -334,7 +333,7 @@ public abstract class ServletManager extends HttpServlet {
         if (visit_id != null) {
             // Don't call this.registerSession(...) here. We don't want to log this as a different visit.
             // Now we register the new session with saved traillog
-            SessionAdmin.getInstance().registerSession(session, traillog);
+            SessionAdmin.getInstance().registerSession(session, traillog, infostruct.getData().getServerName(), infostruct.getData().getRemoteAddr());
         } else {
             // Register a new session now.
             registerSession(req, session);
@@ -411,7 +410,7 @@ public abstract class ServletManager extends HttpServlet {
         LinkedList  traillog      = SessionAdmin.getInstance().getInfo(child).getTraillog();
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(VISIT_ID, curr_visit_id);
-        SessionAdmin.getInstance().registerSession(session, traillog);
+        SessionAdmin.getInstance().registerSession(session, traillog, req.getServerName(), req.getRemoteAddr());
         CAT.debug("===> Redirecting with session (Id: " + session.getId() + ") using OLD VISIT_ID: " + curr_visit_id);
         session.setAttribute(STORED_REQUEST, preq);
         String redirect_uri = SessionHelper.encodeURL(req.getScheme(), req.getServerName(), req);
@@ -488,7 +487,7 @@ public abstract class ServletManager extends HttpServlet {
                 logbuff.append(req.getHeader("accept-language"));
             }
             LOGGER_VISIT.warn(logbuff.toString());
-            SessionAdmin.getInstance().registerSession(session);
+            SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
         }
     }
 

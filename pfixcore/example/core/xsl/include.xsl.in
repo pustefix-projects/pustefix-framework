@@ -14,8 +14,6 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <xsl:param name="__editmode"/>
-  <xsl:param name="__recordmode"/>
-  <xsl:param name="recordmode_allowed"/>
   <xsl:param name="__sessid"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
@@ -64,31 +62,6 @@
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
                 <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
             </td>  
-            <ixsl:choose>
-              <ixsl:when test="$recordmode_allowed = 'true'">
-                <td nowrap="nowrap" style="border: black solid 1px; background-color: #999999;">
-                  <ixsl:choose>
-                    <ixsl:when test="$__recordmode and $__recordmode!='0'">
-                      <input style="font-family: Verdana,Sans; margin-left:3px; margin-right:1px; border: black dotted 1px; color: #000000; background-color: #c0c0c0;"
-                        readonly="readonly" align="center" name="__recordmode" type="text" size="4">
-                        <ixsl:attribute name="value"><ixsl:value-of select="$__recordmode"/></ixsl:attribute>
-                      </input>
-                      <pfx:xinp type="image" align="center" src="/core/img/record_stop.gif" title="Switch record mode OFF">
-                        <pfx:argument name="__recordmode">0</pfx:argument>
-                      </pfx:xinp>
-                    </ixsl:when>
-                    <ixsl:otherwise>
-                      <pfx:xinp type="text" style="font-family: Verdana,Sans; margin-left:3px; margin-right:1px; border: black solid 1px;"
-                        name="__recordmode" size="4" maxlength="20"/>
-                      <pfx:xinp type="image" align="center" src="/core/img/record_start.gif" title="Switch record mode ON"/>
-                    </ixsl:otherwise>
-                  </ixsl:choose>
-                </td>
-              </ixsl:when>
-              <ixsl:otherwise>
-                <td>&#160;</td>
-              </ixsl:otherwise>
-            </ixsl:choose>
           </tr>
           <tr>
             <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">

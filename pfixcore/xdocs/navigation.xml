@@ -42,7 +42,6 @@
     </menu>
     <menu name="Miscellaneous">
       <item name="AppLoader" href="/apploader.html"/>
-      <item name="Test client" href="/testclient.html"/>
       <item name="Building" href="/building.html"/>
       <item name="Glossary" href="/glossary.html"/>
     </menu>

@@ -72,13 +72,6 @@
                 the whole feature is not available in production mode anyway, so the 20 seconds should be no problem)
             </td>
           </tr>
-          <tr>
-            <td>
-              <b>Section 3</b> is only visible if you have declared a
-              <code>record_dir</code> <a href="../depend.html#record_dir">here</a>. Also have a look
-              at the <a href="../testclient.html">test client</a> documentation for more information about it.
-            </td>
-          </tr>
         </table>
       </td>
     </tr>

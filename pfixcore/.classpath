@@ -4,8 +4,6 @@
 	<classpathentry kind="src" path="tests/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/activation-1.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.9.jar"/>
 	<classpathentry kind="lib" path="lib/jcert.jar"/>
 	<classpathentry kind="lib" path="lib/jnet.jar"/>
@@ -18,5 +16,9 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="example/servletconf/tomcat/common/lib/servlet-api.jar"/>
 	<classpathentry sourcepath="/sources/xml-commons-resolver-1.1/src" kind="lib" path="lib/resolver.jar"/>
+	<classpathentry kind="lib" path="lib/jmxremote_optional-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmxremote-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmxri-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.7.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

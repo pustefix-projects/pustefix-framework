@@ -44,8 +44,8 @@ public class SessionAdmin implements HttpSessionBindingListener {
         return allsess;
     }
     
-    public void registerSession(HttpSession sess) {
-        registerSession(sess, null);
+    public void registerSession(HttpSession sess, String serverName, String remoteAddr) {
+        registerSession(sess, null, serverName, remoteAddr);
     }
     
     /**
@@ -54,9 +54,8 @@ public class SessionAdmin implements HttpSessionBindingListener {
      * @param trailog a trailog from another session.
      * @param conutil. 
      */
-    public void registerSession(HttpSession session, LinkedList trailog) {
-    
-        SessionInfoStruct info = new SessionInfoStruct(session, trailog);
+    public void registerSession(HttpSession session, LinkedList trailog, String serverName, String remoteAddr) {
+        SessionInfoStruct info = new SessionInfoStruct(session, trailog, serverName, remoteAddr);
         
         synchronized (sessioninfo) {
             session.setAttribute(LISTENER, this);

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
+  <!-- This will be the only place in a future version where docroot is referenced! -->
   <prop name="pustefix.docroot"><cus:docroot/></prop>
+  
+  <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
 
   <!-- List of all factories to init -->
   <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
@@ -15,17 +17,21 @@
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
   <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
   <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
+  <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.Server</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.2">de/schlund/pfixcore/example/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.3">de/schlund/pfixcore/editor/StatusCodes.prop</prop>
 
+  <prop name="jmx.server.port">9334</prop>
+  
   <!-- SPCacheFactory -->
   <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="targetcache.cachecapacity">50</prop>
   <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="includecache.cachecapacity">50</prop>
+
 
   <!--SPCacheStatistic-->
   <prop name="cachestatistic.queuesize">60</prop>
@@ -44,10 +50,10 @@
 
   <!-- EditorCommonsFactory -->
   <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
-
+  
   <!--ExceptionHandler-->
   <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
-
+  
   <!--AppLoader-->
   <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
 
@@ -70,9 +76,3 @@
   <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
 
 </properties>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

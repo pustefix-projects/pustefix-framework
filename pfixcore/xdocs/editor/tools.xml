@@ -24,12 +24,6 @@
              Pressing the upper button triggers an update of all pages.
             </td>
           </tr>
-          <tr>
-            <td>
-              By pressing the lower button you can playback recorded testcases using a GUI. For
-              more information on this see below and the <a href="../testclient.html">TestClient</a> documentation.
-            </td>
-          </tr>
         </table>
       </td>
     </tr>

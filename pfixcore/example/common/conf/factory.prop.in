@@ -17,12 +17,15 @@
   <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
   <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
   <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
+  <!-- comment-in to start a jmx server: prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop -->
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.2">de/schlund/pfixcore/example/StatusCodes.prop</prop>
   <prop name="statuscodefactory.propertyfile.3">de/schlund/pfixcore/editor/StatusCodes.prop</prop>
 
+  <prop name="jmx.server.port">9334</prop>
+  
   <!-- SPCacheFactory -->
   <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
   <prop name="targetcache.cachecapacity">50</prop>
@@ -71,5 +74,5 @@
   <prop name="perfstat.XMLSERVER_GET_DOM">0</prop>
   <prop name="perfstat.XMLSERVER_CALL_PROCESS">0</prop>
   <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
-  
+
 </properties>
