@@ -43,7 +43,7 @@ public class IHandlerFactory implements Reloader {
     private IHandlerFactory() {
         // do nothing.
         AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) {
+        if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
     }
@@ -69,9 +69,9 @@ public class IHandlerFactory implements Reloader {
             IHandler retval = (IHandler) knownhandlers.get(classname); 
             if (retval == null) {
                 try {
-                    AppLoader appLoader=AppLoader.getInstance();
-                    if(appLoader.isEnabled()) {
-                        retval=(IHandler)appLoader.loadClass(classname).newInstance();
+                    AppLoader appLoader = AppLoader.getInstance();
+                    if (appLoader.isEnabled()) {
+                        retval = (IHandler)appLoader.loadClass(classname).newInstance();
                     } else {
                         Class stateclass = Class.forName(classname);
                         retval = (IHandler) stateclass.newInstance();
