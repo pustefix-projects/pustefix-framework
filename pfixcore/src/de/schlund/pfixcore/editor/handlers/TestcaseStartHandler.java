@@ -9,6 +9,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixxml.testenv.TestClientException;
 
 
 /**
@@ -23,14 +24,18 @@ public class TestcaseStartHandler implements IHandler {
     /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(Context, IWrapper)
      */
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-        throws Exception {
+    public void handleSubmittedData(Context context, IWrapper wrapper)  {
         TestcaseStart tcs = (TestcaseStart) wrapper;
         boolean doit = tcs.getDoStart().booleanValue();
         if(doit) {
             ContextResourceManager crm = context.getContextResourceManager();
             CRTestcase crtc = (CRTestcase) EditorRes.getCRTestcase(crm);
-            crtc.executeTest(); 
+            try {
+                crtc.executeTest();
+            } catch (TestClientException e) {
+                // TODO Auto-generated catch block
+                CAT.error(e);
+            } 
         }
     }
 

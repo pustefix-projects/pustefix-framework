@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixxml.testenv.TestClientException;
 
 
 /**
@@ -69,7 +70,7 @@ public interface CRTestcase extends ContextResource {
      * as value.
      * @throws Exception on all errors
      */
-    public HashMap executeTest() throws Exception;
+    public HashMap executeTest() throws TestClientException;
     
     /**
      * @see public HashMap executeTest() throws Exception;

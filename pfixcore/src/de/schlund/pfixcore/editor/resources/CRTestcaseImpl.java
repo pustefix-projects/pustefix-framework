@@ -1,13 +1,17 @@
 package de.schlund.pfixcore.editor.resources;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 
 import de.schlund.pfixcore.editor.EditorProduct;
@@ -54,7 +58,7 @@ public class CRTestcaseImpl implements CRTestcase {
         String[] cases = getAvailableTestcases();
         Element ele = resdoc.createNode("available");
         for(int i=0; i<cases.length; i++) {
-            Element e = resdoc.addTextChild(ele, "testcase", cases[i]);
+            Element e = ResultDocument.addTextChild(ele, "testcase", cases[i]);
             ele.appendChild(e);
         }
         elem.appendChild(ele);
@@ -68,7 +72,7 @@ public class CRTestcaseImpl implements CRTestcase {
             Iterator iter = scases.iterator();
             while(iter.hasNext()) {
                 String name = (String) iter.next();
-                Element e = resdoc.addTextChild(ele2, "testcase", name);
+                Element e = ResultDocument.addTextChild(ele2, "testcase", name);
                 e.setAttribute("tmp_directory", getTemporaryDirectoryForTestcase(name));
                 ele2.appendChild(e);
             }
@@ -84,23 +88,28 @@ public class CRTestcaseImpl implements CRTestcase {
                 Element el3 = resdoc.createNode("test");
                 el3.setAttribute("id", key);
                 TestcasePlaybackResult playresult = (TestcasePlaybackResult) result.get(key);
-                ArrayList steps = playresult.getStepResults();
-                for(int j=0; j<steps.size(); j++) {
-                    String str = ((TestcaseStepResult)steps.get(j)).getDiffString();
-                    Perl5Util perl = new Perl5Util();
-                    ArrayList lines = new ArrayList();
-                    perl.split(lines, "/\n/", str);
-                    Element elem3 = resdoc.createNode("step");
-                    elem3.setAttribute("id", ""+j);
-                    elem3.setAttribute("statuscode", ""+((TestcaseStepResult)steps.get(j)).getStatusCode());
-                    for(int k=0; k<lines.size(); k++) {
-                        //skip emtpy lines
-                        if(((String) lines.get(k)).equals("")) continue;
-                        Element e3 = resdoc.addTextChild(ele3, "line", (String) lines.get(k));
-                        e3.setAttribute("id", ""+k);
-                        elem3.appendChild(e3);
+                if(playresult.hasException()) {
+                    TestClientException ex = playresult.getException();
+                    el3.appendChild(el3.getOwnerDocument().importNode(ex.toXMLRepresentation().getFirstChild(), true));
+                } else {   
+                    ArrayList steps = playresult.getStepResults();
+                    for(int j=0; j<steps.size(); j++) {
+                        String str = ((TestcaseStepResult)steps.get(j)).getDiffString();
+                        Perl5Util perl = new Perl5Util();
+                        ArrayList lines = new ArrayList();
+                        perl.split(lines, "/\n/", str);
+                        Element elem3 = resdoc.createNode("step");
+                        elem3.setAttribute("id", ""+j);
+                        elem3.setAttribute("statuscode", ""+((TestcaseStepResult)steps.get(j)).getStatusCode());
+                        for(int k=0; k<lines.size(); k++) {
+                            //skip emtpy lines
+                            if(((String) lines.get(k)).equals("")) continue;
+                            Element e3 = ResultDocument.addTextChild(ele3, "line", (String) lines.get(k));
+                            e3.setAttribute("id", ""+k);
+                            elem3.appendChild(e3);
+                        }
+                        el3.appendChild(elem3);
                     }
-                    el3.appendChild(elem3);
                 }
                 ele3.appendChild(el3);
             }
@@ -176,13 +185,13 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#executeTest()
      */
-    public HashMap executeTest() throws Exception {
+    public HashMap executeTest() throws TestClientException  {
         hasStartedTestcases = true;
         testOutput = new HashMap();
         for(int i=0; i<selectedTestcases.size(); i++) {
             TestClient tc = new TestClient();
+            String tcase = (String) selectedTestcases.get(i);
             try {
-                String tcase = (String) selectedTestcases.get(i);
                 String dir = getAvailableTestcaseDir() + "/" + tcase;
                 tc.setOptions(dir, 
                     getTemporaryDirectoryForTestcase(tcase),
@@ -191,9 +200,11 @@ public class CRTestcaseImpl implements CRTestcase {
                 testOutput.put(tcase, result);
             } catch(TestClientException e) {
                 CAT.error("TestClientException: "+e.getMessage()+" -> "+e.getExceptionCause().getMessage());
-                throw e;
+                TestcasePlaybackResult res = new TestcasePlaybackResult();
+                res.setException(e);
+                testOutput.put(tcase, res);
             }
-        }
+        }   
         isTestExecuted = true;
         return testOutput;
     }
@@ -231,14 +242,23 @@ public class CRTestcaseImpl implements CRTestcase {
         isTestExecuted = false;
     }
 
-    private String getAvailableTestcaseDir() throws Exception {
+    private String getAvailableTestcaseDir() throws TestClientException  {
         EditorSessionStatus esess = EditorRes.getEditorSessionStatus(cRM);
         EditorProduct product = esess.getProduct();
         if(product == null) {
             return null;
         }
         String depend = product.getDepend();
-        RecordManager recman = RecordManagerFactory.getInstance().createRecordManager(depend);
+        RecordManager recman = null;
+        try {
+            recman = RecordManagerFactory.getInstance().createRecordManager(depend);
+        } catch (ParserConfigurationException e) {
+            throw new TestClientException("ParserConfigurationException!", e);
+        } catch (SAXException e) {
+            throw new TestClientException("SAXException!", e);
+        } catch (IOException e) {
+            throw new TestClientException("IOException!", e);
+        }
         return recman.getRecordmodeBaseDir();
     }
     /**

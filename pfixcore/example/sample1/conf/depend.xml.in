@@ -1,5 +1,5 @@
 <!-- -*- mode: xml -*- -->
-<make cachedir=".cache/sample1" record_allowed="true" record_dir="sample1/recorded"
+<make cachedir=".cache/sample1"  record_dir="sample1/recorded"
       xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <navigation>
