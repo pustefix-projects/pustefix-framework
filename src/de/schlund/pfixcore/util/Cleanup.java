@@ -1,24 +1,20 @@
 package de.schlund.pfixcore.util;
 
+import de.schlund.pfixxml.IncludeDocument;
+import de.schlund.pfixxml.IncludeDocumentFactory;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
-
-
 
 /**
  * Cleanup.java
@@ -41,6 +37,8 @@ public class Cleanup{
     public Cleanup() {}
 
     public static void main(String[] args) throws Exception {
+        String pwd = new File(".").getCanonicalPath();
+        PathFactory.getInstance().init(pwd);
         Cleanup cleanup = new Cleanup();
         cleanup.clean();
     }
@@ -49,7 +47,6 @@ public class Cleanup{
         Document input = Xml.parse(new File(CLEANUP));
         Element  root  = input.getDocumentElement();
         NodeList nl    = root.getChildNodes();
-
         for (int j = 0; j < nl.getLength(); j++) {
             if (nl.item(j) instanceof Element) {
                 Element clean = (Element) nl.item(j);
@@ -63,8 +60,10 @@ public class Cleanup{
                     if (!(path.indexOf("projects/common/txt") > 0) && !(path.indexOf("projects/core/txt") > 0)) {
                         Document doc = (Document) changed.get(path);
                         if (doc == null && (type.equals("part") || type.equals("prod"))) {
-                            IncludeDocument incdoc =  IncludeDocumentFactory.getInstance().getIncludeDocument(Path.create(path), true);
-                            doc = incdoc.getDocument();
+                            IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
+                                getIncludeDocument(PathFactory.getInstance().createPath(path), true);
+                            doc                    = incdoc.getDocument();
+                            System.out.println(doc.hashCode());
                             doc.getDocumentElement().removeAttribute("incpath");
                             changed.put(path, doc);
                         }
