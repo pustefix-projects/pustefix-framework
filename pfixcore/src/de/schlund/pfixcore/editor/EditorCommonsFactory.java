@@ -50,8 +50,9 @@ public class EditorCommonsFactory implements FactoryInit {
     private static EditorCommonsFactory   instance = new EditorCommonsFactory();
     private        TreeSet                allincs  = new TreeSet();
     private        HashMap                incfiles = new HashMap();
-
-
+    private        HashSet                commonfiles;
+    private        boolean                inited   = false;
+    
     private EditorCommonsFactory() {
         if (!dbfac.isNamespaceAware()) {
             CAT.warn("\n**** Switching DocumentBuilderFactory to be NS-aware ****");
@@ -68,13 +69,19 @@ public class EditorCommonsFactory implements FactoryInit {
     }
     
     public synchronized void init(Properties properties) throws Exception {
-        HashSet commonfiles =
-            new HashSet(PropertiesUtils.selectProperties(properties, "editorcommonsfactory.includefile").values());
-        for (Iterator iter = commonfiles.iterator(); iter.hasNext(); ) {
-            String filename = (String) iter.next();
-            readFile(filename);
+        commonfiles = new HashSet(PropertiesUtils.selectProperties(properties, "editorcommonsfactory.includefile").values());
+    }
+
+    private synchronized void realInit() throws Exception {
+        if (!inited) {
+            for (Iterator iter = commonfiles.iterator(); iter.hasNext(); ) {
+                String filename = (String) iter.next();
+                readFile(filename);
+            }
+            inited = true;
         }
     }
+
 
     private void readFile(String filename) throws Exception {
         File comfile = new File(filename); 
@@ -130,7 +137,11 @@ public class EditorCommonsFactory implements FactoryInit {
     }
 
 
-    public boolean isPathAllowed(String path) {
+    public boolean isPathAllowed(String path) throws Exception {
+        if (!inited) {
+            realInit();
+        }
+        
         if (incfiles.get(path) != null) {
             return true;
         } else {
@@ -139,6 +150,10 @@ public class EditorCommonsFactory implements FactoryInit {
     }
     
     public TreeSet getAllCommons() throws Exception {
+        if (!inited) {
+            realInit();
+        }
+        
         synchronized(allincs) {
             update();
             return (TreeSet) allincs.clone();

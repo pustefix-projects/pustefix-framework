@@ -64,7 +64,7 @@
       <xmlcodeOFF>
         <div class="comment">
           <p>Use this to enter absolute pathnames that do not depend on
-          the absolute location of the <pustefix/> environment in your filesystem.</p>
+            the absolute location of the <pustefix/> environment in your filesystem.</p>
           <p>In the same way you can use <code>cus:machine</code>, <code>cus:fqdn</code> and <code>cus:uid</code>
             to print out the value of the supplied XSLT parameter.</p>
         </div>
