@@ -10,7 +10,7 @@ JAVA_INCLIN=${JAVA_INC}/linux
 
 PFX_JAR=$(shell find .. -name "pfixcore-*jar")
 PFX_SOURCES= \
-	de/schlund/pfixxml/loader/ObjectBuilder.java 
+	de/schlund/pfixxml/loader/ObjectBuilder.java
 PFX_CLASSES=$(subst /,.,$(subst .java,,${PFX_SOURCES}))
 
 JNI_BLDDIR=build
@@ -20,6 +20,9 @@ JNI_SOURCES=$(subst /,_,$(subst .java,.c,${PFX_SOURCES}))
 JNI_LIB=$(JNI_BLDDIR)/libapploader.so
 
 .PHONY : headers lib clean
+
+$(JNI_LIB): $(JNI_SRCDIR)/$(JNI_SOURCES)
+	@make jni
 
 jni: init headers lib
 

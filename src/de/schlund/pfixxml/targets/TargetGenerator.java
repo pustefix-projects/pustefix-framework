@@ -462,7 +462,17 @@ public class TargetGenerator {
         }
     }
 
-    protected void generateAll() throws Exception {
+    /**
+     * Make sure this target generator object is properly configured before calling this method.
+     * To obtain a propely configured TargetGenerator Object follow these steps:
+     * <ul>
+     * <li/><code>String log4jconfig = System.getProperty("log4jconfig"); DOMConfigurator.configure(log4jconfig);</code>
+     * <li/>{@link TargetGenerator} gen = {@link TargetGeneratorFactory}.{@link TargetGeneratorFactory#getInstance()}.{@link TargetGeneratorFactory#createGenerator(String)};
+     * <li/>gen.{@link TargetGenerator#setIsGetModTimeMaybeUpdateSkipped(boolean)};
+     * </ul>
+     * @throws Exception
+     */
+    public void generateAll() throws Exception {
         for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget((String) e.next());
             if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
@@ -506,6 +516,14 @@ public class TargetGenerator {
     public void setIsGetModTimeMaybeUpdateSkipped(boolean isGetModTimeMaybeUpdateSkipped) {
         this.isGetModTimeMaybeUpdateSkipped = isGetModTimeMaybeUpdateSkipped;
     }
+
+    /**
+     * @return report containing sensilbe information after {@link #generateAll()}, not null
+     */
+    public static String getReportAsString() {
+        return report.toString();
+    }
+
 }
 
 class TargetGenerationReport {
@@ -557,5 +575,5 @@ class TargetGenerationReport {
         return buf.toString();
     }
 
- 
+    
 }

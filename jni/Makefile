@@ -13,7 +13,7 @@ JAVA_INCLIN=${JAVA_INC}/linux
 PFX_BLDDIR=../build
 PFX_SRCDIR=../src
 PFX_SOURCES= \
-	${PFX_SRCDIR}/de/schlund/pfixxml/loader/ObjectBuilder.java 
+	${PFX_SRCDIR}/de/schlund/pfixxml/loader/ObjectBuilder.java
 PFX_CLASSES=$(subst /,.,$(subst .java,,$(subst ${PFX_SRCDIR}/,,${PFX_SOURCES})))
 
 JNI_BLDDIR=build
@@ -26,8 +26,8 @@ JNI_PKG=jni.tar.gz
 
 .PHONY : headers lib dist pkg clean
 
-$(JNI_LIB): $(PFX_SOURCES)
-	@make dist 
+$(JNI_LIB): $(PFX_SOURCES) Makefile.pkg
+	@make dist
 
 init:
 	@if [ ! -d ${JNI_BLDDIR} ]; then mkdir ${JNI_BLDDIR}; fi
@@ -53,7 +53,7 @@ dist: clean init lib pkg
 	@echo "!!!!! WARNING !!!!! Distribution is built, but it can't be assured to compile/work correctly."
 endif
 
-pkg:  
+pkg:
 	@echo "*** Creating distribution"
 	@mkdir ${JNI_PKGDIR}
 	@cp -a ${JNI_SRCDIR} ${JNI_PKGDIR}
