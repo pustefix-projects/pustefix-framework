@@ -341,8 +341,8 @@ public abstract class ServletManager extends HttpServlet {
         CAT.debug("*** Got new Session (Id: " + session.getId() + ")");
         CAT.debug("*** Copying data back to new session");
         SessionHelper.copySessionData(map, session);
-        CAT.debug("*** Setting ContainerUtil.SESSION_ID_URL to " +  session.getAttribute(SessionHelper.SESSION_ID_URL));
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
+        CAT.debug("*** Setting " + SessionHelper.SESSION_ID_URL + "  to " + session.getAttribute(SessionHelper.SESSION_ID_URL));
         CAT.debug("*** Setting SECURE flag");
         session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
