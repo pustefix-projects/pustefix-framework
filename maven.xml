@@ -9,7 +9,7 @@
   xmlns:x="jelly:xml"
   xmlns:doc="doc">
 
-  <goal name="ant">
+  <goal name="pfix:all">
     <ant:echo>ant target: ${target}</ant:echo>
     <!-- TODO: fails because javac does not know ant classes 
        ant:ant dir="${basedir}" antfile="build.xml" target="${target}" inheritAll="false">
@@ -24,8 +24,6 @@
     </ant:exec>
   </goal>
 
-  <goal name="xsite" prereqs="ant, site"/>
-  
   <preGoal name="pdf:pdf">
   	<attainGoal name="pfix:docs"/>
   </preGoal>
@@ -34,6 +32,15 @@
   	<attainGoal name="pfix:docs"/>
   </preGoal>
   
+  <preGoal name="site">
+    <attainGoal name="pfix:all"/>
+    <u:file name="${user.home}/.cvspass" var="cvspass"/>
+    <j:if test="${!cvspass.exists()}">
+       <ant:echo>creating empty ${cvspass} file</ant:echo>
+       <ant:touch file="${cvspass}"/>
+    </j:if>
+  </preGoal>
+
   <preGoal name="site:sshdeploy">
     <maven:user-check user="${maven.username}"/>
     <ant:echo>deleting old site: ${pom.siteDirectory}</ant:echo>
