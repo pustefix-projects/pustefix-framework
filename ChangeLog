@@ -1,3 +1,11 @@
+2004-08-18 Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/exceptionprocessor:
+        -UniversalExceptionProcessor.java, util/ExceptionDataValue.java,
+        util/XMLCreatorVisitor.java: cosmetics
+        * src/de/schlund/pfixxml/exceptionprocessor/util/TextCreatorVisitor.java:
+        Bugfix: fixed IndexOutOfBoundsException when handling java.lang.Error
+
 2004-08-18 Benjamin Reitzammer <benjamin@schlund.de>
 
 	* example/core/xsl/navigation.xsl.in: <pfx:button> now accepts the new mode

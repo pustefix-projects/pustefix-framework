@@ -112,10 +112,7 @@ public class XMLCreatorVisitor implements ExceptionDataValueVisitor {
 		e.appendChild(exception);
 		
 		doc.appendChild(e);
-	}
-	
-	public Document getDocument() {
-		return doc;
+        data.setXMLRepresentation(doc);
 	}
 
 }
