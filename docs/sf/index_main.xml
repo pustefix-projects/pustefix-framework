@@ -31,29 +31,28 @@
   <h1>Development news</h1>
 
   <p>
-    We added more possibilities for the pageflow handling.
-    <ul>
-      <li>
-         You can now set a pageflow even if the current page is no
-         member of that pageflow. This allows to enter into any
-         pageflow after the submit to the current page returns
-         successfully.
-      </li>
-      <li>
-        The request parameters <code>__jumptopage</code> and
-        <code>__jumptopageflow</code> are similar to the common
-        <code>__page</code> and <code>__pageflow</code> parameters,
-        but they specify a page (and the associated pageflow) the
-        system hould jumpt to unconditianlly after a successful
-        submit. In other words: If there is a
-        <code>__jumptopage</code> set, the system won't start the
-        usual pageflow process, but instead jump to the specified page
-        (selecting, if it exists, the value of <code>__jumptopageflow</code> as the
-        new pageflow)
-      </li>
-    </ul>
-    See the ChangeLog for more information on this.
+    We added more possibilities for the pageflow handling (See the ChangeLog for more information).
   </p>
+  <ul>
+    <li>
+      You can now set a pageflow even if the current page is no
+      member of that pageflow. This allows to enter into any
+      pageflow after the submit to the current page returns
+      successfully.
+    </li>
+    <li>
+      The request parameters <code>__jumptopage</code> and
+      <code>__jumptopageflow</code> are similar to the common
+      <code>__page</code> and <code>__pageflow</code> parameters,
+      but they specify a page (and the associated pageflow) the
+      system should jump to unconditionally after a successful
+      submit. In other words: If there is a
+      <code>__jumptopage</code> set, the system won't start the
+      usual pageflow process, but instead jump to the specified page
+      (selecting, if it exists, the value of <code>__jumptopageflow</code> as the
+      new pageflow)
+    </li>
+  </ul>
   <p>
     We upgraded our embedded tomcat to version 4.1.30
   </p>

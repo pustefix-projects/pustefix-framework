@@ -57,7 +57,7 @@
         <code>/xml/deref?link=http://some.other.domain/foo/bar</code>
         This is important because for any link that goes directly to a
         foreign destination (e.g. &lt;a
-        href="http://some.other.domain/foo/bar"&gt;) makes the session
+        href="http://some.other.domain/foo/bar"&gt;) the session
         id visible in the logfile of the foreign site's webserver (via
         the <code>Referer</code> header). This is of course a security
         problem. Using the <code>DerefServer</code> avoids this by
