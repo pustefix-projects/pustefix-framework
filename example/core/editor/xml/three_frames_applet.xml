@@ -100,7 +100,7 @@
 
         </pfx:script>  
         </head>
-        <body onunload="__destroyApplet()" onload="test()">
+        <body onunload="__destroyApplet()" onload="__setAppletLoad()">
           <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true"/>
         </body>
       </html>
