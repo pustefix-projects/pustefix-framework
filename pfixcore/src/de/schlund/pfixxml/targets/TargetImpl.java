@@ -18,6 +18,7 @@
 */
 package de.schlund.pfixxml.targets;
 
+import java.io.File;
 import java.util.*;
 
 import org.apache.log4j.*;
@@ -140,11 +141,18 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public Object getCurrValue() throws Exception {
         Object obj = getValueFromSPCache();
-        if (obj == null) {
+        // look if the target exists in memory cache and if the file in disk cache is newer.
+        if (obj == null || isDiskCacheNewerThenMemCache()) {
             synchronized (this) {
                 obj = getValueFromSPCache();
-                if (obj == null) {
+                if (obj == null || isDiskCacheNewerThenMemCache()) {
+                	if(CAT.isDebugEnabled()) {
+	                	if(CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
+	                		CAT.debug("File in disk cache is newer then in memory cache. Rereading target from disk...");
+	                	}
+                	}
                     obj = getValueFromDiscCache();
+                    
                     // Caution! setCacheValue is not guaranteed to store anything at all, so it's NOT
                     // guaranteed that the sequence
                     //           storeValue(tmp); tmp2 = getValueFromSPCache; return tmp2
@@ -152,7 +160,15 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     // Example: A NullCache will silently ignore all store requests, so a call to this method
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
-                    // now the target is generated
+                  	
+               		// after the newer file on disk is reread and stored in memory cache it isnt't
+               		// newer any more, so set the mod time of the target to the mod time of the
+               		// file in disk cache
+               		if(isDiskCacheNewerThenMemCache()) {
+                    	setModTime(new File(getTargetGenerator().getDisccachedir() + getTargetKey()).lastModified());
+                    }
+
+                   	// now the target is generated
                     onceGenerated = true;
                 }
             }
@@ -169,6 +185,18 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             return getTargetKey().compareTo(in.getTargetKey());
         }
     }
+
+	public boolean isDiskCacheNewerThenMemCache() {
+		long target_mod_time = getModTime();
+		File thefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
+		long disk_mod_time = thefile.lastModified();
+		if(CAT.isDebugEnabled()) {
+			CAT.debug("File in DiskCache "+ getTargetGenerator().getDisccachedir() + getTargetKey() +" ("+disk_mod_time+") is "+ 
+				(disk_mod_time > target_mod_time ? " newer " : "older")+ " than target("+target_mod_time+")");
+		}
+		// return true if file in diskcache newer than target
+		return disk_mod_time > target_mod_time ? true : false;
+	}
 
     //
     // implementation
