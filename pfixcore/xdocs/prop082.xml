@@ -2,12 +2,12 @@
 <document>
 
   <properties>
-    <title>Java property files in Pustefix</title>
+    <title>Java property files in Pustefix (old version 0.8.2)</title>
   </properties>
 
   <body>
 
-  <section name="Java property files in Pustefix">
+  <section name="Java property files in Pustefix (old version 0.8.2)">
 
   <p>The configuration of the Java part of the framework (which
     encompasses all the servlets and other services used by the application) is done
@@ -17,29 +17,21 @@
     describe properties. Additionally a customization mechanism is
     provided that helps to configure the configuration files according
     to local needs.</p>
-  <p>Here you can find the <a href="prop082.html">old version</a> of the
-    <code>.prop.in</code> format.</p>   
-  
-  <p><a name="standardprops"/>The structure of a standard <code>.prop.in</code> file is very easy:</p>
+
+  <p>The general structure of a <code>.prop.in</code> file is very easy:</p>
 
   <xmlcode>
-    <standardprops version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
-      <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
-      <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
+    <xproperties xmlns:cus="http://www.schlund.de/pustefix/customize">
       <xmlnote>
           The <code>cus</code> namespace is needed to use the customization tags explained below.
       </xmlnote>
-      <properties>
-        <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
-        <xmlnote>
-            The <code>prop</code> tag is the most primitive way to enter a single property.
-            The example above would simply result in the java property<br/><br/>
-            <code>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</code><br/>
-        </xmlnote>
-      </properties>
-    </standardprops>
+      <prop name="statuscodefactory.messagefile">common/dyntxt/statusmessages.xml</prop>
+      <xmlnote>
+          The <code>prop</code> tag is the most primitive way to enter a single property.
+          The example above would simply result in the java property<br/><br/>
+          <code>statuscodefactory.messagefile=common/dyntxt/statusmessages.xml</code><br/>
+      </xmlnote>
+    </xproperties>
   </xmlcode>
 
   <p><a name="custom"/>Pustefix allows to customize the creation of
@@ -49,13 +41,12 @@
   transforming stylesheet.</p>
 
   <ul>
-    <li>makemode
-      The value of the ant property <b>makemode</b>, which can be
-      passed on the ant commandline but will more commonly be specified
-      in the environment variable <b>MAKE_MODE</b>. 
-      This can be
+    <li>
+      The value of the <b>MAKE_MODE</b> environment variable, or
+      "<b>test</b>" if the variable is not set (the default behavior
+      can be changed by tweaking the build.xml files). This can be
       used to easily switch preferences depending on the "mode" that
-      is active when the application is built, e.g. "test" on
+      is active when the application is made, e.g. "test" on the
       development machines, and "prod" on the production servers. The
       value is supplied as the parameter <code>mode</code>.  Note that
       the value of MAKE_MODE also determines if certain features are
@@ -65,10 +56,7 @@
     </li>
 
     <li>The <code>docroot</code>, i.e. the directory where your
-      project's configuration and XML/XSLT files are located in
-      (without trailing directory separator '/' or '\').
-      Note that 
-    </li>
+    project's configuration and XML/XSLT files are located in.</li>
 
     <li>The user id (<code>uid</code>) of the user that starts the
     build process.</li>
@@ -83,47 +71,45 @@
   <p>Certain customization tags work with these parameters:</p>
 
   <xmlcode>
-    <properties xmlns:cus="http://www.schlund.de/pustefix/customize">
-      <xmlcodeNS attr="xmlns:cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
+    <xproperties xmlns:cus="http://www.schlund.de/pustefix/customize">
       <prop name="foo"><cus:docroot/>/bar/baz.xml</prop>
       <xmlnote>
-          <p>Use this to specify pathnames that depend on the
+          <p>Use this to enter pathnames that do not depend on the
           absolute location of the Pustefix environment in your
           filesystem.</p>
-          <p>In the same way you can use <code>&lt;cus:machine/&gt;</code>,
-          <code>&lt;cus:fqdn/&gt;</code> and <code>&lt;cus:uid/&gt;</code> to insert
+          <p>In the same way you can use <code>cus:machine</code>,
+          <code>cus:fqdn</code> and <code>cus:uid</code> to print out
           the value of the supplied XSLT parameter.</p>
       </xmlnote>
-      <choose>
-        <test mode="test">
+      <cus:choose>
+        <cus:test mode="test">
           <xmlnote/>
-        </test>
-        <test uid="pfixuser">
+        </cus:test>
+        <cus:test uid="pfixuser">
           <xmlnote/>
-        </test>
-        <test machine="server1">
+        </cus:test>
+        <cus:test machine="server1">
           <xmlnote>
-              <p>These <code>choose</code> and <code>test</code> elements are allowed only within <code>properties</code> elements.
-                The three <code>test</code> nodes above test for one of the supplied XSLT parameters...</p>
+              <p>These three <code>cus:test</code> nodes above test for one of the supplied XSLT parameters...</p>
           </xmlnote>
-        </test>
-        <test mode="prod" uid="pfixuser">
+        </cus:test>
+        <cus:test mode="prod" uid="pfixuser">
           <xmlnote/>
-        </test>
-        <test bool="or" mode="prod" machine="server1">
+        </cus:test>
+        <cus:test bool="or" mode="prod" machine="server1">
           <xmlnote>
               <p>...while these two test for a combination of variables. Default for the test to pass is when <b>ALL</b>
                 of the supplied XSLT parameters match the attribute values supplied. If you set the attribute <code>bool</code> to
                 <code>or</code> instead, <b>ANY</b> matching parameter will let the complete test pass.</p>
           </xmlnote>
-        </test>
-        <test>
+        </cus:test>
+        <cus:test>
           <xmlnote>
               <p>The "default test" that will always pass.</p>
           </xmlnote>
-        </test>
-      </choose>
-    </properties>
+        </cus:test>
+      </cus:choose>
+    </xproperties>
   </xmlcode>
 
   <p>Several property files in Pustefix are constructed this way. While
@@ -192,88 +178,6 @@
 
   </section>
 
-  
-  
-  
-  <section name="pustefix.prop.in">
-    <p>
-      is a <a href="#standardprops">standard <code>.prop.in</code></a>
-      file located at <code>DOCROOT/common/conf/pustefix.prop.in</code>.
-      Its settings effect all servlets within one pustefix installation.  
-    </p>
-    <subsection name="Exception processing">
-      <p>
-        Exception processing is configured via <code>prop</code> elements whose names
-        comply to following syntax:
-        <br/>
-        <code>exception.<strong>TYPE</strong>.[page|forward|processor]</code>
-        <br/>
-        For one single <code>TYPE</code>, there may be only one occurance of 
-        <code>page</code>, <code>forward</code> and <code>processor</code>.
-        TYPE is a fully qualified
-        class name of a valid Exception-class, for which the handling should be
-        configured at this point. In this case it specifically means,
-        that the specified class must be a descendant of <code>java.lang.Throwable</code>,
-        as the <code>catch</code>-block that handles the exceptions which are specified
-        here, catches <code>Throwable</code>.
-        <br/>
-        If an exception occurs during exception processing, or during processing
-        of the page, the request got forwarded to, no further exception handling
-        will take place. Therefore the code that processes exceptions and the code that
-        drives pages to which requests get forwarded, in case of exceptions, should
-        be quite robust. Otherwise the whole exception-handling thing would be quite
-        useless, wouldn't it?
-      </p>
-      <table>
-        <tr><th>Property name</th><th>Property value</th></tr>
-        <tr>
-            <td><code>exception.<strong>TYPE</strong>.forward</code></td>
-            <td>[true|false]<br />
-                If you specify a custom ExceptionProcessor, it depends on the implementation
-                of the custom processor, whether this attribute is mandatory or optional.
-                <br />
-                If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>,
-                and <b>must</b> be set to <code>true</code>. It signals the ExceptionProcessor,
-                whether the request should be forwarded to the specified page. In case
-                of the default ExceptionProcessor (see below) the page gets always forwarded, and
-                another value as <code>true</code> for the <code>forward</code>-attribute will
-                result in an exception.
-             </td>
-        </tr>
-        <tr>
-            <td><code>exception.<strong>TYPE</strong>.page</code></td>
-            <td>pagename<br />
-                If you specify a custom ExceptionProcessor, it depends on the implementation
-                of the custom processor, whether this attribute is mandatory or optional.
-                <br />
-                If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>.
-                This specifies a page to which the request will be forwarded in case
-                an exception occurs. The page must be specified as an absolute servlet-path,
-                which means, the pageName must be prefixed with the servletName that
-                serves the page (e.g. <code>/config/auth_user</code> or something similar).
-                <br />
-                The page must be served by a servlet that is contained within the same webapp
-                (or pustefix-project, which basically means the same). One cannot forward a request
-                to page that's in another project as the one in which the exception occurred.
-            </td>
-        </tr>
-        <tr>
-            <td><code>exception.<strong>TYPE</strong>.processor</code></td>
-            <td>fully qualified java classname<br />
-                Optional. A fully qualified class name of a class, that implements
-                the <code>de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor</code>
-                -interface. If not present the default processor
-                <code>de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor</code>
-                will be used.
-            </td>
-        </tr>
-      </table>
-    </subsection>
-  </section>
-  
-  
-  
-  
   <section name="Propery files for a single servlet instance">
 
   <p>The Pustefix
@@ -284,11 +188,7 @@
 
   <a name="editmode"/>
   <xmlcode>
-    <contextxmlserver xmlns:cus="http://www.schlund.de/pustefix/customize"  version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
-      <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
-      <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
+    <xproperties xmlns:cus="http://www.schlund.de/pustefix/customize">
       <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
         <xmlnote>
             The attributes <code>depend</code> and <code>name</code> are <b>mandatory</b>.
@@ -296,27 +196,16 @@
             unchanged, otherwise (which is the usual case) it's interpreted as a path relative
             to the <b>docroot</b>
         </xmlnote>
-        <editmode  allow="true|false" modes="ListOfModes"/>
+        <editmode  allow="true|false"/>
         <xmlnote>
             <code>allow</code> needs to be set to <b>true</b>
-            if you want to be able to use the pustefix editor.<br/>
-            <code>modes</code> is an optional whitespace-separated list of mode names
-            for which to apply this setting. If <code>modes</code> is not given
-            The value of <code>allow</code> applies to all modes.
-            If <code>modes</code> is given, the opposite value of <code>allow</code>
-            is used for all modes not listed.<br/>
-            The whole node is optional.
+            if you want to be able to use the pustefix editor. The whole node is optional.
           <a name="ssl"/>
         </xmlnote>
-        <ssl force="true|false" modes="ListOfModes"/>
+        <ssl force="true|false"/>
         <xmlnote>
             <code>force</code> must be set to <b>true</b> if the
-            servlet needs to run under SSL.<br/>
-            <code>modes</code> is an optional whitespace-separated list of mode names
-            for which to apply this setting. The default is to apply the setting in all modes.
-            If <code>modes</code> is given, the opposite value of <code>force</code>
-            is used for all modes not listed.<br/>
-            The whole node is optional.
+            servlet needs to run under SSL. The whole node is optional.
         </xmlnote>
         <adminmode watch="AName" page="APageName"/>
         <xmlnote>
@@ -324,10 +213,10 @@
             <code>adminmode</code> node is used at all.
         </xmlnote>
         <defaultstate class="a.state.Class"/>
-        <defaultinputstate class="another.state.Class"/>
+        <defaultihandlerstate class="another.state.Class"/>
         <xmlnote>
             <b>&lt;defaultstate&gt;</b> and
-            <b>&lt;defaultinputstate&gt;</b> are both optional. The
+            <b>&lt;defaultihandlerstate&gt;</b> are both optional. The
             <code>class</code> attribute must be
             given. <code>a.state.Class</code> should de a descendant
             of
@@ -361,7 +250,7 @@
             <tr>
               <td><code>authpage</code></td> <td>Optional. It must be given, if the servlet should supply a
                 login/authentification page. If given, it must reference a valid <code>pagerequest</code> with
-                an <code>auth</code> child node.</td>
+                an <code>authhandler</code> child node.</td>
             </tr>
           </table>
           <a name="resource"/>
@@ -385,22 +274,17 @@
                 definition.
             </xmlnote>
           </implements>
-          <properties>
-            <xmlnote>
-              The whole node is optional.
-            </xmlnote>
-            <prop name="AName">AValue</prop>>
-            <xmlnote>
-                <code>prop</code> is <b>mandatory</b> and can be used
-                multiple times.  It's similar to the use as a child of
-                <code>pagerequest/properties</code>, but used here to create
-                properties that are related to a context resource
-                implementation. The resulting property looks like this:
-                <p>
-                  <code>context.resourceparameter.AContextResource.AName=AValue</code>
-                </p>
-            </xmlnote>
-          </properties>
+          <param name="AName">AValue</param>
+          <xmlnote>
+              <code>param</code> is <b>optional</b>, can be used
+              multiple times.  It's similar to the use as a child of
+              <code>pagerequest</code>, but used here to create
+              properties that are related to a context resource
+              implementation. The resulting property looks like this:
+              <p>
+                <code>context.resourceparameter.AContextResource.AName=AValue</code>
+              </p>
+          </xmlnote>
         </resource>
       </context>
       <xmlnote><a name="stopnext"/></xmlnote>
@@ -497,7 +381,7 @@
             </xmlnote>
             <when test="A_XPath_Expression">
               <xmlnote>
-                  <p> <!-- // TODO Q: minOccurs="1" maxOccurs="unbounded" -->
+                  <p>
                     The <code>when</code> tag contains the XPath expression to try in
                     it's <code>test</code> attribute. If this attribute is omitted, the whole condition is
                     considered to be true.
@@ -538,9 +422,6 @@
       </xmlnote>
       <pagerequest name="APageName" nostore="true|false" copyfrom="APageName">
         <xmlnote>
-          <!-- This node is mandatory in schema because pageflow is also mandatory in schema -->
-          <!-- and pageflow and pagerequest share a common choice (used for arbitrary order), -->
-          <!-- so pagerequest cannot be declared optional. -->
           <table>
             <tr>
               <th>Attribute</th>
@@ -568,7 +449,7 @@
                 object (current page, current pageflow) isn't changed. The
                 use of this feature is to allow for pages to act as
                 e.g. CSS or JavaScript without disturbing the flow of the
-                main pages. See also the section on <code>prop</code>s below.
+                main pages. See also the section on <code>param</code>s below.
               </td>
             </tr>
             <tr>
@@ -585,7 +466,7 @@
             </tr>
           </table>
         </xmlnote>
-        <ssl force="true|false" modes="ListOfModes"/>
+        <ssl force="true|false"/>
         <xmlnote>
             <p>The node is optional. If given, and the attribute <code>force</code>
               is set to <code>true</code>, the page will only run under
@@ -594,10 +475,8 @@
               will make sure to redirect to a secure session prior to
               handling the request. After a session is running under
               SSL, there is no way back (so all other pages will run
-              securely regardless if they have a <code>ssl</code> node or not).<br/>
-              <code>modes</code> is an optional whitespace-separated list of mode names
-              for which to apply this setting. The default is to apply the setting in all modes.<br/>
-              Note that you can force the servlet as a whole to run only under SSL
+              securely regardless if they have a <code>ssl</code> node or not). Note that you
+              can force the servlet as a whole to run only under SSL
               by  <a href="#ssl">specifying the <code>ssl</code> subnode of the
                 <code>servletinfo</code> node</a>.
             </p>
@@ -610,11 +489,11 @@
               interface. The used <code>State</code> is determined as follows: </p>
             <ol>
               <li>If <code>state</code> is given, use the value of it's <code>class</code> attribute. Else:</li>
-              <li>If the <code>pagerequest</code> has a <code>auth</code> child,
+              <li>If the <code>pagerequest</code> has a <code>authhandler</code> child,
                 use <code>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</code>. Else:</li>
-              <li>If the pagerequest has an <code>input</code> child, use
+              <li>If the pagerequest has a <code>ihandler</code> child, use
                 the value of the class attribute of the
-                <b>&lt;defaultinputstate&gt;</b> tag explained above <b>if
+                <b>&lt;defaultihandlerstate&gt;</b> tag explained above <b>if
                 it is given</b>.  If this is not given, just use
                 <code>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</code>. Else:</li>
               <li>use the value of the class attribute of the
@@ -634,12 +513,10 @@
               and the logic when to trigger the next step in the current page flow. Use them at your own risk. Or better: Don't use them at all.</p>
           <br/>
           <div class="important">
-            <b>Caution below: only one of <code>input</code> or <code>auth</code> may be given as a child node!</b>
+            <b>Caution below: only one of <code>ihandler</code> or <code>authhandler</code> may be given as a child node!</b>
           </div>
         </xmlnote>
-        <xmlnote/>
-
-        <input policy="ANY|ALL|NONE">
+        <ihandler policy="ANY|ALL|NONE">
           <xmlnote>
               <p>The whole node is optional.
               It may only be given for a <code>State</code> that is either
@@ -766,9 +643,9 @@
               </table>
               <br/>
           </xmlnote>
-        </input>
-
-        <auth>
+        </ihandler>
+        <xmlnote/>
+        <authhandler>
           <xmlnote>
               <p>The whole node is optional.
                 It may only be given for a page using a <code>State</code> that is either
@@ -800,9 +677,8 @@
               </p>
               <p>Note that no error handling whatsoever takes place for <code>auxinterface</code> IHandlers.</p>
           </xmlnote>
-        </auth>
-        <xmlnote/>
-        
+        </authhandler>
+
         <output>
           <xmlnote>
               <p>The whole node is optional. Every page using a State that is itself or a descendant of
@@ -830,78 +706,148 @@
             </table>
           </xmlnote>
         </output>
-        <xmlnote><a name="pagerequestproperties"/></xmlnote>
-        <properties>
-          <xmlnote>The whole node is optional.</xmlnote>
-          <prop name="APropertyKey">AValue</prop>
-          <xmlnote>
-              <p>The node is mandatory and can be used multiple times. It will be transformed into a java property
-                that is associated to the page. The java property that is constructed will look like this:
-                <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
-                of the <code>name</code> attribute.
-              </p>
-              <p>There are some <code>props</code>s that are
-                already defined for
-                <code>de.schlund.pfixcore.workflow.app.StaticState</code>
-                and descendants. These are listed below</p>
-              <br/>
-              <table>
+        <xmlnote><a name="param"/></xmlnote>
+        <param name="APropertyKey">AValue</param>
+        <xmlnote>
+            <p>The node is optional and can be used multiple times. It will be transformed into a java property
+              that is associated to the page. The java property that is constructed will look like this:
+              <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
+              of the <code>name</code> attribute.
+            </p>
+            <p>There are some <code>param</code>s that are
+              already defined for
+              <code>de.schlund.pfixcore.workflow.app.StaticState</code>
+              and descendants. These are listed below</p>
+            <br/>
+            <table>
+              <tr>
+                <th>Parameter name</th>
+                <th>Parameter value</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>mimetype</code></td>
+                <td>e.g. <code>text/css</code></td>
+                <td>
+                  If given, sets the mimetype of the HttpResponse object
+                  to something else than the default
+                  <code>text/html</code>.  This is most often used for
+                  <code>text/css</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>responseheader.A_HEADER</code></td>
+                <td><code>A_VALUE</code></td>
+                <td>
+                  <p>If given, set the
+                    header <code>A_HEADER</code> of the HttpResponse
+                    object to <code>A_VALUE</code>.
+                  </p>
+                  <p>
+                    NOTE: the Pustefix system uses a set of default
+                    headers that are only used, when no user defined
+                    headers are given! The set of default headers is:</p>
+                  <p>
+                    <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT</code><br/>
+                    <code>Pragma=no-cache</code><br/>
+                    <code>Cache-Control=no-cache, no-store, private, must-revalidate</code>
+                  </p>
+                  <p>
+                    If you want to use some of them in addition to your
+                    own headers, you <b>must</b> manually supply them,
+                    too.
+                  </p>
+                </td>
+              </tr>
+            </table>
+            <br/>
+        </xmlnote>
+      </pagerequest>
+      <xmlnote><a name="pagerequest"/></xmlnote>
+      <exception forward="true|false" page="/AServletName/APageName" type="any.kind.of.Exception"
+                 processor="class.implementing.ExceptionProcessor">
+        <xmlnote>
+            There may be multiple <code>exception</code> tags
+            defined, each with a different <code>type</code>-attribute. If there
+            are <code>exception</code>-tags with the same <code>type</code>-attribute,
+            only one of these will affect exception-handling, although there is no
+            guarantee on which one this will be.
+            <br />
+            If an exception occurs during exception processing, or during processing
+            of the page, the request got forwarded to, no exception furhter handling
+            as can be configured during the <code>exception</code>-tag,  will take
+            place. Therefore the code that processes exceptions and the code that
+            drives pages to which requests get forwarded, in case of exceptions, should
+            be quite robust. Otherwise the whole exception-handling thing would be quite
+            useless, wouldn't it?
+            <br/><br/>
+            <table>
                 <tr>
-                  <th>Property name</th>
-                  <th>Property value</th>
+                  <th>Attribute</th>
                   <th>Description</th>
                 </tr>
                 <tr>
-                  <td><code>mimetype</code></td>
-                  <td>e.g. <code>text/css</code></td>
-                  <td>
-                    If given, sets the mimetype of the HttpResponse object
-                    to something else than the default
-                    <code>text/html</code>.  This is most often used for
-                    <code>text/css</code>.
-                  </td>
+                    <td><code>type</code></td>
+                    <td><b>Mandatory</b>. This attribute must contain the fully qualified
+                        class name of a valid Exception-class, for which the handling should be
+                        configured at this point. In this case it specifically means,
+                        that the specified class must be a descendant of <code>java.lang.Throwable</code>,
+                        as the <code>catch</code>-block that handles the exceptions which are specified
+                        here, catches <code>Throwable</code>.
+                    </td>
                 </tr>
                 <tr>
-                  <td><code>responseheader.A_HEADER</code></td>
-                  <td><code>A_VALUE</code></td>
-                  <td>
-                    <p>If given, set the
-                      header <code>A_HEADER</code> of the HttpResponse
-                      object to <code>A_VALUE</code>.
-                    </p>
-                    <p>
-                      NOTE: the Pustefix system uses a set of default
-                      headers that are only used, when no user defined
-                      headers are given! The set of default headers is:</p>
-                    <p>
-                      <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT</code><br/>
-                      <code>Pragma=no-cache</code><br/>
-                      <code>Cache-Control=no-cache, no-store, private, must-revalidate</code>
-                    </p>
-                    <p>
-                      If you want to use some of them in addition to your
-                      own headers, you <b>must</b> manually supply them,
-                      too.
-                    </p>
-                  </td>
+                    <td><code>forward</code></td>
+                    <td>If you specify a custom ExceptionProcessor, it depends on the implementation
+                        of the custom processor, whether this attribute is mandatory or optional.
+                        <br />
+                        If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>,
+                        and <b>must</b> be set to <code>true</code>. It signals the ExceptionProcessor,
+                        whether the request should be forwarded to the specified page. In case
+                        of the default ExceptionProcessor (see below) the page gets always forwarded, and
+                        another value as <code>true</code> for the <code>forward</code>-attribute will
+                        result in an exception.
+                     </td>
                 </tr>
-              </table>
-              <br/>
-          </xmlnote>
-        </properties>
-      </pagerequest>
-      <xmlnote><a name="pagerequest"/></xmlnote>
+                <tr>
+                    <td><code>page</code></td>
+                    <td>If you specify a custom ExceptionProcessor, it depends on the implementation
+                        of the custom processor, whether this attribute is mandatory or optional.
+                        <br />
+                        If no custom ExceptionProcessor is used, this attribute is <b>mandatory</b>.
+                        This specifies a page to which the request will be forwarded in case
+                        an exception occurs. The page must be specified as an absolute servlet-path,
+                        which means, the pageName must be prefixed with the servletName that
+                        serves the page (e.g. <code>/config/auth_user</code> or something similar).
+                        <br />
+                        The page must be served by a servlet that is contained within the same webapp
+                        (or pustefix-project, which basically means the same). One cannot forward a request
+                        to page that's in another project as the one in which the exception occurred.
+                    </td>
+                </tr>
+                <tr>
+                    <td><code>processor</code></td>
+                    <td>Optional. A fully qualified class name of a class, that implements
+                        the <code>de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor</code>
+                        -interface. If not present the default processor
+                        <code>de.schlund.pfixxml.exceptionprocessor.PageForwardingExceptionProcessor</code>
+                        will be used.
+                    </td>
+                </tr>
+            </table>
+        </xmlnote>
+      </exception>
       <prop name="AProperty">AValue</prop>
-    </contextxmlserver>
+    </xproperties>
   </xmlcode>
   </subsection>
-  <subsection name="de.schlund.pfixxml.DirectOutputServer">
+  <subsection name="de.schlund.pfixxml.DirectOutputServlet">
 
   <p><a name="DOS"/>Occasionally you don't
     want to generate output with an XSLT Transformation, but
     e.g. deliver binary content directly to the output
     stream instead. In this case you need to provide another servlet of type
-    <code>de.schlund.pfixxml.DirectOutputServer</code>. This servlet
+    <code>de.schlund.pfixxml.DirectOutputServlet</code>. This servlet
     doesn't have it's own context but instead "hijacks" the context of a
     foreign <code>de.schlund.pfixxml.ContextXMLServer</code>. The
     context isn't used for any pageflow handling, only as a means to get
@@ -921,20 +867,15 @@
   </p>
 
   <xmlcode>
-    <directoutputserver xmlns:cus="http://www.schlund.de/pustefix/customize" version="1.0">
-      <xmlcodeNS ns="">http://pustefix.sf.net/2004/properties</xmlcodeNS>
-      <xmlcodeNS ns="cus">http://www.schlund.de/pustefix/customize</xmlcodeNS>
-      <xmlcodeNS ns="xsi">http://www.w3.org/2001/XMLSchema-instance</xmlcodeNS>
-      <xmlcodeNS attr="xsi:schemaLocation">http://pustefix.sf.net/2004/properties http://pustefix.sf.net/2004/properties.xsd</xmlcodeNS>
-      <directoutputservletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
-        <ssl force="true|false" modes="ListOfModes"/>
-        <editmode allow="true|false" modes="ListOfModes"/><xmlnote>
+    <xproperties xmlns:cus="http://www.schlund.de/pustefix/customize">
+      <servletinfo depend="MyProject/conf/depend.xml" name="AUniqueNameForTheServlet">
+        <ssl force="true|false"/>
+        <editmode allow="true|false"/><xmlnote>
             See the comment for the <code>servletinfo</code> node of the
-            <a href="#de_schlund_pfixxml_ContextXMLServer">
-            <code>de.schlund.pfixxml.ContextXMLServer</code> <code>prop.in</code>
-            file</a> above.
+            <code>de.schlund.pfixxml.ContextXMLServer</code> property
+            file above.
          </xmlnote>
-      </directoutputservletinfo>
+      </servletinfo>
 
       <foreigncontext externalservletname="UniqueNameOfAnotherServlet"/>
       <xmlnote>
@@ -955,19 +896,16 @@
         <xmlnote>
             See the explanation at the start of this subsection.
         </xmlnote>
-        <properties>
-          <xmlnote>The whole node is optional</xmlnote>
-          <prop name="APropertyKey">AValue</prop>
-          <xmlnote>
-              <p>The node is mandatory and can be used multiple times. It will be transformed into a java property
-                that is associated to the page. The java property that is constructed will look like this:
-                <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
-                of the <code>name</code> attribute.
-              </p>
-          </xmlnote>
-        </properties>
+        <param name="APropertyKey">AValue</param>
+        <xmlnote>
+            <p>The node is optional and can be used multiple times. It will be transformed into a java property
+              that is associated to the page. The java property that is constructed will look like this:
+              <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
+              of the <code>name</code> attribute.
+            </p>
+        </xmlnote>
       </directoutputpagerequest>
-    </directoutputserver>
+    </xproperties>
   </xmlcode>
   </subsection>
   </section>

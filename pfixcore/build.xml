@@ -200,6 +200,12 @@ or delete the DOCTYPE definition -->
     </copy>
     <!-- DocumentRoot for sample application, apache fails to start without -->
     <mkdir dir="${dir.testskel}/skel/projects/htdocs"/>
+    <!-- jakarta-tomcat-x.x.xx.tar.gz is not included in skeleton anymore -->
+    <copy todir="${dir.testskel}/skel/lib/tomcat">
+        <fileset dir="${dir.lib}/tomcat">
+          <include name="*.tar.gz"/>
+        </fileset>
+    </copy>
     <exec dir="${dir.testskel}/skel" executable="ant" failonerror="true">
     </exec>
   </target>
