@@ -18,9 +18,6 @@
 */
 package de.schlund.pfixxml;
 
-
-
-
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.serverutil.*;
 import de.schlund.pfixxml.targets.*;
@@ -669,14 +666,14 @@ public abstract class AbstractXMLServer extends ServletManager {
 
    
     /**
-     * Check if the current request will retrieve plain xml.
+     * Check if the current request will retrieve plain XML.
      * @param the {@link PfixServletRequest} containing all
      * submitted parameters.
      * @return true if the <see>PARAM_XMLONLY</see> is 1 and
-     * plain xml is allowed or the client host is valid in
-     * restricted mode, false if plain xml is prohibited.
+     * plain XML is allowed or the client host is valid in
+     * restricted mode, false if plain XML is prohibited.
      */
-    boolean isXMLOnlyCurrentlyEnabled(PfixServletRequest pfreq) {
+    private boolean isXMLOnlyCurrentlyEnabled(PfixServletRequest pfreq) {
         if (isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
             RequestParam doplainxml = pfreq.getRequestParam(PARAM_XMLONLY);
             if (doplainxml != null && doplainxml.getValue().equals("1")) {
@@ -694,7 +691,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                         return true;
                     } else {
                         CAT.warn("\n The host " + client_ip
-                                 + " is NOT allowed to retrieve plain xml!");
+                                 + " is NOT allowed to retrieve plain XML!");
                     }
                 }
             }
@@ -718,8 +715,8 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
         }
-        // These are the params that may be set by the DomTree producing
-        // method of the servlet (something that implements the abstract method getDom)
+        // These are the parameters that may be set by the DOM tree producing
+        // method of the servlet (something that implements the abstract method getDom())
         if (params != null) {
             for (Enumeration e = params.keys(); e.hasMoreElements();) {
                 String name  = (String) e.nextElement();

@@ -51,6 +51,6 @@ public interface DirectOutputState {
      * @param res the curent <code>HttpServletResponse</code>.
      * @exception Exception if an error occurs
      */
-    void    handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception;
+    void handleRequest(ContextResourceManager crm, Properties props, PfixServletRequest preq, HttpServletResponse res) throws Exception;
 }
 

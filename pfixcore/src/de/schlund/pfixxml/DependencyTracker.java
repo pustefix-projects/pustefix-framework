@@ -19,45 +19,37 @@
 
 package de.schlund.pfixxml;
 
+
+import de.schlund.pfixxml.targets.*;
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.targets.DependencyType;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-
-
-/**
- *
- *
- */   
 
 
 public class DependencyTracker {
     private static Category CAT = Category.getInstance(DependencyTracker.class.getName());
     
     public static String log(String type,String path, String part, String product,
-                             String parent_href, String parent_part, String parent_product, String TargetGen, String TargetKey) {
+                             String parent_href, String parent_part, String parent_product,
+                             String TargetGen, String TargetKey) {
         String RetVal = "0";
-        
-        if(CAT.isDebugEnabled()) {
+
+        if (CAT.isDebugEnabled()) {
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
-                "Type       = "+type+"\n"+
-                "Path        = "+path+"\n"+
-                "Part        = "+part+"\n"+
-                "Product     = "+product+"\n"+
-                "ParentHref  = "+parent_href+"\n"+
-                "ParentPart  = "+parent_part+"\n"+
-                "ParentProd  = "+parent_product+"\n"+
-                "TargetGen   = "+TargetGen+"\n"+
-                "TargetKey   = "+TargetKey+"\n");   
-            
+                      "Type        = " + type + "\n" +
+                      "Path        = " + path + "\n" +
+                      "Part        = " + part + "\n" +
+                      "Product     = " + product + "\n" +
+                      "ParentHref  = " + parent_href + "\n" +
+                      "ParentPart  = " + parent_part + "\n" +
+                      "ParentProd  = " + parent_product + "\n" +
+                      "TargetGen   = " + TargetGen + "\n" +
+                      "TargetKey   = " + TargetKey + "\n");
         }
         try {
-            TargetGenerator Generator =
-                TargetGeneratorFactory.getInstance().createGenerator(TargetGen);
-            DependencyType thetype = DependencyType.getByTag(type);
+            TargetGenerator Generator = TargetGeneratorFactory.getInstance().createGenerator(TargetGen);
+            DependencyType  thetype   = DependencyType.getByTag(type);
             Generator.getTarget(TargetKey).getAuxDependencyManager().addDependency(thetype, path, part, product,
-                                                                                   parent_href, parent_part, parent_product);
+                                                                                   parent_href, parent_part,
+                                                                                   parent_product);
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 
             RetVal = "1"; 

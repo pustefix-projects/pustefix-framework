@@ -65,10 +65,10 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
  */
 public class DirectOutputServlet extends ServletManager {
     private static String                PROP_EXT_CONTEXT = "foreigncontextservlet.foreignservletname";
-    private        Category              CAT = Category.getInstance(this.getClass());
-    private        String                ext_cname = null;
-    private        DirectOutputPageMap   pagemap   = null;
-    private        PageRequestProperties preqprops = null;
+    private        Category              CAT              = Category.getInstance(this.getClass());
+    private        String                ext_cname        = null;
+    private        DirectOutputPageMap   pagemap          = null;
+    private        PageRequestProperties preqprops        = null;
     
     /**
      * The usual <code>needsSession</code> method. Is set to return
