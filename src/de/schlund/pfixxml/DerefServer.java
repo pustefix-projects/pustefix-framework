@@ -30,9 +30,7 @@ import org.apache.log4j.Category;
  * This class implements a "Dereferer" servlet to get rid of Referer
  * headers. <b>ALL LINKS THAT GO TO AN OUTSIDE DOMAIN MUST USE THIS SERVLET!</b>
  * If this servlet is bound to e.g. /xml/deref than every outside link
- * (say to www.gimp.org) must be written like <a href="/xml/deref?link=www.gimp.org">Gimp</a>
- *
- *
+ * (say to http://www.gimp.org) must be written like <a href="/xml/deref?link=http://www.gimp.org">Gimp</a>
  *
  */
 
