@@ -11,42 +11,41 @@
 2004-05-25  Benjamin Reitzammer <benjamin@schlund.de>
 
 	* example/core/build/create_propfiles.xsl changed exception template to transform
-    exception configuration into a more sensible property format (no more numbers
-    in property names) -> this allows overriding of exception configuration from
-    pustefix.prop.in in project specific *.prop.in files
-    * src/de./schlund/pfixxml/ServletManager.java adapted initializing of
-    ExceptionConfig objects to new property format
+	exception configuration into a more sensible property format (no more numbers
+	in property names) -> this allows overriding of exception configuration from
+	pustefix.prop.in in project specific *.prop.in files
+	* src/de./schlund/pfixxml/ServletManager.java adapted initializing of
+	ExceptionConfig objects to new property format
 
 2004-05-24  Michael Hartmeier <mhm@schlund.de>
 
-	* simplified dependencies: removed FileDependency, StaticFileDependency and
-	ProductIncludePart since they don't have specific functionality - everything
-	is defined in one of the base classes or DependencyType.
-        * removed AbstractDependency, all functionality is in AuxDependency now
-	* more final fields
-	* moved AuxDependencyManager from TargetImpl down to VirtualTarget.
-	* removed AuxDependency.getDir(), use AuxDependency.getPath().getDir() instead
-    * util.Meminfo.java: performance tweak - explict gc is expensive
-    Affected files
-    	M src/de/schlund/pfixcore/editor/EditorHelper.java
-		M src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
-		M src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java
-		M src/de/schlund/pfixcore/util/Meminfo.java
-		M src/de/schlund/pfixxml/DependencyTracker.java
-		M src/de/schlund/pfixxml/IncludeDocumentExtension.java
-		R src/de/schlund/pfixxml/targets/AbstractDependency.java
-		M src/de/schlund/pfixxml/targets/AuxDependency.java
-		M src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
-		M src/de/schlund/pfixxml/targets/AuxDependencyManager.java
-		M src/de/schlund/pfixxml/targets/DependencyRefCounter.java
-		M src/de/schlund/pfixxml/targets/DependencyType.java
-		R src/de/schlund/pfixxml/targets/FileDependency.java
-		R src/de/schlund/pfixxml/targets/ProductIncludePart.java
-		R src/de/schlund/pfixxml/targets/StaticFileDependency.java
-		M src/de/schlund/pfixxml/targets/Target.java
-		M src/de/schlund/pfixxml/targets/TargetGenerator.java
-		M src/de/schlund/pfixxml/targets/TargetImpl.java
-		M src/de/schlund/pfixxml/targets/VirtualTarget.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java
+	* src/de/schlund/pfixcore/util/Meminfo.java
+	* src/de/schlund/pfixxml/DependencyTracker.java
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java
+	* src/de/schlund/pfixxml/targets/AbstractDependency.java
+	* src/de/schlund/pfixxml/targets/AuxDependency.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java
+	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java
+	* src/de/schlund/pfixxml/targets/DependencyType.java
+	* src/de/schlund/pfixxml/targets/FileDependency.java
+	* src/de/schlund/pfixxml/targets/ProductIncludePart.java
+	* src/de/schlund/pfixxml/targets/StaticFileDependency.java
+	* src/de/schlund/pfixxml/targets/Target.java
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java
+	* src/de/schlund/pfixxml/targets/TargetImpl.java
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java
+	- simplified dependencies: removed FileDependency, StaticFileDependency and
+	  ProductIncludePart since they don't have specific functionality - everything
+	  is defined in one of the base classes or DependencyType.
+        - removed AbstractDependency, all functionality is in AuxDependency now
+	- more final fields
+	- moved AuxDependencyManager from TargetImpl down to VirtualTarget.
+	- removed AuxDependency.getDir(), use AuxDependency.getPath().getDir() instead
+	- util.Meminfo.java: performance tweak - explict gc is expensive
 
 2004-05-18  Jens Lautenbacher  <jtl@schlund.de>
 
