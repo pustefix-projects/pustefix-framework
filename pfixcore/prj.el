@@ -2,7 +2,7 @@
 (jde-set-variables
  '(jde-sourcepath (quote ("./src" "./src-jserv")))
  '(jde-make-working-directory "./")
- '(jde-global-classpath (quote ("./src" "./src-jserv" "./build" "./res" "./lib" "./lib/jserv/jsdk.jar")))
+ '(jde-global-classpath (quote ("./src" "./build" "./res" "./lib" "./example/servletconf/tomcat/common/lib/servlet.jar")))
  '(jde-run-working-directory "./")
  '(jde-compile-option-directory "./build")
  '(jde-built-class-path (quote ("./build"))))
