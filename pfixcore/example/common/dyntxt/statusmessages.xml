@@ -15,6 +15,11 @@
       <lang name="default" warning="NEVER CHANGE THIS NODE!">User and Password don't match.</lang>
     </product>
   </part>
+  <part name="pfixcore.editor.commons.COMMONPATH_UNDEF">
+    <product name="default">
+      <lang name="default" warning="NEVER CHANGE THIS NODE!">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</lang>
+    </product>
+  </part>
   <part name="pfixcore.editor.images.IMAGE_UNDEF">
     <product name="default">
       <lang name="default" warning="NEVER CHANGE THIS NODE!">This image does not exist.</lang>
@@ -48,11 +53,6 @@
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEPNG">
     <product name="default">
       <lang name="default" warning="NEVER CHANGE THIS NODE!">This seems to be no PNG image.</lang>
-    </product>
-  </part>
-  <part name="pfixcore.editor.includes.COMMONPATH_UNDEF">
-    <product name="default">
-      <lang name="default" warning="NEVER CHANGE THIS NODE!">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
