@@ -6,7 +6,7 @@
 	* docs/Servlet-Propertyfiles.txt: updated to new format.
 	* example/sample1/conf/secure.prop.in: 
 	* example/sample1/conf/config.prop.in: 
-	* example/core/editor/conf/config.prop.in: use it.
+	* example/core/editor/conf/config.prop.in: updated
 
 2003-02-17  Joerg Haecker <haecker@schlund.de>
 
