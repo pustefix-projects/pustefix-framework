@@ -38,9 +38,6 @@ function wfxEditor( config ) {
   this.showStatus = false;
   this.syntaxrehighlighting = this._showLine;
 
-  this._ta_src = document.getElementById("ta_src");
-  this._ta_col = document.getElementById("ta_col");
-
   this._scrollTop = 0;
 
   this._linepx    = 16;
@@ -69,7 +66,7 @@ wfxEditor.Config = function () {
 
   this.maxLines = 3333;   // max lines for Moz.
 
-  this.maxUndo = 10;
+  this.maxUndo = 100;
 
   this.doctype = '<!' + 'DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
   this.html = '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">';
@@ -537,26 +534,6 @@ wfxEditor.prototype.src2col = function( buf ) {
 
   dbg_bench && bench( "\n------------------------\n  rules", null, 6);
 
-  dbg_bench && bench( null, 6 );
-  var argvals = buf.match( rule_argvalcondition );
-  if( argvals instanceof Array ) {
-    var oldexp, newstr;
-    for( var i=0; i<argvals.length; i++ ) {
-      //      alert(i + ":\n" + argvals[i]);
-
-      if( argvals[i].search(rule_htmlTag)     == -1 &&
-	  argvals[i].search(rule_htmlEndTag)  == -1 &&
-	  argvals[i].search(rule_colonTag)    == -1 &&
-	  argvals[i].search(rule_colonEndTag) == -1 ) {
-
-	oldexp = new RegExp(argvals[i].replace(/(\W)/g,'\\$1'));
-	newstr = argvals[i].replace(/&/g, '[[[sfxEntity]]]').replace(/\$/g, '$$$' );
-	buf = buf.replace( oldexp, newstr );
-      }
-    }
-  }
-  dbg_bench && bench( "  argvalcondition", null, 6);
-
   //-------------------------
   // comments: preprocessing
   //-------------------------
@@ -595,6 +572,33 @@ wfxEditor.prototype.src2col = function( buf ) {
     }
   }
   dbg_bench && bench( "  scripts1", null, 6);
+  //---------------------------------------------------------------------------
+
+  //--------------------------------------
+  // attribute values containing brackets
+  //--------------------------------------
+
+  dbg_bench && bench( null, 6 );
+  var argvals = buf.match( rule_argvalcondition );
+  var oldexp, newstr;
+  var res, pos = [];
+  while( res = rule_argvalcondition.exec(buf) ) {
+    argvals = res[0];
+    pos[2] = res.index;
+
+    pos[0] = buf.lastIndexOf("&lt;", pos[2]);
+    pos[1] = buf.lastIndexOf("&gt;", pos[2]);
+    pos[3] = buf.indexOf(    "&lt;", pos[2]+argvals.length);
+    pos[4] = buf.indexOf(    "&gt;", pos[2]+argvals.length);
+
+    if( (pos[0]>pos[1] && pos[3]>pos[4]) ) {
+      // inside tag
+      oldexp = new RegExp(argvals.replace(/(\W)/g,'\\$1'));
+      newstr = argvals.replace(/&/g, '[[[sfxEntity]]]').replace(/\$/g, '$$$' );
+      buf = buf.replace( oldexp, newstr );
+    }
+  }
+  dbg_bench && bench( "  argvalcondition", null, 6);
   //---------------------------------------------------------------------------
 
   //------
@@ -772,7 +776,7 @@ wfxEditor.prototype.col2tag = function( buf ) {
   buf = buf.replace( /&lt;/gi,   "<" );
   buf = buf.replace( /&gt;/gi,   ">" );
   buf = buf.replace( /&amp;/gi,  "&" );
-  buf = buf.replace( /&quot;/gi, "\"");
+  //  buf = buf.replace( /&quot;/gi, "\"");
   
   if( wfx.is_ie ) {
     //      buf = buf.replace( /\r\n\r\n/g, "\r\n");
@@ -1129,58 +1133,6 @@ wfxEditor.prototype._editorEvent = function(ev) {
   } else if(!(ev.type == "mousedown" || ev.type == "scroll")) {
     //    wfxEditor._stopEvent(ev);
   }
-  //---------------------------------------------------------------------------
-  
-//S  //-----------
-//S  // scrolling
-//S  //-----------
-//S  
-//S  setTimeout( function() {
-//S    var scrollTop;
-//S    if(wfx.is_ie) {
-//S      scrollTop = editor._doc.documentElement.scrollTop;
-//S    } else {
-//S      scrollTop = editor._editor.pageYOffset;
-//S    }
-//S
-//S    if( scrollTop != editor._scrollTop ) {
-//S      // scroll offset has changed
-//S
-//S      if( wfx.is_ie ) {
-//S
-//S
-//S	var lineStart = parseInt( scrollTop / editor._linepx );
-//S	if( lineStart != editor._lineStart ) {
-//S	// start line has changed
-//S	
-//S	  //	editor._dbg.value += "scrollTop:" + scrollTop + ", ";
-//S	  //	editor._dbg.value += "lineStart:" + lineStart + ", ";
-//S
-//S	var content = "<pre>";
-//S	for( var i=0; i<editor._linebarheight; i++ ) {
-//S	  content += (i+lineStart+1) + "&nbsp;\n";
-//S	}
-//S	content += "</pre>";
-//S	editor._linebar.document.getElementById("bodynode").innerHTML = content;
-//S
-//S	editor._lineStart = lineStart;
-//S	}
-//S
-//S	editor._scrollTop = scrollTop;
-//S
-//S	scrollTop = scrollTop - editor._lineStart*editor._linepx;
-//S	//	editor._dbg.value += "scrollTop:" + scrollTop + "\n";
-//S      }
-//S
-//S      // update linebar
-//S      if(wfx.is_ie) {
-//S	editor._linebar.document.documentElement.scrollTop = scrollTop;
-//S      } else {
-//S	editor._scrollTop = scrollTop;
-//S	editor._linebar.scroll( 0, scrollTop );
-//S      }
-//S    }
-//S  }, 0);   // Moz needs some delay to detect current scrolling
   //---------------------------------------------------------------------------
 
   //#  // update the toolbar state after some time
@@ -2239,10 +2191,11 @@ wfxEditor.prototype.generate = function( target, content ) {
   content = content.replace( /\x09/g, "  ");
 
   content = this.tag2src( content );
-  this._ta_src.value = content;
 
   content = this.src2col( content );
-  this._ta_col.value = content;
+
+  // replace &quot; inside real text with "
+  content = content.replace( /<span class="entity">&amp;quot;<\/span>/g, '"' );
 
   var body = '<body id="bodynode">\n';
   // Moz: \n after body tag is required to prevent exception in rng.setStart
@@ -2465,10 +2418,12 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 	    offsetNewlinesEnd   = ret[3];
 	    posEnd              = ret[4];
 
-	    //	    if( editor.currentUndo < editor.config.maxUndo ) {
-	    editor.currentUndo++;
+	    if( editor.currentUndo == editor.config.maxUndo ) {
+	      editor.storeUndo = editor.undo.splice( 1, 1);
+	    } else {
+	      editor.currentUndo++;
+	    }
 	    editor.undo[editor.currentUndo] = [ ret ];
-	    //	    }
 
 	    //	    alert("offsetStart:" + offsetStart + ", offsetNewlinesStart:" + offsetNewlinesStart + "\noffsetEnd:" + offsetEnd + ", offsetNewlinesEnd:" +  offsetNewlinesEnd + "\nposEnd:" + posEnd);
 	    //-----------------------------------------------------------------
@@ -2516,8 +2471,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		dbgcancel && ( editor._dbg.value += "c3 ");
 		editor.insideRehighlighting = false;
 		editor.cancelRehighlighting = false;
-		editor.undo.length = editor.currentUndo;
-		editor.currentUndo--;
+		editor.undoRehighlightingCancelled();
 		return;
 	      }
 
@@ -2539,8 +2493,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		  dbgcancel && ( editor._dbg.value += "c4 ");
 		  editor.insideRehighlighting = false;
 		  editor.cancelRehighlighting = false;
-		  editor.undo.length = editor.currentUndo;
-		  editor.currentUndo--;
+		  editor.undoRehighlightingCancelled();
 		  return;
 		}
 
@@ -2564,8 +2517,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		    dbgcancel && ( editor._dbg.value += "c5 ");
 		    editor.insideRehighlighting = false;
 		    editor.cancelRehighlighting = false;
-		    editor.undo.length = editor.currentUndo;
-		    editor.currentUndo--;
+		    editor.undoRehighlightingCancelled();
 		    return;
 		  }
 
@@ -2587,8 +2539,7 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
 		      dbgcancel && ( editor._dbg.value += "c6 ");
 		      editor.insideRehighlighting = false;
 		      editor.cancelRehighlighting = false;
-		      editor.undo.length = editor.currentUndo;
-		      editor.currentUndo--;
+		      editor.undoRehighlightingCancelled();
 		      return;
 		    }
 
@@ -2718,6 +2669,20 @@ wfxEditor.prototype.startIntervalRehighlighting = function() {
   }, 100);
   //---------------------------------------------------------------------------
 
+};
+
+//#****************************************************************************
+//#
+//#****************************************************************************
+wfxEditor.prototype.undoRehighlightingCancelled = function() {
+  
+  if( this.currentUndo == this.maxUndo ) {
+    this.undo.pop();
+    this.undo.splice( 1, 0, this.storeUndo );
+  } else {
+    this.undo.length = this.currentUndo;
+    this.currentUndo--;
+  }
 };
 
 //#****************************************************************************
