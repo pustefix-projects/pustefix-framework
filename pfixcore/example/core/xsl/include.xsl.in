@@ -49,6 +49,11 @@
               </ixsl:choose>
             </td>
             <td width="1px">
+              <a href="/manager/html">
+                <img border="0" title="Tomcat Manager" src="/core/img/manager.gif"/>
+              </a>
+            </td>  
+            <td width="1px">
               <a target="__xml_source__">
                 <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>

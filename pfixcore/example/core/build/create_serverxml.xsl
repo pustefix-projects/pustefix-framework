@@ -25,6 +25,22 @@
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <xsl:if test="not(string($adminport) = '')"><xsl:attribute name="port"><xsl:value-of select="$adminport"/></xsl:attribute></xsl:if>
       
+      <GlobalNamingResources>
+        <Resource name="UserDatabase" auth="Container" type="org.apache.catalina.UserDatabase"
+           description="User database that can be updated and saved">
+        </Resource>
+        <ResourceParams name="UserDatabase">
+          <parameter>
+            <name>factory</name>
+            <value>org.apache.catalina.users.MemoryUserDatabaseFactory</value>
+          </parameter>
+          <parameter>
+            <name>pathname</name>
+            <value>conf/tomcat-users.xml</value>
+          </parameter>
+        </ResourceParams>
+      </GlobalNamingResources>
+
       <Service name="Tomcat-Standalone">
 
       <xsl:call-template name="create-connector"/>
@@ -73,7 +89,7 @@
          maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
          enableLookups="false" disableUploadTimeout="true"
          acceptCount="100" debug="0" scheme="https" secure="true"
-         clientAuth="false" sslProtocol="TLS" keystorePass="changeit">
+         clientAuth="false" sslProtocol="TLS" keystoreFile="conf/keystore" keystorePass="secret">
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
       <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
       <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
@@ -115,6 +131,10 @@
 	</xsl:call-template>
     <xsl:apply-templates select="passthrough"/>
     <xsl:apply-templates select="/projects/common/apache/passthrough"/>
+    <Context path="/manager" debug="0" privileged="true" docBase="server/webapps/manager">
+      <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
+      <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="172.17.12.*"/>
+    </Context>
   </xsl:template>
 
   <xsl:template match="passthrough">

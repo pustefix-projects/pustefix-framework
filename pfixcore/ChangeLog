@@ -3,6 +3,7 @@
 	* example/core/img/manager.gif: tomcat manager image
 	* example/core/build/create_serverxml.xsl: relative paths, configure tomcat manager
 	* src/de/schlund/pfixcore/util/XsltTransformer.java
+	* example/core/xsl/include.xsl.in: add tomcat manager button
 
 2004-07-07 Michael Hartmeier  <mhm@schlund.de>
 	* example/core/build/create_apacheconf.xsl: consider defpath decl
