@@ -1,3 +1,8 @@
+2004-06-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument):
+	fixed handling of user supplied response headers and response errors
+
 2004-06-07  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: Let target "generate" depend on "all" again
