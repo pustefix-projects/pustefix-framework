@@ -16,12 +16,16 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixxml;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+
+import de.schlund.util.FactoryInit;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -37,8 +41,6 @@ import org.apache.log4j.Category;
 import org.apache.log4j.spi.ThrowableInformation;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.util.FactoryInit;
 
 /**
  * This Servlet is just there to have it's init method called on startup of the VM.
@@ -47,11 +49,15 @@ import de.schlund.util.FactoryInit;
  * analyzing the "servlet.propfile" parameter which points to a file where
  * all factories are listed.
  */
-
 public class FactoryInitServlet extends HttpServlet {
-    private Object   LOCK       = new Object();
-    private Category CAT        = Category.getInstance(FactoryInitServlet.class.getName());
-    private static   boolean  configured = false;
+
+    //~ Instance/static variables ..................................................................
+
+    private Object         LOCK       = new Object();
+    private Category       CAT        = Category.getInstance(FactoryInitServlet.class.getName());
+    private static boolean configured = false;
+
+    //~ Methods ....................................................................................
 
     /**
      * Handle the HTTP-Post method. 
@@ -70,7 +76,7 @@ public class FactoryInitServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException {
         throw new ServletException("This servlet can't be called interactively");
     }
-    
+
     /**
      * Initialize this servlet. Also call the 'init' method of all classes
      * listed in the configuration. These classes must implement
@@ -79,57 +85,52 @@ public class FactoryInitServlet extends HttpServlet {
      * @see javax.servlet.Servlet#init(ServletConfig)
      * @throws ServletException on errors
      */
-	public void init(ServletConfig Config) throws ServletException  {
+    public void init(ServletConfig Config) throws ServletException {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());
-
-        String confname = Config.getInitParameter("servlet.propfile");
-
+        String     confname = Config.getInitParameter("servlet.propfile");
         if (confname != null) {
             try {
                 properties.load(new FileInputStream(confname));
             } catch (FileNotFoundException e) {
                 throw new ServletException("*** [" + confname + "] Not found: " + e.toString());
-            } catch (IOException e) {
+            }
+             catch (IOException e) {
                 throw new ServletException("*** [" + confname + "] IO-error: " + e.toString());
             }
         }
-
         synchronized (LOCK) {
-            if (!configured) {
+            if (! configured) {
                 if (properties != null) {
                     String log4jconfig = properties.getProperty("pustefix.log4j.config");
                     if (log4jconfig == null & log4jconfig.equals("")) {
-                        throw new ServletException ("*** FATAL: Need the pustefix.log4j.config property... ***");
+                        throw new ServletException("*** FATAL: Need the pustefix.log4j.config property... ***");
                     }
                     DOMConfigurator.configure(log4jconfig);
                 }
-
                 CAT.debug(">>>> LOG4J Init OK <<<<");
-            
                 HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");
                 if (to_init != null) {
-                    
                     // sort key to initialize the factories in defined order
                     TreeSet keyset = new TreeSet(to_init.keySet());
-                    
-                    for (Iterator i = keyset.iterator(); i.hasNext(); ) {
+                    for (Iterator i = keyset.iterator(); i.hasNext();) {
                         String key       = (String) i.next();
                         String the_class = (String) to_init.get(key);
-                        
                         try {
-                            CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class + "] <<<<" );
-                            FactoryInit factory = (FactoryInit) Class.forName(the_class).
-                                getMethod("getInstance", null).invoke(null, null);
+                            CAT.debug(">>>> Init key: [" + key + "] class: [" + the_class
+                                      + "] <<<<");
+                            FactoryInit factory = (FactoryInit) Class.forName(the_class).getMethod(
+                                                                        "getInstance", null).invoke(
+                                                          null, null);
                             CAT.debug("     Object ID: " + factory);
                             factory.init(properties);
                         } catch (Exception e) {
                             CAT.error(e.toString());
-                            ThrowableInformation info=new ThrowableInformation(e);
-                            String[] trace=info.getThrowableStrRep();
-                            StringBuffer strerror=new StringBuffer();
-                            for(int ii=0; ii<trace.length; ii++) {
-                                strerror.append("->"+trace[ii]+"\n");
+                            ThrowableInformation info     = new ThrowableInformation(e);
+                            String[]             trace    = info.getThrowableStrRep();
+                            StringBuffer         strerror = new StringBuffer();
+                            for (int ii = 0; ii < trace.length; ii++) {
+                                strerror.append("->" + trace[ii] + "\n");
                             }
                             CAT.error(strerror.toString());
                             // mk: If you run into an  InvocationTargetException and

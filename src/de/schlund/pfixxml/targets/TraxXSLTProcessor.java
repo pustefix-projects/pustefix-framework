@@ -18,22 +18,10 @@
 */
 package de.schlund.pfixxml.targets;
 
-import com.icl.saxon.Controller;
-import com.icl.saxon.TransformerFactoryImpl;
-import com.icl.saxon.aelfred.SAXDriver;
-import com.icl.saxon.om.Builder;
-import com.icl.saxon.om.DocumentInfo;
-import com.icl.saxon.tinytree.TinyDocumentImpl;
-
-import java.io.File;
 import java.io.OutputStream;
-
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -45,12 +33,15 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Category;
-
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import com.icl.saxon.Controller;
+import com.icl.saxon.aelfred.SAXDriver;
+import com.icl.saxon.om.Builder;
+import com.icl.saxon.om.DocumentInfo;
+import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 
 /**
@@ -65,10 +56,10 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
 
     private static Category          CAT             = Category.getInstance(TraxXSLTProcessor.class.getName());
     private static TraxXSLTProcessor instance        = new TraxXSLTProcessor();
-    public static final String      TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
-    public static final String      DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
-    public static final String      SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
-    public static final String      DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
+    public static final String       TRANS_FAC_SAXON = "com.icl.saxon.TransformerFactoryImpl";
+    public static final String       DOCB_FAC_XERCES = "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl";
+    public static final String       SAXP_FAC_XERCES = "org.apache.xerces.jaxp.SAXParserFactoryImpl";
+    public static final String       DOCB_FAC_SAXON  = "com.icl.saxon.om.DocumentBuilderFactoryImpl";
     private static final String      SAXP_FAC_SAXON  = "com.icl.saxon.aelfred.SAXParserFactoryImpl";
     public static final String       TRANS_FAC_KEY   = "javax.xml.transform.TransformerFactory";
     public static final String       DOCB_FAC_KEY    = "javax.xml.parsers.DocumentBuilderFactory";
@@ -169,21 +160,21 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @return the created stylesheet(currently saxons PreparedStyleSheet)
      * @throws TransformerConfigurationException on errors
      */
-    public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException  {
+    public final Object xslObjectFromDisc(String path) throws TransformerConfigurationException {
         TransformerFactory transFac      = TransformerFactory.newInstance();
         StreamSource       stream_source = new StreamSource("file://" + path);
         Object             val           = null;
         try {
-        	val = transFac.newTemplates(stream_source);
+            val = transFac.newTemplates(stream_source);
         } catch (TransformerConfigurationException e) {
-        	StringBuffer sb = new StringBuffer();
-			sb.append("TransformerException in xslObjectFromDisc!\n");
-        	sb.append("Path: ").append(path).append("\n");
-        	sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
-        	Throwable cause = e.getException();
-        	sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
-        	CAT.error(sb.toString());        	
-        	throw e;
+            StringBuffer sb = new StringBuffer();
+            sb.append("TransformerException in xslObjectFromDisc!\n");
+            sb.append("Path: ").append(path).append("\n");
+            sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+            Throwable cause = e.getException();
+            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+            CAT.error(sb.toString());
+            throw e;
         }
         stream_source = null;
         return val;
@@ -196,25 +187,25 @@ public final class TraxXSLTProcessor implements PustefixXSLTProcessor {
      * @return the created document(currenly saxons TinyDocumentImpl)
      * @throws TransformerException on errors
      */
-    public final Document xmlObjectFromDisc(String path) throws TransformerException  {
-        InputSource  input      = new InputSource("file://" + path);
-        // use the com.icl.saxon.aelfred.SAXDriver here 
+    public final Document xmlObjectFromDisc(String path) throws TransformerException {
+        InputSource input = new InputSource("file://" + path);
+        // use the com.icl.saxon.aelfred.SAXDriver here
         XMLReader    xml_reader = new SAXDriver();
         SAXSource    saxsource  = new SAXSource(xml_reader, input);
         Controller   controller = new Controller();
         Builder      builder    = controller.makeBuilder();
         DocumentInfo dInfo      = null;
         try {
-      		dInfo      = builder.build(saxsource);
-        } catch(TransformerException e) {
-        	StringBuffer sb = new StringBuffer();
-        	sb.append("TransformerException in xmlObjectFromDisc!\n");
-        	sb.append("Path: ").append(path).append("\n");
-        	sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
-        	Throwable cause = e.getException();
-        	sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
-        	CAT.error(sb.toString());
-        	throw e;
+            dInfo = builder.build(saxsource);
+        } catch (TransformerException e) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("TransformerException in xmlObjectFromDisc!\n");
+            sb.append("Path: ").append(path).append("\n");
+            sb.append("Message and Location: ").append(e.getMessageAndLocation()).append("\n");
+            Throwable cause = e.getException();
+            sb.append("Cause: ").append((cause != null) ? cause.getMessage() : "none").append("\n");
+            CAT.error(sb.toString());
+            throw e;
         }
         saxsource  = null;
         controller = null;

@@ -69,12 +69,12 @@ public class PfixServletRequest {
 
     //~ Constructors ...............................................................................
 
-	/**
-	 * Constructor for creating a PfixServletRequest
-	 * @param req the orginal servlet request 
-	 * @param properties 
-	 * @param cUtil
-	 */
+    /**
+     * Constructor for creating a PfixServletRequest
+     * @param req the orginal servlet request 
+     * @param properties 
+     * @param cUtil
+     */
     public PfixServletRequest(HttpServletRequest req, Properties properties, ContainerUtil cUtil) {
         getRequestParams(req, properties);
         servername  = req.getServerName();
@@ -89,77 +89,77 @@ public class PfixServletRequest {
 
     //~ Methods ....................................................................................
 
-	/**
-	 * Retrieve the server name form the orginal request
-	 * @return the name
-	 */
+    /**
+     * Retrieve the server name form the orginal request
+     * @return the name
+     */
     public String getOriginalServerName() {
         return servername;
     }
 
-	/**
-	 * Retrieve the query string from the orginal request
-	 * @return the query string
-	 */
+    /**
+     * Retrieve the query string from the orginal request
+     * @return the query string
+     */
     public String getOriginalQueryString() {
         return querystring;
     }
 
-	/**
-	 * Retrieve the scheme from the orginal request
-	 * @return the scheme
-	 */
+    /**
+     * Retrieve the scheme from the orginal request
+     * @return the scheme
+     */
     public String getOriginalScheme() {
         return scheme;
     }
 
-	/**
-	 * Retrieve the request uri from the orginal request
-	 * @return the uri
-	 */
+    /**
+     * Retrieve the request uri from the orginal request
+     * @return the uri
+     */
     public String getOriginalRequestURI() {
         return uri;
     }
 
-	/**
-	 * Retrieve the port number from the orginal request
-	 * @return the port
-	 */
+    /**
+     * Retrieve the port number from the orginal request
+     * @return the port
+     */
     public int getOriginalServerPort() {
         return serverport;
     }
 
-	/**
-	 * Update the servlet request. After calling this method 
-	 * the request data used by constructor are accesible 
-	 * only by the 'getOriginal' methods.
-	 * @param req the new request 
-	 */
+    /**
+     * Update the servlet request. After calling this method 
+     * the request data used by constructor are accesible 
+     * only by the 'getOriginal' methods.
+     * @param req the new request 
+     */
     public void updateRequest(HttpServletRequest req) {
         this.request = req;
         this.session = req.getSession(false);
     }
 
-	/**
-	 * Retrieve the current request.
-	 * @return the current request.
-	 */
+    /**
+     * Retrieve the current request.
+     * @return the current request.
+     */
     public HttpServletRequest getRequest() {
         return request;
     }
 
-	/**
-	 * Determine if any error happened.
-	 * @return true if error happened, else false
-	 */
+    /**
+     * Determine if any error happened.
+     * @return true if error happened, else false
+     */
     public boolean errorHappened() {
         return ! exceptions.isEmpty();
     }
 
-	/** 
-	 * Retrieve all happened exceptions
-	 * @return a list containing all exceptions
-	 */
+    /** 
+     * Retrieve all happened exceptions
+     * @return a list containing all exceptions
+     */
     public List getAllExceptions() {
         return exceptions;
     }
@@ -168,6 +168,7 @@ public class PfixServletRequest {
     // be the original request used when the instance was created, or
     // any other request that has been set via updateRequest().
     // Most are just called as the corresponding methods in HttpServletRequest.
+
     /**
      * Retrieve all cookies from the current request
      * @return an array containing all cookies 
@@ -176,42 +177,42 @@ public class PfixServletRequest {
         return request.getCookies();
     }
 
-	/**
-	 * Retrieve the path information from the current request
-	 * @return the path info
-	 */
+    /**
+     * Retrieve the path information from the current request
+     * @return the path info
+     */
     public String getPathInfo() {
         return request.getPathInfo();
     }
 
-	/**
-	 * Retrieve the translated path from the current request
-	 * @return the translated path
-	 */
+    /**
+     * Retrieve the translated path from the current request
+     * @return the translated path
+     */
     public String getPathTranslated() {
         return request.getPathTranslated();
     }
 
-	/**
-	 * Retrieve the query string from the current request
-	 * @return the query string
-	 */
+    /**
+     * Retrieve the query string from the current request
+     * @return the query string
+     */
     public String getQueryString() {
         return request.getQueryString();
     }
 
-	/**
-	 * Retrieve the session id belonging to the current request 
-	 * @return the session id
-	 */
+    /**
+     * Retrieve the session id belonging to the current request 
+     * @return the session id
+     */
     public String getRequestedSessionId() {
         return request.getRequestedSessionId();
     }
 
-	/**
-	 * Retrieve the request uri from the current request
-	 * @return the request uri
-	 */
+    /**
+     * Retrieve the request uri from the current request
+     * @return the request uri
+     */
     public String getRequestURI(HttpServletResponse res) {
         if (conUtil != null) {
             return conUtil.encodeURI(request, res);
@@ -220,28 +221,28 @@ public class PfixServletRequest {
         }
     }
 
-	/**
-	 * Retrieve the context path from the current request
-	 * @return the context path
-	 */
+    /**
+     * Retrieve the context path from the current request
+     * @return the context path
+     */
     public String getContextPath() {
         return conUtil.getContextPath(request);
     }
 
-	/**
-	 * Retrieve the servlet path from the current request
-	 * @return the servlet path
-	 */
+    /**
+     * Retrieve the servlet path from the current request
+     * @return the servlet path
+     */
     public String getServletPath() {
         return request.getServletPath();
     }
 
-	/**
-	 * Retrieve the session belonging to the current request
-	 * @param create if true a new session will be created if not exists
-	 * in the current request, if false the orginal session will be returned 
-	 * @return the http session
-	 */
+    /**
+     * Retrieve the session belonging to the current request
+     * @param create if true a new session will be created if not exists
+     * in the current request, if false the orginal session will be returned 
+     * @return the http session
+     */
     public HttpSession getSession(boolean create) {
         if (! create) {
             return session;
@@ -250,55 +251,56 @@ public class PfixServletRequest {
         }
     }
 
-	/**
-	 * Retrieve whether the requested session id is valid
-	 * @return true if valid, else false
-	 */
+    /**
+     * Retrieve whether the requested session id is valid
+     * @return true if valid, else false
+     */
     public boolean isRequestedSessionIdValid() {
         return request.isRequestedSessionIdValid();
     }
 
-	/**
-	 * Retrieve the remote ip-address from the current request
-	 * @return the remote address
-	 */
+    /**
+     * Retrieve the remote ip-address from the current request
+     * @return the remote address
+     */
     public String getRemoteAddr() {
         return request.getRemoteAddr();
     }
 
-	/**
-	 * Retrieve the remote host from the current request
-	 * @return the remote host
-	 */
+    /**
+     * Retrieve the remote host from the current request
+     * @return the remote host
+     */
     public String getRemoteHost() {
         return request.getRemoteHost();
     }
 
-	/**
-	 * Retrieve the scheme from the current request
-	 * @return the scheme
-	 */
+    /**
+     * Retrieve the scheme from the current request
+     * @return the scheme
+     */
     public String getScheme() {
         return request.getScheme();
     }
 
-	/**
-	 * Retrieve the port number from the current request
-	 * @return the port number
-	 */
+    /**
+     * Retrieve the port number from the current request
+     * @return the port number
+     */
     public int getServerPort() {
         return request.getServerPort();
     }
 
-	/**
-	 * Retrieve the server name from the current request
-	 * @return the name
-	 */
+    /**
+     * Retrieve the server name from the current request
+     * @return the name
+     */
     public String getServerName() {
         return request.getServerName();
     }
 
     // ---------------------------------- //
+
     /**
      * Retrieve a {@link RequestParam} according to the name parameter
      * @param the name used as a key
@@ -313,11 +315,11 @@ public class PfixServletRequest {
         }
     }
 
-	/**
-	 * Retrieve all request params according to the name parameter
-	 * @param the name used as a key 
-	 * @return an array containing all request params or null if not exists
-	 */
+    /**
+     * Retrieve all request params according to the name parameter
+     * @param the name used as a key 
+     * @return an array containing all request params or null if not exists
+     */
     public RequestParam[] getAllRequestParams(String name) {
         RequestParam[] params = (RequestParam[]) parameters.get(name);
         if (params != null) {
@@ -327,10 +329,10 @@ public class PfixServletRequest {
         }
     }
 
-	/**
-	 * Retrieve all names of all request params
-	 * @return an array containing all names for all request params.
-	 */
+    /**
+     * Retrieve all names of all request params
+     * @return an array containing all names for all request params.
+     */
     public String[] getRequestParamNames() {
         return (String[]) parameters.keySet().toArray(new String[]{});
     }
