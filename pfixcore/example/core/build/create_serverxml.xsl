@@ -117,7 +117,7 @@
                 directory="logs" prefix="log." suffix=".txt"	timestamp="true"/>
         
         <xsl:call-template name="create_context_list">
-          <xsl:with-param name="defpath" select="concat('/', substring-before(substring-after(defpath/node(), '/'), '/'))"/>
+          <xsl:with-param name="defpath">/xml</xsl:with-param>
         </xsl:call-template>
       </Host>
     </xsl:if>
