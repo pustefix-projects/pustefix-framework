@@ -18,16 +18,28 @@
  */
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.multipart.*;
-import de.schlund.pfixxml.serverutil.SessionHelper;
-import de.schlund.util.statuscodes.StatusCode;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
+import de.schlund.pfixxml.multipart.MultipartHandler;
+import de.schlund.pfixxml.multipart.PartData;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * <p>This class is an abstraction of a servlet request. Is provides wrapper functions
