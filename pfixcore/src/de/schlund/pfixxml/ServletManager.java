@@ -59,6 +59,7 @@ public abstract class ServletManager extends HttpServlet {
     private   static final String SECURE_SESS_COOKIE            = "__PFIX_SEC_";
     private   static final String TEST_COOKIE                   = "__PFIX_TEST__";
     private   static final String SESSION_COOKIES_MARKER        = "__COOKIES_USED_DURING_SESSION__";
+    private   static final String NO_COOKIES_OVERRIDE           = "__NO_COOKIES_OVERRIDE__";
     private   static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
     private   static final String PARAM_FORCELOCAL              = "__forcelocal";
     public    static final String PROP_COOKIE_SEC_NOT_ENFORCED  = "servletmanager.cookie_security_not_enforced";
@@ -141,22 +142,30 @@ public abstract class ServletManager extends HttpServlet {
                 }
             }
         }
-        HttpSession session                  = null;
-        boolean     has_session              = false;
-        boolean     has_ssl_session_insecure = false;
-        boolean     has_ssl_session_secure   = false;
-        boolean     force_jump_back_to_ssl   = false;
-        boolean     force_reuse_visit_id     = false;
-        boolean     does_cookies             = doCookieTest(req, res);
+        HttpSession session                    = null;
+        boolean     has_session                = false;
+        boolean     has_ssl_session_insecure   = false;
+        boolean     has_ssl_session_secure     = false;
+        boolean     force_jump_back_to_ssl     = false;
+        boolean     force_reuse_visit_id       = false;
+        String      mark_session_as_no_cookies = null;
+        boolean     does_cookies               = doCookieTest(req, res);
         if (req.isRequestedSessionIdValid()) {
-            session        = req.getSession(false);
-            has_session    = true;
-            Boolean secure = (Boolean) session.getAttribute(SESSION_IS_SECURE);
+            session              = req.getSession(false);
+            has_session          = true;
+            Boolean secure       = (Boolean) session.getAttribute(SESSION_IS_SECURE);
             CAT.debug("*** Found valid session with ID " + session.getId());
-            // Much of the advanced security depends on having cookies enabled.
-            // We need to make sure that this isn't defeated by just disabling cookies.
-            // So we mark every session whenever the client has cookies enabled,
-            // and don't allow further uses of this session without cookies
+            // Much of the advanced security depends on having cookies enabled.  We need to make
+            // sure that this isn't defeated by just disabling cookies.  So we mark every session
+            // whenever the client has cookies enabled, and don't allow further uses of this session
+            // without cookies. BUT: having a valid session that has the attribute
+            // __NO_COOKIES_OVERRIDE__ set, will be considered as not doing cookies at all. See
+            // below where mark_session_as_no_cookies is set for the reason behind this.
+            Boolean refuse_cookies = (Boolean) session.getAttribute(NO_COOKIES_OVERRIDE);
+            if (refuse_cookies != null && refuse_cookies.booleanValue()) {
+                CAT.debug("*** Session REFUSES to use cookies! ***");
+                does_cookies = false;
+            }
             if (!does_cookies) {
                 CAT.debug("*** Client doesn't use cookies...");
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
@@ -165,7 +174,8 @@ public abstract class ServletManager extends HttpServlet {
                         CAT.debug("    ... during the session cookies were ENABLED, but will continue because of cookie_security_not_enforced " +
                                   session.getId());
                     } else {
-                        CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " + session.getId());
+                        CAT.debug("    ... but during the session cookies were already ENABLED: Will invalidate the session " +
+                                  session.getId());
                         session.invalidate();
                         has_session = false;
                     }
@@ -202,6 +212,17 @@ public abstract class ServletManager extends HttpServlet {
                                 CAT.debug("*** Found NO matching cookie at all. ***");
                                 CAT.error("*** Got NO secure Session-ID from cookie, but client does cookies: " +
                                           "IP:" + req.getRemoteAddr() + " SessID: " + session.getId());
+                                // Most time when this happens, we are not under attack, but a
+                                // stupid behaviour (bug?)  of IE or opera strikes us bad: With
+                                // these two browsers, if we accept the __PFIX_TEST__ cookie, but
+                                // then deny the __PFIX_SEC_* cookie AND also deny for all further
+                                // cookies from the domain, the stupid browser will still continue
+                                // to send the __PFIX_TEST__ cookie, so we will continue to come
+                                // into this branch over and over again....  So we try to mark the
+                                // now created session to decide in the following requests that this
+                                // session does NOT use cookies at all, despite what ever the
+                                // __PFIX_TEST__ cookie says.
+                                mark_session_as_no_cookies = (String) session.getAttribute(VISIT_ID);
                                 session.invalidate();
                                 has_session = false;
                             }
@@ -281,31 +302,37 @@ public abstract class ServletManager extends HttpServlet {
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && allowSessionCreate()) {
+            CAT.debug("=> I");
             forceRedirectBackToInsecureSSL(preq, req, res);
             return;
             // End of request cycle.
         }
         if (force_reuse_visit_id && allowSessionCreate()) {
+            CAT.debug("=> II");
             forceNewSessionSameVisit(preq, req, res);
             return;
             // End of request cycle.
         }
         if (has_ssl_session_insecure) {
+            CAT.debug("=> III");
             redirectToSecureSSLSession(preq, req, res);
             return;
             // End of request cycle.
         }
         if (needsSession() && allowSessionCreate() && needsSSL(preq) && !has_ssl_session_secure) {
-            redirectToInsecureSSLSession(preq, req, res);
+            CAT.debug("=> IV");
+            redirectToInsecureSSLSession(preq, req, res, mark_session_as_no_cookies);
             return;
             // End of request cycle.
         }
         if (!has_session && needsSession() && allowSessionCreate() && !needsSSL(preq)) {
+            CAT.debug("=> V");
             redirectToSession(preq, req, res);
             return;
             // End of request cycle.
         }
         if (!has_session && !needsSession() && needsSSL(preq) && !runningUnderSSL(req)) {
+            CAT.debug("=> VI");
             redirectToSSL(req, res);
             return;
             // End of request cycle.
@@ -425,7 +452,7 @@ public abstract class ServletManager extends HttpServlet {
         relocate(res, redirect_uri);
     }
 
-    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
+    private void redirectToInsecureSSLSession(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res, String msanc) {
         boolean reuse_session = false;
         if (req.isRequestedSessionIdValid()) {
             reuse_session = true;
@@ -433,7 +460,13 @@ public abstract class ServletManager extends HttpServlet {
         }
         HttpSession session = req.getSession(true);
         if (!reuse_session) {
-            registerSession(req, session);
+            if (msanc == null) {
+                registerSession(req, session);
+            } else {
+                session.setAttribute(VISIT_ID, msanc);
+                session.setAttribute(NO_COOKIES_OVERRIDE, Boolean.TRUE);
+                SessionAdmin.getInstance().registerSession(session, req.getServerName(), req.getRemoteAddr());
+            }
         }
         session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
