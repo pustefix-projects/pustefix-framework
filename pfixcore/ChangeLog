@@ -1,3 +1,11 @@
+2004-02-04  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml:
+	Changed target doc for javadoc generation. Using <packageset> instead of
+	<fileset>, because <javadoc> does not work with many files.
+	Changed location for javadoc from apidocs to docs/api to more conform
+	to java conventions.
+
 2004-02-02  Adam Habermann  <adam.habermann@schlund.de>
 
 	* docs/sf/*:
