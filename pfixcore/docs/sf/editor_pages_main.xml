@@ -1,1 +1,27 @@
-<div>Pages!</div>
+<div>
+  <h1>The Pages page</h1>
+<center>
+  <table border="1">
+    <tr>
+      <td colspan="2">
+        <img alt="editor pages page" src="img/editor_pages.png"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>In the left frame all pages are listed. Select one of them
+        an the right frame will appear.</p>
+      </td>
+      <td>
+        <p>The right frame shows all information on the selected page.</p>
+        <p>Box No. 1 lists all targets for the current page. If you select
+        a target, you will see it in the <a href="editor_targets.html">Targets</a> page.</p>
+        <p>Box No. 2 shows all includes used by the current page. With a click on it
+        you will see it in the <a href="editor_includes.html">Includes</a> page.</p>
+        <p>Box No. 3 contains all images used by the current page. If you want to edit
+        an image, click on it and you will see it in the <a href="editor_images.html">Images</a> page.</p>
+      </td>
+    </tr>
+  </table>
+</center>
+</div>
