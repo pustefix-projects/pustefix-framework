@@ -17,6 +17,13 @@ import org.w3c.dom.NodeList;
 
 /**
  *
+ * the following attributes have to be set when calling this task:
+ * <ul>
+ * <li>projects: relative (to ${dir.projects}) path to the projects.xml file </li>
+ * <li>corewebxml: relative (to ${dir.projects}) path to the core web.xml file,
+ *   which defines a minimum web.xml file</li>
+ * </ul>
+ *
  * @author <a href="mailto:benjamin@schlund.de">Benjamin Reitzammer</a>
  * @version $Id$
  */
