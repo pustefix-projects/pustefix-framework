@@ -613,14 +613,22 @@ public abstract class ServletManager extends HttpServlet {
 
         String commonpropfilename = config.getInitParameter("servlet.commonpropfile");
         if (commonpropfilename != null) {
-            commonpropfile = new File(commonpropfilename);
+            if (!commonpropfilename.startsWith("/")) {
+                commonpropfile = PathFactory.getInstance().createPath(commonpropfilename).resolve();
+            } else {
+                commonpropfile = new File(commonpropfilename);
+            }
             common_mtime = loadPropertyfile(properties, commonpropfile);
         }
 
         String servletpropfilename = config.getInitParameter("servlet.propfile");
         if (servletpropfilename != null) {
-            servletpropfile = new File(servletpropfilename);
-            servlet_mtime   = loadPropertyfile(properties, servletpropfile);
+            if (!servletpropfilename.startsWith("/")) {
+                servletpropfile = PathFactory.getInstance().createPath(servletpropfilename).resolve();
+            } else {
+                servletpropfile = new File(servletpropfilename);
+            }
+            servlet_mtime = loadPropertyfile(properties, servletpropfile);
         }
         loadindex = 0;
         properties.setProperty(PROP_LOADINDEX, "" + loadindex);
@@ -653,11 +661,13 @@ public abstract class ServletManager extends HttpServlet {
         
     }
 
-    // This is only for broken clients who suddenly stop supplying cookies in the middle of a
-    // session.  Windows XP internet configuration wizard (which speaks http) seems to be an example of a
-    // client that remembers the cookies over the first request/relocate/relocate cycle, but never sends a
-    // cookie again on the next request.
-    // You are strongly advised to NOT set the corresponding property to true, unless you deal with broken software.
+    /**
+     * This is only for broken clients who suddenly stop supplying cookies in the middle of a
+     * session.  Windows XP internet configuration wizard (which speaks http) seems to be an example of a
+     * client that remembers the cookies over the first request/relocate/relocate cycle, but never sends a
+     * cookie again on the next request.
+     * You are strongly advised to NOT set the corresponding property to true, unless you deal with broken software.
+     */
     private void initCookieSec() {
         String csec = properties.getProperty(PROP_COOKIE_SEC_NOT_ENFORCED);
         if (csec != null && csec.equals("true")) {
@@ -666,7 +676,7 @@ public abstract class ServletManager extends HttpServlet {
             cookie_security_not_enforced = false;
         }
     }
-    
+   
     private long loadPropertyfile(Properties props, File propfile) throws ServletException {
         long mtime;
         try {

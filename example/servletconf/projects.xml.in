@@ -24,7 +24,7 @@
     <servlet name="edit" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
-      <propfile><cus:docroot/>core/editor/conf/config.prop</propfile>
+      <propfile>core/editor/conf/config.prop</propfile>
     </servlet>
     <servlet name="deref">
       <active>true</active>
@@ -48,7 +48,11 @@
     <servlet name="init" autostartup="true">
       <active>true</active>
       <class>de.schlund.pfixxml.FactoryInitServlet</class>
-      <propfile><cus:docroot/>common/conf/factory.prop</propfile>
+      <propfile>common/conf/factory.prop</propfile>
+      <init-param>
+        <param-name>pustefix.docroot</param-name>
+        <param-value><cus:docroot/></param-value>
+      </init-param>
     </servlet>
 
     <servlet name="cachestat">
@@ -60,7 +64,7 @@
   <!-- some common definitions that are shared between all projects -->
   
   <common>
-    <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
+    <commonpropfile>common/conf/pustefix.prop</commonpropfile>
     <documentation>
       <doc_file>core/xsl/navigation.xsl.in</doc_file>
       <doc_file>core/xsl/utils.xsl.in</doc_file>

@@ -41,7 +41,16 @@
   <servlet name="config" useineditor="true">
     <active>true</active>
     <class>de.schlund.pfixxml.ContextXMLServer</class>
-    <propfile><cus:docroot/>simplelink/conf/config.prop</propfile>
+    <propfile>simplelink/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="edit">
+    <active>true</active>
+    <class>de.schlund.pfixxml.ContextXMLServer</class>
+    <propfile>core/editor/conf/config.prop</propfile>
+  </servlet>
+  <servlet name="deref">
+    <active>true</active>
+    <class>de.schlund.pfixxml.DerefServer</class>
   </servlet>
 </project>
 

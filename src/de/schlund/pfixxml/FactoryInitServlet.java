@@ -103,8 +103,15 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     public void init(ServletConfig Config) throws ServletException {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());
+        String     docrootstr = Config.getInitParameter(PROP_DOCROOT);
+        if (docrootstr == null || docrootstr.equals("")) {
+            throw new ServletException("*** FATAL: Need the docroot property as init parameter! ***");
+        }
         String     confname   = Config.getInitParameter("servlet.propfile");
         if (confname != null) {
+            if (!confname.startsWith("/")) {
+                confname = docrootstr + "/" + confname;
+            }
             try {
                 properties.load(new FileInputStream(confname));
             } catch (FileNotFoundException e) {
@@ -113,23 +120,20 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             catch (IOException e) {
                 throw new ServletException("*** [" + confname + "] IO-error: " + e.toString());
             }
+        } else {
+            throw new ServletException("*** FATAL: Need the servlet.propfile property as init parameter! ***");
         }
         synchronized (LOCK) {
             if (!configured) {
-                if (properties != null) {
-                    String docrootstr = properties.getProperty(PROP_DOCROOT);
-                    if (docrootstr == null || docrootstr.equals("")) {
-                        throw new RuntimeException("*** FATAL: Need the docroot property in factory.prop! ***");
-                    }
-                    PathFactory.getInstance().init(docrootstr);
-                    log4jconfig = properties.getProperty(PROP_LOG4J);
-                    if (log4jconfig == null || log4jconfig.equals("")) {
-                        throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.prop! ***");
-                    }
-                    File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
-                    log4jmtime   = l4jfile.lastModified();
-                    DOMConfigurator.configure(l4jfile.getPath());
+                PathFactory.getInstance().init(docrootstr);
+                log4jconfig = properties.getProperty(PROP_LOG4J);
+                if (log4jconfig == null || log4jconfig.equals("")) {
+                    throw new ServletException("*** FATAL: Need the pustefix.log4j.config property in factory.prop! ***");
                 }
+                File l4jfile = PathFactory.getInstance().createPath(log4jconfig).resolve();
+                log4jmtime   = l4jfile.lastModified();
+                DOMConfigurator.configure(l4jfile.getPath());
+
                 CAT.debug(">>>> LOG4J Init OK <<<<");
                 HashMap to_init = PropertiesUtils.selectProperties(properties, "factory.initialize");
                 if (to_init != null) {

@@ -1,5 +1,19 @@
 2005-03-15  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/FactoryInitServlet.java (init): get docroot from system parameter 
+
+	* src/de/schlund/pfixxml/ServletManager.java (init): if servlet property filenames are relative,
+	get the real file from the PathFactory
+
+	* example/servletconf/projects.xml.in: add the pustefix.docroot as init-param. 
+	Made property files relative.
+
+	* example/simple[link|page|form]/conf/project.xml.in:
+	* example/sample1/conf/project.xml.in: Made property files relative.
+	
+	* example/common/conf/factory.prop.in: remove the docroot property (and add the 
+	missing partindex.reloadchanges property for StatusCode reload)
+
 	* example/core/build/create_webxml.xsl: allow in the common
 	section, and in the section of each servlet to define <init-param>
 	tags the same as in the web.xml (where all in the common section
