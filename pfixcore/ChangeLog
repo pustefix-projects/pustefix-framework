@@ -1,3 +1,18 @@
+2004-07-13  Joerg Haecker <haecker@schlund.de>
+
+        * src/de/schlund/pfixxml/PerfEventType.java: removed
+        get/setMessage method. Added get/setPage and 
+        get/setHandlingClass instead.
+        * src/de/schlund/pfixxml/PfixServletRequest.java:
+        improved perfstat-logging. see above.
+        * src/de/schlund/pfixxml/ServletManager.java
+        * src/de/schlund/pfixxml/AbstractXMLServer.java
+        * src/de/schlund/pfixcore/workflow/app/StaticState.java
+        * src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java
+        * src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+        * src/de/schlund/pfixcore/workflow/Context.java:
+        adjusted perflogging-calls to above changes.
+
 2004-07-13  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.6.6-pre

@@ -79,7 +79,7 @@ public class DefaultIWrapperState extends StaticState {
         preq.startLogEntry();
         container.initIWrappers(context, preq, resdoc);
         PerfEventType etw = PerfEventType.PAGE_INITIWRAPPERS;
-        etw.setMessage(context.getCurrentPageRequest().toString());
+        etw.setPage(context.getCurrentPageRequest().toString());
         preq.endLogEntry(etw);
        // preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
         
@@ -88,7 +88,7 @@ public class DefaultIWrapperState extends StaticState {
             preq.startLogEntry();
             container.handleSubmittedData();
             PerfEventType et = PerfEventType.PAGE_HANDLESUBMITTEDDATA;
-            et.setMessage(context.getCurrentPageRequest().toString());
+            et.setPage(context.getCurrentPageRequest().toString());
             preq.endLogEntry(et);
             //preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 300);
             if (container.errorHappened()) {
@@ -107,7 +107,7 @@ public class DefaultIWrapperState extends StaticState {
                     preq.startLogEntry();
                     container.retrieveCurrentStatus();
                     PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                    pet.setMessage(context.getCurrentPageRequest().toString());
+                    pet.setPage(context.getCurrentPageRequest().toString());
                     pet.setAdditionalInfo("SUCCESS_STAY");
                     preq.endLogEntry(pet);
                     //preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
@@ -128,7 +128,7 @@ public class DefaultIWrapperState extends StaticState {
                         preq.startLogEntry();
                         container.retrieveCurrentStatus();
                         PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                        pet.setMessage(context.getCurrentPageRequest().toString());
+                        pet.setPage(context.getCurrentPageRequest().toString());
                         pet.setAdditionalInfo("SUCESS_STAY_NOWF");
                         preq.endLogEntry(pet);
                        // preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
@@ -143,21 +143,21 @@ public class DefaultIWrapperState extends StaticState {
             if (isDirectTrigger(context,preq)) {
                 CAT.debug("    => REASON: DirectTrigger");
                 PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("DIRECT");
                 preq.endLogEntry(pet);
                 //preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
             } else if (context.finalPageIsRunning()) {
                 CAT.debug("    => REASON: FinalPage");
                 PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("FINAL");
                 preq.endLogEntry(pet);
                 //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FINAL", 5);
             } else {
                 CAT.debug("    => REASON: WorkFlow");
                 PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setMessage(context.getCurrentPageRequest().toString());
+                pet.setPage(context.getCurrentPageRequest().toString());
                 pet.setAdditionalInfo("FLOW");
                 preq.endLogEntry(pet);
                 //preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);

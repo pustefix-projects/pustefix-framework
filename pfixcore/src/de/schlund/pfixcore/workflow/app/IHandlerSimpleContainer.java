@@ -127,7 +127,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                 context.startLogEntry();
                 boolean  test = handler.prerequisitesMet(context);
                 PerfEventType et = PerfEventType.IHANDLER_PREREQUISITESMET;
-                et.setMessage(handler.getClass().getName());
+                et.setClass(handler.getClass().getName());
+                //et.setPage(context.getCurrentPageRequest().getName());
                 context.endLogEntry(et);
                 //context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 3);
                 if (!test) {
@@ -169,7 +170,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     
                     //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                    et.setMessage(handler.getClass().getName());
+                    et.setClass(handler.getClass().getName());
                     context.endLogEntry(et);
                     if (!test) {
                         retval = false;
@@ -187,7 +188,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
                     
                     PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                    et.setMessage(handler.getClass().getName());
+                    et.setClass(handler.getClass().getName());
                     context.endLogEntry(et);
                     if (test) {
                         retval = true;
@@ -220,7 +221,7 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
                     context.startLogEntry();
                     boolean test = handler.needsData(context);
                     PerfEventType et = PerfEventType.IHANDLER_NEEDSDATA;
-                    et.setMessage(handler.getClass().getName());
+                    et.setClass(handler.getClass().getName());
                     context.endLogEntry(et);
                     // context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 3);
                     if (test) {
