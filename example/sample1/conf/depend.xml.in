@@ -3,9 +3,9 @@
       xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <navigation>
-    <page name="home"     handler="/xml/config"/>
-    <page name="order"    handler="/xml/config"/>
-    <page name="overview" handler="/xml/config"/>
+    <page name="home"     handler="/xml/config" accesskey="H"/>
+    <page name="order"    handler="/xml/config" accesskey="O"/>
+    <page name="overview" handler="/xml/config" accesskey="S"/>
     <page name="admin"    handler="/xml/config"/>
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>

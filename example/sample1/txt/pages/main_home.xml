@@ -194,12 +194,12 @@
         <b>Display type is:
             <ixsl:choose>
               <ixsl:when test="/formresult/iwrappergroups/@groupdisplay = &apos;true&apos;">
-                <pfx:button mode="force" nodata="true">
+                <pfx:button mode="force" nodata="true" accesskey="W">
                   <pfx:argument name="__groupdisplay">off</pfx:argument>
                   Wizard</pfx:button>
               </ixsl:when>
               <ixsl:otherwise>
-                <pfx:button mode="force" nodata="true">
+                <pfx:button mode="force" nodata="true" accesskey="W">
                   <pfx:argument name="__groupdisplay">on</pfx:argument>
                   Flat</pfx:button>
               </ixsl:otherwise>

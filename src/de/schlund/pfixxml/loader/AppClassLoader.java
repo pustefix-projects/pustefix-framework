@@ -24,11 +24,6 @@ import java.io.*;
 import java.lang.ClassLoader;
 import java.net.*;
 import java.util.*;
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.*;
-import org.apache.bcel.generic.*;
-import org.apache.bcel.util.ClassPath;
-import org.apache.bcel.util.SyntheticRepository;
 import org.apache.log4j.*;
 
 /**
@@ -44,18 +39,11 @@ public class AppClassLoader extends java.lang.ClassLoader {
     private boolean     debug;
     private ClassLoader parent;
     private HashMap     modTimes = new HashMap();
-    private SyntheticRepository  repository;
     
     public AppClassLoader(java.lang.ClassLoader parent) {
         super(parent);
         this.parent=parent;
         debug = CAT.isDebugEnabled();
-        try {
-            repository=SyntheticRepository.getInstance(new ClassPath(AppLoader.getInstance().getRepository().getCanonicalPath()));
-            repository.clear();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex.toString());
-        }
         AppLoader.getInstance().addToHistory(this,"Created");
     }
 
