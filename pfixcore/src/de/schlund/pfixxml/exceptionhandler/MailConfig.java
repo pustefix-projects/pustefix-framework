@@ -19,17 +19,10 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-/*
- *
- */
-
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Class holding mail configuration for exception handler.<br/>
+ * 
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class MailConfig {
 
@@ -39,17 +32,30 @@ class MailConfig {
     private String host_ =null;
     private boolean send_=false;
     private String[] to_ =null;
-
+    private static MailConfig theInstance = new MailConfig();
     //~ Constructors ...........................................................
 
-    MailConfig(String[] to, String from, String host, boolean send) {
+    /*MailConfig(String[] to, String from, String host, boolean send) {
         this.to_  =to;
         this.from_=from;
         this.host_=host;
         this.send_=send;
+    }*/
+    private MailConfig() {
     }
 
     //~ Methods ................................................................
+
+    static MailConfig getInstance() {
+        return theInstance;
+    }
+
+    void configure(String[] to, String from, String host, boolean send) {
+        this.to_ = to;
+        this.from_ = from;
+        this.host_ = host;
+        this.send_ = send;
+    }
 
     /**
      * Returns the from.

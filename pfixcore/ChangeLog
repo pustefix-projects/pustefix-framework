@@ -1,3 +1,8 @@
+2003-04-30  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/*: refactoring. now
+	uses de.schlund.pfixcore.util.email.EmailSender.
+
 2003-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/CheckIncludes.java (checkForUnusedIncludes): 
