@@ -1,3 +1,9 @@
+2004-05-03  Tom Braun <thomas.braun@schlund.de>
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java:
+	a post-checker, that allows to check an inputs min and max length.
+	it provides two parameters. namely min_length and max_length, that
+	have a their defaults set to 1 and 64, respectivly.
+	
 2004-05-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
