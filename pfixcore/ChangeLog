@@ -1,3 +1,19 @@
+2004-11-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java:
+	make sure that when the context returns true for
+	pageMessageIsError() we add all the needed info to the resdoc
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Pagemessages now
+	take another argument "iserror". If any pagemessage is supplied
+	with this argument set to true, the Context will not enter the
+	pageflow but will stay on the current page (much like it does in
+	the case of an error).
+
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java: 
+	* example/core/xsl/include.xsl.in:
+	* example/core/txt/styles.xml: cosmetics, implement example
+
 2004-11-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: remove the __foreceauth reg param again. For now, we better

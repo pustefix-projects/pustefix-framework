@@ -6,8 +6,7 @@
       <lang name="default">
   <center>
 
-    <pfx:pagemessages />
-
+    <pfx:pagemessages/><br/>
 
     <pfx:forminput name="main" target="_top">
       <pfx:errorbox width="500"/>

@@ -166,7 +166,7 @@ public class DefaultIWrapperState extends StaticState {
         }
         // We need to check because in the success case, there's no need to add anything to the
         // SPDocument, as we will advance in the pageflow anyway  
-        if (!resdoc.wantsContinue()) {
+        if (!resdoc.wantsContinue() || context.pageMessageIsError()) {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
