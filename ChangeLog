@@ -1,3 +1,8 @@
+2005-02-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/PfxProperties.java: at least still
+	hold to the contract that equals() ojects have same hash code... so I added an equals method.
+
 2005-02-24  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* example/core/xsl/util.xsl.in, pfx:maincontent: pass-through @noerror to pfx:include

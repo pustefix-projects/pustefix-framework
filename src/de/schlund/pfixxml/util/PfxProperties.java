@@ -18,6 +18,10 @@ public class PfxProperties extends Properties {
         super(props);
     }
     
+    public boolean equals(Object o) {
+        return this == o;
+    }
+
     public int hashCode() {
         return obj.hashCode();
     }
