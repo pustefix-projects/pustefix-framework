@@ -1,19 +1,9 @@
 package de.schlund.pfixcore.editor;
 
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.FactoryInit;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.apache.xml.serialize.*;
-import java.io.*;
-import org.xml.sax.*;
-import javax.xml.parsers.*;
-import org.apache.xpath.*;
 import java.net.URLEncoder;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 /**
  * @author zaich
