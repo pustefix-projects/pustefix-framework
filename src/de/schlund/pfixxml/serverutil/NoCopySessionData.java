@@ -8,7 +8,7 @@ package de.schlund.pfixxml.serverutil;
  * Created: Thu Mar 20 18:56:53 2003
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 
 public interface NoCopySessionData {
