@@ -26,14 +26,11 @@ public class StatusCode {
         this.part = part;
     }
 
-    /**
-     * gets the StatusCode with domain
-     */
-    public String getPart() { 
+    public String getStatusCodeId() { 
         return part;
     }
 
     public String toString() {
-        return "StatusCode:" + getPart();
+        return "StatusCode:" + getStatusCodeId();
     }
 }
