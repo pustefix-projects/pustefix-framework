@@ -1,3 +1,58 @@
+2003-06-05  Martin Leidig <mleidig@schlund.de>
+
+	All jserv specific stuff was removed: startscript, stylesheets for propertyfile creation, 
+	libraries, utility class, make instructions, comments, documentation. The abstraction layer, 
+	represented by the ContainerUtil class, and the derived container specific classes are 
+	removed. The new SessionHelper class with its static methods serves as substitution for 
+	container-independent functions provided by the old classes. ContainerUtil methods 
+	abstracting container-specific ones are removed and substituted by direct Servlet API calls.
+
+	Changed files: 
+	* .classpath
+	* Makefile
+	* Makefile.local
+	* docs/README.1st
+	* example/INSTALL
+	* example/INSTALL.ps
+	* example/Makefile
+	* example/README.1st
+	* example/checkfiles.sh
+	* example/core/build/create_apacheconf.xsl
+	* example/servletconf/projects.xml
+	* skel/Makefile
+	* skel/Makefile.classes
+	* src/de/schlund/pfixcore/editor/handlers/SessionManagerState.java
+	* src/de/schlund/pfixcore/util/MultiTransform.java
+	* src/de/schlund/pfixcore/workflow/AuthContext.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/AppContext.java
+	* src/de/schlund/pfixxml/ContextXMLServer.java
+	* src/de/schlund/pfixxml/DerefServer.java
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/SessionCleaner.java
+	* src/de/schlund/pfixxml/exceptionhandler/Cubbyhole.java
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java
+	* src/de/schlund/pfixxml/serverutil/SessionInfoStruct.java
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+
+	Removed files:
+	* startJServ.sh
+	* example/core/build/create_jservconf.xsl
+	* example/core/build/create_jservprop.xsl
+	* example/core/build/create_jservzones.xsl
+	* lib/ApacheJServ.jar
+	* lib/jserv/jsdk.jar
+	* src/de/schlund/pfixxml/serverutil/ContainerUtil.java
+	* src-jserv/de/schlund/pfixxml/serverutil/jserv/ModernJServUtil.java
+	* src-tomcat4/de/schlund/pfixxml/serverutil/tomcat4/TomcatUtil.java
+	
+	Added files:
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+
 2003-06-04  Martin Leidig <mleidig@schlund.de>
 
 	* src/de/schlund/pfixxml/loader/Profiler.java:

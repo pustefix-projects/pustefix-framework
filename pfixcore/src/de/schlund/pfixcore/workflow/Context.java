@@ -47,7 +47,6 @@ import org.w3c.dom.*;
 public class Context implements AppContext {
     // from constructor
     private String                 name;
-    private ContainerUtil          conutil;
     private Properties             properties;
     
     // shared between all instances that have the same properties
@@ -87,8 +86,7 @@ public class Context implements AppContext {
      * @param properties a <code>Properties</code> value
      * @exception Exception if an error occurs
      */
-    public void init(Properties properties, ContainerUtil conutil, String name) throws Exception {
-        this.conutil    = conutil;
+    public void init(Properties properties, String name) throws Exception {
 	this.properties = properties;
         this.name       = name;
         

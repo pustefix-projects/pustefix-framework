@@ -19,14 +19,11 @@
 
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.PrintWriter;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -53,7 +50,6 @@ public class DerefServer extends ServletManager {
         throws Exception {
         HttpSession session = preq.getSession(false);
         RequestParam link = preq.getRequestParam("link");
-        ContainerUtil conutil = getContainerUtil();
 
         if (link == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -82,7 +78,7 @@ public class DerefServer extends ServletManager {
                     + preq.getServerName()
                     + ":"
                     + preq.getServerPort()
-                    + conutil.getClearedURI(preq, res)
+                    + SessionHelper.getClearedURI(preq, res)
                     + "?link="
                     + link.getValue();
             writer.println("<html><head>");

@@ -21,15 +21,13 @@ package de.schlund.pfixxml;
 
 import java.util.Properties;
 
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-
 /**
  *
  *
  */
 
 public interface AppContext {
-    void       init(Properties props, ContainerUtil conutil, String name) throws Exception;
+    void       init(Properties props, String name) throws Exception;
     SPDocument handleRequest(PfixServletRequest preq) throws Exception;
     void       reset() throws Exception;
 }

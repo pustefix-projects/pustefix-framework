@@ -43,9 +43,6 @@ echo-alljava:
 	@echo $(ALLJAVA1) 
 	@echo $(ALLJAVA2) 
 
-echo-classpath-jserv:
-	@echo ${CLASSPATH}:${PWD}/lib/jserv/jsdk.jar:${JSSE_JARS}
-
-echo-classpath-tomcat:
+echo-classpath:
 	@echo ${CLASSPATH}
 

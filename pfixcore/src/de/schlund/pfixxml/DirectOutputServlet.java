@@ -35,8 +35,7 @@ import de.schlund.pfixcore.workflow.DirectOutputPageMap;
 import de.schlund.pfixcore.workflow.DirectOutputState;
 import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixcore.workflow.PageRequestProperties;
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-
+import de.schlund.pfixxml.serverutil.SessionHelper;
 
 /**
  * The <code>DirectOutputServlet</code> is a servlet that hijacks the {@link de.schlund.pfixcore.workflow.Context} of a
@@ -113,9 +112,8 @@ public class DirectOutputServlet extends ServletManager {
      */
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
          HttpSession   session = preq.getSession(false);
-         ContainerUtil conutil = getContainerUtil();
          String        name    = ext_cname + ContextXMLServer.CONTEXT_SUFFIX;
-         Context       context = (Context) conutil.getSessionValue(session, name);
+         Context       context = (Context)session.getAttribute(name);
          ContextResourceManager crm = context.getContextResourceManager();
          
          if (context == null) {

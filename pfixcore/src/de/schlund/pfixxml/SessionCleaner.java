@@ -1,15 +1,12 @@
 package de.schlund.pfixxml;
 
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.serverutil.ContainerUtil;
-
-
 
 /**
  * The <code>SessionCleaner</code> class is used to remove stored SPDocuments from the session
@@ -49,13 +46,12 @@ public class SessionCleaner {
      * @param key a <code>String</code> value. The key under which the SPDocument will be stored in the session.
      * @param timeoutsecs a <code>int</code> value. The timeout when the document should be removed.
      */
-    public void storeSPDocument(SPDocument spdoc, HttpSession session,
-                                ContainerUtil conutil, String key, int timeoutsecs) {
+    public void storeSPDocument(SPDocument spdoc, HttpSession session,String key, int timeoutsecs) {
         long   stamp   = System.currentTimeMillis();
         String taskkey = key + TASK_POSTFIX; 
 
         synchronized (session) {
-            SessionCleanerTask task   = (SessionCleanerTask) conutil.getSessionValue(session, taskkey);
+            SessionCleanerTask task   = (SessionCleanerTask)session.getAttribute(taskkey);
             if (task != null) {
                 CAT.info("*** Found old TimerTask, trying to cancel... ");
                 try {
@@ -66,36 +62,33 @@ public class SessionCleaner {
                 }
             }
             CAT.info("*** Create new TimerTask with timeout: " + timeoutsecs);
-            task = new SessionCleanerTask(session, conutil, key);
+            task = new SessionCleanerTask(session,key);
             timer.schedule(task, timeoutsecs * 1000);
-            conutil.setSessionValue(session, taskkey, task);
+            session.setAttribute(taskkey, task);
             
             spdoc.setTimestamp(stamp);
-            conutil.setSessionValue(session, key, spdoc);
+            session.setAttribute(key, spdoc);
         }
     }
 
     private class SessionCleanerTask extends TimerTask {
         String        key;
         HttpSession   session;
-        ContainerUtil conutil;
         
-        public SessionCleanerTask(HttpSession session, ContainerUtil conutil, String key) {
+        public SessionCleanerTask(HttpSession session,String key) {
             this.session = session;
-            this.conutil = conutil;
             this.key     = key;
         }
 
         public void run() {
             try {
                 CAT.info("*** CALLING TIMERTASK: Removing SPDoc '" + key + "' from session " + session.getId());
-                synchronized (session) { conutil.setSessionValue(session, key, null); }
+                synchronized (session) { session.setAttribute(key, null); }
             } catch (IllegalStateException e) {
                 CAT.info("*** Couldn't remove from session... " + e.getMessage() + " ***");
             }
             session = null; // we don't want to hold any spurious references to the session that may prohibit it being gc'ed
             key     = null;
-            conutil = null;
         }
     }
 } // SessionCleaner

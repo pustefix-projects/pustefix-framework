@@ -72,6 +72,6 @@ doc:	all
 
 #################################################################
 
-echo-classpath-tomcat:
-	@make -f Makefile.classes echo-classpath-tomcat
+echo-classpath:
+	@make -f Makefile.classes echo-classpath
 #################################################################

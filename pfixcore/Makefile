@@ -6,9 +6,7 @@ include Makefile.local
 # normally, there's no need to change anything below this line #
 ################################################################
 export CLASSPATH = $(shell ./bin/setClassPath.sh `pwd`)
-TC4_BUILDPATH    = ${CLASSPATH}:${PWD}/example/servletconf/tomcat/common/lib/servlet.jar:${JDK_HOME}/jre/lib/rt.jar
-JS_BUILDPATH     = ${CLASSPATH}:${PWD}/lib/jserv/jsdk.jar:${JDK_HOME}/jre/lib/rt.jar
-BUILDPATH        = ${JS_BUILDPATH}
+BUILDPATH    = ${CLASSPATH}:${PWD}/example/servletconf/tomcat/common/lib/servlet.jar:${JDK_HOME}/jre/lib/rt.jar
 
 export JAVAC      = jikes -g +D ${JIKESOPTIONS}
 export JAVA       = java
@@ -28,34 +26,18 @@ TRFBUILDCLASS = de/schlund/pfixcore/util/MultiTransform.class
 PFIXSREQCLASS = de/schlund/pfixxml/PfixServletRequest.class
 
 ALLJAVA     = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.java") $(ALLWRAPPERS:.iwrp=.java)
-JS_ALLJAVA  = $(shell find $(JS_SUBDIRS) -maxdepth 1 -name "*.java")
-TC4_ALLJAVA = $(shell find $(TC4_SUBDIRS) -maxdepth 1 -name "*.java")
 
-.PHONY : java-common java-tomcat java-jserv clean doc docpriv cleandoc dist notag clean-rebuild example
+.PHONY : java-common java-tomcat clean doc docpriv cleandoc dist notag clean-rebuild example
 
 all: compile example dev
 
-compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-jserv java-common
+compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-common
 
 java-common: generate_src
 	@echo
 	@echo "*** Building all *.java-files..."
 	@${JAVAC} -classpath ${BUILDPATH} \
                   -d $(shell pwd)/${BUILDDIR} -sourcepath $(shell pwd)/${SRCROOT} $(ALLJAVA)
-	@echo "*** ...Done!"
-
-java-tomcat:
-	@echo
-	@echo "*** Building tomcat java-files..."
-	@${JAVAC} -classpath ${TC4_BUILDPATH} \
-                  -d $(shell pwd)/${BUILDDIR} -sourcepath $(shell pwd)/${TC4_SRCROOT} $(TC4_ALLJAVA)
-	@echo "*** ...Done!"
-
-java-jserv:
-	@echo
-	@echo "*** Building jserv  java-files..."
-	@${JAVAC} -classpath ${JS_BUILDPATH} \
-                  -d $(shell pwd)/${BUILDDIR} -sourcepath $(shell pwd)/${JS_SRCROOT} $(JS_ALLJAVA)
 	@echo "*** ...Done!"
 
 # generate generator...
@@ -90,11 +72,8 @@ clean:
 	@rm -f $(ALLWRAPPERS:.iwrp=.java)
 	@echo "*** Removing all files matching: *~ ..."
 	@find $(SUBDIRS) -type f -name "*~" | xargs rm -f
-	@find $(JS_SUBDIRS) -type f -name "*~" | xargs rm -f
-	@find $(TC4_SUBDIRS) -type f -name "*~" | xargs rm -f
 	@cd example && make -f Makefile clean
 	@rm -f example/servletconf/tomcat/lib/*.jar
-
 
 realclean: clean cleandoc
 
@@ -102,10 +81,7 @@ clean-rebuild:
 	make clean
 	make all
 
-echo-classpath-jserv:
-	@echo ${CLASSPATH}:${PWD}/lib/jserv/jsdk.jar
-
-echo-classpath-tomcat:
+echo-classpath:
 	@echo ${CLASSPATH}
 
 generate: all

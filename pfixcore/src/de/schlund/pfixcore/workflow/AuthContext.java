@@ -34,8 +34,8 @@ public class AuthContext extends Context {
     
     private static Category CAT = Category.getInstance(AuthContext.class.getName());
 
-    public void init(Properties properties, ContainerUtil conutil, String name) throws Exception {
-        super.init(properties, conutil, name);
+    public void init(Properties properties, String name) throws Exception {
+        super.init(properties, name);
 	String authpagename = properties.getProperty(AUTH_PROP);
         if (authpagename == null) {
             throw new XMLException("Need Authpage property '" + AUTH_PROP + "' for an AuthContext");
