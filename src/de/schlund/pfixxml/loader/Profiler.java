@@ -43,13 +43,45 @@ public class Profiler {
     
     HashSet refs=new HashSet();
     HashMap classLoaders=new HashMap();
+    private boolean aclSrc;
 
     protected void addReferenced(Object obj) {
-        refs.add(new Integer(System.identityHashCode(obj)));
+        if(obj instanceof Class) {
+            ClassLoader cl=((Class)obj).getClassLoader();
+            String clId="";
+            if(cl!=null) clId=String.valueOf(System.identityHashCode(cl));
+            refs.add(String.valueOf(System.identityHashCode(obj))+clId);
+        } else {
+            refs.add(new Integer(System.identityHashCode(obj)));
+        }
     }
     
     protected boolean isReferenced(Object obj) {
-        return refs.contains(new Integer(System.identityHashCode(obj)));
+        if(obj instanceof Class) {
+            ClassLoader cl=((Class)obj).getClassLoader();
+            String clId="";
+            if(cl!=null) clId=String.valueOf(System.identityHashCode(cl));
+            return refs.contains(String.valueOf(System.identityHashCode(obj))+clId);
+        } else {
+            return refs.contains(new Integer(System.identityHashCode(obj)));
+        }
+    }
+    
+    protected ThreadGroup getRootThreadGroup(ThreadGroup group) {
+            ThreadGroup parent=group.getParent();
+            if(parent==null) return group;
+            return getRootThreadGroup(parent);
+    }
+
+    protected void doThreadCheck() {
+            Thread thread=Thread.currentThread();
+            ThreadGroup group=thread.getThreadGroup();
+            ThreadGroup root=getRootThreadGroup(group);
+            Thread[] all=new Thread[root.activeCount()];
+            int max=root.enumerate(all);
+            for(int i=0;i<max;i++) {
+                    doTypeCheck(all[i]);
+            }
     }
 
     protected void doTypeCheck() {
@@ -59,17 +91,24 @@ public class Profiler {
             Object obj=it.next();
 	        doTypeCheck(obj);
 	    }
+        doThreadCheck();
+        doTypeCheck(AppLoader.getInstance());
     }
     
     protected void doTypeCheck(Object obj) {
     	boolean isClass=obj instanceof Class;
-        if(isReferenced(obj)) return;
-	    addReferenced(obj);
         Class clazz=obj.getClass();
 		String clazzName=clazz.getName();
+        if(clazzName.equals("de.schlund.pfixxml.loader.AppClassLoader")) aclSrc=true; 
+        if(isReferenced(obj)) return;
+        addReferenced(obj);
 		if(isClass) {
 			clazz=(Class)obj;
-			clazzName="(java.lang.Class)"+clazz.getName();
+            if(aclSrc) {
+                clazzName="(ACL)(java.lang.Class)"+clazz.getName();
+            } else {
+                clazzName="(java.lang.Class)"+clazz.getName();
+            }
 		}
         ClassLoader classLoader=clazz.getClassLoader();
 	    HashMap classes=(HashMap)classLoaders.get(classLoader);
@@ -88,7 +127,7 @@ public class Profiler {
         }
 	    classes.put(clazzName,count);
 	    if(isClass) return;
-        if(clazzName.startsWith("java.lang") && !(clazzName.equals("java.lang.Object")||clazzName.equals("java.langThread"))) return;
+        if(clazzName.startsWith("java.lang") && !(clazzName.equals("java.lang.Object")||clazzName.equals("java.lang.Thread"))) return;
         if(isObjectArray(clazz)) {
 	        int len=Array.getLength(obj);
 	        for(int i=0;i<len;i++) {
@@ -107,12 +146,13 @@ public class Profiler {
                             if(value!=null) doTypeCheck(value);
                         } 
                     } catch(IllegalAccessException x) {
-                        System.out.println("Member is final");
+                        CAT.warn("Member is final",x);
 		            }
 		        }
 		        clazz=clazz.getSuperclass();
             }
         }
+        if(clazzName.equals("de.schlund.pfixxml.loader.AppClassLoader")) aclSrc=false;
     }
 
     protected boolean isObjectArray(Class clazz) {
@@ -135,8 +175,10 @@ public class Profiler {
             if(cl==null) {
                 sb.append("*** Bootstrap classloader ***\n"); 
 	        } else {
-                sb.append("*** "+cl.getClass().getName()+" ***\n");
-                if(cl instanceof AppClassLoader) appcl++;
+                if(cl instanceof AppClassLoader) {
+                    appcl++;
+                } 
+                sb.append("*** "+cl.getClass().getName()+"@"+cl.hashCode()+" ***\n");
             }
 	        HashMap map=(HashMap)classLoaders.get(cl);
 	        if(map!=null) {
