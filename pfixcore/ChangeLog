@@ -1,3 +1,638 @@
+2003-04-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/servletconf/projects.xml: 
+	* example/core/build/create_serverxml.xsl: added a new config parameter for the server.xml: 
+	connectorport. If not given, it will default to 8009.
+
+	* src/de/schlund/pfixxml/ServletManager.java (registerSession): not simply uuse the last two digits,
+	but instead the part after the last "." from the session id as a suffix to the visit_id.
+
+2003-04-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/PFConfigurationException.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java: 
+	* src/de/schlund/pfixxml/testenv/TestClientException.java: 
+	* src/de/schlund/pfixxml/testenv/RecordManagerException.java: 
+	* src/de/schlund/pfixxml/testenv/TestClient.java: make it compile with java 1.4
+	Basically just renaming "getCause" methods to non conflicting name "getExceptionCause".
+	This should be ported to the real 1.4 api as soon as we have completed the switch.
+
+2003-03-31  Martin Leidig  <mleidig@schlund.de>
+        * example/core/build/create_propfiles.xsl: fixed some bugs concerning transformation
+        of new property file format, i.e. getting prefix for pagerequest parameters within
+        custom choose/test elements, adding support for choose/test elements within
+        servletinfo tag.
+
+2003-03-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	(RecordManager): some changes to help with weird errors on certain
+	machines (jserv only??)  Still don't really know the cause, but
+	changed some stuff nevertheless: DocumentBuilderFactory is now
+	inited statically. We don't force a saxxon DOM anymore.  We don't
+	use complicated xpath stuff to simply check an attribute in the
+	top level element.  The attribute "recodmode_allow" is no longer
+	used. We simple check for "record_dir", and if it's there, the
+	recordmode is allowed, if not recordmode is forbidden.
+
+	Removed some instances of RecordManagerException... If just
+	catching perfectly legal Exceptions, what is the point to NOT throw them, instead wrap
+	them in a new Exception type? This will not work like this anyway for 1.4.1 IIRC.
+
+	(writeDocument): use an FileOutputStream, not a FileWriter. see below.
+	
+2003-03-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (addNavigation): rewrote the 
+	handling of non-autoinvalidating the navigation: We store a HashMap now which may
+	contain the status of the pages from the last time. This can be reused.
+	(recursePages): also hand the navigation status HashMap when autoinvalidate != true.
+	Try to reuse status from this map.
+
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (writeFile): don't 
+	use a FileWriter, as we can't set the encoding there!!!! 
+	We ABSOLUTELY need to make sure that this bug isn not present anywhere else!!!
+
+2003-03-24  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/testenv/TestClient.java: formserial
+	is deleted by code, no stylesheet needed any more.
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java: code cleanup
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: Debug code + xsl
+	parameter changes for editconsole.
+
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseResetHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseReset.iwrp: added
+
+	* example/core/editor/conf/config.prop.in
+	* example/core/editor/txt/navigation.xml
+	* example/core/editor/txt/pages/main_home.xml
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml
+	* example/core/xsl/include.xsl.in
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java:
+	changes for play-back of recorded testcases in editor.
+	
+2003-03-21  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: removed code
+	making decisions on record mode. Moved this code to RecordManager.
+	Now the record manager is configured for each servlet(depend.xml).
+	Only one global property left to enable or disable record mode.
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java
+	* src/de/schlund/pfixxml/testenv/TestClient.java: changes for
+	integration into pustefix cms.
+
+	* src/de/schlund/pfixcore/editor/resources/EditorRes.java:
+	added method for retrieving CR for testcases.
+
+	* src/de/schlund/pfixcore/editor/EditorProductFactory.java
+	* src/de/schlund/pfixcore/editor/EditorProduct.java: store path
+	to depend.xml in EditorProduct.
+
+	* example/core/editor/txt/pages/main_testcaseoverview.xml
+	* example/core/editor/txt/pages/main_testcaseselect.xml
+	* example/core/editor/txt/pages/main_testcasestart.xml
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseOverviewHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseSelectHandler.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseOverview.iwrp
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseSelect.iwrp
+	* src/de/schlund/pfixcore/editor/interfaces/TestcaseStart.iwrp
+	* src/de/schlund/pfixcore/editor/resources/CRTestcase.java
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java: 
+	 added pages, handlers, finalizers, iwrapper and contextresource for test case
+	 handling in pustefix cms.
+
+	* example/sample1/conf/depend.xml.in
+	* example/core/editor/txt/navigation.xml
+	* example/core/build/create_depend.xsl
+	* example/core/editor/conf/depend.xml.in
+	* example/core/editor/conf/config.prop.in : adjusted.
+
+	* example/common/conf/pustefix.prop.in: removed recordmode_logdir
+	  property
+
+	* src/de/schlund/pfixxml/testenv/RecordManagerFactory.java: added,
+	RecordManagers are created by this factory. For every depend.xml one
+	RecordManager is created.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperContainer.java
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: minor
+
+	* example/testenv/log4jconf.xml: added. Sample log4j config for
+	TestClient running in terminal.
+
+	* NOTE: Testcase handling in pustefix cms ready for production use yet!
+
+2003-03-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SessionCleaner.java (storeSPDocument): remove the boolean stattask parameter, 
+	add the int timeout. We unconditionally create TimerTask, but can specify different timeout values.
+
+	* example/common/conf/pustefix.prop.in: set the property sessioncleaner.timeout to 20 for mode=prod and
+	600 for mode=test.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (initValues): read another property 
+	sessioncleaner.timeout to specify how long the timeout for removing the SPDocument should be.
+
+2003-03-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/NoCopySessionData.java: new
+	dummy interface. Use to mark all classes whose objects shouldn't
+	be copied from one session to another, new one (for the jump
+	NON_SSL => SSL)
+	* src-jserv/de/schlund/pfixxml/serverutil/jserv/ModernJServUtil.java (copySessionData): 
+	* src-tomcat4/de/schlund/pfixxml/serverutil/tomcat4/TomcatUtil.java (copySessionData): use this here for an instance of check.
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): implement the interface.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): call SessionCleaner.storeSPDocument() to store the doc into the session. 
+	Use editmodeAllowed as the last parameter so the stored SPDocuments will not be removed when also editMode is allowed (this is for 
+	development purposes: in development mode we want to have the stored SPDocument always there for debugging)
+
+	* src/de/schlund/pfixxml/SessionCleaner.java (SessionCleanerTask): new class. This class starts a Timer thread that removes 
+	stored SPDocuments from sessions after a certain timeout (currently 30 secs). This should greatly improve our memory usage, as these docs won't 
+	hang around 'till the session finally expires when the user stops clicking.
+
+	* example/core/xsl/forminput.xsl.in: really make selective display of errors via paramref work.
+
+2003-03-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (auxEchoData): also echo all "__anchor"
+	parameters.
+
+2003-03-18  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/xsl/include.xsl.in: changes in editconsole
+	for recording
+
+2003-03-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: per advice from mleidig@schlund.de: return false 
+	in the javascript call in pfx:switch. This fixes a lot of annoying problems.
+
+2003-03-07  Joerg Haecker <haecker@schlund.de>
+
+	* Added graphical management for record mode:
+	* example/core/xsl/include.xsl.in: changes
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: changes
+	* example/core/img/player_[pause|play].png: added
+
+2003-03-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/INSTALL.ps: new file. Is made downloadable via a
+	DirectOutputState.
+
+	* example/servletconf/projects.xml: add the /xml/download servlet
+	to the sample1 project (it's a  DirectOutputServlet).
+
+	* example/sample1/conf/depend.xml.in: 
+	* example/sample1/txt/pages/main_home.xml: made relevant changes
+	for the new "install" page.
+
+	* src/de/schlund/pfixcore/workflow/AuthContext.java
+	(checkAuthorization): new mthod, refactored to be accessible from
+	the outside.
+
+	* example/sample1/conf/direct.prop.in: new file, example
+	DirectOutputServlet property file. 
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: new
+	servlet. This servlet requests the Context from a already running
+	(in the same session) ContextXMLServer and supplies the
+	ContextResourceManager to DirectOutputStates, which stream the
+	output for the PageRequests handled by this servlet directly to
+	the outputstream of the HttpServletResponse.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: new
+	class, maps PageRequests to DirectOutputStates.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputState.java: new
+	interface. Implementors stream their own output directly to the outputstream.
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java:
+	new class. Manages DirectOutputStates
+
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java:
+	new class. Example DirectOutputState to download static files.
+
+2003-03-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed get/setLiteralResponseContent(...)
+	This was stupid idea to begin with.
+
+2003-03-06  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/*: organized imports,
+	removed unused variables and added some javadoc.
+
+2003-03-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: (<pfx:errorbox/>) 
+	just show one matching label when using <pfx:paramref>
+
+	* META-INF/pfixcore.version: released 0.2.8, started 0.2.9-pre
+
+	* src/de/schlund/pfixcore/workflow/Context.java: just add some
+	(commented-out) logging lines
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (toString): new method.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainer.java: 
+	(initIHandlers): use the page's properties as a parameter, not the context
+	(isPageAccessible):
+	(areHandlerActive):
+	(needsData): hand over the context as a method parameter.
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (getIHandlerContainer): 
+	throw Exceptions if something goes wrong.
+	call initIHandlers(Properties props) on the created IHandlerContainer.
+	
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java (IHandlerSimpleContainer): 
+	Fixed a big big race where we stored the Context (!!!!) inside the
+	IHandlerContainer despite the fact that these guys are supposed to
+	be valid for every Context using the same set of properties
+	(IHandlerContainerManager is nowadays handled by the
+	PropertyObjectManager). This was really really bad. We now do all
+	the initialization once with the help of the given properties, and
+	don't store anything related to the session any more. The Context
+	is handed to the relevant methods from the outside (see above for the interface change).
+	(initIHandlers): 
+	(isPageAccessible):
+	(areHandlerActive):
+	(needsData): changed accordingly
+
+2003-03-04  Joerg Haecker <haecker@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.7(0.2.6 skipped);
+	started 0.2.8-pre
+
+2003-03-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/SPDocument.java (SPDocument): removed
+	set/getXmlObject(). We store the tinytree just inplace of the
+	original Document.
+	(get/setLiteralResponseContent): HACK! provide for storing the literal
+	response content instead of some XML data tree. This needs more in AbstractXMLServer to work.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): remove all traces of get/setXmlObject
+	as noted above, just use get/setDocument() instead.
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(isAccessible): removed call to IHandlerContainer.initIHandlers(...). 
+	The IHandlerContainerManager already takes care of that one time when creating the IHandlerContainer.
+
+2003-03-04  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/editor/conf/config.prop.in: changed editmode allow to
+	false
+
+2003-03-03  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/*: code cleanup - removed unused variables
+	and organized imports.
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java,
+	src/de/schlund/pfixxml/PfixServletRequest.java: added some javadoc
+
+2003-02-28  Joerg Haecker <haecker@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: bugfix
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java: small changes
+	and improvements.
+	* src/de/schlund/pfixxml/testenv/TestClient.java: conformed to above
+	changes.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: conformed to above
+	changes.
+
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: code cleanup
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java(x[s|m]lObjectFromDisc):
+	more information on errors.
+
+2003-02-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/example/TShirtHandler.java
+	(handleSubmittedData): add an example for using StatusCodes with arguments.
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamInfo.java: 
+	(getArgsForStatusCode): new method. Return the String[] array holding the arguments
+	for this StatusCode (or null).
+	(addScode): add another parameter (String[] args) for adding scodes with arguments.
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java 
+	(addScode): add another parameter (String[] args) for adding scodes with arguments.
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java 
+	(addErrorCodes): added handling of StatusCodes that have arguments attached.
+
+	* src/de/schlund/pfixxml/ResultForm.java: 
+	(addStatusCode) add another parameter (String[] args) for adding scodes with arguments. 
+	Old calling scheme is still valid.
+
+	* src/de/schlund/pfixxml/ResultDocument.java: 
+	(createIncludeFromStatusCode) add another parameter (String[] args) 
+	for adding scodes with arguments. Old calling scheme is valid too.
+
+	* example/core/build/iwrapper.xsl: now we add addSCodeWithArgs<PARAMNAME> methods, too, for
+	every parameter of the IWrapper.
+
+	* example/core/xsl/default_copy.xsl: cop $__env through all nodes.
+	This way you can simultate something like a "dynamic binding" by
+	using apply-templates with a paramter "__env" which has a nodeset containing
+	the data bound to it. All templates using apply-templates (or call-templates) should 
+	be restructured to accept and apply this __env parameter. (some may want to set __env 
+	not to a supplied value but to something own).
+
+	* example/core/xsl/include.xsl (<pfx:argref>): new template.
+	(<pfx:include>): now we use any <pfx:arg> subnodes as the __env
+	parameter when using apply-templates on the new included
+	xml-part. $__env is copied through all nodes handled by the
+	default_copy.xsl default rule.
+
+2003-02-26  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: added
+	restricted mode for sending plain xml. Clients which
+	want to retrieve plain xml must be listed in config file.
+	Code cleanup: Made more functions and added ifXXXEnabled 
+	for debug output.
+
+	* example/common/conf/pustefix.prop.in: changed xmlonly
+	to restricted in prod. mode.
+
+2003-02-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java
+	(addData): removed methods. Removed handling of __DATA:Key:Value:
+	sections in parameter names. see below.
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java (checkParameterNameForEmbeddedData): 
+	new method. Moved the scanning for __DATA:KEY:VAL: strings in
+	parameter names from RequestDataImpl into this method. now we can
+	handle those __DATA sections transparently everywhere.
+
+2003-02-14 Joerg Haecker <haecker@schlund.de>
+
+	* lib/jcert.jar; lib/jnet.jar; lib/jsse.jar: added
+	for TestClient to handle SSL.
+
+	* src/de/schlund/pfixxml/testenv/RecordManager.java:
+	changed format of output files.
+
+	* src/de/schlund/pfixxml/testenv/TestClient.java: added
+	SSL support.
+
+2003-02-19  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/SPCacheFactory.java(init):
+	Info  about initialized caches printed.
+	
+	* src/de/schlund/pfixxml/targets/TargetImpl.java(getCurrValue):
+	now the mod-time of the target is checked against the mod-time
+	of the according file in disk cache. If the file in disk cache
+	is newer, the target will reread its value from disk.
+	
+2003-02-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: changed again the
+	format of the propertyfiles (only the <servletinfo> tag). See the
+	updated documentation for details)
+	* docs/Servlet-Propertyfiles.txt: updated to new format.
+	* example/sample1/conf/secure.prop.in: 
+	* example/sample1/conf/config.prop.in: 
+	* example/core/editor/conf/config.prop.in: updated
+
+2003-02-17  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/util/MultiTransform.java:
+	More detailed message on errors.
+
+	* example/common/conf/pustefix.prop.in: added properties
+	for skipping getModTimeMaybeUpdate.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(initValues): analyze above
+	properties and configure TargetGenerator accordingly.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	ignored transformer exceptions are not printed with whole stack trace
+	any more.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: added flag
+	with getter and setter determining if getModTimeMaybeUpdate should be
+	skipped.(Note: in the main method getModTimeMaybeUpdate must not be
+	skipped!!)
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java(getValue):
+	does not call getModTimeMaybeUpdate if above property is set
+	and target was generated once (indicated by flag 
+	onceGenerated). Increases performance in production mode.
+
+2003-02-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: started 0.2.6-pre
+
+2003-02-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.5
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java
+	(init): Eeeek. fix a bug where the resources were not init'ed in
+	the correct order.
+
+2003-02-13  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: implemented new xml
+	format for the prop.in files (documentation follows tomorrow).
+	* example/sample1/conf/secure.prop.in: 
+	* example/sample1/conf/config.prop.in: 
+	* example/core/editor/conf/config.prop.in: use it.
+
+2003-02-13  Joerg Haecker <haecker@schlund.de>
+	
+	* src/de/schlund/pfixcore/util/email/EmailSender[Exception].java:
+	added classes for sending mail via JavaMail-API
+	
+	* src/de/schlund/pfixxml/testenv/RecordManager[Exception].java:
+	added classes for recording requests and its corresponding results in
+	XML.
+	* src/de/schlund/pfixxml/testenv/TestClient[Exception].java:
+	added simple console application to play-back the recorded data.
+	
+	* example/testenv/default.xsl: added needed stylesheet by TestClient.
+	
+	* example/common/conf/pustefix.prop.in: added properties needed by
+	the RecordManager.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: added support for
+	RecordManager.
+
+	* lib/commons-httpclient-2.0-alpha2.jar and lib/commons-logging.jar:
+	added cause needed by TestClient.
+
+	* Makefile.local: changed accordingly.
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: minor
+
+	* src/de/schlund/pfixxml/IncludeDocument.java: instanciating
+	Xerces-DocumentBuilderFactoryImpl directly. Removed clumpsy
+	system properties.
+
+2003-01-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.4
+
+	* example/core/xsl/utils.xsl.in: (pfx:layer_check) use pfx:on/node() instead of pfx:on, same for pfx:off.
+
+2003-01-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* META-INF/pfixcore.version: released 0.2.3
+	start 0.2.4-pre
+
+2003-01-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (init): make a second, separate loop ovr
+	the contextressources to call init() on them. So all CRs are instantiated first, THEN they a init'ed.
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java
+	(PROP_INSERTCR): change from "resdocfinalizer.insert" =>
+	"insertcr" *** CAUTION *** this means that all property files have
+	to be changed accordingly...
+	* example/sample1/conf/config.prop.in: changed accordingly. 
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (ContextXMLServer):
+	cosmetics, don't check for contextclassname more often than
+	needed.
+
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java (ContextResourceManager): cosmetics
+
+	* src/de/schlund/pfixcore/workflow/Context.java (do_update): new method (was the reset method)
+	(reset): don't do the work anymore, just register a needs_update status.
+	(handleRequest): check if do_update needs to be called.
+
+2003-01-28  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java: added attributes
+	contextClassName and contextMap
+	(init): set contextClassName
+	(tryReloadProperties): set contextClassName, compare old to new and
+	then iterate over Contexts and reset them resp. remove Contexts from 
+	contextMap
+	(getContext): removed reset parameter, now creates new context and adds
+ 	it to contextMap, if context value is null or if contextclass has 
+	changed (getContext)
+
+	* src/de/schlund/pfixcore/workflow/Context.java: made reset method
+	synchronized
+
+2003-01-27  Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: removed almost
+	all xalan supporting code. Documentation added. Small improvement.
+
+2003-01-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getName): return the supplied name.
+	(getPropertyLoadIndex): removed 
+	(init): new parameter name.
+	(reset_internal):  removed
+	(reset): now handles all reset, as the reload flag for the NavigationFactory is gone.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (tryReloadProperties): also return the value of generator.tryReinit when
+	properties didn't change.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (tryReinit): return true when depend.xml was reloaded.
+
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java (getNavigation): remove force_load flag, now
+	the factory checks the modtimes itself and reloads if necessary
+
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: indentation (tab->spaces)
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(getIHandlerContainer): use IHandlerContainerManager instead of IHandlerContainerFactory
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java (updateIHandlers): remove automatic updating
+	(isPageAccessible): 
+	(areHandlerActive): 
+	(needsData): remove up-to-date check
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	* src/de/schlund/pfixxml/PropertyObject.java: just tab->spaces
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerFactory.java: removed class
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (IHandlerContainerManager): Added class
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (makeContextName): added.
+	(getContext): use it.
+
+	* src/de/schlund/pfixxml/AppContext.java (init): now supply a name argument from the caller
+	
+
+2003-01-24  Joerg Haecker  <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorFactory.java,
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplSaxon.java,
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorImplXalan.java:
+	removed
+	* example/common/conf/factory.prop.in: removed PFXPathEvaluatorFactory
+	* src/de/schlund/pfixxml/xpath/PFXPathEvaluator.java: added. 
+	Wrapperclass for calling saxons xpath-api.
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java:
+	now uses PFXPathEvaluator for xpath evaluation.
+	* src/de/schlund/pfixcore/util/Meminfo.java: cosmetics.
+
+2003-01-24  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	new class, which adds support for sharing objects (built from 
+	properties) between contexts
+	* src/de/schlund/pfixxml/PropertyObject.java: 
+	new interface, classes have to implement it to get managed by 
+	PropertyObjectManager
+	* src/de/schlund/pfixxml/ContextXMLServer.java: 
+	inserted call of PropertyObjectManager's resetPropertyObjects 
+	method (tryReloadProperties)
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	PageFlowManager, PageRequestProperties and PageMap aren't newly 
+	created any more, now the context gets them from 
+	PropertyObjectManager (reset_internal)
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, removed dispensable synchronized statements
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, moved Properties construction into init method
+	* src/de/schlund/pfixcore/workflow/PageMap: 
+	constructor replaced by init method to implement PropertyObject 
+	interface, references PageRequestProperties via PropertyObjectManager
+
+2003-01-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_serverxml.xsl: added customizable maxProcessors
+	* example/servletconf/projects.xml: Use it.
+
+2003-01-23  Joerg Haecker <haecker@schlund.de>
+
+	* CVSROOT/cvswrappers: added entry for gifs and jars as binary data.
+
 2003-01-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: Bugfix. only init helper classes one time.

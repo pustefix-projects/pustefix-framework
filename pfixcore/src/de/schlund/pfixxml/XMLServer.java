@@ -19,9 +19,8 @@
 
 package de.schlund.pfixxml;
 
-import org.w3c.dom.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
 
 /**
  *
@@ -63,10 +62,6 @@ public class XMLServer extends AbstractXMLServer {
             generator.createXSLLeafTarget(style.getValue());
         }
         
-        NodeList toplevel = doc.getChildNodes();
-        boolean  found    = false;
-        Node     node;
-
         spdoc.setXSLKey(style.getValue());
         spdoc.setDocument(doc);
         spdoc.setProperties(null);
