@@ -1,1 +1,18 @@
-<div>TODO</div>
+<div>
+  <h1>The <i>Search</i> page</h1>
+
+
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_search.png">
+          The <i>Search</i> page of the <pustefix/> editor.
+        </stdimg>
+      </td>
+    </tr>
+  
+  </table>
+
+
+
+</div>
