@@ -25,8 +25,11 @@
   </stdimg>
 
   <p>
-    <span style="background-color: #eb613d; border: black solid 1px;">red boxes</span> are supplied by the framework,
-    you don't need to create them yourself. Currently this is only the case for <code>master.xsl</code>. 
+    <span style="background-color: #eb613d; border: black solid
+    1px;">red boxes</span> are supplied by the framework, you don't
+    need to create them yourself and as an application programmer, you can't change them. Currently this is only the case for
+    <code>master.xsl</code> and other stylesheets that make up the core environment (these are not shown here,
+    they are included into <code>master.xsl</code> and <code>metatags.xsl</code> with the help of <code>xsl:include</code>).
   </p>
 
   <p>
@@ -43,7 +46,22 @@
     <code>master.xsl</code> and <code>metatags.xsl</code>. It contains templates that should apply on both
     transformation stages, while <code>metatags.xsl</code> contains templates that apply only on the
     first stage.</p>
-    
+
+  <p>
+    There are projects that don't use a <code>skin.xsl</code>
+    stylesheet at all or include even more stylesheets. This is part
+    of the customization of <code>master.xsl</code> and
+    <code>metatags.xsl</code> mentioned above (and <a href="#caution">below</a>), but not shown in the diagram.
+  </p>
+
+  <p><span style="background-color: #99ccff; border: black solid 1px;">blue discs</span> represent <b>include parts</b>.
+    These are little snippets of XML code that make up the actual
+    content of the page. As can be seen from the diagram, they can
+    include themselves recursively. Include parts have a <i>name</i>
+    and are organized into so called <b>include documents</b>. These
+    can hold an arbitray number of parts. Learn more about include parts and the way they are used on
+    <a href="includeparts.html">this page</a>.
+  </p>
   
   <h1>Targets</h1>
   <p>
@@ -97,7 +115,7 @@
         Virtual targets are the result of a XSL transformation. They
         don't exist as files (in fact they do, but only to cache the
         result on the harddisk. These cache files must never be edited
-        by hand). The distinction between the XML/XSL type is analog
+        by hand). The difference between the XML/XSL type is analog
         to the leaf targets</td>
     </tr>
     <tr>
@@ -107,8 +125,8 @@
     </tr>
   </table>
 
-  <p>
-    <b>Please Note</b> that the table uses the slightly simplified example from above. As noted there, <code>master.xsl</code>
+  <p><a name="caution"/>
+    <b>Caution:</b> The table uses the slightly simplified example from above. As noted there, <code>master.xsl</code>
     and <code>metatags.xsl</code> are no leaf targets, but in fact virtual targets. The complete truth is that
     the transformations look like this:</p>
   <center>
