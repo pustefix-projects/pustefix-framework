@@ -85,14 +85,14 @@ public class ExceptionHandler implements FactoryInit {
      * @param req the responsible request.
      * @param properties the current properties.
      */
-    synchronized public void handle(Exception e, PfixServletRequest req, 
+    synchronized public void handle(Throwable t, PfixServletRequest req, 
                                     Properties properties, 
                                     HttpServletResponse res) {
-        PFUtil.getInstance().debug("Handling a " + e.getClass().getName());
+        PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
         // This is called from various threads, so everyone needs its own context !
-        ExceptionContext excontext=new ExceptionContext(e, req, res, properties);
+        ExceptionContext excontext=new ExceptionContext(t, req, res, properties);
         excontext.init();
         if(propman_.needsReinitialisation()) {
             PFUtil.getInstance().debug("Reinitialization needed");
