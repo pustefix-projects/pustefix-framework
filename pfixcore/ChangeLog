@@ -1,4 +1,12 @@
 2004-07-20 Michael Hartmier  <mhm@schlund.de>
+	- console button for Tomcat Admin:
+	* build.xml
+	* example/core/build/create_serverxml.xsl
+	* example/core/img/admin.gif
+	* example/core/xsl/include.xsl.in
+	* skel/build.xml
+
+2004-07-20 Michael Hartmier  <mhm@schlund.de>
 	- switched to tomcat 5:
 	  the 'example/servletconf/tomcat' directory is not longer checked-in, 
           instead it's generated automatically from lib/tomcat/jakarta-tomcat-*.tgz. 

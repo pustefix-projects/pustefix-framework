@@ -134,6 +134,14 @@
     <Context path="/manager" debug="0" privileged="true" docBase="server/webapps/manager">
       <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
       <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="172.17.12.*"/>
+      <Logger className="org.apache.catalina.logger.FileLogger"
+              prefix="localhost_manager_log." suffix=".txt" timestamp="true"/>
+    </Context>
+    <Context path="/admin" debug="0" privileged="true" docBase="server/webapps/admin">
+      <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
+      <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="172.17.12.*"/>
+      <Logger className="org.apache.catalina.logger.FileLogger"
+              prefix="localhost_admin_log." suffix=".txt" timestamp="true"/>
     </Context>
   </xsl:template>
 
