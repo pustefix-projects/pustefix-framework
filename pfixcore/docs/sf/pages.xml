@@ -6,6 +6,7 @@
     <page name="xml" title="XML/XSLT"/>
     <page name="java" title="Framework"/>
   </page>
+  <page name="download" title="Download"/>
   <page name="udocs" title="Userdocs"/>
   <page name="misc" title="Misc."/>
   

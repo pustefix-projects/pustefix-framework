@@ -1,3 +1,23 @@
 <div>
-  <b><a href="http://sourceforge.net/projects/pustefix/">Coming soon....</a></b>
+  <h2>What is Pustefix</h2>
+  <pustefix/> is a framework that helps you to develop web based applications. A high level view of the system is given on
+  <a href="overview.html">this</a> page. The framework consists of two more or less independend parts:
+
+  <ul>
+    <li>A machinery to apply recusrsive XSLT transformations that
+      produces the UI of the web application. You can learn more about
+      this <a href="xml.html">here</a>.</li>
+
+    <li>A Java framework that takes input from the UI to change the
+      application data and supplies changes of the application data back
+      to the UI. This part is explained in much more detail <a href="java.html">here</a></li>
+  </ul>
+
+  Together, the framework acts similar to the <i>Model-View-Container</i> pattern.
+  
+  <h2>Development news</h2>
+  
+  
+  <br/><b><a href="http://sourceforge.net/projects/pustefix/">Coming soon....</a></b>
+
 </div>
