@@ -6,6 +6,8 @@
 // browser detection
 //-------------------
 
+// (to be exported into separate module)
+
 var _browser;
 if (window.opera)
   _browser = "opera";
@@ -15,6 +17,11 @@ else if (typeof navigator.product=="string" && navigator.product=="Gecko")
   _browser = "gecko";
 else if (/msie/i.test(navigator.userAgent))
   _browser = "mshtml";
+
+_isMshtml = _browser == "mshtml";
+_isGecko  = _browser == "gecko";
+_isOpera  = _browser == "opera";
+_isKhtml  = _browser == "khtml";
 
 //*****************************************************************************
 //
@@ -32,18 +39,17 @@ function xmlRequest() {
 
   var self = this;
   this.customOnReadyStateChange = function() { self._customOnReadyStateChange(); };
-  this.cancelOnReadyStateChange = function() { self._cancelOnReadyStateChange(); };
+  this.cancelOnReadyStateChange = function(i, msg) { self._cancelOnReadyStateChange(i, msg); };
 }
 
 xmlRequest._xml = [];
 xmlRequest._xmlThis = [];
 xmlRequest._xmlTimer = [];
 xmlRequest._xmlTimerCount = [];
-xmlRequest._xmlTimerCountMax = 10;
-xmlRequest._xmlTimerInterval = 500;
+xmlRequest._xmlTimerCountMax = 1000;
+xmlRequest._xmlTimerInterval = 5;
 
 xmlRequest.builtin = window.XMLHttpRequest ? true : false;
-xmlRequest.activeX = window.ActiveXObject  ? true : false;
 
 // iframe
 xmlRequest.IFRAMES_NEVER    = -1;
@@ -51,17 +57,38 @@ xmlRequest.IFRAMES_FALLBACK =  0;
 xmlRequest.IFRAMES_ONLY     =  1;
 
 // set iframe behaviour
-xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_NEVER;
-if( /^opera$/.test(_browser) ) {
-  // opera 7.6 pr1 supports XMLHttpRequest but not setRequestHeader(), yet
-  //xmlRequest.prototype.iframes = 1;
-}
+xmlRequest.prototype.iframes  = xmlRequest.IFRAMES_FALLBACK;
 
+// set headers required for SOAP (Axis)
 xmlRequest.prototype.headers = [ [ 'SOAPAction', '""'] ];
 
+//-------
+// Opera
+//-------
+
+if( _isOpera ) {
+  // opera 7.6pr1's support of XMLHttpRequest still buggy
+  // - no setRequestHeader()
+  // - Content-Length: 0
+
+  // deactivate XMLHttpRequest
+  xmlRequest.builtin = false;
+
+  // use iframes instead, if allowed by configuration
+  xmlRequest.prototype.iframes = xmlRequest.prototype.iframes || 1;
+}
+
+//--------
+// Mshtml
+//--------
+
 xmlRequest.msXmlHttp = null;
-if( xmlRequest.activeX ) {
-  // determine working XMLHTTP component
+if( !_isOpera && window.ActiveXObject ) {
+  // determine working ActiveX XMLHTTP component
+  // both security settings needed (secure(1.) and plugins(3.))
+  // if successful, xmlRequest.msXmlHttp is of type "string", 
+  // otherwise "object"
+
   var msXmlHttpList = ["MSXML2.XMLHTTP.5.0", "MSXML2.XMLHTTP.4.0", "MSXML2.XMLHTTP.3.0", "MSXML2.XMLHTTP", "MICROSOFT.XMLHTTP.1.0", "MICROSOFT.XMLHTTP.1", "MICROSOFT.XMLHTTP"];
       
   var obj;
@@ -78,13 +105,15 @@ if( xmlRequest.activeX ) {
   }
 }
 
+xmlRequest.activeX = typeof xmlRequest.msXmlHttp == "string";
+
 //*****************************************************************************
 //
 //*****************************************************************************
 xmlRequest.prototype.start = function( content ) {
 
   // unique timestamp to prevent caching
-  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
+  //  var uniq = ""+ new Date().getTime() + Math.floor(1000 * Math.random());
   //  this.url += ( ( this.url.indexOf('?')+1 ) ? '&' : '?' ) + uniq;
 
   var i = xmlRequest._xml.length;
@@ -121,8 +150,8 @@ xmlRequest.prototype.start = function( content ) {
         } 
       }
     }
-    
-    if( xmlRequest._xml[i] ) {
+
+    if( typeof xmlRequest._xml[i] != "undefined" ) {
 
       if( this.callback ) {
         //-------
@@ -168,7 +197,7 @@ xmlRequest.prototype.start = function( content ) {
 
         for( var j=0; j<this.headers.length; j++ ) {
           try {
-            // not implemented in Opera 7.6 preview1
+            // not implemented in Opera 7.6pr1
             xmlRequest._xml[i].setRequestHeader( this.headers[j][0], this.headers[j][1] );
           } catch(e) {
           }
@@ -187,8 +216,6 @@ xmlRequest.prototype.start = function( content ) {
         xmlRequest._xml[i] = null;
         throw new Error("xmlRequest: Call failed");
       }  
-    } else {
-      return false;
     }
   }
 
@@ -198,9 +225,9 @@ xmlRequest.prototype.start = function( content ) {
     // iframe
     //--------
 
-	if( !this.callback ) {
-		throw new Error("xmlRequest: Synchronous call by iframe not supported"); 
-	}
+    if( !this.callback ) {
+      throw new Error("xmlRequest: Synchronous call by iframe not supported"); 
+    }
 
     try {
 
@@ -210,16 +237,21 @@ xmlRequest.prototype.start = function( content ) {
 
       var el;
 
-      if( !/^(mshtml|opera)$/i.test(_browser) ) {
+      if( !( _isMshtml || _isOpera ) ) {
         el = document.createElement("iframe");
-        //        el.style.display = "none";
+        el.style.display = "none";
         el.name          = "pfxxmliframe"+i;
         el.id            = "pfxxmliframe"+i;
+
+        document.body.appendChild(el);
+
       } else {
         el = document.createElement("div");
-        //        el.style.display = "none";
+        el.style.display = "none";
         el.id            = "pfxxmldiv"+i;
         document.body.appendChild(el);
+
+        document.getElementById("pfxxmldiv"+i).innerHTML = '<' + 'iframe id="pfxxmliframe' + i + '" name="pfxxmliframe' + i + '" style="display:block"><' + '/iframe>';
       }
 
       if( this.method.toLowerCase() == "get" ) {
@@ -239,19 +271,12 @@ xmlRequest.prototype.start = function( content ) {
         // POST
         //------
 
-        if( /^(mshtml|opera)$/i.test(_browser) ) {
-
-          document.getElementById("pfxxmldiv"+i).innerHTML = '<' + 'iframe id="pfxxmliframe' + i + '" name="pfxxmliframe' + i + '" style="display:block"><' + '/iframe>';
-        } else {
-          document.body.appendChild(el);
-        }
-
         //------------
         // form frame
         //------------
 
         el = document.createElement("div");
-        //        el.style.display = "none";
+        el.style.display = "none";
         el.id               = "pfxxmlformdiv"+i;
 
         xmlRequest._xml[i] = this.callback;
@@ -273,7 +298,7 @@ xmlRequest.prototype.start = function( content ) {
           elField.value = content;
           elForm.appendChild(elField);
 
-          if( /^mshtml$/i.test(_browser) ) {
+          if( _isMshtml ) {
             elField = document.createElement("input");
             elField.type  = "hidden";
             elField.name  = "insertpi";
@@ -319,26 +344,32 @@ xmlRequest.prototype.setRequestHeader = function( field, value ) {
 //*****************************************************************************
 xmlRequest.prototype._customOnReadyStateChange = function() {
 
+  var win = null;
+
   for( var i=0; i<xmlRequest._xml.length; i++ ) {
     if( xmlRequest._xmlTimer[i] && xmlRequest._xml[i] ) {
 
       try {
         if( xmlRequest._xmlTimerCount[i]<xmlRequest._xmlTimerCountMax ) {
 
-          if( window.frames['pfxxmliframe'+i] && window.frames['pfxxmliframe'+i].document && window.frames['pfxxmliframe'+i].location == "about:blank" ) {
-            xmlRequest._xmlTimerCount[i]++;
-          } else {
-           
+          win = window.frames['pfxxmliframe'+i];
+          if( win && 
+              win.document && 
+              win.location != "about:blank" && 
+              (_isMshtml ? win.document.readyState=="complete" : true)) {
+
             xmlRequest._xml[i].call( xmlRequest._xmlThis[i].context, 
-                                     /^mshtml$/.test(_browser) ? window.frames['pfxxmliframe'+i].document.body : window.frames['pfxxmliframe'+i].document );
+                                     _isMshtml ? win.document.body : win.document );
             xmlRequest._xml[i] = null;
-            this.cancelOnReadyStateChange(i); //, "regular finalization");
+            this.cancelOnReadyStateChange(i);
+          } else {
+            xmlRequest._xmlTimerCount[i]++;            
           }
         } else {
-          this.cancelOnReadyStateChange(i); //, "too many intervals");
+          this.cancelOnReadyStateChange(i, "too many intervals");
         }
       } catch(e) {
-        this.cancelOnReadyStateChange(i); //, "Exception:" + e);
+        this.cancelOnReadyStateChange(i, "Exception:" + e);
       }
     }
   }
@@ -350,33 +381,40 @@ xmlRequest.prototype._customOnReadyStateChange = function() {
 xmlRequest.prototype._cancelOnReadyStateChange = function( i, msg ) {
 
   try {
-    if( msg ) {
-      alert("cancelOnReadyStateChange:" + i + ", " + msg);
-    }
     window.clearInterval(xmlRequest._xmlTimer[i]);
     xmlRequest._xmlTimer[i] = null;
     xmlRequest._xml[i] = null;
     xmlRequest._xmlThis[i] = null;
     xmlRequest._xmlTimerCount[i] = 0;
   } catch(e) {
-    throw new Error("xmlRequest: Could not cancel");
+    msg = "Could not cancel";
   }
 
+  // remove div, iframe, etc.; speedup by reusing iframes not build in
+  var el;
   try {
-    var el;
     if( el = document.getElementById("pfxxmliframe"+i) ) {
       document.body.removeChild(el);
     }
+  } catch(e) {}
+  try {
     if( el = document.getElementById("pfxxmldiv"+i) ) {
       document.body.removeChild(el);
     }
+  } catch(e) {}
+  try {
     if( el = document.getElementById("pfxxmlform"+i) ) {
       document.body.removeChild(el);
     }
+  } catch(e) {}
+  try {
     if( el = document.getElementById("pfxxmlformdiv"+i) ) {
       document.body.removeChild(el);
     }
-  } catch(e) {
+  } catch(e) {}
+
+  if( msg ) {
+    throw new Error("xmlRequest: " + msg);
   }
 };
 //*****************************************************************************
