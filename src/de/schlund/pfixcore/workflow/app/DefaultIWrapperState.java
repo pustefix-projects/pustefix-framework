@@ -72,27 +72,28 @@ public class DefaultIWrapperState extends StaticState {
             container.handleSubmittedData();
             preq.endLogEntry("CONTAINER_HANDLE_SUBMITTED_DATA", 500);
             if (container.errorHappened()) {
-                CAT.debug("=> Can't continue, as errors happened during load/work.");
+                CAT.debug("    => Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
                 rfinal.onWorkError(container);
             } else {
-                CAT.debug("... No error happened during work ...");
+                CAT.debug("    => No error happened during work ...");
                 if (container.continueSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page...\n" +
-                              "=> retrieving current status.");
+                    CAT.debug("... Container says he wants to stay on this page:");
+                    CAT.debug("    => retrieving current status.");
                     preq.startLogEntry();
                     container.retrieveCurrentStatus();
                     preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY", 5);
                     rfinal.onSuccess(container);
                 } else {
-                    CAT.debug("... Container says he is ready: End of submit reached successfully.");
+                    CAT.debug("... Container says he is ready:");
+                    CAT.debug("    => end of submit reached successfully.");
                     if (context.isCurrentPageRequestInCurrentFlow()) {
-                        CAT.debug("Page is part of current pageflow...\n" +
-                                  "=> signal to continue with pagflow by setting SPDocument to null...");
+                        CAT.debug(">>> Page is part of current pageflow:");
+                        CAT.debug("    => signal to continue with pagflow by setting SPDocument to null...");
                         container.getAssociatedResultDocument().setSPDocument(null);
                     } else {
-                        CAT.debug("Page is NOT part of current pageflow...\n" +
-                                  "=> retrieving current status and stay here...");
+                        CAT.debug(">>> Page is NOT part of current pageflow:");
+                        CAT.debug("    => retrieving current status and stay here...");
                         preq.startLogEntry();
                         container.retrieveCurrentStatus();
                         preq.endLogEntry("CONTAINER_RETRIEVE_CS_SUCCESS_STAY_NOWF", 5);
@@ -101,8 +102,8 @@ public class DefaultIWrapperState extends StaticState {
                 }
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning()) {
-            CAT.debug(">>> In DirectTriggerHandling...\n" +
-                      "=> retrieving current status.");
+            CAT.debug(">>> In DirectTriggerHandling:");
+            CAT.debug("    => retrieving current status.");
             preq.startLogEntry();
             container.retrieveCurrentStatus();
             preq.endLogEntry("CONTAINER_RETRIEVE_CS_DIRECT", 5);
@@ -110,13 +111,13 @@ public class DefaultIWrapperState extends StaticState {
         } else if (context.flowIsRunning()) {
             CAT.debug(">>> In FlowHandling...");
             if (container.needsData()) {
-                CAT.debug("=> needing data, retrieving current status.");
+                CAT.debug("    => needing data, retrieving current status.");
                 preq.startLogEntry();
                 container.retrieveCurrentStatus();
                 preq.endLogEntry("CONTAINER_RETRIEVE_CS_FLOW", 5);
                 rfinal.onRetrieveStatus(container);
             } else {
-                CAT.debug("=> no need to handle, returning NULL.");
+                CAT.debug("    => no need to handle, returning NULL.");
                 container.getAssociatedResultDocument().setSPDocument(null);
             }
         } else {
