@@ -1,4 +1,12 @@
 2004-06-24  Michael Hartmier  <mhm@schlund.de>
+	- adjust project generate to new depend.xml and saxon 8
+	* affected files:
+	* newproject.sh
+	* src/de/schlund/pfixcore/util/basicapp/helper/AppValues.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/DependXmlDom.java
+	* src/de/schlund/pfixcore/util/basicapp/projectdom/ProjectXmlDom.java
+
+2004-06-24  Michael Hartmier  <mhm@schlund.de>
 	- use more File objects
 	- simplify project name computation
 	- affected files:

@@ -118,8 +118,6 @@ public final class AppValues {
     
     /** Strings for the depend.xml.in */
     public static final String DEPENDTAG_MAKE         = "make";
-    public static final String DEPENDATT_CACHE        = "cachedir";
-    public static final String DEPENDATT_CACHEPREFIX  = ".cache/";
     public static final String DEPENDATT_PROJECT      = "project";
     public static final String DEPENDATT_LANG         = "lang";
     public static final String DEPENDTAG_PAGE         = "page";
