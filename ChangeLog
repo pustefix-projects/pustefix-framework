@@ -1,3 +1,12 @@
+2004-10-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/common/dyntxt/statusmessages.xml: removed the "warning" attribute. It no longer makes sense.
+
+	* example/core/txt/styles.xml: 
+	* example/core/script/baselib.js: 
+	* example/sample1/txt/pages/main_order.xml: 
+	* example/core/xsl/utils.xsl.in: remove progressbar stuff. 
+
 2004-10-28  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/sample1/txt/pages/main_order.xml: 
