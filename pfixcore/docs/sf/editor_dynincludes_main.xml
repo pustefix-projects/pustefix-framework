@@ -1,1 +1,36 @@
-<div>DynIncludes!</div>
+<div>
+<h1>The DynIncludes page</h1>
+  <p>The left frame lists all dynamic includes used in your product. Select such a dynamic include
+  from the list for editing.</p>
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_dynincludes.png">
+          The <i>DynIncludes</i> page of the <pustefix/> editor
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              <b>Box No. 1</b> shows the branch options to create or delete product specific branches.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 2</b> displays the whole content of the current dynamic include.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr> 
+    <tr>
+      <td>
+        <stdimg src="img/editor_applet_dynincludes.png">
+          The <i>EditorApplet</i> of the <pustefix/> editor
+        </stdimg>
+      </td>
+    </tr>
+  </table>
+
+</div>

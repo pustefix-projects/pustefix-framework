@@ -1,32 +1,44 @@
 <div>
   <h1>The Images pages</h1>
-  <center>  
-    <table border="1">
-      <tr>
-        <td colspan="2">
-          <img alt="editor images page" src="img/editor_images.png"/>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p>In the left frame all images are listed. For editing
-          select one of them and the right frame appears.</p>
-        </td>
-        <td>
-          <p>The right frame contains the possibity to upload an
-          image and lists information on the current image.</p>
-          <p>Box No. 1 contains backup options and the upload.
-          Backup options appear if you have uploaded this image
-          before. The timepoint of the former upload is then 
-          listed and you can go back to this timepoint by selecting it.
-          The upload allows to select an image on your local filesystem
-          and to send it to the PustefixEditor server.</p>
-          <p>Box No. 2 gives you information on all pages which
-          use the current image. When selecting a page, it will
-          be shown in the <a href="editor_pages.html">Pages</a> page.</p>
-        </td>
-      </tr>
-    </table>
-  </center>
+  
+  <p>In the left frame all images are listed. For editing
+    select one of them and it will appears in the right frame.</p>
+  
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_images.png">
+          The <i>Images</i> page of the <pustefix/> editor.
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              The right frame contains the possibity to upload an
+              image and lists information on the current image.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 1</b> contains backup options and the upload.
+              Backup options appear if you have uploaded this image
+              before. The timepoint of the former upload is then 
+              listed and you can go back to this timepoint by selecting it.
+              The upload allows to select an image on your local filesystem
+              and to send it to the PustefixEditor server.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <b>Box No. 2</b> gives you information on all pages which
+              use the current image. When selecting a page, it will
+              be shown in the <a href="editor_pages.html">Pages</a> page.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 
 </div>
