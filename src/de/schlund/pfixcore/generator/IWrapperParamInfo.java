@@ -115,13 +115,12 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
 
     public void setStringValue(String[] v) { stringval = v; }
 
-    public void setSimpleObjectValue(Object[] v) {
-        if (v != null) {
-            String[] tmp = new String[v.length];
-            for (int i = 0; i < v.length; i++) {
-                tmp[i] = v[i].toString();
+    public void setSimpleObjectValue(Object[] values) {
+        if (values != null) {
+            stringval = new String[values.length];
+            for (int i = 0; i < values.length; i++) {
+                stringval[i] = values[i].toString();
             }
-            stringval = tmp;
         } else {
             stringval = null;
         }
@@ -133,6 +132,7 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
             for (int i = 0; i < values.length; i++) {
                 stringval[i] = values[i].getValue();
             }
+
         } else {
             stringval = null;
         }
