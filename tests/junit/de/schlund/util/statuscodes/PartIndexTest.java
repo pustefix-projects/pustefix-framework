@@ -49,6 +49,6 @@ public class PartIndexTest extends TestCase {
     }
 
     private void check(String name) {
-        assertEquals(name, pi.lookup(name).getPart());
+        assertEquals(name, pi.lookup(name).getStatusCodeId());
     }
 }
