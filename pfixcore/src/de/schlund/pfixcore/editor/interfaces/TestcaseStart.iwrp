@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface>
+	<ihandler class="de.schlund.pfixcore.editor.handlers.TestcaseStartHandler"/>
+	<param name="DoStart" type="java.lang.Boolean">
+		<default value="false"/>
+  		<caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+	</param>
+</interface> 
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

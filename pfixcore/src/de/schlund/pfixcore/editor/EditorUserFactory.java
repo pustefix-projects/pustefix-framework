@@ -158,9 +158,9 @@ public class EditorUserFactory implements FactoryInit {
             user.setAttribute("phone", eu.getPhone());
         }
             
-        FileWriter    output = new FileWriter(userfile);
-        OutputFormat  outfor = new OutputFormat("xml","ISO-8859-1",true);
-        XMLSerializer ser    = new XMLSerializer(output, outfor);
+        FileOutputStream output = new FileOutputStream(userfile);
+        OutputFormat     outfor = new OutputFormat("xml","ISO-8859-1",true);
+        XMLSerializer    ser    = new XMLSerializer(output, outfor);
         outfor.setLineWidth(0);
         
         synchronized (LOCK) {

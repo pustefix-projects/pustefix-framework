@@ -26,12 +26,15 @@ SUBDIRS = \
         $(JAVACR)/pfixxml/serverutil \
         $(JAVACR)/pfixxml/multipart \
         $(JAVACR)/pfixxml/xpath \
+        $(JAVACR)/pfixxml/testenv \
         $(JAVACR)/pfixxml/exceptionhandler \
+        $(JAVACR)/pfixxml/loader \
 	$(JAVACR)/pfixcore/generator \
 	$(JAVACR)/pfixcore/generator/casters \
 	$(JAVACR)/pfixcore/generator/prechecks \
 	$(JAVACR)/pfixcore/generator/postchecks \
         $(JAVACR)/pfixcore/util \
+        $(JAVACR)/pfixcore/util/email \
         $(JAVACR)/pfixcore/workflow \
         $(JAVACR)/pfixcore/workflow/app \
 	$(JAVACR)/pfixcore/editor \

@@ -93,4 +93,9 @@ public abstract class AbstractDependency implements Comparable, AuxDependency {
         }
     }
 
+    public int hashCode() {
+        String key = type.getTag() + "@" + path + "@" + part + "@" + product;
+        return key.hashCode();
+    }
+
 }// AbstractDependency

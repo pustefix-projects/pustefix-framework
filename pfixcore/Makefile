@@ -21,7 +21,6 @@ export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
 JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
 
-
 ALLWRAPPERS = $(shell find $(SUBDIRS) -maxdepth 1 -name "*.iwrp")
 TRFBUILD      = de.schlund.pfixcore.util.MultiTransform
 TRFBUILDCLASS = de/schlund/pfixcore/util/MultiTransform.class
@@ -34,11 +33,7 @@ TC4_ALLJAVA = $(shell find $(TC4_SUBDIRS) -maxdepth 1 -name "*.java")
 
 .PHONY : java-common java-tomcat java-jserv clean doc docpriv cleandoc dist notag clean-rebuild example
 
-all: compile example jar
-	@echo "Install jars in tomcat-lib directory!"
-	@rm -f example/servletconf/tomcat/lib/*.jar
-	@(cp dist/*.jar example/servletconf/tomcat/lib/)
-	@(cd example/servletconf/tomcat/lib/; ln -s ../../../../lib/*.jar .)
+all: compile example dev
 
 compile:  $(BUILDDIR)/$(PFIXSREQCLASS) $(BUILDDIR)/$(TRFBUILDCLASS) java-tomcat java-jserv java-common
 
@@ -116,48 +111,67 @@ echo-classpath-tomcat:
 generate: all
 	@cd example && make -f Makefile generate
 
-# javadoc with only interfaces
 doc:
 	@(if ! test -d $(JAVADOCDIR); then mkdir $(JAVADOCDIR); fi)    
 	${JAVADOC} -locale en_US -use -splitindex \
-	${JAVADOC_GENERALOPTS}
-
-# javadoc with private fields/methods
-docpriv:
-	@(if ! test -d $(JAVADOCDIR); then mkdir $(JAVADOCDIR); fi)    
-	${JAVADOC} -locale en_US -private -use -splitindex \
 	${JAVADOC_GENERALOPTS}
 
 cleandoc:
 	@echo "*** Removing Java-Docs files ..."
 	@rm -rf $(JAVADOCDIR)/*
 
-dist:   _tag clean compile jar
-	@cp META-INF/CVS_AUTOTAG example/core/AUTOTAG
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-	@rm example/core/AUTOTAG
+dist:   _dist clean compile jar data skeleton
+	@rm -f example/core/CVS_AUTOTAG
+	@rm -f skel/CVS_AUTOTAG
 
-_tag:
+notag:	_notag clean compile jar data skeleton
+	@rm -f example/core/CVS_AUTOTAG
+	@rm -f skel/CVS_AUTOTAG
+
+_dist:
 	@echo "*** tag cvs with ${JARAUTOTAG}!"
 	@(cvs tag ${JARAUTOTAG})
 	$(shell echo ${JARAUTOTAG} > META-INF/CVS_AUTOTAG) 
-
-data:
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-
-notag:	_notag compile jar
-	@rm -f example/core/AUTOTAG
-	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
-
 
 _notag:
 	@echo "*** Remove autotag, because we don't tag in cvs!"
 	$(shell echo no-tag-set > META-INF/CVS_AUTOTAG) 
 
+skeleton:
+	@echo "Building $(PROJECT)-skel.jar in directory dist."
+	cp META-INF/CVS_AUTOTAG skel/CVS_AUTOTAG
+	cp -a lib/*.jar skel/lib/
+	cp dist/$(PROJECT)-${VERSION}.jar dist/$(PROJECT)-data-$(VERSION).tar.gz skel/lib
+	@echo "...copying the tomcat installation files into the skeleton distribution..."  
+	@(cd example/servletconf/tomcat; tar cf - `find bin common server -type f | grep -v "/CVS/"` | \
+		tar xf - -C ../../../skel/projects/servletconf/tomcat) 
+	@rm -f dist/$(PROJECT)-skel-*.tar.gz
+	tar cvzf dist/$(PROJECT)-skel-$(VERSION).tar.gz  `find skel -type f | grep -v CVS`
+	@rm -f skel/lib/*.jar
+	@rm -f skel/lib/$(PROJECT)-data-$(VERSION).tar.gz
+	@(cd skel/projects/servletconf/tomcat; rm -rf bin common server)
+
+data:
+	@echo "Building $(PROJECT)-data.jar in directory dist."
+	@cp META-INF/CVS_AUTOTAG example/core/CVS_AUTOTAG
+	@(cd example && rm -f ../dist/$(PROJECT)-data-*.tar.gz && make stylesheets && \
+		tar cvzf ../dist/$(PROJECT)-data-$(VERSION).tar.gz `find core -type f | grep -v CVS`) 
+
 jar:
 	@echo "Building $(PROJECT).jar in directory dist."
 	@(if ! test -d dist; then mkdir dist; fi)
 	@(rm -f dist/*.jar)	
-	@${JAR} cf dist/$(PROJECT)-$(VERSION).jar `find META-INF -type f | grep -v "CVS/"`
-	@(cd $(BUILDDIR); ${JAR} uf ../dist/$(PROJECT)-${VERSION}.jar *)
-	@(cd res; ${JAR} uf ../dist/$(PROJECT)-${VERSION}.jar `find . -type f | grep -v "CVS/"`)
+	@${JAR} cvf dist/$(PROJECT)-$(VERSION).jar `find META-INF -type f | grep -v "CVS/"`
+	@(cd $(BUILDDIR); ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar *)
+	@(cd res; ${JAR} uvf ../dist/$(PROJECT)-${VERSION}.jar `find . -type f | grep -v "CVS/"`)
+
+dev:
+	@echo "Setting link to $(BUILDDIR)/de in example/servletconf/tomcat/classes."
+	@(cd example/servletconf/tomcat/; if ! test -d classes; then mkdir classes; fi)
+	@(cd example/servletconf/tomcat/classes; if ! test -h de; then ln -s ../../../../$(BUILDDIR)/de; fi)
+	@echo "Building $(PROJECT)-res.jar in tomcat's lib directory."
+	@rm -f example/servletconf/tomcat/lib/*.jar
+	@${JAR} cf example/servletconf/tomcat/lib/$(PROJECT)-$(VERSION)-res.jar `find META-INF -type f | grep -v "CVS/"`
+	@(cd res; ${JAR} uf ../example/servletconf/tomcat/lib/$(PROJECT)-${VERSION}-res.jar `find . -type f | grep -v "CVS/"`)
+	@echo "Install jars in tomcat-lib directory!"
+	@(cd example/servletconf/tomcat/lib/; ln -s ../../../../lib/*.jar .)

@@ -1,8 +1,12 @@
 package de.schlund.pfixxml;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
@@ -36,7 +40,7 @@ public class IncludeDocumentFactory {
      * specified by the path. 
      */
     // FIXME! Don't do the whole method synchronized!!
-    public synchronized IncludeDocument getIncludeDocument(String path, boolean mutable) throws Exception {
+    public synchronized IncludeDocument getIncludeDocument(String path, boolean mutable) throws SAXException, IOException, TransformerException  {
         /*
          * CAT.debug("cache is now: "+cache.getClass().getName());
            CAT.debug("cache cap   : "+cache.getCapacity());
@@ -63,7 +67,6 @@ public class IncludeDocumentFactory {
          //   CAT.debug(path+"("+mutable+") "+"cache hit");
             includeDocument= (IncludeDocument) cache.getValue(key);
         }
-
         return includeDocument;
     }
 
