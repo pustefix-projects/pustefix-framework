@@ -374,7 +374,14 @@ class ExceptionContext {
             err.append("Sessionkey: " + sname);
             Object o = session.getAttribute(sname);
             err.append(" [" + o.getClass().getName() + "]\n");
-            err.append("Value:      " + o.toString());
+            String resourcedump = null;
+            try {
+            	resourcedump = o.toString();
+            } catch (Exception e) {
+            	// Ignore all Exceptions here!
+            	resourcedump = e.getMessage();
+            }
+            err.append("Value:      " + resourcedump);
             err.append("\n");
             if (enm.hasMoreElements())
                 err.append("------------------------------------------------------\n");
