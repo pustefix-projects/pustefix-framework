@@ -1213,23 +1213,6 @@
   </xsl:template>
 
 
-
-  <xsl:template name="applet_hide">
-    <pfx:script>
-      if (parent.parent.frames.appLoad == true) {
-        parent.parent.frames["applet"].hideApplet();
-      }
-    </pfx:script>
-  </xsl:template>
-
-  <xsl:template name="applet_show">
-    <pfx:script>
-      if (parent.parent.frames.appLoad == true) {
-        parent.parent.frames["applet"].showApplet();
-      }
-    </pfx:script>
-  </xsl:template>
- 
   
   <xsl:template name="handleformerrors">
     <xsl:param name="select"/>
@@ -1292,7 +1275,6 @@
             (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
             <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
             <input type="hidden" name="visible" value="false"/>
-            <xsl:call-template name="applet_hide"/>
           </td>
         </tr>
       </ixsl:if>
@@ -1374,11 +1356,8 @@
 
   <xsl:template name="include_perm_denied">
     <xsl:param name="type"/>
-      <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
-      <xsl:call-template name="applet_hide"/>
+    <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
   </xsl:template>
-  
-
   
   <xsl:template match="displayimagedetails">
     <ixsl:if test="/formresult/currentimageinfo">
