@@ -44,7 +44,7 @@ public class RequestDataImpl implements RequestData {
     private Category CAT  = Category.getInstance(this.getClass().getName());
     private String   page;
 
-    private static final String DATA_PREFIX = "__DATA";
+//    private static final String DATA_PREFIX = "__DATA";
     private static final String CMDS_PREFIX  = "__CMD";
     
     public RequestDataImpl (Context context, PfixServletRequest preq) {
@@ -79,9 +79,9 @@ public class RequestDataImpl implements RequestData {
     private void initData(PfixServletRequest preq) {
         RequestParam[] array;
         HashMap        map;
-        String         data_prefix = DATA_PREFIX + ":";
+        // String         data_prefix = DATA_PREFIX + ":";
         String         cmds_prefix = CMDS_PREFIX + "[" + page + "]:";
-        CAT.debug(">>>> Checking for data starting with '" + data_prefix + "'");
+        // CAT.debug(">>>> Checking for data starting with '" + data_prefix + "'");
         CAT.debug(">>>> Checking for cmds starting with '" + cmds_prefix + "'");
 
         String[] paramnames = preq.getRequestParamNames();
@@ -90,15 +90,17 @@ public class RequestDataImpl implements RequestData {
 
             array = preq.getAllRequestParams(name);
             if (array != null) {
-                addData(name, array);
+                ArrayList list = new ArrayList();
+                list.addAll(Arrays.asList(array));
+                data.put(name, list);
             }
 
-            CAT.debug(" >>> Looking at param '" + name + "'");
-            CAT.debug("   > Looking for data encoded in paramname (prefix '" + data_prefix + "')");
-            map = parseNameForPrefix(data_prefix, name);
-            if (map != null) {
-                addData(map);
-            }
+            //CAT.debug(" >>> Looking at param '" + name + "'");
+            //CAT.debug("   > Looking for data encoded in paramname (prefix '" + data_prefix + "')");
+            //map = parseNameForPrefix(data_prefix, name);
+            //if (map != null) {
+            //    addData(map);
+            //}
 
             CAT.debug("   > Looking for cmds encoded in paramname (prefix '" + cmds_prefix + "')");
             map = parseNameForPrefix(cmds_prefix, name);
@@ -142,26 +144,26 @@ public class RequestDataImpl implements RequestData {
         return retval;
     }
     
-    private void addData(String name, RequestParam[] array) {
-        ArrayList list = (ArrayList) data.get(name);
-        if (list == null) {
-            list = new ArrayList();
-            data.put(name, list);
-        }
-        list.addAll(Arrays.asList(array));
-    }
+    // private void addData(String name, RequestParam[] array) {
+    //     ArrayList list = (ArrayList) data.get(name);
+    //     if (list == null) {
+    //         list = new ArrayList();
+    //         data.put(name, list);
+    //     }
+    //     list.addAll(Arrays.asList(array));
+    // }
 
-    private void addData(HashMap map) {
-        for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
-            String   name  = (String) i.next();
-            String[] array = (String[]) ((ArrayList) map.get(name)).toArray(new String[] {});
-            RequestParam[] params = new RequestParam[array.length];
-            for (int j = 0; j < array.length; j++) {
-                params[j] = new SimpleRequestParam(array[j]);
-            }
-            addData(name, params);
-        }
-    }
+    // private void addData(HashMap map) {
+    //     for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
+    //         String   name  = (String) i.next();
+    //         String[] array = (String[]) ((ArrayList) map.get(name)).toArray(new String[] {});
+    //         RequestParam[] params = new RequestParam[array.length];
+    //         for (int j = 0; j < array.length; j++) {
+    //             params[j] = new SimpleRequestParam(array[j]);
+    //         }
+    //         addData(name, params);
+    //     }
+    // }
 
     private void addCmds(String name, String[] array) {
         ArrayList list = (ArrayList) cmds.get(name);
@@ -171,7 +173,7 @@ public class RequestDataImpl implements RequestData {
         }
         list.addAll(Arrays.asList(array));
     }
-
+    
     private void addCmds(HashMap map) {
         for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
             String   name  = (String) i.next();
