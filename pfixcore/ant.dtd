@@ -1396,8 +1396,7 @@
           id ID #IMPLIED
           taskname CDATA #IMPLIED
           description CDATA #IMPLIED
-          remote CDATA #IMPLIED
-          haltonerror %boolean; #IMPLIED>
+          remote CDATA #IMPLIED>
 
 <!ELEMENT vajproject EMPTY>
 <!ATTLIST vajproject
@@ -2984,7 +2983,6 @@
 <!ATTLIST vajexport
           id ID #IMPLIED
           exportclasses %boolean; #IMPLIED
-          haltonerror %boolean; #IMPLIED
           remote CDATA #IMPLIED
           destdir CDATA #IMPLIED
           defaultexcludes %boolean; #IMPLIED
@@ -3363,15 +3361,14 @@
 <!ELEMENT vajimport (fileset)*>
 <!ATTLIST vajimport
           id ID #IMPLIED
-          haltonerror %boolean; #IMPLIED
-          remote CDATA #IMPLIED
-          defaultexcludes %boolean; #IMPLIED
-          importsources %boolean; #IMPLIED
           taskname CDATA #IMPLIED
-          project CDATA #IMPLIED
+          importsources %boolean; #IMPLIED
+          importclasses %boolean; #IMPLIED
           description CDATA #IMPLIED
+          remote CDATA #IMPLIED
           importresources %boolean; #IMPLIED
-          importclasses %boolean; #IMPLIED>
+          defaultexcludes %boolean; #IMPLIED
+          project CDATA #IMPLIED>
 
 <!ELEMENT setproxy EMPTY>
 <!ATTLIST setproxy
