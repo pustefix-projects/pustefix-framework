@@ -1,3 +1,10 @@
+2004-04-27  Michael Hartmeier <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+	port number was lost when redirecting a request; this problem
+	showed up when using a none-standard port (e.g. 8080)
+
+
 2004-04-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/build/create_depend.xsl: implement a new format
