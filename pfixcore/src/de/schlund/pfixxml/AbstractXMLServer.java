@@ -524,51 +524,6 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res, 
                                   SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
-        boolean plain_xml = false;
-        // if the document contains a error code, do errorhandling here and no further processing.
-        int    err;
-        String errtxt;
-        if ((err = spdoc.getResponseError()) != 0) {
-            if ((errtxt = spdoc.getResponseErrorText()) != null) {
-                res.sendError(err, errtxt);
-            } else {
-                res.sendError(err);
-            }
-            return;
-        }
-        // So no error happened, let's go on with normal processing.
-        HttpSession   session    = preq.getSession(false);
-        TreeMap       paramhash  = constructParameters(spdoc, params);
-        String        stylesheet = extractStylesheetFromSPDoc(spdoc);
-        if (stylesheet == null) {
-            throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
-                                   spdoc.getPagename() + "' ... bailing out.");
-        }
-
-        preq.startLogEntry();
-        if (! doreuse) {
-            if (isInfoEnabled()) {
-                CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
-            }
-            if (session != null) {
-                // we only want to update the Session hit when we are not handling a "reuse" request
-                SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
-            }
-            // Only process cookies if we don't reuse
-            if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
-                if (isDebugEnabled()) {
-                    CAT.debug("*** Sending cookies ***");
-                }
-                // Now adding the Cookies from spdoc
-                for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
-                    Cookie cookie = (Cookie) i.next();
-                    if (isDebugEnabled()) {
-                        CAT.debug("    Add cookie: " + cookie);
-                    }
-                    res.addCookie(cookie);
-                }
-            }
-        }
         // Check the document for supplied headers...
         HashMap headers = spdoc.getResponseHeader();
         if (headers.size() != 0) {
@@ -593,7 +548,52 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             res.setContentType(DEF_CONTENT_TYPE);
         }
+        // if the document contains a error code, do errorhandling here and no further processing.
+        int    err;
+        String errtxt;
+        if ((err = spdoc.getResponseError()) != 0) {
+            if ((errtxt = spdoc.getResponseErrorText()) != null) {
+                res.sendError(err, errtxt);
+            } else {
+                res.sendError(err);
+            }
+            return;
+        }
+
+        // So no error happened, let's go on with normal processing.
+        HttpSession   session    = preq.getSession(false);
+        TreeMap       paramhash  = constructParameters(spdoc, params);
+        String        stylesheet = extractStylesheetFromSPDoc(spdoc);
+        if (stylesheet == null) {
+            throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
+                                   spdoc.getPagename() + "' ... bailing out.");
+        }
+        preq.startLogEntry();
+        if (! doreuse) {
+            if (isInfoEnabled()) {
+                CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
+            }
+            if (session != null) {
+                // we only want to update the Session hit when we are not handling a "reuse" request
+                SessionAdmin.getInstance().touchSession(servletname, stylesheet, session);
+            }
+            // Only process cookies if we don't reuse
+            if (spdoc.getCookies() != null && ! spdoc.getCookies().isEmpty()) {
+                if (isDebugEnabled()) {
+                    CAT.debug("*** Sending cookies ***");
+                }
+                // Now adding the Cookies from spdoc
+                for (Iterator i = spdoc.getCookies().iterator(); i.hasNext();) {
+                    Cookie cookie = (Cookie) i.next();
+                    if (isDebugEnabled()) {
+                        CAT.debug("    Add cookie: " + cookie);
+                    }
+                    res.addCookie(cookie);
+                }
+            }
+        }
         // Check if we are allowed and should just supply the xml doc
+        boolean plain_xml = false;
         plain_xml = isXMLOnlyCurrentlyEnabled(preq);
         if (! render_external && ! plain_xml) {
             TraxXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
