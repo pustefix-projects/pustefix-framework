@@ -87,7 +87,14 @@
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
         <fail message="Property &quot;machine&quot; not set. Either set environment variable MACHINE or property machine to the localpart of your fully qualified hostname." unless="machine"/>
 
-        <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
+        <exec outputproperty="dnsdomainname"    executable="hostname" os="Linux"><arg value="-d"/></exec>
+        <condition property="fqdn"     value="${machine}.${dnsdomainname}">
+            <isset property="dnsdomainname"/>
+        </condition>
+        <condition property="fqdn"     value="${machine}">
+            <not><isset property="dnsdomainname"/></not>
+        </condition>
+
         <!-- Create time stamp in ISO 8601 alike format.
         17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
         <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
@@ -152,7 +159,6 @@
     <target name="generate" depends="targetdefs, stylesheets, compile, installjars, check-permissions" description="Generates Targets to ${dir.projects}/.cache">
         <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
-        <echo message="As an alternative try target generate-mx, which forks an external java vm with more Heap Memory."/>
     </target>
 
     <target name="all" 

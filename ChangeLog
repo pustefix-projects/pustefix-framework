@@ -1,3 +1,8 @@
+2004-02-06  Adam Habermann  <adam.habermann@schlund.de>
+
+	* build.xml, skel/build.xml: fixed generation of property fqdn for manually
+	specified machine value
+
 2004-02-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetImpl.java: eeeek. bugfix,
