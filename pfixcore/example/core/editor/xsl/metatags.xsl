@@ -961,7 +961,9 @@
               <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
               <input type="hidden" name="visible" value="false"/>
               <pfx:script>
-                parent.parent.frames["applet"].hideApplet(); 
+                if (parent.parent.frames.appLoad == true) {
+                   parent.parent.frames["applet"].hideApplet();
+                }
               </pfx:script>
             </td>
           </tr>
@@ -973,7 +975,9 @@
               <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
               <input type="hidden" name="visible" value="true"/>
               <pfx:script>
-                parent.parent.frames["applet"].showApplet();
+                if (parent.parent.frames.appLoad == true) {
+                  parent.parent.frames["applet"].showApplet();
+                }
               </pfx:script>
             </td>
           </tr>
