@@ -167,6 +167,14 @@
         </default>
         
         <precheck class="a.prechecker.class">
+          <xmlnote>
+               To test if a param value conforms to the rules, you can
+               specify Check-Classes here whosse <tt>check</tt> method
+               will be called to test if the param value makes sense. The
+               Check-Classes must implement
+               <tt>de.schlund.pfixcore.generator.IWrapperParamPreCheck</tt>
+               (the interface defines the check(...) method).
+          </xmlnote>
           <cparam name="APreCheckerParamName" value="APreCheckerParamValue">
 
           </cparam>
@@ -196,6 +204,11 @@
       </param>
     </interface>
   </xmlcode>
+
+  <p>An IWrapper need not have an associated IHandler (for example if
+  the IWrapper is just a base class for more specialized IWrapper
+  subclasses).</p>
+
   </section>
 </body>
 </document>
