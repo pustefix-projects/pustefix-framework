@@ -87,9 +87,9 @@ public class MultipartHandler {
     
     static {
         LOG = Category.getInstance(MultipartHandler.class.getName());
-        if (LOG.getAllAppenders() instanceof NullEnumeration) {
-            LOG = null;
-        }
+        // if (LOG.getAllAppenders() instanceof NullEnumeration) {
+        //     LOG = null;
+        // }
     }
     
     protected static File getDestFile(File dir, String fName)
@@ -177,13 +177,14 @@ public class MultipartHandler {
     public void parseRequest()
         throws IllegalArgumentException, MessagingException, IOException {
         String baseCType = req.getHeader(CTYPE_HEADER);
-        printDebug("Content-Type is: '" + baseCType + "'");
+        printDebug("******** Content-Type is: '" + baseCType + "'");
         ContentType cType = new ContentType(baseCType);
         String boundary = cType.getParameter(PARAM_BOUNDARY);
-        printDebug("Boundary is: '" + boundary + "'");
+        printDebug("******** Boundary is: '" + boundary + "'");
         if (boundary == null || boundary.length() <= 0) return;
         
         ServletInputStream inS = req.getInputStream();
+        
         MultipartStream ms = new MultipartStream(inS);
         if (0 < maxPartSize) ms.setMaxPartSize(maxPartSize);
         
@@ -195,7 +196,9 @@ public class MultipartHandler {
         String curCtStr = null;
         String[] headers = null;
         do {
+            printDebug("\n");
             curHeaders = new InternetHeaders(ms);
+
             headers = curHeaders.getHeader(CTYPE_HEADER);
             if (headers != null && 0 < headers.length) {
                 curCtStr = headers[0];
@@ -203,14 +206,25 @@ public class MultipartHandler {
             } else {
                 curCt = new ContentType(DEFAULT_CTYPE);
             }
-            if (curCt.match("text/*")) {
-                printDebug("parsing text");
+
+            boolean isfile = false;
+            HeaderStruct struct = getHeaderStruct(curHeaders, CONTENT_DISP_HEADER);
+            if (struct != null) {
+                String filename = struct.getParam(FILENAME_PARAM);
+                if (filename != null) {
+                    isfile = true;
+                }
+            }
+            printDebug("*** IS FILE? " + isfile);
+            
+            if (curCt.match("text/*") && !isfile) {
+                printDebug("parsing text field (" + curCt + ")");
                 parseTextField(ms, curHeaders, curCt);
             } else if (curCt.match("multipart/mixed")) {
-                printDebug("parsing multipart");
+                printDebug("parsing multipart (" + curCt + ")");
                 parseMultiFile(ms, curHeaders, curCt, cType);
             } else {
-                printDebug("parsing file");
+                printDebug("parsing file (" + curCt + ")");
                 parseFile(ms, curHeaders, curCt, null);
             }
 

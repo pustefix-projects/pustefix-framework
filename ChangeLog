@@ -1,3 +1,12 @@
+2003-08-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/multipart/MultipartHandler.java (parseRequest): 
+	fixed handling of file upload: now we check if the "filename"
+	param is set in the Content-Disposition header and don't simply
+	parse everything that has content type "text/*" as a simple field
+	parameter (unfortunately some uploaded files with e.g. suffix .txt
+	are transmitted as content type text/plain).
+
 2003-07-31 Joerg Haecker  <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
