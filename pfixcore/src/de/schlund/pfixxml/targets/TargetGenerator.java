@@ -470,10 +470,9 @@ public class TargetGenerator {
         for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget((String) e.next());
             if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
-                StringBuffer buf = new StringBuffer();
-                buf.append(">>>>> Generating ").append(getDisccachedir()).append(File.separator).append(current.getTargetKey())
-                    .append(" from ").append(current.getXMLSource().getTargetKey()).append(" and ") .append(current.getXSLSource().getTargetKey());
-                System.out.println(buf.toString());
+                System.out.println(">>>>> Generating " + getDisccachedir().getRelative() + File.separator +
+                                   current.getTargetKey() + " from " + current.getXMLSource().getTargetKey() +
+                                   " and " + current.getXSLSource().getTargetKey());
                 
                 boolean needs_update = false;
                 needs_update = current.needsUpdate();

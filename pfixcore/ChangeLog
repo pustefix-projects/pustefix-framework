@@ -1,11 +1,17 @@
+2004-10-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: removed shadowed props variable
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: small bugfix. print path.getRelative(), not path
+
 2004-10-22  Michael Hartmeier  <mhm@schlund.de>
 
 	* Dump status code propertie files, always use dyntax/statusmessages.xml.
-    * Removed res.jar files. Instead, the compile target copies the res directory (if there
-    is one) into the build directory.
+	* Removed res.jar files. Instead, the compile target copies the res directory (if there
+	is one) into the build directory.
 	* Removed FactoryInit base class, the init method is called via reflection now.
-    (Ratinale: dependency on FactoryInit class was problematic because it's 
-    from util.jar)
+	(Rationale: dependency on FactoryInit class was problematic because it's 
+	from util.jar)
 
 2004-10-21  Jens Lautenbacher  <jtl@schlund.de>
 

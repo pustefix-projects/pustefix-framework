@@ -25,15 +25,14 @@ public class ServiceConfig extends AbstractConfig {
     private final static String PROP_ENCODINGSTYLE=".encoding.style";
     private final static String PROP_ENCODINGUSE=".encoding.use";
 
-    ConfigProperties props;
-    String name;
-    String itfName;
-    String implName;
-    String ctxName;
-    String sessType=Constants.SESSION_TYPE_SERVLET;
+    String  name;
+    String  itfName;
+    String  implName;
+    String  ctxName;
+    String  sessType = Constants.SESSION_TYPE_SERVLET;
     boolean sslForce;
-    String encStyle;
-    String encUse;
+    String  encStyle;
+    String  encUse;
     HashMap params;
     
     public ServiceConfig() {
@@ -47,16 +46,16 @@ public class ServiceConfig extends AbstractConfig {
     }
     
     private void init() throws ConfigException {
-        String prefix=PROP_PREFIX+name;
-        itfName=props.getStringProperty(prefix+PROP_ITFNAME,true);
-        implName=props.getStringProperty(prefix+PROP_IMPLNAME,true);
-        ctxName=props.getStringProperty(prefix+PROP_CTXNAME,false);
-        sessType=props.getStringProperty(prefix+PROP_SESSTYPE,Constants.SESSION_TYPES,true);
-        sslForce=props.getBooleanProperty(prefix+PROP_SSLFORCE,false,false);
-        encStyle=props.getStringProperty(prefix+PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
-        encUse=props.getStringProperty(prefix+PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
+        String prefix = PROP_PREFIX + name;
+        itfName       = props.getStringProperty(prefix + PROP_ITFNAME,true);
+        implName      = props.getStringProperty(prefix + PROP_IMPLNAME,true);
+        ctxName       = props.getStringProperty(prefix + PROP_CTXNAME,false);
+        sessType      = props.getStringProperty(prefix + PROP_SESSTYPE,Constants.SESSION_TYPES,true);
+        sslForce      = props.getBooleanProperty(prefix + PROP_SSLFORCE,false,false);
+        encStyle      = props.getStringProperty(prefix + PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
+        encUse        = props.getStringProperty(prefix + PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
         //TODO: get params
-        params=new HashMap();
+        params        = new HashMap();
     }
 
     public void reload() throws ConfigException {
