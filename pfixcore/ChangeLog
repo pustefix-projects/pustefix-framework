@@ -7,7 +7,12 @@
 
 	* src/de/schlund/pfixxml/IncludeDocumentExtension.java(get):
 	returns an error-tree if exceptions occur when trying to
-	read include-document from IncludeDocumentFactory.
+	read include-documents from IncludeDocumentFactory.
+	CAUTION: IncludeDocumentExtension will only catch SAXParseExceptions,
+	others will be thrown again. 'Make generate' MUST report 
+	an error on corrupt XML files. IncludeDocument now prints
+	an error message on console via log4j if SAXParseExceptions
+	occur.
 
 	* example/core/xsl/include.xsl.in: render the error-tree
 	if necessary.

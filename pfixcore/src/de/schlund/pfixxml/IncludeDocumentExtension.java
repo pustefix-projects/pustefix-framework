@@ -100,7 +100,12 @@ public final class IncludeDocumentExtension {
         } catch(Exception e) {
             if(dolog)
                 DependencyTracker.log("text", path, part, product, parent_path, parent_part, parent_product, targetgen, targetkey);
-            return handleError(part, e);
+            if(e instanceof SAXParseException) {
+                SAXParseException saxex = (SAXParseException) e;
+                return handleSAXError(part, saxex);
+            } else {
+                throw e;
+            }
         }
         doc = iDoc.getDocument();
         
@@ -245,7 +250,7 @@ public final class IncludeDocumentExtension {
         }
     }
 
-    private static NodeSetValue handleError(String part, Exception e)
+    private static NodeSetValue handleSAXError(String part, SAXParseException e)
         throws ParserConfigurationException, Exception, IOException {
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document d = builder.newDocument();
@@ -253,12 +258,9 @@ public final class IncludeDocumentExtension {
         ele1.setAttribute("part", part);
         ele1.setAttribute("type", e.getClass().getName());
         ele1.setAttribute("msg", e.getMessage());
-        if(e instanceof SAXParseException) {
-            SAXParseException saxex = (SAXParseException) e;
-            ele1.setAttribute("id", saxex.getSystemId());
-            ele1.setAttribute("line", ""+saxex.getLineNumber());
-            ele1.setAttribute("column", ""+saxex.getColumnNumber());
-        }
+        ele1.setAttribute("id", e.getSystemId());
+        ele1.setAttribute("line", ""+e.getLineNumber());
+        ele1.setAttribute("column", ""+e.getColumnNumber());
         d.importNode(ele1, true);
         d.appendChild(ele1);
         TraxXSLTProcessor trax = new TraxXSLTProcessor();
