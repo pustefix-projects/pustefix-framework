@@ -214,14 +214,17 @@ public class Context implements AppContext {
 
 
     private boolean pageIsSidestepPage(PageRequest page) {
-        Properties props   = preqprops.getPropertiesForPageRequest(page);
-        String     nostore = props.getProperty(NOSTORE);
-        if (nostore != null && nostore.toLowerCase().equals("true")) {
-            LOG.warn("*** Found sidestep page: " + page);
-            return true;
+        Properties props  = preqprops.getPropertiesForPageRequest(page);
+        if (props != null) {
+            String nostore = props.getProperty(NOSTORE);
+            if (nostore != null && nostore.toLowerCase().equals("true")) {
+                LOG.warn("*** Found sidestep page: " + page);
+                return true;
+            }
         } else {
-            return false;
+            LOG.error("*** Got NULL properties for page " + page);
         }
+        return false;
     }
     
     /**
