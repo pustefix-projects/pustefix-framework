@@ -77,7 +77,7 @@ clean:
 	@rm -f $(PROPFILES:.prop.in=.prop)
 	@rm -f common/conf/products.prj common/conf/pfixlog.xml 
 	@echo "*** Removing generated tomcat stuff..."
-	@rm -f servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
+	@rm -f servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml \
         @rm -rf servletconf/tomcat/webapps
 
 bin/setvars.sh: core/src/setvars.sh.template
