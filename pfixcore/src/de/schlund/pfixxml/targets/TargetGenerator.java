@@ -43,6 +43,7 @@ import org.xml.sax.SAXParseException;
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.IncludeDocumentFactory;
 import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
@@ -358,6 +359,10 @@ public class TargetGenerator {
         return tmp;
     }
 
+    public static void resetGenerationReport() {
+        report = new TargetGenerationReport();
+    }
+    
     private class TargetStruct {
         HashSet depaux;
         HashMap params;
@@ -428,6 +433,9 @@ public class TargetGenerator {
             for (int i = 0; i < args.length; i++) {
                 try {
                     /* resetting the factories for better memory performance */
+                    SPCacheStatistic.reset();
+                    TargetGeneratorFactory.getInstance().reset();
+                    TargetGenerator.resetGenerationReport();
                     TargetFactory.getInstance().reset();
                     IncludeDocumentFactory.getInstance().reset();
                     PageInfoFactory.getInstance().reset();
