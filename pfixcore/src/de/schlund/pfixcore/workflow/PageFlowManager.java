@@ -63,11 +63,12 @@ public class PageFlowManager implements PropertyObject {
                 LOG.debug("===> Flow '" + flowname.getValue() + "' exists...");
                 if  (flow.containsPageRequest(page)) {
                     LOG.debug("===> and it contains page '" + page.getName() + "'");
-                    LOG.debug("===> Switching to workflow: " + flow.getName());
-                    return flow;
                 } else {
-                    LOG.debug("===> but it doesn't contain page '" + page.getName() + "': Ignoring request.");
+                    LOG.debug("===> CAUTION: it doesn't contain page '" +
+                              page.getName() + "'! Make sure this is what you want...");
                 }
+                LOG.debug("===> Switching to workflow: " + flow.getName());
+                return flow;
             }
         }
         return pageFlowToPageRequest(currentflow, page);
