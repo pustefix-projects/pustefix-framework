@@ -99,6 +99,11 @@ public class CommandProcessor {
            String argStr=st.nextToken();
            Profiler profiler=new Profiler();
            return profiler.getClassInfo(argStr);
+	   } else if(cmdStr.equals("gcrun")) {
+	   		System.gc();
+	   		return "Called garbage collector.";
+	   } else if(cmdStr.equals("history")) {
+	   		return loader.getHistory();
        } else if(cmdStr.equals("help")) {
            return getHelp();
 	   } else {
@@ -108,22 +113,25 @@ public class CommandProcessor {
     }
     
     protected String getHelp() {
-        int size=24;
+        int size=23;
         StringBuffer sb=new StringBuffer();
-        sb.append("\nCommands:\n");
-        sb.append("---------\n");
+        sb.append("\nCommands (general):\n\n");
         sb.append(fillUp("reload",size)+"Reload application (reload classes and keep sessions).\n");
         sb.append(fillUp("restart",size)+"Restart application (reload classes and invalidate sessions).\n");
         sb.append(fillUp("auto on|off",size)+"Enable/disable auto mode (automatic class reloading).\n");
         sb.append(fillUp("interval <seconds>",size)+"Time interval for modification check in auto mode.\n");
-        sb.append(fillUp("typecheck",size)+"Get some profiling information (counted objects grouped by classloader).\n");
-        sb.append(fillUp("classinfo <classname>",size)+"Get informations about type hierarchy and members of a class.\n");
         sb.append(fillUp("help",size)+"Get an overview of available commands.\n");
+        sb.append("\nCommands (advanced):\n\n");
+        sb.append(fillUp("typecheck",size)+"Get some profiling information (counted objects grouped by classloader).\n");
+        sb.append(fillUp("classinfo <classname>",size)+"Get information about type hierarchy and members of a class.\n");
+        sb.append(fillUp("history",size)+"Get AppLoader history (ClassLoader creation/finalization).\n");
+        sb.append(fillUp("gcrun",size)+"Run garbage collector (force cleaning up after reload).\n");
         return sb.toString();
     }
    
     protected String fillUp(String str,int len) {
-        StringBuffer sb=new StringBuffer(str);
+        StringBuffer sb=new StringBuffer("  ");
+        sb.append(str);
         int more=len-str.length();
         for(int i=0;i<more;i++) sb.append(" ");
         return sb.toString();

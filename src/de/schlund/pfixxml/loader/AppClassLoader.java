@@ -56,7 +56,12 @@ public class AppClassLoader extends java.lang.ClassLoader {
         } catch (IOException ex) {
             throw new RuntimeException(ex.toString());
         }
+        AppLoader.getInstance().addToHistory(this,"Created");
     }
+
+	public void finalize() {
+		AppLoader.getInstance().addToHistory(this,"Finalized");
+	}
 
     public synchronized Class loadClass(String name) throws ClassNotFoundException {
 
