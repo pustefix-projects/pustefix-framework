@@ -10,12 +10,12 @@
       <td>
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
-            <td>The upper box lists all available products and lets you select one of them for editing. 
-            After selection the editor starts with the <a href="editor_tools.html">Tools</a> page.</td>
+            <td>The upper box lists all available projects and allows you to select one of them for editing. 
+              After selecting a project the editor starts with the <a href="editor_tools.html">Tools</a> page.</td>
           </tr>
           <tr>
-            <td>The lower box provides buttons as well for listing all editor session and locks as for changing
-            you user data. For more information about this see below.</td>
+            <td>The lower box provides buttons to show all editor sessions and locks and a button that allows you
+              to change the data of the user currently logged in. For more information about this see below.</td>
           </tr>
         </table> 
       </td>
