@@ -133,17 +133,19 @@
   <xsl:template name="render_themes">
     <xsl:param name="variant"/>
     <xsl:param name="local_themes"/>
-    <xsl:variable name="global_themes">
-      <xsl:choose>
-        <xsl:when test="$local_themes"><xsl:value-of select="$local_themes"/></xsl:when>
-        <xsl:when test="/make/@themes"><xsl:value-of select="/make/@themes"/></xsl:when>
-        <xsl:otherwise><xsl:value-of select="/make/@project"/> default</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="fullthemes"><xsl:call-template name="recurse_variant">
-      <xsl:with-param name="variant_tail" select="$variant"/>
-    </xsl:call-template><xsl:text> </xsl:text><xsl:value-of select="$global_themes"/></xsl:variable>
-    <xsl:attribute name="themes"><xsl:value-of select="normalize-space($fullthemes)"/></xsl:attribute>
+    <xsl:if test="not((not($variant) or $variant = '') and (not($local_themes) or $local_themes = ''))">
+      <xsl:variable name="global_themes">
+        <xsl:choose>
+          <xsl:when test="$local_themes"><xsl:value-of select="$local_themes"/></xsl:when>
+          <xsl:when test="/make/@themes"><xsl:value-of select="/make/@themes"/></xsl:when>
+          <xsl:otherwise><xsl:value-of select="/make/@project"/> default</xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="fullthemes"><xsl:call-template name="recurse_variant">
+        <xsl:with-param name="variant_tail" select="$variant"/>
+      </xsl:call-template><xsl:text> </xsl:text><xsl:value-of select="$global_themes"/></xsl:variable>
+      <xsl:attribute name="themes"><xsl:value-of select="normalize-space($fullthemes)"/></xsl:attribute>
+    </xsl:if>
   </xsl:template>
 
   <xsl:template name="recurse_variant">

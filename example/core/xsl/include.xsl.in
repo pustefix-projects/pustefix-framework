@@ -17,8 +17,41 @@
   <xsl:param name="__sessid"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
+  <xsl:param name="themes"/>
   <xsl:param name="prohibitEdit">no</xsl:param>
 
+
+  <xsl:template match="pfx:themeselect" name="recurse_themeselect">
+    <xsl:param name="themestr" select="$themes"/>
+    <xsl:param name="allthemes" select="./pfx:theme"/>
+    <xsl:variable name="curr">
+      <xsl:choose>
+        <xsl:when test="not(contains($themestr, ' '))"><xsl:value-of select="$themestr"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="substring-before($themestr, ' ')"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="rest" select="substring-after($themestr, ' ')"/>
+    <xsl:choose>
+      <xsl:when test="$allthemes[@name = $curr]">
+        <xsl:apply-templates select="$allthemes[@name = $curr]/node()"/>
+      </xsl:when>
+      <xsl:when test="not($rest = '')">
+        <xsl:call-template name="recurse_themeselect">
+          <xsl:with-param name="allthemes" select="$allthemes"/>
+          <xsl:with-param name="themestr" select="$rest"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <span>
+        <div style="width: 100px; align: center; color:white; background-color:black;">
+          <img src="/core/img/warning2.png"/><br/>
+          <span style="font-size: 8px; font-family: verdana,arial,helvetica,sans;"> No content for [<xsl:value-of select="$themes"/>]</span>
+        </div>
+        </span>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:template match="pfx:pagemessages">
     <cus:documentation>
       <responsible>reitzammer</responsible>
@@ -403,12 +436,12 @@
   </xsl:template>
   
   <xsl:template match="pfx:image" name="pfx:image">
-    <xsl:param name="src" select="@src"/>
-    <xsl:param name="alt" select="@alt"/>
+    <xsl:param name="src"   select="@src"/>
+    <xsl:param name="alt"   select="@alt"/>
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img'"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|title|themed-path|themed-img'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
@@ -457,7 +490,7 @@
         <input>
           <xmlcode><pfx:image src="/sample1/img/test.gif"/></xmlcode>
         </input> <output>
-          <xmlcode><img border="0" alt="" src="/sample1/img/test.gif"
+          <xmlcode><img alt="" src="/sample1/img/test.gif"
           width="120" height="82"/></xmlcode>
         </output>
       </example>

@@ -315,7 +315,6 @@ public class TargetGenerator {
                 }
                 virtual.setThemes((String[]) list.toArray(new String[]{}));
             }
-
             
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
