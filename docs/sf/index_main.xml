@@ -5,12 +5,12 @@
     <pustefix/> is a framework that helps you to develop web based
     applications (referred to as <i>projects</i> here). A high level
     view of the system is given on <a href="overview.html">this</a>
-    page. The framework consists of two more or less independend
+    page. The framework consists of two more or less independent
     parts:
   </p>
 
   <ul>
-    <li>A machinery to apply recusrsive XSLT transformations that
+    <li>A machinery to apply recursive XSLT transformations that
       produces the UI of the web application. You can learn more about
       this <a href="xml.html">here</a>.</li>
     <li>A Java framework that takes input from the UI to change the
