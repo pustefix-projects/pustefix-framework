@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 public interface PropertyObject {
 
-	/**Initialize newly created instance with Properties object.*/
-	public void init(Properties props) throws Exception;	
+    /**Initialize newly created instance with Properties object.*/
+    public void init(Properties props) throws Exception;	
 
 }

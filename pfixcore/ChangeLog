@@ -1,3 +1,43 @@
+2003-01-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getName): return the supplied name.
+	(getPropertyLoadIndex): removed 
+	(init): new parameter name.
+	(reset_internal):  removed
+	(reset): now handles all reset, as the reload flag for the NavigationFactory is gone.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (tryReloadProperties): also return the value of generator.tryReinit when
+	properties didn't change.
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (tryReinit): return true when depend.xml was reloaded.
+
+	* src/de/schlund/pfixcore/workflow/NavigationFactory.java (getNavigation): remove force_load flag, now
+	the factory checks the modtimes itself and reloads if necessary
+
+	* src/de/schlund/pfixcore/workflow/PageMap.java: 
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: indentation (tab->spaces)
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	(getIHandlerContainer): use IHandlerContainerManager instead of IHandlerContainerFactory
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java (updateIHandlers): remove automatic updating
+	(isPageAccessible): 
+	(areHandlerActive): 
+	(needsData): remove up-to-date check
+
+	* src/de/schlund/pfixxml/PropertyObjectManager.java: 
+	* src/de/schlund/pfixxml/PropertyObject.java: just tab->spaces
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerFactory.java: removed class
+
+	* src/de/schlund/pfixcore/workflow/app/IHandlerContainerManager.java (IHandlerContainerManager): Added class
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (makeContextName): added.
+	(getContext): use it.
+
+	* src/de/schlund/pfixxml/AppContext.java (init): now supply a name argument from the caller
+	
+
 2003-01-24  Joerg Haecker  <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/xpath/PFXPathEvaluatorFactory.java,

@@ -31,14 +31,12 @@ import org.w3c.dom.*;
 /**
  * @author jtl
  *
- *
  */
-
 
 public class ContextXMLServer extends AbstractXMLServer {
     private              Category CAT            = Category.getInstance(ContextXMLServer.class.getName());
-    public  final static String   CONTEXT_SUFFIX = "__CONTEXT__";
-    public  final static String   CONTEXT_CLASS  = "context.class";
+    private final static String   CONTEXT_SUFFIX = "__CONTEXT__";
+    private final static String   CONTEXT_CLASS  = "context.class";
     
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -47,16 +45,17 @@ public class ContextXMLServer extends AbstractXMLServer {
     protected boolean needsSession() {
         return true;
     }
-   
+    
     protected boolean allowSessionCreate() {
         return true;
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
         if (super.tryReloadProperties(preq)) {
-        	PropertyObjectManager.getInstance().resetPropertyObjects(getProperties());
+            PropertyObjectManager.getInstance().resetPropertyObjects(getProperties());
             try {
-                getContext(preq, true);
+                if (preq.getSession(false) != null) 
+                    getContext(preq, true);
             } catch (Exception e) {
                 throw new ServletException("When reloading for Context: " + e);
             }
@@ -65,7 +64,6 @@ public class ContextXMLServer extends AbstractXMLServer {
             return false;
         }
     }
-
     
     public SPDocument getDom(PfixServletRequest preq) throws Exception {
         AppContext context = getContext(preq, false);
@@ -74,7 +72,7 @@ public class ContextXMLServer extends AbstractXMLServer {
     }
 
     private AppContext getContext(PfixServletRequest preq, boolean reset) throws Exception {
-        String        contextname = servletname + CONTEXT_SUFFIX;
+        String        contextname = makeContextName();
         HttpSession   session     = preq.getSession(false);
         ContainerUtil conutil     = getContainerUtil();
         if (session == null) {
@@ -96,14 +94,17 @@ public class ContextXMLServer extends AbstractXMLServer {
         return context;
     }
     
-
+    private String makeContextName() {
+        return servletname + CONTEXT_SUFFIX;
+    }
+    
     private AppContext createContext() throws Exception {
         String contextclass = getProperties().getProperty(CONTEXT_CLASS);
         if (contextclass == null) {
             throw (new XMLException("Need name for context class from context.class property"));
         }
         AppContext context = (AppContext) Class.forName(contextclass).newInstance();
-        context.init(getProperties(), getContainerUtil());
+        context.init(getProperties(), getContainerUtil(), makeContextName());
         return context;
     }
 }
