@@ -13,6 +13,13 @@
     <product name="default">
       <lang name="default">
         <center>
+          <div style="border: 1px solid black">
+            <ixsl:call-template name="pfx:include">
+              <ixsl:with-param name="href">sample1/txt/navigation.xml</ixsl:with-param>
+              <ixsl:with-param name="part">toppp</ixsl:with-param>
+              <ixsl:with-param name="noerror">true</ixsl:with-param>
+            </ixsl:call-template>
+          </div>
           <pfx:forminput target="_top">
             <pfx:errorbox width="500"/>
             <br/>
@@ -31,11 +38,12 @@
             <table bgcolor="#bbccff" class="boxed" width="400">
               <tr valign="top">
                 <td>
-                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label>
+                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label><br/>
                 </td>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-                  <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/>
+                  <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
+                  <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
                 </td>
               </tr>
             </table>
