@@ -103,7 +103,7 @@ or delete the DOCTYPE definition -->
     <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
 
     <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
-    	
+        
   </target>
 
   <path id="cp.classpath">

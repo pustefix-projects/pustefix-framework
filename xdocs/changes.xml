@@ -4,7 +4,7 @@
     <title>Changes</title>
   </properties>
   <body>
-    <release version="0.6.6" date="CVS HEAD">
+    <release version="0.6.6" date="2004-08-03">
       <action dev="mlhartme" type="update">
         Switched from Tomcat 4.1.30 to 5.0.27.
       </action>
