@@ -50,10 +50,11 @@ public class EditorProduct {
     private        Navigation             navigation;
     private        PfixcoreServlet[]      servlets;
     private        PfixcoreNamespace[]    nspaces;
-    private		   EditorDocumentation	  editdoku;
+    private        EditorDocumentation    editdoku;
     
     public EditorProduct (String name, String comment, TargetGenerator generator,
-                          Navigation navigation, PfixcoreServlet[] servlets, PfixcoreNamespace[] nspaces, EditorDocumentation editdoku) {
+                          Navigation navigation, PfixcoreServlet[] servlets, PfixcoreNamespace[] nspaces,
+                          EditorDocumentation editdoku) {
         this.name       = name;
         this.comment    = comment;
         this.generator  = generator;
