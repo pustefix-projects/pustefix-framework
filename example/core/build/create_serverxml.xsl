@@ -4,6 +4,7 @@
 		xmlns:ext="xalan://de.schlund.pfixcore.util.XsltTransformer"
 		>
 
+  <xsl:param name="trusted"/>
   <xsl:include href="create_lib.xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
   
@@ -133,13 +134,17 @@
     <xsl:apply-templates select="/projects/common/apache/passthrough"/>
     <Context path="/manager" debug="0" privileged="true" docBase="server/webapps/manager">
       <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
-      <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="172.17.12.*"/>
+      <Valve className="org.apache.catalina.valves.RemoteAddrValve">
+        <xsl:attribute name="allow"><xsl:value-of select="$trusted"/></xsl:attribute>
+      </Valve>
       <Logger className="org.apache.catalina.logger.FileLogger"
               prefix="localhost_manager_log." suffix=".txt" timestamp="true"/>
     </Context>
     <Context path="/admin" debug="0" privileged="true" docBase="server/webapps/admin">
       <Realm className="org.apache.catalina.realm.UserDatabaseRealm" debug="0" resourceName="UserDatabase"/>
-      <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="172.17.12.*"/>
+      <Valve className="org.apache.catalina.valves.RemoteAddrValve">
+        <xsl:attribute name="allow"><xsl:value-of select="$trusted"/></xsl:attribute>
+      </Valve>     
       <Logger className="org.apache.catalina.logger.FileLogger"
               prefix="localhost_admin_log." suffix=".txt" timestamp="true"/>
     </Context>
