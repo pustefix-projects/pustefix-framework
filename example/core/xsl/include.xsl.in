@@ -48,16 +48,16 @@
                 </ixsl:otherwise>
               </ixsl:choose>
             </td>
-            <td width="1px">
-              <a target="__manager" href="/manager/html">
-                <img border="0" title="Tomcat Manager" src="/core/img/manager.gif"/>
-              </a>
-            </td>  
-            <td width="1px">
-              <a target="__admin" href="/admin">
-                <img border="0" title="Tomcat Admin" src="/core/img/admin.gif"/>
-              </a>
-            </td>  
+<!--             <td width="1px"> -->
+<!--               <a target="__manager" href="/manager/html"> -->
+<!--                 <img border="0" title="Tomcat Manager" src="/core/img/manager.gif"/> -->
+<!--               </a> -->
+<!--             </td>   -->
+<!--             <td width="1px"> -->
+<!--               <a target="__admin" href="/admin"> -->
+<!--                 <img border="0" title="Tomcat Admin" src="/core/img/admin.gif"/> -->
+<!--               </a> -->
+<!--             </td>   -->
             <td width="1px">
               <a target="__xml_source__">
                 <ixsl:attribute name="href">
@@ -91,12 +91,12 @@
             </ixsl:choose>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="5" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               P: <ixsl:value-of select="$page"/>
             </td>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="5" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               F: <ixsl:value-of select="$pageflow"/>
             </td>
           </tr>
