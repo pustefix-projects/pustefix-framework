@@ -12,17 +12,6 @@
         above changes.
         * example/common/conf/factory.prop.in: added delays for perf-logging.
 
-        * src/de/schlund/pfixxml/exceptionprocessor/jms: package with new 
-        implementation of the exceptionprocessor interface which sends exceptions via JMS
-        to an JBoss application server.
-        * src/de/schlund/pfixxml/exceptionprocessor/jms/Cubbyhole.java:
-        Threads from the servlet container store their exceptions here.
-        * src/de/schlund/pfixxml/exceptionprocessor/jms/JmsQueueSenderExceptionProcessor.java:
-        implementation of the exceptionprocessor interface.
-        * src/de/schlund/pfixxml/exceptionprocessor/jms/JmsSender.java: reads
-        exceptions from cubbyhole and sends via JMS.
-        * lib/jbossall-client.jar: needed for j2ee and jboss types.
-
 2004-06-30  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/PerfEventType.java: new class
