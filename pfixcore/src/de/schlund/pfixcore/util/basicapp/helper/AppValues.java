@@ -109,7 +109,7 @@ public final class AppValues {
     public static final String CONFIGATT_DEPEND       = "depend";
     public static final String CONFIGATT_NAME         = "name";
     public static final String CONFIGATT_NAMEPREFIX   = "pfixcore_project:";
-    public static final String CONFIGATT_NAMEPOSTFIX  = "::servlet:config";
+    public static final String CONFIGATT_NAMEPOSTFIX  = "::servlet:";
     public static final String CONFIGTAG_FLOWSTEP     = "flowstep";
     public static final String CONFIGTAG_PAGEREQUEST  = "pagerequest";
     

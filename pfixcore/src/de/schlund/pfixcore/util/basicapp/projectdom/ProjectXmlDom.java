@@ -130,6 +130,7 @@ public final class ProjectXmlDom {
         // the current servlets name
         String curServletName = ((ServletObject)(project.getServletList().
                 get(currentServlet))).getServletName();
+        
         // my new servlet node
         Element myNewServlet       = domDoc.createElement(AppValues.PROJECTTAG_SERVLET);
         Element newServletActive   = domDoc.createElement(AppValues.PROJECTTAG_ACTIVE);
@@ -150,7 +151,7 @@ public final class ProjectXmlDom {
         newServletActive.appendChild(servletActiveChild);
         myNewServlet.appendChild(newServletActive);
         Text myActiveReturn = domDoc.createTextNode("\n");
-        Text myActiveIndent = domDoc.createTextNode("        ");
+        Text myActiveIndent = domDoc.createTextNode("    ");
         myNewServlet.insertBefore(myActiveReturn, newServletActive);
         myNewServlet.insertBefore(myActiveIndent, newServletActive);
         
@@ -158,7 +159,7 @@ public final class ProjectXmlDom {
         servletClass.appendChild(classValue);
         myNewServlet.appendChild(servletClass);
         Text myClassReturn = domDoc.createTextNode("\n");
-        Text myClassIndent = domDoc.createTextNode("        ");
+        Text myClassIndent = domDoc.createTextNode("    ");
         myNewServlet.insertBefore(myClassReturn, servletClass);
         myNewServlet.insertBefore(myClassIndent, servletClass);
         
@@ -166,12 +167,12 @@ public final class ProjectXmlDom {
         newServletPropfile.appendChild(afterDocRootNode);
         newServletPropfile.insertBefore(newDocRootNode,afterDocRootNode);
         Text myPropfileReturn = domDoc.createTextNode("\n");
-        Text myPropfileIndent = domDoc.createTextNode("        ");
+        Text myPropfileIndent = domDoc.createTextNode("    ");
         myNewServlet.appendChild(newServletPropfile);
         myNewServlet.insertBefore(myPropfileReturn, newServletPropfile);
         myNewServlet.insertBefore(myPropfileIndent, newServletPropfile);
         Text lastReturn = domDoc.createTextNode("\n");
-        Text lastIndent = domDoc.createTextNode("    ");
+        Text lastIndent = domDoc.createTextNode("  ");
         myNewServlet.appendChild(lastReturn);
         myNewServlet.appendChild(lastIndent);
         
@@ -179,7 +180,7 @@ public final class ProjectXmlDom {
         Node servletNode = domDoc.getElementsByTagName(
                 AppValues.PROJECTTAG_SERVLET).item(0);
         Text mainServletReturn = domDoc.createTextNode("\n");
-        Text mainServletIndent = domDoc.createTextNode("    ");
+        Text mainServletIndent = domDoc.createTextNode("  ");
         rootNode.insertBefore(myNewServlet, servletNode);
         rootNode.insertBefore(mainServletReturn, servletNode);
         rootNode.insertBefore(mainServletIndent, servletNode);

@@ -23,6 +23,7 @@ import org.w3c.dom.Document;
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.helper.XmlUtils;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
+import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 
 
 /**
@@ -53,6 +54,7 @@ public final class ConfigXmlDom {
         this.domDoc = domDoc;
         projectName = project.getProjectName();
         homeCounter = counter;
+        this.project     = project;
         prepareConfigProp();
     }
     
@@ -80,6 +82,7 @@ public final class ConfigXmlDom {
         buffy.append(AppValues.CONFIGATT_NAMEPREFIX);
         buffy.append(projectName);
         buffy.append(AppValues.CONFIGATT_NAMEPOSTFIX);
+        buffy.append(((ServletObject)project.getServletList().get(homeCounter -1)).getServletName());
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.CONFIGTAG_SERVLETINFO, 
                  AppValues.CONFIGATT_NAME, buffy.toString());
         buffy.setLength(0);

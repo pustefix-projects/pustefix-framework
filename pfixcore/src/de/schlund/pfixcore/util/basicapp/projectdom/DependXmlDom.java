@@ -121,20 +121,22 @@ public final class DependXmlDom {
         
         // setting the amount of servlets in depend.xml
         if (servletAmount > 0) {
-            domDoc = insertServlets(domDoc, servletAmount);
+            domDoc = insertNavigationTags(domDoc, servletAmount);
+            domDoc = insertStandardpageTags(domDoc, servletAmount);
         }
     }
     
     
     /**
      * If the user has decided to use more than one
-     * servlet they must be added to the current dom.
-     * This will happen in this method
+     * servlet, a page for every servlet must be added 
+     * to the current dom.
+     * It will happen here.
      * @param domDoc The current document
      * @param myAmount The amount of servlets, the user
      * wants to add
      */
-    private Document insertServlets(Document domDoc, int myAmount) {
+    private Document insertNavigationTags(Document domDoc, int myAmount) {
         // the node we need is called navigation
         Node navigationNode = domDoc.getElementsByTagName(
                 AppValues.DEPENDTAG_NAVIGATION).item(0);
@@ -162,6 +164,36 @@ public final class DependXmlDom {
         }
         
         navigationNode.appendChild(lastIndent);
+        return domDoc;
+    }
+    
+    
+    /**
+     * Generating the standardpage tag for each site defined 
+     * in the navigation tag.
+     * @return The changed document
+     */
+    private Document insertStandardpageTags(Document domDoc, int servletAmount) {
+        Element rootNode = domDoc.getDocumentElement();
+        Text myReturn    = domDoc.createTextNode("\n");
+        Text firstIndent = domDoc.createTextNode("  ");
+        
+        rootNode.appendChild(firstIndent);
+        
+        for (int i = 0; i < servletAmount; i++) {
+             Text txtIndent     = domDoc.createTextNode("  ");
+             Text txtReturn  = domDoc.createTextNode("\n");
+             
+             Element newStdPage = domDoc.createElement(AppValues.DEPENDTAG_STDPAGE);
+             newStdPage.setAttribute(AppValues.DEPENDATT_NAME, AppValues.DEPENDATT_HOME + (i + 1));
+             newStdPage.setAttribute(AppValues.DEPENDATT_XML, projectName + AppValues.XMLCONSTANT + AppValues.FRAMEXML);
+             
+             rootNode.appendChild(newStdPage);
+             rootNode.appendChild(txtReturn);
+             rootNode.appendChild(txtIndent);
+        }
+        
+        rootNode.appendChild(myReturn);
         return domDoc;
     }
 
