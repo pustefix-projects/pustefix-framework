@@ -259,7 +259,8 @@ public class TestClient {
 
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
         TransformerFactory trans_fac     = TransformerFactory.newInstance();
-        StreamSource       stream_source = new StreamSource(styleDir + "/" + stylesheet_name);
+        String path = styleDir + "/" + stylesheet_name;
+        StreamSource       stream_source = new StreamSource("file://"+path);
         Templates          templates     = null;
         try {
             templates = trans_fac.newTemplates(stream_source);
