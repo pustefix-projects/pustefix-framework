@@ -6,6 +6,8 @@
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
 
   <xsl:param name="java_home"/>
+  <xsl:param name="port"><xsl:apply-templates select="/projects/common/tomcat/connectorport/node()"/></xsl:param>
+
   <xsl:template match="/">
 #
 # NOTE: this is only a sample file, suited for a single machine without any clustering.
@@ -18,8 +20,9 @@ workers.java_home=<xsl:value-of select="$java_home"/>
 worker.list=<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>
 
 ps=/
-worker.router.host=<xsl:apply-templates select="/projects/common/tomcat/jkhost/node()"/>
-worker.router.port=8009
-worker.router.type=ajp13
+worker.<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>.host=<xsl:apply-templates select="/projects/common/tomcat/jkhost/node()"/>
+worker.<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>.port=<xsl:choose><xsl:when test="not(string($port) = '')">
+<xsl:value-of select="$port"/></xsl:when><xsl:otherwise>8009</xsl:otherwise></xsl:choose>
+worker.<xsl:apply-templates select="/projects/common/tomcat/jkmount/node()"/>.type=ajp13
  </xsl:template>
 </xsl:stylesheet>

@@ -1,50 +1,55 @@
+2004-02-25  Jens Lautenbacher  <jtl@coltrane.laudi.ka>
+
+	* example/core/build/create_workersprop.xsl: patched missing customisability of 
+	connectorport and jkmount string  
+	
 2004-02-23  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java,
-        src/de/schlund/pfixxml/exceptionhandler/PFXThreadedHandler.java,
-        src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java,
-        src/de/schlund/pfixxml/exceptionhandler/PFUtil.java:
+	* src/de/schlund/pfixxml/exceptionhandler/PropertyManager.java,
+	src/de/schlund/pfixxml/exceptionhandler/PFXThreadedHandler.java,
+	src/de/schlund/pfixxml/exceptionhandler/PFXHandler.java,
+	src/de/schlund/pfixxml/exceptionhandler/PFUtil.java:
         minor changes
-
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle),
-        src/de/schlund/pfixxml/ServletManager.java(callProcess):
-        removed param HttpServletResponse
+	
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle),
+	src/de/schlund/pfixxml/ServletManager.java(callProcess):
+	removed param HttpServletResponse
         
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java
-        (createMailSubject): format of mail subject changed.
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java
+	(createMailSubject): format of mail subject changed.
         
-        * src/de/schlund/pfixxml/PfixServletRequest.java: new method
-        'getServletName()'.
+	* src/de/schlund/pfixxml/PfixServletRequest.java: new method
+	'getServletName()'.
 
 
 2004-02-20  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/serverutil/SessionHelper.java
-        (saveSessionData, copySessionData, stripUriSessionId): added 
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+	(saveSessionData, copySessionData, stripUriSessionId): added 
         a CAT.warn when catching NullPointerException(!)
-        * src/de/schlund/pfixxml/serverutil/SessionHelper.java:
-        (getClearedURI, getClearedURL, getURLSessionId, encodeURI,
-        encodeURL): removed useless param HttpServletResponse.
-        * src/de/schlund/pfixxml/ServletManager.java: adjusted all
-        calls to SessionHelper
-        * src/de/schlund/pfixxml/PfixServletRequest.java(getRequestURI):
-        removed useless param HttpServletResponse
-        * src/de/schlund/pfixxml/AbstractXMLServer.java: adjusted all
-        calls to PfixServletRequest
-        * src/de/schlund/pfixxml/DerefServer.java: adjusted all
-        calls to SessionHelper
-        * src/de/schlund/pfixxml/testenv/RecordManager.java: adjusted calls
-        to PfixServletRequest
-        * src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java:
+	(getClearedURI, getClearedURL, getURLSessionId, encodeURI,
+	encodeURL): removed useless param HttpServletResponse.
+	* src/de/schlund/pfixxml/ServletManager.java: adjusted all
+	calls to SessionHelper
+	* src/de/schlund/pfixxml/PfixServletRequest.java(getRequestURI):
+	removed useless param HttpServletResponse
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: adjusted all
+	calls to PfixServletRequest
+	* src/de/schlund/pfixxml/DerefServer.java: adjusted all
+	calls to SessionHelper
+	* src/de/schlund/pfixxml/testenv/RecordManager.java: adjusted calls
+	to PfixServletRequest
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
         adjusted calls to PfixServletRequest.
 
 2004-02-18  Joerg Haecker <haecker@schlund.de>
 
-        * src/de/schlund/pfixxml/testenv/*: Added support for retrieving timing information.
-        * src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
-        src/de/schlund/pfixcore/editor/resources/CRTestcase.java,
-        example/core/editor/txt/pages/main_testcaseoverview.xml: Editor update
-        for new features.
+	* src/de/schlund/pfixxml/testenv/*: Added support for retrieving timing information.
+	* src/de/schlund/pfixcore/editor/resources/CRTestcaseImpl.java,
+	src/de/schlund/pfixcore/editor/resources/CRTestcase.java,
+	example/core/editor/txt/pages/main_testcaseoverview.xml: Editor update
+	for new features.
 
 2004-02-16  Jens Lautenbacher  <jtl@schlund.de>
 
