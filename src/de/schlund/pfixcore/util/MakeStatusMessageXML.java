@@ -299,7 +299,7 @@ public class MakeStatusMessageXML {
             DocumentBuilder parser = dbfac.newDocumentBuilder();
             impelems = parser.parse(new InputSource(new StringReader(text))).getDocumentElement().getChildNodes();
         } catch (Exception exp) {
-            CAT.error("*** " + exp.toString());
+            CAT.error("*** " + message + " *** " + exp.toString());
             System.exit(ERR_NOTVALID);
         }
         for (int i = 0; i < impelems.getLength(); i++) {
