@@ -80,7 +80,7 @@
                                   border-color: black;
                                   background-color: #f7dda0; }
         .editor_sidebar_content_sel { background-color: #e9af6a; border: inset 1px;}
-        .editor_page_old { font-weight: bold; font-style: italic; }
+        .editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
         .editor_small { color: #000000; font-size: 9px;
                         font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
         
