@@ -15,12 +15,12 @@
 
   <target name="master.xsl" type="xsl">
     <depxml name="core/xsl/master.xsl"/>
+    <depxsl name="sample1/xsl/custommaster.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/navigation.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
     <depaux name="core/xsl/forminput.xsl"/>
-    <depxsl name="sample1/xsl/custommaster.xsl"/>
     <param name="product" value="sample1"/>
     <param name="lang" value="en"/>
   </target>
@@ -28,11 +28,11 @@
   <!-- ========= metatags =============== -->
 
   <target name="metatags.xsl" type="xsl">
+    <depxml name="sample1/xsl/metatags.xsl"/>
+    <depxsl name="core/xsl/customizestylesheet.xsl"/>
     <depaux name="core/xsl/include.xsl"/>
     <depaux name="core/xsl/default_copy.xsl"/>
     <depaux name="core/xsl/utils.xsl"/>
-    <depxml name="sample1/xsl/metatags.xsl"/>
-    <depxsl name="sample1/xsl/custommetatags.xsl"/>
     <param name="product" value="sample1"/>
     <param name="lang" value="en"/>
   </target>

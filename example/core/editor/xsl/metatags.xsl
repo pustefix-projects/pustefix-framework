@@ -4,7 +4,6 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
-<!--		exclude-result-prefixes="XMP">-->
   
   <xsl:param name="page"/>
   <xsl:param name="navigation"><cus:navigation/></xsl:param>
@@ -17,7 +16,6 @@
   <xsl:include href="core/xsl/include.xsl"/>
   <xsl:include href="core/xsl/utils.xsl"/>
   <xsl:include href="core/xsl/default_copy.xsl"/>
-<!--  <xsl:include href="core/xsl/forminput.doku.xml"/> -->
 
   <xsl:template match="/">
     <xsl:apply-templates/>
