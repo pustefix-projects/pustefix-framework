@@ -49,10 +49,10 @@ public final class IncludeDocumentExtension {
     private static Category     CAT      = Category.getInstance(IncludeDocumentExtension.class.getName());
     private static final String DEFAULT  = "default";
     private static final String NOTARGET = "__NONE__";
-	private static final String XPPARTNAME = "/include_parts/part[@name='";
-	private static final String XPPRODNAME = "/product[@name = '";
-	private static final String XPNAMEEND  = "']";
-
+    private static final String XPPARTNAME = "/include_parts/part[@name='";
+    private static final String XPPRODNAME = "/product[@name = '";
+    private static final String XPNAMEEND  = "']";
+    
     //~ Methods ....................................................................................
 
     /**

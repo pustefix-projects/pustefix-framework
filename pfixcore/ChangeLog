@@ -1,3 +1,10 @@
+2003-04-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/CheckIncludes.java: new class. This is work in progress.
+	It will be used to check for unused includes, maybe automatically deleting them and producing 
+	text excerpts from include parts and other stuff.
+	* example/core/build/unused.xsl: also part of this stuff...
+
 2003-04-09 Joerg Haecker <haecker@schlund.de>
 
 	* docs/Pustefix_testing_guide.txt: improved
@@ -13,6 +20,7 @@
 	* src/de/schlund/pfixxml/testenv/TestClient.java: added more
 	debugging info.
 
+>>>>>>> 1.60
 2003-04-08 Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/TestcaseDeleteHandler.java
