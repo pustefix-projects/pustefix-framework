@@ -284,11 +284,21 @@
         </xmlcodeOFF>
       </pageflow>
       <xmlcodeOFF/>
-      <pagerequest name="APageName">
+      <pagerequest name="APageName" nostore="true">
         <xmlcodeOFF>
           <div class="comment">
-            <code>name</code> is <b>mandatory</b>. It must be the name of a page defined in 
-            the corresponding depend.xml file.
+            <code>name</code> is <b>mandatory</b>. It must be the name
+            of a page defined in the corresponding depend.xml
+            file.<br/>
+            <code>nostore</code> is <b>optional</b>. If given, and set
+            to <code>true</code> makes the page a so called
+            <i>sidestep</i> page. This has the consequence that the
+            resulting DOM tree is not stored in the session (so no
+            frames are possible!) and that the status of the Context
+            object (current page, current pageflow) isn't changed. The
+            use of this feature is to allow for pages to act as
+            e.g. CSS or JavaScript without disturbing the flow of the
+            main pages. See also the section on <code>param</code>s below.
           </div>
         </xmlcodeOFF>
         <state class="AClassName"/>                              
@@ -419,6 +429,7 @@
                   </td>
                 </tr>
               </table>
+              <br/>
             </div>
           </xmlcodeOFF>
         </ihandler>
@@ -498,6 +509,53 @@
               <code>pagerequest.APpageName.APropertyKey=AValue</code> where <code>APageName</code> is the value
               of the <code>name</code> attribute.
             </p>
+            <p>There are some <code>param</code>s that are
+              already defined for
+              <code>de.schlund.pfixcore.workflow.app.StaticState</code>
+              and descendants. These are listed below</p>
+            <br/>
+            <table class="stdtable">
+              <tr>
+                <th>Parameter name</th>
+                <th>Parameter value</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>mimetype</code></td>
+                <td>e.g. <code>text/css</code></td>
+                <td>
+                  If given, sets the mimetype of the HttpResponse object
+                  to something else than the default
+                  <code>text/html</code>.  This is most often used for
+                  <code>text/css</code>.
+                </td>
+              </tr>
+              <tr>
+                <td><code>responseheader.A_HEADER</code></td>
+                <td><code>A_VALUE</code></td>
+                <td>
+                  <p>If given, set the
+                    header <code>A_HEADER</code> of the HttpResponse
+                    object to <code>A_VALUE</code>.
+                  </p>
+                  <p>
+                    NOTE: the <pustefix/> system uses a set of default
+                    headers that are only used, when no user defined
+                    headers are given! The set of default headers is:</p>
+                  <p>
+                    <code>Expires=Mon, 26 Jul 1997 05:00:00 GMT</code><br/>
+                    <code>Pragma=no-cache</code><br/>
+                    <code>Cache-Control=no-cache, no-store, private, must-revalidate</code>
+                  </p>
+                  <p>
+                    If you want to use some of them in addition to your
+                    own headers, you <b>must</b> manually supply them,
+                    too.
+                  </p>
+                </td>
+              </tr>
+            </table>
+            <br/>
           </div>
         </xmlcodeOFF>
       </pagerequest>

@@ -126,7 +126,7 @@
       <target name="another_target_name.xml" type="[xsl|xml]">...</target>
       ...
       <standardpage name="a_page_name"       xml="a_base_xml_file.xml">...</standardpage>
-      <standardpage name="another_page_name" xml="a_base_xml_file.xml">...</standardpage>
+      <standardpage name="another_page_name" xml="a_base_xml_file.xml" outputmethod="text">...</standardpage>
       ...
       <xmlcodeOFF>
         <div class="comment">
@@ -254,7 +254,7 @@
   The <code>standardpage</code> tag is a convenience tag that encapsulates the typical definition of
   a complete page in the <pustefix/> system.
   <xmlcode>
-    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml"/>
+    <standardpage name="home"  xml="MyProject/xml/SampleLayout.xml" outputmethod="text"/>
     <xmlcodeOFF>
       <table class="stdtable">
         <tr>
@@ -269,6 +269,13 @@
           <td>xml</td>
           <td>The name of a xml target to use as input for the "metatags transformation". Often this is a leaf target and
             one of the projects <i>structural xml files</i> (see <a href="xml.html">here</a>).</td>
+        </tr>
+        <tr>
+          <td>outputmethod</td>
+          <td>This attribute is optional. You can use it to change the output method for the runtime transformation
+            from the default <b>html</b> to other supported output methods (<b>text</b>, <b>xml</b>). This is useful if the
+            page is used to e.g. generate JavaScript. Setting the output method to <i>text</i> will prevent <b>&lt;</b> to
+            be encoded as <b>&amp;lt;</b> in the output.</td>
         </tr>
       </table>
       <br/>
@@ -295,6 +302,12 @@
         <div class="comment">
           As mentioned above, the transformation <code>depend.xml.in</code> => <code>depend.xml</code>
           inserts a <code>param</code> called <code>docroot</code>.
+        </div>
+      </xmlcodeOFF>
+      <param name="outputmethod" value="text"/>
+      <xmlcodeOFF>
+        <div class="comment">
+          Only if the outputmethod attribute is given, this parameter will be supplied to the master transformation.
         </div>
       </xmlcodeOFF>
     </target><xmlcodeOFF/>
