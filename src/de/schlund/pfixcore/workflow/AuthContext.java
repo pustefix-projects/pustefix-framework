@@ -43,9 +43,8 @@ public class AuthContext extends Context {
         authpage = new PageRequest(authpagename);
     }
 
-    protected SPDocument documentFromCurrentStep(PfixServletRequest preq, boolean skip_on_error) throws Exception {
-        SPDocument spdoc = null;
-        
+    public SPDocument checkAuthorization(PfixServletRequest preq) throws Exception {
+        SPDocument  spdoc = null;
         // Push the authpage to be the current PageRequest
         PageRequest saved = getCurrentPageRequest();
         if (saved.getStatus() == PageRequestStatus.WORKFLOW) {
@@ -59,6 +58,12 @@ public class AuthContext extends Context {
         CAT.debug("-----------------> BACK FROM AUTHPAGE");
         // Pop back to the nominally current PageRequest
         setCurrentPageRequest(saved);
+        return spdoc;
+    }
+    
+    protected SPDocument documentFromCurrentStep(PfixServletRequest preq, boolean skip_on_error) throws Exception {
+
+        SPDocument spdoc = checkAuthorization(preq);
         
         // But only call it if the authentication state returned a null document 
         if (spdoc == null) {

@@ -160,11 +160,14 @@
   <part name="text">
     <product name="default">
       <lang name="default">
-          <b>Euro sign <font face="arial">€</font> is written
-            &apos;&amp;#128;&apos;!!</b>
-          <br/>
-          <br/>
-          <pfx:image src="/sample1/img/test.gif"/>
+        <b>Euro sign <font face="arial">€</font> is written
+          &apos;&amp;#128;&apos;!!</b>
+        <br/>
+        <br/>
+        <pfx:button page="install">Download INSTALL.ps</pfx:button>
+        <br/>
+        <br/>
+        <pfx:image src="/sample1/img/test.gif"/>
       </lang>
     </product>
   </part>

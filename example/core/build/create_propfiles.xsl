@@ -35,6 +35,19 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template match="foreigncontext">
+    <xsl:text>foreigncontextservlet.foreignservletname=</xsl:text>
+    <xsl:value-of select="@externalservletname"/><xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="directoutputpagerequest">
+    <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
+    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
+    <xsl:value-of select="./directoutputstate/@class"/><xsl:text>&#xa;</xsl:text>
+    <xsl:apply-templates select="./param">
+      <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/></xsl:with-param>
+    </xsl:apply-templates>
+  </xsl:template>
 
   <xsl:template match="pagerequest">
     <xsl:variable name="name"><xsl:value-of select="@name"/></xsl:variable>
