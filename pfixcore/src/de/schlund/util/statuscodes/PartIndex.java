@@ -33,7 +33,7 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 
-/** not synchronize! **/
+/** not synchronized! **/
 
 public class PartIndex {
     private final static Category  LOG      = Category.getInstance(PartIndex.class.getName());

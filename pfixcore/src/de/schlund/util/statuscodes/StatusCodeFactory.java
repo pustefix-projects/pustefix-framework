@@ -28,8 +28,6 @@ public class StatusCodeFactory {
         return instance;
     }
     
-    //--
-    
     private final String domain;
     
     public StatusCodeFactory() {
