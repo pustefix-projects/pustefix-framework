@@ -79,21 +79,37 @@
     </tr>
     <tr>
       <td>
-        A unixoid OS. 
+	        A unixoid OS. 
+	    </td>
+      <td>
+                          Yes, java should be platform independent.
+          Unfortunately portions of the build environment and code
+          are unix specific. Although these platform independant
+          portions mainly deal with file system path secifications -
+          they exist. There may be even more places where the thing
+          wouldn't work on win32.
+	    </td>
+    </tr>
+    <tr>
+      <td>
+        <a href="http://java.sun.com/j2se/">J2SE &gt;= 1.4.1</a>
       </td>
       <td>
-        Yes, java should be platform independent. Unfortunately the
-        whole build environment is unix specific, and the code itself
-        doesn't abstract away from path separators for example. There may
-        be even more places where the thing wouldn't work under win32.
+        The Java 2 Platform, Standard Edition (aka Java Development Kit)
+        in version 1.4.1 or higher.
       </td>
     </tr>
     <tr>
       <td>
-        <a href="http://java.sun.com/">JDK &gt;= 1.4.1</a>
+        <a href="http://ant.apache.org/">ant</a>
       </td>
       <td>
-        The Java Development Kit.
+          Apache Ant, the Java-based build tool in version 1.5.4 or higher.
+          If you have really large projects consider increasing the memory
+          for the java vm ant runs in: To do this set the ANT_OPTS
+          environment variable to something like "-mx200m". This variable
+          is evaluated within the ant start script contained in the ant
+          distribution.
       </td>
     </tr>
     <tr>
@@ -102,13 +118,12 @@
       </td>
       <td>
         Jikes is a blazingly fast java compiler from IBM. You need it in order for the build environment to work out of the box.
-        If you want to use javac, this should be no problem, but be prepared to poke (a little bit) in the Makefiles of the skeleton
-        application or the CVS checkout. 
+        If you want to use javac, this is no problem, adjust the ant property build.compiler to value modern and javac will be used.
       </td>
     </tr>
     <tr>
       <td>
-        <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/builds/jakarta-tomcat-4.0/release/v4.0.6/src/">mod_jk</a>
+        <a href="http://httpd.apache.org/">Apache</a> + <a href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/jk2/jk/aphowto.html">mod_jk</a>
       </td>
       <td>
         A working installation of the Apache webserver (complete with

@@ -42,7 +42,7 @@
     <li>
       The value of the <b>MAKE_MODE</b> environment variable, or
       "<b>test</b>" if the variable is not set (the default behavior
-      can be changed by tweaking the makefiles). This can be used to
+      can be changed by tweaking the build.xml files). This can be used to
       easily switch preferences depending on the "mode" that is active
       when the application is made, e.g. "test" on the development
       machines, and "prod" on the production servers. The value is supplied as the parameter <code>mode</code>.

@@ -18,6 +18,7 @@
     <property name="javac.source"           value="1.4"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
+    <property name="gen"                    value="**/depend.xml"/>
     <property name="dir.src"                location="src"/>
     <property name="dir.build"              location="build"/>
     <property name="dir.lib"                location="lib"/>
@@ -67,10 +68,13 @@
         </condition>
         <fail message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use." unless="javahome"/>
         
-        <condition property="prohibitedit" value="no">
-            <equals arg1="${makemode}" arg2="test"/>
+        <condition  property="prohibitedit" value="no">
+            <or>
+                <equals arg1="${makemode}" arg2="test"/>
+                <equals arg1="${makemode}" arg2="stage"/>
+            </or>
         </condition>
-        <property  name="prohibitedit"     value="yes"/>
+        <property       name="prohibitedit" value="yes"/>
         
         <condition property="debug"        value="true">
             <equals arg1="${makemode}" arg2="test"/>
@@ -146,7 +150,7 @@
     </target>
     
     <target name="generate" depends="targetdefs, stylesheets, compile, installjars" description="Generates Targets to ${dir.projects}/.cache">
-        <pfx-generate dir="${dir.projects}" includes="**/depend.xml" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
+        <pfx-generate dir="${dir.projects}" includes="${gen}" log4jconfig="${file.log4jconfig}" excludes="${excludes.projects}"/>
         <echo message="If build dies with an OutOfMemoryException, set and export environment variable ANT_OPTS to something like ANT_OPTS=&quot;-ms200m -mx200m&quot;."/>
         <echo message="As an alternative try target generate-mx, which forks an external java vm with more Heap Memory."/>
     </target>
@@ -238,15 +242,15 @@
         <exec executable="sh">
             <arg line="-c &quot;test ! -L ${dir.projects}/servletconf/tomcat/classes/de &amp;&amp; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/classes/de || true&quot;"/>
         </exec>
-        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
-        <!-- only deleting symlinks pointing to non existent files, assuming jar files -->
-        <!-- replaced by new versions (with a new filenames) do not exist anymore -->
+        <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
+        <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
+        <!-- replaced by new versions (with new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat/lib"/>
             <arg line="-iname *.jar -a -type l -a -xtype f -exec rm -v {} ;"/>
         </exec>
-        <!-- delete regular *-res.jar files but the current *-res.jar version,
-             as the version might have been updated -->
+        <!-- As version might have been updated,
+             delete all *-res.jar files but the current *-res.jar version -->
         <delete>
             <fileset
                 dir="${dir.projects}/servletconf/tomcat/lib"
@@ -304,7 +308,7 @@
             />
     </target>
 
-    <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="Creates a DTD for this build file.">
+    <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
         <!-- DTD generated does not describe this build file thorough. It can't be used 
              for complete validation though it may be useful for auto competion within IDEs.
              The Element not generated is the nested type "param" used within the custom ant-tasks -->
@@ -401,6 +405,7 @@
             <tarfileset dir="${dir.dist}" includes="${name.pfixcore_data_tgz}" prefix="skel/lib"/>
             <tarfileset dir="${dir.projects}/servletconf/tomcat" includes="bin/**, common/**, server/**" prefix="skel/projects/servletconf/tomcat"/>
             <tarfileset dir="${basedir}" includes="ant.dtd" prefix="skel"/>
+            <tarfileset dir="${basedir}" includes="INSTALL" prefix="skel"/>
         </tar>
     </target>    
 
@@ -683,12 +688,79 @@
         </pfx-xslt>
     </target>
     
+    <description>
+Targets
+-------
+all [default]:  Builds all files required to run ./startTomcat.sh
+compile:        Compiles all java files.
+generate:       Generates all top level targets to 
+                ${dir.projects}/.cache
+help:           What you are reading at the moment
+run/debug:      Runs tomcat. Advantage over ./startTomcat.sh:
+                Ensures all files are build before
+                starting tomcat. Drawback: As tomcat is started
+                as an external process, there is one more java vm
+                in memory, that does nothing but waiting for tomcat
+                to exit.
+generate-src:   Generates .java from .iwrp files
+checkfiles:     Searches .xml files for unused include parts and
+                writes report to dir.projects/CHECKOUTPUT.xml
+noop:           Echos the name of the project
+clean:          Deletes files created by target all.
+echoproperties: Dumps all properties and exits.
+    
+Properties
+----------
+makemode
+  value:       test|stage|prod
+  environment: MAKE_MODE
+  default:     prod
+javahome
+  value:       location of the root directory of the j2se installation
+               used for generation of
+               ${dir.projects}/servletconf/tomcat/workers.prop
+  environment: PFX_JAVA_HOME, JAVA_HOME
+  default:     -         
+gen
+  value:       include pattern for searching depend.xml files
+               for target generate. E.g. for generating only
+               project1 and project2 use: ant
+               -Dgen="project1/**/depend.xml, project2/**/depend.xml"
+               For more info on pattern matching see
+               http://ant.apache.org/manual/dirtasks.html#patterns
+  environment: -
+  default:     **/depend.xml
+build.compiler:
+  value:       jikes, modern, ...
+               see http://ant.apache.org/manual/CoreTasks/javac.html
+  environment: -
+  default:     jikes         
+debugopts:
+  value:       see java -X
+  environment: -
+  default:     ${debugopts}        
+
+Note about Properties
+---------------------
+This build file defines several targets and properties. Targets
+are a collection of actions, that may depend on the execution of
+other targets and can be parametrized by setting properties.
+Ant properties are immutable, so for customization of the build
+process, knowledge about the order of definition is essential.
+Order of definition:
+1) Commandline. E.g. ant -Dproperty=value
+2) If file ${basedir}/build.properties exists it is read
+3) Environment variables are loaded as properties with prefix "env."
+4) Target "properties": Many targets using properties depend on task
+   "properties". Within this target, properties whose values depend on
+   the values of other properties are defined.
+
+    </description>    
+
 </project>
 
 <!-- Cut 'n' Paste "Buffer"
 -->
-
-
 
 <!--
 Local Variables:
