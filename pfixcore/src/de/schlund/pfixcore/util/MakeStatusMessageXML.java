@@ -57,7 +57,7 @@ public class MakeStatusMessageXML {
     private static final int                    ERR_NOTVALID     = -7;
     private static final int                    ERR_REMNA        = -8;
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         MakeStatusMessageXML maker = new MakeStatusMessageXML();
         StatusCodeFactory    scfac = new StatusCodeFactory();
         Properties           props = new Properties();
