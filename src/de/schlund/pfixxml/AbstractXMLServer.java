@@ -110,7 +110,7 @@ public abstract class AbstractXMLServer extends ServletManager {
 	private static final String PROP_XMLONLY_NOT_ENABLED_VALUE = "true";
 	private static final String PROP_XMLONLY_ENABLED_VALUE = "false";
 	private static final String PROP_XMLONLY_RESTRICTED_VALUE = "restricted";
-	private static final String PROP_XMLONLY_RESTRICTED_HOSTS_KEY = "xmlserver.noxmlonlyallowed.host";
+	private static final String PROP_XMLONLY_RESTRICTED_HOSTS_KEY = "xmlserver.xmlonlyallowed.host";
 	
 	// record mode
 	private static final String PROP_RECORDMODE_KEY  = "xmlserver.recordmode_allowed";
@@ -567,7 +567,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         // Check if we are allowed and should just supply the xml doc
-		plain_xml = isXMLOnlyCurrentlyAllowed(preq);
+		plain_xml = isXMLOnlyCurrentlyEnabled(preq);
 		
         if (!render_external && !plain_xml) {
             PublicXSLTProcessor xsltproc = TraxXSLTProcessor.getInstance();
@@ -631,7 +631,7 @@ public abstract class AbstractXMLServer extends ServletManager {
      * plain xml is allowed or the client host is valid in
      * restricted mode, false if plain xml is prohibited.
      */
-    boolean isXMLOnlyCurrentlyAllowed(PfixServletRequest pfreq) {
+    boolean isXMLOnlyCurrentlyEnabled(PfixServletRequest pfreq) {
 		if(isXMLOnlyAllowed == XML_ONLY_ALLOWED) {
         	RequestParam doplainxml = pfreq.getRequestParam(PARAM_XMLONLY);
         	if (doplainxml != null && doplainxml.getValue().equals("1")) {
