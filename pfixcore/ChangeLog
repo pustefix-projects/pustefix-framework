@@ -1,3 +1,8 @@
+2004-06-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument):
+	fixed handling of user supplied response headers and response errors
+
 2004-06-02  Jens Lautenbacher  <jtl@schlund.de>
 
         * released 0.5.4e
