@@ -69,14 +69,16 @@ import javax.swing.border .*;
 
 
 
-public class PfixIncludeDialog extends JFrame implements ItemListener, ActionListener, TreeSelectionListener{
+public class PfixIncludeDialog extends JFrame implements ItemListener, ActionListener, TreeSelectionListener,WindowListener{
 
     // JFrame dialogFrame;
     GridBagLayout gridbag;
 
     URL ucont;
 
-    
+    JTabbedPane jTabbedPane = new JTabbedPane();
+
+    // Panels
     JPanel panel;
     JPanel incPanel;
     JPanel imgPanel;
@@ -86,48 +88,69 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     JPanel imgbutPanel;
     JPanel imgFilter;
 
+    // Buttons
     JButton imgbutton;
     JButton button;
-
-    ImageIcon neuImg;    
     JButton but;
+    JButton close;
+    JButton imgclose;
 
+    // ImageIcons
+    ImageIcon neuImg;    
+    
+    // Labels
     JLabel img;
     JLabel incText;
+
+    // Trees
     JTree tree;
     JTree jimagetree;
         
 
+    // Text Field -- Not Needed at the Moment, maybe used later
     JTextField incTextField;
-    
 
-    JTabbedPane jTabbedPane = new JTabbedPane();
+    // Not needed
     JComboBox combox;
     JComboBox imbox;
 
     String [] incElements;
     String [] incImages;
-
     String documentBase;
     String host;
-    PfixTextPane syntaxPane;
-
-    String actInclude = "";
-    String actImage = "";
-
+    String actInclude;
+    String actImage;
+    
+    PfixTextPane syntaxPane;    
     PfixAppletInfo info;
 
+    PfixAppletNeu applet;
+
+
+    // buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
     
-    public PfixIncludeDialog(String docBase, PfixTextPane pane) {
+    // buttonPanel.add(button, BorderLayout.EAST);
+    // buttonPanel.add(hideButton, BorderLayout.WEST);
+        
+
+    
+    public PfixIncludeDialog(String docBase, PfixTextPane pane, PfixAppletNeu japplet) {
         super();
-
+        
         this.documentBase = docBase;
+        this.applet = japplet;
+        actInclude = "";
+        actImage = "";
 
+        // Getting Informations from the Webserver
         info = new PfixAppletInfo(documentBase);
 
         setHost(this.documentBase);
         
         syntaxPane = pane;
+
+
+        // Building Layout
         panel = new JPanel();
 
         // panel.setMinimumSize(new Dimension(300,300));
@@ -138,8 +161,8 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         panel.setLayout(new BorderLayout());
         
         setTitle("PfixDialog Includes/Images");
-        
-        System.out.println("Hier noch ");
+
+        // Building the Tabs
         createTabInc();
         createTabImg();
         
@@ -148,9 +171,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         // jTabbedPane.setSize(new java.awt.Dimension(550, 400));
         // jTabbedPane.setMinimumSize(new Dimension(300,300));
 
-        // jTabbedPane.add(label);
-
-        
+        // jTabbedPane.add(label);        
         jTabbedPane.addTab("Includes", incPanel);
         jTabbedPane.addTab("Images", imgPanel);                       
 
@@ -158,19 +179,19 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         // Dimension dim = new Dimension(600,400);
         // setSize(dim);
 
-        // tree = new PfixTree(incTextPanel, info.getRealElements());
-
-        this.tree = buildTree(info.getRealElements());
+        tree = buildTree(info.getRealElements());
         tree.addTreeSelectionListener(this);
         tree.setRootVisible(false);
         // tree.setMinimumSize(new Dimension(200,200));
 
         selPanel.add(new JScrollPane(tree), BorderLayout.CENTER);
+
+        // Opens all Nodes in the Tree
         expandAll(this.tree);
 
-        this.jimagetree = buildTree(info.getRealImages());
+        jimagetree = buildTree(info.getRealImages());
         jimagetree.addTreeSelectionListener(this);
-        // imgFilter.add(new JScrollPane(jimagetree), GridBagConstraints.WEST);
+        // imgFilter.add(new JScrollPane(jimagetree), GridBagConstraints.WEST);        
         expandAll(this.jimagetree);
 
         but = new JButton();
@@ -181,11 +202,6 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         setLocation(350,250);
         setVisible(true);
         //setResizable(false);
-
-        // Dimension minimumSize = new Dimension(200, 150);
-        // setMinimumSize(minimumSize);
-
-        // this.MinimumSize = new Dimension(200,150);
         
         tree.getSelectionModel().setSelectionMode
             (TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -193,7 +209,8 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         jimagetree.getSelectionModel().setSelectionMode
             (TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-        jimagetree.setRootVisible(false);        
+        jimagetree.setRootVisible(false);
+        
         pack();
         show();
 
@@ -206,7 +223,6 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
     private void createGridBagLayout() {
-
         imgFilter = new JPanel();
         
         JSplitPane jsp = new JSplitPane();        
@@ -224,8 +240,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
             neuImg = new ImageIcon(urli);
         }
         catch (Exception e ) {
-            System.out.println("Background Image not Found");
-                     
+            System.out.println("Background Image not Found");                     
         }
         
         JPanel imgButPanel;
@@ -234,6 +249,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
             imgButPanel = new JPanel(){
                     public void paintComponent(Graphics g)	{
                         ImageIcon bgImage = new ImageIcon(ucont);
+                        
                         g.drawImage(bgImage.getImage(), 0, 0, this);
                         super.paintComponent(g);
                         
@@ -264,14 +280,11 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         // JPanel neu = imgButPanel;
 
         imgButPanel.setLayout(new BorderLayout());
+
+        // setting Transparent-Background
         but.setOpaque( false );
         but.setBorder(new EmptyBorder(0,0,0,0));
         imgButPanel.add(but, BorderLayout.CENTER);
-
-        // JButton bla = new JButton("Bla");
-        // neu.add(bla, BorderLayout.SOUTH);
-
-
         
         jsp.setRightComponent(imgButPanel);
         GridBagLayout grid = new GridBagLayout();        
@@ -287,15 +300,12 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         
         imgFilter.add(jsp);
         imgPanel.add(imgFilter, BorderLayout.NORTH);
-
-                
-        
-
         
     }
 
 
 
+    // Creating the Include-Tab
     private void createTabInc() {
         incPanel = new JPanel();
         selPanel = new JPanel();
@@ -317,16 +327,20 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         incTextPanel.add(incText, BorderLayout.WEST);
         incTextPanel.add(incTextField, BorderLayout.CENTER);
 
+        // Creating Button Panel
         button = new JButton("Choose");
+        close = new JButton("Close");
         button.addActionListener(this);
-
-        // getDocument();
-       
-        selPanel.setLayout(new BorderLayout());
+        close.addActionListener(this);       
+        
         butPanel.setLayout(new BorderLayout());
+        butPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
         // selPanel.add(combox, BorderLayout.NORTH);
-        butPanel.add(button, BorderLayout.CENTER);
+        butPanel.add(button, BorderLayout.EAST);
+        butPanel.add(close, BorderLayout.WEST);
+
+        selPanel.setLayout(new BorderLayout());
         
         
         incPanel.add(selPanel, BorderLayout.NORTH);
@@ -336,32 +350,33 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
     
-
+    // Creating the Image-Tab
     private void createTabImg() {
         imgPanel = new JPanel();
         img = new JLabel("Choose Another Image");
         imgPanel.setLayout(new BorderLayout());
         // getImages();
         // imgPanel.add(imbox, BorderLayout.NORTH);
-
-        // imgFilter = new JPanel();
-        // gridbag = new GridBagLayout();
-        // imgFilter.setLayout(gridbag);
-
+        
         imgbutton = new JButton("Choose");
+        imgclose = new JButton("Close");
         imgbutton.addActionListener(this);
+        imgclose.addActionListener(this);
         imgbutPanel = new JPanel();
 
         imgbutPanel.setLayout(new BorderLayout());
-        imgbutPanel.add(imgbutton, BorderLayout.CENTER);
+        imgbutPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        imgbutPanel.add(imgbutton, BorderLayout.EAST);
+        imgbutPanel.add(imgclose, BorderLayout.WEST);
         imgPanel.add(imgbutPanel, BorderLayout.SOUTH);
-        // imgPanel.add(imgFilter, BorderLayout.NORTH);
         
     }
 
 
+
+    // * Method not in use at the Moment, Combo-Box is replaced by
+    // * the JTree --> Will be removed l8ter
     private void getDocument() {
-        // PfixAppletInfo info = new PfixAppletInfo(documentBase);
         
         incElements = info.getIncludeElements();
         incImages = info.getImages();
@@ -382,8 +397,9 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
 
+    // * Method not in use at the Moment, Combo-Box is replaced by
+    // * the JTree --> Will be removed l8ter
     private void getImages() {
-        // PfixAppletInfo info = new PfixAppletInfo(documentBase);
                
         imbox = new JComboBox();
         imbox.addItemListener(this);
@@ -399,7 +415,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
 
 
 
-
+    // Setting the Host Name
     public void setHost(String base) {
         int pos = 0;
                     
@@ -413,7 +429,8 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         this.host = documentBase.substring(0, pos);
     }
 
-
+    
+    // Returns the Host Name
     public String getHost() {
         return this.host;
     }
@@ -421,8 +438,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     
 
 
-    // this method isnt needed at the Moment, and will be removed l8ter
-    
+    // this method isnt needed at the Moment, and will be removed l8ter    
     public void itemStateChanged(ItemEvent e) {        
         
         for (int i=0; i<incElements.length; i++) {
@@ -466,7 +482,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                         if ((but == null)) {
                              but = new JButton(neuImg);
                              imgPanel.add(but, BorderLayout.SOUTH);
-                             System.out.println("Here bin ische drinne !!");
+                             // System.out.println("Here bin ische drinne !!");
                         }
                         else {
                             but.setIcon(neuImg);
@@ -490,21 +506,36 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     
 
     public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == close) {
+            // stop();
+            applet.setFrameShow(false);
+            dispose();
+        }
+
+        if (e.getSource() == imgclose) {
+            applet.setFrameShow(false);
+            dispose();
+        }
+        
+        
         if (e.getSource() == button) {
-            syntaxPane.insertTag(actInclude);
-             
+            applet.setIncText(actInclude);             
         }
 
         if (e.getSource() == imgbutton) {
-            syntaxPane.insertTag(actImage);
+            System.out.println("ActImage : " + actImage);
+            applet.setIncText(actImage);
             
         }
         
     }
 
 
-    
+
+    // Method builds the JTree
     public JTree buildTree(String [] url) {
+        
         JTree temptree;
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Hallo");
@@ -514,6 +545,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
     
 
         for (int i=0; i<url.length; i++) {
+            
             root_neu = root;
 
             String path = url[i];
@@ -532,8 +564,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                     temp_node = (DefaultMutableTreeNode) en.nextElement();
                     String tempStr = temp_node.toString();
                     // System.out.println("Found:" +  tempStr);
-                    // System.out.println("Knoten " + temp_node);
-                    
+                    // System.out.println("Knoten " + temp_node);                    
                     
                     if (tempStr.equals(knoten)) {
                         found = true;
@@ -544,9 +575,7 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                     else {
                         found = false;                                
                         
-                    }
-                    
-                    
+                    }                    
                     
                 }
                 
@@ -558,11 +587,10 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                     root_neu.add(node);
                     root_neu = node;
                     
-                    // System.out.println("Root-Knoten: " + root_neu.toString());
-                
-                
+                    // System.out.println("Root-Knoten: " + root_neu.toString());                
                 }
-            
+
+                
                 else {
                     if (found) {
                         // System.out.println("Knoten Found");
@@ -599,16 +627,11 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
             
             DefaultMutableTreeNode element = new DefaultMutableTreeNode(path);
             root_neu.add(element);
-        }
-        
-        
+        }        
         temptree = new JTree(treeModel);
         temptree.addTreeSelectionListener(this);
         
-        return temptree;
-                
-
-        
+        return temptree;        
     }
 
 
@@ -725,18 +748,10 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
                 System.out.println("Error while getting nodes");
             }
 
-        }
-        
-
-
-
-
-
-        
+        }        
     }
 
     public void expandAll(JTree temptree) {
-
         Enumeration e = ((DefaultMutableTreeNode) temptree.getModel().getRoot()).depthFirstEnumeration();
         for (; e.hasMoreElements();) {
             TreePath t = new TreePath(((DefaultMutableTreeNode)e.nextElement()).getPath());
@@ -749,11 +764,36 @@ public class PfixIncludeDialog extends JFrame implements ItemListener, ActionLis
         String pfad = new String();
         for (int i = 1; i < trnode.length; i++) {
             // System.out.println(trnode[i].toString());
-            pfad = pfad + trnode[i].toString() + "/";
-            
+            pfad = pfad + trnode[i].toString() + "/";            
         }
         return pfad;
     }
 
+
+
+    
+    public void windowActivated(WindowEvent e)    {
+    }
+    
+    public void windowClosed(WindowEvent e) {
+    }
+    public void windowClosing(WindowEvent e) {
+        // System.exit(0); // Exit program
+        applet.setFrameShow(false);
+    }
+    public void windowDeactivated(WindowEvent e)    {
+    }
+    public void windowDeiconified(WindowEvent e)    {
+    }
+    public void windowIconified(WindowEvent e)    {
+    }
+    public void windowOpened(WindowEvent e)    {
+    }
+    
+
+
+
+
+    
     
 }

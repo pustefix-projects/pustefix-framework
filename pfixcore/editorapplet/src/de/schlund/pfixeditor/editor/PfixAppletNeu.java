@@ -140,6 +140,7 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
 
     // Boolean Pack
     boolean pack = false;
+    boolean frameShow = false;
 
     String [] incElements;
 
@@ -594,7 +595,12 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         // }
 
         if (e.getSource() == tagMenu) {
-            PfixIncludeDialog incDialog = new PfixIncludeDialog(getDocumentBase().toString(), syntaxPane);             
+            if (!getFrameShow()) {
+                 PfixIncludeDialog incDialog = new PfixIncludeDialog(getDocumentBase().toString(), syntaxPane, this);
+                 setFrameShow(true);
+            }
+            
+                        
         }
         
         
@@ -614,8 +620,10 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         }
 
         if (e.getSource() == tagClose) {
-            syntaxPane.closeFinalTag();
-            syntaxPane.hilightAll();
+             syntaxPane.closeFinalTag();
+             syntaxPane.getDocument().removeUndoableEditListener(undolistener);
+             syntaxPane.hilightAll();
+             syntaxPane.getDocument().addUndoableEditListener(undolistener);
         }
         
         if (e.getSource() == searchedit) {
@@ -665,11 +673,29 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
         syntaxPane.getDocument().addUndoableEditListener(undolistener);
         frame.show();
     }
+
+
+
+
+
+    
+    public void setIncText(String text) {
+        if (text != null) {            
+            syntaxPane.insertTag(text);
+            syntaxPane.getDocument().removeUndoableEditListener(undolistener);
+        }
+        colorize();
+        syntaxPane.getDocument().addUndoableEditListener(undolistener);
+    }
+    
+
     
     public String getText() {
         String text = syntaxPane.getText();
         return text;
     }
+
+    
 
     public void find() {
         String tSearchFor = JOptionPane.showInputDialog(frame, "Search");
@@ -746,6 +772,27 @@ public class PfixAppletNeu extends JApplet implements DocumentListener, ActionLi
               }*/
     }
 
+
+
+    public void setFrameShow(boolean bol) {
+        this.frameShow = bol;
+    }
+
+    public boolean getFrameShow() {
+        return frameShow;
+    }
+
+
+
+    
+
+    public void stopUndo() {
+        syntaxPane.getDocument().removeUndoableEditListener(undolistener);
+    }
+
+    public void startUndo() {
+        syntaxPane.getDocument().addUndoableEditListener(undolistener);
+    }
 
     protected class MyUndoableEditListener implements UndoableEditListener {
         public void undoableEditHappened(UndoableEditEvent e) {
