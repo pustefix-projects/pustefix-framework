@@ -23,6 +23,8 @@ package de.schlund.pfixxml;
 
 
 import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
@@ -47,11 +49,11 @@ import org.apache.log4j.Category;
  * Created: Wed May  8 16:39:06 2002
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
+ * @version $Id$
  */
 
 public abstract class ServletManager extends HttpServlet {
-   
+
     public  static final String STORED_REQUEST     = "__STORED_PFIXSERVLETREQUEST__";
     public  static final String SESSION_IS_SECURE  = "__SESSION_IS_SECURE__";
     public  static final String VISIT_ID           = "__VISIT_ID__";
@@ -63,20 +65,22 @@ public abstract class ServletManager extends HttpServlet {
     private static final String TEST_COOKIE        = "__PFIX_TEST__";
     private static final String SESSID_COOKIE      = "__PFIX_CURRENT_SESS__";
     public  static final String CHECK_FOR_RUNNING_SSL_SESSION = "__CHECK_FOR_RUNNING_SSL_SESSION__";
+    private static final String PROP_EXCEPTION     = "exception";
     private static       String TIMESTAMP_ID       = "";
     private static       int    INC_ID             = 0;
 
-    private SessionAdmin     sessionadmin  = SessionAdmin.getInstance();
-    private Category         LOGGER_VISIT  = Category.getInstance("LOGGER_VISIT");
-    private Category         CAT           = Category.getInstance(ServletManager.class);
-    private ExceptionHandler xhandler      = ExceptionHandler.getInstance();
-    private long             common_mtime  = 0;
-    private long             servlet_mtime = 0;
-    private long             loadindex     = 0;
+    private SessionAdmin     sessionadmin     = SessionAdmin.getInstance();
+    private Category         LOGGER_VISIT     = Category.getInstance("LOGGER_VISIT");
+    private Category         CAT              = Category.getInstance(ServletManager.class);
+    private ExceptionHandler xhandler         = ExceptionHandler.getInstance();
+    private Map              exceptionConfigs = new Hashtable();
+    private long             common_mtime     = 0;
+    private long             servlet_mtime    = 0;
+    private long             loadindex        = 0;
     private Properties       properties;
     private File             commonpropfile;
     private File             servletpropfile;
-    
+
     protected Properties getProperties() {
         return properties;
     }
@@ -88,7 +92,7 @@ public abstract class ServletManager extends HttpServlet {
             return false;
         }
     }
-    
+
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
         String needs_ssl = properties.getProperty("servlet.needsSSL");
         if (needs_ssl != null && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
@@ -100,7 +104,7 @@ public abstract class ServletManager extends HttpServlet {
 
     abstract protected boolean needsSession();
     abstract protected boolean allowSessionCreate();
-   
+
     protected void relocate(HttpServletResponse res, String reloc_url) {
         CAT.debug("\n\n        ======> relocating to " + reloc_url + "\n");
         res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
@@ -113,7 +117,7 @@ public abstract class ServletManager extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         doGet(req, res);
     }
-    
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         if (CAT.isDebugEnabled()) {
             CAT.debug("\n ------------------- Start of new Request ---------------");
@@ -141,7 +145,7 @@ public abstract class ServletManager extends HttpServlet {
             //     CAT.debug("*** [HEADER " + name + " => " + value + "] ***");
             // }
         }
-            
+
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
         AppLoader loader = AppLoader.getInstance();
         if (loader.isEnabled()) {
@@ -149,7 +153,7 @@ public abstract class ServletManager extends HttpServlet {
                 try {
                     Thread.sleep(100);
                 } catch(InterruptedException x) {
-                    // 
+                    //
                 }
             }
         }
@@ -214,7 +218,7 @@ public abstract class ServletManager extends HttpServlet {
                 }
             }
         }
-        
+
         PfixServletRequest preq = null;
         if (has_session) {
             preq = (PfixServletRequest) session.getAttribute(STORED_REQUEST);
@@ -230,7 +234,7 @@ public abstract class ServletManager extends HttpServlet {
         }
 
         tryReloadProperties(preq);
-        
+
         // End of initialization. Now we handle all cases where we need to redirect.
 
         if (force_jump_back_to_ssl && allowSessionCreate()) {
@@ -263,7 +267,7 @@ public abstract class ServletManager extends HttpServlet {
             return;
             // End of request cycle.
         }
-        
+
         CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
 
@@ -282,7 +286,7 @@ public abstract class ServletManager extends HttpServlet {
     //     cookie.setSecure(secure);
     //     res.addCookie(cookie);
     // }
-    // 
+    //
     // private sessionCookieMatches(HttpSession session) {
     //     Cookie[] cookies = req.getCookies();
     //     Cookie   tmp;
@@ -345,7 +349,7 @@ public abstract class ServletManager extends HttpServlet {
                 }
             }
         }
-        
+
         CAT.debug("*** Saving session data...");
         HashMap map = new HashMap();
         SessionHelper.saveSessionData(map, session);
@@ -358,7 +362,7 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             CAT.warn("*** Infostruct == NULL ***");
         }
-        
+
         CAT.debug("*** Invalidation old session (Id: " + old_id + ")");
         session.invalidate();
         session = req.getSession(true);
@@ -380,7 +384,7 @@ public abstract class ServletManager extends HttpServlet {
         CAT.debug("*** Setting SECURE flag");
         session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
-        
+
         Cookie cookie = getSecureSessionCookie(req);
         if (cookie != null) {
             cookie.setMaxAge(0);
@@ -391,7 +395,7 @@ public abstract class ServletManager extends HttpServlet {
         cookie.setMaxAge(-1);
         cookie.setSecure(true);
         res.addCookie(cookie);
-        
+
         CAT.debug("===> Redirecting to secure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
@@ -431,7 +435,7 @@ public abstract class ServletManager extends HttpServlet {
         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
         relocate(res, redirect_uri);
     }
-    
+
     private void forceNewSessionSameVisit(PfixServletRequest preq, HttpServletRequest req, HttpServletResponse res) {
         // When we come here, we KNOW that there's a secure SSL session already running, but unfortunately
         // it seems that the browser doesn't send cookies. So we will not be able to know for sure that the request comes
@@ -472,7 +476,7 @@ public abstract class ServletManager extends HttpServlet {
             return false;
         }
     }
-    
+
     private Cookie getSecureSessionCookie(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
         Cookie   tmp;
@@ -485,7 +489,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         return null;
     }
-    
+
     private void registerSession(HttpServletRequest req, HttpSession session) {
         if (session != null) {
             synchronized (TIMESTAMP_ID) {
@@ -493,7 +497,7 @@ public abstract class ServletManager extends HttpServlet {
                 String           timestamp = sdf.format(new Date());
                 NumberFormat     nf        = NumberFormat.getInstance();
                 nf.setMinimumIntegerDigits(3);
-                    
+
                 if (timestamp.equals(TIMESTAMP_ID)) {
                     INC_ID++;
                 } else {
@@ -544,7 +548,7 @@ public abstract class ServletManager extends HttpServlet {
             commonpropfile = new File(commonpropfilename);
             common_mtime = loadPropertyfile(properties, commonpropfile);
         }
-        
+
         String servletpropfilename = config.getInitParameter("servlet.propfile");
         if (servletpropfilename != null) {
             servletpropfile = new File(servletpropfilename);
@@ -552,6 +556,8 @@ public abstract class ServletManager extends HttpServlet {
         }
         loadindex = 0;
         properties.setProperty(PROP_LOADINDEX, "" + loadindex);
+
+        initExceptionConfigs();
     }
 
     protected boolean tryReloadProperties(PfixServletRequest preq) throws ServletException {
@@ -573,7 +579,7 @@ public abstract class ServletManager extends HttpServlet {
         } else {
             return false;
         }
-        
+
     }
 
     private long loadPropertyfile(Properties props, File propfile) throws ServletException {
@@ -590,16 +596,114 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     private void callProcess(PfixServletRequest preq, HttpServletRequest req,
-                             HttpServletResponse res) throws ServletException {
+                             HttpServletResponse res) throws ServletException, IOException {
         try {
             res.setContentType(DEF_CONTENT_TYPE);
             process(preq, res);
         } catch (Throwable e) {
             xhandler.handle(e, preq, properties);
+            processException(preq, req, res, e);
             throw(new ServletException(e.toString()));
         }
     }
-    
+
+    /**
+     *
+     */
+    private void processException(PfixServletRequest preq, HttpServletRequest req,
+                                  HttpServletResponse res, Throwable exception)
+                           throws ServletException, IOException {
+        // make sure, that if the current request is already the result of a
+        // forwarded request, that no more forwarding takes place in order
+        // to prevent an infinite loop
+
+        if ( preq.getLastException() != null )
+            return;
+
+        String exceptionType = exception.getClass().getName();
+        ExceptionConfig exConfig = (ExceptionConfig) exceptionConfigs.get(exceptionType);
+
+        if ( exConfig != null ) {
+            ExceptionProcessor processor = exConfig.getProcessor();
+            processor.processException(exception, exConfig, preq,
+                                       getServletConfig().getServletContext(),
+                                       req, res);
+        }
+    }
+
+    /**
+     * This method uses all properties prefixed with 'exception' to build ExceptionConfig
+     * objects, which are then stored in the exConfig-Map, keyed by the type attribute
+     * of the ExceptionConfig
+     * @exception ServletException if the exception configuration defined in the properties
+     * is somehow invalid
+     */
+    private void initExceptionConfigs() throws ServletException {
+        Map tmpExConf = new HashMap();
+        int len = PROP_EXCEPTION.length();
+
+    	Enumeration props = properties.propertyNames();
+    	while( props.hasMoreElements()) {
+        	String propName = (String) props.nextElement();
+
+        	if ( propName.startsWith(PROP_EXCEPTION) ) {
+                String propValue = properties.getProperty(propName);
+                String exConfNum = propName.substring(len+1, len+3);
+                ExceptionConfig exConf = (ExceptionConfig) tmpExConf.get(exConfNum);
+
+                CAT.debug("Property found for exception processing: "+propName +"="+propValue);
+
+                if ( exConf == null ) {
+                    exConf = new ExceptionConfig();
+                    tmpExConf.put(exConfNum, exConf);
+                }
+
+        		try {
+                    String attrName = propName.substring(len+4).trim();
+                    CAT.debug(attrName);
+                    if ( "type".equals(attrName) ) {
+                        exConf.setType(propValue);
+                    } else if ( "forward".equals(attrName) ) {
+                        exConf.setForward( Boolean.valueOf(propValue).booleanValue() );
+                    } else if ( "page".equals(attrName) ) {
+                        exConf.setPage(propValue);
+                    } else if ( "jms".equals(attrName) ) {
+                        exConf.setJms(propValue);
+                    } else if ( "processor".equals(attrName) ) {
+                        Class procClass = Class.forName(propValue);
+                        ExceptionProcessor exProc = (ExceptionProcessor) procClass.newInstance();
+                        exConf.setProcessor(exProc);
+                    }
+                } catch (ClassCastException ex) {
+                    throw new ServletException("INVALID CONF: Class "+propValue+" is not an instance of 'ExceptionProcessor'");
+                } catch (IllegalAccessException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+                } catch (SecurityException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+                } catch (InstantiationException ex) {
+                    throw new ServletException("INVALID CONF: Can't create instance of class "+propName, ex);
+                }
+        	}
+    	}
+
+        CAT.debug("Finished reading properties for Exception configuration! \n"+tmpExConf);
+
+        exceptionConfigs.clear();
+
+        // validate the ExceptionConfig-instances and save them, keyed by their type-attribute
+        for(Iterator values = tmpExConf.values().iterator(); values.hasNext();) {
+            ExceptionConfig exConfig = (ExceptionConfig) values.next();
+            if ( exConfig.validate() == false )
+                throw new ServletException("INVALID ExceptionConfig: \n"+ exConfig);
+            else
+                exceptionConfigs.put(exConfig.getType(), exConfig);
+        }
+    }
+
+
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
-    
+
+
 }// ServletManager
