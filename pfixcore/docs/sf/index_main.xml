@@ -30,16 +30,18 @@
   
   <h1>Development news</h1>
 
-  <p>There has been no release for a long time, sorry about that. I
-    try to do that more often, but if there is no recent release, the
-    best you can do is using the CVS tree and create the needed files yourself (just type <code>ant notag</code>).
-    We try hard to have the CVS tree compilable at all times, although we can't make any guarantees, of course.</p>
-  <ul>
-    <li>The transition to ant is complete. You need to have at least ant 1.5.4.</li>
-    <li>because of the long time without a stable release, there are numerous changes to many to list them here.
-      I tried to report on any bigger change to the mailing list, plese look there (there are not that many postings). For a
-      better overview, please look into the ChangeLog file.</li>
-  </ul>
+  <p><b>The <code>State</code> interface has changed to incorporate a new
+    method <code>boolean needsData(Context,
+      PfixServletRequest)</code></b>. This change makes it necessary to port
+    your own States to the new system. If you only have States that
+    inherit from <code>StateImpl</code>, your code may still compile
+    (because StateImpl has a default implementation), but you
+    have to check your <code>getDocument()</code> method if it is
+    still "correct". Please refer to the mailing list and/or the
+    ChangeLog for in-depth information on how the semantic of States
+    has changed.
+  </p>
+    
   
   <h2>ChangeLog</h2>
 
