@@ -138,6 +138,7 @@ xmlRequest.prototype.start = function( content ) {
         _xml[i].send(content);
           
         if( !this.callback ) {
+          this.status = _xml[i].status;
           return _xml[i].responseXML;
         } else {
           return true;
@@ -154,6 +155,10 @@ xmlRequest.prototype.start = function( content ) {
     //--------
     // iframe
     //--------
+
+	if( !this.callback ) {
+		throw "xmlRequest: synchronous call by iframe not supported"; 
+	}
 
     try {
 
