@@ -22,7 +22,7 @@
   <!-- The default path you will be sent to when using the url -->
   <!-- "http://simplepage.<servername>/" -->
   <defpath>/xml/config</defpath>
-  <passthrough>simplepage/img</passthrough>
+  <!-- <passthrough>simplepage/img</passthrough> -->
   
   <!-- The Apache DocumentRoot for static content -->
   <documentroot><cus:docroot/>simplepage/htdocs</documentroot>
