@@ -18,7 +18,7 @@ import org.apache.log4j.Category;
  * Created: Thu Mar 20 16:45:31 2003
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 public class SessionCleaner {
     private static SessionCleaner instance     = new SessionCleaner();

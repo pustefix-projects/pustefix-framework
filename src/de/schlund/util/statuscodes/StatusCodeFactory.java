@@ -8,7 +8,7 @@ import java.net.URL;
 /**
  * factory object that produces StatusCode objects for all framework classes
  *
- * @autor Wolfram M�ller, jtl
+ * @author Wolfram M�ller, jtl
  */
 
 public class StatusCodeFactory implements FactoryInit {

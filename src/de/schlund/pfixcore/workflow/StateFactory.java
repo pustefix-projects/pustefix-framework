@@ -30,7 +30,7 @@ import de.schlund.pfixxml.loader.*;
  * Created: Sat Oct 13 00:07:21 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
+ * @version $Id$
  *
  *
  */

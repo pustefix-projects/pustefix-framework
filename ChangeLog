@@ -1,4 +1,29 @@
 2004-07-26 Michael Hartmeier  <mhm@schlund.de>
+	* project.properties
+	* project.xml
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/auth/GlobalPermissions.java
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/ShowIncFileHandler.java
+	* src/de/schlund/pfixcore/editor/resources/CurrentIncludeInfo.java
+	* src/de/schlund/pfixcore/util/CheckIncludes.java
+	* src/de/schlund/pfixcore/workflow/Context.java
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java
+	* src/de/schlund/pfixcore/workflow/DirectOutputState.java
+	* src/de/schlund/pfixcore/workflow/DirectOutputStateFactory.java
+	* src/de/schlund/pfixcore/workflow/PageRequest.java
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java
+	* src/de/schlund/pfixcore/workflow/PageRequestStatus.java
+	* src/de/schlund/pfixcore/workflow/StateFactory.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java
+	* src/de/schlund/pfixcore/workflow/app/FileDownloadDOState.java
+	* src/de/schlund/pfixxml/DirectOutputServlet.java
+	* src/de/schlund/pfixxml/SessionCleaner.java
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java: fix some JavaDoc warnings
+
+2004-07-26 Michael Hartmeier  <mhm@schlund.de>
 	* example/core/build/create_serverxml.xsl: fix tomcat admin configuration
 
 2004-07-26 Michael Hartmeier  <mhm@schlund.de>

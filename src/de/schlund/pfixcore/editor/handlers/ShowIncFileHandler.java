@@ -15,7 +15,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
  * Created: Thu Jul  8 12:44:52 2004
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version 1.0
+ * @version $Id$
  */
 public class ShowIncFileHandler implements IHandler {
 

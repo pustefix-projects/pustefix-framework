@@ -48,9 +48,7 @@ import de.schlund.util.FactoryInit;
  * Created: Fri Nov 23 23:08:28 2001
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- * @version
- *
- *
+ * @version $Id$
  */
 
 public class EditorCommonsFactory implements FactoryInit {

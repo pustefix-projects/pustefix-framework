@@ -36,23 +36,11 @@ import org.w3c.dom.*;
  * Created: Fri Jul 04 16:40:07 2003
  *
  * @author <a href="mailto:zaich@schlund.de">Volker Zaich</a>
- * @version
+ * @version $Id$
  *
  * AppletInfoFinalizer gets all Includes and Images from the actually project
  * and put em into the resultDocument. Maybe directorys will be added later.
- *
- *
- *
- *
- *
- *
  */
-
-
-
-
-
-
 
 public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
     

@@ -35,7 +35,7 @@ import org.w3c.dom.Element;
  *
  *
  * @author jtl
- * @version 2.0
+ * @version $Id$
  *
  *
  */

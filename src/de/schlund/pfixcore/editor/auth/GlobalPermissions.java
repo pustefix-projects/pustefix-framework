@@ -27,16 +27,12 @@ package de.schlund.pfixcore.editor.auth;
 public class GlobalPermissions {
     private boolean admin;
     private boolean defaultedit;
-    /**
-     * @return
-     */
+
     public boolean isAdmin() {
         return admin;
     }
 
-    /**
-     * @return
-     */
+
     public boolean isEditDynIncludesDefault() {
         return defaultedit;
     }

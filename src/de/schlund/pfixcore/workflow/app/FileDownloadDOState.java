@@ -38,7 +38,7 @@ import javax.servlet.http.*;
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  *
- * @version 1.0
+ * @version $Id$
  */
 public class FileDownloadDOState implements DirectOutputState {
     private static String PROP_FILENAME = "downloadfile";
