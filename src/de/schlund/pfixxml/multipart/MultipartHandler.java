@@ -93,18 +93,18 @@ public class MultipartHandler {
     }
 
     protected static File getDestFile(File dir, String fName) throws IOException {
-        File rc = null;
+        TempFile rc = null;
         synchronized (lock) {
             StringBuffer buf = new StringBuffer(fName);
             buf.append('-');
             long curSec = new Date().getTime();
             buf.append(curSec).append(FNAME_PATTERN);
-            rc = new File(dir, buf.toString());
+            rc = new TempFile(dir, buf.toString());
             if (rc.exists()) {
                 long count = 1;
                 String base = buf.substring(0, buf.length() - FNAME_PATTERN.length());
                 while (rc.exists()) {
-                    rc = new File(dir, base + format.format(count++));
+                    rc = new TempFile(dir, base + format.format(count++));
                 }
             }
             rc.createNewFile();
