@@ -1,5 +1,7 @@
 2004-06-02  Jens Lautenbacher  <jtl@schlund.de>
 
+        * released 0.5.4e
+	
 	* example/core/xsl/include.xsl.in (pfx:include): added attribute
 	noedit to inhib the creation of the edit brackets in
 	editmode=admin. Those includes can only be edited by selecting
