@@ -320,15 +320,13 @@ public class Context implements AppContext {
             LOG.info(" **** MAKE NEW NAVIGATION !!! ****");
             long start = System.currentTimeMillis();
             NavigationElement[] pages = navi.getNavigationElements();
-            if (autoinvalidate_navi) {
-                doc.createElement("navigation");
-                navigation_element = null;
-            } else {
-                navigation_element = doc.createElement("navigation");
-            }
+            navigation_element = doc.createElement("navigation");
             doc.getDocumentElement().appendChild(navigation_element);
             recursePages(pages, navigation_element, doc, preq);
             LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
+            if (autoinvalidate_navi) {
+                navigation_element = null;
+            }
         } else {
             LOG.info(" **** REUSING NAVIGATION !!! ****");
             long start = System.currentTimeMillis();
