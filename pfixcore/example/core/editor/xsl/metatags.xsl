@@ -1177,13 +1177,14 @@
               <br />
               <textarea id="ta_src" rows="10" cols="130" style="display:none"></textarea>
               <textarea id="ta_col" rows="10" cols="130" style="display:none"></textarea>
+							<textarea id="dbg" rows="25" cols="130" style="display:none"></textarea>
               <br />
               <pfx:xinp class="editor_textarea" wrap="off" type="area" id="wfxta01" name="{$upload}.Content"/>
             </div>
           </td>
         </tr>
         <tr>
-          <td colspan="2">
+          <td colspan="2" align="right">
             <pfx:xinp class="editor_submit"  type="submit" id="wfxsubmit01" name="Upload Data" value="Upload Data" style="display:none">
               <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
               <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
