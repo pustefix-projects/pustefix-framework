@@ -1,3 +1,10 @@
+2003-03-07  Joerg Haecker <haecker@schlund.de>
+
+	* Added graphical management for record mode:
+	* example/core/xsl/include.xsl.in: changes
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: changes
+	* example/core/img/player_[pause|play].png: added
+
 2003-03-07  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/INSTALL.ps: new file. Is made downloadable via a
