@@ -177,7 +177,7 @@ XML_Request.prototype.start = function( content ) {
                 } catch(e) {
                 }
                 if( self.status && self.status >= 300 ) {
-                  throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
+                  //throw new Error("XML_Request: Asynchronous call failed" + " (status " + self.status + ", " + self.statusText + ")");
                 }
                 self.callback.call( self.context, XML_Request._xml[i].responseXML );
                 XML_Request._xml[i] = null;
@@ -360,13 +360,12 @@ XML_Request.prototype._customOnReadyStateChange = function() {
 
             XML_Request._xml[i].call( XML_Request._xmlThis[i].context, 
                                      _isMshtml ? win.document.body : win.document );
-            XML_Request._xml[i] = null;
             this.cancelOnReadyStateChange(i);
           } else {
             XML_Request._xmlTimerCount[i]++;            
           }
         } else {
-          this.cancelOnReadyStateChange(i, "too many intervals");
+          this.cancelOnReadyStateChange(i, "too many intervals " + i + ", " + XML_Request._xmlTimerCount[i]);
         }
       } catch(e) {
         this.cancelOnReadyStateChange(i, "Exception:" + e);

@@ -743,6 +743,7 @@ SOAP_RPCSerializer.prototype.serialize=function(writer) {
 }
 
 SOAP_RPCSerializer.prototype.deserialize=function(element) {
+	if(this.retTypeInfo==null) return;
 	var serializer=SOAP_TypeMapping.getSerializerByInfo(this.retTypeInfo);
 	var res=serializer.deserialize(this.retTypeInfo,element.getElementsByTagName(this.opName+"Return")[0]);
 	return res;
@@ -871,8 +872,11 @@ SOAP_Call.prototype.callback=function(xml) {
 		var soapMsg=new SOAP_Message(xml);
 		var fault=soapMsg.getSoapPart().getEnvelope().getBody().getFault();
 		if(fault!=null) {
-			var ex=new SOAP_Exception(fault.toString(),"SOAP_Call.callback");
-			if(this.userCallback) this.userCallback(null,ex);
+			var ex=new Error();
+			var ind=fault.faultString.indexOf(":");
+			ex.name=fault.faultString.substring(0,ind);
+			ex.message=fault.faultString.substring(ind+1,fault.faultString.length);
+			if(this.userCallback) this.userCallback(ex);
 			else throw ex;
 		} else {
 			var rpc=new SOAP_RPCSerializer( this.opName, null, this.retTypeInfo);
