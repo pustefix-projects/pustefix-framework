@@ -53,12 +53,14 @@
       </subsection>
       <subsection name="Release a new version">
         <ol>
-            <li>Adjust the version number in <code>build.xml</code>.</p></li>
-            <li>Document important changes in <code>xdocs/changes.xml</code></p></li>
+            <li><p>Adjust the version number in <code>build.xml</code>.</p></li>
+            <li><p>Document important changes in <code>xdocs/changes.xml</code></p></li>
             <li><code>cvs commit</code></li>
             <li><p>Run <code>ant dist</code> to build the distribution and tag the repository.</p></li>
-            <li><p>Upload files to sourceforge.</p></li>
-            <li>Bump the version number in <code>build.xml</code>.</p></li>
+            <li><p>Upload the files in the <code>dist</code> directory to sourceforge. 
+              Release name is the version number without pustefix. Architecture is
+              Platform independent. </p></li>
+            <li><p>Bump the version number in <code>build.xml</code>.</p></li>
             <li><code>cvs commit</code></li>
          </ol>
       </subsection>
