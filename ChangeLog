@@ -1,3 +1,11 @@
+2003-10-15 Thomas Braun <thomas.braun@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/caster/ToLowerCase.java: inserted
+	This caster may be used for input fields, that are case insensitive.
+	It simply converts the input string to lower-case.
+	Note though, that special char conversion was only tested with german umlaute.
+	
+
 2003-10-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java (redirectToSecureSSLSession): fixed a
