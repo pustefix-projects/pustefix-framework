@@ -7,6 +7,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import junit.framework.TestCase;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,6 +56,16 @@ public class XmlTest extends TestCase {
         assertEquals(1, doc.getChildNodes().getLength());
     }
     
+    public void testParseCDATA() throws Exception {
+        Document doc;
+        Node node;
+        
+        doc = parse("<ok><![CDATA[bla]]></ok>");
+        node = doc.getDocumentElement();
+        assertEquals(1, node.getChildNodes().getLength());
+        assertTrue(node.getChildNodes().item(0) instanceof CDATASection);
+    }
+    
     public void testComments() throws Exception {
         // make sure to get comments
     	Document doc = parse("<hello><!-- commend --></hello>");
@@ -82,6 +93,11 @@ public class XmlTest extends TestCase {
     
     public void testSerializeSimple() throws Exception {
         assertEquals("<ok/>", serialize("<ok/>", false, false));
+    }
+
+    public void testSerializeCDATA() throws Exception {
+        // CAUTION: saxon's identity transformer doesn't preserve CDATA!!!
+        assertEquals("<ok>bla</ok>", serialize("<ok><![CDATA[bla]]></ok>", false, false));
     }
 
     public void testSerializePreserveInnerWhitespace() throws Exception {
