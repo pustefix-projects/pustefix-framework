@@ -13,13 +13,29 @@ import de.schlund.pfixxml.util.Xml;
 import junit.framework.TestCase;
 
 public class TargetGeneratorTest extends TestCase {
+    
     public void testEmpty() throws Exception {
+        final File DOCROOT = new File(".").getAbsoluteFile().getCanonicalFile().getParentFile();
+
         TargetGenerator gen;
         
-        gen = create("<make docroot='.' cachedir='.' record_dir='.'/>");
+        gen = create("<make docroot='..' cachedir='.' record_dir='foo'/>");
         assertEquals(0, gen.getAllTargets().size());
-        assertEquals(gen.getDocroot(), new File("."));
-        assertEquals(gen.getDisccachedir(), new File("."));
+        assertEquals(gen.getDocroot(), DOCROOT);
+        assertEquals(gen.getDisccachedir(), DOCROOT); // because it's relative to docroot 
+        assertEquals(gen.getRecorddir(), new File(DOCROOT, "foo"));
+    }
+
+    public void testDocrootAbsolute() throws Exception {
+        createInvalid("<make docroot='/' cachedir='.' record_dir='.'/>", "docroot: relative");
+    }
+
+    public void testCachedirAbsolute() throws Exception {
+        createInvalid("<make docroot='.' cachedir='/' record_dir='.'/>", "cachedir: relative");
+    }
+
+    public void testRecorddirAbsolute() throws Exception {
+        createInvalid("<make docroot='.' cachedir='.' record_dir='/'/>", "record_dir: relative");
     }
 
     public void testTarget() throws Exception {

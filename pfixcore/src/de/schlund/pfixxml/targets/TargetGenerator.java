@@ -20,6 +20,7 @@
 package de.schlund.pfixxml.targets;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -166,17 +167,24 @@ public class TargetGenerator {
         Element  makenode    = (Element) config.getElementsByTagName("make").item(0);
         NodeList targetnodes = config.getElementsByTagName("target");
 
-        recorddir = getFileAttributeOpt(makenode, "record_dir");
-        disccache = getFileAttribute(makenode, "cachedir");
+        docroot = absolute(confile.getParentFile(), getFileAttribute(makenode, "docroot"));
+        if (docroot.getName().equals("core")) {
+            System.out.println("TODO: editor-up");
+            docroot = docroot.getParentFile();
+        }
+        CAT.debug("* Set docroot to " + docroot);
+
+        disccache = absolute(docroot, getFileAttribute(makenode, "cachedir"));
         CAT.debug("* Set CacheDir to " + disccache);
+
+        recorddir = absolute(docroot, getFileAttributeOpt(makenode, "record_dir"));
+
         if (!disccache.exists()) {
             disccache.mkdirs();
         } else if (!disccache.isDirectory() || !disccache.canWrite() || !disccache.canRead()) {
             throw new XMLException("Directory " + disccache + " is not writeable, readeable or is no directory");
         }
 
-        docroot = getFileAttribute(makenode, "docroot");
-        CAT.debug("* Set docroot to " + docroot);
 
         HashSet depxmls = new HashSet();
         HashSet depxsls = new HashSet();
@@ -589,17 +597,29 @@ public class TargetGenerator {
     //--
     
     private static File getFileAttribute(Element node, String name) throws XMLException {
-        return new File(getAttribute(node, name));
+        File file;
+        
+        file = getFileAttributeOpt(node, name);
+        if (file == null) {
+            throw new XMLException("missing attribute: " + name);
+        } else {
+            return file;
+        }
     }
 
     private static File getFileAttributeOpt(Element node, String name) throws XMLException {
         String value;
+        File file;
         
         value = getAttributeOpt(node, name);
         if (value == null) {
             return null;
         } else {
-            return new File(value);
+            file = new File(value);
+            if (file.isAbsolute()) {
+                throw new XMLException("attribute " + name + ": relative path expected: " + value);
+            }
+            return file;
         }
     }
 
@@ -621,6 +641,19 @@ public class TargetGenerator {
             return null;
         }
         return attr.getValue();
+    }
+    
+    private static File absolute(File base, File relative) throws IOException {
+        File file;
+        
+        if (relative == null) {
+            return null;
+        }
+        if (relative.isAbsolute()) {
+            throw new IllegalArgumentException(relative.getPath());
+        }
+        file = new File(base.getAbsoluteFile(), relative.getPath());
+        return file.getCanonicalFile();
     }
 }
 
