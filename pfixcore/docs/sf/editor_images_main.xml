@@ -1,8 +1,18 @@
 <div>
   <h1>The Images pages</h1>
   
-  <p>In the left frame all images are listed. For editing
-    select one of them and it will appears in the right frame.</p>
+  <p>
+    In the left frame all images used in the current project are
+    listed. If you select one of them detailed information will be displayed in the
+    right frame. Additionally you have the possibility to upload
+    a new image from your local computer.
+  </p>
+  <p>
+    Note that it is only possible to upload an image that is already
+    known to the system.  Images that are known but don't already have
+    a file uploaded are marked with a blue "<b>!</b>" in the left frame
+    display.
+  </p>
   
   <table>
     <tr valign="top">
@@ -15,25 +25,21 @@
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              The right frame contains the possibility to upload an
-              image and lists information on the current image.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <b>Box No. 1</b> contains backup options and the upload.
-              Backup options appear if you have uploaded this image
-              before. The point of time of the former upload is then 
-              listed and you can go back to this point of time by selecting it.
-              The upload allows to select an image on your local filesystem
-              and to send it to the PustefixEditor server.
+              <b>Box No. 1</b> contains backup options and the file
+              upload user interfacce.  Backup options appear whenever you change
+              the image by uploading a new image file.  The timestamp
+              of the former upload is then displayed in the select box
+              and you can go back to this point of time by choosing
+              the select box entry.  The file upload box allows you to
+              select an image on your local filesystem and send it to
+              the <pustefix/> editor server.
             </td>
           </tr>
           <tr>
             <td>
               <b>Box No. 2</b> gives you information on all pages which
-              use the current image. When selecting a page, it will
-              be shown in the <a href="editor_pages.html">Pages</a> page.
+              use the current image. Clicking on a page will
+              display it in the <a href="editor_pages.html">Pages</a> page.
             </td>
           </tr>
         </table>
