@@ -386,7 +386,11 @@ or delete the DOCTYPE definition -->
   <target name="check-permissions">
     <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
-      <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh bin/setClassPath.sh projects/bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
+      <!-- // TODO_AH 2004-12-08 take out if other fileset works okay
+      <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh bin/setClassPath.sh bin/setvars.sh projects/servletconf/tomcat/bin/catalina.sh projects/servletconf/tomcat/bin/setclasspath.sh example/checkfiles.sh example/servletconf/tomcat/bin/catalina.sh example/servletconf/tomcat/bin/setclasspath.sh"/>
+      -->
+      <fileset dir="${basedir}" includes="apploader.sh newproject.sh startTomcat.sh skel/apploader.sh skel/newproject.sh skel/startTomcat.sh bin/setClassPath.sh bin/setvars.sh stuff/**/*.sh stuff/**/bin/*"/>
+      <fileset dir="${dir.projects}" includes="**/*.sh"/>
     </apply>
   </target>
 
@@ -622,7 +626,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="tomcat.dir.opt">
-    <available file="${dir.tomcat}" type="dir" property="dir.tomcat.exists" />
+    <available file="${dir.tomcat}/bin/catalina.sh" type="file" property="dir.tomcat.exists" />
     <antcall target="tomcat.dir.missing"/>
   </target>
   <target name="tomcat.dir.missing" unless="dir.tomcat.exists">
