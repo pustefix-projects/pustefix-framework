@@ -19,7 +19,8 @@
 2004-10-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
-	bugfix: ignore all exceptions when createing sessiondump
+	bugfix: ignore all exceptions when createing sessiondump. If exceptions
+	occur, try to report them properly.
 
 2004-10-06  Martin Leidig  <mleidig@schlund.de>
 
