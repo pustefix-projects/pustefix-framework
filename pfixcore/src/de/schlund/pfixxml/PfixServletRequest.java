@@ -547,7 +547,7 @@ public class PfixServletRequest {
                     String   key    = name.substring(prefix.length());
                     String[] values = req.getParameterValues(name);
                     CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
-                    if (values.length > 0) {
+                    if (values != null && values.length > 0) {
                         RequestParam[] newvals = new RequestParam[values.length];
                         for (int k = 0; k < values.length ; k++) {
                             CAT.debug("         Adding value: " + values[k]);
