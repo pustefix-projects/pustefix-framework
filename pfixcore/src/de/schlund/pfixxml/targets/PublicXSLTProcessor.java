@@ -19,9 +19,10 @@
 
 package de.schlund.pfixxml.targets;
 
-import java.util.*;
-import java.io.*;
-import org.w3c.dom.*;
+import java.io.OutputStream;
+import java.util.Map;
+
+import org.w3c.dom.Document;
 
 /**
  *

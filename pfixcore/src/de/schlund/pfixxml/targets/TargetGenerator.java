@@ -19,17 +19,25 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.*;
-import java.lang.reflect.*;
-import java.io.*;
-import java.util.*;
-import de.schlund.pfixcore.util.*;
-import org.xml.sax.*;
-import org.w3c.dom.*;
-import org.apache.log4j.*;
-import org.apache.log4j.xml.*;
-import javax.xml.parsers.*;
-import org.apache.xpath.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.TreeMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.log4j.Category;
+import org.apache.log4j.xml.DOMConfigurator;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import de.schlund.pfixcore.util.Meminfo;
+import de.schlund.pfixxml.XMLException;
 
 /**
  * The TargetGenerator holds all the targets belonging to a certain
