@@ -140,7 +140,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     public boolean errorHappened() throws Exception {
         if (wrappers.isEmpty()) return false; // border case
 
-        //if (!is_loaded) loadIWrappers();
         if (!is_loaded) throw new XMLException("You first need to have called handleSubmittedData() here!");
         if (!is_splitted) splitIWrappers();
         IWrapper[] cwrappers = selectedwrappers.getIWrappers();
@@ -232,36 +231,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         if (!is_splitted) splitIWrappers();
         
         if (selectedwrappers != currentgroup) {
-            // now let's check if all of selectedwrappers are member in contwrappers
-            // normally, when you restrict a submit to a subset of wrappers, you will
-            // always remain on the page/group, even when the submit handling was sucessfull.
-            // We init a set of wrappers here from the property PROP_RESTRICED. If all of the
-            // restricted wrappers of a submit are members of this group, continueSubmit() will return false.
-
-            // Properties props      = context.getPropertiesForCurrentPageRequest();
-            // String     restricted = props.getProperty(PROP_RESTRICED);
-            // if (restricted != null && !restricted.equals("")) {
-            //     contwrappers = new IWrapperGroup();
-            //     StringTokenizer tok = new StringTokenizer(restricted);
-            //     for (; tok.hasMoreTokens(); ) {
-            //         String prefix = tok.nextToken();
-            //         String iface  = (String) prefixmap.get(prefix);
-            //         if (iface == null) {
-            //             CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-            //         } else {
-            //             if(CAT.isDebugEnabled()) {
-            //                 CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
-            //             }
-            //             IWrapper wrapper = (IWrapper) wrappers.get(iface);
-            //             contwrappers.addIWrapper(wrapper);
-            //         }
-            //     }
-            // }
-
             if (contwrappers != null && contwrappers.containsAll(selectedwrappers)) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("*** No more submit because all selected wrappers are members of the restriced_continue group!");
-                }
+                CAT.debug("*** No more submit because all selected wrappers are members of the restriced_continue group!");
                 return false;
             }
             return true;
@@ -462,6 +433,10 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
             currentgroup = group;
         }
         checkForRestrictedCalling();
+
+        createRestrictedContinueGroup();
+        createAlwaysRetrieveGroup();
+        
         is_splitted = true;
     }
 
@@ -504,27 +479,19 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         HttpSession  session = preq.getSession(false);
         RequestParam status  = preq.getRequestParam(GROUP_STATUS_PARAM);
         if (status != null && (status.getValue().equals(GROUP_ON_PARAM))) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Request says: Groupdisplay ON");
-            }
+            CAT.debug("*** Request says: Groupdisplay ON");
             session.putValue(GROUP_STATUS, GROUP_ON);
             return true;
         } else if (status != null && status.getValue().equals(GROUP_OFF_PARAM)) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Request says: Groupdisplay OFF");
-            }
+            CAT.debug("*** Request says: Groupdisplay OFF");
             session.putValue(GROUP_STATUS, GROUP_OFF);
             return false;
         } else if (session.getValue(GROUP_STATUS) == null) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
-            }
+            CAT.debug("*** Nothing in Session: init by switching Groupdisplay ON");
             session.putValue(GROUP_STATUS, GROUP_ON);
             return true;
         } else {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Session says: Groupddisplay is " + session.getValue(GROUP_STATUS));
-            }
+            CAT.debug("*** Session says: Groupddisplay is " + session.getValue(GROUP_STATUS));
             return ((Boolean) session.getValue(GROUP_STATUS)).booleanValue();
         }
     }
@@ -533,14 +500,8 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         Properties props      = context.getPropertiesForCurrentPageRequest();
         HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
 
-        contwrappers    = new IWrapperGroup();
-        always_retrieve = new IWrapperGroup();
-        
         if (interfaces.isEmpty()) {
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("*** Found no interfaces for this page (page=" +
-                          context.getCurrentPageRequest().getName() + ")!!!");
-            }
+            CAT.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
         } else {
             // Initialize all wrappers
             for (Iterator i = interfaces.keySet().iterator(); i.hasNext(); ) {
@@ -590,45 +551,51 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 AppLoader appLoader = AppLoader.getInstance();
                 if (appLoader.isEnabled()) appLoader.addReloader(this);
             }
+        }
+    }
 
-            String retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
-            if (retrieve != null && !retrieve.equals("")) {
-                StringTokenizer tok = new StringTokenizer(retrieve);
-                for (; tok.hasMoreTokens(); ) {
-                    String prefix = tok.nextToken();
-                    String iface  = (String) prefixmap.get(prefix);
-                    if (iface == null) {
-                        CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-                    } else {
-                        if (CAT.isDebugEnabled()) {
-                            CAT.debug("*** Adding interface '" + iface + "' to the always_retrieve group...");
-                        }
-                        IWrapper wrapper = (IWrapper) wrappers.get(iface);
-                        always_retrieve.addIWrapper(wrapper);
+    private void createAlwaysRetrieveGroup() {
+        Properties props = context.getPropertiesForCurrentPageRequest();
+        always_retrieve = new IWrapperGroup();
+        String retrieve = props.getProperty(PROP_ALWAYS_RETRIEVE);
+        if (retrieve != null && !retrieve.equals("")) {
+            StringTokenizer tok = new StringTokenizer(retrieve);
+            for (; tok.hasMoreTokens(); ) {
+                String prefix = tok.nextToken();
+                String iface  = (String) prefixmap.get(prefix);
+                if (iface == null) {
+                    CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
+                } else {
+                    if (CAT.isDebugEnabled()) {
+                        CAT.debug("*** Adding interface '" + iface + "' to the always_retrieve group...");
                     }
-                }
-            }
-
-            String restricted = props.getProperty(PROP_RESTRICED);
-            if (restricted != null && !restricted.equals("")) {
-                StringTokenizer tok = new StringTokenizer(restricted);
-                for (; tok.hasMoreTokens(); ) {
-                    String prefix = tok.nextToken();
-                    String iface  = (String) prefixmap.get(prefix);
-                    if (iface == null) {
-                        CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
-                    } else {
-                        if(CAT.isDebugEnabled()) {
-                            CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
-                        }
-                        IWrapper wrapper = (IWrapper) wrappers.get(iface);
-                        contwrappers.addIWrapper(wrapper);
-                    }
+                    IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                    always_retrieve.addIWrapper(wrapper);
                 }
             }
         }
     }
 
+    private void createRestrictedContinueGroup() {
+        Properties props = context.getPropertiesForCurrentPageRequest();
+        contwrappers    = new IWrapperGroup();
+        String restricted = props.getProperty(PROP_RESTRICED);
+        if (restricted != null && !restricted.equals("")) {
+            StringTokenizer tok = new StringTokenizer(restricted);
+            for (; tok.hasMoreTokens(); ) {
+                String prefix = tok.nextToken();
+                String iface  = (String) prefixmap.get(prefix);
+                if (iface == null) {
+                    CAT.warn("*** Prefix '" + prefix + "' is not mapped to a defined interface. Ignoring...");
+                } else {
+                    CAT.debug("*** Adding interface '" + iface + "' to the restricted_continue group...");
+                    IWrapper wrapper = (IWrapper) wrappers.get(iface);
+                    contwrappers.addIWrapper(wrapper);
+                }
+            }
+        }
+    }
+    
     private void readIWrapperGroupsConfigFromProperties() throws Exception {
         Properties props = context.getPropertiesForCurrentPageRequest();
         TreeMap    pmap  = PropertiesUtils.selectPropertiesSorted(props, GROUP_PROP);
@@ -673,33 +640,23 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
         Properties props = context.getPropertiesForCurrentPageRequest();
         HashMap    pmap  = PropertiesUtils.selectProperties(props, GROUP_PROP);
         if (pmap.isEmpty()) {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Properties say: Have NO group definition");
-            }
+            CAT.debug("*** Properties say: Have NO group definition");
             return false;
         } else {
-            if(CAT.isDebugEnabled()) {
-                CAT.debug("*** Properties say: Have group definition");
-            }
+            CAT.debug("*** Properties say: Have group definition");
             return true;
         }
     }
 
     private IWrapperGroup getCurrentGroupFromRequest() throws Exception {
-        if(CAT.isDebugEnabled()) {
-            CAT.debug("* looking for group index: " +  GROUP_CURR);
-        }
-        RequestParam page = preq.getRequestParam(GROUP_CURR); 
+        CAT.debug("* looking for group index: " +  GROUP_CURR);
+        RequestParam page = preq.getRequestParam(GROUP_CURR);
         synchronized (activegroups) { 
             if (page == null || page.getValue().equals("")) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("*** Request specifies NO group index: Using index 0");
-                }
+                CAT.debug("*** Request specifies NO group index: Using index 0");
                 return (IWrapperGroup) activegroups.get(0);
             } else {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("*** Request specifies group index: Using index " + page);
-                }
+                CAT.debug("*** Request specifies group index: Using index " + page);
                 Integer index = new Integer(page.getValue());
                 return (IWrapperGroup) activegroups.get(index.intValue());
             }
@@ -709,9 +666,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     private Integer checkForNextIndexInRequest() {
         int current_idx = getCurrentIWrapperGroupIndex();
         int last_idx    = activegroups.size() - 1;
-        if(CAT.isDebugEnabled()) {
-            CAT.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
-        }
+        CAT.debug("* Current Idx: " + current_idx + " LastIdx: " + last_idx);
         String[] grpcmdvals = reqdata.getCommands(SELECT_GROUP); 
 
         if (grpcmdvals != null && grpcmdvals.length > 0) {
@@ -721,39 +676,25 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
             String val = grpcmdvals[0];
 
             if (val.equals(GROUP_NEXT)) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("* CMD VAL is NEXT");
-                }
+                CAT.debug("* CMD VAL is NEXT");
                 if (current_idx < last_idx) {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("* Setting idx to: " + (current_idx + 1));
-                    }
+                    CAT.debug("* Setting idx to: " + (current_idx + 1));
                     return new Integer(current_idx + 1);
                 } else {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("* Next idx out of bounds; setting to: " + last_idx);
-                    }
+                    CAT.debug("* Next idx out of bounds; setting to: " + last_idx);
                     return new Integer(last_idx);
                 }
             } else if (val.equals(GROUP_PREV)) {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("* CMD VAL is PREV");
-                }
+                CAT.debug("* CMD VAL is PREV");
                 if (current_idx > 0) {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("* Setting idx to: " + (current_idx - 1));
-                    }
+                    CAT.debug("* Setting idx to: " + (current_idx - 1));
                     return new Integer(current_idx - 1);
                 } else {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("* Prev idx out of bounds; setting to: 0");
-                    }
+                    CAT.debug("* Prev idx out of bounds; setting to: 0");
                     return new Integer(0);
                 }
             } else {
-                if(CAT.isDebugEnabled()) {
-                    CAT.debug("* CMD VAL is: " + val);
-                }
+                CAT.debug("* CMD VAL is: " + val);
                 Integer index;
                 try {
                     index = new Integer(val);
@@ -764,9 +705,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
                 if (index.intValue() >= 0 && index.intValue() <= last_idx) {
                     return index;
                 } else {
-                    if(CAT.isDebugEnabled()) {
-                        CAT.debug("* Idx out of bounds; resetting to current value: " + current_idx);
-                    }
+                    CAT.debug("* Idx out of bounds; resetting to current value: " + current_idx);
                     return new Integer(current_idx);
                 }
             }
@@ -824,16 +763,17 @@ public class IWrapperSimpleContainer implements IWrapperContainer,Reloader {
     }// IWrapperGroup
 
     public void reload() {
-          HashMap wrappersNew=new HashMap();
-          Iterator it=wrappers.keySet().iterator();
+          HashMap  wrappersNew = new HashMap();
+          Iterator it = wrappers.keySet().iterator();
           while(it.hasNext()) {
-              String str=(String)it.next();
-              IWrapper iwOld=(IWrapper)wrappers.get(str);
-              IWrapper iwNew=(IWrapper)StateTransfer.getInstance().transfer(iwOld);
-              String className=iwOld.getClass().getName();
+              String   str       = (String)it.next();
+              IWrapper iwOld     = (IWrapper) wrappers.get(str);
+              IWrapper iwNew     = (IWrapper)  StateTransfer.getInstance().transfer(iwOld);
+              String   className = iwOld.getClass().getName();
               wrappersNew.put(str,iwNew);
           }
-          wrappers=wrappersNew;
+          wrappers = wrappersNew;
+          
     }
 
     
