@@ -92,7 +92,7 @@
     </tr>
     <tr>
       <td>
-        <a href="http://jakarta.apache.org/tomcat/index.html">tomcat</a> &gt; 1.6.2
+        <a href="http://jakarta.apache.org/tomcat/index.html">tomcat</a> 5.0.x
       </td>
       <td>
         The tomcat servlet container. You need to get this together
@@ -100,11 +100,12 @@
         environment. We currently develop against
         tomcat-5.0.27. Please note that you need to download the
         binary package in the form of a gzipped tar file
-        (.tar.gz). Don't unpack it, just put the downloaded package in the directory ./lib/tomcat
-        of the unpacked skeleton distribution.
+        (.tar.gz). Don't unpack it, just put the downloaded package in
+        the directory ./lib/tomcat of the unpacked skeleton
+        distribution. There's also a README file in the directory that
+        may contain other helpful information.
       </td>
     </tr>
-    <tr>
     <tr>
       <td>
         <a href="http://ant.apache.org/">ant</a> &gt; 1.6.2
@@ -129,7 +130,7 @@
         to <code>modern</code> when calling ant.</p>
       </td>
     </tr>
-  </table>
+    </table>
 
   </subsection>
   </section>
