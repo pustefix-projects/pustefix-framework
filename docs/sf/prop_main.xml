@@ -265,15 +265,50 @@
         </resource>                               
       </context>
       <xmlcodeOFF/>
-      <pageflow name="AName" final="APageName">
+      <pageflow name="AName" final="APageName" stopnext="true|false">
         <xmlcodeOFF>
-          <div class="comment">
-            <code>name</code> is <b>mandatory</b>, must be a unique
-            name.  <code>final</code> is optional, must reference a
-            page with a valid <code>pagerequest</code> definition given in
-            this property file.  There may be many pageflows defined
-            for a servlet. A page may well be used in more than one pageflow.
-          </div>
+          <table class="stdtable">
+            <tr>
+              <th>Attribute</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>
+                <code>name</code>
+              </td>
+              <td>
+                <b>Mandatory</b>. Must be a unique name. 
+              </td>
+            </tr>              
+            <tr>
+              <td>
+                <code>final</code>
+              </td>
+              <td>
+                Optional, must reference a page with a valid
+                <code>pagerequest</code> definition given in this
+                property file.  There may be many pageflows defined
+                for a servlet. A page may well be used in more than
+                one pageflow.
+              </td>
+            </tr>              
+            <tr>
+              <td>
+                <code>stopnext</code>
+              </td>
+              <td>
+                Optional, defaults to false. If given and true, states
+                inheriting from <code>StateImpl</code> (which should
+                be almost all states) handle the next accessible page
+                <i>after</i> the current page as if it had been
+                triggered directly. This has the effect that the
+                pageflow will stop at the next accessible page after
+                the current page even if this page would normally be
+                skipped in the workflow because it doesn't need any
+                input.
+              </td>
+            </tr>              
+          </table>
         </xmlcodeOFF>
         <flowstep name="AnotherPageName"/>
         <xmlcodeOFF>
