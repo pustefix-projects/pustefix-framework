@@ -86,12 +86,12 @@ class PFUtil {
      * 
      * @return the hashcode as an int.
      */
-    int getSTraceHashCode(String[] strace) {
+    int getSTraceHashCode(StackTraceElement[] strace) {
         StringBuffer tmp = null;
         int code = 0;
         tmp = new StringBuffer();
         for (int i = 0; i < strace.length; i++) {
-            tmp.append(strace[i].trim());
+            tmp.append(strace[i].toString().trim());
         }
         code = tmp.toString().hashCode();
         return code;

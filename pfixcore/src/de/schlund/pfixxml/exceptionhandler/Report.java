@@ -25,23 +25,31 @@ package de.schlund.pfixxml.exceptionhandler;
  *@author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 class Report {
-    
+    private String header;
     /**The containing message */
     private String message;
     /**Number of collected exceptions */
     private int count;
     
-    Report(String message, int count) {
+    Report(String header, String message, int count) {
+        if(header == null)
+            throw new IllegalArgumentException("A NP passed as header is not allowed here.");
+        
         if(message == null)
             throw new IllegalArgumentException("A NP as message is not allowed here.");
             
         if(count == 0)
             throw new IllegalArgumentException("0 as count is not sensible here.");
             
+        this.header = header;
         this.message = message;
         this.count = count;
     }
     
+    
+    public String getHeader() {
+        return header;
+    }
     
 
     /**
