@@ -1,3 +1,10 @@
+2003-06-11 Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java:
+	Fixed bug. Avoid duplicate key/value pairs for input buttons with
+	image type by excluding the according duplicate parameter names 
+	from embedded data check.
+
 2003-06-10 Joerg Haecker <haecker@schlund.de
 	
 	* src/de/schlund/pfixcore/util/email/EmailSender.java(sendMail):
