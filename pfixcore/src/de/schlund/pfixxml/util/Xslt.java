@@ -63,7 +63,7 @@ public class Xslt {
         factory.setErrorListener(new PFErrorListener());
     }
 
-    public static SAXSource createSaxSource(InputSource input) {
+    private static SAXSource createSaxSource(InputSource input) {
         return new SAXSource(Xml.createXMLReader(), input);
     }
      
@@ -80,15 +80,10 @@ public class Xslt {
      * @throws Exception on all errors 
      */
     public static Document xmlObjectFromDocument(Document doc) {
-        return xmlObjectFromDocument(doc, null);
-    }
-
-    public static Document xmlObjectFromDocument(Document doc, String systemid) {
         if (doc instanceof TinyDocumentImpl) {
             return doc;
         } else {
             DOMSource domsrc = new DOMSource(doc);
-            domsrc.setSystemId(systemid);
             try {
                 return xmlObjectFromSource(domsrc);
             } catch (TransformerException e) {
@@ -96,6 +91,7 @@ public class Xslt {
             }
         }
     }
+
 
     /**
      * Create a document from a sourcefile in the filesystem. 
@@ -113,7 +109,7 @@ public class Xslt {
         SAXSource src = Xslt.createSaxSource(new InputSource(new StringReader(str)));
         return xmlObjectFromSource(src);
     }
-
+    
     private static Document xmlObjectFromSource(Source input) throws  TransformerException, TransformerConfigurationException {
         try {
             Transformer trans  = factory.newTransformer();

@@ -45,87 +45,45 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 public final class Xml {
-    private static final Category CAT = Category.getInstance(Xml.class.getName());
-
+    private static final Category               CAT     = Category.getInstance(Xml.class.getName());
+    private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
+    
     //-- this is where you configure the xml parser:
     
     public static XMLReader createXMLReader() {
         XMLReader reader;
-
         reader = new SAXParser();
         reader.setErrorHandler(ERROR_HANDLER);
         return reader;
     }
     
-    public static DocumentBuilder createDocumentBuilder() {
-        DocumentBuilderFactory factory;
-        DocumentBuilder result;
-        
-        factory = new DocumentBuilderFactoryImpl();
-        if (!factory.isNamespaceAware()) {
-            factory.setNamespaceAware(true);
-        }
-        if (factory.isValidating()) {
-            factory.setValidating(false);
-        }
-        try {
-            result = factory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("createDocumentBuilder failed", e);
-        }
-        result.setErrorHandler(ERROR_HANDLER);
-        return result;
+    public static Document createDocument() {
+        return createDocumentBuilder().newDocument();       
     }
     
-    // make sure that output is not polluted by prinlns:
-    private static final ErrorHandler ERROR_HANDLER = new ErrorHandler() {
-        public void error(SAXParseException exception) throws SAXException {
-            report(exception);
-        }
-
-        public void fatalError(SAXParseException exception) throws SAXException {
-            report(exception);
-        }
-
-        public void warning(SAXParseException exception) throws SAXException {
-            report(exception);
-        }
-
-        private void report(SAXParseException exception) throws SAXException {
-    	    CAT.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":" 
-    	            + exception.getColumnNumber() + ":" + exception.getMessage());
-    	    throw exception;
-    	}
-    };
-    
-    //--
-    // parsing - synchronized because all methods use the same document builder
-    
-    private static final DocumentBuilder builder = createDocumentBuilder();
-    
-    public static synchronized Document createDocument() {
-        return builder.newDocument();       
-    }
-    
-    public static synchronized Document parseString(String text) throws SAXException {
+    public static Document parseString(String text) throws SAXException {
         try {
             return parse(new InputSource(new StringReader(text)));        
         } catch (IOException e) {
             throw new RuntimeException("unexpected ioexception while reading from memory", e);
         }
     }
-    public static synchronized Document parse(File file) throws IOException, SAXException {
+    
+    public static Document parse(File file) throws IOException, SAXException {
         return parse(file.getPath());
     }
-    public static synchronized Document parse(String filename) throws IOException, SAXException {
+    
+    public static Document parse(String filename) throws IOException, SAXException {
         return parse(new InputSource(filename));
     }
-    public static synchronized Document parse(InputStream src) throws IOException, SAXException {
+    
+    public static Document parse(InputStream src) throws IOException, SAXException {
         return parse(new InputSource(src));
     }
-    public static synchronized Document parse(InputSource src) throws IOException, SAXException {
+    
+    public static Document parse(InputSource src) throws IOException, SAXException {
         try {
-            return builder.parse(src);
+            return createDocumentBuilder().parse(src);
         } catch (SAXParseException e) {
             StringBuffer buf = new StringBuffer(100);
             buf.append("Caught SAXParseException!\n");
@@ -152,6 +110,7 @@ public final class Xml {
         }
     }
 
+    
     
     //-- serialization
     
@@ -192,6 +151,54 @@ public final class Xml {
         doSerialize(node, new FileOutputStream(filename), pp, true);
     }
 
+
+    
+
+    // PRIVATE
+
+    private static DocumentBuilderFactory createDocumentBuilderFactory() {
+        DocumentBuilderFactory fact = new DocumentBuilderFactoryImpl();
+        if (!fact.isNamespaceAware()) {
+            fact.setNamespaceAware(true);
+        }
+        if (fact.isValidating()) {
+            fact.setValidating(false);
+        }
+        return fact;
+    }
+
+    private static DocumentBuilder createDocumentBuilder() {
+        DocumentBuilder result;
+        try {
+            result = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("createDocumentBuilder failed", e);
+        }
+        result.setErrorHandler(ERROR_HANDLER);
+        return result;
+    }
+
+    // make sure that output is not polluted by prinlns:
+    private static final ErrorHandler ERROR_HANDLER = new ErrorHandler() {
+            public void error(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+            
+            public void fatalError(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+            
+            public void warning(SAXParseException exception) throws SAXException {
+                report(exception);
+            }
+            
+            private void report(SAXParseException exception) throws SAXException {
+                CAT.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":" 
+                          + exception.getColumnNumber() + ":" + exception.getMessage());
+                throw exception;
+            }
+        };
+    
     /**
      * @param pp pretty print
      */
@@ -213,11 +220,16 @@ public final class Xml {
         } else {
             format.setPreserveSpace(true);
         }
-        if (dest instanceof Writer) {
+        if (dest instanceof StringWriter) { // No FileWriter because encoding must be set.
+                                            // Use FileOutputstreams instead 
             ser = new XMLSerializer((Writer) dest, format);
-        } else {
+        } else if (dest instanceof FileOutputStream) {
             ser = new XMLSerializer((OutputStream) dest, format);
+        } else {
+            throw new RuntimeException("Only StringWriter and FileOutputStreams allowed! " +
+                                       "(" + dest.getClass() +")");
         }
+
         if (node instanceof Document) {
             ser.serialize((Document) node);
         } else if (node instanceof DocumentFragment) {
