@@ -57,9 +57,6 @@
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <xsl:if test="@forcessl and @forcessl = 'true'">
-      <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.FORCE_SSL=true&#xa;</xsl:text>
-    </xsl:if>
     <xsl:if test="$nostore = 'true'">
       <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
     </xsl:if>
@@ -203,37 +200,31 @@
 
   <xsl:template match="servletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
-    <!--     <xsl:apply-templates select="./depend/node()"> -->
-    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
-    <!--     </xsl:apply-templates> -->
     <xsl:choose>
       <xsl:when test="starts-with(@depend, '/')"><xsl:value-of select="@depend"/></xsl:when>
       <xsl:otherwise><xsl:value-of select="$docroot"/>/<xsl:value-of select="@depend"/></xsl:otherwise>
     </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
     <xsl:text>xmlserver.servlet.name=</xsl:text>
-    <!--     <xsl:apply-templates select="./servletname/node()"> -->
-    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
-    <!--     </xsl:apply-templates> -->
     <xsl:value-of select="@name"/>
     <xsl:text>&#xa;</xsl:text>
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="ssl">
+  <xsl:template match="servletinfo/ssl">
     <xsl:text>servlet.needsSSL=</xsl:text>
-      <!--       <xsl:apply-templates select="./sslneeded/node()"> -->
-      <!--         <xsl:with-param name="doit" select="'yes'"/> -->
-      <!--       </xsl:apply-templates> -->
-      <xsl:value-of select="./@force"/>
-      <xsl:text>&#xa;</xsl:text>
+    <xsl:value-of select="./@force"/>
+    <xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="pagerequest/ssl">
+    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="../@name"/><xsl:text>.needsSSL=</xsl:text>
+    <xsl:value-of select="./@force"/>
+    <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
   <xsl:template match="editmode">
     <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
-    <!--     <xsl:apply-templates select="./prohibitedit/node()"> -->
-    <!--       <xsl:with-param name="doit" select="'yes'"/> -->
-    <!--     </xsl:apply-templates> -->
     <xsl:choose>
       <xsl:when test="@allow = 'true'">false</xsl:when>
       <xsl:otherwise>true</xsl:otherwise>

@@ -434,7 +434,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                        session.getAttribute(SessionHelper.SESSION_ID_URL));
             if (doreuse) {
                 synchronized (session) {
-                    spdoc = (SPDocument)session.getAttribute(servletname + SUFFIX_SAVEDDOM);
+                    spdoc = (SPDocument) session.getAttribute(servletname + SUFFIX_SAVEDDOM);
                 }
             }
            
@@ -463,9 +463,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         // Set stylesheet parameters for editconsole
-        if(recordmodeAllowed) {
+        if (recordmodeAllowed) {
             String name = RecordManagerFactory.getInstance().createRecordManager(targetconf).getTestcaseName(session);         
-            if(name != null) {
+            if (name != null) {
                 params.put(PARAM_RECORDMODE, name);            
             }
             boolean allowed = recordmodeAllowed && RecordManagerFactory.getInstance().createRecordManager(targetconf).isRecordmodeAllowed();
