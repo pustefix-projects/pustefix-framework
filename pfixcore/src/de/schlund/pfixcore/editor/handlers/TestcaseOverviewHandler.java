@@ -1,16 +1,16 @@
 package de.schlund.pfixcore.editor.handlers;
 
+import de.schlund.pfixcore.editor.resources.CRTestcase;
+import de.schlund.pfixcore.editor.resources.EditorRes;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Handler for showing results of play-backed testcases.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcaseOverviewHandler implements IHandler {
 
@@ -33,7 +33,10 @@ public class TestcaseOverviewHandler implements IHandler {
      * @see de.schlund.pfixcore.generator.IHandler#prerequisitesMet(Context)
      */
     public boolean prerequisitesMet(Context context) throws Exception {
-        return true;
+        ContextResourceManager crm = context.getContextResourceManager();
+        CRTestcase crtc = EditorRes.getCRTestcase(crm);
+        boolean ret = crtc.isTestExecuted();
+        return ret;
     }
 
     /**

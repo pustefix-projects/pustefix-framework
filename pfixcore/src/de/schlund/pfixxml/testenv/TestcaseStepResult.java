@@ -1,19 +1,16 @@
 package de.schlund.pfixxml.testenv;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * Class encapsulating the result of a single step in a testcase after playback.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcaseStepResult {
     private String diffString;
     private int statusCode;
 
     /**
-     * Returns the diffString.
+     * Returns the diff for this step.
      * @return String
      */
     public String getDiffString() {
@@ -21,7 +18,7 @@ public class TestcaseStepResult {
     }
 
     /**
-     * Returns the statusCode.
+     * Returns the status code for this step.
      * @return int
      */
     public int getStatusCode() {
@@ -29,16 +26,16 @@ public class TestcaseStepResult {
     }
 
     /**
-     * Sets the diffString.
-     * @param diffString The diffString to set
+     * Sets the diff for this step.
+     * @param diffString the diff 
      */
     public void setDiffString(String diffString) {
         this.diffString = diffString;
     }
 
     /**
-     * Sets the statusCode.
-     * @param statusCode The statusCode to set
+     * Sets the status for this step.
+     * @param statusCode the statusCode
      */
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;

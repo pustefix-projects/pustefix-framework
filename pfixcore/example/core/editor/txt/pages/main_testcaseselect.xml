@@ -5,13 +5,13 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-        <b>Directory with testcases is: <ixsl:value-of select="/formresult/testcases/@directory"/></b> 
+        <!--<b>Directory with testcases is: <ixsl:value-of select="/formresult/testcases/@directory"/></b> -->
         <br/><br/>
-          <pfx:button activeclass="editor_submit" page="testcaseselect" target="_top" mode="force">Reload page</pfx:button>
+          <!--<pfx:button activeclass="editor_submit" page="testcaseselect" target="_top" mode="force">Reload page</pfx:button>-->
         <br/>
           <ixsl:choose>
           <ixsl:when test="/formresult/testcases/available/testcase">
-          <div class="doc_div"><h3>The following testcases exist for this product:</h3></div>
+          <b>The following testcases exist for this product:</b>
           <br/>
           <pfx:forminput target="_top">	
           <table border="0" class="editor_box">
@@ -37,6 +37,7 @@
             <td>
               <pfx:xinp type="submit" class="editor_submit" value="Delete">
                 <pfx:argument name="tcselect.DoDelete">true</pfx:argument>
+								<pfx:command name="SELWRP">tcselect</pfx:command>
               </pfx:xinp>
               </td>
               <td>
@@ -50,7 +51,9 @@
           </pfx:forminput>
           </ixsl:when>
           <ixsl:otherwise>
-            <div class="doc_div"><h3>No recorded testcases exist, please record something and reload this page</h3></div>
+	  				<table class="editor_box">
+            	<tr><td><p>No recorded testcases exist, please record something and reload this page.</p></td></tr>
+						</table>
           </ixsl:otherwise>
           </ixsl:choose>
         <br/>

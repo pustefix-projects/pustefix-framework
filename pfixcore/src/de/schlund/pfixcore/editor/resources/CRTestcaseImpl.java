@@ -37,6 +37,7 @@ public class CRTestcaseImpl implements CRTestcase {
     private boolean hasStartedTestcases = false;
     private HashMap testOutput = null;
     private ContextResourceManager cRM = null;
+    private boolean isTestExecuted = false;
     private static Category CAT = Category.getInstance(CRTestcase.class.getName());
     private static String TEMP_DIR_DEFAULT = "/tmp";
     /**
@@ -177,7 +178,7 @@ public class CRTestcaseImpl implements CRTestcase {
     /**
      * @see de.schlund.pfixcore.editor.resources.CRTestcase#executeTest()
      */
-    public void executeTest() throws Exception {
+    public HashMap executeTest() throws Exception {
         hasStartedTestcases = true;
         testOutput = new HashMap();
         for(int i=0; i<selectedTestcases.size(); i++) {
@@ -195,6 +196,8 @@ public class CRTestcaseImpl implements CRTestcase {
                 throw e;
             }
         }
+        isTestExecuted = true;
+        return testOutput;
     }
 
     /**
@@ -227,6 +230,7 @@ public class CRTestcaseImpl implements CRTestcase {
         availableTestcases = null;
         testOutput = null;
         hasStartedTestcases = false;
+        isTestExecuted = false;
     }
 
     private String getAvailableTestcaseDir() throws Exception {
@@ -245,7 +249,9 @@ public class CRTestcaseImpl implements CRTestcase {
     public void removeTestcase(String[] names) throws Exception {
         for(int i=0; i<names.length; i++) {
             String abs_path = getAvailableTestcaseDir() + "/" + names[i];
-            System.out.println("removing "+abs_path);
+            if(CAT.isDebugEnabled()) {
+                CAT.debug("removing "+abs_path);
+            }
             File file = new File(abs_path);
             File[] files = file.listFiles();
             for(int j=0; j<files.length; j++) {
@@ -264,7 +270,7 @@ public class CRTestcaseImpl implements CRTestcase {
             Iterator iter = getSelectedTestcases().iterator();
             for(int i=0; i<names.length; i++) {
                 while(iter.hasNext()) {
-                 String str = (String) iter.next();
+                    String str = (String) iter.next();
                     if(names[i].equals(str)) {
                         iter.remove();
                     }
@@ -280,4 +286,11 @@ public class CRTestcaseImpl implements CRTestcase {
         return hasStartedTestcases;
     }
 
+   
+    /**
+     * @see de.schlund.pfixcore.editor.resources.CRTestcase#isTestExecuted()
+     */
+    public boolean isTestExecuted() {
+        return isTestExecuted;
+    }
 }

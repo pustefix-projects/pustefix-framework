@@ -2,6 +2,8 @@ package de.schlund.pfixcore.editor.handlers;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Category;
+
 import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
 import de.schlund.pfixcore.editor.interfaces.TestcaseSelect;
 import de.schlund.pfixcore.editor.resources.CRTestcase;
@@ -12,15 +14,13 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
- * @author jh
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * 
+ * Handler for selecting testcases.
+ * <br/>
+ * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TestcaseSelectHandler implements IHandler {
-    
+    private static Category CAT = Category.getInstance(TestcaseSelectHandler.class.getName());
     /**
      * @see de.schlund.pfixcore.generator.IHandler#handleSubmittedData(Context, IWrapper)
      */
@@ -85,7 +85,6 @@ public class TestcaseSelectHandler implements IHandler {
         ContextResourceManager crm = context.getContextResourceManager();
         CRTestcase crtc = EditorRes.getCRTestcase(crm);
         boolean ret = !crtc.hasSelectedTestcases();
-        //System.out.println("TestcaseSelectHandler#needsData="+ret);
         return ret;
     }
 }

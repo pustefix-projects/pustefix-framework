@@ -10,7 +10,16 @@
        <ixsl:variable name="grey">#AAAAAA</ixsl:variable> 
       
 
+      <b>All results of play-backed testcases:</b><br/><br/>
       <table class="editor_box">
+        <tr>
+          <td>Note:</td> 
+        </tr>
+        <tr>
+          <td>
+            :-) means no diff between recorded and current output
+          </td>
+        </tr>
         <tr>
           <td>
             <font>
@@ -33,10 +42,9 @@
       </table>
 
       
-       <div class="doc_div"><h3>All results of play-backed testcases:</h3></div>
        <ixsl:for-each select="/formresult/testcases/test_results/child::*">
        <br/><hr/><br/>
-        <div class="doc_div"><h4>Results for test <ixsl:value-of select="@id"/></h4></div><br/>
+       <b>Results for test <ixsl:value-of select="@id"/></b><br/>
        <table border="1" cellspacing="0" cellpadding="0" class="editor_box">
         <ixsl:for-each select="./child::*">
           <tr>
@@ -62,14 +70,18 @@
                         <ixsl:choose>
                           <ixsl:when test="substring($line, 1, 1)='-'">
                             <td>
-                              <ixsl:attribute name="bgcolor"><ixsl:value-of select="$red"/></ixsl:attribute>
-                              <ixsl:value-of select="$line"/>
+                              <font>
+                                <ixsl:attribute name="color"><ixsl:value-of select="$red"/></ixsl:attribute>
+                                <ixsl:value-of select="$line"/>
+                              </font>
                             </td>
                           </ixsl:when>
                           <ixsl:when test="substring($line, 1, 1)='+'">
                             <td>
-                              <ixsl:attribute name="bgcolor"><ixsl:value-of select="$green"/></ixsl:attribute>
-                              <ixsl:value-of select="$line"/>
+                              <font>
+                                <ixsl:attribute name="color"><ixsl:value-of select="$green"/></ixsl:attribute>
+                                <ixsl:value-of select="$line"/>
+                              </font>
                             </td>
                           </ixsl:when>
                           <ixsl:otherwise>
@@ -96,12 +108,14 @@
        </table>
        </ixsl:for-each>
        <br/>
+       <hr/>
+       <br/>
        <table>
         <tr>
           <td>
             <pfx:button normalclass="editor_submit" page="testcaseselect">New test
               <pfx:argument name="tcreset.Reset">true</pfx:argument>
-              <pfx:command name="SELWRP" page="testcaseselect">testcasereset</pfx:command>
+              <pfx:command name="SELWRP" page="testcaseselect">tcreset</pfx:command>
             </pfx:button>
           </td>
         </tr>

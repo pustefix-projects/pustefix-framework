@@ -45,6 +45,7 @@ import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpRecoverableException;
 import org.apache.commons.httpclient.HttpState;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.URIException;
@@ -71,8 +72,7 @@ import org.xml.sax.SAXParseException;
 
 
 /**
- * TestClient is an application for testing business logic on
- * pustefix-based projects.
+ * Class for playback of a testcase.
  * 
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
@@ -80,22 +80,21 @@ public class TestClient {
 
     //~ Instance/static variables ..................................................................
 
-    private static String  XMLONLY_PARAM_KEY   = "__xmlonly";
-    private static String  XMLONLY_PARAM_VALUE = "1";
-    private static String  GNU_DIFF            = "diff -u";
-    private String         srcDir;
-    private String         tmpDir;
-    private String         styleDir;
-    private HttpConnection httpConnect;
-    // Xerces
-    private static DocumentBuilderFactory docBFactory   = DocumentBuilderFactory.newInstance();
-    private long                          request_count = 0;
+    private static String                 XMLONLY_PARAM_KEY   = "__xmlonly";
+    private static String                 XMLONLY_PARAM_VALUE = "1";
+    private static String                 GNU_DIFF            = "diff -u";
+    private String                        srcDir;
+    private String                        tmpDir;
+    private String                        styleDir;
+    private HttpConnection                httpConnect;
+    private static DocumentBuilderFactory docBFactory         = DocumentBuilderFactory.newInstance();
+    private long                          request_count       = 0;
     private String                        sessionId;
-    private boolean                       ssl           = false;
-    private HostConfiguration             currentConfig = new HostConfiguration();
-    private String                        uri_session   = new String();
-    private SimpleHttpConnectionManager   conMan        = new SimpleHttpConnectionManager();
-    private static Category               CAT           = Category.getInstance(TestClient.class.getName());
+    private boolean                       ssl                 = false;
+    private HostConfiguration             currentConfig       = new HostConfiguration();
+    private String                        uri_session         = new String();
+    private SimpleHttpConnectionManager   conMan              = new SimpleHttpConnectionManager();
+    private static Category               CAT                 = Category.getInstance(TestClient.class.getName());
 
     //~ Initializers ...............................................................................
 
@@ -106,11 +105,19 @@ public class TestClient {
 
     //~ Constructors ...............................................................................
 
-    public TestClient() throws TestClientException {
+    /**
+     * Create a new TestClient. 
+     */
+    public TestClient() {
     }
 
     //~ Methods ....................................................................................
 
+    /**
+     * Start playback the testcase. Please call setOptions
+     * before calling this method.
+     * @return the result of the testcase
+     */
     public TestcasePlaybackResult makeTest() throws TestClientException {
         CAT.warn("Starting test NOW");
         File tmp = new File(tmpDir);
@@ -126,6 +133,34 @@ public class TestClient {
         return doTest(config);
     }
 
+    /**
+     * Configure the TestClient
+     * @param src_dir the path to the testcase to playback
+     * @param tmp_dir directory where temporay data is written
+     * @param style_dir directory containing stylesheets
+     */
+    public void setOptions(String src_dir, String tmp_dir, String style_dir)
+                    throws TestClientException {
+        if (src_dir == null || tmp_dir == null || style_dir == null) {
+            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+                                               + "Arguments: Directories for testcases: " + src_dir
+                                               + ", temporary: " + tmp_dir + ", stylesheets: "
+                                               + style_dir);
+        }
+        if (CAT.isDebugEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("\n");
+            sb.append("Setting directory for testcases to " + src_dir).append("\n");
+            sb.append("Setting temporary directory to " + tmp_dir).append("\n");
+            sb.append("Setting stylesheet directory to " + style_dir).append("\n");
+            CAT.debug(sb.toString());
+        }
+        srcDir   = src_dir;
+        tmpDir   = tmp_dir;
+        styleDir = style_dir;
+    }
+
+    /** execute test */
     private TestcasePlaybackResult doTest(StepConfig[] config) throws TestClientException {
         TestcasePlaybackResult tcresult   = new TestcasePlaybackResult();
         TestcaseStepResult     stepresult = null;
@@ -155,37 +190,46 @@ public class TestClient {
                     throw e;
                 }
             }
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("  Transforming recorded and current output document...");
-            } else if (CAT.isInfoEnabled()) {
-                CAT.info("  Transforming...");
-            }
-            Document tmp_rec = doTransform(config[j].getRecordedOutput(), config[j].getStyleSheet());
-            Document tmp_out = doTransform(current_output_tree, config[j].getStyleSheet());
-            String tmp_fname_cur = tmpDir + "/_current" + j;
-            String tmp_fname_rec = tmpDir + "/_recorded" + j;
-            writeDocument(tmp_out, tmp_fname_cur);
-            writeDocument(tmp_rec, tmp_fname_rec);
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("  Diffing " + tmp_fname_cur + " and " + tmp_fname_rec + " ...");
-            } else if (CAT.isInfoEnabled()) {
-                CAT.info("  Diffing...");
-            }
-            String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
-            stepresult.setDiffString(msg);
-            stepresult.setStatusCode(scode);
-            if (msg == null || msg.equals("")) {
-                msg = ":-)";
+            if (scode == HttpStatus.SC_OK) {
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("  Transforming recorded and current output document...");
+                } else if (CAT.isInfoEnabled()) {
+                    CAT.info("  Transforming...");
+                }
+                Document tmp_rec       = doTransform(config[j].getRecordedOutput(), 
+                                                     config[j].getStyleSheet());
+                Document tmp_out       = doTransform(current_output_tree, config[j].getStyleSheet());
+                String   tmp_fname_cur = tmpDir + "/_current" + j;
+                String   tmp_fname_rec = tmpDir + "/_recorded" + j;
+                writeDocument(tmp_out, tmp_fname_cur);
+                writeDocument(tmp_rec, tmp_fname_rec);
+                if (CAT.isDebugEnabled()) {
+                    CAT.debug("  Diffing " + tmp_fname_cur + " and " + tmp_fname_rec + " ...");
+                } else if (CAT.isInfoEnabled()) {
+                    CAT.info("  Diffing...");
+                }
+                String msg = doDiff(tmp_fname_cur, tmp_fname_rec);
+                stepresult.setDiffString(msg);
+                stepresult.setStatusCode(scode);
+                if (msg == null || msg.equals("")) {
+                    msg = ":-)";
+                } else {
+                    has_diff = true;
+                }
+                tcresult.addTestcaseStepResult(stepresult);
             } else {
-                has_diff = true;
+                stepresult.setStatusCode(scode);
+                stepresult.setDiffString(null);
+                tcresult.addTestcaseStepResult(stepresult);
+                return tcresult;
             }
-            tcresult.addTestcaseStepResult(stepresult);
         }
         CAT.warn("\n*** Resut: ***");
         CAT.warn(has_diff ? ";-(" : ";-)");
         return tcresult;
     }
 
+    /** prepare */
     private StepConfig[] doPrepare(ArrayList files) throws TestClientException {
         DocumentBuilder doc_builder;
         StepConfig[]    config          = new StepConfig[files.size()];
@@ -236,7 +280,7 @@ public class TestClient {
             String stylessheet = null;
             try {
                 Node ssheet = XPathAPI.selectSingleNode(file_content, "/step/stylesheet");
-                if(ssheet != null) {
+                if (ssheet != null) {
                     stylessheet = ssheet.getFirstChild().getNodeValue();
                 }
             } catch (TransformerException e) {
@@ -274,6 +318,7 @@ public class TestClient {
         return config;
     }
 
+    /** do the transformation */
     private Document doTransform(Document in, String stylesheet_name) throws TestClientException {
         try {
             removeSerialNumber(in);
@@ -314,12 +359,23 @@ public class TestClient {
         return in;
     }
 
+    /** remove the serial number from the result document */
     private void removeSerialNumber(Document in) throws TransformerException {
         Node node = XPathAPI.selectSingleNode(in, "/formresult");
         ((Element) node).setAttribute("serial", "0");
     }
 
+    /** serialize document into file */
     private void writeDocument(Document doc, String path) throws TestClientException {
+        if (doc == null) {
+            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+                                               + "Can't serialize a " + doc
+                                               + " document to a file!");
+        }
+        if (path == null || path.equals("")) {
+            throw new IllegalArgumentException("The parameter 'null' or '\"\"' is not allowed here! "
+                                               + "Can't serialize a document to " + path + "!");
+        }
         XMLSerializer ser        = new XMLSerializer();
         OutputFormat  out_format = new OutputFormat("xml", "ISO-8859-1", true);
         out_format.setIndent(2);
@@ -339,6 +395,7 @@ public class TestClient {
         }
     }
 
+    /** serialize document into a string */
     private String documentToString(Document doc) throws TestClientException {
         if (doc == null) {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
@@ -360,6 +417,7 @@ public class TestClient {
         return string_writer.getBuffer().toString();
     }
 
+    /** start GNU diff process */
     private String doDiff(String path1, String path2) throws TestClientException {
         String diff = GNU_DIFF + " " + path2 + " " + path1;
         if (CAT.isDebugEnabled()) {
@@ -394,6 +452,7 @@ public class TestClient {
         return buf.toString();
     }
 
+    /** read testcase files */
     private ArrayList readFiles() throws TestClientException {
         File      dir       = new File(srcDir);
         File[]    all_files = dir.listFiles();
@@ -418,28 +477,9 @@ public class TestClient {
         return files;
     }
 
-    public void setOptions(String src_dir, String tmp_dir, String style_dir) throws TestClientException {
-        if (src_dir == null || tmp_dir == null || style_dir == null) {
-            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
-                                               + "Arguments: Directories for testcases: " + src_dir
-                                               + ", temporary: " + tmp_dir + ", stylesheets: "
-                                               + style_dir);
-        }
-        if(CAT.isDebugEnabled()) {
-            StringBuffer sb = new StringBuffer();
-            sb.append("\n");
-            sb.append("Setting directory for testcases to "+src_dir).append("\n");
-            sb.append("Setting temporary directory to "+tmp_dir).append("\n");
-            sb.append("Setting stylesheet directory to "+style_dir).append("\n");
-            CAT.debug(sb.toString());
-        }
-        srcDir    = src_dir;
-        tmpDir    = tmp_dir;
-        styleDir = style_dir;
-    }
-
+    /** check options */
     private void checkOptions() throws TestClientException {
-        if(CAT.isDebugEnabled()) {
+        if (CAT.isDebugEnabled()) {
             CAT.debug("Checking options...");
         }
         File input_dir = new File(srcDir);
@@ -454,11 +494,12 @@ public class TestClient {
         if (! style_dir.isDirectory() || ! style_dir.canRead()) {
             throw new TestClientException(styleDir + " is not a directory or not readable!", null);
         }
-        if(CAT.isDebugEnabled()) {
+        if (CAT.isDebugEnabled()) {
             CAT.debug("Checking options done!");
         }
     }
 
+    /** initialize the HTTP-connection */
     private void initHttpConnection(String hostname, int port, String proto)
                              throws TestClientException {
         HostConfiguration config = new HostConfiguration();
@@ -496,6 +537,7 @@ public class TestClient {
         }
     }
 
+    /** get result from server after posting request data */
     private TestcaseSimpleStepResult getResultFromFormInput(Document form_data)
                                                      throws TestClientException {
         String host  = getHostnameFromInput(form_data);
@@ -551,24 +593,25 @@ public class TestClient {
             sessionId   = uri.substring(uri.indexOf('=') + 1, uri.length());
             uri_session = uri.substring(0, uri.indexOf('=') + 1) + sessionId;
         }
-
-        /*if (status_code != HttpStatus.SC_OK) {
-            throw new TestClientException("HTTP-Status code =" + status_code + " (Must be 200)! ", 
-                                          null);
-        }*/
-        InputStream response_stream = null;
-        try {
-            response_stream = post.getResponseBodyAsStream();
-        } catch (IOException e) {
-            throw new TestClientException("IOException occured!", e);
-        }
-        Document                 d   = convertInputStreamToDocument(response_stream);
         TestcaseSimpleStepResult res = new TestcaseSimpleStepResult();
-        res.setScode(status_code);
-        res.setDoc(d);
+        if (status_code != HttpStatus.SC_OK) {
+            res.setScode(status_code);
+            res.setDoc(null);
+        } else {
+            InputStream response_stream = null;
+            try {
+                response_stream = post.getResponseBodyAsStream();
+            } catch (IOException e) {
+                throw new TestClientException("IOException occured!", e);
+            }
+            Document d = convertInputStreamToDocument(response_stream);
+            res.setScode(status_code);
+            res.setDoc(d);
+        }
         return res;
     }
 
+    /** Convert the inputstream from the server into a XML-document */
     private Document convertInputStreamToDocument(InputStream istream) throws TestClientException {
         DocumentBuilder doc_builder = null;
         try {
@@ -588,6 +631,7 @@ public class TestClient {
         return doc;
     }
 
+    /** extract postparams from the recorded request data */
     private NameValuePair[] getPostParamsFromInput(Document form_data) throws TestClientException {
         NodeList value = null;
         try {
@@ -608,6 +652,7 @@ public class TestClient {
         return post_params;
     }
 
+    /** extract the target hostname from the recorded request data */
     private String getHostnameFromInput(Document form_data) throws TestClientException {
         Node value = null;
         try {
@@ -619,6 +664,7 @@ public class TestClient {
         return name;
     }
 
+    /** extract the target hostport from the recorded request data */
     private int getPortFromInput(Document form_data) throws TestClientException {
         Node value = null;
         try {
@@ -631,6 +677,7 @@ public class TestClient {
         return port;
     }
 
+    /** extract the protocol from the recorded request data */
     private String getProtoFromInput(Document form_data) throws TestClientException {
         Node value = null;
         try {
@@ -642,6 +689,7 @@ public class TestClient {
         return proto;
     }
 
+    /** extract the URI from the recorded request data */
     private String getURIFromInput(Document form_data) throws TestClientException {
         Node value = null;
         try {
@@ -653,6 +701,7 @@ public class TestClient {
         return uri;
     }
 
+    /** initialize SSL */
     private void initSSL() throws TestClientException {
         Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
         System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
@@ -677,6 +726,7 @@ public class TestClient {
     }
 }
 
+/** Helper class which encapsulates the configuration of one single step*/
 class StepConfig {
 
     //~ Instance/static variables ..................................................................
@@ -730,6 +780,7 @@ class StepConfig {
     }
 }
 
+/** HACK for handling recorded data over SSL */
 class MyX509TrustManager implements X509TrustManager {
 
     //~ Methods ....................................................................................
@@ -747,6 +798,7 @@ class MyX509TrustManager implements X509TrustManager {
     }
 }
 
+/** HACK for handling recorded data over SSL */
 class MySSLSocketfactory implements SecureProtocolSocketFactory {
 
     //~ Instance/static variables ..................................................................
@@ -776,6 +828,7 @@ class MySSLSocketfactory implements SecureProtocolSocketFactory {
     }
 }
 
+/**Helper class for internal usage. Encapsulates the result of a single step */
 class TestcaseSimpleStepResult {
 
     //~ Instance/static variables ..................................................................
