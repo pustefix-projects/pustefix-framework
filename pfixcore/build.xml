@@ -52,6 +52,7 @@
     <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
     <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
     <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
+	<property name="dir.tomcat" location="${dir.projects}/servletconf/tomcat"/>
     
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
@@ -79,7 +80,7 @@
                 <not><equals arg1="${env.JAVA_HOME}" arg2=""/></not>
             </and>
         </condition>
-        <fail unless="javahome" message="Property &quot;javahome&quot; not set. This property is used to create projects/servletconf/tomcat/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use."/>
+        <fail unless="javahome" message="Property &quot;javahome&quot; not set. This property is used to create ${dir.tomcat}/workers.prop. Set environment variable JAVA_HOME to point to the root directory of the Java2 Standard Edition installation you wish to use."/>
         
         <condition  property="prohibitedit" value="yes">
             <equals arg1="${makemode}" arg2="prod"/>
@@ -115,12 +116,12 @@
     
     <path id="cp.classpath">
         <fileset dir="${dir.lib}" includes="*.jar"/>
-        <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet.jar"/>
+        <pathelement location="${dir.tomcat}/common/lib/servlet-api.jar"/>
         <pathelement location="${dir.build}"/>
         <pathelement location="${dir.res}"/>
     </path>
     
-    <target name="init" depends="properties">
+    <target name="init" depends="properties, tomcat_dir_opt">
         <mkdir dir="${dir.build}"/>
         <mkdir dir="${dir.dist}"/>
         <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
@@ -160,7 +161,7 @@
             <pathelement location="${dir.jni}/build"/>
         </path>
         <property name="run.ld_library_path" refid="run.path.ld_library_path"/>
-        <exec dir="${dir.projects}/servletconf/tomcat" executable="${dir.projects}/servletconf/tomcat/bin/catalina.sh" vmlauncher="false">
+        <exec dir="${dir.tomcat}" executable="${dir.tomcat}/bin/catalina.sh" vmlauncher="false">
             <env key="LD_LIBRARY_PATH" value="${run.ld_library_path}"/>
             <env key="JAVA_OPTS" value="-mx200M ${run.debugopts}"/>
             <env key="JSSE_HOME" value="${basedir}/lib/jsse"/>
@@ -260,35 +261,35 @@
         <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
         as ${dir.build} is specified as location it always resolves to an absolute path;
         does not work for filenames containing spaces -->
-        <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.projects}/servletconf/tomcat/shared/classes"/>
-        <mkdir dir="${dir.projects}/servletconf/tomcat/shared/classes"/>
+        <echo level="verbose" message="Setting symlink to ${dir.build}/de in ${dir.tomcat}/shared/classes"/>
+        <mkdir dir="${dir.tomcat}/shared/classes"/>
         <exec executable="sh">
-            <arg line="-c &quot;[ -e ${dir.projects}/servletconf/tomcat/shared/classes/de ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/classes/de ; ln -s  ${dir.build}/de ${dir.projects}/servletconf/tomcat/shared/classes/de&quot;"/>
+            <arg line="-c &quot;[ -e ${dir.tomcat}/shared/classes/de ] &amp;&amp; rm -fr ${dir.tomcat}/shared/classes/de ; ln -s  ${dir.build}/de ${dir.tomcat}/shared/classes/de&quot;"/>
         </exec>
         <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
         <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
         <!-- replaced by new versions (with new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
+            <arg file="${dir.tomcat}/shared/lib"/>
             <arg line="-iname *.jar -a -type l -exec rm -v {} ;"/>
         </exec>
         <!-- As version might have been updated,
              delete all *-res.jar files but the current *-res.jar version -->
         <delete>
             <fileset
-                dir="${dir.projects}/servletconf/tomcat/shared/lib"
+                dir="${dir.tomcat}/shared/lib"
                 includes="*-res.jar"
                 excludes="${project.name}-${project.version}-res.jar"
             />
         </delete>
         <echo level="verbose">Building ${project.name}-${project.version}-res.jar in tomcat's lib directory</echo>
-        <jar jarfile="${dir.projects}/servletconf/tomcat/shared/lib/${project.name}-${project.version}-res.jar">
+        <jar jarfile="${dir.tomcat}/shared/lib/${project.name}-${project.version}-res.jar">
             <fileset dir="${basedir}" includes="META-INF/**"/>
             <fileset dir="${dir.res}"/>
         </jar>
         <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
         <exec executable="sh">
-            <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+            <arg line="-c &quot;cd ${dir.tomcat}/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
         </exec>
      </target>
     
@@ -374,21 +375,10 @@
           <fileset dir="${dir.exampleform}" includes="img/**"/>
         </delete>
         
-        <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
-        <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat/shared"/> <!-- symlink de -->
-            <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
-            <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
-        </exec>
-        <!-- delete regular files using task delete -->
-        <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/shared/lib" includes="*.jar"/>
-        </delete>
         <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
     
     <target name="clean-project" description="deletes files from ${dir.projects}">
-        <!-- Delete ${dir.build}, ${dir.dist} directory trees and all .java files generated from .iwrp files in ${dir.src} -->
         <delete>
             <fileset dir="${dir.projects}" includes="**/*.xsl">
                 <present present="both" targetdir="${dir.projects}">
@@ -405,9 +395,10 @@
                     <mapper type="glob" from="*.prop" to="*.prop.in"/>
                 </present>
             </fileset>
-            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>            
+            <fileset dir="${dir.projects}" includes="common/conf/products.prj common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml"/>
         </delete>
-        <delete dir="${dir.projects}/servletconf/tomcat/webapps"/>
+    	<echo>delete ${dir.tomcat}"</echo>
+        <delete dir="${dir.tomcat}"/>
     </target>
     
     <target name="realclean" depends="clean, clean-jni, clean-doc">
@@ -776,7 +767,125 @@
         </pfx-xslt>
     </target>
     
-    <target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
+	<target name="tomcat_dir_opt">
+	    <available file="${dir.tomcat}" type="dir" property="dir.tomcat.exists" />
+	    <antcall target="tomcat_dir_missing"/>
+	</target>
+
+	<target name="tomcat_dir_missing" unless="dir.tomcat.exists">
+	    <antcall target="tomcat_dir"/>
+	</target>
+
+	<target name="tomcat_dir">
+	    <antcall target="tomcat_extract"/>
+	    <antcall target="tomcat_strip"/>
+		<antcall target="tomcat_jndi"/>
+		<antcall target="tomcat_web_xml"/>
+	</target>
+
+	<target name="tomcat_extract">
+		<property name="tomcat.version" value="5.0.25"/><!-- TODO detemin automatically -->
+	    <property name="tomcat.bindist" location="lib/tomcat/jakarta-tomcat-${tomcat.version}.tar.gz"/>
+
+		<delete dir="${dir.tomcat}"/>
+	    <available file="${tomcat.bindist}" type="file" property="tomcat.bindist.exists" />
+	    <fail unless="tomcat.bindist.exists" message="${tomcat.bindist} not found"/>
+	    <property name="dir" location="${dir.tomcat}/.."/>
+	    <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
+	    <move todir="${dir.tomcat}">
+	        <fileset dir="${dir}/jakarta-tomcat-${tomcat.version}" />
+	    </move>
+	</target>
+	
+	<target name="tomcat_strip">
+		<delete dir="${dir.tomcat}/server/webapps"/>
+		<delete dir="${dir.tomcat}/server/classes"/>
+		<delete dir="${dir.tomcat}/common/endorsed"/>
+		<delete dir="${dir.tomcat}/common/classes"/>
+		<delete dir="${dir.tomcat}/temp"/>
+		<delete dir="${dir.tomcat}/webapps"/>
+		<delete>
+			<fileset dir="${dir.tomcat}/bin">
+				<include name="*.bat"/>
+				<include name="*.exe"/>
+				<include name="catalina.xml"/>
+				<include name="commons-daemon.jar"/>
+				<include name="commons-launcher.jar"/>
+				<include name="digest.*"/>
+				<include name="jsvc.tar.gz"/>
+				<include name="LauncherBootstrap.class"/>
+				<include name="launcher.properties"/>
+				<include name="startup*.*"/>
+				<include name="shutdown*.*"/>
+				<include name="tool-wrapper*.*"/>
+			</fileset>
+		</delete>
+		<delete>
+		    <fileset dir="${dir.tomcat}/common/lib">
+				<include name="ant.jar"/>
+				<include name="jasper-*.jar"/>
+				<include name="commons-dbcp-*.jar"/>
+				<include name="commons-el.jar"/>
+				<include name="commons-pool-*.jar"/>
+		    	<include name="naming-factory.jar"/>
+		    	<include name="naming-java.jar"/>
+			</fileset>
+		</delete>
+		<delete dir="${dir.tomcat}/conf/Catalina"/>
+		<delete>
+		    <fileset dir="${dir.tomcat}/conf">
+				<include name="catalina.policy"/>
+				<include name="catalina.properties"/>
+				<include name="jk2.properties"/>
+				<include name="server-minimal.xml"/>
+				<include name="server.xml"/>
+				<include name="tomcat-users.xml"/>
+			</fileset>
+		</delete>
+		<delete>
+			<fileset dir="${dir.tomcat}">
+				<include name="NOTICE"/>
+				<include name="LICENSE"/>
+				<include name="RELEASE-NOTES"/>
+				<include name="RUNNING.txt"/>
+        	</fileset>
+		</delete>
+		<delete>
+			<fileset dir="${dir.tomcat}/server/lib">
+				<include name="catalina-ant.jar"/>
+				<include name="catalina-i18n-??.jar"/>
+				<include name="catalina-optional.jar"/>
+				<include name="catalina-cluster.jar"/>
+				<include name="commons-fileupload-*.jar"/>
+				<include name="jakarta-regexp-1.3.jar"/>
+				<include name="jkconfig.jar"/>
+				<include name="jkshm.jar"/>
+				<include name="servlets-webdav.jar"/>
+				<include name="tomcat-http11.jar"/>
+				<include name="tomcat-jni.jar"/>
+				<include name="*.renametojar"/>
+			</fileset>
+		</delete>
+	</target>
+	    
+	<target name="tomcat_jndi">
+		<copy file="lib/tomcat/jndi.jar" todir="${dir.tomcat}/common/lib"/>
+	</target>
+	
+	<target name="tomcat_web_xml">
+		<property name="file" location="${dir.tomcat}/conf/web.xml"/>
+		<delete file="${file}"/>
+		<touch file="${file}"/>
+		<echo file="${dir.tomcat}/conf/web.xml"><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app
+     PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+     "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+</web-app>
+]]></echo>
+    </target>
+
+	<target name="server_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/conf/server.xml from servletconf/projects.xml with core/build/create_serverxml.xsl">
         <pfx-xslt
             infile="${dir.projects}/servletconf/projects.xml"
             outfile="${dir.projects}/servletconf/tomcat/conf/server.xml"
