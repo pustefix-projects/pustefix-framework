@@ -1,6 +1,23 @@
+2003-10-24  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* skel/build.xml: does not require specifying the version of pfixcore here, in order to be able
+	to find pfixcore-*.jar and pfixcore-data-*.tar.gz
+	Added "mkdir src" in target init, so first time build does not fail
+	* build.xml, skel/build.xml: changed guessing of machine property from "hostname" to "hostname -s"
+
 2003-10-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/XsltGenericTask.java: killed extra imports to make it compile
+
+2003-10-23  Adam Habermann  <adam.habermann@schlund.de>
+	
+	* build.xml, skel/build.xml: checked in the new ant build system consisting of the build.xml
+	files, custom ant tasks in src/de/schlund/pfixcore/util
+	* de/schlund/pfixxml/targets/TargetGenerator.java: added method getReportAsString()
+	to be able to display the generator's report by an ant task
+	* src/de/schlund/pfixxml/targets/TraxXSLTProcessor.java: changed instantiation of TransformerFactory
+	from TransformerFactory.newInstance() to new com.icl.saxon.TransformerFactoryImpl() because the Factory
+	failed to load saxon with the current (Ant-)ClassLoader
 
 2003-10-23  Jens Lautenbacher  <jtl@schlund.de>
 
@@ -1069,7 +1086,7 @@
 	state transfer. Removed logging of object value in debug mode to avoid possible 
 	ClassCastExceptions.
 
-2003-06-03  Martin Leidig <mleidig@schlund.de> Jörg Häcker <haecker@schlund.de>
+2003-06-03  Martin Leidig <mleidig@schlund.de> J?rg H?cker <haecker@schlund.de>
 
 	* META-INF/pfixcore.version: released 0.3.4 - started 0.3.5-pre.
 
@@ -3205,7 +3222,7 @@
              calls the new Java-Function for generating
 	     the documentation-stylesheets
 
-2002-09-12  Rouven Schöller <rouven@schlund.de>
+2002-09-12  Rouven Sch?ller <rouven@schlund.de>
 	* src/de/schlund/pfixxml/AbstractXMLServer.java
 	(process): adjust code for logging the latency. Reason: page names 
 	of the pustefix editor are not longer overgiven as request parameter,
@@ -5104,7 +5121,7 @@
 
 	* examples/core/editor...: Div. xml/xslt and config work for editor.
 
-	* de/schlund/pfixcore/editor/StatusCodes.prop: Remove EMPTY_PRODUCT Scode, as it´s handled in the 
+	* de/schlund/pfixcore/editor/StatusCodes.prop: Remove EMPTY_PRODUCT Scode, as it?s handled in the 
 	IWrapper again
 
 	* de/schlund/pfixcore/editor/handlers/ProductSelectMandatoryHandler.java:
