@@ -27,8 +27,19 @@
                 <pfx:include href="core/txt/styles.xml" part="standard"/>
                 <pfx:include href="core/editor/txt/styles.xml" part="standard"/>
               </style>
+              <pfx:script>
+                function check_frameset() {
+                    if (top.frames["top_navi"] == null) {
+                        alert("Need to reload top");
+                        var href = self.location.href;
+                        var pre  = href.substring(0, href.indexOf("__frame"));
+                        var post = href.substring(href.indexOf("left_navi") + 9); 
+                        top.location.href = pre + "__frame=_top" + post;
+                    }
+                }
+              </pfx:script>
             </head>
-	    <body class="editor_body_sidebar">
+	    <body class="editor_body_sidebar" onload="check_frameset()">
               <pfx:maincontent path="core/editor/txt/pages" prefix="main_" part="sidebar"/>
 	    </body>
 	  </html>
@@ -76,22 +87,11 @@
               parent.frames["bottom"].frames["main"].document.getElementById('subButton').click();
             }
 
-            function f_test() {
-              doSub();
-            }
-            
         </pfx:script>  
         </head>
         <body onunload="__destroyApplet()">
-          <form NAME="the_form">
-          </form>
-          
-          <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true">
-            <param attribut="true"/>
-          </applet>
-          
+          <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true"/>
         </body>
-       
       </html>
     </pfx:frame>
   </pfx:frameset>
