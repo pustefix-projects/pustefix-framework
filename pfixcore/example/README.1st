@@ -9,7 +9,7 @@ You will want to create your own "common" directory to hold
 configuration data, xsl, xml (unlikely) and txt includes (maybe not
 very much).
 
-The applications that may share this common data sit in their own
+The applications that may share this common data reside in their own
 subdirectories (like sample1 in this case here).
 
 The servletconf subdirectory holds the neccessary data for Tomcat4
