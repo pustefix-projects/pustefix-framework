@@ -1,5 +1,8 @@
 2003-06-11  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/script/baselib.js: bug fix from sebastian.werner@schlund.de to
+	make the browser detection code work on windows.
+
 	* example/core/xsl/utils.xsl.in: moved the "method" attribute from
 	the <pfx:switch> tag to it's child tag <pfx:layer_ref>. This
 	allows to specify for each of the ref'ed layers on it's own the
