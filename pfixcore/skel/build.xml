@@ -36,7 +36,6 @@ or delete the DOCTYPE definition -->
   <!-- TODO: use dir.tomcat whereever possible -->
   <!-- TODO: point into subdirectory of build.dir -->
   <property name="dir.tomcat"                 location="${dir.projects}/servletconf/tomcat"/>
-  <property name="trusted.tomcat"             value="172.17.12.*"/>
 
   <property name="pat.pfixcore_jar"         value="pfixcore-*.jar"/>
   <fileset  id="id.fs.pfixcore_jar"         dir="${dir.lib}" includes="pfixcore-*.jar"/>
@@ -102,6 +101,9 @@ or delete the DOCTYPE definition -->
     <!-- Create time stamp in ISO 8601 alike format.
          17th September 2003 11:58:23 formats to AUTO_TAG_2003-09-17-115823 in property -->
     <tstamp><format property="tstamp.autotag" pattern="'AUTO_TAG_'yyyy'-'MM'-'dd'-'HHmmss"/></tstamp>
+
+    <exec outputproperty="trusted.tomcat" executable="hostname" os="Linux"><arg value="-i"/></exec>
+    	
   </target>
 
   <path id="cp.classpath">

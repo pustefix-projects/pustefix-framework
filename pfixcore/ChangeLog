@@ -1,5 +1,11 @@
 2004-07-21 Michael Hartmier  <mhm@schlund.de>
 	* build.xml
+	* skel/build.xml: use hostname -i for trusted ip
+	* startTomcat.sh: adjust debugger configuration to latest tomcat conventions
+	* example/core/build/create_serverxml.xsl: cleanup
+
+2004-07-21 Michael Hartmier  <mhm@schlund.de>
+	* build.xml
 	* example/core/build/create_serverxml.xsl
 	* skel/build.xml: configureable "trusted ips"
 
