@@ -36,6 +36,8 @@ import org.apache.log4j.Category;
 public class StateTransfer {
     
     private Category CAT=Category.getInstance(getClass().getName());
+    private boolean debug;
+    
     private static StateTransfer instance=new StateTransfer();
 
     //cache transferred AppLoader type objects (old -> new)
@@ -49,6 +51,7 @@ public class StateTransfer {
 
     private StateTransfer() {
         initVersionDeps();
+        debug=CAT.isDebugEnabled();
     }
 
     public static StateTransfer getInstance() {
@@ -63,11 +66,19 @@ public class StateTransfer {
     }
 
     public void addTransferred(Object oldObj,Object newObj) {
-        transferred.put(oldObj,newObj);
+        transferred.put(new Integer(System.identityHashCode(oldObj)),newObj);
     }
 
     public Object getTransferred(Object oldObj) {
-        return transferred.get(oldObj);
+        return transferred.get(new Integer(System.identityHashCode(oldObj)));
+    }
+    
+    public void addReferenced(Object obj) {
+        refs.add(new Integer(System.identityHashCode(obj)));
+    }
+    
+    public boolean isReferenced(Object obj) {
+        return refs.contains(new Integer(System.identityHashCode(obj)));
     }
 
     public Object transfer(Object oldObj) {
@@ -77,7 +88,7 @@ public class StateTransfer {
         if(oldCL instanceof AppClassLoader) {
             Object newObj=getTransferred(oldObj);
             if(newObj!=null) {return newObj;}
-            CAT.debug("Transfer instance of class '"+oldClass.getName()+"'."); 
+            if(debug) CAT.debug("Transfer instance of class '"+oldClass.getName()+"'."); 
             if(isObjectArray(oldClass)) {Object obj=transferArray(oldObj);return obj;} 
             AppLoader loader=AppLoader.getInstance();
             Class newClass=null;
@@ -99,7 +110,7 @@ public class StateTransfer {
                             if(!fields[i].isAccessible()) fields[i].setAccessible(true);
                             //get field value
                             Object value=fields[i].get(oldObj);
-                            CAT.debug("Transfer field '"+name+"'.");
+                            if(debug) CAT.debug("Transfer field '"+name+"'.");
                             //check if field value defined
                             if(value!=null) {value=transfer(value);} 
                             if(!field.isAccessible()) field.setAccessible(true);     
@@ -143,7 +154,7 @@ public class StateTransfer {
             return newObj;
         } else {
             try {
-                if(refs.contains(oldObj)) {return oldObj;} 
+                if(isReferenced(oldObj)) {return oldObj;} 
             } catch(NullPointerException x) {
                 addException(new StateTransferException(StateTransferException.NULLHASH_EXCEPTION,oldObj.getClass().getName(),
                     "Can't locate object in hash due to NullPointerException. Possible reason: invalid 'hashcode()' implementation."));
@@ -152,8 +163,8 @@ public class StateTransfer {
             
             //check if object is a container and transfer its content
           
-            refs.add(oldObj);
-            CAT.debug("Transfer content from instance of class: "+oldObj.getClass().getName());
+            addReferenced(oldObj);
+            if(debug) CAT.debug("Transfer content from instance of class: "+oldObj.getClass().getName());
           
             //HashMaps and Hashtables hold special hash data, which has to be updated, when contained objects are reloaded,
             //therefore these objects have to be removed and added once again.
@@ -187,9 +198,10 @@ public class StateTransfer {
                         //get field value
                         Object value=fields[i].get(oldObj);
                         //__log("Transfer field '"+name+"' ("+value+").");
-                        CAT.debug("Transfer field '"+name+"'.");
+                        if(debug) CAT.debug("Transfer field '"+name+"'.");
+                        //if(value!=null && (!value.getClass().getName().startsWith("java.") || value.getClass().getName().equals("java.langObject") || value.getClass().getName().startsWith("java.util."))) {
                         if(value!=null && (!value.getClass().getName().startsWith("java.lang") || value.getClass().getName().equals("java.lang.Object"))) {
-                        //if(value!=null) {
+                        //if(value!=null && !value.getClass().isPrimitive()) {
                             Object newValue=transfer(value);
                             if(newValue.getClass().getClassLoader() instanceof AppClassLoader) {
                                 fields[i].set(oldObj,newValue);
@@ -224,7 +236,7 @@ public class StateTransfer {
     }
                             
     public Collection transferCollection(Collection oldCol) {
-        CAT.debug("Transfer collection of type '"+oldCol.getClass().getName()+"'.");
+        if(debug) CAT.debug("Transfer collection of type '"+oldCol.getClass().getName()+"'.");
         ArrayList tmpList=new ArrayList();
         boolean changed=false;
         Iterator it=oldCol.iterator();
@@ -247,7 +259,7 @@ public class StateTransfer {
     */
                     
     public Map transferHashedMap(Map oldMap) {
-        CAT.debug("Transfer map of type '"+oldMap.getClass().getName()+"'.");
+        if(debug) CAT.debug("Transfer map of type '"+oldMap.getClass().getName()+"'.");
         HashMap tmpMap=new HashMap();
         Iterator it=oldMap.keySet().iterator();
         while(it.hasNext()) {
@@ -275,7 +287,7 @@ public class StateTransfer {
 
     public Object transferArray(Object oldArray) {
         String className=oldArray.getClass().getName();
-        CAT.debug("Transfer array of type '"+className+"'.");
+        if(debug) CAT.debug("Transfer array of type '"+className+"'.");
         Class comp=oldArray.getClass().getComponentType();
         String compName=comp.getName();
         
@@ -342,7 +354,7 @@ public class StateTransfer {
                 obj=con.newInstance(null);
             }
         } catch(NoSuchMethodException x) {
-            CAT.debug("Class '"+clazz.getName()+"' hasn't empty or default constructor. Allocate object with native method.");
+            if(debug) CAT.debug("Class '"+clazz.getName()+"' hasn't empty or default constructor. Allocate object with native method.");
             return allocateNewObject(clazz);
         } catch(Exception x) {
             addException(new StateTransferException(StateTransferException.UNHANDLED_EXCEPTION,clazz.getName(),x));
@@ -445,7 +457,7 @@ public class StateTransfer {
         exceptions.add(ste);
         int type=getInconsistencyType(ste);
         if(type==AppLoader.INCONSISTENCY_POSSIBLE) {
-            CAT.debug(ste);
+            if(debug) CAT.debug(ste);
         } else {
             CAT.warn(ste);
         }
