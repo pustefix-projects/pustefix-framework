@@ -18,6 +18,7 @@ public class JsMethod {
     JsClass jsClass;
     String name;
     JsParam[] params;
+    JsParam retParam;
     JsBlock body;
     
     public JsMethod(JsClass jsClass,String name) {

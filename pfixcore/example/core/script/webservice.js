@@ -9,8 +9,11 @@ XMLNS_PREFIX_MAP[XMLNS_XSI]="xsi";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENC]="soapenc";
 XMLNS_PREFIX_MAP[XMLNS_SOAPENV]="soapenv";
 
-var ERR_WRONGARGS="Wrong number of arguments";
-
+Function.prototype.extend = function( base ) {
+var derived = this.prototype = new base;
+this.prototype.superclass = base.prototype;
+return derived;
+};
 
 //*********************************
 //QName(localpart)
@@ -111,6 +114,7 @@ var jstype=new JSType();
 
 
 //*********************************
+//Parameter(String name,TypeInfo typeInfo)
 //Parameter(String name,TypeInfo typeInfo,parameterMode)
 //*********************************
 function Parameter() {
@@ -119,14 +123,21 @@ function Parameter() {
 	this.parameterMode=null;
 	this.init(arguments);
 	this.value=null;
+	this.MODE_IN=0;
+	this.MODE_INOUT=1;
+	this.MODE_OUT=2;
 }
 
 Parameter.prototype.init=function(args) {
-	if(args.length==3) {
+	if(args.length==2) {
+		this.name=args[0];
+		this.typeInfo=args[1];
+		this.parameterMode=this.MODE_IN;
+	} else if(args.length==3) {
 		this.name=args[0];
 		this.typeInfo=args[1];
 		this.parameterMode=args[2];
-	} else throw ERR_WRONGARGS;
+	} else throw new soapIllegalArgumentException("Wrong number of arguments","Parameter.init");
 }
 
 Parameter.prototype.setValue=function(value) {
@@ -289,14 +300,47 @@ XMLWriter.prototype.getPrefix=function(nsuri) {
 	return prefix;
 }
 
+//*********************************
+//soapException
+//*********************************
+function soapException(message,source) {
+   this.message=message;
+   this.source=source;
+   this.name="soapException";
+}
+
+soapException.prototype.toString=function() {
+	return this.name+"["+this.source+"] "+this.message;
+}
+
+//*********************************
+//soapSerializationException
+//*********************************
+function soapSerializationException(message,source) {
+	soapException.call(this,message,source);
+	this.name="soapSerializationException";
+}
+soapSerializationException.extend(soapException);
+
+//*********************************
+//soapIllegalArgumentException
+//*********************************
+function soapIllegalArgumentException(message,source) {
+	soapException.call(this,message,source);
+	this.name="soapIllegalArgumentException";
+}
+soapIllegalArgumentException.extend(soapException);
+
+
+
 
 //*********************************
 //SimpleTypeSerializer(QName xmlType)
 //*********************************
-function SimpleTypeSerializer(xmlType) {
+function SimpleTypeSerializer() {
 	if(arguments.length==1) {
-		this.xmlType=xmlType;
-	} else throw ERR_WRONGARGS;
+		this.xmlType=arguments[0];
+	}
 }
 
 //serialize(value,name,typeInfo,writer)
@@ -315,12 +359,32 @@ SimpleTypeSerializer.prototype.deserialize=function(typeInfo,element) {
 
 
 //*********************************
+//IntSerializer(QName xmlType)
+//*********************************
+function IntSerializer(xmlType) {
+	SimpleTypeSerializer.call( this, xmlType);
+}
+
+IntSerializer.extend(SimpleTypeSerializer);
+
+IntSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(typeof value!="number") throw new soapSerializationException("Illegal type: "+(typeof value),"IntSerializer.serialize");
+	this.superclass.serialize(value,name,typeInfo,writer);
+}
+
+IntSerializer.prototype.deserialize=function(typeInfo,element) {
+	return parseInt(this.superclass.deserialize.call( this, typeInfo,element));
+}
+
+
+
+//*********************************
 //ArraySerializer(QName xmlType)
 //*********************************
 function ArraySerializer(xmlType) {
 	if(arguments.length==1) {
 		this.xmlType=xmlType;
-	} else throw ERR_WRONGARGS;
+	} else throw new soapIllegalArgumentException("Wrong number of arguments","ArraySerializer");
 }
 
 ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer) {
@@ -378,6 +442,7 @@ TypeMapping.prototype.init=function() {
 	this.builtin[xmltypes.XSD_INT.hashKey()]=this.SER_SIMPLE;
 	this.builtin[xmltypes.XSD_STRING.hashKey()]=this.SER_SIMPLE;
 	this.builtin[xmltypes.SOAP_ARRAY.hashKey()]=this.SER_ARRAY;
+	this.mappings[xmltypes.XSD_INT.hashKey()]=new IntSerializer();
 }
 
 //register(QName xmlType,Serializer serializer)
@@ -395,7 +460,7 @@ TypeMapping.prototype.getSerializer=function(typeInfo) {
 			this.register(typeInfo.xmlType,serializer);
 		} 
 		return serializer;
-	} else throw ERR_WRONGARGS;
+	} else throw new IllegalArgumentException("Wrong number of arguments","TypeMapping.getSerializer");
 }
 
 //Serializer getBuiltinSerializer(TypeInfo typeInfo)
@@ -459,6 +524,10 @@ Call.prototype.setTargetEndpointAddress=function() {
 	}
 }
 
+Call.prototype.setUserCallback=function(cb) {
+	this.userCallback=cb;
+}
+
 //setOperationName(operationName)
 Call.prototype.setOperationName=function() {
 	if(arguments.length==1) {
@@ -468,10 +537,13 @@ Call.prototype.setOperationName=function() {
 
 //addParameter(paramName,typeInfo,parameterMode)
 Call.prototype.addParameter=function() {
-	if(arguments.length==3) {
+	if(arguments.length==2) {
+		var param=new Parameter(arguments[0],arguments[1]);
+		this.params.push(param);
+	} else if(arguments.length==3) {
 		var param=new Parameter(arguments[0],arguments[1],arguments[2]);
-		if(param!=null) this.params.push(param);
-	} else throw ERR_WRONGARGS;
+		this.params.push(param);
+	} else throw new soapIllegalArgumentException("Wrong number of arguments","Call.addParameter");
 }
 
 //setReturnType(retTypeInfo)
@@ -493,7 +565,7 @@ Call.prototype.invoke=function() {
 			ind++;
 		}
 	}
-	if(this.params.length!=arguments.length-ind) throw ERR_WRONGARGS;
+	if(this.params.length!=arguments.length-ind) throw new soapIllegalArgumentException("Wrong number of arguments","Call.invoke");
 	for(var i=0;i<this.params.length;i++) {
 		this.params[i].setValue(arguments[i+ind]);
 	}
@@ -721,14 +793,47 @@ Call.prototype.callback = function( xml ) {
   }
 };
 
+
+//*********************************
+// soapStub
+//*********************************
+function soapStub() {
+	this._url="";
+}
+
+soapStub.prototype._createCall=function() {
+  var call=new Call();
+  call.setTargetEndpointAddress(this._url);
+  return call;
+};
+
+soapStub.prototype._extractCallback=function(args,expLen) {
+	var argLen=args.length;
+	if(argLen==expLen+1 && typeof args[argLen-1]=="function") return args[argLen-1];
+	else if(argLen!=expLen) throw new soapIllegalArgumentException("Wrong number of arguments","soapStub._extractCallback");
+	return null;
+}
+
+soapStub.prototype._setURL=function(url) {
+	this._url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,"$1"+window.location.host+"$3");
+}
+
+
 var count = 0;
 
 function test() {
 	
 	
 	var call = new Call();
-	call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/Calculator");
+	var url="http://webservice.zap.ue.schlund.de/xml/webservice/Calculator";
+	
+	url=url.replace(/(https?:\/\/)([^\/]+)(.*)/,"$1"+window.location.host+"$3");
+	
+	
+	call.setTargetEndpointAddress(url);
 	//call.setTargetEndpointAddress(window.location.protocol + "//" + window.location.host + "/xml/webservice/TypeTest");
+	
+	
 	
 	call.setOperationName(new QName("add"));
 	call.addParameter("val1",new TypeInfo(xmltypes.XSD_INT),"IN");
@@ -744,6 +849,10 @@ function test() {
       document.getElementById('request').value += "even: async: "+v + "\n";
     };
   }
+  
+
+	
+	
 
   try {
     var res = call.invoke( count++, 2);
@@ -777,6 +886,11 @@ function test() {
 	call.invoke(new Array(new Array("a","b","c"),new Array("d","e")));
 	*/
 	
+	var wsc=new wsCalculator();
+	var wsc_res=wsc.multiply(23,45, function(v) { alert("async:"+v);} );
+//	alert("WSC:"+wsc_res+" "+(typeof wsc_res));
+	
+		
 }
 
 function sendTest(msg,url) {
@@ -793,3 +907,50 @@ function sendTest(msg,url) {
 	req.send(msg);
 	return req.responseXML;
 }
+
+//Autogenerated webservice stub (don't modify this code manually!)
+function wsCalculator() {
+  this._setURL("http://webservice.zap.ue.schlund.de/xml/webservice/Calculator");
+}
+wsCalculator.prototype=new soapStub;
+wsCalculator.prototype.add=function(value1,value2) {
+  var cb=this._extractCallback(arguments,2);
+  var call=this._createCall();
+  if(cb!=null) call.setUserCallback(cb);
+  call.setOperationName("add");
+  call.addParameter("value1",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.addParameter("value2",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.setReturnType(new TypeInfo(new QName("http://www.w3.org/2001/XMLSchema","int")));
+  return call.invoke(value1,value2);
+}
+wsCalculator.prototype.divide=function(value1,value2) {
+  var cb=this._extractCallback(arguments,2);
+  var call=this._createCall();
+  if(cb!=null) call.setUserCallback(cb);
+  call.setOperationName("divide");
+  call.addParameter("value1",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.addParameter("value2",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.setReturnType(new TypeInfo(new QName("http://www.w3.org/2001/XMLSchema","int")));
+  return call.invoke(value1,value2);
+}
+wsCalculator.prototype.multiply=function(value1,value2) {
+  var cb=this._extractCallback(arguments,2);
+  var call=this._createCall();
+  if(cb!=null) call.setUserCallback(cb);
+  call.setOperationName("multiply");
+  call.addParameter("value1",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.addParameter("value2",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.setReturnType(new TypeInfo(new QName("http://www.w3.org/2001/XMLSchema","int")));
+  return call.invoke(value1,value2);
+}
+wsCalculator.prototype.subtract=function(value1,value2) {
+  var cb=this._extractCallback(arguments,2);
+  var call=this._createCall();
+  if(cb!=null) call.setUserCallback(cb);
+  call.setOperationName("subtract");
+  call.addParameter("value1",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.addParameter("value2",new TypeInfo(new QName(XMLNS_XSD,"int")));
+  call.setReturnType(new TypeInfo(new QName("http://www.w3.org/2001/XMLSchema","int")));
+  return call.invoke(value1,value2);
+}
+

@@ -40,6 +40,8 @@ import org.exolab.castor.xml.schema.reader.SchemaReader;
  */
 public class Wsdl2Js {
     
+    public static final String JSPREFIX_WS="ws";
+    
     public Wsdl2Js() {
         test();
     }
@@ -132,8 +134,17 @@ public class Wsdl2Js {
                 while(prtIt.hasNext()) {
                     Port port=(Port)prtIt.next();
                     String portName=port.getName();
-                    JsClass jsClass=new JsClass(portName);
-                    if(getSOAPAddress(port)==null) throw new Exception("No soap address binding found for port "+portName);
+                    
+                    SOAPAddress soapAdr=getSOAPAddress(port);
+                    if(soapAdr==null) throw new Exception("No soap address binding found for port "+portName);
+                    
+                    String stubClass=JSPREFIX_WS+portName;
+                    
+                    JsClass jsClass=new JsClass(stubClass,"soapStub");
+                    JsBlock block=jsClass.getConstructorBody();
+                    block.addStatement(new JsStatement("this._setURL(\""+soapAdr.getLocationURI()+"\")"));
+                    
+                    
                     Binding binding=port.getBinding();
                     if(getSOAPBinding(binding)==null) throw new Exception("No soap binding found for binding "+binding.getQName());
                     PortType portType=binding.getPortType();
@@ -145,30 +156,52 @@ public class Wsdl2Js {
                         JsMethod jsMethod=new JsMethod(jsClass,op.getName());
                         jsClass.addMethod(jsMethod);
                        
+                        //get input params
                         Input input=op.getInput();
                         Message inputMsg=input.getMessage();
-                      
                         Iterator partIt=inputMsg.getOrderedParts(op.getParameterOrdering()).iterator();
                         while(partIt.hasNext()) {
                             Part part=(Part)partIt.next();
                             JsParam jsParam=new JsParam(part.getName());
-                            jsMethod.addParam(jsParam);
-                            //System.out.println(part.getName());
-                            System.out.println(part.getTypeName());
-                            
+                            jsMethod.addParam(jsParam);     
                         }   
+                        
+                       
+                        
                         JsBlock jsBlock=jsMethod.getBody();
-                        jsBlock.addStatement(new JsStatement("var call=new Call()"));
+                        jsBlock.addStatement(new JsStatement("var cb=this._extractCallback(arguments,"+jsMethod.getParams().length+")"));
+                        jsBlock.addStatement(new JsStatement("var call=this._createCall()"));
+                        jsBlock.addStatement(new JsStatement("if(cb!=null) call.setUserCallback(cb)"));
+                        jsBlock.addStatement(new JsStatement("call.setOperationName(\""+jsMethod.getName()+"\")"));
                         JsParam[] jsParams=jsMethod.getParams();
                         for(int i=0;i<jsParams.length;i++) {
                             Part part=inputMsg.getPart(jsParams[i].getName());
                             QName type=part.getTypeName();
-                            String str="";
+                            String info="";
                             if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
-                                str="new TypeInfo(new QName(\""+type.getNamespaceURI()+"\",\""+type.getLocalPart()+"\"))";
+                                info="new TypeInfo(new QName("+"XMLNS_XSD"+",\""+type.getLocalPart()+"\"))";
                             }
-                            jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\","+str+")"));
+                            jsBlock.addStatement(new JsStatement("call.addParameter(\""+jsParams[i].getName()+"\","+info+")"));
                         }
+                        
+                        //get return param (presume only one return param)
+                        Output output=op.getOutput();
+                        Message outputMsg=output.getMessage();
+                        partIt=outputMsg.getParts().values().iterator();
+                        while(partIt.hasNext()) {
+                            Part part=(Part)partIt.next();
+                            QName type=part.getTypeName();
+                            String info="";
+                            if(type.getNamespaceURI().equals(Constants.XMLNS_XSD)) {
+                                info="new TypeInfo(new QName(\""+type.getNamespaceURI()+"\",\""+type.getLocalPart()+"\"))";
+                            }
+                            jsBlock.addStatement(new JsStatement("call.setReturnType("+info+")"));
+                        }
+                        
+                        
+                        jsBlock.addStatement(new JsStatement("return call.invoke("+jsMethod.getParamList()+")"));
+                        
+                        
                     }
                     jsClass.printCode(System.out);
                     
