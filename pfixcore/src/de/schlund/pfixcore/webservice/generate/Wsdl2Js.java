@@ -32,6 +32,7 @@ import org.xml.sax.InputSource;
 
 import org.apache.wsif.schema.Parser;
 import org.apache.wsif.schema.SchemaType;
+import org.apache.wsif.schema.SequenceElement;
 import org.apache.wsif.schema.ComplexType;
 
 
@@ -219,8 +220,16 @@ public class Wsdl2Js {
                         String qn1=createJsQName(ctype.getTypeName());
                         String qn2=createJsQName(ctype.getArrayType());
                         info="new soapArrayInfo("+qn1+","+qn2+","+ctype.getArrayDimension()+")";
-                    } else {
-                        info="new soapTypeInfo("+createJsQName(type)+")";
+                    } else if(true) {
+                        info="new soapBeanInfo("+createJsQName(type)+",new Array(";
+                        SequenceElement[] elems=ctype.getSequenceElements();
+                        for(int i=0;i<elems.length;i++) {
+                            QName propType=elems[i].getElementType();
+                            String propInfo=createJsTypeInfo(propType);
+                            info+="\""+elems[i].getTypeName().getLocalPart()+"\","+propInfo;
+                            if(i<elems.length-1) info+=",";
+                        }
+                        info+="))";
                     }
                 } else {
                     info="new soapTypeInfo("+createJsQName(type)+")";

@@ -524,11 +524,56 @@ soapBooleanSerializer.prototype.deserialize=function(typeInfo,element) {
 
 
 //*********************************
+//soapDateTimeSerializer(QName xmlType)
+//*********************************
+function soapDateTimeSerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
+}
+soapDateTimeSerializer.extend(soapSimpleSerializer);
+soapDateTimeSerializer.prototype.fillNulls=function(value,length) {
+	var valLen=(""+value).length;
+	var filler="";
+	for(var i=0;i<(length-valLen);i++) filler+="0"; 
+	return filler+value;
+}
+soapDateTimeSerializer.prototype.parseDate=function(dateStr) {
+	var date=new Date();
+	var year=dateStr.substr(0,4);
+	date.setUTCFullYear(year);
+	var month=dateStr.substr(5,2);
+	date.setUTCMonth(month-1);
+	var day=dateStr.substr(8,2);
+	date.setUTCDate(day);
+	var hours=dateStr.substr(11,2);
+	date.setUTCHours(hours);
+	var minutes=dateStr.substr(14,2);
+	date.setUTCMinutes(minutes);
+	var seconds=dateStr.substr(17,2);
+	date.setUTCSeconds(seconds);
+	var millis=dateStr.substr(20,3);
+	date.setUTCMilliseconds(millis);
+	return date;
+}
+soapDateTimeSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	if(!(value instanceof Date)) throw new soapSerializeEx("Illegal type: "+(typeof value),"soapDateTimeSerializer.serialize");
+	var date=value.getUTCFullYear()+"-"+this.fillNulls(value.getUTCMonth()+1,2)+"-"+
+					this.fillNulls(value.getUTCDate(),2)+"T"+this.fillNulls(value.getUTCHours(),2)+":"+
+					this.fillNulls(value.getUTCMinutes(),2)+":"+this.fillNulls(value.getUTCSeconds(),2)+"."+
+					this.fillNulls(value.getUTCMilliseconds(),3)+"Z";
+	this.superclass.serialize(date,name,typeInfo,writer);
+}
+soapDateTimeSerializer.prototype.deserialize=function(typeInfo,element) {
+	var val=this.parseDate(this.superclass.deserialize.call(this,typeInfo,element));
+	return val;
+}
+
+//*********************************
 //soapArraySerializer
 //*********************************
 function soapArraySerializer(xmlType) {
+	soapSimpleSerializer.call(this,xmlType);
 }
-
+soapArraySerializer.extend(soapSimpleSerializer);
 soapArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writer) {
 	if(dim>0 && value instanceof Array) {
 		writer.startElement(name);
@@ -546,12 +591,8 @@ soapArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,writ
 		}
 		writer.endElement(name);
 	} else {
-		var serializer=typeMapping.getSerializerByInfo(typeInfo);
-		//alert(serializer);
+		var serializer=typeMapping.getSerializer(typeInfo.arrayType);
 		serializer.serialize(value,name,new soapTypeInfo(typeInfo.arrayType),writer);
-		//writer.startElement(name);
-		//writer.writeChars(value);
-		//writer.endElement(name);
 	}
 }
 
@@ -560,12 +601,24 @@ soapArraySerializer.prototype.serialize=function(value,name,typeInfo,writer) {
 }
 
 soapArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
-	var items=xmlUtils.getChildrenByName(element,"item");
-	var array=new Array();
-	for(var i=0;i<items.length;i++) {
-		array.push(items[i].firstChild.nodeValue);
-	}
-	return array;
+	if(dim>1) {
+		var items=xmlUtils.getChildrenByName(element,"item");
+		var array=new Array();
+		for(var i=0;i<items.length;i++) {
+			var subArray=this.deserializeSub(typeInfo,dim-1,items[i]);
+			array.push(subArray);
+		}
+		return array;
+	} else if(dim==1) {
+		var items=xmlUtils.getChildrenByName(element,"item");
+		var array=new Array();
+		for(var i=0;i<items.length;i++) {
+			var deserializer=typeMapping.getSerializer(typeInfo.arrayType);
+			var val=deserializer.deserialize(typeInfo,items[i]);
+			array.push(val);
+		}
+		return array;
+	} else throw new soapSerializeEx("Illegal array dimension: "+dim,"soapArraySerializer.deserializeSub");
 }
 
 soapArraySerializer.prototype.deserialize=function(typeInfo,element) {
@@ -574,10 +627,38 @@ soapArraySerializer.prototype.deserialize=function(typeInfo,element) {
 
 
 //*********************************
-//BeanSerializer(QName type)
+//soapBeanSerializer(QName type)
 //*********************************
-function BeanSerializer(type) {
-	this.type=type;
+function soapBeanSerializer(type) {
+	soapSimpleSerializer.call(this,type);
+}
+soapBeanSerializer.extend(soapSimpleSerializer);
+soapBeanSerializer.prototype.serialize=function(value,name,typeInfo,writer) {
+	writer.startElement(name);
+	for(var i=0;i<typeInfo.propNames.length;i++) {
+		var propName=typeInfo.propNames[i];
+		var propInfo=typeInfo.propToInfo[propName];
+		var serializer=typeMapping.getSerializerByInfo(propInfo);
+		var propVal=value[propName];
+		if(propVal==undefined) throw new soapSerializeEx("Missing bean property: "+propName,"soapBeanSerializer.serialize");
+		serializer.serialize(propVal,propName,propInfo,writer);
+	}
+	writer.endElement(name);
+}
+soapBeanSerializer.prototype.deserialize=function(typeInfo,element) {
+	var obj=new Object();
+	for(var i=0;i<typeInfo.propNames.length;i++) {
+		var propName=typeInfo.propNames[i];
+		var propInfo=typeInfo.propToInfo[propName];
+		var serializer=typeMapping.getSerializerByInfo(propInfo);
+		var items=xmlUtils.getChildrenByName(element,propName);
+		if(items.length>0) {
+			var deserializer=typeMapping.getSerializerByInfo(propInfo);
+			var val=deserializer.deserialize(propInfo,items[0]);
+			obj[propName]=val;
+		}
+	}
+	return obj;
 }
 
 
@@ -595,8 +676,10 @@ TypeMapping.prototype.init=function() {
 	this.mappings[xmltypes.XSD_INT.hashKey()]=new soapIntSerializer();
 	this.mappings[xmltypes.XSD_FLOAT.hashKey()]=new soapFloatSerializer();	
 	this.mappings[xmltypes.XSD_STRING.hashKey()]=new soapStringSerializer();
+	this.mappings[xmltypes.XSD_DATETIME.hashKey()]=new soapDateTimeSerializer();
 	this.mappings[xmltypes.SOAP_STRING.hashKey()]=new soapStringSerializer();
-	this.mappings[xmltypes.SOAP_ARRAY.hashKey()]=new soapArraySerializer();
+	this.mappings["ARRAY"]=new soapArraySerializer();
+	this.mappings["BEAN"]=new soapBeanSerializer();
 }
 
 //register(QName xmlType,Serializer serializer)
@@ -617,7 +700,8 @@ TypeMapping.prototype.getSerializer=function(xmlType) {
 TypeMapping.prototype.getSerializerByInfo=function(info) {
 	if(arguments.length==1) {
 		var serializer=this.mappings[info.xmlType.hashKey()];
-		if(serializer==null && (info instanceof soapArrayInfo)) serializer=this.mappings[xmltypes.SOAP_ARRAY.hashKey()];
+		if(serializer==null && (info instanceof soapArrayInfo)) serializer=this.mappings["ARRAY"];
+		if(serializer==null && (info instanceof soapBeanInfo)) serializer=this.mappings["BEAN"];
 		if(serializer==null) throw "Can't find serializer for type '"+info.xmlType.toString()+"'";
 		return serializer;
 	} else throw new coreIllegalArgsException("Wrong number of arguments","TypeMapping.getSerializerByInfo");
@@ -721,7 +805,7 @@ Call.prototype.invoke=function() {
 	var bodyElem=new SOAPBodyElement(rpc);
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
- 
+  //alert(writer.xml);
   var resDoc;
   if( !this.userCallback ) {
     // sync
@@ -982,12 +1066,17 @@ function soapArrayInfo(xmlType,arrayType,dimension) {
 soapArrayInfo.extend(soapTypeInfo);
 
 //*********************************
-// soapBeanInfo(QName xmlType,Array propToInfo)
+// soapBeanInfo(QName xmlType,Array props)
 //*********************************
-function soapBeanInfo(xmlType,arrayType,propToInfo) {
-	soapTypeInfo.call(this.xmlType);
-	this.arrayType=arrayType;
-	this.propToInfo=propToInfo;
+function soapBeanInfo(xmlType,props) {
+	soapTypeInfo.call(this,xmlType);
+	this.props=props;
+	this.propNames=new Array();
+	this.propToInfo=new Array();
+	for(var i=0;i<props.length;i=i+2) {
+		this.propNames.push(props[i]);
+		this.propToInfo[props[i]]=props[i+1];
+	}
 }
 soapBeanInfo.extend(soapTypeInfo);
 
