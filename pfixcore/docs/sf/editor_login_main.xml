@@ -1,1 +1,24 @@
-<div>TODO</div>
+<div>
+  <h1>The <i>Login</i> page</h1>
+  <table>
+    <tr valign="top">
+      <td>
+        <stdimg src="img/editor_login.png">
+          The <i>Login</i> page of the <pustefix/> editor.
+        </stdimg>
+      </td>
+      <td>
+        <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
+          <tr>
+            <td>
+              This is the login page. Enter your username and your password and press the <i>Login</i>
+              button for login.
+            </td>
+          </tr> 
+        </table>
+      </td>
+    </tr>
+  </table>
+
+
+</div>
