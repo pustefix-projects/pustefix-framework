@@ -653,6 +653,24 @@ public class EditorHelper {
         }
     }
 
+
+    public static void renderIncludesForAppletInfo(TreeSet includes, ResultDocument resdoc, Element root) {
+        for (Iterator i = includes.iterator(); i.hasNext();) {
+            AuxDependency curr = (AuxDependency) i.next();
+            String dir = curr.getDir();
+            String path = curr.getPath();
+            String part = curr.getPart();
+            String product = curr.getProduct();
+
+            Element inc = resdoc.createSubNode(root, "include");
+            inc.setAttribute("path", path);
+            inc.setAttribute("part", part);
+            inc.setAttribute("product", product);
+        }
+            
+    }
+
+    
     public static void renderAllIncludesForNavigation(TreeSet includes, ResultDocument resdoc, Element root) {
         String olddir = "";
         String oldpath = "";
