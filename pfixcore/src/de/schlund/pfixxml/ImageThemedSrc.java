@@ -1,0 +1,89 @@
+package de.schlund.pfixxml;
+import com.icl.saxon.Context;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import de.schlund.pfixxml.targets.VirtualTarget;
+import de.schlund.pfixxml.util.Path;
+import java.io.File;
+import org.apache.log4j.Category;
+
+    
+
+/**
+ * Describe class ImageThemedSrc here.
+ *
+ *
+ * Created: Wed Mar 23 17:15:43 2005
+ *
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
+ * @version 1.0
+ */
+public class ImageThemedSrc {
+    private static Category CAT = Category.getInstance(ImageThemedSrc.class.getName());
+
+    /** xslt extension */
+    public static String getSrc(Context context, String src, String themed_path, String themed_img,
+                                String parent_part_in, String parent_product_in,
+                                String targetGen, String targetKey) throws Exception {
+
+        String[]        themes    = null;
+        Path            tgen_path = PathFactory.getInstance().createPath(targetGen);
+        TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
+          
+        if (!targetKey.equals("__NONE__")) {
+            VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
+            themes                    = target.getThemes();
+        }
+        if (themes == null) {
+            themes = gen.getGlobalThemes();
+        }
+        
+        if (isSimpleSrc(src, themed_path, themed_img)) {
+            if (src.startsWith("/")) {
+                src = src.substring(1);
+            }
+            CAT.debug("  -> Register image src '" + src + "'");
+            DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey);
+            return src;
+        } else if (isThemedSrc(src, themed_path, themed_img)) {
+            if (themed_path.startsWith("/")) {
+                themed_path = themed_path.substring(1);
+            }
+            
+            String   testsrc = null;
+            for (int i = 0; i < themes.length; i++) {
+                String currtheme = themes[i];
+                testsrc = themed_path + "/" + currtheme + "/" + themed_img;
+                CAT.info("  -> Trying to find image src '" + testsrc + "'");
+                DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey);
+                if (existsImage(testsrc)) {
+                    CAT.info("    -> Found src '" + testsrc + "'");
+                    return testsrc;
+                }
+                if (i < (themes.length - 1)) {
+                    CAT.info("    -> Image src '" + testsrc + "' not found, trying next theme");
+                } else {
+                    CAT.warn("    -> No themed image found!");
+                }
+            }
+            return testsrc;
+        } else {
+            throw new XMLException("Need to have one of 'src' XOR both 'themed-path' and 'themed-img' given!");
+        }
+    }
+
+
+    private static boolean isSimpleSrc(String src, String path, String img) {
+        return (src != null && !src.equals("") && (path == null || path.equals("")) && (img == null || img.equals("")));
+    }
+
+    private static boolean isThemedSrc(String src, String path, String img) {
+        return ((src == null || src.equals("")) && path != null && !path.equals("") && img != null && !img.equals(""));
+    }
+
+    private static boolean existsImage(String path) {
+        File img = PathFactory.getInstance().createPath(path).resolve();
+        return (img.exists() && img.canRead() && img.isFile());
+    }
+
+}

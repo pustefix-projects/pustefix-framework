@@ -29,6 +29,7 @@ import javax.xml.transform.TransformerException;
 interface TargetRW extends Target {
     void   setXMLSource(Target source);
     void   setXSLSource(Target source);
+    void   setThemes(String[] themes);
     void   addParam(String key, String val);
     void   resetParams();
     void   addPageInfo(PageInfo info);

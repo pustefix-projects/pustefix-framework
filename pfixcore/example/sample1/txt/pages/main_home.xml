@@ -1,133 +1,167 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+
+  <part name="theme-test">
+    <product name="default">
+      <lang name="default">
+        ~~~~~ Theme: default ~~~~~
+      </lang>
+    </product>
+    <product name="sample1">
+      <lang name="default">
+        ~~~~~ Theme: sample1 ~~~~~
+      </lang>
+    </product>
+    <product name="foo">
+      <lang name="default">
+        ~~~~~ Theme: foo ~~~~~
+      </lang>
+    </product>
+    <product name="bar">
+      <lang name="default">
+        ~~~~~ Theme: bar ~~~~~
+      </lang>
+    </product>
+    <product name="baz">
+      <lang name="default">
+        ~~~~~ Theme: baz ~~~~~
+      </lang>
+    </product>
+  </part>
 
   <part name="adult">
     <product name="default">
       <lang name="default">
-  Are you really older than 18 years?
-</lang>
+        Are you really older than 18 years?
+      </lang>
     </product>
   </part>
-
+  
   <part name="content">
     <product name="default">
       <lang name="default">
-  <center>
-    <pfx:forminput target="_top">
-      <pfx:errorbox width="500"/>
-      <br/>
-      <div style="text-align: left; padding: 10px;">
-        Remote IP: <ixsl:value-of select="$__remote_addr"/><br/>
-        Request Scheme: <ixsl:value-of select="$__request_scheme"/><br/>
-        Server name: <ixsl:value-of select="$__server_name"/><br/>
-        Servletpath: <ixsl:value-of select="$__servletpath"/><br/>
-        Complete uri: <ixsl:value-of select="$__uri"/><br/>
-        Query String: <ixsl:value-of select="$__querystring"/><br/>
-        Session for ext. reference: <ixsl:value-of select="$__external_session_ref"/><br/>
-        Page: <ixsl:value-of select="$page"/><br/>
-        PageFlow: <ixsl:value-of select="$pageflow"/><br/>
-      </div>
-      <table width="400">
-        <tr>
-          <td align="left">
-            <b><big>Confirmation:</big></b>
-          </td>
-        </tr>
-      </table>
-      <table bgcolor="#bbccff" class="boxed" width="400">
-        <tr valign="top">
-          <td>
-            <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label><br/>
-          </td>
-          <td>
-            <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-            <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
-            <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
-          </td>
-        </tr>
-      </table>
-      <table width="400">
-        <tr>
-          <td align="right" nowrap="nowrap">
-            <pfx:xinp type="submit" value="Go!"/>
-            <pfx:xinp type="submit" value="Don't go" forcestop="true"/>
-            <pfx:xinp type="submit" value="Go Step by Step!" forcestop="step"/>
-          </td>
-        </tr>
-      </table>
-      <pfx:button page="test" target="_top">STARTWITHFLOW test</pfx:button>
-    </pfx:forminput>
-    
-    <pfx:include part="buttons"/>
-    <br/><br/><br/>
-    <pfx:include part="switch"/>
-    <br/>
-    <br/>
-    <pfx:include part="display"/><br/><br/>
-    
-    <pfx:switch>
-      <pfx:layer_ref method="on" name="FOO"/>
-      <pfx:layer_check name="FOO">
-        <pfx:on class="core_button_invisible">Show it...</pfx:on>
-        <pfx:off>Show it...</pfx:off>
-      </pfx:layer_check>
-    </pfx:switch>
-    <br/>
-    <table border="1" cellpadding="5">
-      <tr>
-        <td colspan="2">You can hide the</td>
-      </tr>
-      <tr>
-        <td>last</td>
-        <pfx:layer element="td" name="FOO" store="false"><b>cell</b></pfx:layer>
-      </tr>
-    </table>
-    <pfx:switch>
-      <pfx:layer_ref method="off" name="FOO"/>
-      <pfx:layer_check name="FOO">
-        <pfx:on>Hide it...</pfx:on>
-        <pfx:off class="core_button_invisible">Hide it...</pfx:off>
-      </pfx:layer_check>
-    </pfx:switch>
-    <br/>
-    <br/>
-    <table>
-      <tr>
-        <td>
+        <center>
+          <br/>
+          ~~~~ Requested variant: <ixsl:value-of select="/formresult/@requested-variant"/> ~~~~<br/>
+          ~~~~ Selected variant: <ixsl:value-of select="$variant"/> ~~~~<br/>
+          <pfx:include part="theme-test"/><br/>
+          <pfx:forminput target="_top">
+            <pfx:errorbox width="500"/>
+            <br/>
+            <div style="text-align: left; padding: 10px;">
+              Remote IP: <ixsl:value-of select="$__remote_addr"/><br/>
+              Request Scheme: <ixsl:value-of select="$__request_scheme"/><br/>
+              Server name: <ixsl:value-of select="$__server_name"/><br/>
+              Servletpath: <ixsl:value-of select="$__servletpath"/><br/>
+              Complete uri: <ixsl:value-of select="$__uri"/><br/>
+              Query String: <ixsl:value-of select="$__querystring"/><br/>
+              Session for ext. reference: <ixsl:value-of select="$__external_session_ref"/><br/>
+              Page: <ixsl:value-of select="$page"/><br/>
+              PageFlow: <ixsl:value-of select="$pageflow"/><br/>
+            </div>
+            <table width="400">
+              <tr>
+                <td align="left">
+                  <b><big>Confirmation:</big></b>
+                </td>
+              </tr>
+            </table>
+            <table bgcolor="#bbccff" class="boxed" width="400">
+              <tr valign="top">
+                <td>
+                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label><br/>
+                </td>
+                <td>
+                  <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
+                  <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
+                  <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
+                </td>
+              </tr>
+            </table>
+            <table width="400">
+              <tr>
+                <td align="right" nowrap="nowrap">
+                  <pfx:xinp type="submit" value="Go!"/>
+                  <pfx:xinp type="submit" value="Don't go" forcestop="true"/>
+                  <pfx:xinp type="submit" value="Go Step by Step!" forcestop="step"/>
+                </td>
+              </tr>
+            </table>
+            <pfx:button page="test" target="_top">STARTWITHFLOW test</pfx:button>
+          </pfx:forminput>
+          
+          <pfx:include part="buttons"/>
+          <br/><br/><br/>
+          <pfx:include part="switch"/>
+          <br/>
+          <br/>
+          <pfx:include part="display"/><br/><br/>
+          
           <pfx:switch>
-            <pfx:layer_ref method="on" name="XXX"/>
-            <pfx:layer_ref method="off" name="YYY"/>
-            <pfx:layer_check name="XXX" type="radio"/>
-            <pfx:layer_check name="YYY">
-              <pfx:on>Show BAZ</pfx:on>
-              <pfx:off class="core_button_invisible">Show BAZ</pfx:off>
+            <pfx:layer_ref method="on" name="FOO"/>
+            <pfx:layer_check name="FOO">
+              <pfx:on class="core_button_invisible">Show it...</pfx:on>
+              <pfx:off>Show it...</pfx:off>
             </pfx:layer_check>
           </pfx:switch>
-        </td>
-      </tr>
-      <tr>
-        <td>
+          <br/>
+          <table border="1" cellpadding="5">
+            <tr>
+              <td colspan="2">You can hide the</td>
+            </tr>
+            <tr>
+              <td>last</td>
+              <pfx:layer element="td" name="FOO" store="false"><b>cell</b></pfx:layer>
+            </tr>
+          </table>
           <pfx:switch>
-            <pfx:layer_ref method="off" name="XXX"/>
-            <pfx:layer_ref method="on" name="YYY"/>
-            <pfx:layer_check name="YYY" type="radio"/>
-            <pfx:layer_check name="XXX">
-              <pfx:on>Show FOOBAR</pfx:on>
-              <pfx:off class="core_button_invisible">Show FOOBAR</pfx:off>
+            <pfx:layer_ref method="off" name="FOO"/>
+            <pfx:layer_check name="FOO">
+              <pfx:on>Hide it...</pfx:on>
+              <pfx:off class="core_button_invisible">Hide it...</pfx:off>
             </pfx:layer_check>
           </pfx:switch>
-        </td>
-      </tr>
-    </table>
-    <br/>
-    <pfx:layer element="div" name="XXX" style="border: 1px solid black; padding: 2px; width: 100px; background-color: black; color: #ff7755;" visible="true">
-      <b>BAZ</b>
-    </pfx:layer>
-    <pfx:layer element="div" name="YYY" style="border: 1px solid black; padding: 2px; width: 100px; background-color: #ff7755; color: black;" visible="false">
-      <b>FOOBAR</b>
-    </pfx:layer>
-    <pfx:include part="sample_layers"/>
-  </center>
-</lang>
+          <br/>
+          <br/>
+          <table>
+            <tr>
+              <td>
+                <pfx:switch>
+                  <pfx:layer_ref method="on" name="XXX"/>
+                  <pfx:layer_ref method="off" name="YYY"/>
+                  <pfx:layer_check name="XXX" type="radio"/>
+                  <pfx:layer_check name="YYY">
+                    <pfx:on>Show BAZ</pfx:on>
+                    <pfx:off class="core_button_invisible">Show BAZ</pfx:off>
+                  </pfx:layer_check>
+                </pfx:switch>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <pfx:switch>
+                  <pfx:layer_ref method="off" name="XXX"/>
+                  <pfx:layer_ref method="on" name="YYY"/>
+                  <pfx:layer_check name="YYY" type="radio"/>
+                  <pfx:layer_check name="XXX">
+                    <pfx:on>Show FOOBAR</pfx:on>
+                    <pfx:off class="core_button_invisible">Show FOOBAR</pfx:off>
+                  </pfx:layer_check>
+                </pfx:switch>
+              </td>
+            </tr>
+          </table>
+          <br/>
+          <pfx:layer element="div" name="XXX" style="border: 1px solid black; padding: 2px; width: 100px; background-color: black; color: #ff7755;" visible="true">
+            <b>BAZ</b>
+          </pfx:layer>
+          <pfx:layer element="div" name="YYY" style="border: 1px solid black; padding: 2px; width: 100px; background-color: #ff7755; color: black;" visible="false">
+            <b>FOOBAR</b>
+          </pfx:layer>
+          <pfx:include part="sample_layers"/>
+        </center>
+      </lang>
     </product>
   </part>
   

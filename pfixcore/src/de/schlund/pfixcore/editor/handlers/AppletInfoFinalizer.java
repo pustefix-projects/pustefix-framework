@@ -95,7 +95,7 @@ public class AppletInfoFinalizer extends ResdocSimpleFinalizer {
                 Element img = resdoc.createSubNode(root, "image");
                 img.setAttribute("path", path.getRelative());
                 img.setAttribute("name", name);
-                if (curr.getModTime() == 0) {
+                if (curr.getModTime(false) == 0) {
                     img.setAttribute("missing", "true");
                 }
                  

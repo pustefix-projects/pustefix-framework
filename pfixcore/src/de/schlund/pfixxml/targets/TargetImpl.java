@@ -48,6 +48,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected TargetType           type;
     protected TargetGenerator      generator;
     protected String               targetkey;
+    protected String[]             themes          = null;
     protected TreeMap              params          = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
@@ -69,6 +70,7 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         return type;
     }
 
+    
     /**
      * @see de.schlund.pfixxml.targets.Target#getTargetKey()
      */
@@ -83,6 +85,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         return generator;
     }
 
+    public String[] getThemes() {
+        return themes;
+    }
+    
     /**
      * @see de.schlund.pfixxml.targets.Target#getXMLSource()
      */
@@ -185,6 +191,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
 
     public abstract void addParam(String key, String val);
 
+    public abstract void setThemes(String[] themes);
+    
     public abstract void storeValue(Object obj);
 
     public abstract boolean needsUpdate() throws Exception;

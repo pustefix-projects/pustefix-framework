@@ -27,13 +27,16 @@ import de.schlund.pfixxml.util.Path;
  * Additional dependency besides XML and XSL source. 
  */
 public class AuxDependency implements DependencyParent, Comparable {
+
     private final DependencyType type;
-    private final Path path;
-    private final String part;
-    private final String product;
-    private final int hashCode;
-    private final HashSet parents; 
-    private final TreeSet children;
+    private final Path           path;
+    private final String         part;
+    private final String         product;
+    private final int            hashCode;
+    private final HashSet        parents; 
+    private final TreeSet        children;
+
+    private long last_lastModTime = -1;
     
     public AuxDependency(DependencyType type, Path path, String part, String product) {
         if (path == null) {
@@ -91,12 +94,30 @@ public class AuxDependency implements DependencyParent, Comparable {
         return product;
     }
     
-    public long getModTime() {
+    public long getModTime(boolean willrebuild) {
         File check = path.resolve();
         if (check.exists() && check.canRead() && check.isFile()) {
-            return check.lastModified();
+            if (last_lastModTime == 0) {  // We change from the file being checked once to not exist to "it exists now".
+                                          // so we need to make sure that the target will be rebuild.
+                if (willrebuild) { // make sure to return the same answer until we will rebuild
+                    last_lastModTime = check.lastModified();
+                }
+                return System.currentTimeMillis();
+            } else { // The file existed already the last round of checks.
+                last_lastModTime = check.lastModified();
+                return last_lastModTime;
+            }
         } else {
-            return 0;
+            if (last_lastModTime > 0) { // The file existed when last check has been made,
+                                        // so make sure target is being rebuild
+                if (willrebuild) { // make sure to return the same answer until we will rebuild
+                    last_lastModTime = 0;
+                }
+                return System.currentTimeMillis();
+            } else {
+                last_lastModTime = 0;
+                return 0;
+            }
         }
     }
 

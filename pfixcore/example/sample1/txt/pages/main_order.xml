@@ -4,36 +4,37 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-  <center>
-
-    <pfx:pagemessages/><br/>
-
-    <pfx:forminput name="main" target="_top">
-      <pfx:errorbox width="500"/>
-      <br/>
-      <pfx:checkactive prefix="shirt">
-        <pfx:include part="shirt"/>
-      </pfx:checkactive>
-      <table>
-        <tr valign="top">
-          <pfx:checkactive prefix="counter">
-            <td>
-              <pfx:include part="counter"/>
-            </td>
-          </pfx:checkactive>
-          <td>
-            <pfx:include part="pic"/>
-          </td>
-        </tr>
-      </table>
-      <pfx:checkactive prefix="trouser">
-        <pfx:include part="trouser"/>
-      </pfx:checkactive>
-      <br/>
-      <pfx:include part="wizard"/>
-    </pfx:forminput>
-  </center>
-</lang>
+        <center>
+          [<pfx:image themed-path="sample1/img" themed-img="test.gif"/>]<br/>
+          
+          <pfx:pagemessages/><br/>
+          
+          <pfx:forminput name="main" target="_top">
+            <pfx:errorbox width="500"/>
+            <br/>
+            <pfx:checkactive prefix="shirt">
+              <pfx:include part="shirt"/>
+            </pfx:checkactive>
+            <table>
+              <tr valign="top">
+                <pfx:checkactive prefix="counter">
+                  <td>
+                    <pfx:include part="counter"/>
+                  </td>
+                </pfx:checkactive>
+                <td>
+                  <pfx:include part="pic"/>
+                </td>
+              </tr>
+            </table>
+            <pfx:checkactive prefix="trouser">
+              <pfx:include part="trouser"/>
+            </pfx:checkactive>
+            <br/>
+            <pfx:include part="wizard"/>
+          </pfx:forminput>
+        </center>
+      </lang>
     </product>
   </part>
 
@@ -41,69 +42,69 @@
   <part name="help_shirt">
     <product name="default">
       <lang name="default">
-  Quite some help for all the things you should fill into this
-  wizard dialog page. You need to do this, because you want to
-  buy a nice T-Shirt at <b><i>ACME Shirts&amp;Trousers Inc.</i></b>,
-  don't you? I bet you really want to.
-</lang>
+        Quite some help for all the things you should fill into this
+        wizard dialog page. You need to do this, because you want to
+        buy a nice T-Shirt at <b><i>ACME Shirts&amp;Trousers Inc.</i></b>,
+        don't you? I bet you really want to.
+      </lang>
     </product>
   </part>
 
   <part name="shirt">
     <product name="default">
       <lang name="default">
-  <table width="400">
-    <tr>
-      <td align="left">
-        <b><big>T-Shirt:</big></b>
-      </td>
-    </tr>
-  </table>
-  <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
-    <pfx:groupdisplayonly name="01-Shirt">
-      <tr>
-        <td class="sample_group_help" colspan="2">
-          <pfx:include part="help_shirt"/>
-        </td>
-      </tr>
-    </pfx:groupdisplayonly>
-    <tr>
-      <td nowrap="nowrap">
-        <pfx:label name="shirt.Size">Size [S,M,L,XL,XXL]</pfx:label>:
-      </td>
-      <td>
-        <pfx:xinp name="shirt.Size" type="select">
-          <pfx:option>--- Please Select ---</pfx:option>
-          <pfx:option value="S">S</pfx:option>
-          <pfx:option value="M">M</pfx:option>
-          <pfx:option default="true" value="L">L</pfx:option>
-          <pfx:option value="XL">XL</pfx:option>
-          <pfx:option value="XXL">XXL</pfx:option>
-        </pfx:xinp>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap="nowrap">
-        <pfx:label name="shirt.Color">Color-No.</pfx:label>:
-      </td>
-      <td>
-        <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
-      </td>
-    </tr>
-    <tr valign="top">
-      <td>
-        <pfx:label name="shirt.Feature">Features</pfx:label>:
-      </td>
-      <td>
-        <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
-        <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
-        <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>Windproof<br/>
-        <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
-      </td>
-    </tr>
-  </table>
-  <br/>
-</lang>
+        <table width="400">
+          <tr>
+            <td align="left">
+              <b><big>T-Shirt:</big></b>
+            </td>
+          </tr>
+        </table>
+        <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
+          <pfx:groupdisplayonly name="01-Shirt">
+            <tr>
+              <td class="sample_group_help" colspan="2">
+                <pfx:include part="help_shirt"/>
+              </td>
+            </tr>
+          </pfx:groupdisplayonly>
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="shirt.Size">Size [S,M,L,XL,XXL]</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp name="shirt.Size" type="select">
+                <pfx:option>--- Please Select ---</pfx:option>
+                <pfx:option value="S">S</pfx:option>
+                <pfx:option value="M">M</pfx:option>
+                <pfx:option default="true" value="L">L</pfx:option>
+                <pfx:option value="XL">XL</pfx:option>
+                <pfx:option value="XXL">XXL</pfx:option>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap">
+              <pfx:label name="shirt.Color">Color-No.</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
+            </td>
+          </tr>
+          <tr valign="top">
+            <td>
+              <pfx:label name="shirt.Feature">Features</pfx:label>:
+            </td>
+            <td>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
+              <pfx:xinp default="true" name="shirt.Feature" type="check" value="2"/>Windproof<br/>
+              <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
+            </td>
+          </tr>
+        </table>
+        <br/>
+      </lang>
     </product>
   </part>
 

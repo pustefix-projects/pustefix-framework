@@ -14,6 +14,7 @@
     <page name="order"    handler="/xml/config" accesskey="O"/>
     <page name="overview" handler="/xml/config" accesskey="S"/>
 
+    <page name="foo"      handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
     <page name="admin"    handler="/xml/config"/>
     <page name="gencss"   handler="/xml/config"/>
@@ -31,6 +32,10 @@
   </standardmetatags>
   
   <standardpage name="home"     xml="sample1/xml/two_frames.xml"/>
+  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo"/>
+  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="foo:bar"/>
+  <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="baz"/>
+
   <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>
   <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
   <standardpage name="admin"    xml="sample1/xml/one_frame.xml"/>

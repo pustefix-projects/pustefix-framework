@@ -42,11 +42,12 @@ public class PageInfoFactory {
         return instance;
     }
 
-    public PageInfo getPage(TargetGenerator gen, String name) {
-        String   key = gen.getName() + "@" + name;
+    public PageInfo getPage(TargetGenerator gen, String name, String variant) {
+        // System.out.println(name + " :: " + variant);
+        String   key = gen.getName() + "@" + name + "::" + variant;
         PageInfo ret = (PageInfo) pagemap.get(key);
         if (ret == null) {
-            ret = new PageInfo(gen, name);
+            ret = new PageInfo(gen, name, variant);
             pagemap.put(key, ret);
         }
         return ret;

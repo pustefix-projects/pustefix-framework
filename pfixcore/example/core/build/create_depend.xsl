@@ -13,6 +13,9 @@
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
     <target name="master.xsl" type="xsl">
+      <xsl:call-template name="render_themes">
+        <xsl:with-param name="local_themes" select="@themes"/>
+      </xsl:call-template>
       <depxml name="core/xsl/master.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
       <depaux name="core/xsl/default_copy.xsl"/>
@@ -33,6 +36,9 @@
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
     <target name="metatags.xsl" type="xsl">
+      <xsl:call-template name="render_themes">
+        <xsl:with-param name="local_themes" select="@themes"/>
+      </xsl:call-template>
       <depxml name="core/xsl/metatags.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
       <depaux name="core/xsl/default_copy.xsl"/>
@@ -48,8 +54,24 @@
   </xsl:template>
 
   <xsl:template match="standardpage">
-    <target name="{@name}.xsl" type="xsl">
-      <depxml name="{@name}.xml"/>
+    <xsl:if test="not(@name)">
+      <xsl:message terminate="yes">*** standardpage needs to have a "name" attribute given! ***</xsl:message>
+    </xsl:if>
+    <xsl:if test="not(/make/standardpage[@name = current()/@name and not(@variant)])">
+      <xsl:message terminate="yes">*** Can't create a variant of a page that's not defined! ***</xsl:message>
+    </xsl:if>
+    <xsl:variable name="thename">
+      <xsl:choose>
+        <xsl:when test="@variant"><xsl:value-of select="@name"/>::<xsl:value-of select="@variant"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <target name="{$thename}.xsl" type="xsl">
+      <xsl:call-template name="render_themes">
+        <xsl:with-param name="variant" select="@variant"/>
+        <xsl:with-param name="local_themes" select="@themes"/>
+      </xsl:call-template>
+      <depxml name="{$thename}.xml"/>
       <depxsl name="master.xsl"/>
       <xsl:if test="./include or /make/global/include">
         <xsl:for-each select="./include">
@@ -69,31 +91,38 @@
           </xsl:attribute>
         </param>
       </xsl:if>
-      <xsl:variable name="allp" select="./param"/>
-      <xsl:for-each select="/make/global/param">
+      <xsl:variable name="allp" select="./param[not(@name = 'page')]"/>
+      <xsl:for-each select="/make/global/param[not(@name = 'page')]">
         <xsl:variable name="pn"><xsl:value-of select="@name"/></xsl:variable>
         <xsl:if test="not($allp[@name = $pn])">
           <xsl:apply-templates select="current()"/>
         </xsl:if>
       </xsl:for-each>
-      <xsl:apply-templates select="param"/>
+      <xsl:apply-templates select="$allp"/>
       <param name="page" value="{@name}"/>
+      <xsl:if test="@variant">
+        <param name="variant" value="{@variant}"/>
+      </xsl:if>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
     </target>
 
-    <target name="{@name}.xml" type="xml">
+    <target name="{$thename}.xml" type="xml">
+      <xsl:call-template name="render_themes">
+        <xsl:with-param name="variant" select="@variant"/>
+        <xsl:with-param name="local_themes" select="@themes"/>
+      </xsl:call-template>
       <depxml name="{@xml}"/>
       <depxsl name="metatags.xsl"/>
-      <xsl:variable name="allp" select="./param"/>
-      <xsl:for-each select="/make/global/param">
+      <xsl:variable name="allp" select="./param[not(@name = 'page')]"/>
+      <xsl:for-each select="/make/global/param[not(@name = 'page')]">
         <xsl:variable name="pn"><xsl:value-of select="@name"/></xsl:variable>
         <xsl:if test="not($allp[@name = $pn])">
           <xsl:apply-templates select="current()"/>
         </xsl:if>
       </xsl:for-each>
-      <xsl:apply-templates select="param"/>
+      <xsl:apply-templates select="$allp"/>
       <param name="page" value="{@name}"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
@@ -101,6 +130,42 @@
     </target>
   </xsl:template>
 
+  <xsl:template name="render_themes">
+    <xsl:param name="variant"/>
+    <xsl:param name="local_themes"/>
+    <xsl:variable name="global_themes">
+      <xsl:choose>
+        <xsl:when test="$local_themes"><xsl:value-of select="$local_themes"/></xsl:when>
+        <xsl:when test="/make/@themes"><xsl:value-of select="/make/@themes"/></xsl:when>
+        <xsl:otherwise><xsl:value-of select="/make/@project"/> default</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="fullthemes"><xsl:call-template name="recurse_variant">
+      <xsl:with-param name="variant_tail" select="$variant"/>
+    </xsl:call-template><xsl:text> </xsl:text><xsl:value-of select="$global_themes"/></xsl:variable>
+    <xsl:attribute name="themes"><xsl:value-of select="normalize-space($fullthemes)"/></xsl:attribute>
+  </xsl:template>
+
+  <xsl:template name="recurse_variant">
+    <xsl:param name="variant_tail"/>
+    <xsl:param name="variant_list"/>
+    <xsl:choose>
+      <xsl:when test="contains($variant_tail, ':')">
+        <xsl:variable name="curr_list">
+          <xsl:value-of select="$variant_list"/> <xsl:value-of select="substring-before($variant_tail, ':')"/>
+        </xsl:variable>
+        <xsl:variable name="remain_tail"><xsl:value-of select="substring-after($variant_tail, ':')"/></xsl:variable>
+        <xsl:call-template name="recurse_variant">
+          <xsl:with-param name="variant_tail" select="$remain_tail"/>
+          <xsl:with-param name="variant_list" select="$curr_list"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space(concat($variant_tail, ' ', $variant_list))"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:template name="render_include_ssheets">
     <xsl:if test="./include">
       <xsl:for-each select="include">
@@ -121,7 +186,7 @@
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
-      <xsl:apply-templates select="*[not(name() = 'param' and (@name='product' or @name='lang'))]"/>
+      <xsl:apply-templates select="*[not(name() = 'param' and (@name='product' or @name='themes' or @name='lang'))]"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>

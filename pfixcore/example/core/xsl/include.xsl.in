@@ -5,9 +5,9 @@
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtension"
-                xmlns:runtime="xalan://de.schlund.pfixxml.DependencyTracker"
+                xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrc"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
-                exclude-result-prefixes="include runtime geometry">
+                exclude-result-prefixes="include image geometry">
 
   <!-- The needed parameters must be set in the including stylesheet! -->
 
@@ -55,7 +55,7 @@
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
       <form target="_top">
-        <table width="1px" cellpadding="0" cellspacing="0" border="0">
+        <table cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td width="1px">
               <ixsl:choose>
@@ -85,7 +85,7 @@
 <!--                 <img border="0" title="Tomcat Admin" src="/core/img/admin.gif"/> -->
 <!--               </a> -->
 <!--             </td>   -->
-            <td width="1px">
+            <td align="left">
               <a target="__xml_source__">
                 <ixsl:attribute name="href">
                   <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
@@ -93,12 +93,12 @@
             </td>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+            <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               P: <ixsl:value-of select="$page"/>
             </td>
           </tr>
           <tr>
-            <td nowrap="nowrap" colspan="3" style="font-family: Verdana,Sans; font-size: 8px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+            <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
               F: <ixsl:value-of select="$pageflow"/>
             </td>
           </tr>
@@ -233,11 +233,10 @@
         <b>[Error: &lt;pfx:include&gt; needs "part" attribute]</b>
       </xsl:when>
       <xsl:otherwise>
-<!--         <xsl:message>$HREF |<xsl:value-of select="$href"/>| $REALPATH |<xsl:value-of select="$realpath"/>|</xsl:message> -->
         <xsl:variable name="incnodes"
-                      select="include:get(string($realpath), string($part), string($product),
-                      string($__target_gen), string($__target_key),
-                      string($parent_part), string($parent_product), $computed_inc)"/>
+                      select="include:get(string($realpath), string($part),
+                              string($__target_gen), string($__target_key),
+                              string($parent_part), string($parent_product), $computed_inc)"/>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
@@ -251,6 +250,18 @@
           </xsl:when>
         </xsl:choose>
         <!-- -->
+        <xsl:variable name="used_prod">
+          <xsl:choose>
+            <xsl:when test="$incnodes and $incnodes[name() = 'product' or name() = 'missing']">
+              <xsl:value-of select="$incnodes/@name"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:message terminate="yes">
+                Error when calling extension function 'include:get' => Didn't get a valid nodeset.
+              </xsl:message>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
         <xsl:choose>
           <xsl:when test="$incnodes and $incnodes[name() = 'product']">
             <xsl:choose>
@@ -369,15 +380,46 @@
     </xsl:choose>
   </xsl:template>
 
+
+  <xsl:template name="pfx:image_register_src">
+    <xsl:param name="src"/>
+    <xsl:param name="themed-path"/>
+    <xsl:param name="themed-img"/>
+    <xsl:choose>
+      <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
+                      ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
+        <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
+        <xsl:variable name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:variable>
+        <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
+                              string($parent_part),string($parent_product),
+                              string($__target_gen),string($__target_key))"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message terminate="yes">
+          *** Need either the 'src' attribute XOR both of 'themed-img' and 'themed-path' given. ***
+        </xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:template match="pfx:image" name="pfx:image">
     <xsl:param name="src" select="@src"/>
     <xsl:param name="alt" select="@alt"/>
+    <xsl:param name="themed-path" select="@themed-path"/> 
+    <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt'"/>
-    <img src="{$src}" alt="{$alt}">
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img'"/>
+    <xsl:variable name="real_src">
+      <xsl:call-template name="pfx:image_register_src">
+        <xsl:with-param name="src" select="$src"/>
+        <xsl:with-param name="themed-path" select="$themed-path"/>
+        <xsl:with-param name="themed-img" select="$themed-img"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <img src="/{$real_src}" alt="{$alt}">
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
       <xsl:call-template name="pfx:image_geom_impl">
-        <xsl:with-param name="src" select="$src"/>
+        <xsl:with-param name="src" select="$real_src"/>
       </xsl:call-template>
       <xsl:apply-templates/>
     </img>
@@ -441,11 +483,6 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-        <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
-        <xsl:variable name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:variable>
-        <xsl:variable name="add_dep" select="runtime:logImage(string($path),
-                      string($parent_part),string($parent_product),
-                      string($__target_gen),string($__target_key))"/>
         <xsl:variable name="width">
           <xsl:choose>
             <xsl:when test="./@width">
@@ -466,12 +503,6 @@
             </xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-        <xsl:if test="not($add_dep = '0')">
-          <xsl:message terminate="no">**** Caution:      Error calling DependencyTracker ****</xsl:message>
-          <xsl:message terminate="no">|    path:         <xsl:value-of select="$src"/></xsl:message>
-          <xsl:message terminate="no">|    __target_gen: <xsl:value-of select="$__target_gen"/></xsl:message>
-          <xsl:message terminate="no">|    __target_key: <xsl:value-of select="$__target_key"/></xsl:message>
-        </xsl:if>
         <xsl:if test="not($width = -1)">
           <xsl:attribute name="width">
             <xsl:value-of select="$width"/>

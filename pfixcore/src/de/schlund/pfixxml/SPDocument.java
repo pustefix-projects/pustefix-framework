@@ -40,6 +40,7 @@ public class SPDocument implements NoCopySessionData {
     private Properties properties;
     private boolean    nostore     = false;
     private String     pagename    = null;
+    private String     variant     = null;
     private String     xslkey      = null;
     private long       timestamp   = -1;
     private int        error       = 0;
@@ -57,6 +58,32 @@ public class SPDocument implements NoCopySessionData {
 
     public String getPagename() {
         return pagename;
+    }
+
+    public void setVariant(String variant) {
+        this.variant = variant;
+    }
+
+    public String getVariant() {
+        return variant;
+    }
+
+    public String[] getVariantFallbackArray() {
+        if (variant == null) {
+            return null;
+        }
+        StringTokenizer tokenizer = new StringTokenizer(variant, ":");
+        ArrayList       arrlist   = new ArrayList();
+        String          fallback  = "";
+        while (tokenizer.hasMoreElements()) {
+            String tok = tokenizer.nextToken();
+            if (!fallback.equals("")) {
+                fallback += ":";
+            }
+            fallback += tok;
+            arrlist.add(0,fallback);
+        }
+        return (String[]) arrlist.toArray(new String[]{});
     }
 
     public void setNostore(boolean nostore) {

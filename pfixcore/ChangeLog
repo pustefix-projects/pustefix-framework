@@ -1,3 +1,72 @@
+2005-03-29  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/PageInfo.java: variant handling: PageInfo now has 3 constituents: page name,
+	target generator, variant (which can be 'null').
+	* src/de/schlund/pfixxml/targets/PageInfoFactory.java: changed accordingly.
+
+	* src/de/schlund/pfixxml/targets/Target.java (getThemes): new method in interface
+	* src/de/schlund/pfixxml/targets/TargetRW.java (setThemes): new method in interface 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (getThemes): implemented 
+	(setThemes) abstract implemented
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setThemes): implemented 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java (setThemes): implement it as a RuntimeException. 
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (getModTime()): add boolean parameter "willrebuild"	where the
+	caller can signal if the response may trigger a rebuild of the target using the auxdependency. This should help
+	in catching more cases where a target must be rebuild (see the source)
+	FIXME FIXME: this needs more thinking how to make it really work in every case.
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java loop the willrebuild param through.
+
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java (get): Rewrote extension function to 
+	allow to check for a whole queue of themes (== product branches), not only for a product 
+	branch called like the project name or for a branch called "default". We get the array of allowed themes 
+	from the Target itself, or if we are not called in the context of a target, get the global defeined themes from the 
+	TargetGenerator.
+
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: New extension function to register the selected image file. 
+	This can be called with a single src parameter, which will register exactly this file, or a themed-img and themed-path 
+	parameter. In this case, all themes will be tried starting with the most specific to see if a file exists 
+	<themed-path>/<theme>/themed-src>, and the one that's found is returned.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (extractStylesheetFromSPDoc): handle variants set 
+	in the SPDocument, and implement the fallback line in case of a compound variant.
+
+	* src/de/schlund/pfixxml/SPDocument.java: handle variants (set/get)
+	* src/de/schlund/pfixcore/workflow/Context.java: handle variants (set|getVariant(...)), also set them in the SPDocument 
+	befor returning it.
+
+	* src/de/schlund/pfixcore/example/RandomVariantState.java: New state that randomly changes the requested variant. 
+
+	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java: Quick fix to make it compile against the variant enabled PageTargetTree.
+	I think this needs more work so the editor can work with variants.
+
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: change calls to getModTime() to getModTime(false) 
+
+	* example/sample1/conf/config.prop.in: use RandomVariantState for the home page as an example how to use Variants 
+	* example/sample1/conf/depend.xml.in: create some sample variants for the homepage
+
+	* example/core/xsl/master.xsl.in: added $variant variable,
+	accessible at runtime (not sure if this is strictly needed at all)
+	also make $product to be a variable rather than a
+	parameter (there's nno sense to be able to change this to
+	something else from the outside)
+
+	* example/core/xsl/include.xsl.in: cosmetic changes to pfx:editconsole.
+	- pfx:include changed call to IncludeDocumentExtension.get(...): product (aka project name) is no longer given, 
+	as themeing queue is retrieved from TargetGenerator or Target itself.
+	- pfx:image_register_src: new template that implements (together with the extension funktion ImageSrc.getSrc) 
+	theming for images. You MUST call this template to register an image, pfx:image_geom_impl does NO LONGER do so.
+	- pfx:image: call it to get the src to use.
+	- pfx:image_geom_impl: no longer register the image
+	
+	* example/core/xsl/forminput.xsl.in: support in <pfx:xinp type="image"> for themed images. 
+
+	* example/core/build/create_depend.xsl: added support for the new themeing and variant stuff.  
+
 2005-03-23  Tanjev Stuhr  <tanjev.stuhr@schlund.de>
 
         * src/de/schlund/pfixcore/generator/casters/ToByte.java: added new caster.
