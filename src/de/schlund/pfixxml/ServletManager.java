@@ -88,7 +88,7 @@ public abstract class ServletManager extends HttpServlet {
         }
     }
     
-    protected boolean needsSSL() {
+    protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
         String needs_ssl = properties.getProperty("servlet.needsSSL");
         if (needs_ssl != null && (needs_ssl.equals("true") || needs_ssl.equals("yes") || needs_ssl.equals("1"))) {
             return true;
@@ -119,7 +119,7 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("====> Scheme://Server:Port " + req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort());
             CAT.debug("====> URI:   " + req.getRequestURI());
             CAT.debug("====> Query: " + req.getQueryString());
-            CAT.debug("----> needsSession=" + needsSession() + " needsSSL=" + needsSSL() + " allowSessionCreate=" + allowSessionCreate());
+            CAT.debug("----> needsSession=" + needsSession() + " allowSessionCreate=" + allowSessionCreate());
             CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
 
             Cookie[] cookies = req.getCookies();
@@ -142,7 +142,7 @@ public abstract class ServletManager extends HttpServlet {
         }
             
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
-        AppLoader loader=AppLoader.getInstance();
+        AppLoader loader = AppLoader.getInstance();
         if (loader.isEnabled()) {
             while (loader.isLoading()) {
                 try {
@@ -247,17 +247,17 @@ public abstract class ServletManager extends HttpServlet {
             return;
             // End of request cycle.
         }
-        if (needsSession() && needsSSL() && !has_ssl_session_secure) {
+        if (needsSession() && needsSSL(preq) && !has_ssl_session_secure) {
             redirectToInsecureSSLSession(preq, req, res);
             return;
             // End of request cycle.
         }
-        if (!has_session && needsSession() && !needsSSL()) {
+        if (!has_session && needsSession() && !needsSSL(preq)) {
             redirectToSession(preq, req, res);
             return;
             // End of request cycle.
         }
-        if (!has_session && !needsSession() && needsSSL() && !runningUnderSSL(req)) {
+        if (!has_session && !needsSession() && needsSSL(preq) && !runningUnderSSL(req)) {
             redirectToSSL(req, res);
             return;
             // End of request cycle.

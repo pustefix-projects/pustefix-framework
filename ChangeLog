@@ -1,3 +1,20 @@
+2003-10-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ContextXMLServer.java (needsSSL):
+	implement own version of this method. In case the whole servlet
+	does not want to run under SSL anyway, check the context if the current page wants SSL. 
+	Return true if this is the case.
+
+	* src/de/schlund/pfixxml/AppContext.java (currentPageNeedsSSL): new method in interface.
+	* src/de/schlund/pfixcore/workflow/Context.java (currentPageNeedsSSL): implement it. This will 
+	try to get a page from the current request, and that failing, use the current page of the context to 
+	check for the property pagerequest.<PAGENAME>.FORCE_SSL. If this is property is true, return true, too.
+	* example/sample1/conf/config.prop.in: handle the new attribute "forcessl" of the <pagerequest> node to 
+	build the mentioned java property.
+
+	* src/de/schlund/pfixxml/ServletManager.java (needsSSL): now get the request as a parameter.
+	(doGet): change accordingly
+
 2003-10-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/script/baselib.js: small bugfixes. 

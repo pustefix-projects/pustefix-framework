@@ -57,6 +57,9 @@
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
+    <xsl:if test="@forcessl and @forcessl = 'true'">
+      <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.FORCE_SSL=true&#xa;</xsl:text>
+    </xsl:if>
     <xsl:if test="$nostore = 'true'">
       <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
     </xsl:if>
