@@ -4,3 +4,5 @@ apidocs
 prj.el
 build
 semantic.cache
+testskel
+.externalToolBuilders
