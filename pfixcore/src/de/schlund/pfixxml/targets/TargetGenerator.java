@@ -431,14 +431,7 @@ public class TargetGenerator {
             for (int i = 0; i < args.length; i++) {
                 try {
                     /* resetting the factories for better memory performance */
-                    SPCacheStatistic.reset();
-                    TargetGeneratorFactory.getInstance().reset();
-                    TargetGenerator.resetGenerationReport();
-                    TargetFactory.getInstance().reset();
-                    IncludeDocumentFactory.getInstance().reset();
-                    PageInfoFactory.getInstance().reset();
-                    SharedLeafFactory.getInstance().reset();
-                    AuxDependencyFactory.getInstance().reset();
+                    TargetGenerator.resetFactories();
                     System.gc();
                      
                     File file = new File(args[i]);
@@ -590,7 +583,16 @@ public class TargetGenerator {
         report = new TargetGenerationReport();
     }
 
-    
+    public static void resetFactories() {
+        SPCacheStatistic.reset();
+        TargetGeneratorFactory.getInstance().reset();
+        TargetGenerator.resetGenerationReport();
+        TargetFactory.getInstance().reset();
+        IncludeDocumentFactory.getInstance().reset();
+        PageInfoFactory.getInstance().reset();
+        SharedLeafFactory.getInstance().reset();
+        AuxDependencyFactory.getInstance().reset();
+    }
 }
 
 class TargetGenerationReport {

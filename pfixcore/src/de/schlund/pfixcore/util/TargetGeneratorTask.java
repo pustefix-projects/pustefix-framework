@@ -65,16 +65,7 @@ public class TargetGeneratorTask extends MatchingTask {
                             gen.generateAll();
                             System.out.println("---------- ...done [" + confignames[i] + "]");
 
-                            // cleanup
-                            SPCacheStatistic.reset();
-                            TargetGeneratorFactory.getInstance().reset();
-                            TargetGenerator.resetGenerationReport();
-                            TargetFactory.getInstance().reset();
-                            IncludeDocumentFactory.getInstance().reset();
-                            PageInfoFactory.getInstance().reset();
-                            SharedLeafFactory.getInstance().reset();
-                            AuxDependencyFactory.getInstance().reset();
-                            
+                            TargetGenerator.resetFactories();
                         } catch (Exception e) {
                             throw new BuildException("Oops! TargetGenerator exit!", e);
                         }
