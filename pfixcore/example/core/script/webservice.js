@@ -258,6 +258,15 @@ SimpleTypeSerializer.prototype.serialize=function(value,name,writer) {
 	writer.endElement(name);
 }
 
+//*********************************
+//TypeMapping()
+//*********************************
+function TypeMapping() {
+	this.mappings=new Array();
+}
+
+
+
 
 //*********************************
 // RPCSerializer(QName opName,ArrayOfParameter params,values,...)
@@ -268,10 +277,12 @@ function RPCSerializer(opName,params) {
 }
 
 RPCSerializer.prototype.serialize=function(writer) {
+	writer.startElement(this.opName);
 	var ser=new SimpleTypeSerializer(xmltype.XSD_INT);
 	for(var i=0;i<this.params.length;i++) {
 		ser.serialize(this.params[i].value,this.params[i].name,writer);
 	}
+	writer.endElement(this.opName);
 }
 
 
