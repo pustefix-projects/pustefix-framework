@@ -1,5 +1,3 @@
-<!-- -*- mode: xml -*- -->
-
 <!-- The needed parameters must be set in the including stylesheet! -->
 
 <xsl:stylesheet version="1.0"
