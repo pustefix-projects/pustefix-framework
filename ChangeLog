@@ -2,6 +2,8 @@
 
 	* build.xml: relased 0.8.0 
 
+	* example/core/xsl/navigation.xsl.in: fixed handling of pfx:active/pfx:normal/pfx:invisible
+
 	* src/de/schlund/pfixxml/ImageGeometryData.java: close the input stream.
 
 2004-10-15  Martin Leidig  <mleidig@schlund.de>
