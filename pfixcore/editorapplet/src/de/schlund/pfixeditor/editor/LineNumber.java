@@ -26,8 +26,9 @@ import javax.swing.border.*;
 import javax.swing.text.*;
 
 public class LineNumber extends JComponent {
-    private final static Color DEFAULT_BACKGROUND = new Color(230, 163, 4);
-    private final static Color DEFAULT_FOREGROUND = Color.black;
+    // private final static Color DEFAULT_BACKGROUND = new Color(230, 163, 4);
+    private final static Color DEFAULT_BACKGROUND = new Color(102,119,170);
+    private final static Color DEFAULT_FOREGROUND = new Color(250,250,250);
     private final static Font DEFAULT_FONT = new Font("monospaced", Font.PLAIN, 12);
 
     // LineNumber height (abends when I use MAX_VALUE)
@@ -59,7 +60,8 @@ public class LineNumber extends JComponent {
         }
         else {
             setBackground( DEFAULT_BACKGROUND );
-            setForeground( component.getForeground() );
+            // setForeground( component.getForeground() );
+            setForeground( DEFAULT_FOREGROUND );
             setFont( component.getFont() );
         }
 
