@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
  * Here we decide which {@link de.schlund.pfixcore.workflow.State State} handles the
  * request. This decision is based on the notion of workflows (aka
  * {@link de.schlund.pfixcore.workflow.PageFlow PageFlow}s).
- * 
+ *
  *
  * @author jtl
  * @version 2.0
@@ -45,8 +45,8 @@ public class Context implements AppContext {
     private final static String   NOSTORE            = "nostore";
     private final static String   DEFPROP            = "context.defaultpageflow";
     private final static String   NAVPROP            = "xmlserver.depend.xml";
-    private final static String   PROP_NAVI_AUTOINV  = "navigation.autoinvalidate"; 
-    private final static String   PROP_NEEDS_SSL     = "needsSSL"; 
+    private final static String   PROP_NAVI_AUTOINV  = "navigation.autoinvalidate";
+    private final static String   PROP_NEEDS_SSL     = "needsSSL";
     private final static String   WATCHMODE          = "context.adminmode.watch";
     private final static String   ADMINPAGE          = "context.adminmode.page";
     private final static String   ADMINMODE          = "context.adminmode";
@@ -59,18 +59,18 @@ public class Context implements AppContext {
     // from constructor
     private String     name;
     private Properties properties;
-    
+
     // shared between all instances that have the same properties
     private PageFlowManager       pageflowmanager;
     private PageRequestProperties preqprops;
     private PageMap               pagemap;
-    
+
     // new instance for every Context
     private ContextResourceManager rmanager;
     private Navigation             navigation    = null;
     private PageRequest            authpage      = null;
     private HashSet                visited_pages = null;
-    
+
     // values read from properties
     private boolean     autoinvalidate_navi = true;
     private boolean     in_adminmode        = false;
@@ -83,7 +83,7 @@ public class Context implements AppContext {
     private PageRequest        jumptopagerequest;
     private PageFlow           jumptopageflow;
     private boolean            on_jumptopage;
-    
+
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
     private boolean needs_update;
@@ -108,7 +108,7 @@ public class Context implements AppContext {
         needs_update = true;
         invalidateNavigation();
     }
-    
+
     /**
      * <code>handleRequest</code> is the entry point where the Context is called
      * from outside to handle the supplied request.
@@ -122,16 +122,16 @@ public class Context implements AppContext {
         jumptopagerequest = null;
         jumptopageflow    = null;
         on_jumptopage     = false;
-        
+
         if (needs_update) {
             do_update();
         }
-        
+
         SPDocument  spdoc;
         PageRequest prevpage = currentpagerequest;
         PageFlow    prevflow = currentpageflow;
-        
-        if (visit_id == null) 
+
+        if (visit_id == null)
             visit_id = (String) currentpreq.getSession(false).getValue(ServletManager.VISIT_ID);
 
         if (in_adminmode) {
@@ -147,14 +147,14 @@ public class Context implements AppContext {
             spdoc.setPagename(admin_pagereq.getName());
             return spdoc;
         }
-        
+
         trySettingPageRequestAndFlow();
         spdoc = documentFromFlow();
 
         if (spdoc != null && spdoc.getPagename() == null) {
             spdoc.setPagename(currentpagerequest.getName());
         }
-        
+
         if (spdoc != null && currentpageflow != null) {
             spdoc.setProperty("pageflow", currentpageflow.getName());
         }
@@ -169,7 +169,7 @@ public class Context implements AppContext {
             visited_pages.add(spdoc.getPagename());
             addNavigation(navigation, spdoc);
         }
-        
+
         if (pageIsSidestepPage(currentpagerequest)) {
             LOG.info("* [" + currentpagerequest + "] is sidestep: Restoring to [" +
                      prevpage + "] in flow [" + prevflow.getName() + "]");
@@ -230,7 +230,7 @@ public class Context implements AppContext {
             jumptopagerequest = null;
         }
     }
-    
+
     public PageRequest getJumpToPageRequest() {
         return jumptopagerequest;
     }
@@ -243,7 +243,7 @@ public class Context implements AppContext {
             } else {
                 jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest);
             }
-            
+
         } else {
             jumptopageflow = null;
         }
@@ -252,7 +252,7 @@ public class Context implements AppContext {
     public PageFlow getJumpToPageFlow() {
         return jumptopageflow;
     }
-    
+
     /**
      * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returnes true if the pagerequest has already been jumped to internally after a successful submit.
@@ -262,7 +262,7 @@ public class Context implements AppContext {
     public boolean jumpToPageIsRunning() {
         return on_jumptopage;
     }
-    
+
     /**
      * <code>flowIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
      * It returned true if the Context is currently running one of the defined pageflows.
@@ -280,7 +280,7 @@ public class Context implements AppContext {
     public void invalidateNavigation() {
         navigation_visible = new HashMap();
     }
-    
+
     /**
      * <code>getCurrentSessionId</code> returns the visit_id.
      *
@@ -301,7 +301,7 @@ public class Context implements AppContext {
         }
         PageRequest current  = currentpagerequest;
         FlowStep[]  workflow = currentpageflow.getAllSteps();
-        
+
         for (int i = 0; i < workflow.length; i++) {
             FlowStep    step = workflow[i];
             PageRequest page = step.getPageRequest();
@@ -336,7 +336,7 @@ public class Context implements AppContext {
             return false;
         }
     }
-    
+
     public boolean currentFlowStepWantsPostProcess() {
         if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
             if (currentpageflow.getFlowStepForPage(currentpagerequest).hasOnContinueAction()) {
@@ -347,7 +347,7 @@ public class Context implements AppContext {
     }
 
     public boolean currentPageNeedsSSL(PfixServletRequest preq) throws Exception {
-        PageRequest page = new PageRequest(preq); 
+        PageRequest page = new PageRequest(preq);
         if (page.isEmpty() && currentpagerequest != null) {
             page = currentpagerequest;
         }
@@ -362,7 +362,7 @@ public class Context implements AppContext {
         }
         return false;
     }
-    
+
     public synchronized SPDocument checkAuthorization() throws Exception {
         if (authpage != null) {
             ResultDocument resdoc = null;
@@ -399,7 +399,7 @@ public class Context implements AppContext {
     private void do_update() throws Exception {
     	// get PropertyObjects from PropertyObjectManager
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
-        
+
         pageflowmanager = (PageFlowManager) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageFlowManager");
         preqprops       = (PageRequestProperties) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
         pagemap         = (PageMap) pom.getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageMap");
@@ -417,7 +417,7 @@ public class Context implements AppContext {
         checkForAuthenticationMode();
         checkForAdminMode();
         checkForNavigationReuse();
-        
+
         needs_update = false;
     }
 
@@ -434,7 +434,7 @@ public class Context implements AppContext {
         }
         return false;
     }
-    
+
     private void checkForAuthenticationMode() {
         String authpagename = properties.getProperty(AUTH_PROP);
         if (authpagename != null) {
@@ -443,7 +443,7 @@ public class Context implements AppContext {
             authpage = null;
         }
     }
-    
+
     private void checkForNavigationReuse() {
         String navi_autoinv = properties.getProperty(PROP_NAVI_AUTOINV);
         if (navi_autoinv != null && navi_autoinv.equals("false")) {
@@ -454,7 +454,7 @@ public class Context implements AppContext {
             autoinvalidate_navi = true;
         }
     }
-    
+
     private void checkForAdminMode() {
         admin_pagereq = null;
         in_adminmode  = false;
@@ -525,7 +525,7 @@ public class Context implements AppContext {
             if (document != null) {
                 return document;
             }
-        
+
             // Now we need to make sure that the current page is accessible, and take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
@@ -543,7 +543,7 @@ public class Context implements AppContext {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest);
                 step.applyActionsOnContinue(this, resdoc);
             }
-            
+
             if (!resdoc.wantsContinue()) {
                 LOG.debug("* [" + currentpagerequest + "] returned document to show, skipping page flow.");
                 document = resdoc.getSPDocument();
@@ -555,7 +555,7 @@ public class Context implements AppContext {
                 jumptopageflow     = null; // we don't want to recurse infinitely
                 on_jumptopage      = true; // we need this information to supress the interpretation of
                                            // the request as one that submits data. See StateImpl,
-                                           // methods isSubmitTrigger & isDirectTrigger  
+                                           // methods isSubmitTrigger & isDirectTrigger
                 LOG.debug("******* JUMPING to [" + currentpagerequest + "] *******\n");
                 document = documentFromFlow();
             } else if (currentpageflow != null) {
@@ -582,7 +582,7 @@ public class Context implements AppContext {
         FlowStep[]  workflow      = currentpageflow.getAllSteps();
         PageRequest saved         = currentpagerequest;
         boolean     after_current = false;
-        
+
         for (int i = 0; i < workflow.length; i++) {
             FlowStep    step = workflow[i];
             PageRequest page = step.getPageRequest();
@@ -660,14 +660,14 @@ public class Context implements AppContext {
             throw new XMLException ("* Can't get a state in documentFromCurrentStep() for page " +
                                     currentpagerequest.getName());
         }
-        
+
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
         return state.getDocument(this, currentpreq);
     }
 
     private void trySettingPageRequestAndFlow() {
-        PageRequest page = new PageRequest(currentpreq); 
+        PageRequest page = new PageRequest(currentpreq);
         if (!page.isEmpty() && (authpage == null || !page.equals(authpage))) {
             page.setStatus(PageRequestStatus.DIRECT);
             currentpagerequest = page;
@@ -700,10 +700,10 @@ public class Context implements AppContext {
         Document doc     = spdoc.getDocument();
         Element  element = doc.createElement("navigation");
         doc.getDocumentElement().appendChild(element);
-        
+
         StringBuffer debug_buffer = new StringBuffer();
         StringBuffer warn_buffer  = new StringBuffer();
-        
+
         if (autoinvalidate_navi) {
             LOG.debug("=> Add new navigation.");
             currentpreq.startLogEntry();
@@ -776,13 +776,13 @@ public class Context implements AppContext {
                     }
                 }
             }
-            
+
             if (page.hasChildren()) {
                 recursePages(page.getChildren(), pageelem, doc, vis_map, warn_buffer, debug_buffer);
             }
         }
     }
-    
+
     /**
      * <code>toString</code> tries to give a detailed printed representation of the Context.
      * WARNING: this may be very long!
@@ -791,10 +791,10 @@ public class Context implements AppContext {
      */
     public String toString() {
         StringBuffer contextbuf = new StringBuffer("\n");
-	
+
         contextbuf.append("     pageflow:      " + currentpageflow  + "\n");
-        contextbuf.append("     PageRequest:   " + currentpagerequest + "\n"); 
-        if (currentpagerequest != null) { 
+        contextbuf.append("     PageRequest:   " + currentpagerequest + "\n");
+        if (currentpagerequest != null) {
             contextbuf.append("       -> State: " + pagemap.getState(currentpagerequest) + "\n");
             contextbuf.append("       -> Status: " + currentpagerequest.getStatus() + "\n");
         }
@@ -804,7 +804,7 @@ public class Context implements AppContext {
             contextbuf.append("         " + res.getClass().getName() + ": ");
             contextbuf.append(res.toString() + "\n");
         }
-        
+
         return contextbuf.toString();
     }
 
@@ -815,9 +815,18 @@ public class Context implements AppContext {
     public void startLogEntry() {
         currentpreq.startLogEntry();
     }
-    
+
     public void endLogEntry(String info, long min) {
         currentpreq.endLogEntry(info, min);
     }
+
+    /**
+	 * Returns the last exception-object that was stored in the request object.
+     * See {@link PfixServletRequest#getLastException() PfixServletRequest} for details.
+	 */
+	public Throwable getLastException()
+	{
+		return currentpreq.getLastException();
+	}
 
 }
