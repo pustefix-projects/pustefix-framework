@@ -43,11 +43,11 @@
 
   <preGoal name="site:sshdeploy">
     <maven:user-check user="${maven.username}"/>
-    <ant:echo>deleting old site: ${pom.siteDirectory}</ant:echo>
+    <ant:echo>deleting tmp site: ${pom.siteDirectory}</ant:echo>
     <ant:exec dir="." executable="${maven.ssh.executable}">
       <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'rm -rf ${pom.siteDirectory}'"/>
     </ant:exec>
-    <ant:echo>deleting old site: done</ant:echo>
+    <ant:echo>deleting tmp site: done</ant:echo>
   </preGoal>
   
   <postGoal name="site:sshdeploy">
