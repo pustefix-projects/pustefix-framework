@@ -121,6 +121,28 @@ public class PfixAppletInfo {
         return incElements;
         
     }
+
+    public String[] getImages() {
+        org.w3c.dom.NodeList  nl          = this.doc.getElementsByTagName("image");
+        String [] incImages = new String[nl.getLength()];
+        
+        for (int i = 0; i < nl.getLength(); i++) {
+            org.w3c.dom.Element el = (org.w3c.dom.Element) nl.item(i);
+            
+            // String part       = el.getAttribute("part");
+            String path       = el.getAttribute("path");            
+            String newPath    = path.substring(path.indexOf("example/"), path.length());
+            String includeStr = "<pfx:imgage href=\"" + newPath + "\" />";
+            
+            incImages[i] = includeStr;
+            
+        }
+        
+        
+        return incImages;
+        
+    }
+    
     
     
    

@@ -37,7 +37,7 @@ export JAR        = ${JDK_HOME}/bin/jar
 #export VERSION    = $(shell head -n 1 META-INF/$(PROJECT).version | grep -E '^[^\s]+')
 export JARAUTOTAG = AUTO_TAG_$(shell  date +%s)
 
-BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:./lib/java40.jar:./lib/xerces.jar:./lib/commons-pfix_httpclient-2.0-beta1.jar
+BUILDPATH     = ${CLASSPATH}:$(PROJECT_ROOT)/$(BUILDDIR):${JDK_HOME}/jre/lib/rt.jar:./lib/java40.jar:./lib/xerces.jar
 
 JAVADOCSUBDIRS = $(subst $(SRCROOT)/,,$(SUBDIRS))
 SRCDIRS        =$(patsubst %, $(SRCROOT)/%,$(SUBDIRS))
