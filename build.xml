@@ -794,8 +794,8 @@ or delete the DOCTYPE definition -->
 
   <target name="tomcat.dir">
     <antcall target="tomcat.extract"/>
-    <!-- antcall target="tomcat.strip"/>
-    <antcall target="tomcat.jndi"/-->
+    <antcall target="tomcat.strip"/>
+    <antcall target="tomcat.jndi"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
   </target>
