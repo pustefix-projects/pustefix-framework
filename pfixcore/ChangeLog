@@ -1,3 +1,37 @@
+2003-08-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java (getDocument): 
+	changed to respect to properties:
+	pagerequest.PAGENAME.mimetype=MIMETYPE to set the mimetype to
+	something else than the default text/html (e.g. text/css).  and
+	pagerequest.PAGNAME.responseheader.HEADER=HEADERVAL to set
+	headers in the servlets http response (e.g. to change the cache strategies)
+	(addResponseHeader): new private helper method.
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: 
+	* src/de/schlund/pfixxml/SPDocument.java: 
+	* src/de/schlund/pfixcore/workflow/Context.java: 
+	* example/sample1/conf/depend.xml.in: 
+	* example/sample1/conf/config.prop.in: 
+	* example/core/build/create_propfiles.xsl: support another
+	attribute "nostore" of the "pagerequest" tag to allow for a page
+	to be a "sidestep" page: The DOM tree is not stored for reuse (so
+	no frames are possible!) and the Context doesn't change it's
+	current page or current pageflow. This is useful for CSS or
+	JavaScript output of pages (together with the change of the
+	outputmethod described below).
+
+	* example/sample1/conf/depend.xml.in: 
+	* example/sample1/xsl/custommaster.xsl: 
+	* example/core/editor/xsl/custommaster.xsl: 
+	* example/core/xsl/master.xsl.in: 
+	* example/core/build/create_depend.xsl: support another optional
+	attribute "outputmethod" of the "standardpage" tag to allow for
+	setting the output method of the last transformation to something
+	else than html (eg. text).  this works by supplying a param
+	"outputmethod" to the master transformation. (this needs a trivial
+	change to the custommaster stylesheet to work)
+
 2003-08-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/loader/AppClassLoader.java (AppClassLoader): really removed BCEL... 
