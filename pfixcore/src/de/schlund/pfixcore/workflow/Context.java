@@ -402,12 +402,15 @@ public class Context implements AppContext {
         } else if (isCurrentPageRequestInCurrentFlow()) {
             LOG.debug(">>> Page is part of current pageflow:");
             LOG.debug("    => continue with pagflow...");
+            return true;
         } else if (isCurrentPageFlowRequestedByUser()) {
             LOG.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
             LOG.debug("    => continue with pagflow...");
+            return true;
         } else if (jumptopagerequest != null) {
             LOG.debug(">>> Have been called with a jumptopage set:");
             LOG.debug("    => continue so we can jump to this page...");
+            return true;
         }
         return false;
     }
