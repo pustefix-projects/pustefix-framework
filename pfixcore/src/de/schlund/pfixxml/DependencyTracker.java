@@ -19,10 +19,11 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.targets.*;
-import org.apache.log4j.*;
-import java.lang.*;
-import java.io.*;
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
 
 /**

@@ -90,7 +90,7 @@
   </category>
 
   <category name="de.schlund.pfixxml.AbstractXMLServer" additivity="false">
-    <priority value="DEBUG"/>
+    <priority value="INFO"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -120,7 +120,7 @@
   </category>
   
   <category name="de.schlund.pfixxml.targets.TraxXSLTProcessor" additivity="false">
-    <priority value="DEBUG"/>
+    <priority value="WARN"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
   

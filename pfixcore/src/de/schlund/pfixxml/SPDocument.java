@@ -1,5 +1,4 @@
-/*
-* This file is part of PFIXCORE.
+/* This file is part of PFIXCORE.
 *
 * PFIXCORE is free software; you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -16,23 +15,28 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 */
-
 package de.schlund.pfixxml;
- 
-import java.util.*;
+
 import java.io.*;
+
+import java.util.*;
+
 import javax.servlet.http.*;
-import org.w3c.dom.*;
+
 import org.apache.xml.serialize.*;
+
+import org.w3c.dom.*;
+
 
 /**
  *
  *
  */
-
 public class SPDocument {
+
+    //~ Instance/static variables ..................................................................
+
     private Document   document;
-    private Document   xmlobject;
     private Properties properties;
     private String     pagename    = null;
     private String     xslkey      = null;
@@ -42,8 +46,9 @@ public class SPDocument {
     private String     contenttype = null;
     private HashMap    header      = new HashMap();
     private ArrayList  cookies     = new ArrayList();
-    
-    
+
+    //~ Methods ....................................................................................
+
     // Pagename is the preferred way to specify the target
     public void setPagename(String pagename) {
         this.pagename = pagename;
@@ -60,11 +65,11 @@ public class SPDocument {
     public String getResponseContentType() {
         return contenttype;
     }
-    
+
     public void setResponseErrorText(String err) {
         errortext = err;
     }
-    
+
     public String getResponseErrorText() {
         return errortext;
     }
@@ -80,7 +85,7 @@ public class SPDocument {
     public void addResponseHeader(String key, String val) {
         header.put(key, val);
     }
-    
+
     public HashMap getResponseHeader() {
         return header;
     }
@@ -91,9 +96,9 @@ public class SPDocument {
         }
         Element root = document.getDocumentElement();
         for (Iterator i = anchors.keySet().iterator(); i.hasNext();) {
-            String frame  = (String) i.next();
-            String anchor = (String) anchors.get(frame);
-            Element elem = document.createElement("frameanchor");
+            String  frame  = (String) i.next();
+            String  anchor = (String) anchors.get(frame);
+            Element elem   = document.createElement("frameanchor");
             elem.setAttribute("frame", frame);
             elem.setAttribute("anchor", anchor);
             root.appendChild(elem);
@@ -124,27 +129,27 @@ public class SPDocument {
      * @param cookie a <code>Cookie</code> value
      */
     public void addCookie(Cookie cookie) {
-	cookies.add(cookie);
+        cookies.add(cookie);
     }
-    
+
     /**
      * Describe <code>getCookies</code> method here.
      *
      * @return an <code>ArrayList</code> value
      */
     public ArrayList getCookies() {
-	return cookies;
+        return cookies;
     }
-    
+
     /**
      * Describe <code>setCookies</code> method here.
      *
      * @param newcookies an <code>ArrayList</code> value
      */
     public void setCookies(ArrayList newcookies) {
-	cookies = newcookies;
+        cookies = newcookies;
     }
-    
+
     /**
      * Describe <code>getXSLKey</code> method here.
      *
@@ -162,6 +167,7 @@ public class SPDocument {
     public Document getDocument() {
         return document;
     }
+
     /**
      * Insert the method's description here.
      * Creation date: (05/10/00 19:46:18)
@@ -170,6 +176,7 @@ public class SPDocument {
     public Properties getProperties() {
         return properties;
     }
+
     /**
      * Insert the method's description here.
      * Creation date: (05/10/00 19:46:18)
@@ -178,6 +185,7 @@ public class SPDocument {
     public void setDocument(Document newDocument) {
         document = newDocument;
     }
+
     /**
      * Insert the method's description here.
      * Creation date: (05/10/00 19:46:18)
@@ -195,7 +203,7 @@ public class SPDocument {
     public void setXSLKey(String xslkey) {
         this.xslkey = xslkey;
     }
-    
+
     /**
      * Describe <code>toString</code> method here.
      *
@@ -203,42 +211,21 @@ public class SPDocument {
      */
     public String toString() {
         Document tmp = document;
-        if (tmp == null) {
-            tmp = xmlobject;
-        }
-        
         StringWriter sw = new StringWriter();
         sw.write("\n");
-        
         if (tmp == null) {
             sw.write("null\n");
         } else {
             sw.write("[class: " + tmp.getClass().getName() + "]\n");
             try {
-                OutputFormat out = new OutputFormat("XML","UTF-8",true);
+                OutputFormat out = new OutputFormat("XML", "UTF-8", true);
                 out.setLineWidth(0);
                 XMLSerializer xs = new XMLSerializer(sw, out);
                 xs.asDOMSerializer().serialize(tmp);
-            } catch(java.io.IOException e) {
+            } catch (java.io.IOException e) {
                 sw.write(e.toString());
             }
         }
         return sw.toString();
     }
-    /**
-     * Returns the xmlobject.
-     * @return Object
-     */
-    public Document getXmlObject() {
-        return xmlobject;
-    }
-
-    /**
-     * Sets the xmlobject.
-     * @param xmlobject The xmlobject to set
-     */
-    public void setXmlObject(Document xmlobject) {
-        this.xmlobject = xmlobject;
-    }
-
 }

@@ -15,6 +15,7 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <xsl:param name="__editmode"/>
+  <xsl:param name="__recordmode"/>
   <xsl:param name="__sessid"/>
   <xsl:param name="__target_gen"/>
   <xsl:param name="__target_key"/>
@@ -42,32 +43,72 @@
       
     </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
-      <ixsl:choose>
-        <ixsl:when test="$__editmode=&apos;admin&apos;">
-          <a target="_top">
-            <ixsl:attribute name="href">
-              <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
-            <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
-          </a>
-        </ixsl:when>
-        <ixsl:otherwise>
-          <a target="_top">
-            <ixsl:attribute name="href">
-              <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
-            <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
-          </a>
-        </ixsl:otherwise>
-      </ixsl:choose>
-      <a target="__xml_source__">
-        <ixsl:attribute name="href">
-          <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
-        <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+     <table border="1">
+       <tr>
+         <td>
+           <ixsl:choose>
+             <ixsl:when test="$__editmode=&apos;admin&apos;">
+               <a target="_top">
+                 <ixsl:attribute name="href">
+                   <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
+                 <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
+               </a>
+             </ixsl:when>
+             <ixsl:otherwise>
+               <a target="_top">
+                  <ixsl:attribute name="href">
+                <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
+                <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
+               </a>
+             </ixsl:otherwise>
+           </ixsl:choose>
+         </td>
+         <td>
+           <ixsl:choose>
+             <ixsl:when test="$__recordmode and $__recordmode!='0'">
+               <a target="_top">
+                 <ixsl:attribute name="href">
+                   <ixsl:value-of select="$__uri"/>?__recordmode=0</ixsl:attribute>
+                 <img border="0" title="Switch record mode OFF" src="/core/img/player_pause.png"/>
+              </a>
+             </ixsl:when>
+             <ixsl:otherwise>
+               <form target="_top">
+                 <input align="center" name="__recordmode" type="text" size="10" maxlength="20"/>
+                 <input align="center" type="image" src="/core/img/player_play.png" title="Switch record mode ON"/>
+              </form>
+             </ixsl:otherwise>
+           </ixsl:choose>
+         </td>
+         <td>
+           <a target="__xml_source__">
+             <ixsl:attribute name="href">
+               <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+             <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+         </td>  
+       </tr>
+     </table>
     </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:argref">
+    <xsl:param name="__env"/>
+    <xsl:variable name="pos">
+      <xsl:choose>
+        <xsl:when test="@pos"><xsl:value-of select="@pos"/></xsl:when>
+        <xsl:otherwise>1</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+    <xsl:variable name="args" select="$__env/pfx:arg[position() = $pos]/@value"/>
+    <xsl:choose>
+      <xsl:when test="$args"><xsl:value-of select="$args"/></xsl:when>
+      <xsl:otherwise><b>[?]</b></xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
   <xsl:template name="pfx:missinc">
     <cus:documentation>
-      <description>Called by &lt; pfx:include&gt;. This template will be executed
+      <description>Called by &lt;pfx:include&gt;. This template will be executed
         if an Include-Document/Part cannot be found, instead of this a warning-icon
         and a warning-message will be displayed
       </description>
@@ -89,6 +130,7 @@
     <cus:documentation>
       <description>test</description>
     </cus:documentation>
+    <xsl:param name="__env"/>
     <xsl:param name="parent_path">
       <xsl:if test="/include_parts and not($__target_key='__NONE__')">
         <xsl:value-of select="/include_parts/@incpath"/>
@@ -165,7 +207,9 @@
                       <xsl:when test="not($incnodes/lang[not(@name = 'default')])">
                         <xsl:choose> 
                           <xsl:when test="$incnodes/lang[@name = 'default']">
-                            <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()"/>
+                            <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
+                              <xsl:with-param name="__env" select="."/>
+                            </xsl:apply-templates>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:call-template name="pfx:missinc">
@@ -180,13 +224,17 @@
                         <ixsl:choose>
                           <xsl:for-each select="$incnodes/lang[not(@name = 'default')]">
                             <ixsl:when test="$lang = '{./@name}'">
-                              <xsl:apply-templates select="./node()"/>
+                              <xsl:apply-templates select="./node()">
+                                <xsl:with-param name="__env" select="."/>
+                              </xsl:apply-templates>
                             </ixsl:when>
                           </xsl:for-each>
                           <xsl:choose> 
                             <xsl:when test="$incnodes/lang[@name = 'default']">
                               <ixsl:otherwise>
-                                <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()"/>
+                                <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
+                                  <xsl:with-param name="__env" select="."/>
+                                </xsl:apply-templates>
                               </ixsl:otherwise>
                             </xsl:when>
                             <xsl:otherwise>
@@ -208,10 +256,14 @@
                     <xsl:variable name="deflangnodes" select="$incnodes/lang[@name = 'default']"/>
                     <xsl:choose>
                       <xsl:when test="$langnodes">
-                        <xsl:apply-templates select="$langnodes/node()"/>
+                        <xsl:apply-templates select="$langnodes/node()">
+                          <xsl:with-param name="__env" select="."/>
+                        </xsl:apply-templates>
                       </xsl:when>
                       <xsl:when test="$deflangnodes">
-                        <xsl:apply-templates select="$deflangnodes/node()"/>
+                        <xsl:apply-templates select="$deflangnodes/node()">
+                          <xsl:with-param name="__env" select="."/>
+                        </xsl:apply-templates>
                       </xsl:when>
                       <xsl:otherwise>
                         <xsl:call-template name="pfx:missinc">
