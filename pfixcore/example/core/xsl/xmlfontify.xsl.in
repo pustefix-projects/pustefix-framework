@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<?xml version="1.0" encoding="ISO-8859-1"?><xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
   <xsl:template match="/">
     <html>
@@ -8,8 +7,8 @@
         <style type="text/css">
           body {font-family: monospace; }
           .bracket            {color: #0000cc;}
-          .attribute          {color: #0000cc; font-weight: bold;}
-          .tag                {color: #dd5522; font-weight: bold;}
+          .attribute          {color: #0000cc;}
+          .tag                {color: #dd5522;}
           .value              {color: #22aa00;}
           .comment            {color: #666666;}
           .dimmed             {color: #aaaaaa;}
@@ -23,18 +22,19 @@
   </xsl:template>
 
   <xsl:template match="*" mode="static_disp">
-    <xsl:param name="ind">&#160;&#160;</xsl:param>
+    <xsl:param name="ind">  </xsl:param>
     <xsl:param name="break">true</xsl:param>
+    <xsl:param name="bold">true</xsl:param>
     <xsl:variable name="dim">
       <xsl:choose>
-        <xsl:when test="ancestor-or-self::navigation">true</xsl:when>
-        <xsl:when test="ancestor-or-self::iwrappergroups">true</xsl:when>
+        <xsl:when test="ancestor-or-self::navigation[1] and generate-id(ancestor-or-self::navigation[1]) = generate-id(/formresult/navigation)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::iwrappergroups[1] and generate-id(ancestor-or-self::iwrappergroups[1]) = generate-id(/formresult/iwrappergroups)">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="error">
       <xsl:choose>
-        <xsl:when test="name() = 'formerrors' and count(./node()) > 0" >true</xsl:when>
+        <xsl:when test="name() = 'formerrors' and count(./node()) &gt; 0">true</xsl:when>
         <xsl:when test="ancestor::formerrors">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
@@ -69,26 +69,40 @@
     <span class="bracket">
       <xsl:text>&lt;</xsl:text>
     </span>
-    <span class="{$tagclass}"><xsl:value-of select="name()"/></span>
+    <span class="{$tagclass}">
+      <xsl:if test="$bold = 'true' and $dim = 'false'">
+        <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
+      </xsl:if>
+    <xsl:value-of select="name()"/></span>
     <xsl:for-each select="@*">
-      <xsl:text>&#160;</xsl:text>
+      <xsl:text> </xsl:text>
       <span class="{$attrclass}"><xsl:value-of select="name()"/></span>
       <xsl:text>="</xsl:text><span class="{$valueclass}"><xsl:value-of select="."/></span>
       <xsl:text>"</xsl:text>
     </xsl:for-each>
     <span class="bracket"><xsl:if test="count(./node()) = 0">/</xsl:if>&gt;</span>
     <xsl:apply-templates mode="static_disp">
-      <xsl:with-param name="ind">
-        <xsl:value-of select="$ind"/>&#160;&#160;&#160;&#160;</xsl:with-param>
+      <xsl:with-param name="bold">
+        <xsl:choose>
+          <xsl:when test="count(ancestor::node()) &gt; 1">false</xsl:when>
+          <xsl:otherwise>true</xsl:otherwise>
+        </xsl:choose>
+        </xsl:with-param>
+        <xsl:with-param name="ind">
+        <xsl:value-of select="$ind"/>    </xsl:with-param>
       <xsl:with-param name="break">false</xsl:with-param>
     </xsl:apply-templates>
     <xsl:if test="not(count(./node()) = 0)">
-      <xsl:if test="count(./*) > 0">
+      <xsl:if test="count(./*) &gt; 0">
         <br/>
         <xsl:value-of select="$ind"/>
       </xsl:if>
       <span class="bracket">&lt;/</span>
-      <span class="{$tagclass}"><xsl:value-of select="name()"/></span>
+      <span class="{$tagclass}">
+      <xsl:if test="$bold = 'true' and $dim = 'false'">
+        <xsl:attribute name="style">font-weight: bold;</xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="name()"/></span>
       <span class="bracket">&gt;</span>
     </xsl:if>
   </xsl:template>
