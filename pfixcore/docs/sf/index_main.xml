@@ -32,15 +32,12 @@
 
   <ul>
     <li>
-      The next version (released soon) will have rights management for
-      the editor. Admins will be able to restrict users to edit only
-      certain projects, while the possible use of one include by
-      different projects will be taken care of with respect to the
-      user's rights. More information on this will be available
-      on the <a href="editor.html">editor's documentation page.</a>
+      Finally the apploader should work as advertised. After some trial and error we finally
+      settled on using an external C-library to create the new objects in the VM without any initialisation.
+      We hope that this solved most of the remaining issues. Also some
+      <a href="apploader.html">documentation has been written.</a> 
     </li>
-    <li>Some more bugfixes for the class reloading mechanism.</li>
-    <li>as always, a bunch of fixes.</li>
+    <li>Some other small fixes. Refer to the ChangeLog for more detailed news.</li>
   </ul>
   
   <h2>ChangeLog</h2>
