@@ -234,7 +234,7 @@ public class AppLoader implements FactoryInit,Runnable {
         }
     }
     
-    protected AppClassLoader getAppClassLoader() {
+    public AppClassLoader getAppClassLoader() {
         return loader;
     }
     

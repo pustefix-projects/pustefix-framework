@@ -1,3 +1,147 @@
+2004-10-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added webservice support to Pustefix, which now makes it possible
+	to exchange data/access application state via SOAP by providing
+	special webservice capabilities. This is done by a close webservice 
+	server integration on the server side (with Apache Axis as default 
+	server) and a client side Javascript SOAP implementation supporting 
+	all important browsers (with some special features, like automatically 
+	generated Javascript webservice stubs). 
+	
+	Added webservice libraries (Apache Axis and dependent libraries):
+	
+	* lib/axis-ant.jar
+	* lib/axis.jar
+	* lib/commons-discovery.jar
+	* lib/commons-logging.jar
+	* lib/jaxrpc.jar
+	* lib/saaj.jar
+	* lib/wsdl4j.jar
+
+	Added WSDL processing library (for stub generation):
+
+	* lib/wsif.jar
+
+	Added special webservice task for generation of descriptors and code:
+	* build.xml
+
+	Added webservice targets, e.g. "webservice-config" for building 
+	webservice configuration, "webservice" for building WSDL, WSDD and stub
+	files:
+	* skel/build.xml
+
+	Added xml schema, defining the webservice configuration (server and 
+	services):
+	* example/core/schema/wsconfig200401.xsd
+
+	Added copy (to site) instruction for webservice configuration schema:
+	* maven.xml
+
+	Added catalog entry for webservice configuration schema:
+	* example/core/schema/catalog.xml
+
+	Added webservice logger, customized Axis and apache.commons Digester 
+	logging (see comment within this file):
+	* example/common/conf/pfixlog.xml.in
+
+	Added axis webservice deployment descriptor skeleton:
+	* example/common/conf/server-config.wsdd
+
+	Added stylesheet for creating webservice.conf from customizable 
+	webservice.conf.in:
+	* example/core/build/create_webservice.xsl
+
+	Added javascript SOAP 1.1 (RPC/Encoded) implementation
+	* example/core/script/webservice.js
+
+	Added platform independent javascript XMLHttpRequest implementation
+	* example/core/script/xml.js
+
+	Added webservice example application, containing some demos and tests
+	* example/webservice
+
+	Roundup of the most important webservice application files:
+
+	Webservice configuration, containing global server settings and 
+	definitions of some demo and test services:
+	* example/webservice/conf/webservice.conf.in
+
+	Some examples provide usage of different clientside soap 
+	calling mechanisms, which are placed in files with the a naming 
+	convention (SERVICE-pfxsoap.js for the Pustefix Javascript SOAP 
+	implementation, SERVICE-soap.js for Mozilla Low Level SOAP and 
+	SERVICE-wsdl.js for Mozilla WSDL proxying), example: 
+	* example/webservice/htdocs/calc-pfxsoap.js
+	* example/webservice/htdocs/calc-soap.js
+	* example/webservice/htdocs/calc-wsdl.js
+
+	Added webservice example classes (webservice interfaces and 
+	implementations, beans, etc.). The service classes follow an optional 
+	naming convention (SERVICE.java for interfaces and SERVICEImpl.java 
+	for the according implementation), example:
+	* src/de/schlund/pfixcore/example/webservices/Calculator.java
+	* src/de/schlund/pfixcore/example/webservices/CalculatorImpl.java
+
+	Added lots of classes, only the important ones will be listed and 
+	shortly described:
+	
+	* src/de/schlund/pfixcore/webservice: Main package, containing general 
+	webservice classes, important classes:
+
+	* src/de/schlund/pfixcore/webservice/AbstractService.java: Base class 
+	of all service implementations, which need access to the application 
+	state (ContextResources),
+	* src/de/schlund/pfixcore/webservice/WebServiceContext.java: Class, 
+	which provides access to webservice container internals (i.e. service 
+	configuration), similar to Servlet API's ServletContext
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: This class
+	extends AxisServlet from the Axis distribution to provide additional 
+	features and smoothly integrate Axis into Pustefix.
+	
+	* src/de/schlund/pfixcore/webservice/config: Package, containing all 
+	the stuff for configuration reading and management, important classes:
+
+	* src/de/schlund/pfixcore/webservice/config/Configuration.java: Main 
+	configuration class, providing access to Webservice container and 
+	webservices configuration
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java: 
+	Manages global/container configuration
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java: 
+	Manages service configuration
+
+	* src/de/schlund/pfixcore/webservice/generate: Package, containing all
+	the stuff for creation of deployment descriptors, WSDL and code 
+	generation, important classes:
+
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java: Ant
+	task, which generates descriptors, WSDL and code (and is responsible 
+	for deploying them to the according webapplication), using the 
+	following subtasks:
+	* src/de/schlund/pfixcore/webservice/generate/Java2Wsdl.java: Generates
+	WSDL descriptions from Java interfaces
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Java.java: Generates
+	WSDD deployment descriptors from WSDL descriptions
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java: Generates
+	Javascript SOAP stubs from WSDL descriptions
+
+	* src/de/schlund/pfixcore/webservice/handler: Package, containing 
+	Message handlers, working as interceptors during SOAP Message 
+	processing, important classes:
+	
+	* src/de/schlund/pfixcore/webservice/handler/AbstractHandler.java: Base
+	class for handlers which provides methods to access servlet-/webservice
+	context and request.
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java:
+	Handler, which is responsible for handling the different authentication
+ 	mechanisms, e.g. authentication via Pustefix session and calling 
+	checkAuthorization on context
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java: 
+	Handler, which intercepts message processing, to provide monitoring 
+	capabilities
+
+	* src/de/schlund/pfixcore/webservice/monitor: Package, implementing 
+	message monitoring capabilities (message history)
+	
 2004-10-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java:

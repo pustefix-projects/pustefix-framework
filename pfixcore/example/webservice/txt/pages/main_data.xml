@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+		<h1>Data service</h1>
+		
+		<div>
+		<h2>Pustefix SOAP</h2>
+		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
+		<p><span class="error" id="pfxsoap_error"></span></p>
+		<form name="pfxsoap" action="">
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="pfxsoap_result" readonly="readonly" rows="5" cols="40" wrap="soft"></textarea></td>
+					<td>
+						<input type="button" onclick="pfxsoapCall('exchangeData',document.pfxsoap.reqStrSize.value,document.pfxsoap.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="pfxsoapCall('exchangeDataArray',document.pfxsoap.arrReqArrSize.value,document.pfxsoap.arrReqStrSize.value,document.pfxsoap.arrResArrSize.value,document.pfxsoap.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>
+					</td>
+					
+				</tr>
+			</table>	
+		</form>
+		</div>
+		
+		<div name="gecko_disp" style="display:none">
+		<h2>Mozilla low-level SOAP</h2>
+		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
+		<p><span class="error" id="soap_error"></span></p>
+		<form name="mozsoap" action="">
+			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<table cellpadding="5" bgcolor="#b6cfe4">
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="soap_result" readonly="readonly" rows="5" cols="40"></textarea></td>
+					<td>
+						<input type="button" onclick="mozsoapCall('exchangeData',document.mozsoap.sid.value,document.mozsoap.reqStrSize.value,document.mozsoap.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="mozsoapCall('exchangeDataArray',document.mozsoap.sid.value,document.mozsoap.arrReqArrSize.value,document.mozsoap.arrReqStrSize.value,document.mozsoap.arrResArrSize.value,document.mozsoap.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>					
+					</td>
+				</tr>
+			</table>	
+		</form>
+		
+		<h2>Mozilla WSDL proxying</h2>
+		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
+		<p><span class="error" id="wsdl_error"></span></p>
+		<form name="mozwsdl" action="">
+			<input type="hidden" name="sid" value="{$__sessid}"/>
+			<table cellpadding="5" bgcolor="#b6cfe4"> 
+				<tr>
+					<td>Data:</td>
+					<td><textarea id="wsdl_result" readonly="readonly" rows="5" cols="40"></textarea></td>
+					<td>
+						<input type="button" onclick="wsdlCall('exchangeData',document.mozwsdl.sid.value,document.mozwsdl.reqStrSize.value,document.mozwsdl.resStrSize.value);" value="exchange string"/>
+						request string size:<input type="text" size="6" value="10" name="reqStrSize"/>
+						response string size:<input type="text" size="6" value="10" name="resStrSize"/>
+						<br/><br/>
+						<input type="button" onclick="wsdlCall('exchangeDataArray',document.mozwsdl.sid.value,document.mozwsdl.arrReqArrSize.value,document.mozwsdl.arrReqStrSize.value,document.mozwsdl.arrResArrSize.value,document.mozwsdl.arrResStrSize.value);" value="exchange string array"/>
+						request array size:<input type="text" size="6" value="10" name="arrReqArrSize"/>
+						request string size:<input type="text" size="6" value="10" name="arrReqStrSize"/>
+						response array size:<input type="text" size="6" value="10" name="arrResArrSize"/>
+						response string size:<input type="text" size="6" value="10" name="arrResStrSize"/>	
+					</td>
+				</tr>
+			</table>	
+		</form>
+		</div>
+                
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>

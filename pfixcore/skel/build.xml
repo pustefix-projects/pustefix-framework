@@ -172,7 +172,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml"
+          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice, statusmessages_xml"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -288,6 +288,13 @@ or delete the DOCTYPE definition -->
      loaderref="pfx-loader"
      description="Creates dependencies in ${dir.projects}/.cache"
      />
+    <taskdef
+      name="pfx-webservice"
+      classname="de.schlund.pfixcore.webservice.generate.WebServiceTask"
+      classpathref="cp.classpath"
+      loaderref="pfx-loader"
+      description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
+    />
   </target>
 
   <target name="dtd" depends="dtd-check, ant-tasks" unless="upd.dtd" description="creates a DTD for this build file">
@@ -306,7 +313,7 @@ or delete the DOCTYPE definition -->
     <delete file="ant.dtd"/>
   </target>
 
-  <target name="clean" depends="clean-project" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
+  <target name="clean" depends="clean-project, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
     <delete dir="${dir.build}"/>
     <!-- Delete *.java files created from *.iwrp files -->
     <delete>
@@ -334,6 +341,11 @@ or delete the DOCTYPE definition -->
       <fileset dir="${dir.projects}" includes="**/*.prop">
         <present present="both" targetdir="${dir.projects}">
           <mapper type="glob" from="*.prop" to="*.prop.in"/>
+        </present>
+      </fileset>
+      <fileset dir="${dir.projects}" includes="**/webservice.conf">
+        <present present="both" targetdir="${dir.projects}">
+          <mapper type="glob" from="*webservice.conf" to="*webservice.conf.in"/>
         </present>
       </fileset>
       <fileset dir="${dir.projects}" includes="common/conf/newprjlog.xml common/conf/pfixlog.xml servletconf/projects.xml servletconf/tomcat/apache.conf servletconf/tomcat/jk.conf servletconf/tomcat/workers.prop servletconf/tomcat/conf/server.xml"/>
@@ -695,6 +707,38 @@ or delete the DOCTYPE definition -->
     <copy file="lib/jmxri-1.2.1.jar" tofile="${dir.tomcat}/bin/jmx.jar" overwrite="true"/>
   </target>
 
+  <target name="webservice-config" depends="ant-tasks" description="creates webservice.conf">
+    <pfx-xslt
+      style="${dir.projects}/core/build/create_webservice.xsl"
+      srcdir="${dir.projects}"
+      destdir="${dir.projects}"
+      includes="**/webservice.conf.in"
+      extension=""
+    >
+      <param name="docroot" expression="${dir.docroot}"/>
+      <param name="fqdn"    expression="${fqdn}"/>
+      <param name="uid"     expression="${uid}"/>
+      <param name="machine" expression="${machine}"/>
+      <param name="mode"    expression="${makemode}"/>
+    </pfx-xslt>
+  </target>
+    
+  <target name="webservice" depends="ant-tasks,webservice-config">
+    <pfx-webservice
+      fqdn="${fqdn}" 
+      tmpdir="${dir.projects}/.webservice"
+      prjdir="${dir.projects}"
+      wsddskel="${dir.projects}/common/conf/server-config.wsdd"
+      prjfile="${file.projects_xml}" 
+      srcdir="${dir.src}" 
+      webappsdir="${dir.tomcat}/webapps"
+    />
+  </target>
+
+  <target name="clean-webservice">
+    <delete dir="${dir.projects}/.webservice"/>
+  </target>
+    
   <description>
     Targets
     -------
