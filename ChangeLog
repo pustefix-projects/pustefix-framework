@@ -2,6 +2,9 @@
 
 	* build.xml: released 0.5.3
 
+	* src/de/schlund/pfixcore/workflow/Context.java: make sure to
+	throw an 404 when the user requests an unknown page
+
 	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
 	(addErrorCodes)	call wrapper.tryErrorLogging() to maybe log StatusCodes
 

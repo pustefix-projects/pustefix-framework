@@ -498,7 +498,17 @@ public class Context implements AppContext {
         PageRequest[]  workflow;
         ResultDocument resdoc;
 
-        // First, check for possibly needed authorization
+        // First, check if the requested page is defined at all
+        State state = pagemap.getState(currentpagerequest);
+        if (state == null) {
+            LOG.warn("* Can't get a handling state for page " + currentpagerequest);
+            resdoc = new ResultDocument();
+            document = resdoc.getSPDocument();
+            document.setResponseError(HttpServletResponse.SC_NOT_FOUND);
+            return document;
+        }
+
+        // Now, check for possibly needed authorization
         document = checkAuthorization();
         if (document != null) {
             return document;
@@ -625,11 +635,8 @@ public class Context implements AppContext {
     private ResultDocument documentFromCurrentStep() throws Exception {
         State state = pagemap.getState(currentpagerequest);
         if (state == null) {
-            LOG.warn("* Can't get a handling state for page " + currentpagerequest);
-            ResultDocument resdoc = new ResultDocument();
-            SPDocument     spdoc  = resdoc.getSPDocument();
-            spdoc.setResponseError(HttpServletResponse.SC_NOT_FOUND);
-            return resdoc;
+            throw new XMLException ("* Can't get a state in documentFromCurrentStep() for page " +
+                                    currentpagerequest.getName());
         }
         
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
