@@ -1,3 +1,7 @@
+2004-08-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_apacheconf.xsl: same here as below... /xml is fix for the time being.
+
 2004-08-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* build.xml
