@@ -333,16 +333,6 @@ final public class EditorUserInfo {
         }
         //</comment>
         
-        /*try {
-            affected_products =
-                EditorHelper.getAffectedProductsForInclude(
-                    esess,
-                    esess.getCurrentInclude().getPath(),
-                    esess.getCurrentInclude().getPart());
-        } catch (Exception e) {
-            throw new XMLException("Error when getting affected products for include! " + e.getMessage());
-        }*/
-
         for (Iterator iter = affected_products.iterator(); iter.hasNext();) {
             String productname = ((EditorProduct) iter.next()).getName();
             ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(productname);

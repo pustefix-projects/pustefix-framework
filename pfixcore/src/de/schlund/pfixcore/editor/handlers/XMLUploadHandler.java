@@ -28,7 +28,6 @@ import org.apache.log4j.Category;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternCompiler;
-import org.apache.oro.text.regex.PatternMatcher;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 import org.apache.oro.text.regex.StringSubstitution;
@@ -50,6 +49,7 @@ import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.util.Path;
@@ -72,7 +72,6 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
     private static PatternCompiler        pc              = new Perl5Compiler();
     private static Substitution           nbspsubst       = new StringSubstitution("&#160;");
     private static Pattern                nbspsign;
-    private PatternMatcher                pm;
     private static final String           DEF_TEXT        = "<lang name=\"default\">\n      </lang>";
     private static final String           DEF_TEXT_APPLET = "<lang name=|default|>\n      </lang>";
 
@@ -211,13 +210,15 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
             String product = currinc.getProduct();
             Element thepart = EditorHelper.getIncludePart(tgen, currinc);
             if (thepart != null) {
-                pm = new Perl5Matcher();
-                List nl = XPath.select(thepart, "./product[@name = '" + product + "']/node()");
-                if (nl.size() > 0) {
-                    String text = "";
-                    for (int i = 0; i < nl.size(); i++) {
-                        text += Xml.serialize((Node) nl.get(i), false, false);
-                    }
+                Element ele = (Element) XPath.selectOne(thepart, "./product[@name = '" + product + "']");
+                if (ele != null) {
+                    // make sure we have the ns decl in the root element and thus trip it before the 
+                    // text field is filled.
+                    // TOOD: more ns decls to strip?
+                    ele.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:pfx", ResultDocument.PFIXCORE_NS);
+                    Perl5Matcher pm = new Perl5Matcher();
+                    String text = Xml.serialize(ele, false, false);
+                    text = Xml.stripElement(text);
                     text = Util.substitute(pm, nbspsign, nbspsubst, text, Util.SUBSTITUTE_ALL);
                     text = text.trim();
                     upl.setStringValContent(text);

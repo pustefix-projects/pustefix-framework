@@ -103,6 +103,11 @@ public class XmlTest extends TestCase {
         assertEquals("foo", Xml.serialize(XPath.selectNode(doc, "/a/text()"), false, false));
     }
 
+    public void testSerializeComment() throws Exception {
+        Document doc = parse("<a><!-- hi --></a>");
+        assertEquals("<!-- hi -->", Xml.serialize(XPath.selectNode(doc, "/a/comment()"), false, false));
+    }
+
     public void testSerializeAttribute() throws Exception {
         Document doc = parse("<a b='foo'/>");
         try {
@@ -129,6 +134,14 @@ public class XmlTest extends TestCase {
         assertEquals("<ab:cd xmlns:ab=\"myuri\"/>", Xml.serialize(doc, true, false));
     }
 
+    //--
+    
+    public void testStrip() {
+        assertEquals("foo", Xml.stripElement("<a>foo</a>"));
+        assertEquals("foo", Xml.stripElement("<b bar='xy'>foo</b>"));
+        assertEquals("", Xml.stripElement("<c/>"));
+    }
+    
     //-- helper code
     
     private static String serialize(String doc, boolean pp, boolean decl) throws Exception {

@@ -42,6 +42,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Category;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.xerces.parsers.SAXParser;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -296,13 +297,11 @@ public final class Xml {
         
         if (node instanceof Text) {
             // TODO:
-            String str = ((Text) node).getData();
-            if (dest instanceof Writer) {
-                ((Writer) dest).write(str);
-            } else {
-                ((OutputStream) dest).write(str.getBytes("UTF-8"));
-            }
+            write(((Text) node).getData(), dest);
             return; 
+        } else if (node instanceof Comment) {
+            write("<!--" + ((Comment) node).getData() + "-->", dest);
+            return;
         }
         if (!(node instanceof Document) && !(node instanceof Element)) {
             throw new IllegalArgumentException("unsupported node type: " + node.getClass());
@@ -334,6 +333,15 @@ public final class Xml {
             }
         }
     }
+    
+    private static void write(String str, Object dest) throws IOException {
+        if (dest instanceof Writer) {
+            ((Writer) dest).write(str);
+        } else {
+            ((OutputStream) dest).write(str.getBytes("UTF-8")); // TODO: encoding
+        }
+    }
+    
     private static Document wrap(Node node) {
         // ugly hack to work-around saxon limitation: 6.5.3 cannot run xslt on sub-trees:
         // solved in 7.7: http://saxon.sourceforge.net/saxon7.7/changes.html (see 'jaxp changes')
@@ -348,5 +356,29 @@ public final class Xml {
             doc.appendChild(doc.importNode(node, true));
         }
         return doc;
+    }
+    
+    public static String stripElement(String ele) {
+        int start;
+        int end;
+        
+        if (!ele.startsWith("<")) {
+            throw new IllegalArgumentException(ele);
+        }
+        if (!ele.endsWith(">")) {
+            throw new IllegalArgumentException(ele);
+        }
+        if (ele.endsWith("/>")) {
+            return "";
+        }
+        start = ele.indexOf('>');
+        if (start == -1) {
+            throw new IllegalArgumentException(ele);
+        }
+        end = ele.lastIndexOf('<');
+        if (end == -1) {
+            throw new IllegalArgumentException(ele);
+        }
+        return ele.substring(start + 1, end);
     }
 }
