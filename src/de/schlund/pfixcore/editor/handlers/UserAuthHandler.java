@@ -85,16 +85,23 @@ public class UserAuthHandler implements IHandler {
             return;
         }
         
-        if (loginok ) {
+        /* admins are always allowed to login, regardless of the 'getLoginAllowed' flag.
+         * other users must pay attention to this flag.
+         */
+        if(editor_user.getUserInfo().isAdmin()) {
             esess.setUser(editor_user);
             if(CAT.isDebugEnabled())
                 CAT.debug("Login for user '"+user+"' successfull. Saving user in session. User logged in.");
-        
         } else {
-            auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));    
-            if(CAT.isDebugEnabled())
-                CAT.debug("Login for user '"+user+"' denied: Login currently not allowed.");
-        
+            if (loginok ) {
+                esess.setUser(editor_user);
+                if(CAT.isDebugEnabled())
+                    CAT.debug("Login for user '"+user+"' successfull. Saving user in session. User logged in.");
+            } else {
+                auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));    
+                if(CAT.isDebugEnabled())
+                    CAT.debug("Login for user '"+user+"' denied: Login currently not allowed.");
+            }
         }
         if(PERF_LOGGER.isInfoEnabled()) {
             long length = System.currentTimeMillis() - start_time;

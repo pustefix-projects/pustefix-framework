@@ -1,5 +1,8 @@
 2003-09-04  Joerg Haecker <haecker@schlund.de>
 
+	* src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java(handleSubmittedData):
+	ignore the 'isLoginAllowed' flag for admins.
+
 	* src/de/schlund/pfixxml/testenv/TestcaseStep.java(getResultFromFormInput):
 	bugfix for wrong handling of server-side closed connections.
 	* src/de/schlund/pfixcore/editor/handlers/TestcaseStartHandler.java(handleSubmittedData):
