@@ -17,6 +17,19 @@
 
 2005-03-02  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/forminput.xsl.in:
+	* example/core/xsl/navigation.xsl.in: add __lf to pfx:button
+	generated links and as a hidden parameter to pfx:forminput generated forms
+	to better remember the used pageflow for the
+	current page
+
+	* src/de/schlund/pfixcore/workflow/Context.java: init
+	currentpageflow with the __lf parameter, when given. This may be
+	overwritten again by an explicit pageflow param later or by having
+	a page given that needs another flow
+
+2005-03-02  Jens Lautenbacher  <jtl@schlund.de>
+
 	* src/de/schlund/pfixcore/workflow/Context.java (canContinue): new
 	method, returns true whenever the Context thinks it can continue
 	somehow (via a valid pageflow, or a jumptopage). 
