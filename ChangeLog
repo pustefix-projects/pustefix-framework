@@ -1,3 +1,10 @@
+2003-05-28  Martin Leidig <mleidig@schlund.de>
+
+	* example/core/build/create_serverxml.xsl:
+	added connector attribute minProcessors, set default values for minProcessors and maxProcessors
+        * example/servletconf/projects.xml:
+        added connector attribute minProcessors
+
 2003-05-28  Volker Zaich <zaich@schlund.de>
 	
 	* example/core/editor/xml/three_frames_applet.xml
