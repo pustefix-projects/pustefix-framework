@@ -581,7 +581,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             Object stylevalue = null;
             try {
                 stylevalue = generator.getTarget(stylesheet).getValue();
-            } catch(TargetGenerationException targetex) {
+            } catch (TargetGenerationException targetex) {
                 Document errordoc = createErrorTree(targetex);
                 errordoc = xsltproc.xmlObjectFromDocument(errordoc);
                 Object stvalue = ((Target)TargetFactory.getInstance().getTarget(TargetType.XSL_LEAF, generator, ERROR_STYLESHEET)).getValue();

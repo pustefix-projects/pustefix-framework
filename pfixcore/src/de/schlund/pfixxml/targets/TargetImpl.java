@@ -18,9 +18,10 @@
 */
 package de.schlund.pfixxml.targets;
 
-import java.io.File;
-import java.util.*;
 
+import java.io.*;
+import java.util.*;
+import javax.xml.transform.*;
 import org.apache.log4j.*;
 
 
@@ -49,10 +50,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected Target               xslsource = null;
     protected Category             CAT       = Category.getInstance(this.getClass().getName());
     protected Category             TREE      = Category.getInstance(
-                                                       this.getClass().getName() + ".TREE");
+        this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
     // we do not need to handle that the target is always up to date (expect make generate!!!)
-    private boolean onceGenerated = false;
+    private   boolean onceGenerated = false;
     // store  exception occured during transformation here. 
     protected Exception storedException = null;
 
@@ -118,9 +119,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             }
         } // do not skip getModTimeMaybeUpdate 
         else {
-        	if (CAT.isDebugEnabled()) {
-            	CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
-           	}
+            if (CAT.isDebugEnabled()) {
+                CAT.debug("Skipping getModTimeMaybeUpdate disabled in TargetGenerator!");
+            }
             getModTimeMaybeUpdate();
         }
         return getCurrValue();
@@ -151,13 +152,19 @@ public abstract class TargetImpl implements TargetRW, Comparable {
             synchronized (this) {
                 obj = getValueFromSPCache();
                 if (obj == null || isDiskCacheNewerThenMemCache()) {
-                	if(CAT.isDebugEnabled()) {
-	                	if(CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
-	                		CAT.debug("File in disk cache is newer then in memory cache. Rereading target from disk...");
-	                	}
-                	}
-                    obj = getValueFromDiscCache();
-                    
+                    if(CAT.isDebugEnabled()) {
+                        if(CAT.isDebugEnabled() && isDiskCacheNewerThenMemCache()) {
+                            CAT.debug("File in disk cache is newer then in memory cache. Rereading target from disk...");
+                        }
+                    }
+                    try {
+                        obj = getValueFromDiscCache();
+                    } catch (Exception e) {
+                        TargetGenerationException targetex = 
+                            new TargetGenerationException("Caught transformer exception when doing getValueFromDiscCache", e);
+                        targetex.setTargetkey(targetkey);
+                        throw targetex;
+                    }
                     // Caution! setCacheValue is not guaranteed to store anything at all, so it's NOT
                     // guaranteed that the sequence
                     //           storeValue(tmp); tmp2 = getValueFromSPCache; return tmp2
@@ -166,14 +173,14 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
                   	
-               		// after the newer file on disk is reread and stored in memory cache it isnt't
-               		// newer any more, so set the mod time of the target to the mod time of the
-               		// file in disk cache
-               		if(isDiskCacheNewerThenMemCache()) {
+                    // after the newer file on disk is reread and stored in memory cache it isnt't
+                    // newer any more, so set the mod time of the target to the mod time of the
+                    // file in disk cache
+                    if(isDiskCacheNewerThenMemCache()) {
                     	setModTime(new File(getTargetGenerator().getDisccachedir() + getTargetKey()).lastModified());
                     }
 
-                   	// now the target is generated
+                    // now the target is generated
                     onceGenerated = true;
                 }
             }

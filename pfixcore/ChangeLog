@@ -1,3 +1,8 @@
+2003-05-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (getModTimeMaybeUpdate): set storedException to null.
+	set modification time to -1 to force rebuild in all circumstances.
+
 2003-05-06  Joerg Haecker <haecker@schlund.de>
 
 	* example/core/xsl/errorrepresentation.xsl.in: small changes.

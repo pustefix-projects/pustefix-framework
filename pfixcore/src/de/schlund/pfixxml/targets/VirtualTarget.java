@@ -136,37 +136,30 @@ public abstract class VirtualTarget extends TargetImpl {
         maxmodtime      = Math.max(tmpmodtime, maxmodtime);
         tmpmodtime      = ((TargetImpl) getXSLSource()).getModTimeMaybeUpdate();
         maxmodtime      = Math.max(tmpmodtime, maxmodtime);
-
+        storedException = null;
         // check all the auxilliary sources from auxsource
         maxmodtime = Math.max(getAuxDependencyManager().getMaxTimestamp(), maxmodtime);
         if(maxmodtime > getModTime()) {
             synchronized(this) {
-                if(maxmodtime > getModTime()) {
+                if (maxmodtime > getModTime()) {
                     try {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
-                    } catch(Exception e) {
-                        
-                        StringBuffer b = new StringBuffer(100);
-                        b.append("Error when generating: ").append(getTargetKey()).append(" from ").
-                            append(getXMLSource().getTargetKey()).append(" and ").append(getXSLSource().getTargetKey());
-                        CAT.error(b.toString(), e);
+                    } catch (Exception e) {
+                        CAT.error("Error when generating: " + getTargetKey() + " from " +
+                                  getXMLSource().getTargetKey() + " and " + getXSLSource().getTargetKey(), e);
                         // Now we invalidate the mem- and disc cache to force
                         // a complete rebuild of this target the next try
                         storeValue(null);
+                        setModTime(-1);
                         File cachefile = new File(getTargetGenerator().getDisccachedir() + getTargetKey());
-                        if(cachefile.exists()) {
+                        if (cachefile.exists()) {
                             cachefile.delete();
                         }
-                        
-                        if(e instanceof TransformerException) {
-                            TransformerException tex =  (TransformerException) e;
-                            /*if(storedException != null && tex.getCause() == null && tex.getException() == null) {
-                                tex.initCause(storedException);
-                               // tex = new TransformerException(tex.getMessage(), tex.getCause());
-                            }*/
+                        if (e instanceof TransformerException) {
+                            TransformerException      tex = (TransformerException) e;
                             TargetGenerationException targetex = null;
-                            if(storedException != null) {
+                            if (storedException != null) {
                                 targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
                             } else {
                                 targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
