@@ -9,20 +9,23 @@
   xmlns:x="jelly:xml"
   xmlns:doc="doc">
 
-  <goal name="ant"><!-- TODO: test goal -->
-    <j:choose>
-      <j:when test="${empty(target)}">
-        <ant:fail>Missing target - please specify -Dtarget=yourTarget</ant:fail>
-      </j:when>
-      <j:otherwise>
-        <ant:echo>ant target: ${target}</ant:echo>
-        <ant:ant dir="${basedir}" antfile="build.xml" target="${target}" inheritAll="false">
-          <ant:property name="makemode" value="${makemode}"/>
-        </ant:ant>
-      </j:otherwise>
-    </j:choose>
+  <goal name="ant">
+    <ant:echo>ant target: ${target}</ant:echo>
+    <!-- TODO: fails because javac does not know ant classes 
+       ant:ant dir="${basedir}" antfile="build.xml" target="${target}" inheritAll="false">
+      <ant:property name="makemode" value="${makemode}"/>
+      <ant:property name="build.compiler" value="modern"/>
+    </ant:ant -->
+    <ant:exec executable="ant">
+      <ant:arg value="realclean"/>
+      <ant:arg value="all"/>
+      <ant:arg value="-Dmakemode=${makemode}"/>
+      <ant:arg value="-Dbuild.compiler=modern"/>
+    </ant:exec>
   </goal>
 
+  <goal name="xsite" prereqs="ant, site"/>
+  
   <preGoal name="pdf:pdf">
   	<attainGoal name="pfix:docs"/>
   </preGoal>
