@@ -418,9 +418,10 @@ wfxEditor.prototype.src2col = function( buf ) {
   var rule_colonTagName    = /&lt;(\/?(pfx|ixsl|xsl)\:[\w\-]+)\b(.*?)&gt;/g;
   var rule_colonEndTag     = /&lt;(\/(pfx|ixsl|xsl)\:\w+)&gt;/g;
 
-  var rule_argval  = /(\"[^\0]*?\")/g;
+  //  var rule_argval  = /(\"[^\0]*?\")/g;
+  var rule_argval  = /(=\s*)(([\"\'])[^\0]*?\3)/g;
 
-  var rule_entity  = /(&amp;(.+?;))/g;
+  var rule_entity  = /(&amp;([^&]+?;))/g;
   var rule_comment = /(&lt;!--[^\0]*?--&gt;)/g;
   var rule_cdata   = /(&lt;!\[CDATA\[[^\0]*?\]\]&gt;)/g;
 
@@ -464,7 +465,7 @@ wfxEditor.prototype.src2col = function( buf ) {
       if( buf.indexOf(arr[i]) != -1 ) {
 	// only if not yet replaced (redundancy!)
 
-	newexp = arr[i].replace( rule_argval, '<span class="string">$1</span>');
+	newexp = arr[i].replace( rule_argval, '$1<span class="string">$2</span>');
 	if(newexp != arr[i]) {
 	  // quotemeta
 	  arr[i] = arr[i].replace( /(\W)/g, '\\$1' );
@@ -588,7 +589,7 @@ wfxEditor.prototype.prepareContent = function( content ) {
   if(wfx.is_ie) {
     content = content.replace( /<br \/>/g, '\r\n' );
     // insert &lrm; to ensure correct line numbering for empty lines
-    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span>\r\n' );
+    //    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span>\r\n' );
   } else {
     // insert &lrm; to ensure correct line height for some monospace fonts
     //    content = content.replace( /<br \/>/g, '<span style="font-weight:bold">&lrm;</span><br />' );
@@ -1550,24 +1551,30 @@ wfxEditor.prototype.getHTML = function(dbg) {
     html = html.replace( /&nbsp;/g, "  ");
 
   } else {
-    //    totalGetHTML = 1;
-    //    html = wfxEditor.getHTML(this._doc.body, false, dbg);
-    //    alert("total:" + totalGetHTML );
     html = this._doc.body.innerHTML;
+
+    html = html.replace( /^\n*/g, "");
 
     html = html.replace( /<br>/g, '<br />' );
 
     // Ctrl-A selects entire content including <pre>
     // ==> bring leading and trailing range markers inside <pre>
     html = html.replace( /^(.+?)\n<pre>/, "<pre>$1");
-    html = html.replace( /<\/pre>\n(.+?)$/, "$1</pre>");
+    html = html.replace( /<\/pre>\n?(.+?)$/, "$1</pre>");
+
+    // after Ctrl-A + Backspace to empty entire content, a Ctrl-V to paste new
+    // content could be inserted after empty pre tags including wrong newlines
+    html = html.replace( /^<pre><\/pre>([^\0]*)$/, "<pre>$1</pre>");
+    html = html.replace( /\n/g, " ");
 
     // untabify
     html = html.replace( /\x09/g, "  ");
   }
 
+  // untabify (IE); paste weirdness (Moz)
+  html = html.replace( /&nbsp;/g, "  ");
   
-  html = html.replace( /\u200E/g, '' );   // &#8206; == &lrm;
+  //  html = html.replace( /\u200E/g, '' );   // &#8206; == &lrm;
 
   //  alert( "getHTML():\n" + wfxEditor.str2chr(html));
   bench( "getHTML", null, 3 );
@@ -1703,7 +1710,7 @@ wfxEditor.htmlEncode = function(str) {
 wfxEditor.getHTML = function(root, outputRoot) {
   //  var thisdbg = 0;
 
-  var html = "";   //[" + (totalGetHTML++) + "]";
+  var html = "";
   switch (root.nodeType) {
   case 1: // Node.ELEMENT_NODE
     //    thisdbg && alert("case 1: Node.ELEMENT_NODE");
@@ -2779,7 +2786,6 @@ wfxEditor.prototype.findAndReplace = function( fstr, rstr ) {
 //#****************************************************************************
 //#
 //#****************************************************************************
-var totalGetHTML = 1;
 
 var doBench = true;
 var benchMsg = "";
