@@ -1,3 +1,10 @@
+2004-07-02 Michael Hartmier  <mhm@schlund.de>
+	- support ssl in standalone tomcat setup:
+	* example/core/build/create_serverxml.xsl
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/serverutil/SessionHelper.java
+	* src/de/schlund/pfixxml/testenv/Testcase.java
+
 2004-06-28 Michael Hartmier  <mhm@schlund.de>
 	* build.xml: cleanup
 	* skel/build.xml: add tomcat handling

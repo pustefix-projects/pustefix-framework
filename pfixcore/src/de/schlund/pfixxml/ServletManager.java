@@ -86,11 +86,7 @@ public abstract class ServletManager extends HttpServlet {
     }
 
     protected boolean runningUnderSSL(HttpServletRequest req) {
-        if (req.getScheme().equals("https") && req.getServerPort() == 443) {
-            return true;
-        } else {
-            return false;
-        }
+        return req.getScheme().equals("https") && (isSslPort(req.getServerPort()));
     }
 
     protected boolean needsSSL(PfixServletRequest preq) throws ServletException {
@@ -706,5 +702,19 @@ public abstract class ServletManager extends HttpServlet {
 
     protected abstract void process(PfixServletRequest preq, HttpServletResponse res) throws Exception;
 
+    //--
 
+    // TODO: replace constants - ask tomcat 
+    public static final int HTTP_PORT = 80;
+    public static final int APACHE_SSL_PORT = 443;
+    public static final int TOMCAT_SSL_PORT = 8443;
+    
+    public static boolean isDefault(int port) {
+        return port == HTTP_PORT || port == APACHE_SSL_PORT;
+    }
+
+    public static boolean isSslPort(int port) {
+        return port == APACHE_SSL_PORT || port == TOMCAT_SSL_PORT;
+    }
+    
 }// ServletManager

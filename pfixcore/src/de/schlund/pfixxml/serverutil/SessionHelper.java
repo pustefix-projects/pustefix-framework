@@ -121,8 +121,15 @@ public class SessionHelper {
         if (host == null) host     = req.getServerName();
         StringBuffer rcBuf         = new StringBuffer();
         rcBuf.append(scheme).append("://").append(host);
-        if (!"https".equals(scheme)) {
-             rcBuf.append(":").append(req.getServerPort());
+        if (ServletManager.isDefault(req.getServerPort())) {
+            // don't care about port -- stick with defaults
+        } else {
+            // we're running on none-default ports: repeat port in encoded url
+            if ("https".equals(scheme)) {
+                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT);
+            } else {
+                rcBuf.append(":").append(req.getServerPort());
+            }
         }
         String       oldSessionId  = stripUriSessionId(null, req.getRequestURI(), rcBuf);
         HttpSession  session       = req.getSession(false);

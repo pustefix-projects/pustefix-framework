@@ -75,6 +75,15 @@
           <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
           <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
         </Connector>
+        <Connector port="8443" 
+               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+               enableLookups="false" disableUploadTimeout="true"
+               acceptCount="100" debug="0" scheme="https" secure="true"
+               clientAuth="false" sslProtocol="TLS" keystorePass="changeit">
+          <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+          <xsl:if test="not(string($minprocessors)='')"><xsl:attribute name="minProcessors"><xsl:value-of select="$minprocessors"/></xsl:attribute></xsl:if>
+          <xsl:if test="not(string($maxprocessors)='')"><xsl:attribute name="maxProcessors"><xsl:value-of select="$maxprocessors"/></xsl:attribute></xsl:if>
+        </Connector>
       </xsl:when>
       <xsl:otherwise>
         <xsl:message terminate="yes">unkown setup: <xsl:value-of select="$setup"/></xsl:message>
