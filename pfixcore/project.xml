@@ -4,11 +4,11 @@
   <pomVersion>3</pomVersion>
   <id>pfixcore</id>
   <name>Pustefix Core</name>
-  <groupId>pfix</groupId>
-  <currentVersion>0.6.6-pre</currentVersion>
+  <groupId>pustefix</groupId>
+  <currentVersion>0.6.6</currentVersion>
   <organization>
     <name>The Pustefix Group</name>
-    <url>http://pustefix.sourceforge.net</url>
+    <url>http://sourceforge.net</url>
     <logo>http://sourceforge.net/sflogo.php?group_id=72089&amp;type=5</logo>
   </organization>
   <description>Pustefix is a framework that helps you to develop web based applications.</description>

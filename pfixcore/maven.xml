@@ -4,6 +4,7 @@
   xmlns:j="jelly:core"
   xmlns:jsl="jelly:jsl"
   xmlns:log="jelly:log"
+  xmlns:maven="jelly:maven"
   xmlns:u="jelly:util"
   xmlns:x="jelly:xml"
   xmlns:doc="doc">
@@ -21,7 +22,7 @@
       </j:otherwise>
     </j:choose>
   </goal>
-  
+
   <preGoal name="pdf:pdf">
   	<attainGoal name="pfix:docs"/>
   </preGoal>
@@ -31,6 +32,7 @@
   </preGoal>
   
   <preGoal name="site:sshdeploy">
+    <maven:user-check user="${maven.username}"/>
     <ant:echo>deleting old site: ${pom.siteDirectory}</ant:echo>
     <ant:exec dir="." executable="${maven.ssh.executable}">
       <arg line="${maven.ssh.args} -l ${maven.username} ${pom.siteAddress} 'rm -rf ${pom.siteDirectory}'"/>
