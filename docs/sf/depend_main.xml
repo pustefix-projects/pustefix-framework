@@ -108,20 +108,38 @@
             </tr>
           </table>
         </xmlcodeOFF>
-        <target>...</target>
-        <stdpage>...</stdpage>
+
+        <target name="a_target_name.xsl"       type="[xsl|xml]">...</target>
+        <target name="another_target_name.xml" type="[xsl|xml]">...</target>
+        ...
+        <standardpage name="a_page_name"       xml="a_base_xml_file.xml">...</standardpage>
+        <standardpage name="another_page_name" xml="a_base_xml_file.xml">...</standardpage>
+        ...
         <xmlcodeOFF>
           <table class="stdtable">
             <tr>
-              <td>This tag has only <code>page</code> nodes as
-              children. The tree of pages matches the hierarchy of the
-              projects sitetree.</td>
+              <td>
+                <p>The only other tags allowed besides the
+                  <code>navigation</code> tag are <code>target</code>
+                  and <code>standardpage</code>. The latter is only a
+                  convenience tag that can be expressed fully in terms
+                  of <code>target</code> tags (Expanding the
+                  <code>standardpage</code> tag is one of the duties
+                  of the transformation [<code>depend.xml.in</code>
+                  => <code>depend.xml</code>] mentioned above).
+                </p>
+                <p>See below for a detailed explanation of targets and their configuration</p>
+              </td>
             </tr>
           </table>
         </xmlcodeOFF>
       </navigation>
     </make>
   </xmlcode>
+
+  <h2>Targets and their definition</h2>
+
+  coming soon...
 </div>
 
   
