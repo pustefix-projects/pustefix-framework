@@ -737,7 +737,7 @@
     
   <h2>de.schlund.pfixxml.DirectOutputServlet</h2>
 
-  <p>Occasionally you don't
+  <p><a name="DOS"/>Occasionally you don't
     want to generate output with an XSLT Transformation, but
     e.g. deliver binary content directly to the output
     stream instead. In this case you need to provide another servlet of type
