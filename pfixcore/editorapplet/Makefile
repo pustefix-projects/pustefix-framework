@@ -66,10 +66,6 @@ compile:
 	@echo ${BUILDPATH}
 	@ ${JAVAC} -classpath ${BUILDPATH} \
                   -d $(PROJECT_ROOT)/${BUILDDIR} -sourcepath $(PROJECT_ROOT)/${SRCROOT} $(ALLJAVA)
-
-
-                  
-
 	@echo "*** ...Done!"
 
 jar:
