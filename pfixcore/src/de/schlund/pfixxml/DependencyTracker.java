@@ -84,8 +84,11 @@ public class DependencyTracker {
     private static Path relative(File docroot, String path) {
         if (path.startsWith(File.separator)) {
             path = path.substring(1); // TODO: kind of ugly - fix gif src attributes instead!!
-        } 
-        return Path.createOpt(docroot, path);
+        }
+        if ("".equals(path)) {
+            return null;
+        }
+        return Path.create(docroot, path);
     }
     
     public static void logTyped(String type,Path path, String part, String product,

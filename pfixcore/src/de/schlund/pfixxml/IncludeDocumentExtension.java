@@ -104,7 +104,7 @@ public final class IncludeDocumentExtension {
         
         try {
             Path            path        = Path.create(docroot, path_str);
-            Path            parent_path = Path.createOpt(docroot, parent_path_str);
+            Path            parent_path = "".equals(parent_path_str)? null : Path.create(docroot, parent_path_str);
             boolean         dolog       = !targetkey.equals(NOTARGET);
             File            incfile     = path.resolve();
             int             length      = 0;

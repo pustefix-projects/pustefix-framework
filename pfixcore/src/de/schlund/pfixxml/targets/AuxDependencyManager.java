@@ -83,7 +83,8 @@ public class AuxDependencyManager implements DependencyParent {
                     Path path              = Path.create(docroot, ((Element) auxdeps.item(j)).getAttribute("path"));
                     String part            = ((Element) auxdeps.item(j)).getAttribute("part");
                     String product         = ((Element) auxdeps.item(j)).getAttribute("product");
-                    Path parent_path       = Path.createOpt(docroot, ((Element) auxdeps.item(j)).getAttribute("parent_path"));
+                    String parent_attr     = ((Element) auxdeps.item(j)).getAttribute("parent_path");
+                    Path parent_path       = "".equals(parent_attr)? null : Path.create(docroot, parent_attr);
                     String parent_part     = ((Element) auxdeps.item(j)).getAttribute("parent_part");
                     String parent_product  = ((Element) auxdeps.item(j)).getAttribute("parent_product");
                     DependencyType thetype = DependencyType.getByTag(type);

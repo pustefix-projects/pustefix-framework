@@ -27,8 +27,9 @@ import java.io.File;
 public class Path implements Comparable {
 	private static final String SEP = File.separator; 
 	
-	private static final File ROOT = new File(SEP);
-	private static final File USER = new File(System.getProperty("user.dir"));
+	public static final File ROOT = new File(SEP); // TODO: windows
+	public static final File HERE = new File(".").getAbsoluteFile();
+	public static final File USER = new File(System.getProperty("user.dir"));
 	
 	public static Path create(String path) {
 	    if (path.startsWith(SEP)) {
@@ -44,17 +45,9 @@ public class Path implements Comparable {
             relative = relative.substring(1);
             // TODO: throw new IllegalArgumentException("relative path expected: " + path);
         }
-        return new Path(base.getAbsolutePath(), relative);
+        return new Path(base.getAbsoluteFile(), relative);
     }
 
-	public static Path createOpt(File base, String relative) {
-	    if (relative.length() == 0) {
-	        return null;
-	    } else {
-	        return create(base, relative);
-	    }
-	}
-	
 	public static String getRelativeString(File base, String absolute) {
 	    String prefix = base.getAbsolutePath() + SEP;
 	    if (absolute.startsWith(prefix)) {
@@ -67,30 +60,24 @@ public class Path implements Comparable {
     //--
     
     /** starts and ends with SEP */
-    private final String base;
+    private final File base;
     
-    /** never starts with SEP, never empty */
+    /** never starts with SEP, may be "" */
     private final String relative;
 
     /** use one of the create methods ... */
-    private Path(String base, String relative) {
-        if (relative.length() == 0) {
-            throw new IllegalArgumentException("empty relative: " + relative);
-        }
+    private Path(File base, String relative) {
         if (relative.startsWith(SEP)) {
             throw new IllegalArgumentException("relative is absolute: " + relative);
         }
-        if (!base.startsWith(SEP)) {
+        if (!base.isAbsolute()) {
             throw new IllegalArgumentException("relative base: " + base);
-        }
-        if (!base.endsWith(SEP)) {
-            base = base + SEP;
         }
         this.base = base;
         this.relative = relative;
     }
 
-    public String getBase() {
+    public File getBase() {
         return base;
     }
     
@@ -99,7 +86,11 @@ public class Path implements Comparable {
     }
 
     public File resolve() {
-        return new File(base + relative);
+        if ("".equals(relative)) {
+            return base;
+        } else {
+            return new File(base.getPath(), relative);
+        }
     }
 
     /**
@@ -118,7 +109,10 @@ public class Path implements Comparable {
     }
     
     public String getSuffix() {
-        return relative.substring(relative.lastIndexOf("."));
+        int idx;
+        
+        idx = relative.lastIndexOf(".");
+        return (idx == -1)? "" : relative.substring(idx);
     }
     
     //--
