@@ -38,6 +38,8 @@
 
         .boxed    { border-width: 1px; border-color: #000000; border-style: solid; } 
 
+        .layer    { background-color: #ddccaa; padding: 10px; border: 1px outset threeDFace; position: absolute; min-width: 100px; }
+
       </lang>
     </product>
   </part>
