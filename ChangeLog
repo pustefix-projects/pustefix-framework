@@ -3,15 +3,17 @@
 	* example/core/xsl/include.xsl.in: Implemented a fall back for lang nodes: If a lang node's @name ends with a '*', 
 	this node will work as a fallback for all languages starting with the @name (without the star). Example: you have
 	<lang name="en_US">, <lang name="en_*">, <lang name="default">. If language is set to en_GB, the en_* node will be used, if it is 
-	set to en_US, the en_US lang node is used. In any other case the "default" lang node will be used 
-	(with other words, "default" still has its special meaning)
+	set to en_US, the en_US lang node is used. In any other case the "default" lang node will be used (with other words, 
+	"default" still has its special meaning)
+	
+	add <pfx:langselect> template to have language switching also as an inline template (see also pfx:themeselect below)
 
 2005-03-31  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): always supply a "themes" XSLT parameter containing
 	all the valid themes for the target as a space separated list.
 
-	* example/core/xsl/include.xsl.in: add pfx:themeselect to have the possibility to switch "inline", that means without 
+	* example/core/xsl/include.xsl.in: add <pfx:themeselect> to have the possibility to switch "inline", that means without 
 	having to create another include part, between different content based on the theme fallback queue.
 
 2005-03-29  Jens Lautenbacher  <jtl@schlund.de>
