@@ -1,3 +1,14 @@
+2004-12-27  Daniel Hopp <daniel.hopp@schlund.de>
+
+  * Minor changes to the templates pfx:image and pfx:xinp[@type='image'] in
+  ~/pfixcore/example/core/xsl/include.xsl.in and ~/pfixcore/example/core/xsl/forminput.xsl.in:
+    The 'alt'-attribute was added as xsl:param as well as an optional
+    parameter called 'exclude-attributes', which contains a string of
+    attribute names, _not_ to copy from context-node into the resulting
+    img/input-element.
+    'border="0"' removed from output-elements img/input[type=image], cause it's
+    deprecated according to HTML 4.01 specification.
+
 2004-12-21  Ute Platzer <up@schlund.de>
         * src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: in getDocument()
         method, use super.createDefaultResultDocument() instead of creating a new ResultDocument.
