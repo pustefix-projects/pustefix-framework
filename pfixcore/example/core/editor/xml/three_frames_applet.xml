@@ -54,7 +54,7 @@
     <pfx:frame name="applet">
       <html>
         <head>
-          <script>                        
+          <pfx:script>                        
 
             function showApplet() {
                window.document.applets["xmlEditor"].showApplet();
@@ -80,21 +80,15 @@
               doSub();
             }
             
-        </script>  
+        </pfx:script>  
         </head>
         <body onunload="__destroyApplet()">
-                 <form NAME="the_form">
-                 </form>
-
-           <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true">
-            <param attribut="true"/>
-         </applet>
-
-
-
-
+          <form NAME="the_form">
+          </form>
           
-
+          <applet code="de/schlund/pfixeditor/editor/PfixAppletNeu" codebase="/core/script" NAME="xmlEditor" archive="xmlEditorApplet.jar"  width="1" height="1" MAYSCRIPT="true">
+            <param attribut="true"/>
+          </applet>
           
         </body>
        
