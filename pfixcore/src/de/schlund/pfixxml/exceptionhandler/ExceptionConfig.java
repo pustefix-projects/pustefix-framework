@@ -91,4 +91,14 @@ class ExceptionConfig {
     String getType() {
         return type_;
     }
+    
+    public String toString() {
+        StringBuffer buf = new StringBuffer(128);
+        buf.append("Type ="+type_).append("\n");
+        buf.append("Match="+match_).append("\n");
+        buf.append("Limit="+limit_+"/"+ldimension_).append("\n");
+        buf.append("Burst="+burst_).append("\n");
+        return buf.toString();
+    }
+    
 }

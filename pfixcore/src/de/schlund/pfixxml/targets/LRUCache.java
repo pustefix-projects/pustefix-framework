@@ -21,7 +21,6 @@ package de.schlund.pfixxml.targets;
 
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;

@@ -19,15 +19,17 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.servlet.http.*;
-import javax.xml.parsers.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import java.util.Date;
+import java.util.Properties;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * @author jtl
@@ -37,6 +39,7 @@ import org.xml.sax.*;
 
 public class ResultDocument {
     public  static final String PFIXCORE_NS = "http://www.schlund.de/pustefix/core";
+    public  static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
     
     private        Category               CAT   = Category.getInstance(ResultDocument.class.getName());
     private static DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
@@ -67,6 +70,7 @@ public class ResultDocument {
         
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
+        // formresult.setAttribute("xmlns:ixsl", IXSL_NS);
         formresult.setAttribute("serial", "" + date.getTime());
         doc.appendChild(formresult);
     }
@@ -74,6 +78,10 @@ public class ResultDocument {
     // public void setProperty(String name, String value) {
     //     spprop.put(name, value);
     // }
+
+    public void addUsedNamespace(String prefix, String uri) {
+        formresult.setAttribute("xmlns:" + prefix, uri);
+    }
     
     public SPDocument getSPDocument() {
         return spdoc;
@@ -137,11 +145,22 @@ public class ResultDocument {
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
+        return createIncludeFromStatusCode(props, code, null);
+    }
+    
+    public Element createIncludeFromStatusCode(Properties props, StatusCode code, String[] args) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
         String  part    = code.getStatusCodeWithDomain();
         Element include = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
         include.setAttribute("href", incfile);
         include.setAttribute("part", part);
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                Element arg   = doc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:arg");
+                arg.setAttribute("value", args[i]);
+                include.appendChild(arg);
+            }
+        }
         return include;
     }
     

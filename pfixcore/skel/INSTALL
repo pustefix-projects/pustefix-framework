@@ -1,0 +1,116 @@
+This file describes how to get the package up and running.
+
+Prerequisites:
+
+        * A Java installation. You need version 1.3.x as pustefix doesn't work
+          with 1.4 yet. The environment variable JDK_HOME must be set to the 
+          location of your java installation.
+
+        * jikes if you want to compile out-of-the-box.  Compilation
+          with javac is of course possible, but needs some tinkering
+          with the Makefile. And belive me, you really want to use
+          jikes, it's just lightning fast compared to javac.
+
+        * A working apache installation with a working mod_jk
+          (the apache connection module for tomcat). You need
+          to have this module loaded, but you need no further
+          configuration, the build process will take care of providing
+          you with a sample config file that should at least get you
+          started. Additionally the apache installation must provide mod_rewrite 
+          (This should be pretty standard nowadays).
+
+          Note that there have been problems with the order of
+          inclusion of mod_rewrite and mod_jk in the
+          httpd.conf. It seems that mod_jk needs to be loaded
+          BEFORE mod_rewrite. If you experience problems, try changing
+          the order of these two modules.  Other problems that have
+          been experienced are related to a changed regexp syntax
+          between different versions of mod_rewrite. You may have to
+          customize the relevant regexps in the file core/build/create_apacheconf.xsl.
+        
+        * Your apache needs to have enabled name-based virtual servers
+          for the default hostname of your machine. Furthermore you
+          should have a "* entry" for your machine in DNS (This means that 
+          a lookup to NAME.HOSTNAME.DOMAIN should resolve to HOSTNAME.DOMAIN no
+          matter what NAME is). If you don't have DNS configured like this you can 
+          still supply the names "editor.HOSTNAME.DOMAIN" and "admskel.HOSTNAME.DOMAIN" via
+          your /etc/hosts file.
+          Note that you can work around this last point by tweaking the
+          created apache.conf or by tweaking the producing stylesheet
+          core/build/create_apacheconf.xsl; this is not recommended, though.
+
+        * NOTE: you don't need a external installation of tomcat,
+          everything you need is contained in this package.  I suggest
+          that even if you have your own tomcat set up already,
+          start with using the supplied versions, and, if all goes
+          well, you can try to move the configuration into your own
+          installation.
+
+        * NOTE2: you don't need any additional jar files or classes besides
+          what is supplied with your java installation and this package.
+ 
+1) It is assumed that you have compiled the java classes
+    (type "make" if you didn't do so)
+
+1a) For (re-) compiling all relevant config files it should be enough
+    to type "make" in the "projects" directory unless you just did
+    step 1) as the Makefile in the "projects" dir is being called by
+    the Makefile in the parent directory.
+
+2)  You may want to type "make generate" (here or in the "projects"
+    directory) for pre-processing all the templates up-front. This
+    speeds up the first hit of a page in the sample applications as
+    the page must not be build from scratch then.
+
+3)  Put something  like the following
+
+        NameVirtualHost HOSTNAME.DOMAIN:80
+        # uncomment if you want to use SSL
+        # NameVirtualHost HOSTNAME.DOMAIN:443
+
+        # config for mod_jk
+        include <your path to this directory>/projects/servletconf/tomcat/jk.conf
+
+        # virtual hosts for tomcat:
+        include <your path to this directory>/projects/servletconf/tomcat/apache.conf
+
+    into your httpd.conf. Don't forget to restart your apache.
+
+5)  start Tomcat with the following command:
+
+        ./startTomcat.sh 
+
+    Note: For stopping Tomcat, just press Control-C to interrupt the script.
+
+    Note: There have been problems with restarting or
+    stopping/starting tomcat. Somtimes a restart of Apache is needed,
+    too, so mod_jk can catch up and reopen the connections to
+    Tomcat. (FIXME: Is this still the case? I have not experienced
+    these problems for quite some time now)
+    
+6)  To see if everything works, you can try to open the editor
+    application. Point your browser to
+        
+        http://editor.HOSTNAME.DOMAIN 
+
+6a) Have Fun.
+
+
+
+FINAL NOTE:
+
+You could now start building your own applications, but unfortunately
+there is still no documentation about how to achieve this. In the
+future it is planned to provide an application that will help with
+creating new projects inside this skeleton package, a sample
+application that serves as a tutorial and the needed documentation to
+understand the whole system. I hope this will happen soon :-/
+
+For now, I suggest you refer to the mailing list (see pustefix.sf.net).
+
+Just one warning for people trying to use the editor app as an example
+for their own application: The editor works, but is quite old and in a
+lot of ways can't be considered anymore as a good example on how to
+program a pustefix application. Of course we should rewrite the editor
+to better conform to the pustefix programming model, but this will take
+time.

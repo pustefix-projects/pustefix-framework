@@ -19,13 +19,14 @@
 
 package de.schlund.pfixxml;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.serverutil.ContainerUtil;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer

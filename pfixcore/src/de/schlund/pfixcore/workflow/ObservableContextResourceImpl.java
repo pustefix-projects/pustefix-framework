@@ -33,10 +33,9 @@ import org.apache.log4j.Category;
  *
  */
 
-public abstract class ObservableContextResourceImpl
-    implements ContextResource, ObservableContextResource {
-    private Vector observers = new Vector();
-    private Category CAT = Category.getInstance(this.getClass().getName());
+public abstract class ObservableContextResourceImpl implements ContextResource, ObservableContextResource {
+    private Vector   observers = new Vector();
+    private Category CAT       = Category.getInstance(this.getClass().getName());
 
     /**
      * Adds an observer to the list of registered observers.
