@@ -18,9 +18,14 @@
       <br/>
       <div style="text-align: left; padding: 10px;">
         Remote IP: <ixsl:value-of select="$__remote_addr"/><br/>
+        Request Scheme: <ixsl:value-of select="$__request_scheme"/><br/>
         Server name: <ixsl:value-of select="$__server_name"/><br/>
+        Servletpath: <ixsl:value-of select="$__servletpath"/><br/>
+        Complete uri: <ixsl:value-of select="$__uri"/><br/>
+        Query String: <ixsl:value-of select="$__querystring"/><br/>
+        Session for ext. reference: <ixsl:value-of select="$__external_session_ref"/><br/>
+        Page: <ixsl:value-of select="$page"/><br/>
         PageFlow: <ixsl:value-of select="$pageflow"/><br/>
-        Session for ext. reference: <ixsl:value-of select="$__external_session_ref"/>
       </div>
       <table width="400">
         <tr>
