@@ -78,8 +78,16 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
 
         // Render detailed view of currently selected include
         if (currcomm != null) {
-            boolean lock    = esess.getLock(currcomm); 
-            //String  dir     = currcomm.getDir();
+            boolean lock    = false;
+            String editor_product = esess.getProduct().getName();
+            String incl_product = esess.getCurrentCommon().getProduct();
+            boolean allowed = esess.getUser().getUserInfo().isDynIncludeEditAllowed(editor_product, incl_product);
+            if(allowed) {
+                lock = esess.getLock(currcomm);
+            } else {
+                if(CAT.isDebugEnabled()) 
+                    CAT.debug("User is not allowed to edit this dyninclude. No lock required!");    
+            } 
             long    mod     = currcomm.getModTime();
             String  path    = currcomm.getPath();
             String  part    = currcomm.getPart();
