@@ -1,3 +1,15 @@
+2003-03-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (addNavigation): rewrote the 
+	handling of non-autoinvalidating the navigation: We store a HashMap now which may
+	contain the status of the pages from the last time. This can be reused.
+	(recursePages): also hand the navigation status HashMap when autoinvalidate != true.
+	Try to reuse status from this map.
+
+	* src/de/schlund/pfixcore/util/MakeStatusMessageXML.java (writeFile): don't 
+	use a FileWriter, as we can't set the encoding there!!!! 
+	We ABSOLUTELY need to make sure that this bug isn not present anywhere else!!!
+
 2003-03-24  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/testenv/TestClient.java: formserial

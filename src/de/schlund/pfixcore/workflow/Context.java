@@ -68,8 +68,8 @@ public class Context implements AppContext {
     private PageRequest            currentpagerequest;
     private PageFlow               currentpageflow;
 
-    private Element                navigation_element  = null;
-    private String                 visit_id            = null;
+    private HashMap                navigation_visible = null;
+    private String                 visit_id           = null;
     private boolean                needs_update;
     
     private static Category LOG = Category.getInstance(Context.class.getName());
@@ -98,12 +98,13 @@ public class Context implements AppContext {
         reset();
     }
 
-    public void invalidateNavigation() {
-        navigation_element = null;
+    public void reset() {
+        needs_update       = true;
+        invalidateNavigation();
     }
     
-    public void reset() {
-        needs_update = true;
+    public void invalidateNavigation() {
+        navigation_visible = new HashMap();
     }
     
     private void do_update() throws Exception {
@@ -315,59 +316,69 @@ public class Context implements AppContext {
     }
 
     private void addNavigation(Navigation navi, SPDocument spdoc, PfixServletRequest preq) throws Exception {
-        Document            doc   = spdoc.getDocument();
-        if (navigation_element == null || autoinvalidate_navi) {
-            LOG.info(" **** MAKE NEW NAVIGATION !!! ****");
-            long start = System.currentTimeMillis();
-            NavigationElement[] pages = navi.getNavigationElements();
-            navigation_element = doc.createElement("navigation");
-            doc.getDocumentElement().appendChild(navigation_element);
-            recursePages(pages, navigation_element, doc, preq);
+        LOG.info(" **** MAKE NAVIGATION !!! ****");
+        long     start   = System.currentTimeMillis();
+        Document doc     = spdoc.getDocument();
+        Element  element = doc.createElement("navigation");
+        doc.getDocumentElement().appendChild(element);
+        if (autoinvalidate_navi) {
+            recursePages(navi.getNavigationElements(), element, doc, preq, null);
             LOG.info(" **** MADE NEW NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
-            if (autoinvalidate_navi) {
-                navigation_element = null;
-            }
         } else {
-            LOG.info(" **** REUSING NAVIGATION !!! ****");
-            long start = System.currentTimeMillis();
-            Node reusednavi = doc.importNode(navigation_element, true);
-            doc.getDocumentElement().appendChild(reusednavi);
+            recursePages(navi.getNavigationElements(), element, doc, preq, navigation_visible);
             LOG.info(" **** REUSING NAVIGATION !!! **** (" + (System.currentTimeMillis() - start) + "ms)");
         }
+        
     }
 
     private void recursePages(NavigationElement[] pages, Element parent,
-                              Document doc, PfixServletRequest pfixreq) throws Exception {
+                              Document doc, PfixServletRequest pfixreq, HashMap vis_map) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page = pages[i];
-            String      name     = page.getName();
+            String            name = page.getName();
             // LOG.info("====> looking at page " + name);
             PageRequest preq     = new PageRequest(name);
             Element     pageelem = doc.createElement("page");
             parent.appendChild(pageelem);
             pageelem.setAttribute("name", name);
             pageelem.setAttribute("handler", page.getHandler());
-            if (preqprops.pageRequestIsDefined(preq)) {
-                // LOG.info("    * found props for page " + name);
-                State       state   = pagemap.getState(preq);
-                // LOG.info("    * found state " + state.getClass() + " for page " + name);
-                PageRequest saved   = getCurrentPageRequest();
-                setCurrentPageRequest(preq);
-                boolean     visible = state.isAccessible(this, pfixreq);
-                // LOG.info("    * state accessible? " + visible);
-                setCurrentPageRequest(saved);
-                if (visible) {
-                    pageelem.setAttribute("visible", "1");
-                } else {
-                    pageelem.setAttribute("visible", "0");
-                }
-            } else {
-                // LOG.info("    * found NO PROPS for page " + name);
-                pageelem.setAttribute("visible", "-1");
+
+            Integer page_vis = null;
+            if (vis_map != null) {
+                page_vis = (Integer) vis_map.get(page);
             }
 
-            if (page.hasChildren()) {
-                recursePages(page.getChildren(), pageelem, doc, pfixreq);
+            if (page_vis != null) {
+                pageelem.setAttribute("visible", "" + page_vis.intValue());
+            } else {
+                if (preqprops.pageRequestIsDefined(preq)) {
+                    // LOG.info("    * found props for page " + name);
+                    State       state   = pagemap.getState(preq);
+                    // LOG.info("    * found state " + state.getClass() + " for page " + name);
+                    PageRequest saved   = getCurrentPageRequest();
+                    setCurrentPageRequest(preq);
+                    boolean     visible = state.isAccessible(this, pfixreq);
+                    // LOG.info("    * state accessible? " + visible);
+                    setCurrentPageRequest(saved);
+                    if (visible) {
+                        pageelem.setAttribute("visible", "1");
+                    } else {
+                        pageelem.setAttribute("visible", "0");
+                    }
+                    if (vis_map != null) {
+                        vis_map.put(page, new Integer(visible ? 1 : 0));
+                    }
+                } else {
+                    // LOG.info("    * found NO PROPS for page " + name);
+                    pageelem.setAttribute("visible", "-1");
+                    if (vis_map != null) {
+                        vis_map.put(page, new Integer(-1));
+                    }
+                }
+                
+                if (page.hasChildren()) {
+                    recursePages(page.getChildren(), pageelem, doc, pfixreq, vis_map);
+                }
             }
         }
     }
