@@ -44,6 +44,15 @@ public class PathFactory {
         if (relative.startsWith(File.separator)) {
             throw new IllegalArgumentException("**** Need a relative path: " + relative);
         }
+        return createPathMakeRelative(relative);
+    }
+
+    public Path createPathMakeRelative(String relative) {
+        // TODO: having this method public is ugly, 
+        // but otherwise we have to fix all xsl includes ...
+        if (relative.startsWith(File.separator)) {
+            relative = relative.substring(1);
+        }
         return Path.create(docroot, relative);
     }
 

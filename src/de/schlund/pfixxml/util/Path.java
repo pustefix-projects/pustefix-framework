@@ -44,11 +44,6 @@ public class Path implements Comparable {
     }
 
     public static Path create(File base, String relative) {
-        if (relative.startsWith(SEP)) {
-            // TODO: move this check "up"
-            relative = relative.substring(1);
-            // TODO: throw new IllegalArgumentException("relative path expected: " + path);
-        }
         return new Path(base.getAbsoluteFile(), relative);
     }
 
