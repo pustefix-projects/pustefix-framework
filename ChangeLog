@@ -1,3 +1,11 @@
+2003-08-05  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument):
+	we only ignore java.net.SocketExceptions wrapped in the
+	TransformerException in the last transformation.
+	On all other wrapped exceptions the TransfomerException will be
+	thrown again. 
+
 2003-08-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java (getDocument): 
