@@ -87,7 +87,7 @@ var __js_Cookie = {
         };
         
         // Save remaining values
-        if (s!="" && j<=this.maxarr) {
+        if (s!="" && j <= this.maxarr) {
             this.create(this.base + this.norm_sub(j), s, this.days);
             j++;
         };
@@ -126,7 +126,7 @@ var __js_Cookie = {
     create : function(name, value, days) {
         if (days) {
             var date = new Date();
-            date.setTime(date.getTime() + (days*24*60*60*1000));
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             var expires = "; expires=" + date.toGMTString();
         } else {
             var expires = "";
@@ -139,22 +139,22 @@ var __js_Cookie = {
         var ne = name + "=";
         var ca = document.cookie.split(";");
 
-        for (var i=0; i < ca.length; i++) {
+        for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
             
             while (c.charAt(0) == " ")
-                c = c.substring(1,c.length);
+                c = c.substring(1, c.length);
 
             if (c.indexOf(ne) == 0)
-                return c.substring(ne.length,c.length);
+                return c.substring(ne.length, c.length);
         };
 
         return null;
     },
 
     erase : function(name) {
-    	if(this.read(name)!=null)
-	    this.create(name,"",-1);
+    	if (this.read(name) != null)
+	    this.create(name, "", -1);
     }
 };
 
