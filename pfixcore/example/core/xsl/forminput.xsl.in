@@ -668,6 +668,14 @@
         <values><string/></values>
         <description>value attribute of the option tag.</description>
       </param>
+      <param required="0">
+        <name>default</name>
+        <values>
+          <oneof><option>true</option><option>false</option></oneof>
+        </values>
+        <description>if set to true, the option is selected by default if no
+        other value is given by the business logic</description>
+      </param>
     </cus:documentation>  
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <xsl:variable name="value">
@@ -681,10 +689,19 @@
       </xsl:choose>
     </xsl:variable>
     <option>
-      <xsl:copy-of select="@*[name()!= 'position']"/>
-      <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()='{$value}'">
-        <ixsl:attribute name="selected">selected</ixsl:attribute>
-      </ixsl:if>
+      <xsl:copy-of select="@*[name()!= 'default']"/>
+      <xsl:choose>
+        <xsl:when test="@default = 'true'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()='{$value}' or not(/formresult/formvalues/param[@name='{$name}'])">
+            <ixsl:attribute name="selected">selected</ixsl:attribute>
+          </ixsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()='{$value}'">
+            <ixsl:attribute name="selected">selected</ixsl:attribute>
+          </ixsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:apply-templates select="./node()"/>
     </option>
   </xsl:template>
@@ -693,13 +710,21 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates one or more "option" form elements. The options are taken from the result tree,
-      where they need to be given below the elment designated by the "optionpath" attribute</description>
+      where they need to be given below the element designated by the "optionpath" attribute</description>
       <param required="1">
         <name>optionpath</name> 
         <values><xpath/></values>
         <description>The path to
         the node in the result tree, under which the "option" elements
         are that should be inserted</description>
+      </param>
+      <param required="0">
+        <name>default</name>
+        <values>
+          <oneof><option>true</option><option>false</option></oneof>
+        </values>
+        <description>if set to true, the option is selected by default if no
+        other value is given by the business logic</description>
       </param>
     </cus:documentation>
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
@@ -715,8 +740,9 @@
         </ixsl:choose>
       </ixsl:variable>
       <option>
-        <ixsl:copy-of select="./@*"/>
-        <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text() = $value">
+        <ixsl:copy-of select="./@*[name()!= 'default']"/>
+        <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text() = $value or
+          (@default = 'true' and not(/formresult/formvalues/param[@name='{$name}']))">
           <ixsl:attribute name="selected">selected</ixsl:attribute>
         </ixsl:if>
         <ixsl:apply-templates select="./node()"/>
@@ -728,7 +754,7 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>
-        Creates a check box form element. All attributes given will be copied to the final html tag.
+        Creates a check box form element. All attributes given  except "type" and "default" will be copied to the final html tag.
       </description>
       <param required="1">
         <name>name</name>
@@ -742,6 +768,14 @@
         </values>
         <description></description>
       </param>     
+      <param required="0">
+        <name>default</name>
+        <values>
+          <oneof><option>true</option><option>false</option></oneof>
+        </values>
+        <description>if set to true, the checkbox is checked by default if no
+        other value is given by the business logic</description>
+      </param>
       <example>
         <input>
           <xmlcode>Select: <pfx:xinp type="check" name="foo"/></xmlcode>
@@ -752,10 +786,19 @@
       </example>
     </cus:documentation>    
     <input type="checkbox">
-      <xsl:copy-of select="@*[name()!='type']"/>
-      <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
-        <ixsl:attribute name="checked">checked</ixsl:attribute>
-      </ixsl:if>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:choose>
+        <xsl:when test="@default = 'true'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:apply-templates/>
     </input>
   </xsl:template>
@@ -785,6 +828,14 @@
         <values><oneof><option>text</option></oneof></values>
         <description></description>
       </param>
+      <param required="0">
+        <name>default</name>
+        <values>
+          <string/>
+        </values>
+        <description>if set to any value, the text field is set this value by default if no
+        other value is given by the business logic</description>
+      </param>
       <example>
         <input>
           <xmlcode><pfx:xinp type="text" name="foo"/></xmlcode>
@@ -795,10 +846,20 @@
       </example>
     </cus:documentation>
     <input type="text" size="40" maxlength="40">
-      <xsl:copy-of select="@*"/>
-      <ixsl:attribute name="value">
-        <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
-      </ixsl:attribute>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:choose>
+        <xsl:when test="@default">
+          <ixsl:attribute name="value">
+            <ixsl:choose>
+              <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:value-of select="@default"/></ixsl:when>
+              <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
+            </ixsl:choose>
+          </ixsl:attribute>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:attribute>
+        </xsl:otherwise>
+      </xsl:choose>
     </input>
   </xsl:template>
 
@@ -836,7 +897,7 @@
       </example>
     </cus:documentation>
     <input type="password" size="40" maxlength="40">
-      <xsl:copy-of select="@*"/>
+      <xsl:copy-of select="@*[name()!='type']"/>
       <ixsl:attribute name="value">
         <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
       </ixsl:attribute>
@@ -879,8 +940,11 @@
       </example>
     </cus:documentation>   
     <textarea cols="38" rows="20">
-      <xsl:copy-of select="@*"/>
-      <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
+      <xsl:copy-of select="@*[name()!='type']"/>
+      <ixsl:choose>
+        <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:apply-templates/></ixsl:when>
+        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
+      </ixsl:choose>
     </textarea>
   </xsl:template>
 
@@ -888,7 +952,7 @@
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xoutp">
     <cus:documentation>
-      <responsible>JTL</responsible>
+      <responsible>Nobody</responsible>
       <description>Displays the value associated to a named formelement. THIS IS DEPRECATED. DON'T USE IT.</description>
       <param name="1">
         <name>name</name>
@@ -911,7 +975,7 @@
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xoutperror">
     <cus:documentation>
-      <responsible>JTL</responsible>
+      <responsible>Nobody</responsible>
       <description>Displays an error associated to a named formelement. THIS IS DEPRECATED. DON'T USE IT.</description>
       <param name="1">
         <name>name</name>
@@ -965,7 +1029,7 @@
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xinp[@type='dynselect']">
     <cus:documentation>
-      <responsible>JTL</responsible>
+      <responsible>Nobody</responsible>
       <description>THIS ELEMENT IS DEPRECATED! Creates a select box with options taken from the
         result XML tree. Don't use this tag, usse the &lt;pfx:xinp @type="select"&gt; tag instead with the
         &lt;pfx:dynoptions optionpath="/foo/bar/baz"&gt; tag as a child.</description>

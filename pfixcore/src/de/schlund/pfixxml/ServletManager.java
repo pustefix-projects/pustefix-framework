@@ -19,32 +19,25 @@
 
 package de.schlund.pfixxml;
 
+
+
+
+import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
+import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Properties;
-
+import java.util.*;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import javax.servlet.http.*;
 import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
-import de.schlund.pfixxml.loader.AppLoader;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionHelper;
 
  /*
  *
@@ -130,7 +123,8 @@ public abstract class ServletManager extends HttpServlet {
             CAT.debug("====> URI:   " + req.getRequestURI());
             CAT.debug("====> Query: " + req.getQueryString());
             CAT.debug("----> needsSession=" + needsSession() + " needsSSL=" + needsSSL() + " allowSessionCreate=" + allowSessionCreate());
-			CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
+            CAT.debug("====> Sessions: " + SessionAdmin.getInstance().toString());
+
             Cookie[] cookies = req.getCookies();
             if (cookies != null) {
                 for (int i = 0; i < cookies.length; i++) {
@@ -138,7 +132,18 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug(">>>>> Cookie: " + tmp.getName() + " -> " + tmp.getValue());
                 }
             }
+            Enumeration enum = req.getHeaderNames();
+            TreeSet     hset = new TreeSet();
+            for ( ; enum.hasMoreElements(); ) {
+                hset.add(enum.nextElement());
+            }
+            for (Iterator iter = hset.iterator(); iter.hasNext();) {
+                String name = (String) iter.next();
+                String value = req.getHeader(name);
+                CAT.warn("*** [HEADER " + name + " => " + value + "] ***");
+            }
         }
+            
         //if AppLoader is enabled and currently doing a reload, block request until reloading is finished
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
