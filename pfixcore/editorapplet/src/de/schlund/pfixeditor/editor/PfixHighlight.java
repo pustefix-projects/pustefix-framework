@@ -225,14 +225,14 @@ public class PfixHighlight extends DefaultStyledDocument {
 
     public void setCommentStyle() {
         MutableAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setItalic (attr, true);
+        // StyleConstants.setItalic (attr, true);
         StyleConstants.setForeground(attr, colComment);
         textpane.setCharacterAttributes(attr, false);       
     }
 
     public void setCommentStyle(int start, int end) {
         MutableAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setItalic (attr, true);
+        // StyleConstants.setItalic (attr, true);
         StyleConstants.setForeground(attr, colComment);
         textpane.getStyledDocument().setCharacterAttributes(start, end, attr, false);
     }
@@ -261,6 +261,16 @@ public class PfixHighlight extends DefaultStyledDocument {
         String afterText = text.substring(currentPos, text.length());
         int comPos = preText.lastIndexOf("<!--");
 
+        int closeIt = preText.lastIndexOf(">");
+
+        // very ugly, i know
+        if (closeIt == currentPos - 2) {
+            unsetStyle(closeIt, 2);
+            unsetStyle();
+            newStatus="none";                         
+        }
+        
+        
         
         if (comPos > -1) {
             int endPos = preText.lastIndexOf("-->");
@@ -348,11 +358,12 @@ public class PfixHighlight extends DefaultStyledDocument {
                 
                 
                 else {
-
+                    
                     int endCom = preText.lastIndexOf(">");
                     int posi = endCom -1 ;
                     Character car = new Character(preText.charAt(posi));
-                    
+
+
                     if (car.toString().equals("-")) {
                         setCommentStyle(preText.lastIndexOf(">"), 1); 
                     }
