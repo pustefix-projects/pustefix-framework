@@ -39,7 +39,17 @@ public interface Target {
 
     TreeMap getParams();
     TreeSet getPageInfos();
-    Object  getValue() throws Exception;
+   
+    /**
+     * Get the value of the target. Depending on the 
+     * circumstances this will trigger a recursive 
+     * generation of the target.</br> 
+     * @return the value of this target.
+     * @throws TargetGenerationException on 
+     * known errors which can occur on target 
+     * generation. 
+     */
+    Object  getValue() throws TargetGenerationException;
     
     boolean needsUpdate() throws Exception;
     long    getModTime();

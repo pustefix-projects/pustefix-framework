@@ -239,11 +239,10 @@ public abstract class VirtualTarget extends TargetImpl {
         //  are up-to-date: getCurrValue() will finally load these values.
         Object xmlobj = ((TargetRW) xmlsource).getCurrValue();
         Object xslobj = ((TargetRW) xslsource).getCurrValue();
-        if (xmlobj == null)
+        if (xmlobj == null) 
             throw new XMLException("**** xml source " + xmlsource.getTargetKey() + xmlsource.getType() + " doesn't have a value!");
-        if (xslobj == null)
+        if (xslobj == null) 
             throw new XMLException("**** xsl source " + xslsource.getTargetKey() + xslsource.getType() + " doesn't have a value!");
-
         //FIXME!!! Do we want to do this right HERE????
         xsltproc.applyTrafoForOutput(xmlobj, xslobj, getParams(), new FileOutputStream(cachefile));
         // Now we need to save the current value of the auxdependencies
