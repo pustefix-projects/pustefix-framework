@@ -6,10 +6,6 @@
 	* src/de/schlund/pfixxml/ServletManager.java(relocate):
 	SC_MOVED_TEMPORARILY is now accessed in a static way.
 
-	* src/de/schlund/pfixxml/targets/FileDependency.java,
-	src/de/schlund/pfixxml/targets/StaticFileDependency.java:
-	removed dummy and dummy2 parameter from constructor.
-
 	* src/de/schlund/pfixxml/DirectOutputServlet.java,
 	src/de/schlund/pfixxml/SessionCleaner.java,
 	src/de/schlund/pfixxml/targets/TargetGenerationException.java:
