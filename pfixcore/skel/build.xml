@@ -253,26 +253,26 @@
         <!-- Setting absolute links instead of relative to avoid extra property for dir.build 
         as ${dir.build} is specified as location it always resolves to an absolute path;
         does not work for filenames containing spaces -->
-        <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/classes"/>
+        <echo level="verbose" message="Setting symlink to ${dir.build} as ${dir.projects}/servletconf/tomcat/shared/classes"/>
         <exec executable="sh">
-            <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/classes -a ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/classes || true&quot;"/>
+            <arg line="-c &quot;[ -d ${dir.projects}/servletconf/tomcat/shared/classes -a ! -L ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; rm -fr ${dir.projects}/servletconf/tomcat/shared/classes ; [ ! -L ${dir.projects}/servletconf/tomcat/shared/classes ] &amp;&amp; ln -s  ${dir.build} ${dir.projects}/servletconf/tomcat/shared/classes || true&quot;"/>
         </exec>
         <!-- As task delete does not delete symbolic links, deleting symlinks using native tools. -->
         <!-- Deleting symlinks pointing to non existent files, assuming jar files -->
         <!-- replaced by new versions (with new filenames) do not exist anymore -->
         <exec executable="find" os="Linux">
-            <arg file="${dir.projects}/servletconf/tomcat/lib"/>
+            <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/>
             <arg line="-iname *.jar -a -type l -a -xtype f -exec rm {} ;"/>
         </exec>
         <!-- don't delete the *-res.jar file here, let it be updated by task jar -->
         <echo level="verbose">Building ${project.name}-res.jar in tomcat's lib directory</echo>
-        <jar jarfile="${dir.projects}/servletconf/tomcat/lib/${project.name}-res.jar">
+        <jar jarfile="${dir.projects}/servletconf/tomcat/shared/lib/${project.name}-res.jar">
             <fileset dir="${basedir}" includes="META-INF/**"/>
             <fileset dir="${dir.res}"/>
         </jar>
         <echo level="verbose">Creating symlinks in tomcat's lib directory</echo>
         <exec executable="sh">
-            <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
+            <arg line="-c &quot;cd ${dir.projects}/servletconf/tomcat/shared/lib &amp;&amp; for i in ${dir.lib}/*.jar ; do test -L $(basename $i) || ln -s $i . ; done&quot;"/>
         </exec>
     </target>
     
@@ -338,12 +338,12 @@
         <!-- as task delete does not delete symbolic links, deleting symlinks using native tools -->
         <exec executable="find" os="Linux">
             <arg file="${dir.projects}/servletconf/tomcat"/> <!-- symlink classes -->
-            <arg file="${dir.projects}/servletconf/tomcat/lib"/> <!-- symlinks *.jar -->
+            <arg file="${dir.projects}/servletconf/tomcat/shared/lib"/> <!-- symlinks *.jar -->
             <arg line="-type l -maxdepth 1 -exec rm {} ;"/>
         </exec>
         <!-- delete regular files using task delete -->
         <delete>
-            <fileset dir="${dir.projects}/servletconf/tomcat/lib" includes="*.jar"/>
+            <fileset dir="${dir.projects}/servletconf/tomcat/shared/lib" includes="*.jar"/>
         </delete>
         <delete file="${dir.metainf}/${name.cvsautotag}"/>
     </target>
