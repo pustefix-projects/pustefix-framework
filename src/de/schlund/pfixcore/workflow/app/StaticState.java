@@ -108,7 +108,7 @@ public class StaticState extends StateImpl {
                     }
                     context.startLogEntry();
                     cr.insertStatus(resdoc, resdoc.createNode(nodename));
-                    context.endLogEntry("INSERT_CR ()", 5);
+                    context.endLogEntry("INSERT_CR (" + classname + ")", 5);
                 }
             }
         }
