@@ -1,3 +1,14 @@
+2003-07-08  Volker Zaich <zaich@schlund.de>
+
+	* example/core/editor/conf/config.prop.in 
+	Removed bugs
+
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoHandler.java
+	Unessecary Handler removed
+
+	* src/de/schlund/pfixcore/editor/handlers/AppletInfoFinalizer.java
+	renderAllImages() added	
+
 2003-07-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java (realInit): new method, delay the initialization
