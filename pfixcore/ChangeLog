@@ -1,3 +1,7 @@
+2004-07-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* released 0.6.5
+
 2004-07-12  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/resources/EditorCommonsFactory: fix absolute 
