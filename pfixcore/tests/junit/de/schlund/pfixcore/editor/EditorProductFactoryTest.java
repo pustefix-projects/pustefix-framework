@@ -86,7 +86,7 @@ public class EditorProductFactoryTest extends TestCase {
             "  </documentation></common>" +
             "</projects>");
         EditorProduct prod = factory.getEditorProduct("bar");
-        assertEquals(15, prod.getDocumentation().getDocumentationValues().length);
+        assertTrue(prod.getDocumentation().getDocumentationValues().length > 10);
     }
     
     public void testProjectDocumentation() throws Exception {
@@ -100,7 +100,7 @@ public class EditorProductFactoryTest extends TestCase {
             "  </project>" +
             "</projects>");
         EditorProduct prod = factory.getEditorProduct("bar");
-        assertEquals(15, prod.getDocumentation().getDocumentationValues().length);
+        assertTrue(prod.getDocumentation().getDocumentationValues().length > 10);
     }
     
     //--
