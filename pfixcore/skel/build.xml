@@ -130,8 +130,18 @@
     <target name="all" 
         depends="compile, installjars, propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, products_prj, apache_conf, jk_conf, workers_prop, server_xml, statusmessages_xml, check-permissions"
         description="builds all files required to run"
-        />    
-    <target name="compile" depends="generate-src, jni" description="compiles all .java files">
+        />
+    
+    <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
+        <depend
+            srcdir="${dir.src}"
+            destdir="${dir.build}"
+            cache="${dir.build}"
+            >
+        </depend>
+    </target>
+
+    <target name="compile" depends="generate-src, jni, depend" description="compiles all .java files">
         <javac 
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -534,4 +544,12 @@
             <compilerarg compiler="jikes" line="-target ${javac.target}"/>
             <compilerarg compiler="jikes" line="-sourcepath ${dir.src}"/>
 
+-->
+
+
+
+<!--
+Local Variables:
+sgml-indent-step: 4
+End:
 -->

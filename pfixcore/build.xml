@@ -12,6 +12,7 @@
     <property name="javahome"               value="${env.JAVA_HOME}"/>
     <property name="build.compiler"         value="jikes"/>
     <property name="build.compiler.emacs"   value="true"/>
+    <property name="build.compiler.fulldepend" value="true"/>
     <property name="javac.source"           value="1.4"/>
     <property name="name.cvsautotag"        value="CVS_AUTOTAG"/>
     <property name="debugopts"              value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
@@ -40,6 +41,7 @@
     <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
     <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
     
+    
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
         - ant commandline via the '-Dparam=value' option
@@ -57,11 +59,12 @@
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
         <property  name="prohibitedit"     value="yes"/>
-
+        
         <condition property="debug"        value="true">
             <equals arg1="${makemode}" arg2="test"/>
         </condition>
         <property  name="debug"            value="false"/>
+        
         <exec outputproperty="machine" executable="hostname" os="Linux"><arg value="-s"/></exec>
         <exec outputproperty="fqdn"    executable="hostname" os="Linux"><arg value="-f"/></exec>
         <!-- Create time stamp in ISO 8601 alike format.
@@ -140,7 +143,16 @@
         description="builds all files required to run"
         />    
 
-    <target name="compile" depends="generate-src, jni" description="compiles all .java files">
+    <target name="depend" depends="generate-src, jni" description="checks dependencies of all .java files">
+        <depend
+            srcdir="${dir.src}"
+            destdir="${dir.build}"
+            cache="${dir.build}"
+            >
+        </depend>
+    </target>
+
+    <target name="compile" depends="generate-src, jni, depend" description="compiles all .java files">
         <javac
             srcdir="${dir.src}"
             destdir="${dir.build}"
@@ -623,4 +635,11 @@
 <!-- Cut 'n' Paste
 excludes="de/schlund/pfixxml/exceptionhandler/**, de/schlund/pfixxml/loader/**"
 
+-->
+
+
+<!--
+Local Variables:
+sgml-indent-step: 4
+End:
 -->
