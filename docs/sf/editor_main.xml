@@ -10,6 +10,11 @@
     for writing applications with <pustefix/>. This is due to the fact
     that this part of the code is quite old. For an example that should always be up to date with respect to the current
     features of <pustefix/> see the <i>sample1</i> application in the CVS checkout.</p>
+
+  <p>
+    Note2: The build system takes care of configuring your environment
+    automatically so that all the editing capabilities are <b>not available</b> when in production mode
+    (<code>MAKE_MODE</code> must not be <i>prod</i>, see <a href="prop.html#custom">here</a> for more information).</p>
   
   <h2>Getting started</h2>
   
