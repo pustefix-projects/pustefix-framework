@@ -417,7 +417,23 @@
     </cus:documentation>
   </xsl:template>
 
+  <xsl:template match="pfx:url">
+    <xsl:call-template name="pfx:button_impl" >
+      <xsl:with-param name="urlonly" select="'true'" />
+      <xsl:with-param name="args" select="./pfx:argument"/>
+      <xsl:with-param name="cmds" select="./pfx:command"/>
+      <xsl:with-param name="pageflow" select="@pageflow"/>
+      <xsl:with-param name="startwithflow" select="@startwithflow"/>
+      <xsl:with-param name="nodata" select="@nodata"/>
+      <xsl:with-param name="buttpage" select="@page"/>
+      <xsl:with-param name="frame" select="@frame"/>
+      <xsl:with-param name="target" select="@target"/>
+      <xsl:with-param name="mode" select="@mode"/>
+    </xsl:call-template>
+  </xsl:template>
+
   <xsl:template name="pfx:button_impl">
+    <xsl:param name="urlonly" select="'false'"/>
     <xsl:param name="accesskey"/>
     <xsl:param name="omover"/>
     <xsl:param name="omout"/>
@@ -504,7 +520,7 @@
     </xsl:variable>
 
     <xsl:choose>
-      <xsl:when test="$mode_impl = 'urlonly'">
+      <xsl:when test="string($urlonly) = 'true'">
         <xsl:copy-of select="$fulllink" />
       </xsl:when>
       <xsl:otherwise>
