@@ -7,18 +7,14 @@
 package de.schlund.pfixcore.util;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 
 import org.apache.log4j.xml.DOMConfigurator;
-import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
 /**
  * @author adam
