@@ -161,15 +161,68 @@
     </ul>
   </p>
 
-  <h2>The contract between States and Context</h2>
+  <h1>The contract between States and Context</h1>
   <p>
     In this section we will describe in detail how the Context selects
     the State to call and what a state is expected to return in which
     situation.
   </p>
+  <h2>PageFlows</h2>
   <p>
     As already mentioned above, the pages the Context knows about are
     optionally organized into PageFlow objects in the form of a linear
     list of pages. A Page can be part of none, one or many PageFlow. 
+  </p>
+  <stdimg src="img/PageFlow.png">
+    Some example page flows.
+  </stdimg>
+  <p>The image shows some typical pages (named <b>A</b> to <b>N</b>) and
+  how they are organized into page flows ( <b>Flow I</b> to <b>Flow IV</b>). The
+  context selects the page to process depending on information given
+  via the path of the request. A typical <pustefix/> request looks
+  like this (parts in square brackets are variable):</p>
+  <p>
+    <code>http://[some.server.tld]/xml/[servletname]/[pagename]?[query_string]</code>
+  </p>
+  <p>
+    If the pagename is not given, the Context will reuse the last page
+    that was handled. If there is no last page, it will use the first
+    page from a PageFlow that has been designated to be the <a href="prop.html#defflow"><i>default
+    flow</i></a>. Because of this, every Context knows at least one
+    PageFlow with one member page.
+  </p>
+  <p>
+    The PageFlow is most often selected automatically. The Context
+    initially starts with the current page flow being set to the default
+    flow. Whenever a request comes in, the Context checks which page
+    should handle the request as descibed above. If the current flow
+    has this page as one of it's members, the flow is not changed (not
+    even when there are other flows that contain the page, too). If
+    the current flow does not contain the page, the Context looks if
+    there is another flow that contains it. If it finds <i>one</i> the
+    current flow is changed to this flow. If it finds <i>none</i>, the
+    pageflow is not changed, despite the fact that the current page is
+    not a member of the flow. If it finds <i>more than one</i>,
+    the result is undefined (one of those is selected, but don't count
+    on any order). This is one of the cases where you must help the
+    system by actually specifing which page flow to choose. This is
+    done by giving the special request parameter
+    <code>__pageflow</code> with the name of the flow as it's value.
+  </p>
+  <p>
+    In our example pictured above, suppose you are on <i>page[pageflow]</i> <b>M[Flow
+    IV]</b>. Now you jump to page <b>A</b> without giving a
+    <code>__pageflow</code> parameter. The system will switch to
+    <b>A[Flow I]</b>. But if you jump to page <b>D</b> instead, you
+    need to tell the system which pageflow to choose, as there is no
+    single possibility.
+  </p>
+  <p>
+    Note: using the <code>__pageflow</code> parameter even allows to
+    select a page flow which doesn't contain the target page at all!
+    so it is indeed possible to select a situation like <b>F[Flow
+    IV]</b>, it's just that the system will never choose a situation
+    like that <i>automatically</i> (only if the page isn't a member of
+    any flow, as explained above).
   </p>
 </div>
