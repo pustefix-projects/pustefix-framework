@@ -1,3 +1,11 @@
+2003-04-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/editor/xsl/metatags.xsl: removed editor applet stuff. This is work in progress for
+	the new editor applet.
+
+	* src/de/schlund/pfixcore/editor/handlers/IncludesUploadHandler.java (EditorStdHandler): 
+	removed URL En/Decoding. Removed applet stuff in preparation for new Applet.
+
 2003-04-24  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/testenv/XMLSerializeUtil.java: added
