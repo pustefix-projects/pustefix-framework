@@ -108,8 +108,12 @@ public class DefaultIWrapperState extends StaticState {
                         CAT.debug(">>> Page is part of current pageflow:");
                         CAT.debug("    => signal to continue with pagflow by setting success flag to true...");
                         container.getAssociatedResultDocument().setContinue(true);
+                    } else if (context.isCurrentPageFlowRequestedByUser()) {
+                        CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
+                        CAT.debug("    => signal to continue with pagflow by setting success flag to true...");
+                        container.getAssociatedResultDocument().setContinue(true);
                     } else {
-                        CAT.debug(">>> Page is NOT part of current pageflow:");
+                        CAT.debug(">>> NO continuable pageflow set:");
                         CAT.debug("    => retrieving current status and stay here...");
                         preq.startLogEntry();
                         container.retrieveCurrentStatus();
