@@ -44,14 +44,14 @@ public class AuthManagerFactory implements FactoryInit {
      * @see de.schlund.util.FactoryInit#init(java.util.Properties)
      */
     public void init(Properties arg0) throws Exception {
-        if(CAT.isDebugEnabled())
-            CAT.debug(this.getClass().getName()+" init start");
+        if(CAT.isInfoEnabled())
+            CAT.info(this.getClass().getName()+" init start");
         FileAuthManager auth = new FileAuthManager();
         auth.setPwdFile(arg0.getProperty(PROP_UF));
         auth.init();
         current = auth;
-        if(CAT.isDebugEnabled())
-            CAT.debug(this.getClass().getName()+" init end");
+        if(CAT.isInfoEnabled())
+            CAT.info(this.getClass().getName()+" init end");
     }
     
     public static AuthManagerFactory getInstance() {
