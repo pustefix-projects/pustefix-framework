@@ -11,7 +11,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Category;
-import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -282,7 +281,7 @@ public final class RecordManager {
         Node input_node = doPFServletRequesttoXML(uri, pfix_servlet_request);
         Node output_node = doSPDocumenttoXML(result_document);
         Node stylesheet_node = doDefaultStylesheettoXML();
-        Document doc = new DocumentImpl();
+        Document doc = createDocument();
         Element step = doc.createElement("step");
         doc.appendChild(step);
         Node imp1 = doc.importNode(input_node, true);
@@ -328,7 +327,7 @@ public final class RecordManager {
      * @return a Node containing the generated XML
      */
     private Node doPFServletRequesttoXML(String uri, PfixServletRequest pfreq) {
-        Document doc = new DocumentImpl();
+        Document doc = createDocument();
         Element ele = doc.createElement("request");
 
         String new_uri = uri.substring(0, uri.indexOf(';'));
@@ -372,10 +371,18 @@ public final class RecordManager {
      * @return a Node containing the generated XML
      */
     private Node doDefaultStylesheettoXML() {
-        Document doc = new DocumentImpl();
+        Document doc = createDocument();
         Element ele = doc.createElement("stylesheet");
         Text text = doc.createTextNode(DEFAULT_STYLESHEET);
         ele.appendChild(text);
         return ele;
+    }
+    
+    private static Document createDocument() {
+        try {
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
