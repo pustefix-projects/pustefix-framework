@@ -1,3 +1,11 @@
+2004-10-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed the cache
+	control stuff to something that may or may not be better suited to
+	a) always request a new copy when really clicking on the link b) serve
+	the content from cache when using the back button. This cache stuff really 
+	makes my day - not.
+
 2004-10-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.1-pre

@@ -420,10 +420,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                 res.setHeader(key, val);
             }
         } else {
-            // set some default values to prohibit caching...
-            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-            res.setHeader("Pragma", "no-cache");
-            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            // set some default values to force generating new requests every time...
+            res.setHeader("Expires", "Mon, 05 Jul 1970 05:07:00 GMT");
+            res.setHeader("Cache-Control", "private");
         }
         // Check if a content type was supplied
         String ctype;
