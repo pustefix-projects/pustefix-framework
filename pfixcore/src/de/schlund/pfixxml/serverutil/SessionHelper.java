@@ -112,26 +112,6 @@ public class SessionHelper {
     public static String encodeURL(String scheme, String host, HttpServletRequest req) {
         return encodeURL(scheme, host, req, null);
     }
-
-    
-    private static StringBuffer createPrefix(String scheme, String host, HttpServletRequest req) {
-        StringBuffer rcBuf;
-
-        rcBuf = new StringBuffer();
-        rcBuf.append(scheme).append("://").append(host);
-        if (ServletManager.isDefault(req.getServerPort())) {
-            // don't care about port -- stick with defaults
-        } else {
-            // we're running with none-default ports: repeat port in encoded url
-            if ("https".equals(scheme)) {
-                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT); // TODO: ask tomcat's ssl port
-            } else {
-                rcBuf.append(":").append(req.getServerPort());
-            }
-        }
-        return rcBuf;
-    }
-
     public static String encodeURL(String scheme, String host, HttpServletRequest req, String sessid) {
         if (scheme == null) scheme = req.getScheme();
         if (host == null) host     = req.getServerName();
@@ -152,6 +132,26 @@ public class SessionHelper {
             rcBuf.append('?').append(query);
         }
         return rcBuf.toString();
+    }
+
+
+    
+    private static StringBuffer createPrefix(String scheme, String host, HttpServletRequest req) {
+        StringBuffer rcBuf;
+
+        rcBuf = new StringBuffer();
+        rcBuf.append(scheme).append("://").append(host);
+        if (ServletManager.isDefault(req.getServerPort())) {
+            // don't care about port -- stick with defaults
+        } else {
+            // we're running with none-default ports: repeat port in encoded url
+            if ("https".equals(scheme)) {
+                rcBuf.append(":" + ServletManager.TOMCAT_SSL_PORT); // TODO: ask tomcat's ssl port
+            } else {
+                rcBuf.append(":").append(req.getServerPort());
+            }
+        }
+        return rcBuf;
     }
 
     protected static String stripUriSessionId(String oldSessionId, String uri, StringBuffer rcUri) {
