@@ -1,12 +1,16 @@
 /*
- * de.schlund.pfixcore.webservice.DescriptorTask
+ * de.schlund.pfixcore.webservice.WebServiceTask
  */
 package de.schlund.pfixcore.webservice.generate;
 
 import org.apache.axis.deployment.wsdd.WSDDDocument;
+import org.apache.axis.deployment.wsdd.WSDDHandler;
+import org.apache.axis.deployment.wsdd.WSDDRequestFlow;
+import org.apache.axis.deployment.wsdd.WSDDResponseFlow;
 import org.apache.axis.deployment.wsdd.WSDDService;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.w3c.dom.*;
 
@@ -15,6 +19,7 @@ import java.io.FileOutputStream;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -25,13 +30,13 @@ import javax.xml.transform.stream.*;
 import de.schlund.pfixcore.webservice.config.*;
 
 /**
- * DescriptorTask.java
+ * WebServiceTask.java
  * 
  * Created: 28.07.2004
  * 
  * @author mleidig
  */
-public class DescriptorTask extends Task {
+public class WebServiceTask extends Task {
    
     private String msg;
 
@@ -45,7 +50,6 @@ public class DescriptorTask extends Task {
     
     private DocumentBuilder docBuilder;
     private Transformer trfSerializer;
-   
     
     public void execute() throws BuildException {
         
@@ -70,10 +74,54 @@ public class DescriptorTask extends Task {
                 if(wsConfFile.exists()) {
                 
                     File tmpDir=getTmpDir(prjName);
+                    File globPropsFile=new File(tmpDir,"global.props");
+                    boolean propsChanged=false;
+                    if(!globPropsFile.exists() || globPropsFile.lastModified()<wsConfFile.lastModified()) propsChanged=true;
                     
                     ConfigProperties cfgProps=new ConfigProperties(new File[] {wsConfFile});
                     ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
                     ServiceGlobalConfig globConf=srvConf.getServiceGlobalConfig();
+                    
+                    File appDir=new File(webappsdir,prjName);
+                    if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
+                    File webInfDir=new File(appDir,"WEB-INF");
+                    if(!webInfDir.exists()) throw new BuildException("Web application WEB-INF subdirectory of project '"+prjName+"' doesn't exist");
+                    
+                    File wsdlDir=tmpDir;
+                    if(globConf.isWSDLSupportEnabled()) {
+                        String wsdlRepo=globConf.getWSDLRepository();
+                        if(wsdlRepo.startsWith("/")) wsdlRepo.substring(1);
+                        wsdlDir=new File(appDir,wsdlRepo);
+                        if(!wsdlDir.exists()) {
+                            boolean ok=wsdlDir.mkdir();
+                            if(!ok) throw new BuildException("Can't create WSDL directory "+wsdlDir.getAbsolutePath());
+                        }
+                    }
+                    
+                    File srvWsddFile=new File(webInfDir,"server-config.wsdd");
+                    boolean isNewWsdd=false;
+                    boolean wsddChanged=false;
+                    WSDDDocument srvWsdd=null;
+                    if(!srvWsddFile.exists() || srvWsddFile.lastModified()<wsddSkel.lastModified()) {
+                        Document wsddDoc=loadDoc(wsddSkel);
+                        srvWsdd=new WSDDDocument(wsddDoc);
+                        isNewWsdd=true;
+                        wsddChanged=true;
+                    } else {
+                        Document wsddDoc=loadDoc(srvWsddFile);
+                        srvWsdd=new WSDDDocument(wsddDoc);
+                    }
+                    
+                    WSDDRequestFlow reqFlow=null;
+                    WSDDResponseFlow resFlow=null;
+                    if(globConf.monitoringEnabled()) {
+                        WSDDHandler monitorHandler=new WSDDHandler();
+                        monitorHandler.setType(new QName("MonitorHandler"));
+                        reqFlow=new WSDDRequestFlow();
+                        reqFlow.addHandler(monitorHandler);
+                        resFlow=new WSDDResponseFlow();
+                        resFlow.addHandler(monitorHandler);
+                    }
                     
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
                     if(srvElem==null) throw new BuildException("Missing servername element in configuration of project '"+prjName+"'");
@@ -81,26 +129,30 @@ public class DescriptorTask extends Task {
                
                     String wsUrl="http://"+srvName+globConf.getRequestPath();   
                     
-                    File appDir=new File(webappsdir,prjName);
-                    if(!appDir.exists()) throw new BuildException("Web application directory of project '"+prjName+"' doesn't exist");
-                    
                     Iterator it=srvConf.getServiceConfig();
-                    
+                    //iterate over services
+                    int srvCnt=0;
+                    int wsdlCnt=0;
+                    int wsddCnt=0;
                     while(it.hasNext()) {
                         
+                        srvCnt++;
                         ServiceConfig conf=(ServiceConfig)it.next();
-                        
                         String wsName=conf.getName();
                         String wsItf=conf.getInterfaceName();
                         String wsImpl=conf.getImplementationName();
                         String wsItfPkg=getPackageName(wsItf);
                         
+                        File confPropsFile=new File(tmpDir,wsName+".props");
                         String wsItfPath=wsItf.replace('.',File.separatorChar)+".java";
                         File wsItfFile=new File(srcdir,wsItfPath);
                         if(!wsItfFile.exists()) throw new BuildException("Web service interface source '"+wsItfFile.getAbsolutePath()+"' doesn't exist.");
-               
-                        File wsdlFile=new File(tmpDir,wsName+".wsdl");
-                        if(!(wsdlFile.exists() && wsdlFile.lastModified()>=wsItfFile.lastModified())) {
+                        File wsdlFile=new File(wsdlDir,wsName+".wsdl");
+                        
+                        if(!wsdlFile.exists() || wsdlFile.lastModified()<wsItfFile.lastModified() || !confPropsFile.exists() || 
+                                propsChanged || conf.changed(new ServiceConfig(new ConfigProperties(new File[] {confPropsFile}),wsName))) {
+                            
+                                wsdlCnt++;
                                 String wsNS=createShortNamespace(wsName);
                                 //String wsNS=createLongNamespace(wsItf);
                                 Java2Wsdl task=new Java2Wsdl();
@@ -110,23 +162,16 @@ public class DescriptorTask extends Task {
                                 task.setLocation(wsUrl+"/"+wsName);
                                 //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
                                 task.generate();
-                                System.out.println("Created: "+wsdlFile.getAbsolutePath());
+                                log("Created webservice definition file "+wsdlFile.getAbsolutePath(),Project.MSG_VERBOSE);
                                 conf.saveProperties(new File(tmpDir,wsName+".props"));
-                        }
-                        
+                        }                
                      
-                        File srvWsddFile=new File(tmpDir,"server-config.wsdd");
-                       
-                        
-                        
-                        
-                        System.out.println("###############:"+wsddSkel.getAbsolutePath());
-                        
-                        
                         String wsddPathPart=getPackageName(wsItf).replace('.',File.separatorChar);
                         File wsddPath=new File(tmpDir,wsddPathPart);
                         File wsddFile=new File(tmpDir,wsName+".wsdd");
-                        if(!(wsddFile.exists() && wsddFile.lastModified()>=wsdlFile.lastModified())) {      
+                        if(!wsddFile.exists() || wsddFile.lastModified()<wsdlFile.lastModified()) {
+                            
+                            wsddCnt++;
                             Wsdl2Java task=new Wsdl2Java();
                             task.setOutput(tmpDir);
                             task.setDeployScope("Application");
@@ -137,34 +182,55 @@ public class DescriptorTask extends Task {
                             
                             File origWsddFile=new File(wsddPath,"deploy.wsdd");
                             origWsddFile.renameTo(wsddFile);
-                            System.out.println("Created: "+wsddFile.getAbsolutePath());
+                            log("Created deployment descriptor file "+wsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
                             
-                            //Change automatically generated name of implementation class to configured name
+                            
+                           
+                            
                             Document wsddDoc=loadDoc(wsddFile);
                             WSDDDocument wsdd=new WSDDDocument(wsddDoc);
                             WSDDService[] wsddServices=wsdd.getDeployment().getServices();
                             for(int j=0;j<wsddServices.length;j++) {
+                                //Change automatically generated name of implementation class to configured name
                                 wsddServices[j].setParameter("className",wsImpl);
+                                
+                                if(globConf.monitoringEnabled()) wsddServices[j].setRequestFlow(reqFlow);
+                                
+                                //Update server deployment descriptor
+                                srvWsdd.getDeployment().deployService(wsddServices[j]);
+                                wsddChanged=true;
                             }
                             serialize(wsdd.getDOMDocument(),wsddFile);
+                              
+                        } else if(isNewWsdd) {
                             
-                            //Update server deployment descriptor
-                            
+                            Document wsddDoc=loadDoc(wsddFile);
+                            WSDDDocument wsdd=new WSDDDocument(wsddDoc);
+                            WSDDService[] wsddServices=wsdd.getDeployment().getServices();
+                            for(int j=0;j<wsddServices.length;j++) {
+                                //Update server deployment descriptor
+                                srvWsdd.getDeployment().deployService(wsddServices[j]);
+                                wsddChanged=true;
+                            }
                             
                         }
-                  
-                       
                         
                     }
                     
                    
-                   
-                    //Create server deployment descriptor
                     
-                    //if(!(srvWsddFile.exists()) {
-                       // File skelWsddFile=new File()
-                    //}
-                    //Document srvWsddDoc=db.parse();
+                    //Store changed server deployment descriptor
+                    if(wsddChanged) {
+                        serialize(srvWsdd.getDOMDocument(),srvWsddFile);
+                        log("Created server deployment descriptor file "+srvWsddFile.getAbsolutePath(),Project.MSG_VERBOSE);
+                    }
+                    
+                    //Store current global webservice properties
+                    globConf.saveProperties(globPropsFile);
+                    
+                    if(wsdlCnt!=0 || wsddCnt!=0) log("Generated "+wsdlCnt+"(of "+srvCnt+") WSDL file(s) and "+wsddCnt+" (of "+srvCnt+") WSDD file(s)");
+                    if(wsddChanged) log("Generated server WSDD file");
+                    
                     
                 }
                 
@@ -175,7 +241,7 @@ public class DescriptorTask extends Task {
             throw new BuildException(x);
         }
 
-        System.out.println(msg);
+        
         }
     
         private String getPackageName(String className) {
@@ -243,6 +309,11 @@ public class DescriptorTask extends Task {
             return dir;
         }
         
+       
+           
+      
+        
+        
         private boolean delete(File file) {
             if(file.isDirectory()) {
                 File[] files=file.listFiles();
@@ -280,28 +351,20 @@ public class DescriptorTask extends Task {
             }
         }
     
-        // The setter for the "message" attribute
-        public void setMessage(String msg) {
-            this.msg = msg;
-        }
-        
         public void setFqdn(String fqdn) {
             this.fqdn=fqdn;
         }
         
         public void setTmpdir(File tmpdir) {
             this.tmpdir=tmpdir;
-            System.out.println(tmpdir.getAbsolutePath());
         }
         
         public void setPrjdir(File prjdir) {
             this.prjdir=prjdir;
-            System.out.println(prjdir.getAbsolutePath());
         }
         
         public void setPrjfile(File prjfile) {
             this.prjfile=prjfile;
-            System.out.println(prjfile.getAbsolutePath());
         }
         
         public void setSrcdir(File srcdir) {
@@ -314,14 +377,6 @@ public class DescriptorTask extends Task {
         
         public void setWebappsdir(File webappsdir) {
             this.webappsdir=webappsdir;
-        }
-        
-        private BuildException createException(String prj,String ws,String msg) {
-            return new BuildException(createError(prj,ws,msg));
-        }
-        
-        private String createError(String prj,String ws,String msg) {
-            return "Project '"+prj+"'/Web service '"+ws+"': "+msg;
         }
         
 }

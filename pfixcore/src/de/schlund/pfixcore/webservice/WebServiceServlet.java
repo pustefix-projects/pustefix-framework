@@ -32,6 +32,9 @@ public class WebServiceServlet extends AxisServlet {
     private boolean MONITOR=true;
     private WeakHashMap monitorMap=new WeakHashMap();
     
+    private WebServiceContext wsc;
+    
+    
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         ArrayList al=new ArrayList();
@@ -44,7 +47,7 @@ public class WebServiceServlet extends AxisServlet {
             for(int i=0;i<al.size();i++) propFiles[i]=(File)al.get(i);
             ConfigProperties cfgProps=new ConfigProperties(propFiles);
             ServiceConfiguration srvConf=new ServiceConfiguration(cfgProps);
-            WebServiceContext wsc=new WebServiceContext(srvConf);
+            wsc=new WebServiceContext(srvConf);
             getServletContext().setAttribute(Constants.WEBSERVICE_CONTEXT,wsc);
            
         } catch(Exception x) {
@@ -56,12 +59,21 @@ public class WebServiceServlet extends AxisServlet {
         res.setStatus(HttpURLConnection.HTTP_FORBIDDEN);
         res.setContentType("text/html");
         writer.println("<h2>Forbidden!</h2>");
+        writer.close();
     }
     
     protected void sendBadRequest(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
         res.setStatus(HttpURLConnection.HTTP_BAD_REQUEST);
         res.setContentType("text/html");
         writer.println("<h2>Bad request!</h2>");
+        writer.close();
+    }
+    
+    protected void sendError(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
+        res.setStatus(HttpURLConnection.HTTP_INTERNAL_ERROR);
+        res.setContentType("text/html");
+        writer.println("<h2>Internal server error!</h2>");
+        writer.close();
     }
     
     protected void sendMonitor(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
@@ -82,6 +94,7 @@ public class WebServiceServlet extends AxisServlet {
                 writer.println("</textarea></td>");
                 writer.println("</tr></table>");
                 writer.println("</body></html>");
+                writer.close();
             }
         } else sendForbidden(req,res,writer);
     }
@@ -108,55 +121,63 @@ public class WebServiceServlet extends AxisServlet {
     
     
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
-        PrintWriter writer = res.getWriter();
         HttpSession session=req.getSession(false);
-        if(session!=null) {
-            String qs=req.getQueryString();
-            if(qs!=null) {
-                if(qs.startsWith("WSDL")) {
-                    String pathInfo=req.getPathInfo();
-                    String realpath = getServletContext().getRealPath(req.getServletPath());
-                    if (realpath == null) {
-                        realpath = req.getServletPath();
-                    }
-                    String serviceName;
-                    if (pathInfo.startsWith("/")) {
-                        serviceName = pathInfo.substring(1);
-                    } else {
-                        serviceName = pathInfo;
-                    }
-                    res.setContentType("text/xml");
-                    StringBuffer sb=new StringBuffer();
-                    InputStream in=getServletContext().getResourceAsStream(serviceName+".wsdl");
-                    BufferedInputStream bis=new BufferedInputStream(in);
-                    int ch=0;
-                    while((ch=bis.read())!=-1) {
-                        sb.append((char)ch);
-                    }
-                    String str=sb.toString();
-                    String sid=Constants.SESSION_PREFIX+session.getId();
-                    Pattern pat=Pattern.compile("(wsdlsoap:address location=\"[^\"]*)");
-                    Matcher mat=pat.matcher(str);
-                    sb=new StringBuffer();
-                    while(mat.find()) {
-                        mat.appendReplacement(sb,mat.group(1)+sid);
-                    }
-                    mat.appendTail(sb);
-                    str=sb.toString();
-             
-                    writer.println(str);
-                } else if(MONITOR && qs.equalsIgnoreCase("monitor")) {
-                    sendMonitor(req,res,writer);
+        PrintWriter writer = res.getWriter();
+        String qs=req.getQueryString();
+        if(qs==null) {
+            sendBadRequest(req,res,writer);
+        } else if(qs.equalsIgnoreCase("WSDL")) {
+            if(wsc.getServiceConfiguration().getServiceGlobalConfig().isWSDLSupportEnabled()) {
+                String pathInfo=req.getPathInfo();
+                String serviceName;
+                if (pathInfo.startsWith("/")) {
+                    serviceName=pathInfo.substring(1);
                 } else {
-                    sendBadRequest(req,res,writer);
+                    serviceName=pathInfo;
                 }
-            } else {
-                sendBadRequest(req,res,writer);
-            }
-        } else {
-            sendForbidden(req,res,writer);
-        }
-        writer.close();
+                ServiceConfig conf=wsc.getServiceConfiguration().getServiceConfig(serviceName);
+                int type=conf.getSessionType();
+                if(type==Constants.SESSION_TYPE_SERVLET && session==null) {
+                    sendForbidden(req,res,writer);
+                    return;
+                }
+                res.setContentType("text/xml");
+                String repoPath=wsc.getServiceConfiguration().getServiceGlobalConfig().getWSDLRepository();
+                InputStream in=getServletContext().getResourceAsStream(repoPath+"/"+serviceName+".wsdl");
+                if(in!=null) {
+                    if(type==Constants.SESSION_TYPE_SERVLET) {
+                        StringBuffer sb=new StringBuffer();
+                        BufferedInputStream bis=new BufferedInputStream(in);
+                        int ch=0;
+                        while((ch=bis.read())!=-1) {
+                            sb.append((char)ch);
+                        }
+                        String str=sb.toString();
+                        String sid=Constants.SESSION_PREFIX+session.getId();
+                        Pattern pat=Pattern.compile("(wsdlsoap:address location=\"[^\"]*)");
+                        Matcher mat=pat.matcher(str);
+                        sb=new StringBuffer();
+                        while(mat.find()) {
+                            mat.appendReplacement(sb,mat.group(1)+sid);
+                        }
+                        mat.appendTail(sb);
+                        str=sb.toString();
+                        writer.println(str);
+                    } else {
+                        BufferedInputStream bis=new BufferedInputStream(in);
+                        int ch=0;
+                        while((ch=bis.read())!=-1) {
+                            writer.write(ch);
+                        }
+                    }
+                    writer.close();
+                } else sendError(req,res,writer);
+            } else sendForbidden(req,res,writer);
+        } else if(qs.equalsIgnoreCase("monitor")) {
+            sendMonitor(req,res,writer);
+        } else if(qs.equalsIgnoreCase("admin")) {
+            
+        } else sendBadRequest(req,res,writer);
     }
     
 }

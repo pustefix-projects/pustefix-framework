@@ -2,13 +2,17 @@
 
 	<webservice-global>
 		<requestpath>/xml/webservice</requestpath>
+		<wsdlsupport enabled="true" repository="/wsdl"/>
+		<monitoring enabled="true" scope="session"/>
+		<logging enabled="true"/>
 	</webservice-global>
-
+	
 	<webservice name="Calculator">
 		<interface name="de.schlund.pfixcore.example.webservices.Calculator"/>
 		<implementation name="de.schlund.pfixcore.example.webservices.CalculatorImpl"/>
 		<param name="p1" value="7"/>
 		<param name="p2" value="3"/>
+		<session type="none"/>
 	</webservice>
 	
 	<webservice name="Counter">

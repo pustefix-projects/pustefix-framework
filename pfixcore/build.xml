@@ -211,16 +211,16 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}"/>
   </target>
 
-  <target name="generate-wsdesc" depends="ant-tasks">
-    <pfx-wsdesc 
+  <target name="webservice" depends="ant-tasks">
+    <pfx-webservice
     	fqdn="${fqdn}" 
-    	tmpdir="${dir.projects}/.tmp_webservice"
+    	tmpdir="${dir.projects}/.webservice"
     	prjdir="${dir.projects}"
     	wsddskel="${dir.projects}/common/conf/server-config.wsdd"
     	prjfile="${file.projects_xml}" 
     	srcdir="${dir.src}" 
     	webappsdir="${dir.tomcat}/webapps"
-    	message="foo"/>
+    />
   </target>
 	
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
@@ -353,11 +353,11 @@ or delete the DOCTYPE definition -->
      description="Creates dependencies in ${dir.projects}/.cache"
      />
   	<taskdef
-  	     name="pfx-wsdesc"
-  	     classname="de.schlund.pfixcore.webservice.generate.DescriptorTask"
+  	     name="pfx-webservice"
+  	     classname="de.schlund.pfixcore.webservice.generate.WebServiceTask"
   	     classpathref="cp.classpath"
   	     loaderref="pfx-loader"
-  	     description="Generates WSDL from Web service interfaces"
+  	     description="Generates/deploys WSDL, WSDD and JS stubs from web service interfaces/configuration"
 	/>
   </target>
 

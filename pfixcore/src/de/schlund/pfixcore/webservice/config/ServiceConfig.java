@@ -57,6 +57,7 @@ public class ServiceConfig {
             else throw new ServiceConfigurationException(ServiceConfigurationException.ILLEGAL_PROPERTY_VALUE,propKey,str);
         } else sessType=Constants.SESSION_TYPE_SERVLET;
         //TODO: get params
+        params=new HashMap();
     }
 
     public void reload() throws ServiceConfigurationException {

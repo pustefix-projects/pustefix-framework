@@ -44,6 +44,10 @@
 		<xsl:text>webservice-global.</xsl:text>
 	</xsl:variable>
 	<xsl:value-of select="$wspref"/><xsl:text>requestpath=</xsl:text><xsl:value-of select="requestpath/text()"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.enabled=</xsl:text><xsl:value-of select="wsdlsupport/@enabled"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>wsdlsupport.repository=</xsl:text><xsl:value-of select="wsdlsupport/@repository"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>monitoring.enabled=</xsl:text><xsl:value-of select="monitoring/@enabled"/><xsl:text>&#xa;</xsl:text>
+	<xsl:value-of select="$wspref"/><xsl:text>monitoring.scope=</xsl:text><xsl:value-of select="monitoring/@scope"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
   
   <xsl:template match="webservice">

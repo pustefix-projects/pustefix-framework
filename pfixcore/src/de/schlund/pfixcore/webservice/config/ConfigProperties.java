@@ -75,7 +75,6 @@ public class ConfigProperties {
         while(it.hasNext()) {
             String key=(String)it.next();
             String val=properties.getProperty(key);
-            System.out.println("key: "+key+" val: "+val);
             props.setProperty(key,val);
         }
         return props;

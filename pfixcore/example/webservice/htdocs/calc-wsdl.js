@@ -13,7 +13,7 @@ function wsdlPrintError(msg) {
 }
 
 var proxy    = null;
-var wsdl_uri = "http://webservice.zap.ue.schlund.de/Calculator.wsdl";
+var wsdl_uri = "http://webservice.zap.ue.schlund.de/xml/webservice/Calculator?WSDL";
 
 var t1=0;
 

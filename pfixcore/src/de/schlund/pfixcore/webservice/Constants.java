@@ -16,6 +16,9 @@ public class Constants {
     public final static int SESSION_TYPE_SERVLET=1;
     public final static int SESSION_TYPE_SOAPHEADER=1;
     
+    public final static int MONITOR_SCOPE_SESSION=0;
+    public final static int MONITOR_SCOPE_IP=1;
+    
     public final  static String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
     
    
