@@ -19,17 +19,13 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixcore.util.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.Navigation.*;
+import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.serverutil.*;
-import de.schlund.pfixxml.targets.*;
 import java.util.*;
-import javax.servlet.http.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
-
+import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * This class is the corner piece of our workflow concept.
@@ -622,7 +618,6 @@ public class Context implements AppContext {
         return document;
     }
 
-    
     /**
      * <code>documentFromCurrentStep</code> handles how to get a SPDocument from the state
      * that is associated (via the properties) to the current PageRequest.

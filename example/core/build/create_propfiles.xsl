@@ -187,7 +187,6 @@
     <xsl:text>context.class=</xsl:text>      
     <xsl:choose>
       <xsl:when test="@class"><xsl:value-of select="@class"/></xsl:when>
-      <xsl:when test="@authpage">de.schlund.pfixcore.workflow.AuthContext</xsl:when>
       <xsl:otherwise>de.schlund.pfixcore.workflow.Context</xsl:otherwise>
     </xsl:choose>
     <xsl:text>&#xa;</xsl:text>
