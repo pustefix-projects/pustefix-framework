@@ -15,7 +15,7 @@ public class LineNumber extends JComponent {
     private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
     // Set right/left margin
-    private final static int MARGIN = 5;
+    private final static int MARGIN = 0;
 
     // Line height of this LineNumber component
     private int lineHeight;
