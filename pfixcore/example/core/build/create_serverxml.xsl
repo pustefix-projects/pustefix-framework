@@ -107,7 +107,7 @@
   </xsl:template>
 
   <xsl:template name="create_context_list">
-j   <xsl:param name="defpath"/>
+    <xsl:param name="defpath"/>
 	<xsl:call-template name="create_context">
       <xsl:with-param name="cookies">false</xsl:with-param>
 	  <xsl:with-param name="path"><xsl:value-of select="$defpath"/></xsl:with-param>
