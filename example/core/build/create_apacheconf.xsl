@@ -102,8 +102,3 @@ AddHandler cgi-script .cgi
     
 </xsl:stylesheet>
 
-<!--
-Local Variables:
-mode: xml
-End:
--->

@@ -71,9 +71,3 @@
   <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
   
 </properties>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
