@@ -1,4 +1,10 @@
 2004-02-12  Jens Lautenbacher  <jtl@schlund.de>
+	* released 0.5.1 
+	
+	* example/core/build/create_propfiles.xsl: Eeeeeeek. the last fix
+	was stupid, now the context resource manager thinks there is a CR named
+	param.AContextResource.... New naming scheme is:
+	context.resoureparameter.AContextResource.AName=AValue
 
 	* starting 0.5.1-pre
 
