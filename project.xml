@@ -4,12 +4,12 @@
   <pomVersion>3</pomVersion>
   <id>pfixcore</id>
   <name>Pustefix Core</name>
-  <groupId>schlund</groupId>
+  <groupId>pfix</groupId>
   <currentVersion>0.6.6-pre</currentVersion>
   <organization>
-    <name>Schlund + Partner</name>
-    <url>http://www.schlund.de</url>
-    <logo>http://sourceforge.net/sflogo.php?group_id=61626&amp;type=5</logo>
+    <name>The Pustefix Project</name>
+    <url>http://pustefix.sourceforge.net</url>
+    <logo>/images/logo.gif</logo>
   </organization>
   <description>Pustefix is a framework that helps you to develop web based applications.</description>
   <shortDescription>Web application framework</shortDescription>
@@ -17,7 +17,7 @@
   <url>http://pustefix.sourceforge.net</url>
   <inceptionYear>2002,2003,2004</inceptionYear>
   <package>de.schlund</package>
-  <logo>http://sourceforge.net/sflogo.php?group_id=61626&amp;type=5</logo>
+  <logo>/images/logo.gif</logo>
 
   <issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl>
   <siteAddress>pustefix.sourceforge.net</siteAddress>
@@ -41,17 +41,17 @@
 
   <dependencies>
     <dependency>
-      <groupId>schlund</groupId>
+      <groupId>pfix</groupId>
       <artifactId>getopt</artifactId>
       <version>1.0.9</version>
     </dependency>
     <dependency>
-      <groupId>schlund</groupId>
+      <groupId>pfix</groupId>
       <artifactId>httpclient</artifactId>
-      <version>2.0-beta1-schlund</version>
+      <version>2.0-beta1-pfix</version>
     </dependency>
     <dependency>
-      <groupId>schlund</groupId>
+      <groupId>pfix</groupId>
       <artifactId>mail</artifactId>
       <version>1.3</version>
     </dependency>
@@ -89,9 +89,9 @@
       <name>Andreas Kurth</name>
       <id>akurth</id>
       <email>akurth@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/akurth/</url>
       <timezone>+1</timezone>
@@ -100,9 +100,9 @@
       <name>Corinna Herrmann</name>
       <id>ch17</id>
       <email>ch17@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/ch17/</url>
       <timezone>+1</timezone>
@@ -111,9 +111,9 @@
       <name>Andreas Ecker</name>
       <id>ecker</id>
       <email>ecker@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/ecker/</url>
       <timezone>+1</timezone>
@@ -122,9 +122,9 @@
       <name>Benjamin Reitzammer</name>
       <id>firstbman</id>
       <email>firstbman@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/firstbman/</url>
       <timezone>+1</timezone>
@@ -133,9 +133,9 @@
       <name>Adam Habermann</name>
       <id>habermann</id>
       <email>habermann@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/habermann/</url>
       <timezone>+1</timezone>
@@ -144,9 +144,9 @@
       <name>Jörg Häcker</name>
       <id>haexel</id>
       <email>haexel@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/haexel/</url>
       <timezone>+1</timezone>
@@ -155,9 +155,9 @@
       <name>Jens Lautenbacher</name>
       <id>jenstl</id>
       <email>jenstl@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/jenstl/</url>
       <timezone>+1</timezone>
@@ -166,9 +166,9 @@
       <name>Marcus Knappe</name>
       <id>marcusatschlund</id>
       <email>marcusatschlund@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/marcusatschlund/</url>
       <timezone>+1</timezone>
@@ -177,9 +177,9 @@
       <name>Michael Hartmeier</name>
       <id>mlhartme</id>
       <email>mlhartme@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/mlhartme/</url>
       <timezone>+1</timezone>
@@ -188,9 +188,9 @@
       <name>Martin Leidig</name>
       <id>mtld</id>
       <email>mtld@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/mtld/</url>
       <timezone>+1</timezone>
@@ -199,9 +199,9 @@
       <name>Ralf Rapude</name>
       <id>rrapude</id>
       <email>rrapude@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/rrapude/</url>
       <timezone>+1</timezone>
@@ -210,9 +210,9 @@
       <name>Niels Schelbach</name>
       <id>schelby</id>
       <email>schelby@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/schelby/</url>
       <timezone>+1</timezone>
@@ -221,9 +221,9 @@
       <name>Tim Schuppener</name>
       <id>schuppi</id>
       <email>schuppi@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/schuppi/</url>
       <timezone>+1</timezone>
@@ -232,9 +232,9 @@
       <name>Tanjev Stuhr</name>
       <id>tanjev</id>
       <email>tanjev@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/tanjev/</url>
       <timezone>+1</timezone>
@@ -243,9 +243,9 @@
       <name>Tobias Fehrenbach</name>
       <id>tfehrenbach</id>
       <email>tfehrenbach@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/tfehrenbach/</url>
       <timezone>+1</timezone>
@@ -254,9 +254,9 @@
       <name>Tobias Kraft</name>
       <id>tobik74</id>
       <email>tobik74@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/tobik74/</url>
       <timezone>+1</timezone>
@@ -265,9 +265,9 @@
       <name>Thomas Braun</name>
       <id>tombraun</id>
       <email>tombraun@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/tombraun/</url>
       <timezone>+1</timezone>
@@ -276,9 +276,9 @@
       <name>Thomas Stieler</name>
       <id>tstieler</id>
       <email>tstieler@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/tstieler/</url>
       <timezone>+1</timezone>
@@ -287,9 +287,9 @@
       <name>Ute Platzer</name>
       <id>uplatze</id>
       <email>uplatze@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/uplatze/</url>
       <timezone>+1</timezone>
@@ -298,9 +298,9 @@
       <name>Sebastian Werner</name>
       <id>wpbasti</id>
       <email>wpbasti@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/wpbasti/</url>
       <timezone>+1</timezone>
@@ -309,9 +309,9 @@
       <name>Sonja Pieper</name>
       <id>yashima</id>
       <email>yashima@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/yashima/</url>
       <timezone>+1</timezone>
@@ -320,9 +320,9 @@
       <name>Volker Zaich</name>
       <id>zaich</id>
       <email>zaich@users.sourceforge.net</email>
-      <organization>Schlund + Partner</organization>
+      <organization>The Pustefix Project</organization>
       <roles>
-        <role>Unix Development</role>
+        <role>Java Development</role>
       </roles>
       <url>http://sourceforge.net/users/zaich/</url>
       <timezone>+1</timezone>
