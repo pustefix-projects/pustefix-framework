@@ -28,6 +28,8 @@ import java.util.*;
 import javax.servlet.http.*;
 import org.apache.log4j.*;
 
+import java.lang.reflect.Array;
+
 
 /**
  * PfixServletRequest.java
@@ -53,7 +55,8 @@ public class PfixServletRequest {
 
     private static final Category PFXPERF             = Category.getInstance("PFXPERF");
     private static final String   INDENT              = "   ";
-    private static final String   DATA_PREFIX         = "__DATA:";
+    private static final String   SBMT_PREFIX         = "__SBMT:";
+    private static final String   SYNT_PREFIX         = "__SYNT:";
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
@@ -455,7 +458,9 @@ public class PfixServletRequest {
         return (String[]) parameters.keySet().toArray(new String[]{});
     }
 
-    // ------------------------------- //
+
+
+
     private void getRequestParams(HttpServletRequest req, Properties properties) {
         String  type     = req.getContentType();
         HashSet allnames = new HashSet();
@@ -490,19 +495,21 @@ public class PfixServletRequest {
             }
             parameters.put(key, params);
         }
-        HashSet processed=new HashSet();
-        for (Iterator i = allnames.iterator(); i.hasNext();) {
-            String paramname = (String) i.next();
-            //avoid duplicate key/value pairs for input buttons with image type by
-            //excluding the according duplicate parameter names from embedded data check
-            if(paramname.endsWith(":.x")||paramname.endsWith(":.y")) {
-                paramname=paramname.substring(0,paramname.length()-2);
-            }
-            if(!processed.contains(paramname)) {
-                checkParameterNameForEmbeddedData(paramname);
-                processed.add(paramname);
-            }
-        }
+        //HashSet processed=new HashSet();
+        //for (Iterator i = allnames.iterator(); i.hasNext();) {
+        //    String paramname = (String) i.next();
+        //    //avoid duplicate key/value pairs for input buttons with image type by
+        //    //excluding the according duplicate parameter names from embedded data check
+        //    if(paramname.endsWith(":.x")||paramname.endsWith(":.y")) {
+        //        paramname=paramname.substring(0,paramname.length()-2);
+        //    }
+        //    if(!processed.contains(paramname)) {
+        //        checkParameterNameForEmbeddedData(paramname);
+        //        processed.add(paramname);
+        //    }
+        //}
+        generateSynthetics(req,allnames);
+        
     }
 
     private HashSet handleMulti(HttpServletRequest req, Properties properties) {
@@ -539,60 +546,111 @@ public class PfixServletRequest {
         return names;
     }
 
-    private void checkParameterNameForEmbeddedData(String name) {
-        HashMap embpar = new HashMap();
-        int     index = 0;
-        while (name.indexOf(DATA_PREFIX, index) >= 0) {
-            int keystart = name.indexOf(DATA_PREFIX, index) + DATA_PREFIX.length();
-            int keyend = name.indexOf(":", keystart);
-            if (keyend < 0) {
-                CAT.warn("    * [EMB/" + name
-                         + "] No trailing ':' was found after the key. Ignoring key.");
-                break;
-            }
-            String key = name.substring(keystart, keyend);
-            CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
-            int valuestart = keyend + 1;
-            int valueend = name.indexOf(":", valuestart);
-            if (valueend < 0) {
-                CAT.warn("    * [EMB/" + name
-                         + "] No trailing ':' was found after the value. Ignoring key/value pair.");
-                break;
-            }
-            String value = name.substring(valuestart, valueend);
-            CAT.debug("    * [EMB/" + name + "]  >> Value is " + value);
-            ArrayList list = (ArrayList) embpar.get(key);
-            if (list == null) {
-                list = new ArrayList();
-                embpar.put(key, list);
-            }
-            list.add(value);
-            index = valueend;
-        }
-        for (Iterator i = embpar.keySet().iterator(); i.hasNext();) {
-            String    pkey  = (String) i.next();
-            ArrayList pvals = (ArrayList) embpar.get(pkey);
-            if (pvals != null) {
-                RequestParam[] oldvals = (RequestParam[]) parameters.get(pkey);
-                RequestParam[] newvals;
-                if (oldvals == null) {
-                    newvals = new RequestParam[pvals.size()];
-                } else {
-                    newvals = new RequestParam[pvals.size() + oldvals.length];
-                }
-                for (int j = 0; j < pvals.size(); j++) {
-                    newvals[j] = new SimpleRequestParam((String) pvals.get(j));
-                    newvals[j].setSynthetic(true);
-                }
-                if (oldvals != null) {
-                    CAT.debug("          **** [EMB] already having parameter data for key '" + pkey
-                              + "'...");
-                    for (int k = pvals.size(); k < (pvals.size() + oldvals.length); k++) {
-                        newvals[k] = oldvals[k - pvals.size()];
+    private void generateSynthetics(HttpServletRequest req, HashSet allnames) {
+        HashSet prefixes = new HashSet();
+        for (Iterator i = allnames.iterator(); i.hasNext();) {
+            String name = (String) i.next();
+            if (name.startsWith(SBMT_PREFIX)) {
+                int start = SBMT_PREFIX.length();
+                int end   = name.lastIndexOf(":");
+                if (end > start) {
+                    String prefix = name.substring(start, end);
+                    if (prefix != null && !prefix.equals("")) {
+                        prefixes.add(prefix);
                     }
                 }
-                parameters.put(pkey, newvals);
+            }
+        }
+        for (Iterator i = prefixes.iterator(); i.hasNext();) {
+            String prefix = SYNT_PREFIX + (String) i.next() + ":";
+            for (Iterator j = allnames.iterator(); j.hasNext();) {
+                String name = (String) j.next();
+                if (name.startsWith(prefix) && (name.length() > prefix.length())) {
+                    String   key    = name.substring(prefix.length());
+                    String[] values = req.getParameterValues(name);
+                    CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
+                    if (values.length > 0) {
+                        RequestParam[] newvals = new RequestParam[values.length];
+                        for (int k = 0; k < values.length ; k++) {
+                            CAT.debug("         Adding value: " + values[k]);
+                            newvals[k] = new SimpleRequestParam(values[k]);
+                            newvals[k].setSynthetic(true);
+                        }
+                        // Eeeek, how to concatenate arrays in an elegant way?
+                        RequestParam[] oldvals = (RequestParam[]) parameters.get(key);
+                        RequestParam[] finvals = newvals;
+                        if (oldvals != null && oldvals.length > 0) {
+                            finvals = new RequestParam[oldvals.length + newvals.length];
+                            for (int k = 0; k < newvals.length; k++) {
+                                finvals[k] = newvals[k];
+                            }
+                            for (int k = 0; k < oldvals.length; k++) {
+                                finvals[k + newvals.length] = oldvals[k];
+                            }
+                        }
+                        parameters.put(key, finvals);
+                    }
+                }
             }
         }
     }
+
+    
+    
+    // private void checkParameterNameForEmbeddedData(String name) {
+    //     HashMap embpar = new HashMap();
+    //     int     index = 0;
+    //     while (name.indexOf(DATA_PREFIX, index) >= 0) {
+    //         int keystart = name.indexOf(DATA_PREFIX, index) + DATA_PREFIX.length();
+    //         int keyend = name.indexOf(":", keystart);
+    //         if (keyend < 0) {
+    //             CAT.warn("    * [EMB/" + name
+    //                      + "] No trailing ':' was found after the key. Ignoring key.");
+    //             break;
+    //         }
+    //         String key = name.substring(keystart, keyend);
+    //         CAT.debug("    * [EMB/" + name + "]  >> Key is " + key);
+    //         int valuestart = keyend + 1;
+    //         int valueend = name.indexOf(":", valuestart);
+    //         if (valueend < 0) {
+    //             CAT.warn("    * [EMB/" + name
+    //                      + "] No trailing ':' was found after the value. Ignoring key/value pair.");
+    //             break;
+    //         }
+    //         String value = name.substring(valuestart, valueend);
+    //         CAT.debug("    * [EMB/" + name + "]  >> Value is " + value);
+    //         ArrayList list = (ArrayList) embpar.get(key);
+    //         if (list == null) {
+    //             list = new ArrayList();
+    //             embpar.put(key, list);
+    //         }
+    //         list.add(value);
+    //         index = valueend;
+    //     }
+    //     for (Iterator i = embpar.keySet().iterator(); i.hasNext();) {
+    //         String    pkey  = (String) i.next();
+    //         ArrayList pvals = (ArrayList) embpar.get(pkey);
+    //         if (pvals != null) {
+    //             RequestParam[] oldvals = (RequestParam[]) parameters.get(pkey);
+    //             RequestParam[] newvals;
+    //             if (oldvals == null) {
+    //                 newvals = new RequestParam[pvals.size()];
+    //             } else {
+    //                 newvals = new RequestParam[pvals.size() + oldvals.length];
+    //             }
+    //             for (int j = 0; j < pvals.size(); j++) {
+    //                 newvals[j] = new SimpleRequestParam((String) pvals.get(j));
+    //                 newvals[j].setSynthetic(true);
+    //             }
+    //             if (oldvals != null) {
+    //                 CAT.debug("          **** [EMB] already having parameter data for key '" + pkey
+    //                           + "'...");
+    //                 for (int k = pvals.size(); k < (pvals.size() + oldvals.length); k++) {
+    //                     newvals[k] = oldvals[k - pvals.size()];
+    //                 }
+    //             }
+    //             parameters.put(pkey, newvals);
+    //         }
+    //     }
+    // }
 } // PfixServletRequest

@@ -1,3 +1,51 @@
+2004-05-10  Jens Lautenbacher  <jtl@schlund.de>
+	* example/core/xsl/forminput.xsl.in:
+	(pfx:button_impl): assume mode="force" when neither a page
+	attribute nor a mode attribute has been given. Add the attribute
+	'sendtoflow', which, if set to true, will trigger the first page
+	of the current pageflow, and not the page given (this is only used
+	for determining the link status (active/normal/invisible)
+	
+	* example/core/xsl/forminput.xsl.in: generate_coded_name: removed.
+	generate_coded_input: new template, used to put
+	pfx:argument/pfx:anchor/pfx:command in special named hidden input
+	fields.  <pfx:xinp type="submit|image"> now use this instead of
+	coding their pfx:argument/command/anchor children into the name of
+	the submit button. (This whole stuff is due to a suggestion by ae@schlund.de)
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java
+	(checkParameterNameForEmbeddedData): removed. We no longer submit
+	data encoded into submit button names. The new method works the
+	following way: The name of a submit button is generated with a
+	uniq id to look like: '__SBMT:<UNIQ_ID>:' All arguments / commands
+	associated to this button are encoded as hidden input fields with
+	a name that looks like this: __SYNT:<UNIQ_ID>:<REAL_PARAM_NAME>
+	This solves among other stuff the problem that the ':' was special as 
+	as seperator of the name/value in the old case of encoded names.
+
+	Another thing that changes is that commands are no longer of the
+	form '__CMD[page]:<CMD_NAME>:<CMD_VALUE>:' which results in a
+	dicardable parameter value when used in a get request (as all info
+	is already encoded in the parameter name). The cmdvalue is now
+	simply the value of the hidden input field
+	'__SYNT:<UNIQ_ID>:<REAL_PARAM_NAME>' with REAL_PARAM_NAME being
+	'__CMD[page]:<CMD_NAME>'.
+	
+	(generateSynthetics): new method, used to generate the synthetic
+	parameters which match a submitted __SBMT parameter <UNIQ_ID>:
+	
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java: 
+	we no longer store cmds or parameters as hashsets, but use arrays instead.
+	(parseNameForPrefix): removed
+	(addCmds): removed
+	(initData): heavily simplified. As cmds are simple parameters, we no longer need to 
+	parse through parameter names. Also drop parameters starting with __SBMT or __SYNTH from 
+	adding to the data map (as the are already parsed and handled in the PfixServletRequest)
+
+	* src/de/schlund/pfixcore/workflow/Context.java: reworked the way "sendtoflow" works: 
+	it no longer assumes some arbitrary predefined pagename, but rather looks for the
+	request parameter __sendtoflow.
+
 2004-05-03  Tom Braun <thomas.braun@schlund.de>
 	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java:
 	a post-checker, that allows to check an inputs min and max length.

@@ -41,21 +41,20 @@ import org.w3c.dom.Element;
  */
 
 public class Context implements AppContext {
-    private final static Category LOG               = Category.getInstance(Context.class.getName());
-    private final static String   NOSTORE           = "nostore";
-    private final static String   DEFPROP           = "context.defaultpageflow";
-    private final static String   NAVPROP           = "xmlserver.depend.xml";
-    private final static String   PROP_NAVI_AUTOINV = "navigation.autoinvalidate";
-    private final static String   PROP_NEEDS_SSL    = "needsSSL";
-    private final static String   WATCHMODE         = "context.adminmode.watch";
-    private final static String   ADMINPAGE         = "context.adminmode.page";
-    private final static String   ADMINMODE         = "context.adminmode";
-    private final static String   AUTH_PROP         = "authcontext.authpage";
-    private final static String   JUMPPAGE          = "__jumptopage";
-    private final static String   JUMPPAGEFLOW      = "__jumptopageflow";
-    private final static String   PARAM_FLOW        = "__pageflow";
-
-    final static String STARTWITHFLOW_PAGE = "__STARTWITHFLOW";
+    private final static Category LOG                 = Category.getInstance(Context.class.getName());
+    private final static String   NOSTORE             = "nostore";
+    private final static String   DEFPROP             = "context.defaultpageflow";
+    private final static String   NAVPROP             = "xmlserver.depend.xml";
+    private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
+    private final static String   PROP_NEEDS_SSL      = "needsSSL";
+    private final static String   WATCHMODE           = "context.adminmode.watch";
+    private final static String   ADMINPAGE           = "context.adminmode.page";
+    private final static String   ADMINMODE           = "context.adminmode";
+    private final static String   AUTH_PROP           = "authcontext.authpage";
+    private final static String   JUMPPAGE            = "__jumptopage";
+    private final static String   JUMPPAGEFLOW        = "__jumptopageflow";
+    private final static String   PARAM_FLOW          = "__pageflow";
+    private final static String   PARAM_STARTWITHFLOW = "__startwithflow";
 
     // from constructor
     private String     name;
@@ -85,7 +84,8 @@ public class Context implements AppContext {
     private PageFlow           jumptopageflow;
     private boolean            on_jumptopage;
     private boolean            pageflow_requested_by_user;
-
+    private boolean            startwithflow;
+    
     private HashMap navigation_visible = null;
     private String  visit_id           = null;
     private boolean needs_update;
@@ -125,9 +125,15 @@ public class Context implements AppContext {
         jumptopageflow             = null;
         on_jumptopage              = false;
         pageflow_requested_by_user = false;
+        startwithflow              = false;
         
         if (needs_update) {
             do_update();
+        }
+
+        RequestParam swflow = currentpreq.getRequestParam(PARAM_STARTWITHFLOW);
+        if (swflow != null && swflow.getValue().equals("true")) {
+            startwithflow = true;
         }
 
         SPDocument  spdoc;
@@ -516,7 +522,7 @@ public class Context implements AppContext {
         // We do this only if the current pagerequest is not the special STARTWITHFLOW_PAGE
         // because then we don't know yet which page to use.
 
-        if (!currentpagerequest.getName().equals(STARTWITHFLOW_PAGE)) {
+        if (!startwithflow) {
             State state = pagemap.getState(currentpagerequest);
             if (state == null) {
                 LOG.warn("* Can't get a handling state for page " + currentpagerequest);
@@ -690,8 +696,6 @@ public class Context implements AppContext {
                     pageflow_requested_by_user = true;
                     if (flow.containsPageRequest(page)) {
                     LOG.debug("===> and it contains page '" + page.getName() + "'");
-                    } else if (page.getName().equals(Context.STARTWITHFLOW_PAGE)) {
-                        LOG.debug("===> CAUTION: page to use will be determined from flow.");
                     } else {
                         LOG.debug("===> CAUTION: it doesn't contain page '" +
                                   page.getName() + "'! Make sure this is what you want...");
