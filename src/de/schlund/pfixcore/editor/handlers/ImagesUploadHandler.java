@@ -111,6 +111,7 @@ public class ImagesUploadHandler extends EditorStdHandler {
                     (to_suff.equals(".jpg") && type.equals("image/jpeg")) ||
                     (to_suff.equals(".png") && type.equals("image/png"))) {
                     File to_file   = path.resolve();
+                    createDirMaybe(esess, path);
                     EditorHelper.createBackupImage(esess, to_file);
                     FileInputStream  fin  = new FileInputStream(file);
                     FileOutputStream fout = new FileOutputStream(to_file);
@@ -147,6 +148,37 @@ public class ImagesUploadHandler extends EditorStdHandler {
         }
     }
     
+    /**
+     * Creates directories for a file, if neccessary directories do not exist yet. 
+     *  
+     * @param esess 
+     * @param path the complete path of a file
+     * @return true if at least one directory had to be created,
+     *         false if all neccessary directories existed. 
+     * @throws Exception if directory could not be created
+     *         (that is if {@link File#mkdirs()} returned false)
+     */
+    private boolean createDirMaybe(EditorSessionStatus esess, Path path) throws Exception {
+        boolean dirCreated;
+        String reldir = path.getDir();
+        File base = path.getBase();
+        File absdir;
+        if ( reldir == null ) {
+            absdir = base;
+        } else {
+            absdir = new File(base, reldir);
+        }
+        if ( !absdir.exists() ) { 
+            dirCreated = absdir.mkdirs();
+            if ( dirCreated == false ) {
+                throw new Exception("Directory \""+absdir+"\" could not be created. Reason unknown.");
+            }
+        } else {
+            dirCreated = false;
+        }
+        return dirCreated;
+    }
+
     private void checkAccess(EditorSessionStatus esess) throws XMLException {
         if(CAT.isDebugEnabled())
             CAT.debug("checkAccess start");
