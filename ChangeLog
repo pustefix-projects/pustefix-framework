@@ -1,3 +1,8 @@
+2004-09-17  Joerg Haecker
+
+	* example/core/build/create_serverxml.xsl
+	Prevent tomcat from serializing sessions upon shutdown
+
 2004-09-15  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixcore/editor/* 

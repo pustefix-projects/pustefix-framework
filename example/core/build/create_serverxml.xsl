@@ -216,6 +216,8 @@
       <xsl:attribute name="path"><xsl:value-of select="$path"/></xsl:attribute>
       <xsl:attribute name="docBase"><xsl:value-of select="$docBase"/></xsl:attribute>
       <xsl:attribute name="debug"><xsl:value-of select="$debug"/></xsl:attribute>
+      <!-- switch off session serialization -->
+      <Manager  pathname=""/>
     </Context>
   </xsl:template>
   
