@@ -39,6 +39,7 @@ RewriteEngine on
 <xsl:apply-templates select="$currentprj/documentroot"/>
 
 <xsl:apply-templates select="/projects/common/apache/passthrough"/>
+<xsl:apply-templates select="/projects/project/passthrough"/>
 
 <xsl:apply-templates select="$currentprj/literalapache/node()"/>
 

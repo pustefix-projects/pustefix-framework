@@ -15,6 +15,7 @@
     <!-- The default path you will be sent to when using the url -->
     <!-- "http://sample1.<servername>/" -->
     <defpath>/xml/config</defpath>
+    <passthrough>sample1/img</passthrough>
     <!-- The Apache DocumentRoot for static content -->
     <documentroot><cus:docroot/>htdocs</documentroot>
     <!-- Here you can enter any additional apache config stuff -->
@@ -81,6 +82,7 @@
     <servername>cmscore.<cus:fqdn/></servername>
     <serveralias>cmscore.<cus:machine/></serveralias>
     <defpath>/xml/edit</defpath>
+    <passthrough>core/editor/img</passthrough>
     <ports>
       <port number="80"/>
     </ports>
@@ -138,12 +140,11 @@
     <apache>
       <apachelogdir>/var/log/httpd</apachelogdir>
       <!-- For all of these there will be an alias for direct handling by apache in ALL projects. -->
+      <!-- plus all the passthrough nodes under the projects -->
       <!-- This is needed because every project can potentially use images from every other projects "img" directory  -->
       <passthrough>common/img</passthrough>
       <passthrough>core/img</passthrough>
       <passthrough>core/script</passthrough>
-      <passthrough>core/editor/img</passthrough>
-      <passthrough>sample1/img</passthrough>
     </apache>
   </common>
 </projects>

@@ -1,3 +1,8 @@
+2003-07-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_apacheconf.xsl: now <passthrough> nodes can also be
+	under the <project> node in the projects xml file.
+
 2003-07-09  Volker Zaich <zaich@schlund.de>
 
 	* editorapplet/src/de/schlund/pfixeditor/editor/PfixIncludeDialog.java
