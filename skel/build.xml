@@ -24,7 +24,7 @@ or delete the DOCTYPE definition -->
   <property name="dir.res"                  location="res"/>
   <property name="dir.dist"                 location="dist"/>
   <property name="dir.skel"                 location="skel"/>
-  <property name="dir.javadoc"              location="docs/api"/>
+  <property name="dir.javadoc"              location="target/api"/>
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.projects"             location="projects"/>
