@@ -668,6 +668,7 @@
         <possible_values></possible_values>
         <description>...</description>
       </param>
+    </cus:documentation>
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <ixsl:for-each select="{@optionpath}/option">
       <ixsl:variable name="value">
