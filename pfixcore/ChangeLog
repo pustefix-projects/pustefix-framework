@@ -1,5 +1,9 @@
 2004-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/*.xsl: moved from XSLT 1.0 to 1.1. Still pending some
+	testing if other projects don't regress. This will help to bridge the time until 
+	we finally switch to 2.0
+
 	* src/de/schlund/pfixcore/workflow/Context.java
 	(documentFromFlow): only set currentpageflow to jumptopageflow if
 	the latter is != null
