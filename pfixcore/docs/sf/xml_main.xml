@@ -1,4 +1,4 @@
-<div>
+<div xmlns:pfx="http://www.schlund.de/pustefix/core">
   <h1>Recursive Transformations</h1>
   <p>
     The XML/XSLT System of <pustefix/> is responsible for generating the
@@ -148,11 +148,32 @@
     complexity when reading the documentation. We will explicitely make it clear where you can't.</p>
 
   <h1>Include parts</h1>
-  Include parts hold the content that is displayed on your pages.
-  The parts are organized into include files.
+  <p>Include parts contain the content that is displayed on your pages.
+    The parts are organized into include files. Every part has the
+    same structure:</p>
 
+  <p>The children of the <code>part</code> tag are
+    <code>product</code> tags (at least one). The <code>name</code>
+    attribute of the <code>product</code> tag is the name of a project
+    defined in the <pustefix/> environment or "default". The latter
+    matches when a part is referenced out of a project that
+    has no exact match on a <code>product</code> tag's <code>name</code> attribute ("product branch").</p>
+
+  <p>The children of the <code>product</code> tag are <code>lang</code> tags (at least one). 
+    The <code>name</code> attribute of the <code>lang</code> tag is
+    the name of a language or "default". The latter matches when a part is
+    referenced with a language that has no exact match on a <code>lang</code> 
+    tags's <code>name</code> attribute.</p>
+
+  <p>Note that the resolution of the matching <code>product</code> is done at the time the part is included (see below).
+    Every page "knows" to which project it belongs, and therefore it
+    is possible to decide which product branch to use on generation
+    time. The language on the other hand can be changed dynamically
+    while the user clickes through the application, so the selection
+    of the right <code>lang</code> subtree to use is done at runtime.</p>
+  
+  
   <xmlcode>
-    
     <include_parts>
       <xmlcodeNS ns="ixsl">http://www.w3.org/1999/XSL/Transform</xmlcodeNS>
       <xmlcodeNS ns="pfx">http://www.schlund.de/pustefix/core</xmlcodeNS>
@@ -169,26 +190,32 @@
             </xmlcodeOFF>
           </lang>
         </product>
-        <product name="">
+        <product name="MyProject">
           <lang name="default">
             <xmlcodeOFF>
-              <div class="comment">The default content for product <b>prod_b</b> goes here...</div>
+              <div class="comment">The default content for product <b>MyProject</b> goes here...</div>
             </xmlcodeOFF>
           </lang>
           <lang name="fr">
             <xmlcodeOFF>
-              <div class="comment">Content for <b>prod_b</b> in <b>french</b> goes here...</div>
+              <div class="comment">Content for <b>MyProject</b> in <b>french</b> goes here...</div>
             </xmlcodeOFF>
           </lang>
         </product>
       </part>
       <xmlcodeOFF/>
-      <part name="partBaz">
+      <part name="Baz">
         <xmlcodeOFF>
           <div class="comment">Other parts...</div>
         </xmlcodeOFF>
       </part>
     </include_parts>
   </xmlcode>
-  
+
+  <p>A part is referenced with two attributes: The filename of the include file that contains it, and the name of the part.</p>
+
+  <xmlcode>
+    <pfx:include href="relative/path/from/docroot/to/incfile" part="Foo"/>
+  </xmlcode>
+
 </div>

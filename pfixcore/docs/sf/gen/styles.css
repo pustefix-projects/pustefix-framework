@@ -86,3 +86,6 @@ h2 {
 .tagother{ color: #ffaa44; }
 .attrkey { color: #0000ff; }
 .attrval { color: #22aa00; }
+
+
+.comment { background-color: #eeeeee; margin-left: 60px; margin-right: 60px; }
