@@ -148,7 +148,7 @@ public class ExceptionConfig {
         sb.append("]\n processor: [").append(processor);
         sb.append("]\n page: [").append(page).append("], forward: ");
         sb.append(forward ? "[true]" : "[false]");
-        sb.append(", jms: [").append(jms).append("]");
+        sb.append(", jms: [").append(jms).append("]\n");
         return sb.toString();
     }
 
