@@ -1418,11 +1418,7 @@
                       </ixsl:choose>
                     </td>
                   </tr>
-                  <tr class="editor_odd_row">
-                    <td>
-                      <xsl:call-template name="show_image_upload"/>
-                    </td>
-                  </tr>
+                    <xsl:call-template name="show_image_upload"/>
                 </table>
               </ixsl:when>
               <ixsl:otherwise>
