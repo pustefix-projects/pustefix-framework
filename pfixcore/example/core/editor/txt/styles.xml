@@ -199,6 +199,12 @@ div.docframe div.main li.low h4{
   color: #FFFFFF;
 }
 
+.editor_sidebar_box {
+  padding: 2px 2px 2px 2px;
+  background-color: #cBd5eF;
+  color: #333333;
+}
+
 .editor_sidebar_content_sel *{
   color: #FFFFFF !important;
 }

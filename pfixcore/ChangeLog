@@ -1,3 +1,20 @@
+2004-07-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor/interfaces/ShowIncFile.iwrp:
+	* src/de/schlund/pfixcore/editor/handlers/ShowIncFileHandler.java: new files.
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatus.java
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatusImpl.java:
+	new methods showAdditionalIncfiles(boolean) and boolean : getShowAdditionalIncfiles()
+	* example/core/editor/conf/config.prop.in
+	* example/core/editor/txt/styles.xml
+	* example/core/editor/xml/three_frames_editor.xml
+	* example/core/editor/xsl/metatags.xsl
+	* src/de/schlund/pfixcore/editor/EditorHelper.java
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java
+	Now we no longer show the full list of includes, but only when explicitely requested 
+	by clicking "show all". Only the includes in the same file as the current one are always shown.
+	
 2004-07-07  Jens Lautenbacher  <jtl@schlund.de>, Andreas Ecker <ae@schlund.de>
 
 	The new javascript based editing area has landed.

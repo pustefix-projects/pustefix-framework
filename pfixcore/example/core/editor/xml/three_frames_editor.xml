@@ -28,8 +28,7 @@
               </style>
             </head>
             <body class="editor_body_sidebar">
-              <pfx:maincontent path="core/editor/txt/pages" prefix="main_" 
-                part="sidebar"/>
+              <pfx:maincontent path="core/editor/txt/pages" prefix="main_"  part="sidebar"/>
             </body>
           </html>
         </pfx:frame>

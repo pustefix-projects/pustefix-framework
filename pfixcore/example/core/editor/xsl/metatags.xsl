@@ -386,10 +386,17 @@
       </xsl:choose>
     </xsl:variable>
     <table width="100%" class="editor_sidebar_content">
+      <tr>
+        <td>
+          (<pfx:button target="left_navi" frame="left_navi">
+            <pfx:command name="SELWRP">addshow</pfx:command>
+          <pfx:argument name="addshow.DoShow">true</pfx:argument>show all</pfx:button>)
+        </td>
+      </tr>
       <ixsl:for-each select="{$path}/directory">
         <tr>
           <td class="editor_sidebar_box"  nowrap="nowrap">
-            Directory: <b><ixsl:value-of select="@name"/></b>
+            Dir: <b><ixsl:value-of select="@name"/></b>
           </td>
         </tr>
         <ixsl:for-each select="./path">

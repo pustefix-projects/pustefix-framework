@@ -44,18 +44,28 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     private static final String  BACKDIR_DEF   = "/tmp/editor_backup";
     private static final String  BACKDIR_PROP  = "pfixcore.editor.backupdir";
     
-    private EditorUser    user           = null;
-    private EditorUserInfo    userforedit    = null;
-    private EditorProduct product        = null;
-    private PageInfo      currentpage    = null;
-    private Target        currenttarget  = null;
-    private AuxDependency currentimage   = null;
-    //private AuxDependency currentinclude = null;
-    private AuxDependency currentcommon  = null;
-    private Context       context        = null;
-    private String        currentdokuid  = null;
+    private EditorUser         user               = null;
+    private EditorUserInfo     userforedit        = null;
+    private EditorProduct      product            = null;
+    private PageInfo           currentpage        = null;
+    private Target             currenttarget      = null;
+    private AuxDependency      currentimage       = null;
+    //private AuxDependency currentinclude        = null;
+    private AuxDependency      currentcommon      = null;
+    private Context            context            = null;
+    private String             currentdokuid      = null;
     private CurrentIncludeInfo currentIncludeInfo = new CurrentIncludeInfo();
-        
+    private boolean            addincshown        = false;
+
+
+    public void showAdditionalIncfiles(boolean doshow) {
+        addincshown = doshow;
+    }
+
+    public boolean getShowAdditionalIncfiles() {
+        return addincshown;
+    }
+    
     public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
         root.setAttribute("loginallowed", "" + getLoginAllowed());
         if (user != null) {

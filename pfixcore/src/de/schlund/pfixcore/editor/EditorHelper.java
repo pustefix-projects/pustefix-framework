@@ -639,7 +639,9 @@ public class EditorHelper {
     }
 
     
-    public static void renderAllIncludesForNavigation(TreeSet includes, ResultDocument resdoc, Element root) {
+    public static void renderAllIncludesForNavigation(TreeSet includes, ResultDocument resdoc,
+                                                      Element root, AuxDependency currinc, boolean doshow) {
+        
         String olddir = "";
         Path oldpath = null;
         Element direlem = null;
@@ -660,10 +662,13 @@ public class EditorHelper {
                 pathelem.setAttribute("name", path.getRelative());
                 oldpath = path;
             }
-            Element inc = resdoc.createSubNode(pathelem, "include");
-            inc.setAttribute("path", path.getRelative());
-            inc.setAttribute("part", part);
-            inc.setAttribute("product", product);
+            if (doshow  || (currinc != null && currinc.getPath().equals(path))) {
+                Element inc = resdoc.createSubNode(pathelem, "include");
+                inc.setAttribute("path", path.getRelative());
+                inc.setAttribute("part", part); 
+                inc.setAttribute("product", product);
+            }
+
         }
     }
 
