@@ -1,3 +1,10 @@
+2004-12-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_depend.xsl: use global and local
+	parameters now in all transformations for standardpage (not only
+	the last one). Also no longer accept local definitions of product/lang in 
+	targets, always use the global from the make root node.
+
 2004-12-06  Adam Habermann  <adam.habermann@schlund.de>
 	* src/de/schlund/pfixcore/util/XsltGenericTask.java
 	Changed task, so the validate attribute may be true|false|dynamic.
