@@ -47,7 +47,8 @@ xmlRequest.prototype.start = function( content ) {
       _xml[i] = new XMLHttpRequest();
 
       if( this.callback ) {
-        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 && _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); }' );
+        //alert(""+_xml['+i+'].readyState + (_xml['+i+'].readyState==4 ? _xml['+i+'].status : "XXX"));
+        _xml[i].onreadystatechange = new Function( 'if( _xml['+i+'].readyState == 4 ) { if( _xml['+i+'].status < 300 ) { '+this.callback+'(_xml['+i+'].responseXML); } else { throw "Asynchronous call failed"; }}' );
       }
       _xml[i].open( this.method, this.url, this.callback ? true : false);
       _xml[i].setRequestHeader("SOAPAction", '""');
@@ -114,13 +115,13 @@ xmlRequest.prototype.start = function( content ) {
 
     var i = _xml.length;
 
-    document.getElementById("dbg").value += "\n>" + i;
+    //    document.getElementById("dbg").value += "\n>" + i;
 
     var iframe = document.createElement("iframe");
 		iframe.style.visibility = "hidden";
-//     iframe.style.position   = "absolute";
-//     iframe.style.left       = "0px";
-//     iframe.style.top        = "0px";
+    //     iframe.style.position   = "absolute";
+    //     iframe.style.left       = "0px";
+    //     iframe.style.top        = "0px";
     iframe.style.width      = "0px";
     iframe.style.height     = "0px";    
     iframe.id               = "pfxxmliframe"+i;
@@ -141,9 +142,9 @@ xmlRequest.prototype.start = function( content ) {
 
         var attr;
         var form = iDoc.createElement("form");
-//         attr = iDoc.createAttribute("action");
-//         attr.nodeValue = self.url;
-//         form.setAttributeNode(attr);
+        //         attr = iDoc.createAttribute("action");
+        //         attr.nodeValue = self.url;
+        //         form.setAttributeNode(attr);
         form.action = self.url;
         form.method = "POST";
 
@@ -165,24 +166,11 @@ xmlRequest.prototype.start = function( content ) {
       _xmlTimer[i] = window.setInterval('customOnReadyStateChange()', _xmlTimerInterval);
     }
 
-//       var count=0;
-//       while( _xmlTimer[i] && count++<10000000 ) {
-//       }
-
-//       alert(count);
-
-//       var timer = window.setInterval( function() {
-//         if( !_xmlTimer[i] ) {
-//           window.clearInterval(timer);
-//         }
-//       }, 0);
-    }
-
-		return "iframe";
-	}
+    return "iframe";
+  }
 
   // Error
-	return false;
+  return false;
 };
 
 //*****************************************************************************
@@ -190,10 +178,10 @@ xmlRequest.prototype.start = function( content ) {
 //*****************************************************************************
 function customOnReadyStateChange() {
 
-	for( var i=0; i<_xml.length; i++ ) {
+  for( var i=0; i<_xml.length; i++ ) {
     if( _xmlTimer[i] &&_xml[i] ) {
 
-      document.getElementById("dbg").value += "\n=" + _xmlTimerCount[i] + ", ";
+      //      document.getElementById("dbg").value += "\n=" + _xmlTimerCount[i] + ", ";
 
       try {
         if( _xmlTimerCount[i]<_xmlTimerCountMax ) {
@@ -201,7 +189,7 @@ function customOnReadyStateChange() {
             _xmlTimerCount[i]++;
           } else {
 
-            sleepMSec(5000);
+            sleepMSec(1000);
 
             //            alert( _xmlTimerCount[i] + "\n" + document.getElementById("pfxxmliframe"+i).contentWindow.document );
             

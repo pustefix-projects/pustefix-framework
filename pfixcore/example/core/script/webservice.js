@@ -501,16 +501,15 @@ Call.prototype.invoke=function() {
 	soapMsg.getSOAPPart().getEnvelope().getBody().addBodyElement(bodyElem);
 	soapMsg.write(writer);
   //  alert("writer.xml:\n" + writer.xml);
-  	document.getElementById('request').value=writer.xml;
+  //  	document.getElementById('request').value=writer.xml;
   	
 
-	var resDoc=sendTest(writer.xml,this.endpoint);
+  var resDoc=sendTest(writer.xml,this.endpoint);
 
 	
-	return rpc.deserialize(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
-	
-  //return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
+  //	return rpc.deserialize(resDoc.getElementsByTagNameNS(XMLNS_SOAPENV,"Body")[0]);
 
+  return new xmlRequest( 'POST', this.endpoint, this.callback ).start( writer.xml );
 }
 
 

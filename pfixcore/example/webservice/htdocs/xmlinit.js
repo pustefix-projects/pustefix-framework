@@ -31,6 +31,8 @@ function init() {
 
 function cb( xml ) {
 
+  alert("cb");
+
   try {
 
     //  sleepMSec( 1000 );

@@ -6,6 +6,8 @@
 </script>
 <script type="text/javascript" src="xmlinit.js">
 </script>
+<script type="text/javascript" src="Calculator.js">
+</script>
 <script type="text/javascript">
 var count = 0;
 </script>
@@ -14,7 +16,7 @@ var count = 0;
 <form>
 <input type="button" value="load" onclick="_reqLoad.start()" />&nbsp;&nbsp;
 <input type="button" value="send" onclick="new xmlRequest( 'POST', 'http://webservice.dvorak.ue.schlund.de/xml/webservice/Calculator', 'cb' ).start()" /><input name="sendcontent" type="text" /><br />
-<input type="button" value="Calculator (sync)" onclick='alert( Calculator.multiply( count++, 1) )' /><br />
+<input type="button" value="Calculator (sync)" onclick='var res = Calculator.multiply( count++, 1); document.getElementById("dbg").value += "\nresult:" + res + "\n"; return false' /><br />
 <input type="button" value="Calculator (async)" onclick='Calculator.multiply( count++, 1, function(v){ document.getElementById("dbg").value += "\nresult:" + v + "\n"; return; alert("result:"+v);} )' /><br />
 <textarea id="dbg" cols="80" rows="20"></textarea>
 </form>
