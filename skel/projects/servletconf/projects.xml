@@ -7,6 +7,7 @@
   <common>
     <commonpropfile><cus:docroot/>common/conf/pustefix.prop</commonpropfile>
     <tomcat>
+      <minprocessors>100</minprocessors>
       <maxprocessors>500</maxprocessors>
       <connectorport>8009</connectorport>
       <debug>0</debug>
