@@ -8,6 +8,35 @@
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
 
+  <xsl:key name="xinp_text" match="pfx:xinp[@type='text']" use="'text'"/>
+  <xsl:key name="xinp_area" match="pfx:xinp[@type='area']" use="'area'"/>
+  <xsl:key name="xinp_hidden" match="pfx:xinp[@type='hidden']" use="'hidden'"/>
+  <xsl:key name="xinp_password" match="pfx:xinp[@type='password']" use="'password'"/>
+
+  <xsl:template name="pfx:get_position">
+    <xsl:param name="set"/>
+    <xsl:param name="cnode"/>
+    <xsl:param name="count"/>
+    <xsl:choose>
+      <xsl:when test="count($set) > 0">
+        <xsl:choose>
+          <xsl:when test="generate-id($set[position() = 1]) = generate-id($cnode)">
+            <xsl:value-of select="$count"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="pfx:get_position">
+              <xsl:with-param name="set" select="$set[position() > 1]"/>
+              <xsl:with-param name="cnode" select="$cnode"/>
+              <xsl:with-param name="count" select="$count + 1"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>-1</xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+    
+  
   <xsl:template match="pfx:label" name="pfx:label">
     <cus:documentation>
       <responsible>JTL</responsible>    
@@ -446,7 +475,7 @@
         </xsl:choose>]:<xsl:value-of select="@name"/>:<xsl:apply-templates select="./node()"/>:</xsl:for-each>
     </ixsl:attribute>
   </xsl:template>
-  
+
   <xsl:template match="pfx:xinp[@type='image']">
     <cus:documentation>
     <responsible>JTL</responsible>
@@ -544,66 +573,23 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates a hidden-field. Hidden Fields will can be usefull, if you need values,
-        that shouldn't be displayed on a page. Params will be copied.
+      that shouldn't be displayed on a page. Params will be copied.
       </description>
     </cus:documentation>
+
     <input type="hidden">
       <xsl:copy-of select="@name"/>
+      <xsl:variable name="thename" select="@name"/>
+      <xsl:variable name="pos">
+        <xsl:call-template name="pfx:get_position">
+          <xsl:with-param name="set" select="key('xinp_hidden','hidden')[@name = $thename]"/>
+          <xsl:with-param name="cnode" select="."/>
+          <xsl:with-param name="count" select="1"/>
+        </xsl:call-template>
+      </xsl:variable>
       <ixsl:attribute name="value">
-        <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
+        <ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/>
       </ixsl:attribute>
-      <xsl:apply-templates/>
-    </input>
-  </xsl:template>
-
-
-  <xsl:template match="pfx:xinp[@type='radio']">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Creates a html radio button. Every Radio-Button in a group has the same name.
-        The attribute &#148;value&#148; should be
-        different in each Radio-Button. All params will be copied.
-      </description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the radiobutton</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:forminput>
-              <pfx:xinp type="radio" name="feldname" value="wert1">My Text to 1</pfx:xinp><br/>
-              <pfx:xinp type="radio" name="feldname" value="wert2">Title  2</pfx:xinp><br/>
-              <pfx:xinp type="radio" name="feldname" value="wert3">Something Point 3</pfx:xinp><br/>
-            </pfx:forminput>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <form method="post" action="baz">
-              <input type="radio" name="feldname" value="wert1"/>My Text to 1<br/>
-              <input type="radio" name="feldname" value="wert2"/>Title  2<br/>
-              <input type="radio" name="feldname" value="wert3"/>Something Point 3<br/>
-            </form>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>  
-    <input type="radio">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
-      <xsl:choose>
-        <xsl:when test="@default = 'true'">
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
-            <ixsl:attribute name="checked">checked</ixsl:attribute>
-          </ixsl:if>
-        </xsl:when>
-        <xsl:otherwise>
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
-            <ixsl:attribute name="checked">checked</ixsl:attribute>
-          </ixsl:if>
-        </xsl:otherwise>
-      </xsl:choose>
       <xsl:apply-templates/>
     </input>
   </xsl:template>
@@ -754,6 +740,57 @@
     </ixsl:for-each>
   </xsl:template>
 
+  <xsl:template match="pfx:xinp[@type='radio']">
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Creates a html radio button. Every Radio-Button in a group has the same name.
+        The attribute &#148;value&#148; should be
+        different in each Radio-Button. All params will be copied.
+      </description>
+      <param required="1">
+        <name>name</name>
+        <values><string/></values>
+        <description>name of the radiobutton</description>
+      </param>
+      <example>
+        <input>
+          <xmlcode>
+            <pfx:forminput>
+              <pfx:xinp type="radio" name="feldname" value="wert1">My Text to 1</pfx:xinp><br/>
+              <pfx:xinp type="radio" name="feldname" value="wert2">Title  2</pfx:xinp><br/>
+              <pfx:xinp type="radio" name="feldname" value="wert3">Something Point 3</pfx:xinp><br/>
+            </pfx:forminput>
+          </xmlcode>
+        </input>
+        <output>
+          <xmlcode>
+            <form method="post" action="baz">
+              <input type="radio" name="feldname" value="wert1"/>My Text to 1<br/>
+              <input type="radio" name="feldname" value="wert2"/>Title  2<br/>
+              <input type="radio" name="feldname" value="wert3"/>Something Point 3<br/>
+            </form>
+          </xmlcode>
+        </output>
+      </example>
+    </cus:documentation>  
+    <input type="radio">
+      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:choose>
+        <xsl:when test="@default = 'true'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:when>
+        <xsl:otherwise>
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+            <ixsl:attribute name="checked">checked</ixsl:attribute>
+          </ixsl:if>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:apply-templates/>
+    </input>
+  </xsl:template>
+
   <xsl:template match="pfx:xinp[@type='check']">
     <cus:documentation>
       <responsible>JTL</responsible>
@@ -851,17 +888,25 @@
       </cus:documentation>
       <input type="text" size="40" maxlength="200">
         <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+        <xsl:variable name="thename" select="@name"/>
+        <xsl:variable name="pos">
+          <xsl:call-template name="pfx:get_position">
+            <xsl:with-param name="set" select="key('xinp_text','text')[@name = $thename]"/>
+            <xsl:with-param name="cnode" select="."/>
+            <xsl:with-param name="count" select="1"/>
+          </xsl:call-template>
+        </xsl:variable>
         <xsl:choose>
           <xsl:when test="@default">
             <ixsl:attribute name="value">
               <ixsl:choose>
-                <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:value-of select="@default"/></ixsl:when>
-                <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
+                <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:value-of select="@default"/></ixsl:when>
+                <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
               </ixsl:choose>
             </ixsl:attribute>
           </xsl:when>
           <xsl:otherwise>
-            <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:attribute>
+            <ixsl:attribute name="value"><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:attribute>
           </xsl:otherwise>
         </xsl:choose>
         <xsl:apply-templates/>
@@ -901,10 +946,12 @@
           </output>
         </example>
       </cus:documentation>
+      
       <input type="password" size="40" maxlength="200">
         <xsl:copy-of select="@*[name()!='type']"/>
+        <xsl:variable name="thename" select="@name"/>
         <ixsl:attribute name="value">
-          <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
+          <ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = 1]"/>
         </ixsl:attribute>
         <xsl:apply-templates/>
       </input>
@@ -915,7 +962,7 @@
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>Creates a html-textarea. All attributes will be copied to the resulting
-        &lt;textarea&gt; html tag</description>
+      &lt;textarea&gt; html tag</description>
       <param required="1">
         <name>name</name>
         <values><string/></values>
@@ -947,9 +994,17 @@
     </cus:documentation>   
     <textarea cols="38" rows="20">
       <xsl:copy-of select="@*[name()!='type']"/>
+      <xsl:variable name="thename" select="@name"/>
+      <xsl:variable name="pos">
+        <xsl:call-template name="pfx:get_position">
+          <xsl:with-param name="set" select="key('xinp_area','area')[@name = $thename]"/>
+          <xsl:with-param name="cnode" select="."/>
+          <xsl:with-param name="count" select="1"/>
+        </xsl:call-template>
+      </xsl:variable>
       <ixsl:choose>
-        <ixsl:when test="not(/formresult/formvalues/param[@name='{@name}'])"><xsl:apply-templates/></ixsl:when>
-        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/></ixsl:otherwise>
+        <ixsl:when test="not(/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}])"><xsl:apply-templates/></ixsl:when>
+        <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name='{$thename}'][position() = {$pos}]"/></ixsl:otherwise>
       </ixsl:choose>
     </textarea>
   </xsl:template>

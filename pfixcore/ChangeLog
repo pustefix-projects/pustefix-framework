@@ -1,3 +1,21 @@
+2004-02-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: new recognize also
+	<param name="AName">AValue</param> nodes under <resource>. This
+	results in properties being set relative to the context resources
+	classname: context.param.AContextResource.AName=AValu
+
+	* lib/xalan-2.1.0.jar removed, java-1.4 already has the XPathAPI from xalan we use.
+	* lib/xercesImpl-2.6.1.jar
+	* lib/xml-apis.jar  Updated to version 2.6.1 of xerces. Should fix some quotation 
+	problems at least. Still a main problem to solve to get rid of xalan completely and 
+	port to a new saxon.
+
+	* example/core/xsl/forminput.xsl.in: try to handle multiple input
+	elements with the same name more sensible (only text, hidden and
+	area). If the parameter is defined as "multiple" the return values
+	in formvalues will be used to fill the input fields one after the other.
+
 2004-02-06  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml: fixed generation of property fqdn for manually
