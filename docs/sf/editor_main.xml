@@ -51,7 +51,7 @@
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              No the application is in <i>EditMode.</i>
+              Now the application is in <i>EditMode.</i>
               In EditMode every include part is framed by red curly braces. Remember that include parts
               can be nested. After each closing curly brace there is a small box with a
               pen symbol in it. Staying with to mouse over it shows the ToolTip
