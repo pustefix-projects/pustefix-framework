@@ -281,6 +281,12 @@
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
+  <xsl:template match="prop:encoding">
+    <xsl:text>servlet.encoding=</xsl:text>
+    <xsl:value-of select="text()"/>
+    <xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+
   <xsl:template match="editmode">
     <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
     <xsl:choose>

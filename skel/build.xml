@@ -479,7 +479,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="targetdefs" depends="ant-tasks" description="creates **/depend.xml">
+  <target name="targetdefs" depends="ant-tasks, projects_xml" description="creates **/depend.xml">
     <pfx-xslt
      style="${dir.projects}/core/build/create_depend.xsl"
      srcdir="${dir.projects}"
@@ -489,6 +489,7 @@ or delete the DOCTYPE definition -->
      >
       <param name="prohibitEdit" expression="${prohibitedit}"/>
       <param name="docroot" expression="${dir.docroot}"/>
+      <param name="projectsFile" expression="${file.projects_xml}"/>
     </pfx-xslt>
   </target>
 

@@ -1,3 +1,37 @@
+2005-04-04  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/build/create_depend.xsl: If no global or target specific outputencoding is specified,
+	a node for the outputencoding stylesheet parameter with the project's encoding is inserted. 
+	* example/core/build/create_propfiles.xsl: Create 'servlet.encoding' from 'servletinfo/encoding'-node,
+	which can be used to overwrite the servlet encoding's default (the project's encoding).
+	* example/core/build/create_serverxml.xsl: Add URIEncoding attribute to the Connector elements. The value 
+	can be set in projects.xml.in. (/projects/common/tomcat/uriencoding).
+	* example/core/build/create_webxml.xsl: Sets the project encoding as default servlet encoding by addding
+	it as 'servlet.encoding' init parameter.
+	* example/core/schema/properties200401.xsd: Added optional encoding element as servletinfo-child, which
+	can be used to set the servlet's encoding resp. overwrite the project encoding.
+	* example/sample1/conf/config.prop.in: Added encoding test page.
+	* example/sample1/conf/depend.xml.in: Added encoding test page.
+	* example/sample1/conf/project.xml.in: Added encoding element, defining the project's encoding (without
+	an encoding element UTF-8 is taken as default).
+	* example/servletconf/projects.xml.in: Added uriencoding element under /projects/common/tomcat (wihtout
+	an encoding element UTF-8 is taken as default).
+	* skel/build.xml: Added projects_xml target to dependcy list of targetdefs target.
+	* src/de/schlund/pfixxml/ServletManager.java: Added method initServletEncoding() which gets the encoding
+	from the servlet.encoding init parameter resp. the according property (overriding the init parameter). 
+	At the beginning of the doGet() method setCharacterEncoding() is called on the request and response
+	objects to set the appropriate encoding.
+	* example/sample1/txt/pages/main_encoding.xml: Added encoding test page.
+	Added encoding test:
+	* src/de/schlund/pfixcore/example/ContextEncodingTest.java
+	* src/de/schlund/pfixcore/example/ContextEncodingTestImpl.java
+	* src/de/schlund/pfixcore/example/EncodingTestHandler.java
+	* src/de/schlund/pfixcore/example/EncodingTestState.java
+	* src/de/schlund/pfixcore/example/iwrapper/EncodingTest.iwrp
+	* src/de/schlund/pfixxml/util/URIParameters.java: Added helper class to get parameters from an URI 
+	urlencoded by an arbitrary encoding.
+
+
 2005-04-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in: Implemented a fall back for lang nodes: If a lang node's @name ends with a '*', 
