@@ -24,7 +24,7 @@
         </table>
       </td>
     </tr> 
-    <tr>
+    <tr valign="top">
       <td>
         <stdimg src="img/editor_applet_dynincludes.png">
           The <i>EditorApplet</i> of the <pustefix/> editor
