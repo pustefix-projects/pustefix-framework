@@ -476,7 +476,14 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
+        // String etag = preq.getRequest().getHeader("Etag");
+        // String id   = createIDForDocument(preq,spdoc, paramhash);
+        // if (etag != null && etag.equals(id)) {
+        //     res.sendError(res.SC_NOT_MODIFIED);
+        // } else {
+        //     res.setHeader("Etag", id);
         render(spdoc, getRendering(preq), res, paramhash, stylesheet);
+        // }
         
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
