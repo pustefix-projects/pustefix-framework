@@ -4,10 +4,10 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
-                xmlns:cus="http://www.schlund.de/pustefix/customize"> 
+                xmlns:cus="http://www.schlund.de/pustefix/customize">
 
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
-  
+
   <!-- needed for the template below to work... ughh, bloody hack. -->
   <xsl:template match="pfx:invisible"></xsl:template>
   <xsl:template match="pfx:argument"></xsl:template>
@@ -15,7 +15,7 @@
   <xsl:template match="pfx:anchor"></xsl:template>
   <xsl:template match="pfx:host">
     <cus:documentation>
-      
+
       <description>Always a child of &lt;pfx:elink&gt;. See there for usage information.</description>
     </cus:documentation>
   </xsl:template>
@@ -38,7 +38,7 @@
       <xsl:apply-templates/>
     </ixsl:if>
     <cus:documentation>
-      
+
       <description>The content of the tag will be used if the reference page has already been visited</description>
       <param required="0">
         <name>page</name>
@@ -50,7 +50,7 @@
       </param>
     </cus:documentation>
   </xsl:template>
-  
+
   <xsl:template match="pfx:unvisited">
     <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
     <xsl:variable name="pagename_impl">
@@ -69,7 +69,7 @@
       <xsl:apply-templates/>
     </ixsl:if>
     <cus:documentation>
-      
+
       <description>The content of the tag will be used if the reference page has not already been visited</description>
       <param required="0">
         <name>page</name>
@@ -81,7 +81,7 @@
       </param>
     </cus:documentation>
   </xsl:template>
-  
+
   <xsl:template match="pfx:button">
     <xsl:call-template name="pfx:button_impl">
       <xsl:with-param name="normal">
@@ -143,7 +143,7 @@
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
     <cus:documentation>
-      
+
       <description>You can use this tag as a switch (for sending formulars) or as a link. The content of this tag will be the link content</description>
       <param required="0">
         <name>activeclass</name>
@@ -190,6 +190,8 @@
             <li>mode="force": The button is always displayed as a link, and the normalclass css is used.</li>
             <li>mode="desc" : The button is considered to be in active mode (aka: NOT clickable) not only when the page attribute points to the
             current page, but also when a subpage of the target page is the current page. The activeclass css is used in this case.</li>
+            <li>mode="urlonly" : No button is displayed, but instead only the 'raw' URL of the target, to which the button
+            points, is printed out.</li>
           </ul>
         </description>
       </param>
@@ -199,7 +201,7 @@
         <description>The target in the frameset</description>
       </param>
       <param required="0">
-        <name>frame</name> 
+        <name>frame</name>
         <values><string/></values>
         <description>The name of
         the target frame that should be loaded as defined in the
@@ -375,7 +377,7 @@
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
     <cus:documentation>
-      
+
       <description>
         Similar to the &lt;pfx:button&gt;, but it uses JavaScript
         mouse-over and mouse-out events to create a rollover image.
@@ -390,7 +392,7 @@
         <name>omnover</name>
         <description>Name of the mouse-over picture</description>
         <standard></standard>
-        <possible_values></possible_values>        
+        <possible_values></possible_values>
       </param>
       <param required="0">
         <name>accesskey</name>
@@ -412,7 +414,7 @@
           </xmlcode>
         </output>
       </example>
-    </cus:documentation>  
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template name="pfx:button_impl">
@@ -452,7 +454,7 @@
       <xsl:choose>
         <xsl:when test="$frame">
           <xsl:value-of select="$frame"/>
-        </xsl:when>  
+        </xsl:when>
         <xsl:when test="ancestor-or-self::pfx:frame[position()=2]/@name">
           <xsl:value-of select="ancestor-or-self::pfx:frame[position()=2]/@name"/>
         </xsl:when>
@@ -482,100 +484,109 @@
       </xsl:choose>
     </xsl:variable>
     <xsl:variable name="path_to_page">/formresult/navigation<xsl:for-each select="$thebuttpage/ancestor-or-self::page">/page[@name='<xsl:value-of select="./@name"/>']</xsl:for-each></xsl:variable>
-    <ixsl:choose>
-      <ixsl:when test="{$path_to_page}/@visible = '0'">
-        <span>
-          <xsl:attribute name="class">
-            <xsl:choose>
-              <xsl:when test="$invisibleclass = ''">core_button_invisible</xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="$invisibleclass"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:attribute>
-          <xsl:copy-of select="$invisible"/>
-        </span>
-      </ixsl:when>
-      <ixsl:otherwise>
-        <xsl:choose>
-          <xsl:when test="not($mode_impl = 'force') and ($page = $buttpage_impl)">
+
+    <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
+    <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
+    <xsl:variable name="prelink">
+      <xsl:value-of select="$thehandler"/>/<xsl:value-of select="$buttpage_impl"/>
+    </xsl:variable>
+    <xsl:variable name="postlink">
+      <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
+    </xsl:variable>
+    <xsl:variable name="fulllink">
+      <xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
+      <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
+      <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
+      <xsl:if test="$pageflow">&amp;__pageflow=<xsl:value-of select="$pageflow"/></xsl:if>
+      <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
+      <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$buttpage_impl"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
+      <xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="$mode_impl = 'urlonly'">
+        <xsl:copy-of select="$fulllink" />
+      </xsl:when>
+      <xsl:otherwise>
+        <ixsl:choose>
+          <ixsl:when test="{$path_to_page}/@visible = '0'">
             <span>
               <xsl:attribute name="class">
                 <xsl:choose>
-                  <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
+                  <xsl:when test="$invisibleclass = ''">core_button_invisible</xsl:when>
                   <xsl:otherwise>
-                    <xsl:value-of select="$activeclass"/>
+                    <xsl:value-of select="$invisibleclass"/>
                   </xsl:otherwise>
                 </xsl:choose>
               </xsl:attribute>
-              <xsl:copy-of select="$active"/>
+              <xsl:copy-of select="$invisible"/>
             </span>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:variable name="thehandler" select="$thebuttpage/@handler"/>
-            <xsl:variable name="thequery">__frame=<xsl:value-of select="$frame_impl"/></xsl:variable>
-            <xsl:variable name="prelink">
-              <xsl:value-of select="$thehandler"/>/<xsl:value-of select="$buttpage_impl"/>
-            </xsl:variable>
-            <xsl:variable name="postlink">
-              <xsl:text>?</xsl:text><xsl:value-of select="$thequery"/>
-            </xsl:variable>
-            <a target="{$target_impl}">
-              <xsl:if test="not($accesskeyimpl = '')">
-                <xsl:attribute name="accesskey"><xsl:value-of select="$accesskeyimpl"/></xsl:attribute>
-              </xsl:if>
-              <xsl:attribute name="class">
-                <xsl:choose>
-                  <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
+          </ixsl:when>
+          <ixsl:otherwise>
+            <xsl:choose>
+              <xsl:when test="not($mode_impl = 'force') and ($page = $buttpage_impl)">
+                <span>
+                  <xsl:attribute name="class">
                     <xsl:choose>
                       <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
                       <xsl:otherwise>
                         <xsl:value-of select="$activeclass"/>
                       </xsl:otherwise>
                     </xsl:choose>
-                  </xsl:when>
-                  <xsl:otherwise>
+                  </xsl:attribute>
+                  <xsl:copy-of select="$active"/>
+                </span>
+              </xsl:when>
+              <xsl:otherwise>
+                <a target="{$target_impl}">
+                  <xsl:if test="not($accesskeyimpl = '')">
+                    <xsl:attribute name="accesskey"><xsl:value-of select="$accesskeyimpl"/></xsl:attribute>
+                  </xsl:if>
+                  <xsl:attribute name="class">
                     <xsl:choose>
-                      <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
+                      <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
+                        <xsl:choose>
+                          <xsl:when test="$activeclass = ''">core_button_active</xsl:when>
+                          <xsl:otherwise>
+                            <xsl:value-of select="$activeclass"/>
+                          </xsl:otherwise>
+                        </xsl:choose>
+                      </xsl:when>
                       <xsl:otherwise>
-                        <xsl:value-of select="$normalclass"/>
+                        <xsl:choose>
+                          <xsl:when test="$normalclass = ''">core_button_normal</xsl:when>
+                          <xsl:otherwise>
+                            <xsl:value-of select="$normalclass"/>
+                          </xsl:otherwise>
+                        </xsl:choose>
                       </xsl:otherwise>
                     </xsl:choose>
-                  </xsl:otherwise>
-                </xsl:choose>
-              </xsl:attribute>
-              <xsl:variable name="fulllink">
-                <xsl:value-of select="$prelink"/>;<ixsl:value-of select="$__sessid"/><xsl:value-of select="$postlink"/>
-                <xsl:if test="$args and not($nodata)">&amp;__sendingdata=1</xsl:if>
-                <xsl:for-each select="$args">&amp;<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
-                <xsl:if test="$pageflow">&amp;__pageflow=<xsl:value-of select="$pageflow"/></xsl:if>
-                <xsl:if test="$startwithflow">&amp;__startwithflow=<xsl:value-of select="$startwithflow"/></xsl:if>
-                <xsl:for-each select="$cmds">&amp;__CMD[<xsl:choose><xsl:when test="./@page"><xsl:value-of select="./@page"/></xsl:when><xsl:otherwise><xsl:value-of select="$buttpage_impl"/></xsl:otherwise></xsl:choose>]:<xsl:value-of select="./@name"/>=<xsl:apply-templates select="./node()"/></xsl:for-each>
-                <xsl:for-each select="$anchors">&amp;__anchor=<xsl:value-of select="@frame"/>|<xsl:apply-templates select="./node()"/></xsl:for-each>
-              </xsl:variable>
-              <xsl:if test="$omover and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
-                <xsl:attribute name="onmouseover"><xsl:value-of select="$omover"/></xsl:attribute></xsl:if>
-              <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
-                  <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
-              <xsl:if test="$target = '_popup'">
-                <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:copy-of select="$fulllink"/>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
-              </xsl:if>
-              <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
-              <xsl:choose>
-                <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
-                  <xsl:copy-of select="$active"/>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:copy-of select="$normal"/>
-                </xsl:otherwise>
-              </xsl:choose>
-            </a>
-          </xsl:otherwise> 
-        </xsl:choose>
-      </ixsl:otherwise>
-    </ixsl:choose>
+                  </xsl:attribute>
+                  <xsl:if test="$omover and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
+                    <xsl:attribute name="onmouseover"><xsl:value-of select="$omover"/></xsl:attribute></xsl:if>
+                  <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
+                      <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
+                  <xsl:if test="$target = '_popup'">
+                    <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:copy-of select="$fulllink"/>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
+                  </xsl:if>
+                  <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
+                  <xsl:choose>
+                    <xsl:when test="$mode_impl = 'desc' and $thebuttpage//page[@name=$page]">
+                      <xsl:copy-of select="$active"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:copy-of select="$normal"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </a>
+              </xsl:otherwise>
+            </xsl:choose>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
     <cus:documentation>
-      
+
       <description>Called by &lt;pfx:button&gt; and &lt;pfx:jsbutton&gt;</description>
     </cus:documentation>
   </xsl:template>
@@ -586,14 +597,14 @@
         <xsl:choose>
           <xsl:when test="@href or ./pfx:host">
             <xsl:choose>
-              <xsl:when test="not(contains(@href, '?'))">               
+              <xsl:when test="not(contains(@href, '?'))">
                 <xsl:variable name="href">
                   <xsl:if test="@href">
-                    <xsl:value-of select="concat('/xml/deref?link=',@href)"/>    
-                  </xsl:if>            
+                    <xsl:value-of select="concat('/xml/deref?link=',@href)"/>
+                  </xsl:if>
                   <xsl:if test="./pfx:host">
                     <xsl:text>/xml/deref?link=</xsl:text>
-                    <xsl:apply-templates select="./pfx:host/node()"/>   
+                    <xsl:apply-templates select="./pfx:host/node()"/>
                   </xsl:if>
                   <xsl:if test="./pfx:argument">
                     <xsl:text>%3f</xsl:text>
@@ -604,7 +615,7 @@
                       </xsl:if>
                     </xsl:for-each>
                   </xsl:if>
-                </xsl:variable>               
+                </xsl:variable>
                 <a>
                   <xsl:copy-of select="@*"/>
                   <xsl:if test="@target = '_popup'">
@@ -642,7 +653,7 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      
+
       <description>Creates a link to an external page. If you want
       to create a dynamic link, leave href blank and
       use the child:pfx:host
@@ -713,28 +724,28 @@
       </example>
     </cus:documentation>
   </xsl:template>
-  
+
   <xsl:template match="pfx:wizardnavigation">
     <ixsl:choose>
       <ixsl:when test="/formresult/iwrappergroups/@lastindex = 0">
         <xsl:apply-templates select="./pfx:flat/node()"/>
-      </ixsl:when> 
+      </ixsl:when>
       <ixsl:otherwise>
         <xsl:apply-templates select="./pfx:group/node()"/>
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-      
+
       <description>will be documentated later</description>
       <children>
         <name>pfx:group</name>
         <description></description>
-      </children>  
+      </children>
       <children>
         <name>pfx:flat</name>
         <description></description>
-      </children>  
-    </cus:documentation>  
+      </children>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardprevious">
@@ -776,15 +787,15 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-      
+
       <description>will be documentated later</description>
       <children>
         <name>pfx:active</name>
-        <description></description>        
+        <description></description>
       </children>
       <children>
         <name>pfx:inactive</name>
-        <description></description>        
+        <description></description>
       </children>
       <example>
         <input>
@@ -797,8 +808,8 @@
         </input>
         <output>
         </output>
-      </example> 
-    </cus:documentation>  
+      </example>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardnext">
@@ -811,15 +822,15 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-      
+
       <description>will be documentated later</description>
       <children>
         <name>pfx:active</name>
-        <description></description>        
+        <description></description>
       </children>
       <children>
         <name>pfx:inactive</name>
-        <description></description>        
+        <description></description>
       </children>
       <example>
         <input>
@@ -837,10 +848,10 @@
         <output>
           <xmlcode></xmlcode>
         </output>
-      </example>     
+      </example>
     </cus:documentation>
   </xsl:template>
-  
+
   <xsl:template match="pfx:wizardfinish">
     <ixsl:choose>
       <ixsl:when test="/formresult/iwrappergroups/@currentindex = /formresult/iwrappergroups/@lastindex">
@@ -851,21 +862,21 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-      
+
       <description>will be documentated later</description>
       <children>
         <name>pfx:active</name>
-        <description></description>        
+        <description></description>
       </children>
       <children>
         <name>pfx:inactive</name>
-        <description></description>        
+        <description></description>
       </children>
       <example>
         <input>
           <xmlcode>
             <pfx:wizardfinish>
-              <pfx:active>   
+              <pfx:active>
                 <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Finish"/>
               </pfx:active>
               <pfx:inactive>Finish</pfx:inactive>
@@ -881,8 +892,8 @@
 
 </xsl:stylesheet>
 
-<!-- 
-Local Variables: 
-mode: xsl 
-End: 
---> 
+<!--
+Local Variables:
+mode: xsl
+End:
+-->
