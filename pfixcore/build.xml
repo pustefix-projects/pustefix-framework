@@ -29,6 +29,12 @@
     <property name="dir.jni"                location="jni"/>
     <property name="dir.metainf"            location="META-INF"/>
     <property name="dir.projects"           location="example"/>
+    <property name="dir.examplepage"        location="${dir.projects}/simplepage"/>
+    <property name="name.examplepage"       value="simplepage"/>
+    <property name="dir.examplelink"        location="${dir.projects}/simplelink"/>
+    <property name="name.examplelink"       value="simplelink"/>
+    <property name="dir.exampleform"        location="${dir.projects}/simpleform"/>
+    <property name="name.exampleform"       value="simpleform"/>
     <property name="dir.docroot"            location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
     <property name="file.projects_xml"      location="${dir.projects}/servletconf/projects.xml"/>
     <property name="genlog"                 value="quiet" description="which log4j config to use for the generate task; currently one of quiet, full, tree; defaults to quiet; see ${dir.projects}/core/conf/generator_*.xml"/>
@@ -43,6 +49,8 @@
     <property name="file.pfixcore_data_tgz" location="${dir.dist}/${name.pfixcore_data_tgz}"/>
     <property name="name.pfixcore_skel_tgz" value="${project.name}-skel-${project.version}.tar.gz"/>
     <property name="file.pfixcore_skel_tgz" location="${dir.dist}/${name.pfixcore_skel_tgz}"/>
+    <property name="name.pfixcore_examples_tgz" value="${project.name}-examples-${project.version}.tar.gz"/>
+    <property name="file.pfixcore_examples_tgz" location="${dir.dist}/${name.pfixcore_examples_tgz}"/>
     
     <target name="properties">
         <!-- Ant properties are immutable, the order of definition is:
@@ -407,6 +415,31 @@
 
     <target name="notag" depends="clean" description="Builds release files in dist directory without tagging cvs.">
         <antcall target="skeleton" inheritall="true"/>
+    </target>
+    
+     <target name="dist-examples" description="Builds three basic examples as a pustefix turorial">
+         <echo message="Building ${name.pfixcore_examples_tgz} in dist directory"/>
+         <delete file="${file.pfixcore_examples_tgz}"/>
+         <delete>
+            <fileset dir="${dir.examplepage}/conf" excludes="**.in"/>
+            <fileset dir="${dir.examplelink}/conf" excludes="**.in"/>
+            <fileset dir="${dir.exampleform}/conf" excludes="**.in"/>
+         </delete>
+        <tar destfile="${file.pfixcore_examples_tgz}" compression="gzip">
+            <tarfileset dir="${dir.examplepage}" includes="**" prefix="${name.examplepage}"/>
+            <tarfileset dir="${dir.projects}" includes="README_EXAMPLES.txt"/>
+            <tarfileset dir="${dir.examplelink}" includes="**" prefix="${name.examplelink}"/>
+            <tarfileset dir="${dir.exampleform}" includes="**" prefix="${name.exampleform}"/>
+            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/iwrapper/DemoText.iwrp" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/ContextDemoText.java" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/ContextDemoTextImpl.java" prefix="src"/>
+            <tarfileset dir="${dir.src}" includes="de/schlund/pfixcore/example/DemoTextHandler.java" prefix="src"/>
+        </tar>
+    </target>
+    
+    
+    <target name="basic-app" description="Builds a naked application and creates the basic stuff">
+    	
     </target>
 
     <target name="fixtabs">
