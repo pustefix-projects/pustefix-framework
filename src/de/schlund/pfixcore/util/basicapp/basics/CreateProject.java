@@ -25,7 +25,7 @@ import de.schlund.pfixcore.util.basicapp.objects.Project;
 
 /**
  * Building the project with all informations collected by
- * @see de.schlund.pfixcore.util.basicapp.basics.CreateBasicSettings
+ * @see de.schlund.pfixcore.util.basicapp.basics.CreateProjectSettings
  * 
  * @author <a href="mailto:rapude@schlund.de">Ralf Rapude</a>
  * @version $Id$
@@ -34,7 +34,7 @@ import de.schlund.pfixcore.util.basicapp.objects.Project;
 public class CreateProject {
     /** 
      * The project settings initialized by 
-     * @see de.schlund.pfixcore.util.basicapp.basics.CreateBasicSettings 
+     * @see de.schlund.pfixcore.util.basicapp.basics.CreateProjectSettings 
      */
     private Project project = null;
     private String docRoot  = AppValues.BASICPATH;

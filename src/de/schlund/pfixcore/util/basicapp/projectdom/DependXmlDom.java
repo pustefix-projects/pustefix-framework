@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.helper.XmlUtils;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
@@ -59,7 +60,7 @@ public final class DependXmlDom {
         this.project  = project; 
         projectName   = project.getProjectName();
         projectLang   = project.getLanguage();
-        servletAmount = project.getServletAmount();
+        servletAmount = project.getServletList().size();
         
         prepareDependXml();
     }
@@ -88,6 +89,16 @@ public final class DependXmlDom {
                  AppValues.DEPENDATT_LANG, 
                  projectLang);
         
+        // change attribute handler in the page tag for the default servlet
+        String defServletHandler = ((ServletObject)(project.getServletList().get(0))).getServletName();
+        buffy.append(AppValues.XMLCONSTANT);
+        buffy.append(defServletHandler);
+        
+        domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_PAGE,
+                 AppValues.DEPENDATT_HANDLER, buffy.toString());
+        
+        buffy.setLength(0);
+        
         // change attribute stylesheet in the include tag
         buffy.append(projectName);
         buffy.append(AppValues.XSLFOLDER);
@@ -98,14 +109,14 @@ public final class DependXmlDom {
         
         buffy.setLength(0);
         
+        
         // change the attribute xml in the standardpage tag
         buffy.append(projectName);
-        buffy.append(AppValues.XMLFOLDER);
+        buffy.append(AppValues.XMLCONSTANT);
         buffy.append(AppValues.FRAMEXML);
         
         domDoc = XmlUtils.changeAttributes(domDoc, AppValues.DEPENDTAG_STDPAGE,
                  AppValues.DEPENDATT_XML, buffy.toString());
-        
         buffy.setLength(0);
         
         // setting the amount of servlets in depend.xml
@@ -129,20 +140,28 @@ public final class DependXmlDom {
                 AppValues.DEPENDTAG_NAVIGATION).item(0);
         
         // an ArrayList with the servlet spec
-        ArrayList tmpList   = project.getServletList();
-        Element newElement  = null;
-        String tmpName      = null;
-        String tmpHandler   = null;
+        ArrayList tmpList  = project.getServletList();
+        Element newElement = null;
+        String tmpName     = null;
+        String myHandler   = null;
+        Text lastIndent    = domDoc.createTextNode("  ");
         
         for (int i = 0; i < myAmount; i++) {
-            tmpName    = ((ServletObject)tmpList.get(i)).getServletName();
-            tmpHandler = ((ServletObject)tmpList.get(i)).getServletPath();
-            newElement = domDoc.createElement(AppValues.DEPENDTAG_PAGE);
-            newElement.setAttribute(AppValues.DEPENDATT_NAME, tmpName);
-            newElement.setAttribute(AppValues.DEPENDATT_HANDLER, tmpHandler);
+            Text txtIndent     = domDoc.createTextNode("    ");
+            Text txtReturn  = domDoc.createTextNode("\n");
+            tmpName         = ((ServletObject)tmpList.get(i)).getServletName();
+            myHandler       = AppValues.XMLCONSTANT + tmpName;
+            newElement      = domDoc.createElement(AppValues.DEPENDTAG_PAGE);
+            
+            newElement.setAttribute(AppValues.DEPENDATT_NAME, AppValues.DEPENDATT_HOME + (i + 1));
+            newElement.setAttribute(AppValues.DEPENDATT_HANDLER, myHandler);
+   
             navigationNode.appendChild(newElement);
+            navigationNode.appendChild(txtReturn);
+            navigationNode.insertBefore(txtIndent, newElement);
         }
         
+        navigationNode.appendChild(lastIndent);
         return domDoc;
     }
 

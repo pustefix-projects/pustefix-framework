@@ -35,11 +35,14 @@ public final class Project {
     private static final Logger LOG = Logger.getLogger(Project.class);
     
     /** A String for the projectname */
-    private String projectName = null;
-    /** An int for the amount of servlets */
-    private int servletAmount;
+    private String projectName    = null;
     /** A String for the language */
-    private String language    = null;
+    private String language       = null;
+    /** A String project comment */
+    private String comment        = null;
+    /** A static field for the projectname */
+    private static String PRJNAME = null;
+    
     /** 
      * An ArrayList containing the servlet properties.
      * @see de.schlund.pfixcore.util.basicapp.objects.ServletObject
@@ -69,27 +72,18 @@ public final class Project {
         return projectName;
     }
     
+    /** A getter for the static variable */
+    public static String getStaticPrjName() {
+        return PRJNAME;
+    }
+    
     /**
      * @param projectName The projectName to set.
      */
     public void setProjectName(String projectName) {
         LOG.debug("Setting the projectname: " + projectName);
         this.projectName = projectName;
-    }
-    
-    /**
-     * @return Returns the servletAmount.
-     */
-    public int getServletAmount() {
-        return servletAmount;
-    }
-    
-    /**
-     * @param servletAmount The servletAmount to set.
-     */
-    public void setServletAmount(int servletAmount) {
-        LOG.debug("Current Servlet Amount: " + servletAmount);
-        this.servletAmount = servletAmount;
+        PRJNAME          = projectName;
     }
     
     /**
@@ -99,6 +93,18 @@ public final class Project {
         return servletList;
     }
     
+    /**
+     * @return Returns the comment.
+     */
+    public String getComment() {
+        return comment;
+    }
+    /**
+     * @param comment The comment to set.
+     */
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
     /**
      * @param servletList The servletList to set.
      */

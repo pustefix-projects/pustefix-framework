@@ -44,7 +44,7 @@ public final class AppValues {
     /** A String describing the xsl folder name */
     public static final String XSLFOLDER       = "/xsl/";
     /** A String describing the xml folder name */
-    public static final String XMLFOLDER       = "/xml/";
+    public static final String XMLCONSTANT       = "/xml/";
     /** The htdocs folder */
     public static final String HTDOCSFOLDER    = "/htdocs";
     /** String for config.prop.in */
@@ -65,10 +65,25 @@ public final class AppValues {
     public static final String PROJECTXML      = "project.xml";
     /** String for skin.xsl (the basic stylesheet) */
     public static final String SKINXSL         = "skin.xsl";
+    /** String for default language */
+    public static final String DEFAULTLNG      = "en";
+    /** String for default servlet name */
+    public static final String DFSERVLETNAME   = "config";
+    /** Suffix for the projects comment */
+    public static final String PRJCOMMENTSUFF  = "comment";
+    /** suffix for docroot tag */
+    public static final String DOCROOTSUFFIX  = "cus";
+    /** file suffix for prop */
+    public static final String CFGFILESUFF    = ".prop";
+    /** file suffix for prop.in */
+    public static final String CFGFILESUFFIN = ".prop.in";
+    /** default name for pages */
+    public static final String PAGEDEFAULT   = "home";
     /** All those values as an array */
     public static final String[] TEMPLATEARR   = {"config.tmpl", 
-            "depend.tmpl", "content.tmpl", "frame.tmpl", "project.tmpl", 
+            "depend.tmpl", "frame.tmpl", "project.tmpl", 
             "skin.tmpl"};
+    
     
     /** All Template strings */
     public static final String CONFIG_TMPL     = "config.tmpl";
@@ -95,6 +110,8 @@ public final class AppValues {
     public static final String CONFIGATT_NAME         = "name";
     public static final String CONFIGATT_NAMEPREFIX   = "pfixcore_project:";
     public static final String CONFIGATT_NAMEPOSTFIX  = "::servlet:config";
+    public static final String CONFIGTAG_FLOWSTEP     = "flowstep";
+    public static final String CONFIGTAG_PAGEREQUEST  = "pagerequest";
     
     /** Strings for the depend.xml.in */
     public static final String DEPENDTAG_MAKE         = "make";
@@ -110,10 +127,12 @@ public final class AppValues {
     public static final String DEPENDTAG_INCLUDE      = "include";
     public static final String DEPENDTAG_STDPAGE      = "standardpage";
     public static final String DEPENDATT_XML          = "xml";
+    public static final String DEPENDATT_HOME         = "home";
+    public static final String DEPENTATT_HOME_DEF     = "home1";
     
     
     /** Strings for the project.xml.in */
-    public static final String PROJECTTAG_DOCROOT     = "documentroot";
+    public static final String PROJECTTAG_DOCUMENTROOT= "documentroot";
     public static final String PROJECTTAG_PROJECT     = "project";
     public static final String PROJECTATT_NAME        = "name";
     public static final String PROJECTTAG_SERVERNAME  = "servername";
@@ -121,6 +140,16 @@ public final class AppValues {
     public static final String PROJECTTAG_DEPEND      = "depend";
     public static final String PROJECTTAG_PROPFILE    = "propfile";
     public static final String PROJECTTAG_PASSTHROUGH = "passthrough";
+    public static final String PROJECTTAG_COMMENT     = "comment";
+    public static final String PROJECTTAG_DEFPATH     = "defpath";
+    public static final String PROJECTTAG_SERVLET     = "servlet";
+    public static final String PROJECTTAG_ACTIVE      = "active";
+    public static final String PROJECTTAG_CLASS       = "class";
+    public static final String PROJECTTAG_DOCROOT     = "cus:docroot";
+    public static final String PROJECTVALUE_TRUE      = "true";
+    public static final String PROJECTVALUE_CLASS     = "de.schlund.pfixxml.ContextXMLServer";
+    public static final String PROJECTPRRF_DOCROOT    = "cus"; 
+    public static final String PROJECTATT_EDITOR      = "useineditor";
     
     /** Strings for frame xml */
     public static final String FRAMETAG_INCLUDE       = "pfx:include";

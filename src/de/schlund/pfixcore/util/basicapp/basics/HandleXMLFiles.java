@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import de.schlund.pfixcore.util.basicapp.helper.AppValues;
 import de.schlund.pfixcore.util.basicapp.objects.Project;
+import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 import de.schlund.pfixcore.util.basicapp.projectdom.ConfigXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.DependXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.FrameXmlDom;
@@ -95,9 +96,16 @@ public class HandleXMLFiles {
             // desciding what to do with the current document
             // the config,prop.in
             if (tmpDoc.equals(AppValues.CONFIG_TMPL)) {
-                wrtDoc                   = AppValues.CONFIGPROPIN;
-                ConfigXmlDom configDom   = new ConfigXmlDom(project, domDoc);
+            
+            // loop if there are more servlets defined
+            for (int j = 0; j < project.getServletList().size(); j++) {
+                String defServletName = ((ServletObject)(project.getServletList().
+                        get(j))).getServletName();
+                wrtDoc                   = defServletName + AppValues.CFGFILESUFFIN;
+                ConfigXmlDom configDom   = new ConfigXmlDom(project, domDoc, j + 1);
                 domDoc                   = configDom.getDom();
+                writeXmlFile(domDoc, wrtDoc);
+            }
                 
             // the depend.xml    
             } else if (tmpDoc.equals(AppValues.DEPEND_TMPL)) {
@@ -116,10 +124,6 @@ public class HandleXMLFiles {
                 wrtDoc                   = AppValues.FRAMEXML;
                 FrameXmlDom frameDom     = new FrameXmlDom(project, domDoc);
                 domDoc                   = frameDom.getDom();
-                
-            // the content.xml will just be written without modification
-            } else if (tmpDoc.equals(AppValues.CONTENT_TMPL)) {
-                wrtDoc                   = AppValues.CONTENTXML;
                 
             // the skin.xml also
             } else if (tmpDoc.equals(AppValues.SKIN_TMPL)) {
@@ -173,20 +177,12 @@ public class HandleXMLFiles {
         try {
             // Prepare the DOM document for writing
             Source source = new DOMSource(domDoc);
-    
-            // Prepare the output file for content.xml
-            if (fileName.equals(AppValues.CONTENTXML)) {
-                buffy.append(AppValues.BASICPATH);
-                buffy.append(projectName);
-                buffy.append(AppValues.PATHTO_PAGES);
-                file = new File(buffy.toString() + fileName);
-                buffy.setLength(0);
                 
             // preparing the output file for frame.xml
-            } else if (fileName.equals(AppValues.FRAMEXML)) {
+            if (fileName.equals(AppValues.FRAMEXML)) {
                 buffy.append(AppValues.BASICPATH);
                 buffy.append(projectName);
-                buffy.append(AppValues.XMLFOLDER);
+                buffy.append(AppValues.XMLCONSTANT);
                 file = new File(buffy.toString() + fileName);
                 buffy.setLength(0);
                 
@@ -200,7 +196,7 @@ public class HandleXMLFiles {
                 
             // and in the case that is a normal config file
               // e.g. The config.prop.in
-            } else if (fileName.equals(AppValues.CONFIGPROPIN)) {
+            } else if (fileName.endsWith(AppValues.CFGFILESUFFIN)) {
                 file = new File(pathToConf + fileName);
                 
               // or the depend.xml.in 

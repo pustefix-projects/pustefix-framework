@@ -45,7 +45,6 @@ public class StringUtils {
         
         if (input == null || input.length() == 0) {
             LOG.debug("String is not ok");
-            System.out.println("Please type in a String.");
             return emptyString;
         } else {
             LOG.debug("String is ok");
@@ -74,18 +73,6 @@ public class StringUtils {
         return input;
     }
     
-    /**
-     * Look if the path has got a leadint slash.
-     * If not it will be added
-     * @param path The path typed in by the user
-     */
-    public static String giveCorrectPath(String path) {
-        if (!path.startsWith("/")) {
-            path = "/" + path;  
-        }
-        
-        return path;
-    }
     
     /**
      * Check whether the project already exists
@@ -105,28 +92,5 @@ public class StringUtils {
         }
         
         return exists;
-    }
-    
-    /**
-     * Checking for a valid int in order to 
-     * get the amount of servlets
-     * @param the servlet amount
-     */
-    public static int checkServletAmount (String amount) 
-    throws NumberFormatException {
-        LOG.debug("Checking the String by regular expression...");
-        int tmpInt = 0;
-        amount.trim();
-        
-        if (amount.equals("")) {
-            return tmpInt;
-        } else if (amount.matches("[0-9]++")) {
-            tmpInt = Integer.parseInt(amount);
-            LOG.debug("String is a valid int");
-            return tmpInt;
-        } else {
-            LOG.debug("RegEx fails. No int!");
-            return -1;
-        }
     }
 }
