@@ -64,6 +64,11 @@ public class SPCacheStatistic implements FactoryInit {
     /** Timer used for AdvanceCacheStatistic */
     private Timer tickTimer = new Timer(true);
 
+    public static void reset() {
+        theInstance = new SPCacheStatistic();
+    }
+
+    
      /**
      * Retrieve information which maps the config file
      * of an TargetGenerator to a product name and get the
