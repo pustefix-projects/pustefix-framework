@@ -231,9 +231,11 @@
     attribute values) but instead the filename of the include part is auto generated from the
     name of the page that is to be produced.</p>
 
-  <p>Looking at <a href="depend.html">this page</a>, one can see that the two transformations which produce <code>BazPage.xml</code>
-    resp. <code>BazPage.xsl</code> have the page name supplied through the use of an XSLT transformation parameter.
-    Using this parameter, the tag <code>pfx:maincontent</code> constructs an include request depending on the page name.</p>
+  <p>Looking at <a href="depend.html#stdpage">this page</a>, one can see that the two
+    transformations which produce <code>BazPage.xml</code> resp. <code>BazPage.xsl</code> have the
+    page name supplied through the use of an XSLT transformation parameter.  Using this parameter,
+    the tag <code>pfx:maincontent</code> constructs an include request depending on the page
+    name.</p>
 
   <xmlcode>
     <pfx:maincontent part="content" path="MyProject/txt/pages" prefix="main_"/>
