@@ -1158,28 +1158,27 @@
       <table class="editor_box" width="100%">
         <tr>
           <td colspan="2">
-<div id="wfxtb01" style="border:1px solid black"></div>
-      <table cellpadding="0" cellspacing="0" width="100%" border="0">
-				<tbody>
-					<tr>
-						<td width="50"><iframe id="wfxline01" frameborder="0" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left" src="about:blank" scrolling="no"></iframe></td>
-						<td><iframe id="wfxedit01" frameborder="0" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right" src="about:blank" scrolling="yes"></iframe></td>
-					</tr>
-				</tbody>
-			</table>
-<br />
-<input type="button" value="Upload Data" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" />
-<br />
-<div style="display:none">
-Line: <input type="text" id="wfxed_line" size="3" value="" />
-Scroll: <input type="text" id="wfxed_column" size="3" value="" />
-Message: <input type="text" id="wfxed_msg" size="100" value="" />
-<br />
-<textarea id="ta_src" rows="10" cols="130" style="display:none"></textarea>
-<textarea id="ta_col" rows="10" cols="130" style="display:none"></textarea>
-<br />
-      
-            <pfx:xinp class="editor_textarea" wrap="off" type="area" id="wfxta01" name="{$upload}.Content"/>
+            <div id="wfxtb01" style="border:1px solid black"></div>
+            <table cellpadding="0" cellspacing="0" width="100%" border="0">
+              <tbody>
+                <tr>
+                  <td width="50"><iframe id="wfxline01" frameborder="0" style="width:50px; height:384px; border:1px solid #000000; background-color:#ffffff; float:left" src="about:blank" scrolling="no"></iframe></td>
+                  <td><iframe id="wfxedit01" frameborder="0" style="width:100%; height:384px; border:1px solid #000000; background-color:#ffffff; float:right" src="about:blank" scrolling="yes"></iframe></td>
+                </tr>
+              </tbody>
+            </table>
+            <br />
+            <input class="editor_submit" type="button" value="Upload Data" onclick="wfxed.submitContent('wfxta01', 'wfxsubmit01')" />
+            <br />
+            <div style="display:none">
+              Line: <input type="text" id="wfxed_line" size="3" value="" />
+              Scroll: <input type="text" id="wfxed_column" size="3" value="" />
+              Message: <input type="text" id="wfxed_msg" size="100" value="" />
+              <br />
+              <textarea id="ta_src" rows="10" cols="130" style="display:none"></textarea>
+              <textarea id="ta_col" rows="10" cols="130" style="display:none"></textarea>
+              <br />
+              <pfx:xinp class="editor_textarea" wrap="off" type="area" id="wfxta01" name="{$upload}.Content"/>
             </div>
           </td>
         </tr>
