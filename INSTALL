@@ -109,11 +109,11 @@ Prerequisites:
         
         http://cmsskel.HOSTNAME.DOMAIN 
 
-6)	You will find some basic applications in the example.tar.gz. 
-	Just unpack the file with "tar xvzf example.tar.gz" in your skel/projects 
-	directory and take a short look to the README_EXAMPLES.txt included in the 
-	tar afterwards.
-
+6)  You will find some basic applications in the example.tar.gz.
+    Just unpack the file with "tar xvzf example.tar.gz" in your skel/projects 
+    directory and take a short look to the README_EXAMPLES.txt included in the 
+    tar afterwards.
+    
     Have Fun.
 
 
