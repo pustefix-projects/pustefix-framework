@@ -72,10 +72,10 @@
     <param name="mimetype">text/css</param>
     <cus:choose>
       <cus:test mode="prod">
-        <param name="responseheader.Cache-Control">max-age="3600"</param>
+        <param name="responseheader.Cache-Control">max-age=3600</param>
       </cus:test>
-      <cus:test mode="test">
-        <param name="responseheader.Cache-Control">max-age="30"</param>
+      <cus:test>
+        <param name="responseheader.Cache-Control">max-age=30</param>
       </cus:test>
     </cus:choose>
   </pagerequest>
