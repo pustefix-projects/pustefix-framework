@@ -1,7 +1,9 @@
 2003-11-10  Jens Lautenbacher  <jtl@schlund.de>
 
-	* released 0.4.1
-	* started 0.4.2-pre
+	* released 0.4.1. This is the last release with Makefiles.
+
+	* started 0.4.2-pre: Removed all the makefile cruft. There needs still more work to
+	be done wrt the INSTALL files.
 
 2003-11-08  Jens Lautenbacher  <jtl@schlund.de>
 	
