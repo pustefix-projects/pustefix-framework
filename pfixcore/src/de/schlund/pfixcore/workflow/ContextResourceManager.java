@@ -155,9 +155,9 @@ public class ContextResourceManager implements Reloader {
     public ContextResource getResource(String name) {
         return  (ContextResource) resources.get(name);
     }
-    
+
     private void checkInterface(Object obj, String interfacename) throws ServletException {
-        Class   wantedinterface       = null;
+        Class wantedinterface = null;
         
         // Get the class of the requested interface and get all
         // implemented interfaces of the object
