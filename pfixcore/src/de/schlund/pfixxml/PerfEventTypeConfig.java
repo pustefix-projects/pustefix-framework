@@ -9,6 +9,8 @@ package de.schlund.pfixxml;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.util.FactoryInit;
 
@@ -20,6 +22,7 @@ import de.schlund.util.FactoryInit;
  */
 public class PerfEventTypeConfig implements FactoryInit {
     private static PerfEventTypeConfig instance = new PerfEventTypeConfig();
+    private static Logger LOG = Logger.getLogger(PerfEventTypeConfig.class);
     private boolean initialised = false;
     private HashMap properties;
     
@@ -33,18 +36,21 @@ public class PerfEventTypeConfig implements FactoryInit {
     
     public void init(Properties props) throws Exception {
         properties = PropertiesUtils.selectProperties(props, "perfstat");
-        System.out.println("properties: "+properties);
+        initialised = true;
     }
 
     public long getPerfDelayProperty(String name) {
+        checkInit();
         if(properties.get(name) == null) {
-            throw new IllegalArgumentException("Property named '"+name+"'   ");
+            LOG.error("Property named '"+name+"' not found.");
+            throw new IllegalArgumentException("Property named '"+name+"' not found");
         }
         return Long.parseLong(properties.get(name).toString());
     }
     
     private void checkInit() {
         if(!initialised) {
+            LOG.error("Factory not configured yet!");
             throw new IllegalStateException("Factory not configured yet!");
         }
     }
