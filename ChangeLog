@@ -1,3 +1,14 @@
+2003-02-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java
+	(addData): removed methods. Removed handling of __DATA:Key:Value:
+	sections in parameter names. see below.
+
+	* src/de/schlund/pfixxml/PfixServletRequest.java (checkParameterNameForEmbeddedData): 
+	new method. Moved the scanning for __DATA:KEY:VAL: strings in
+	parameter names from RequestDataImpl into this method. now we can
+	handle those __DATA sections transparently everywhere.
+
 2003-02-14 Joerg Haecker <haecker@schlund.de>
 
 	* lib/jcert.jar; lib/jnet.jar; lib/jsse.jar: added
