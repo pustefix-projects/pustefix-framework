@@ -1,7 +1,13 @@
 2003-10-28  Adam Habermann  <adam.habermann@schlund.de>
 	
-	* build.xml: made cvs tag work in target "dist", removed workaround for jni from pfixcore.jar
-	cleaned up format of CVS_AUTOTAG to be terminated by "&#010;"
+	* build.xml:
+	Made cvs tag work in target "dist", removed workaround for jni from pfixcore.jar
+	Cleaned up format of CVS_AUTOTAG to be terminated by "&#010;"
+	Removed make comments for easier diffing with skel/build.xml
+	* build.xml, skel/build.xml:
+	Let target statusmessages_xml depend on target propfiles
+	Using only one classpath including example/servletconf/tomcat/common/lib/servlet.jar
+	Synchronized the two build files more closer for easier (xml-)diffing
 
 2003-10-27  Adam Habermann  <adam.habermann@schlund.de>
 	
