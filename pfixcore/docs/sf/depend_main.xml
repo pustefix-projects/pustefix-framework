@@ -133,6 +133,35 @@
 
   <xmlcode>
     <target name="master.xsl" type="xsl">
+      <xmlcodeOFF>
+        <table class="stdtable">
+          <tr>
+            <th>
+              Atribute
+            </th>
+            <th>
+              Notes
+            </th>
+          </tr>
+          <tr>
+            <td>
+              name
+            </td>
+            <td>
+              The name of the target. This name must be unique for the whole project (NOT the whole environment!)
+            </td>
+          </tr>
+          <tr>
+            <td>
+              type
+            </td>
+            <td>
+              Must be <b>xsl</b> for a target that should be "compiled" into a templates object. Must be <b>xml</b> for every
+              target that is used as input for a transformation.
+            </td>
+          </tr>
+        </table>
+      </xmlcodeOFF>
       <depxml name="core/xsl/master.xsl"/>
       <depxsl name="core/editor/xsl/custommaster.xsl"/>
       <depaux name="core/xsl/default_copy.xsl"/>
