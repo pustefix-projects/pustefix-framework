@@ -18,25 +18,34 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.apache.log4j.*;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.editor.EditorProduct;
+import de.schlund.pfixcore.editor.EditorProductFactory;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.auth.AuthManager;
+import de.schlund.pfixcore.editor.auth.AuthManagerFactory;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.auth.ProjectPermissions;
+import de.schlund.pfixcore.editor.interfaces.EditUserData;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.generator.IHandler;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.util.UnixCrypt;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
- * EditUserDataHandler.java
+ * Handler for changing user data.
  *
- *
- * Created: Sun Dec 10 14:34:24 2001
- *
+ * <br/>
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
- *
- *
  */
 
 public class EditUserDataHandler implements IHandler {
@@ -47,17 +56,19 @@ public class EditUserDataHandler implements IHandler {
         EditorSessionStatus    esess  = EditorRes.getEditorSessionStatus(crm);
         EditUserData           data   = (EditUserData) wrapper;
         EditorUser             curr   = esess.getUser();
-        EditorUser             euser  = esess.getUserForEdit();
+        EditorUserInfo         euser  = esess.getUserForEdit();
         StatusCodeFactory      sfac   = new StatusCodeFactory("pfixcore.editor.userdata");
         boolean                commit = true;
         
         String name  = data.getName();
-        String group = data.getGroup();
         String sect  = data.getSect();
         String phone = data.getPhone();
 
         String pass1 = data.getPass1();
         String pass2 = data.getPass2();
+        
+        
+        
         String crypt = null;
         
         if (pass1 != null && pass2 != null && pass1.equals(pass2)) {
@@ -72,15 +83,121 @@ public class EditUserDataHandler implements IHandler {
             euser.setName(name);
             euser.setSect(sect);
             euser.setPhone(phone);
-            if (curr.isAdmin()) {
+            /*if (curr.isAdmin()) {
                 euser.setGroup(group);
-            }
+            }*/
             if (crypt != null) {
                 euser.setPwd(crypt);
             }
+            
+            
+            // Permission stuff can only be edited by an admin!
+            if(curr.getUserInfo().isAdmin()) {
+                Boolean admin = data.getAdmin();
+                Boolean editDynDefault = data.getDynInclDef();
+        
+                
+                // global
+                if(admin != null && admin.booleanValue()) {
+                    if(CAT.isDebugEnabled())
+                        CAT.debug("Setting "+euser.getId()+" to admin");
+                    euser.getGlobalPerms().setAdmin(true);
+                } else {
+                    if(CAT.isDebugEnabled())
+                        CAT.debug("Setting "+euser.getId()+" to NON admin");
+                    euser.getGlobalPerms().setAdmin(false);
+                }
+                if(editDynDefault != null && editDynDefault.booleanValue()) {
+                    if(CAT.isDebugEnabled())
+                        CAT.debug("Setting "+euser.getId()+" to DynInclEditDefault");
+                    euser.getGlobalPerms().setEditDynIncludesDefault(true);
+                } else {
+                    if(CAT.isDebugEnabled())
+                        CAT.debug("Setting "+euser.getId()+" to NON DynInclEditDefault");
+                    euser.getGlobalPerms().setEditDynIncludesDefault(false);
+                }
+                
+                               
+                // projects
+                EditorProduct[] prods = EditorProductFactory.getInstance().getAllEditorProducts();
+                for(int i=0; i<prods.length; i++) {
+                    String n = prods[i].getName();
+                     
+                    //edit dynincludes
+                    String ec = data.geteditcom(n);
+                    if(ec!=null &&  ec.equals("true")) {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null) {
+                            p.setEditDynIncludes(true);
+                        } else {
+                            p = new ProjectPermissions();
+                            p.setEditDynIncludes(true);
+                            euser.addProjectPermission(n, p);
+                        }
+                    } else {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null){
+                            p.setEditDynIncludes(false);
+                        } else {
+                            p = new ProjectPermissions();
+                            p.setEditDynIncludes(true);
+                            euser.addProjectPermission(n, p);
+                        }
+                    }
+                    
+                    //edit images
+                    String ei = data.geteditimg(n);
+                    if(ei!= null && ei.equals("true")) {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null) {
+                            p.setEditImages(true);
+                        } else {
+                            p = new ProjectPermissions();
+                            p.setEditImages(true);
+                            euser.addProjectPermission(n, p);
+                        }
+                    } else {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null){
+                            p.setEditImages(false);
+                        } else {
+                            p = new ProjectPermissions();
+                            p.setEditImages(true);
+                            euser.addProjectPermission(n, p);
+                        }
+                    }
+                    
+                    //edit includes
+                    String en = data.geteditincl(n);
+                    if(en!=null && en.equals("true")) {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null) {
+                            p.setEditIncludes(true);
+                        } else {
+                        p = new ProjectPermissions();
+                        p.setEditIncludes(true);
+                        euser.addProjectPermission(n, p);
+                                                }
+                    } else {
+                        ProjectPermissions p = euser.getProjectPerms(n);
+                        if(p!=null){
+                            p.setEditIncludes(false);
+                        } else {
+                            p = new ProjectPermissions();
+                            p.setEditIncludes(true);
+                            euser.addProjectPermission(n, p);
+                       }
+                    }
+                }             
+            }
+            
+            
             // make sure the user is really added
-            EditorUserFactory.getInstance().addEditorUser(euser);
-            EditorUserFactory.getInstance().writeFile();
+            //TODO TODO
+            EditorUser.addUser(euser);
+            
+            AuthManagerFactory.getInstance().getAuthManager().commit();
+            
             // reset the selected "user for editing"
             esess.setUserForEdit(null);
         }
@@ -90,12 +207,44 @@ public class EditUserDataHandler implements IHandler {
         ContextResourceManager crm   = context.getContextResourceManager();
         EditorSessionStatus    esess = EditorRes.getEditorSessionStatus(crm);
         EditUserData           data  = (EditUserData) wrapper;
-        EditorUser             euser = esess.getUserForEdit();
+        EditorUserInfo             euser = esess.getUserForEdit();
 
-        data.setStringValGroup(euser.getGroup());
         data.setStringValName(euser.getName());
         data.setStringValPhone(euser.getPhone());
         data.setStringValSect(euser.getSect());
+        data.setStringValAdmin(""+euser.getGlobalPerms().isAdmin());
+        data.setStringValDynInclDef(""+euser.getGlobalPerms().isEditDynIncludesDefault());
+        
+        
+        HashMap prjperms = euser.getAllProjectPerms();
+        EditorProduct[] allprj = EditorProductFactory.getInstance().getAllEditorProducts();
+        for(int i=0; i<allprj.length; i++) {
+            String name = allprj[i].getName();
+            if(prjperms.containsKey(name)) {
+                ProjectPermissions p = (ProjectPermissions) prjperms.get(name);
+                data.setStringValeditcom(""+p.isEditDynIncludes(), name);
+                data.setStringValeditimg(""+p.isEditImages(), name);
+                data.setStringValeditincl(""+p.isEditIncludes(), name);  
+            } else {
+                data.setStringValeditcom("false", name);
+                data.setStringValeditimg("false", name);
+                data.setStringValeditincl("false", name);
+            }
+        }
+        
+        
+        if(CAT.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("\nGlobalPerms:  Admin="+euser.getGlobalPerms().isAdmin()+" editDefault="+euser.getGlobalPerms().isEditDynIncludesDefault()).append("\n");
+            HashMap prp = euser.getAllProjectPerms();
+            Iterator iter = prp.keySet().iterator();
+            while(iter.hasNext()){
+                String key = (String)iter.next();
+                ProjectPermissions p = (ProjectPermissions) prp.get(key);
+                sb.append("Projects: "+key+"  editIncludes="+p.isEditIncludes()+" editImages="+p.isEditImages()+" editDefaults="+p.isEditDynIncludes()).append("\n");
+            }
+            CAT.info(sb.toString());
+        }
     }
         
     public boolean prerequisitesMet(Context context) {

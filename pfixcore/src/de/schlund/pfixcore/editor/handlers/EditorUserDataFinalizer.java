@@ -18,16 +18,16 @@
 */
 
 package de.schlund.pfixcore.editor.handlers;
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.editor.interfaces.*;
-import de.schlund.pfixcore.editor.resources.*;
-import de.schlund.pfixcore.generator.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixcore.workflow.app.*;
-import de.schlund.util.*;
-import de.schlund.util.statuscodes.*;
-import de.schlund.pfixxml.*;
-import org.w3c.dom.*;
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixcore.workflow.app.IWrapperContainer;
+import de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer;
+import de.schlund.pfixxml.ResultDocument;
 
 /**
  * EditorUserDataFinalizer.java
@@ -47,7 +47,7 @@ public class EditorUserDataFinalizer extends ResdocSimpleFinalizer {
         ContextResourceManager crm     = context.getContextResourceManager();
         EditorSessionStatus    esess   = EditorRes.getEditorSessionStatus(crm);
         ResultDocument         resdoc  = container.getAssociatedResultDocument();
-        EditorUser             user    = esess.getUserForEdit();
+        EditorUserInfo             user    = esess.getUserForEdit();
         
         // Render the current status of the editor session
         esess.insertStatus(resdoc, resdoc.createNode("cr_editorsession"));

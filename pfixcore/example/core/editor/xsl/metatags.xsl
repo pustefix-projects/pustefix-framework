@@ -37,7 +37,7 @@
 
   <xsl:template match="productselection">
     <table width="100%" class="editor_box">
-      <ixsl:for-each select="/formresult/allproducts/product">
+      <ixsl:for-each select="/formresult/cr_editorsession/allproducts/product">
         <tr>
           <td>
             <ixsl:value-of select="./@comment"/>
@@ -168,6 +168,7 @@
   </xsl:template>
 
 
+  <!-- Render all editor users in a table -->
   <xsl:template match="displayallusers">
     <table cellspacing="0" class="editor_box" width="100%" style="padding:0px;">
       <tr>
@@ -176,9 +177,6 @@
         </td>
         <td class="editor_head">
           <b>Username</b>
-        </td>
-        <td class="editor_head">
-          <b>Group</b>
         </td>
         <td class="editor_head" colspan="2">
           <b>Sect/Phone</b>
@@ -201,9 +199,6 @@
           </td> 
           <td style="padding: 5px">
             <ixsl:value-of select="@name"/>
-          </td>
-          <td style="padding: 5px">
-            <ixsl:value-of select="@group"/>
           </td>
           <td style="padding: 5px">
             <ixsl:value-of select="@sect"/> (Phone: <ixsl:value-of select="@phone"/>)
@@ -911,74 +906,148 @@
       <pfx:xinp type="hidden" name="__anchor">
         <ixsl:attribute name="value">left_navi|<ixsl:value-of select="/formresult/current{$type}info/@path"/></ixsl:attribute>
       </pfx:xinp>
-      <ixsl:if test="/formresult/formerrors/error">
-        <table width="100%">
-          <tr>
-            <td align="center">
-              <ixsl:choose>
-                <ixsl:when test="starts-with(/formresult/formerrors/error/@name, '{$select}')">
-                  <table class="core_errorbox_table" width="200">
-                    <tr>
-                      <td class="core_errorlabel_text">
-                        Error!
-                      </td>
-                      <td class="core_errortext">
-                        Unknown Include.
-                      </td>
-                    </tr>
-                  </table>
-                </ixsl:when>
-                <ixsl:when test="/formresult/formvalues/param[@name='{$upload}.ExceptionMsg']/node()">
-                  <table class="core_errorbox_table">
-                    <tr>
-                      <td class="core_errorlabel_text">
-                        <ixsl:value-of select="/formresult/formvalues/param[@name='{$upload}.ExceptionMsg']"/>
-                      </td>
-                    </tr>
-                  </table><br/>
-                </ixsl:when>
-              </ixsl:choose>
-            </td>
-          </tr>
-        </table><br/>
-      </ixsl:if>
-      <table width="100%">
-        <tr>
-          <td  class="editor_main_emph">Current include:
-          <ixsl:value-of select="/formresult/current{$type}info/@part"/>
-          <span style="color: #9999cc">@</span>
-          <ixsl:value-of select="substring-after(/formresult/current{$type}info/@path, '{$docroot}/')"/>
-          (Product: <ixsl:value-of select="/formresult/current{$type}info/@product"/>)
-          </td>
-        </tr>
-      </table>
-      <table class="editor_box" width="100%">
-        <ixsl:if test="/formresult/current{$type}info/lockinguser/user">
-          <tr>
-            <td align="right" class="editor_locked">
-              [Locked by <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@name"/>
-              (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
-              <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
-              <input type="hidden" name="visible" value="false"/>
-              <pfx:script>
-                if (parent.parent.frames.appLoad == true) {
-                   parent.parent.frames["applet"].hideApplet();
-                }
-              </pfx:script>
-            </td>
-          </tr>
-        </ixsl:if>
+      
+      <xsl:call-template name="handleformerrors">
+        <xsl:with-param name="select" select="$select"/>
+        <xsl:with-param name="upload" select="$upload"/>
+      </xsl:call-template>
+      
+      <xsl:call-template name="showcurrentinclude">
+        <xsl:with-param name="type" select="$type"/>
+        <xsl:with-param name="docroot" select="$docroot"/>
+      </xsl:call-template>
+  
+      <xsl:call-template name="handleuserlock">
+        <xsl:with-param name="type" select="$type"/>
+      </xsl:call-template>
+
+   
+      <xsl:choose>
+        <xsl:when test="$type = 'common'">
+          <xsl:call-template name="partdetails_dyn">  
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="select" select="$select"/>
+            <xsl:with-param name="upload" select="$upload"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:when test="$type = 'include'">
+          <xsl:call-template name="partdetails_incl">
+            <xsl:with-param name="type" select="$type"/>
+            <xsl:with-param name="select" select="$select"/>
+            <xsl:with-param name="upload" select="$upload"/>
+          </xsl:call-template>
+        </xsl:when>
+      </xsl:choose>
+      
+    </pfx:forminput>
+  </xsl:template>
+ 
+
+   <xsl:template name="partdetails_incl"> 
+      <xsl:param name="type"/>
+      <xsl:param name="select"/>
+      <xsl:param name="upload"/>
+      
+      <ixsl:variable name="edit_incl">
+        <ixsl:choose>
+          <ixsl:when test="/formresult/cr_editorsession/user/permissions/global/@admin = 'true'">true</ixsl:when>
+          <ixsl:otherwise>
+            <ixsl:value-of select="/formresult/cr_editorsession/user/permissions/project[@name = /formresult/cr_editorsession/product/@name]/@editIncludes"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </ixsl:variable>
+     
+     <!-- <ixsl:choose>
+        <ixsl:when test="$edit_incl = 'true'">
+          <ixsl:for-each select="/formresult/currentincludeinfo/affectedproducts/product">
+            <ixsl:variable name="aff" select="./@name"/>
+            <ixsl:variable name="perm_aff" select="/formresult/cr_editorsession/user/permissions/project[@name = $aff]/@editIncludes"/>
+            <ixsl:message>Hallo: <ixsl:value-of select="$perm_aff"/></ixsl:message>
+            <ixsl:if test="$perm_aff != 'true'">
+              <ixsl:variable name="err">true</ixsl:variable>
+              <h1>Permission denied!! No permissions for <ixsl:value-of select="$aff"/></h1>
+            </ixsl:if>
+          </ixsl:for-each>
+          <xsl:call-template name="show_upload">
+            <xsl:with-param name="upload" select="$upload"/>
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
+        </ixsl:when>
+        <ixsl:otherwise>
+          <h1>Go away</h1>
+        </ixsl:otherwise>
+      </ixsl:choose>-->
+
+    
+      <ixsl:variable name="forbidden_inc">
+        <ixsl:for-each select="/formresult/currentincludeinfo/affectedproducts/product">
+          <ixsl:variable name="aff_inc" select="./@name"/>
+          <ixsl:variable name="perm_aff_inc" select="/formresult/cr_editorsession/user/permissions/project[@name = $aff_inc]/@editIncludes"/>
+          <ixsl:if test="$perm_aff_inc != 'true'">
+            <li><ixsl:value-of select="./@name"/></li>
+          </ixsl:if>
+        </ixsl:for-each>
+      </ixsl:variable>
+      <ixsl:choose>
+        <ixsl:when test="$forbidden_inc = ''">
+          <xsl:call-template name="show_upload">
+            <xsl:with-param name="upload" select="$upload"/>
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
+          <ixsl:choose>
+            <ixsl:when test="/formresult/currentincludeinfo/@product='default'">
+              <xsl:call-template name="create_specific_branch">
+                <xsl:with-param name="upload" select="$upload"/>
+              </xsl:call-template>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <xsl:call-template name="handle_specific_branch">
+                <xsl:with-param name="upload" select="$upload"/>
+                <xsl:with-param name="type" select="$type"/>
+              </xsl:call-template>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:when>
+        <ixsl:otherwise>
+          <div class="core_errorbox_table">
+          <table>
+            <tr> <td><img src="/core/img/error.gif"/><b><font color="#CC0000"><blink>Permission denied!</blink></font></b></td></tr> 
+            <tr><td>This includes is used by the following products:</td></tr> 
+            <tr>
+              <td>
+                <ul>
+                  <ixsl:copy-of select="$forbidden_inc"/>
+                </ul>
+              </td>
+            </tr>
+            <tr><td>You do not have the permission to edit includes of these products.</td></tr>
+          </table>
+          </div>
+
+        </ixsl:otherwise>
+      </ixsl:choose>
+
+    
+      <!--  <ixsl:choose>
+        <ixsl:when test="/formresult/current{$type}info/@permission = 'denied'">
+          <xsl:call-template name="include_perm_denied">
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
+          <ixsl:if test="/formresult/current{$type}info/@branch_allowed = 'true'">
+            <xsl:call-template name="create_specific_branch">
+              <xsl:with-param name="upload" select="$upload"/>
+            </xsl:call-template>
+          </ixsl:if>
+        </ixsl:when>
+        <ixsl:otherwise>
         <pfx:checkactive prefix="{$upload}">
+        <table>
           <tr>
             <td colspan="2">
               <input type="hidden" value="{$upload}.Content" name="upload"/>
               <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
               <input type="hidden" name="visible" value="true"/>
-              <pfx:script>
-                if (parent.parent.frames.appLoad == true) {
-                  parent.parent.frames["applet"].showApplet();
-                }
-              </pfx:script>
+              <xsl:call-template name="applet_show"/>
             </td>
           </tr>
           <tr valign="middle">
@@ -999,78 +1068,549 @@
               </ixsl:if>
             </td>
           </tr>
+        </table>
           <ixsl:choose>
             <ixsl:when test="/formresult/current{$type}info[@product = 'default']">
-              <tr>
-                <td colspan="2">
-                  <b>This is the default branch of the include.</b><br/>
-                  Do you want to create and edit a product specific branch of this part?
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <table class="editor_box" width="100%">
-                    <tr valign="bottom">
-                      <td>
-                        <table>
-                          <tr>
-                            <td>
-                              <pfx:xinp type="radio" name="create.Type" value="empty"/>
-                            </td>
-                            <td>
-                              Create new, empty branch.
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <pfx:xinp type="radio" name="create.Type" value="copy"/>
-                            </td>
-                            <td>
-                              Create new branch and use the <i>default</i> branch as the initial content.
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                      <td align="right" nowrap="nowrap">
-                        <pfx:xinp class="editor_submit" type="submit" value="Create Branch">
-                          <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-                          <pfx:command  name="SELWRP">create</pfx:command>
-                          <pfx:argument name="create.DoBranch">true</pfx:argument>
-                        </pfx:xinp>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/current{$type}info[@branch_allowed = 'true']">
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <xsl:call-template name="applet_hide"/>
+                  <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
+                </ixsl:otherwise>
+              </ixsl:choose>
             </ixsl:when>
             <ixsl:otherwise>
-              <tr>
-                <td colspan="2">
-                  <table class="editor_box" width="100%"> 
-                    <tr>
-                      <td>
-                        This is the specific branch for product <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
-                        of the include part. You can delete this branch to use the default branch again.
-                      </td>
-                      <td align="right" nowrap="nowrap">
-                        <pfx:button normalclass="editor_submit" page="{$type}s" mode="force">
-                          <pfx:command  name="SELWRP">create</pfx:command>
-                          <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-                          <pfx:argument name="create.DoBranch">true</pfx:argument>
-                          <pfx:argument name="create.Type">delete</pfx:argument>
-                          Delete branch
-                        </pfx:button>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
+              <xsl:call-template name="handle_specific_branch">
+                <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="upload" select="$upload"/>
+              </xsl:call-template>
             </ixsl:otherwise>
           </ixsl:choose>
         </pfx:checkactive>
-      </table>
-    </pfx:forminput>
+        </ixsl:otherwise>
+        </ixsl:choose>-->
   </xsl:template>
+
+   <xsl:template name="partdetails_dyn"> 
+      <xsl:param name="type"/>
+      <xsl:param name="select"/>
+      <xsl:param name="upload"/>
+      
+      
+      <ixsl:variable name="current_product" select="/formresult/cr_editorsession/product/@name"/>
+      <ixsl:variable name="admin" select="/formresult/cr_editorsession/user/permissions/global/@admin"/>
+      
+      <ixsl:variable name="edit_dyn_default">
+        <ixsl:choose>
+          <ixsl:when test="$admin = 'true'">true</ixsl:when>
+          <ixsl:otherwise>
+            <ixsl:value-of select="/formresult/cr_editorsession/user/permissions/global/@editDefaults"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </ixsl:variable>
+      <ixsl:variable name="edit_dyn_currprj">
+        <ixsl:choose>
+          <ixsl:when test="$admin = 'true'">true</ixsl:when>
+          <ixsl:otherwise>
+            <ixsl:value-of select="/formresult/cr_editorsession/user/permissions/project[@name = $current_product]/@editDefaults"/>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </ixsl:variable>
+     
+      <ixsl:choose>
+        <ixsl:when test="/formresult/currentcommoninfo/@product='default'">
+          <ixsl:choose>
+            <ixsl:when test="$edit_dyn_default = 'true'">
+              <ixsl:choose>
+                <ixsl:when test="$edit_dyn_currprj = 'true'">
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                  </xsl:call-template>
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise><!-- edit_dyn_currprj != 'true' --> 
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:when>
+            <ixsl:otherwise><!-- edit_dyn_default != 'true' -->
+              <ixsl:choose>
+                <ixsl:when test="$edit_dyn_currprj = 'true'">
+                  <xsl:call-template name="edit_default_branch_denied_but_specific"/>
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise><!-- edit_dyn_currprj != 'true' -->
+                  <xsl:call-template name="edit_default_branch_denied"/>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:when>
+        <ixsl:otherwise> <!--"/formresult/currentcommoninfo/@product!='default'"-->
+          <ixsl:choose>
+            <ixsl:when test="$edit_dyn_default = 'true'">
+              <ixsl:choose>
+                <ixsl:when test="$edit_dyn_currprj = 'true'">
+                  <xsl:call-template name="handle_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise> <!-- $edit_dyn_currprj != 'true'-->
+                  <xsl:call-template name="edit_specific_branch_denied"/>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:when>
+            <ixsl:otherwise> <!-- $edit_dyn_default != 'true' -->
+              <ixsl:choose>
+                <ixsl:when test="$edit_dyn_currprj = 'true'">
+                  <xsl:call-template name="handle_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise> <!-- $edit_dyn_currprj != 'true' -->
+                  <xsl:call-template name="edit_specific_branch_denied"/>
+                </ixsl:otherwise>
+              </ixsl:choose> 
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:otherwise>
+      </ixsl:choose>
+
+     
+     <!--
+      <ixsl:choose>
+        <ixsl:when test="$edit_dyn_default = 'true'">
+          <h1>You are allowed to edit the default branch.</h1>
+          <ixsl:choose>
+            <ixsl:when test="$edit_dyn_currprj = 'true'">
+              <h1>You are allowed to edit specific branch!</h1>
+              <xsl:call-template name="create_specific_branch">
+                <xsl:with-param name="upload" select="$upload"/>
+              </xsl:call-template>
+              <xsl:call-template name="show_upload">
+                <xsl:with-param name="upload" select="$upload"/>
+                <xsl:with-param name="type" select="$type"/>
+              </xsl:call-template>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <h1>You are NOT allowed to edit specific branch.</h1>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/currentcommoninfo/@product='default'">
+                  <h1>You are currently editing the default branch! OK!</h1>
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <h1>Product specific branch edit denied!</h1>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:when>
+
+        <ixsl:otherwise>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/currentcommoninfo/@product='default'">
+                  <h1>Default branch edit denied!</h1>
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <xsl:call-template name="handle_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                  <xsl:call-template name="show_upload">
+                    <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
+                  </xsl:call-template>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/currentcommoninfo/@product='default'">-->
+              
+                  <!-- User is NOT allowed to edit default specific branch -->
+                  <!--<div class="core_errorbox_table">
+                    <table>
+                      <tr><td><img src="/core/img/error.gif"/><b><font color="0#CC0000"><blink>Permission denied!</blink>
+                      </font></b></td></tr>
+                    </table>
+                  </div>
+                  <h1>YoU are not allowed to edit default branch.</h1>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <h1>YoU are not allowed to edit specific branch.</h1>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </ixsl:otherwise>
+      </ixsl:choose>-->
+
+
+        
+      <!--  <ixsl:choose>
+        <ixsl:when test="/formresult/current{$type}info/@permission = 'denied'">
+          <xsl:call-template name="include_perm_denied">
+            <xsl:with-param name="type" select="$type"/>
+          </xsl:call-template>
+          <ixsl:if test="/formresult/current{$type}info/@branch_allowed = 'true'">
+            <xsl:call-template name="create_specific_branch">
+              <xsl:with-param name="upload" select="$upload"/>
+            </xsl:call-template>
+          </ixsl:if>
+        </ixsl:when>
+        <ixsl:otherwise>
+        <pfx:checkactive prefix="{$upload}">
+        <table>
+          <tr>
+            <td colspan="2">
+              <input type="hidden" value="{$upload}.Content" name="upload"/>
+              <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
+              <input type="hidden" name="visible" value="true"/>
+              <xsl:call-template name="applet_show"/>
+            </td>
+          </tr>
+          <tr valign="middle">
+            <td>
+              <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
+                <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+                <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
+              </pfx:xinp>
+            </td>
+            <td nowrap="nowrap" align="right">
+              <ixsl:if test="/formresult/current{$type}info/backup/option">
+                <pfx:xinp type="dynselect" name="{$upload}.Backup" optionpath="/formresult/current{$type}info/backup"/>
+                <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
+                  <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+                  <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument>
+                  <pfx:argument name="{$upload}.HaveBackup">true</pfx:argument>
+                </pfx:xinp>
+              </ixsl:if>
+            </td>
+          </tr>
+        </table>
+          <ixsl:choose>
+            <ixsl:when test="/formresult/current{$type}info[@product = 'default']">
+              <ixsl:choose>
+                <ixsl:when test="/formresult/current{$type}info[@branch_allowed = 'true']">
+                  <xsl:call-template name="create_specific_branch">
+                    <xsl:with-param name="upload" select="$upload"/>
+                  </xsl:call-template>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <xsl:call-template name="applet_hide"/>
+                  <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:when>
+            <ixsl:otherwise>
+              <xsl:call-template name="handle_specfic_branch">
+                <xsl:with-param name="type" select="$type"/>
+                <xsl:with-param name="upload" select="$upload"/>
+              </xsl:call-template>
+            </ixsl:otherwise>
+          </ixsl:choose>
+        </pfx:checkactive>
+        </ixsl:otherwise>
+        </ixsl:choose>-->
+  </xsl:template>
+ 
+  <xsl:template name="edit_specific_branch_denied">
+    <div class="core_errorbox_table">
+      <table>
+        <tr>
+          <td>
+            <img src="/core/img/error.gif"/>
+            <b>
+              <font color="#CC0000">
+                <blink>Permission denied!</blink>
+              </font>
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td>You do not have the permission to edit this specific branch.</td>
+        </tr>
+      </table>
+    </div>
+  </xsl:template>
+  
+  <xsl:template name="edit_default_branch_denied">
+    <div class="core_errorbox_table">
+      <table>
+        <tr>
+          <td>
+            <img src="/core/img/error.gif"/>
+            <b>
+              <font color="#CC0000">
+                <blink>Permission denied!</blink>
+              </font>
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td>You do not have the permission to edit the default branch.</td>
+        </tr>
+      </table>
+    </div>
+  </xsl:template>
+
+  <xsl:template name="edit_default_branch_denied_but_specific">
+    <div class="core_errorbox_table">
+      <table>
+        <tr>
+          <td>
+            <img src="/core/img/error.gif"/>
+            <b>
+              <font color="#CC0000">
+                <blink>Permission denied!</blink>
+              </font>
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td>You do not have the permission to edit the default branch, but you can create a specific branch.</td>
+        </tr>
+      </table>
+    </div>
+  </xsl:template>
+
+
+  <xsl:template name="show_upload">
+    <xsl:param name="upload"/>
+    <xsl:param name="type"/>
+    <pfx:checkactive prefix="{$upload}">
+      <table>
+        <tr>
+          <td colspan="2">
+            <input type="hidden" value="{$upload}.Content" name="upload"/>
+            <pfx:xinp id="test" class="editor_textarea" type="area" name="{$upload}.Content"  style="height: 400px; width: 100%; display:none"/>
+            <input type="hidden" name="visible" value="true"/>
+            <xsl:call-template name="applet_show"/>
+          </td>
+        </tr>
+        <tr valign="middle">
+          <td>
+            <pfx:xinp  type="submit" name="Upload Data" value="Upload Data" style="display:none" id="subButton">
+              <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+              <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument> 
+            </pfx:xinp>
+          </td>
+          <td nowrap="nowrap" align="right">
+            <ixsl:if test="/formresult/current{$type}info/backup/option">
+              <pfx:xinp type="dynselect" name="{$upload}.Backup" optionpath="/formresult/current{$type}info/backup"/>
+              <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
+                <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+                <pfx:argument name="{$upload}.HaveUpload">true</pfx:argument>
+                <pfx:argument name="{$upload}.HaveBackup">true</pfx:argument>
+              </pfx:xinp>
+            </ixsl:if>
+          </td>
+        </tr>
+      </table>
+    </pfx:checkactive>
+  </xsl:template>
+
+
+
+  <xsl:template name="applet_hide">
+    <pfx:script>
+      if (parent.parent.frames.appLoad == true) {
+        parent.parent.frames["applet"].hideApplet();
+      }
+    </pfx:script>
+  </xsl:template>
+
+  <xsl:template name="applet_show">
+    <pfx:script>
+      if (parent.parent.frames.appLoad == true) {
+        parent.parent.frames["applet"].showApplet();
+      }
+    </pfx:script>
+  </xsl:template>
+ 
+  
+  <xsl:template name="handleformerrors">
+    <xsl:param name="select"/>
+    <xsl:param name="upload"/>
+    <ixsl:if test="/formresult/formerrors/error">
+      <table width="100%">
+        <tr>
+          <td align="center">
+            <ixsl:choose>
+              <ixsl:when test="starts-with(/formresult/formerrors/error/@name, '{$select}')">
+                <table class="core_errorbox_table" width="200">
+                  <tr>
+                    <td class="core_errorlabel_text">
+                      Error!
+                    </td>
+                    <td class="core_errortext">
+                      Unknown Include.
+                    </td>
+                  </tr>
+                </table>
+              </ixsl:when>
+              <ixsl:when test="/formresult/formvalues/param[@name='{$upload}.ExceptionMsg']/node()">
+                <table class="core_errorbox_table">
+                  <tr>
+                    <td class="core_errorlabel_text">
+                      <ixsl:value-of select="/formresult/formvalues/param[@name='{$upload}.ExceptionMsg']"/>
+                    </td>
+                  </tr>
+                </table><br/>
+              </ixsl:when>
+            </ixsl:choose>
+          </td>
+        </tr>
+      </table><br/>
+    </ixsl:if>
+  </xsl:template>
+ 
+  <xsl:template name="showcurrentinclude">
+    <xsl:param name="type"/>
+    <xsl:param name="docroot"/>
+    <table width="100%">
+      <tr>
+        <td class="editor_main_emph">Current include:
+          <ixsl:value-of select="/formresult/current{$type}info/@part"/>
+          <span style="color: #9999cc">@</span>
+          <ixsl:value-of select="substring-after(/formresult/current{$type}info/@path, '{$docroot}/')"/>
+          (Product: <ixsl:value-of select="/formresult/current{$type}info/@product"/>)
+        </td>
+      </tr>
+    </table>
+  </xsl:template>
+  
+  <xsl:template name="handleuserlock">
+    <xsl:param name="type"/> 
+    <table class="editor_box" width="100%">
+      <ixsl:if test="/formresult/current{$type}info/lockinguser/user">
+        <tr>
+          <td align="right" class="editor_locked">
+            [Locked by <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@name"/>
+            (<ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@sect"/>) - Phone:
+            <ixsl:value-of select="/formresult/current{$type}info/lockinguser/user/@phone"/>]
+            <input type="hidden" name="visible" value="false"/>
+            <xsl:call-template name="applet_hide"/>
+          </td>
+        </tr>
+      </ixsl:if>
+    </table>
+  </xsl:template>
+    
+
+
+  <xsl:template name="handle_specific_branch">
+    <xsl:param name="type"/>
+    <xsl:param name="upload"/>
+    <table>
+      <tr>
+        <td colspan="2">
+          <table class="editor_box" width="100%"> 
+            <tr>
+              <td>
+                This is the specific branch for product <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
+                of the include part. You can delete this branch to use the default branch again.
+              </td>
+              <td align="right" nowrap="nowrap">
+                <pfx:button normalclass="editor_submit" page="{$type}s" mode="force">
+                  <pfx:command  name="SELWRP">create</pfx:command>
+                  <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+                  <pfx:argument name="create.DoBranch">true</pfx:argument>
+                  <pfx:argument name="create.Type">delete</pfx:argument>
+                  Delete branch
+                </pfx:button>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </xsl:template>
+
+  <xsl:template name="create_specific_branch">
+    <xsl:param name="upload"/>
+    <table>
+      <tr>
+        <td colspan="2">
+          <b>This is the default branch of the include.</b><br/>
+            Do you want to create and edit a product specific branch of this part?
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <table class="editor_box" width="100%">
+            <tr valign="bottom">
+              <td>
+                <table>
+                  <tr>
+                    <td>
+                      <pfx:xinp type="radio" name="create.Type" value="empty"/>
+                    </td>
+                    <td>
+                      Create new, empty branch.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <pfx:xinp type="radio" name="create.Type" value="copy"/>
+                    </td>
+                    <td>
+                      Create new branch and use the <i>default</i> branch as the initial content.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td align="right" nowrap="nowrap">
+                <pfx:xinp class="editor_submit" type="submit" value="Create Branch">
+                  <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+                  <pfx:command  name="SELWRP">create</pfx:command>
+                  <pfx:argument name="create.DoBranch">true</pfx:argument>
+                </pfx:xinp>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </xsl:template>
+
+
+  <xsl:template name="include_perm_denied">
+    <xsl:param name="type"/>
+      <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
+      <xsl:call-template name="applet_hide"/>
+  </xsl:template>
+  
+
   
   <xsl:template match="displayimagedetails">
     <ixsl:if test="/formresult/currentimageinfo">
@@ -1082,64 +1622,125 @@
           <tr>
             <td nowrap="nowrap" class="editor_main_emph">Current image: <ixsl:value-of select="substring-after(/formresult/currentimageinfo/@path, '{$docroot}')"/>
             </td>
-            <ixsl:if test="/formresult/currentimageinfo/lockinguser/user">
+            <td>
+              <xsl:call-template name="handleuserlock">
+                <xsl:with-param name="type">image</xsl:with-param>
+              </xsl:call-template>
+            </td>
+            <!--<ixsl:if test="/formresult/currentimageinfo/lockinguser/user">
               <td align="right" class="editor_locked">
                 [Locked by <ixsl:value-of select="/formresult/currentimageinfo/lockinguser/user/@name"/>
                 (<ixsl:value-of select="/formresult/currentimageinfo/lockinguser/user/@sect"/>) - Phone:
                 <ixsl:value-of select="/formresult/currentimageinfo/lockinguser/user/@phone"/>]
               </td>
-            </ixsl:if>
+            </ixsl:if>-->
           </tr>
         </table>
-        <table width="100%" class="editor_box_alpha" cellspacing="0"
-               background="/core/editor/img/alpha.gif">
-          <tr>
-            <td align="center" style="padding-top: 10px; padding-bottom: 10px;" colspan="3">
-              <ixsl:choose>
-                <ixsl:when test="/formresult/currentimageinfo/@modtime = 0">
-                  <span class="editor_missing_img_txt">MISSING IMAGE</span>
-                </ixsl:when>
-                <ixsl:otherwise>
-                  <img border="0">
-                    <ixsl:attribute name="src">
-                      <ixsl:value-of select="substring-after(/formresult/currentimageinfo/@path, '{$docroot}')"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/>
-                    </ixsl:attribute>
-                  </img>
-                </ixsl:otherwise>
-              </ixsl:choose>
-            </td>
-          </tr>
-          <pfx:checkactive prefix="upload">
-            <tr valign="center" class="editor_odd_row">
-              <td align="right">
-                <pfx:label name="upload.HaveUpload">New Image:</pfx:label>
-              </td>
-              <td>
-                <input type="file" name="upload.UplImage"/>
-              </td>
-              <td align="right">
-                <pfx:xinp class="editor_submit" type="submit" value="Upload Image">
-                  <pfx:command  name="SELWRP">upload</pfx:command>
-                  <pfx:argument name="upload.HaveUpload">true</pfx:argument>
-                </pfx:xinp>
-              </td>
-            </tr>
-            <ixsl:if test="/formresult/currentimageinfo/backup/option">
-              <tr class="editor_odd_row">
-                <td colspan="3" align="right" nowrap="nowrap">
-                  <pfx:xinp type="dynselect" name="upload.Backup" optionpath="/formresult/currentimageinfo/backup"/>
-                  <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
-                    <pfx:command  name="SELWRP">upload</pfx:command>
-                    <pfx:argument name="upload.HaveUpload">true</pfx:argument>
-                    <pfx:argument name="upload.HaveBackup">true</pfx:argument>
-                  </pfx:xinp>
+        <!--<ixsl:choose>
+          <ixsl:when test="/formresult/currentimageinfo/@permission = 'denied'">
+            <xsl:call-template name="include_perm_denied">
+              <xsl:with-param name="type" select="'image'"/>
+            </xsl:call-template>
+          </ixsl:when>
+          <ixsl:otherwise>-->
+        <ixsl:variable name="forbidden_img">
+          <ixsl:for-each select="/formresult/currentimageinfo/affectedproducts/product">
+            <ixsl:variable name="aff_img" select="./@name"/>
+            <ixsl:variable name="perm_aff_img" select="/formresult/cr_editorsession/user/permissions/project[@name = $aff_img]/@editImages"/>
+            <ixsl:if test="$perm_aff_img != 'true'">
+              <li><ixsl:value-of select="./@name"/></li>
+            </ixsl:if>
+          </ixsl:for-each>
+        </ixsl:variable>
+        <ixsl:choose>
+          <ixsl:when test="$forbidden_img = ''">
+            <table width="100%" class="editor_box_alpha" cellspacing="0" background="/core/editor/img/alpha.gif">
+              <tr>
+                <td align="center" style="padding-top: 10px; padding-bottom: 10px;" colspan="3">
+                  <ixsl:choose>
+                    <ixsl:when test="/formresult/currentimageinfo/@modtime = 0">
+                      <span class="editor_missing_img_txt">MISSING IMAGE</span>
+                    </ixsl:when>
+                    <ixsl:otherwise>
+                      <img border="0">
+                        <ixsl:attribute name="src">
+                          <ixsl:value-of select="substring-after(/formresult/currentimageinfo/@path, '{$docroot}')"/>?<ixsl:value-of select="/formresult/currentimageinfo/@modtime"/>
+                        </ixsl:attribute>
+                      </img>
+                    </ixsl:otherwise>
+                  </ixsl:choose>
                 </td>
               </tr>
-            </ixsl:if>
-          </pfx:checkactive>
-        </table>
+              <tr>
+                <td>
+                  <xsl:call-template name="show_image_upload"/>
+                </td>
+              </tr>
+            </table>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <div class="core_errorbox_table">
+              <table> 
+                <tr>
+                  <td>
+                    <img src="/core/img/error.gif"/>
+                    <b>
+                      <font color="#CC0000">
+                        <blink>Permission denied!</blink>
+                      </font>
+                    </b>
+                  </td>
+                </tr>
+                <tr>
+                  <td>This image is used by the following products:</td>
+                </tr>
+                <tr>
+                  <td>
+                    <ul>
+                      <ixsl:copy-of select="$forbidden_img"/>
+                    </ul>
+                  </td>
+                </tr>
+                <tr><td>You do not have the permission to edit images of these products.</td></tr>
+              </table>
+            </div>
+          </ixsl:otherwise>
+        </ixsl:choose>
       </pfx:forminput>
     </ixsl:if>
+  </xsl:template>
+
+  <xsl:template name="show_image_upload">
+    <pfx:checkactive prefix="upload">
+      <table>
+        <tr valign="center" class="editor_odd_row">
+          <td align="right">
+            <pfx:label name="upload.HaveUpload">New Image:</pfx:label>
+          </td>
+          <td>
+            <input type="file" name="upload.UplImage"/>
+          </td>
+          <td align="right">
+            <pfx:xinp class="editor_submit" type="submit" value="Upload Image">
+              <pfx:command  name="SELWRP">upload</pfx:command>
+              <pfx:argument name="upload.HaveUpload">true</pfx:argument>
+            </pfx:xinp>
+          </td>
+        </tr>
+        <ixsl:if test="/formresult/currentimageinfo/backup/option">
+          <tr class="editor_odd_row">
+            <td colspan="3" align="right" nowrap="nowrap">
+              <pfx:xinp type="dynselect" name="upload.Backup" optionpath="/formresult/currentimageinfo/backup"/>
+              <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
+                <pfx:command  name="SELWRP">upload</pfx:command>
+                <pfx:argument name="upload.HaveUpload">true</pfx:argument>
+                <pfx:argument name="upload.HaveBackup">true</pfx:argument>
+              </pfx:xinp>
+            </td>
+          </tr>
+        </ixsl:if>
+      </table>
+    </pfx:checkactive>
   </xsl:template>
 
 

@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
@@ -47,10 +48,10 @@ public class UserForEditHandler implements IHandler {
         EditorUser             curr   = esess.getUser();
         UserForEdit            toedit = (UserForEdit) wrapper;
         String                 user   = toedit.getUser();
-        EditorUser             eduser = EditorUserFactory.getInstance().getEditorUser(user);
+        EditorUserInfo          eduser = EditorUser.getUserInfoByLogin(user);
         StatusCodeFactory      sfac   = new StatusCodeFactory("pfixcore.editor.userforedit");
         
-        if (curr.isAdmin()) {
+        if (curr.getUserInfo().isAdmin()) {
             if (eduser != null) {
                 esess.setUserForEdit(eduser);
             } else {
@@ -58,8 +59,9 @@ public class UserForEditHandler implements IHandler {
                 toedit.addSCodeUser(scode);
             }
         } else {
-            esess.setUserForEdit(curr); // normal users can only edit their own data.
+            esess.setUserForEdit(curr.getUserInfo()); // normal users can only edit their own data.
         }
+        
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {

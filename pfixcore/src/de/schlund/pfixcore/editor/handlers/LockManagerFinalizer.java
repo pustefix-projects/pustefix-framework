@@ -66,9 +66,9 @@ public class LockManagerFinalizer extends ResdocSimpleFinalizer {
                 Element       elem = resdoc.createSubNode(root, "lock");
                 elem.setAttribute("count", "" + i);
                 elem.setAttribute("id",   tmp.getEditorSessionId());
-                elem.setAttribute("username", user.getName());
-                elem.setAttribute("phone", user.getPhone());
-                elem.setAttribute("sect", user.getSect());
+                elem.setAttribute("username", user.getUserInfo().getName());
+                elem.setAttribute("phone", user.getUserInfo().getPhone());
+                elem.setAttribute("sect", user.getUserInfo().getSect());
                 elem.setAttribute("product", prod.getComment());
                 elem.setAttribute("type", "" + aux.getType());
                 elem.setAttribute("auxpath", "" + aux.getPath());

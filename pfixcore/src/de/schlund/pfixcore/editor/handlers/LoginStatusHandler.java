@@ -49,7 +49,7 @@ public class LoginStatusHandler implements IHandler {
         Boolean                allow  = stat.getLoginAllowed();
         EditorUser             eu     = esess.getUser();
 
-        if (eu.isAdmin()) {
+        if (eu.getUserInfo().isAdmin()) {
             esess.setLoginAllowed(allow.booleanValue());
         } else {
             CAT.warn("*** EEEK! Trying to change login status, but no member of group wheel!");

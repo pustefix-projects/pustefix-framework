@@ -26,10 +26,12 @@
               </tr>
               <tr>
                 <td align="center">
+                    <ixsl:variable name="admin_session" select="/formresult/cr_editorsession/user/permissions/global/@admin = 'true'"/>
+    <!--
                   <ixsl:if test="not(/formresult/cr_editorsession/user/@group = 'wheel')">
                     <pfx:xinp type="hidden" name="change.Group">
                       <ixsl:attribute name="value"><ixsl:value-of select="/formresult/cr_editorsession/user/@group"/></ixsl:attribute></pfx:xinp>
-                  </ixsl:if>
+                  </ixsl:if>-->
                   <table class="editor_box" width="100%">
                     <ixsl:if test="/formresult/formerrors/error">
                       <tr>
@@ -46,6 +48,7 @@
                         <pfx:xinp class="editor_input" type="text" name="change.Name"/>
                       </td>
                     </tr>
+        <!---
                     <ixsl:if test="/formresult/cr_editorsession/user/@group = 'wheel'">
                       <tr>
                         <td align="right">
@@ -55,7 +58,7 @@
                           <pfx:xinp class="editor_input" type="text" name="change.Group"/>
                         </td>
                       </tr>
-                    </ixsl:if>
+                    </ixsl:if>-->
                     <tr>
                       <td align="right">
                         <pfx:label name="change.Sect">Section:</pfx:label>
@@ -88,6 +91,129 @@
                         <input class="editor_input_pwd" type="password" name="change.Pass2"/>
                       </td>
                     </tr>
+                    <tr>
+                      <td colspan="2">
+                        <hr/>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.Admin">Admin:</pfx:label>
+                      </td>
+                      <td>
+                        <input>
+                          <ixsl:attribute name="type">checkbox</ixsl:attribute>
+                          <ixsl:attribute name="value">true</ixsl:attribute>
+                          <ixsl:attribute name="name">change.Admin</ixsl:attribute>
+                          <ixsl:if test="not($admin_session)">
+                            <ixsl:attribute name="disabled"/>
+                          </ixsl:if>
+                          <ixsl:if test="/formresult/formvalues/param[@name='change.Admin'] = 'true'">
+                            <ixsl:attribute name="checked">checked</ixsl:attribute>
+                          </ixsl:if>
+                        </input>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td align="right">
+                        <pfx:label name="change.DynInclDef">Edit DynIncludes (Default):</pfx:label>
+                      </td>
+                      <td>
+                        <input>
+                          <ixsl:attribute name="type">checkbox</ixsl:attribute>
+                          <ixsl:attribute name="value">true</ixsl:attribute>
+                          <ixsl:attribute name="name">change.DynInclDef</ixsl:attribute>
+                          <ixsl:if test="not($admin_session)">
+                            <ixsl:attribute name="disabled"/>
+                          </ixsl:if>
+                          <ixsl:if test="/formresult/formvalues/param[@name='change.DynInclDef'] = 'true'">
+                            <ixsl:attribute name="checked">checked</ixsl:attribute>
+                          </ixsl:if>
+                        </input>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="2">
+                        <hr/>
+                      </td>
+                    </tr>
+                    <tr>
+		                  <td colspan="2"> 
+                      <table cellspacing="0">
+                        <tr>
+                          <td>Project</td>
+                          <td>Edit Includes</td>
+                          <td>Edit Images</td>
+                          <td>Edit DynIncludes</td>
+                        </tr>
+                      <ixsl:for-each select="/formresult/cr_editorsession/allproducts/product">
+                      <tr>
+                      <ixsl:choose>
+                        <ixsl:when test="position() mod 2 = 0">
+                          <ixsl:attribute name="class">editor_even_row</ixsl:attribute>
+                        </ixsl:when>
+                        <ixsl:otherwise>
+                          <ixsl:attribute name="class">editor_odd_row</ixsl:attribute>
+                        </ixsl:otherwise>
+                      </ixsl:choose>
+                        <td align="right">
+                          <ixsl:value-of select="@name"/>
+                        </td>
+                        <ixsl:variable name="id"><ixsl:value-of select="@name"/></ixsl:variable>
+                       
+                        <td align="center">
+                          <input type="checkbox">
+                            <ixsl:attribute name="name"><ixsl:value-of select="concat('change.editincl.', $id)"/></ixsl:attribute>
+                            <ixsl:attribute name="value">true</ixsl:attribute>
+                            <ixsl:if test="not($admin_session)">
+                              <ixsl:attribute name="disabled"/>
+                            </ixsl:if> 
+                            <ixsl:if test="/formresult/formvalues/param[@name = concat('change.editincl.', $id)] = 'true'">
+                              <ixsl:attribute name="checked">checked</ixsl:attribute>
+                            </ixsl:if>
+                          </input>
+                        </td>
+                        <td align="center">
+                          <input type="checkbox">
+                            <ixsl:attribute name="name"><ixsl:value-of select="concat('change.editimg.', $id)"/></ixsl:attribute>
+                            <ixsl:attribute name="value">true</ixsl:attribute>
+                            <ixsl:if test="not($admin_session)">
+                              <ixsl:attribute name="disabled"/>
+                            </ixsl:if> 
+                            <ixsl:if test="/formresult/formvalues/param[@name = concat('change.editimg.', $id)] = 'true'">
+                              <ixsl:attribute name="checked">checked</ixsl:attribute>
+                            </ixsl:if>
+                          </input>
+                        </td>
+                        <td align="center">
+                          <input type="checkbox">
+                            <ixsl:attribute name="name"><ixsl:value-of select="concat('change.editcom.', $id)"/></ixsl:attribute>
+                            <ixsl:attribute name="value">true</ixsl:attribute>
+                            <ixsl:if test="not($admin_session)">
+                              <ixsl:attribute name="disabled"/>
+                            </ixsl:if> 
+                            <ixsl:if test="/formresult/formvalues/param[@name = concat('change.editcom.', $id)] = 'true'">
+                              <ixsl:attribute name="checked">checked</ixsl:attribute>
+                            </ixsl:if>
+                          </input>
+                        </td>
+                      </tr>
+                    </ixsl:for-each>
+                    </table>
+                    </td>
+                  </tr>
+        <!--
+        <tr>
+          <td align="right">
+            Gobal:
+          </td>
+          <td>
+            admin=<ixsl:value-of select="/formresult/cr_editorsession/user/permissions/global/@admin"/>
+          </td>
+          <td>
+            editDefaults=<ixsl:value-of  select="/formresult/cr_editorsession/user/permissions/global/@editDefaults"/>
+          </td>
+        </tr>-->
                     <tr>
                       <td colspan="2">
                         <hr/>

@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor.resources;
 
 import java.util.*;
 import de.schlund.pfixcore.editor.*;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
@@ -43,7 +44,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     private static final String  BACKDIR_PROP  = "pfixcore.editor.backupdir";
     
     private EditorUser    user           = null;
-    private EditorUser    userforedit    = null;
+    private EditorUserInfo    userforedit    = null;
     private EditorProduct product        = null;
     private PageInfo      currentpage    = null;
     private Target        currenttarget  = null;
@@ -53,13 +54,24 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     private Context       context        = null;
     private String        currentdokuid  = null;
         
-    public void insertStatus(ResultDocument resdoc, Element root) {
+    public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
         root.setAttribute("loginallowed", "" + getLoginAllowed());
         if (user != null) {
             user.insertStatus(resdoc, root);
         }
         if (product != null) {
             product.insertStatus(resdoc, root);
+        }
+        
+        EditorProduct[] prods = EditorProductFactory.getInstance().getAllEditorProducts();
+        Node all = resdoc.createNode("allproducts");
+        Element n = (Element)root.appendChild(all);
+        if(prods != null) {
+            for(int i=0; i<prods.length; i++) {
+                prods[i].insertStatus(resdoc, n);
+                // Why did we need this???
+                //n.setAttribute("id", ""+i);
+            }
         }
     }
     
@@ -114,7 +126,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     }
 
     public EditorUser    getUser() {return user;}
-    public EditorUser    getUserForEdit() {return userforedit;}
+    public EditorUserInfo    getUserForEdit() {return userforedit;}
     public EditorProduct getProduct() {return product;}
     public PageInfo      getCurrentPage() {return currentpage;}
     public Target        getCurrentTarget() {return currenttarget;}
@@ -127,7 +139,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     }
     public boolean       getLoginAllowed() {return login_allowed; }
     public void          setUser(EditorUser user) {this.user = user;}
-    public void          setUserForEdit(EditorUser userforedit) {this.userforedit = userforedit;}
+    public void          setUserForEdit(EditorUserInfo userforedit) {this.userforedit = userforedit;}
     public void          setProduct(EditorProduct product) {this.product = product;}
     public void          setCurrentPage(PageInfo page) {currentpage = page;}
     public void          setCurrentTarget(Target target) {currenttarget = target;}

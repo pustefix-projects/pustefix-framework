@@ -19,11 +19,13 @@
 
 package de.schlund.pfixcore.editor.resources;
 
-import de.schlund.pfixcore.editor.*;
-import de.schlund.pfixcore.workflow.*;
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.targets.*;
-import org.w3c.dom.*;
+import de.schlund.pfixcore.editor.EditorProduct;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.auth.EditorUserInfo;
+import de.schlund.pfixcore.workflow.ContextResource;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.Target;
 
 /**
  * EditorSessionStatus.java
@@ -38,7 +40,7 @@ import org.w3c.dom.*;
 
 public interface EditorSessionStatus extends ContextResource {
     EditorUser    getUser();
-    EditorUser    getUserForEdit();
+    EditorUserInfo    getUserForEdit();
     EditorProduct getProduct();
     PageInfo      getCurrentPage();
     Target        getCurrentTarget();
@@ -47,7 +49,8 @@ public interface EditorSessionStatus extends ContextResource {
     AuxDependency getCurrentCommon();
     String        getCurrentDocumentationId();
     void          setUser(EditorUser user);
-    void          setUserForEdit(EditorUser user);
+    //void          setUserForEdit(EditorUser user);
+    void          setUserForEdit(EditorUserInfo user);
     void          setProduct(EditorProduct product);
     void          setCurrentPage(PageInfo page);
     void          setCurrentTarget(Target target);

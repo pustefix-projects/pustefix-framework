@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.editor.handlers;
 
 import de.schlund.pfixcore.editor.*;
+import de.schlund.pfixcore.editor.auth.ProjectPermissions;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.generator.*;
@@ -75,6 +76,8 @@ public class ImagesUploadHandler extends EditorStdHandler {
 
         // We don't want to shadow the value back to the UI.
         upload.setStringValBackup(null);
+        
+        checkAccess(esess);
         
         if (haveupl != null && haveupl.booleanValue() == true) {
             File   file = null;
@@ -134,6 +137,28 @@ public class ImagesUploadHandler extends EditorStdHandler {
                 upload.addSCodeHaveUpload(scode);
             }
         }
+    }
+    
+    private void checkAccess(EditorSessionStatus esess) throws XMLException {
+        if(CAT.isDebugEnabled())
+            CAT.debug("checkAccess start");
+        HashSet affected_products = null;
+        String path = esess.getCurrentImage().getPath();
+        try {
+            affected_products = EditorHelper.getAffectedProductsForImage(path);
+        } catch (Exception e) {
+            throw new XMLException("Error when getting affected products for include! "+e.getMessage());
+        }
+       
+        for(Iterator iter = affected_products.iterator(); iter.hasNext(); ) {
+            String name = ((EditorProduct) iter.next()).getName();
+            ProjectPermissions p = esess.getUser().getUserInfo().getProjectPerms(name);
+            if(! p.isEditImages()) {
+                throw new XMLException("Permission DENIED! "+esess.getUser().getUserInfo().toString());
+            }
+        }
+        if(CAT.isDebugEnabled())
+            CAT.debug("checkAccess end. Permission granted.");
     }
     
 }// ImagesHandler

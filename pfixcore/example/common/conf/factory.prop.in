@@ -4,14 +4,14 @@
   <prop name="pustefix.log4j.config"><cus:docroot/>common/conf/pfixlog.xml</prop>
 
   <!-- List of all factories to init -->
-  <prop name="factory.initialize.00">de.schlund.util.statuscodes.StatusCodeFactory</prop>
-  <prop name="factory.initialize.01">de.schlund.pfixxml.targets.SPCacheFactory</prop>
-  <prop name="factory.initialize.02">de.schlund.pfixcore.editor.EditorUserFactory</prop>
-  <prop name="factory.initialize.03">de.schlund.pfixcore.editor.EditorProductFactory</prop>
-  <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
-  <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
-  <prop name="factory.initialize.06">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
-  <prop name="factory.initialize.07">de.schlund.pfixxml.loader.AppLoader</prop>
+  <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
+  <prop name="factory.initialize.01">de.schlund.util.statuscodes.StatusCodeFactory</prop>
+  <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
+  <prop name="factory.initialize.03">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
+  <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorProductFactory</prop>
+  <prop name="factory.initialize.05">de.schlund.pfixcore.editor.EditorPageUpdater</prop>
+  <prop name="factory.initialize.06">de.schlund.pfixcore.editor.EditorCommonsFactory</prop>
+  <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
 
   <!-- StatusCodeFactory -->
   <prop name="statuscodefactory.propertyfile.1">de/schlund/pfixcore/generator/StatusCodes.prop</prop>

@@ -88,8 +88,8 @@ public class SessionManagerState extends StateImpl {
                             EditorUser theuser = newcpr.getUser();
 			    if (theuser != null) {
 				sesselem.setAttribute("editoruserid", theuser.getId());
-				sesselem.setAttribute("editorusername", theuser.getName());
-				sesselem.setAttribute("editoruserphone", theuser.getPhone());
+				sesselem.setAttribute("editorusername", theuser.getUserInfo().getName());
+				sesselem.setAttribute("editoruserphone", theuser.getUserInfo().getPhone());
 			    }
                             EditorProduct newprod = newcpr.getProduct();
                             if (newprod != null) {
