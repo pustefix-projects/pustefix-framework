@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<div>
+  <h1>The Context</h1> The class
+  <p>
+    <code>de.schlund.pfixcore.workflow.Context</code> is the main entry
+    point and dispatcher for requests in <pustefix/>. It is responsible for...
+    <ul>
+      <li>
+        ...providing an interface to
+        <code>de.schlund.pfixcore.workflow.ContextResource</code>
+        objects. These objects contain the data and the methods needed
+        to implement the desired functionality of a project.  Each
+        Context objects initializes one
+        <code>de.schlund.pfixcore.workflow.ContextResourceManager</code>,
+        which in turn initializes all the <a
+        href="prop.html#resource">requested</a> ContextResources. All
+        user data must be stored in ContextResources instead of
+        directly into the HttpSession (this is by design, because a
+        HttpSession only allows to store untyped String-to-Object
+        relations, while the ContextResources can expose arbitrary
+        complex access methods to the stored data).
+      </li>
+      <li>
+        ...poviding a pluggable authentication mechanism that is
+        called before any request processing to check if the current session
+        has the needed privileges.
+      </li>
+      <li>
+        ...mapping of requested pagenames (aka "PageRequests") to the objects that
+        implement the functionality that should be supplied by the
+        page. The Context (with the help of a PageMap object
+        initialized on startup of the Context) checks which page is
+        <a href="prop.html#pagerequest">requested</a> and uses the associated
+        <code>de.schlund.pfixcore.workflow.State</code> object to
+        dispatch the request processing to. See below for more details
+        on this process. Note that State objects are singeltons, so no
+        local data can be stored in States - all session data must be
+        stored in ContextResources.
+      </li>
+      <li>
+        ...organizing pages into PageFlows to provide a small scale
+        "workflow management". PageFlows are linear lists of
+        PageRequests which should be stepped through in order. The
+        Context advances a PageFlow after a request has been handled
+        sucessfully, ie. no error has happened as the result of
+        processing the request data. The detailed rules how page flows
+        work are explained below.
+      </li>
+    </ul>
+    <p>
+      The return value of the Context's entry point method
+      <code>handleRequest()</code> is a
+      <code>de.schlund.pfixxml.SPDocument</code>. This class is a
+      small wrapper around a <code>org.w3c.Document</code> and
+      supplies the XML input document for the final transformation
+      which produces the HTML output. Besides the DOM tree it contains
+      the information the system needs to choose the right stylesheet
+      for the dired page that is to be shown plus some other stuff
+      like XSLT parameters that should be set for the transformation
+      process. The Context doesn't produce the SPDocument itself but
+      delagates this to the State's method
+      <code>getDocument()</code>. See below for more detail.
+    </p>
+  </p>
+  
+  <stdimg src="img/java_context.png">
+    The <pustefix/> backend system
+  </stdimg>
+
+  <h1>States</h1>
+
+  <p>
+    A State (a class implementing
+    <code>de.schlund.pfixcore.workflow.State</code>) is responsible for
+    processing incoming requests to produce the needed output in the
+    form of a <code>de.schlund.pfixxml.SPDocument</code>. States are
+    singletons, and one instance of a State can in fact be used to
+    handle lots of different pages (the object that represents a page
+    - or better: a page name - is a  <code>de.schlund.pfixcore.workflow.PageRequest</code>).
+  </p>
+  <p>
+    The interface of <code>State</code> is quite simple, it consists of just three methods:
+
+    <ul>
+      <li>
+        <code>+ isAccessible(Context, PfixServletRequest) :
+        boolean</code><br/> This method is called by the Context to
+        check if the current page is accessible at all. A State can
+        deny accessibility depending on the state of the application's
+        data model which is stored in the Context's associated
+        ContextResources. A State can also request page specific
+        properties (by using the Context method
+        <code>gePropertiesForCurrentPageRequest() : Properties</code>)
+        to implement different behaviour (and accessibility) according
+        to which page it currently handles. The page specific
+        properties are a map of all <a href="prop.html#param"><code>param</code> child nodes</a> of
+        a <code>pagerequest</code> node (mapping the "name" attribute of the param to it's content).
+      </li>
+      <li>
+        <code>+ needsData(Context, PfixServletRequest) : boolean</code><br/>
+      </li>
+      <li>
+        <code>+ getDocument(Context, PfixServletRequest) : SPDocument</code><br/>
+      </li>
+    </ul>
+  </p>
+  
+</div>

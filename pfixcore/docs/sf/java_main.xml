@@ -107,18 +107,14 @@
       </p>
       <p>A <pustefix/> application usually consists of one
       ContextXMLServer servlets. It's possible to use more than one
-      ContextXMLServer, but most often it's the best thing to only use
+      ContextXMLServer, but most often it's better to only use
       one, because exchanging data between the different associated
-      Context objects is cumbersome. Using an additional
+      Context objects is cumbersome. Using one or many additional
       <code>DirectOutputServlet</code> is no problem, because
       DirectOutputServlets don't have an Context of their own, but use
       the data of the Context of a "foreign" ContextXMLServer</p>
     </li>
   </ul>
-
-  <stdimg src="img/java_context.png">
-    The <pustefix/> backend system
-  </stdimg>
 
 
 </div>
