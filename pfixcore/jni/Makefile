@@ -58,7 +58,7 @@ pkg:
 
 clean:
 	@echo "*** Cleaning up"
-	@rm -f ${JNI_INCDIR}/*
+	@rm -f ${JNI_INCDIR}/*.h
 	@rm -f ${JNI_LIB}
 	@rm -rf ${JNI_PKGDIR}
 	@rm -f ${JNI_PKG}
