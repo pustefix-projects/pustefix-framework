@@ -1,3 +1,11 @@
+2004-03-09  Jens Lautenbacher  <jtl@schoenberg.ue.schlund.de>
+
+	* example/core/build/create_propfiles.xsl: 
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/generator/IWrapper.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: 
+	RELEASE ONLY: backport of IWrapper logging
+	
 2004-02-04  Adam Habermann  <adam.habermann@schlund.de>
 
 	* build.xml, skel/build.xml:
