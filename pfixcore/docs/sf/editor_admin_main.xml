@@ -75,8 +75,13 @@
         <table class="stdtable" style="min-width: 200px; margin: 10px; margin-left: 0px; width: 100%">
           <tr>
             <td>
-              TODO 
+              This page is for editing user specific data like name, section, phone
+              and password. Addintionaly you can define the rights a user has to edit
+              differnet parts of your project(s). This is explained below. 
             </td>
+          </tr>
+          <tr>
+            <td>Common rights: These rights are shared among all existing projects.</td>
           </tr>
         </table>
       </td>
