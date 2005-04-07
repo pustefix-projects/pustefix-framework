@@ -19,25 +19,27 @@
 package de.schlund.pfixxml;
 
 
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.List;
+
+import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Category;
+import org.apache.xpath.NodeSet;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import com.icl.saxon.Context;
-import com.icl.saxon.expr.EmptyNodeSet;
 import com.icl.saxon.om.NodeInfo;
+
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.targets.VirtualTarget;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import java.io.File;
-import java.text.MessageFormat;
-import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.TransformerException;
-import org.apache.log4j.Category;
-import org.apache.xpath.NodeSet;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 /**
  * IncludeDocumentExtension.java

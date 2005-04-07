@@ -50,7 +50,7 @@ public class PartIndex {
         return instance;
     }
     
-    private PartIndex() {}
+    public PartIndex() {}
 
     public void init(Properties props) throws Exception {
         String check = props.getProperty(DO_CHECK);
@@ -72,28 +72,31 @@ public class PartIndex {
         return (StatusCode) codes.get(name);
     }
     
-    synchronized private void addAll(File src) throws TransformerException {
+    public synchronized void addAll(File src) throws TransformerException {
         if (src.lastModified() > mtime) {
-            Document doc = Xml.parse(src);
-            HashMap  tmp = new HashMap();
-            List     lst;
-            Iterator iter;
-            Attr     attr;
-            String   key;
-            
-            LOG.debug("\n\n**** Loading StatusCode file " + src + " ****\n");
-            lst = XPath.select(doc, "/include_parts/part[product/@name='default']/@name");
-            iter = lst.iterator();
-            while (iter.hasNext()) {
-                attr = (Attr) iter.next();
-                key = attr.getValue();
-                if (!tmp.containsKey(key)) {
-                    tmp.put(key, new StatusCode(key));
-                }
-            }
-            codes = tmp;
-            mtime = src.lastModified();
-            LOG.info(codes.size() + " StatusCodes loaded");
+            addAll(Xml.parse(src));
         }
+    }
+    
+    public synchronized void addAll(Document doc) throws TransformerException {
+        HashMap  tmp = new HashMap();
+        List     lst;
+        Iterator iter;
+        Attr     attr;
+        String   key;
+            
+        LOG.debug("\n\n**** Loading StatusCode file " + src + " ****\n");
+        lst = XPath.select(doc, "/include_parts/part[product/@name='default']/@name");
+        iter = lst.iterator();
+        while (iter.hasNext()) {
+            attr = (Attr) iter.next();
+            key = attr.getValue();
+            if (!tmp.containsKey(key)) {
+                tmp.put(key, new StatusCode(key));
+            }
+        }
+        codes = tmp;
+        mtime = src.lastModified();
+        LOG.info(codes.size() + " StatusCodes loaded");
     }
 }
