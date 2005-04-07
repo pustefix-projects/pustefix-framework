@@ -1,8 +1,9 @@
 package de.schlund.util.statuscodes;
 
+import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Document;
 import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.statuscodes.PartIndex;
 import junit.framework.TestCase;
 
 public class PartIndexTest extends TestCase {
@@ -49,6 +50,10 @@ public class PartIndexTest extends TestCase {
     }
 
     private void check(String name) {
-        assertEquals(name, pi.lookup(name).getStatusCodeId());
+        try {
+			assertEquals(name, pi.lookup(name).getStatusCodeId());
+		} catch (TransformerException e) {
+			fail(e.toString());
+		}
     }
 }

@@ -48,7 +48,11 @@
     <servlet name="init" autostartup="true">
       <active>true</active>
       <class>de.schlund.pfixxml.FactoryInitServlet</class>
-      <propfile><cus:docroot/>common/conf/factory.prop</propfile>
+      <propfile>common/conf/factory.prop</propfile>
+      <init-param>
+        <param-name>pustefix.docroot</param-name>
+        <param-value><cus:docroot/></param-value>
+      </init-param>
     </servlet>
   </project>
 

@@ -3,12 +3,7 @@ package de.schlund.pfixcore.example;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.app.DefaultIWrapperState;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 
 /**
  * Describe class RandomVariantState here.
