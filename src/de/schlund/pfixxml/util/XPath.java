@@ -37,12 +37,12 @@ import com.icl.saxon.om.NodeInfo;
  *  <b>PFXPathEvaluator</b> evaluates XPath-expressions. Currently saxon is used.
  *   @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
  */
-public final class XPath {
+public class XPath {
     // TODO: xalan cannot evaluable saxon trees an vice versa ...
-    
+
     public static List select(Node context, String xpath) throws TransformerException {
         List result;
-        
+
         result = new ArrayList();
         if (context instanceof NodeInfo) {
         	NodeInfo   cNode   = (NodeInfo) context;
@@ -72,10 +72,10 @@ public final class XPath {
 
     public static Node selectOne(Node context, String xpath) throws TransformerException {
         Node node;
-        
+
         node = selectNode(context, xpath);
         if (node == null) {
-            throw new TransformerException("xpath '" + xpath + "' not found in " 
+            throw new TransformerException("xpath '" + xpath + "' not found in "
                     + context.getClass().getName() + " " + Xml.serialize(context, true, false));
         }
         return node;
@@ -83,7 +83,7 @@ public final class XPath {
 
     public static Node selectNode(Node context, String xpath) throws TransformerException {
         List result;
-        
+
         result = select(context, xpath);
         if (result.size() == 0) {
             return null;
@@ -109,9 +109,9 @@ public final class XPath {
 
     private static Document getDocument(Node node) {
         Document doc;
-        
+
         if (node instanceof Document) {
-            return (Document) node;        
+            return (Document) node;
         }
         doc = node.getOwnerDocument();
         if (doc == null) {
