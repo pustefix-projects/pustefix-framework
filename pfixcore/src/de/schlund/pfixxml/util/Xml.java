@@ -56,19 +56,19 @@ import com.icl.saxon.expr.XPathException;
 import com.icl.saxon.output.SaxonOutputKeys;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
-public final class Xml {
+public class Xml {
     private static final Category               CAT     = Category.getInstance(Xml.class.getName());
     private static final DocumentBuilderFactory factory = createDocumentBuilderFactory();
-    
+
     //-- this is where you configure the xml parser:
-    
+
     public static XMLReader createXMLReader() {
         XMLReader reader;
         reader = new SAXParser();
         reader.setErrorHandler(ERROR_HANDLER);
         return reader;
     }
-    
+
     public static DocumentBuilder createDocumentBuilder() {
         DocumentBuilder result;
         try {
@@ -81,25 +81,25 @@ public final class Xml {
     }
 
     public static Document createDocument() {
-        return createDocumentBuilder().newDocument();       
+        return createDocumentBuilder().newDocument();
     }
 
     //-- parse immutable
-    
+
     public static Document parseString(String str) throws TransformerException {
         SAXSource src = new SAXSource(createXMLReader(), new InputSource(new StringReader(str)));
         return parse(src);
     }
 
     /**
-     * Convert the document implementation which is used for write-access 
-     * by {@link SPDocument} to the document implementation which is used 
+     * Convert the document implementation which is used for write-access
+     * by {@link SPDocument} to the document implementation which is used
      * by the XSLTProcessor. Note: Currently we convert here from a mutable
      * DOM implementation to an imutable TinyTree(saxon).
      * @param doc the document as source for conversion(mostly a Node implementation
      * when using xerces)
      * @return a document as result of conversion(currently saxons TinyDocumentImpl)
-     * @throws Exception on all errors 
+     * @throws Exception on all errors
      */
     public static Document parse(Document doc) {
         if (doc instanceof TinyDocumentImpl) {
@@ -115,7 +115,7 @@ public final class Xml {
     }
 
     /**
-     * Create a document from a sourcefile in the filesystem. 
+     * Create a document from a sourcefile in the filesystem.
      * @param path the path to the source file in the filesystem
      * @return the created document(currenly saxons TinyDocumentImpl)
      * @throws TransformerException on errors
@@ -149,31 +149,31 @@ public final class Xml {
     }
 
     //-- parse mutable
-    
+
     public static Document parseStringMutable(String text) throws SAXException {
         try {
-            return parseMutable(new InputSource(new StringReader(text)));        
+            return parseMutable(new InputSource(new StringReader(text)));
         } catch (IOException e) {
             throw new RuntimeException("unexpected ioexception while reading from memory", e);
         }
     }
-    
+
     public static Document parseMutable(File file) throws IOException, SAXException {
-        if (file.isDirectory()) { 
-            // otherwise, I get obscure content-not-allowed-here exceptions 
+        if (file.isDirectory()) {
+            // otherwise, I get obscure content-not-allowed-here exceptions
             throw new IOException("expected file, got directory: " + file);
         }
         return parseMutable(new InputSource(toUri(file)));
     }
-    
+
     public static Document parseMutable(String filename) throws IOException, SAXException {
         return parseMutable(new File(filename));
     }
-    
+
     public static Document parseMutable(InputStream src) throws IOException, SAXException {
         return parseMutable(new InputSource(src));
     }
-    
+
     public static Document parseMutable(InputSource src) throws IOException, SAXException {
         try {
             return createDocumentBuilder().parse(src);
@@ -202,24 +202,24 @@ public final class Xml {
             throw e;
         }
     }
-    
+
     //-- serialization
-    
+
     /**
      * @param pp pretty print
      */
     public static String serialize(Node node, boolean pp, boolean decl) {
         StringWriter dest;
-        
+
         dest = new StringWriter();
         try {
             doSerialize(node, dest, pp, decl);
         } catch (IOException e) {
             throw new RuntimeException("unexpected IOException while writing to memory", e);
         }
-        return dest.getBuffer().toString();        
+        return dest.getBuffer().toString();
     }
-    
+
     /**
      * @param pp pretty print
      */
@@ -232,7 +232,7 @@ public final class Xml {
      */
     public static void serialize(Node node, String filename, boolean pp, boolean decl) throws IOException {
         FileOutputStream dest;
-        
+
         if (node == null) {
             throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
                                                + "Can't serialize a null node to a file!");
@@ -241,16 +241,16 @@ public final class Xml {
             throw new IllegalArgumentException("The parameter 'null' or '\"\"' is not allowed here! "
                                                + "Can't serialize a document to " + filename + "!");
         }
-        
+
         dest = new FileOutputStream(filename);
-        
+
         doSerialize(node, dest, pp, true);
-        
+
         // We append a newline because most editors do so and we want to avoid cvs conflicts.
-        // Note: tailing whitespace is removed when parsing a file, so 
-        // it's save to append it here without checking for exiting newlines. 
+        // Note: tailing whitespace is removed when parsing a file, so
+        // it's save to append it here without checking for exiting newlines.
         dest.write('\n');
-        
+
         dest.close();
     }
 
@@ -258,7 +258,7 @@ public final class Xml {
         doSerialize(node, dest, pp, decl);
     }
 
-    
+
 
     // PRIVATE
 
@@ -278,24 +278,24 @@ public final class Xml {
             public void error(SAXParseException exception) throws SAXException {
                 report(exception);
             }
-            
+
             public void fatalError(SAXParseException exception) throws SAXException {
                 report(exception);
             }
-            
+
             public void warning(SAXParseException exception) throws SAXException {
                 report(exception);
             }
-            
+
             private void report(SAXParseException exception) throws SAXException {
-                CAT.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":" 
+                CAT.error(exception.getSystemId() + ":" + exception.getLineNumber() + ":"
                           + exception.getColumnNumber() + ":" + exception.getMessage());
                 throw exception;
             }
         };
-    
+
     private static final String ENCODING = "ISO-8859-1";
-    
+
     /**
      * @param pp pretty print
      */
@@ -308,11 +308,11 @@ public final class Xml {
         Result result;
         Throwable cause;
         DOMSource src;
-        
+
         // TODO: remove special cases
         if (node instanceof Text) {
             write(((Text) node).getData(), dest);
-            return; 
+            return;
         } else if (node instanceof Comment) {
             write("<!--" + ((Comment) node).getData() + "-->", dest);
             return;
@@ -353,7 +353,7 @@ public final class Xml {
             }
         }
     }
-    
+
     private static void write(String str, Object dest) throws IOException {
         if (dest instanceof Writer) {
             ((Writer) dest).write(str);
@@ -361,14 +361,14 @@ public final class Xml {
             ((OutputStream) dest).write(str.getBytes(ENCODING));
         }
     }
-    
+
     private static Document wrap(Node node) {
         // ugly hack to work-around saxon limitation: 6.5.3 cannot run xslt on sub-trees:
         // solved in 7.7: http://saxon.sourceforge.net/saxon7.7/changes.html (see 'jaxp changes')
-        
+
         // TODO: implicit namespace attributes in tiny-tree nodes might vanish
         Document doc;
-        
+
         if (node instanceof Document) {
             doc = (Document) node;
         } else {
@@ -377,11 +377,11 @@ public final class Xml {
         }
         return doc;
     }
-    
+
     public static String stripElement(String ele) {
         int start;
         int end;
-        
+
         if (ele.startsWith("<?")) {
             throw new IllegalArgumentException(ele);
         }
