@@ -19,15 +19,18 @@
 
 package de.schlund.pfixxml.jmx;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
-import de.schlund.pfixxml.serverutil.SessionAdmin;
-import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
@@ -36,13 +39,20 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Category;
+
+import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+import de.schlund.pfixxml.util.Path;
 
 /** 
  * Jmx Server, started via factory.init
  */
 public class JmxServer implements JmxServerMBean {
-    private static Category CAT = Category.getInstance(JmxServer.class.getName());
+    private static Category LOG = Category.getInstance(JmxServer.class.getName());
 
     private static JmxServer instance = new JmxServer();
 
@@ -59,27 +69,47 @@ public class JmxServer implements JmxServerMBean {
     }
     
     public void init(Properties props) throws Exception {
+    	LOG.debug("init JmxServer start");
         this.port = PropertiesUtils.getInteger(props, "jmx.server.port"); 
         start();
+    	LOG.debug("init JmxServer done");
     }
 
+	//--
+    
     public void start() throws Exception {
         MBeanServer server;
-        JMXConnectorServer connection;
-
+        JMXConnectorServer connector;
+        Path keystore;
+        
+        javaLogging();
+		keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
         try {
             server = MBeanServerFactory.createMBeanServer();
             server.registerMBean(this, createServerName());
             // otherwise, clients cannot instaniate TrailLogger objects:
             server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
-            connection = JMXConnectorServerFactory.newJMXConnectorServer(createServerURL(null, port), null, server);
-        	connection.start();
-        	CAT.info("server started on port " + port);
+            connector = JMXConnectorServerFactory.newJMXConnectorServer(
+            		createServerURL(null, port), 
+            		Environment.create(keystore.resolve()), server);
+        	connector.start();
+        	LOG.info("server started on port " + port);
         } finally {
             port = -1;
         }
     }
-	
+
+    private void javaLogging() throws IOException {
+		Logger logger;
+		Handler handler;
+
+		logger = Logger.getLogger("javax.management.remote");
+		logger.setLevel(Level.FINER);
+		handler = new FileHandler("log");
+		handler.setFormatter(new SimpleFormatter());
+		logger.addHandler(handler);
+    }
+
     public boolean isKnownClient(String remoteAddr) {
         return knownClients.contains(remoteAddr);
     }
