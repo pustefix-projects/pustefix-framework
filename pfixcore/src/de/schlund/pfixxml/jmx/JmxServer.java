@@ -34,10 +34,14 @@ import java.util.logging.SimpleFormatter;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
+import javax.management.Notification;
+import javax.management.NotificationListener;
 import javax.management.ObjectName;
+import javax.management.remote.JMXConnectionNotification;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.management.remote.jmxmp.JMXMPConnectorServer;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
@@ -93,10 +97,31 @@ public class JmxServer implements JmxServerMBean {
             		createServerURL(null, port), 
             		Environment.create(keystore.resolve()), server);
         	connector.start();
+        	notifications(connector);
         	LOG.info("server started on port " + port);
         } finally {
             port = -1;
         }
+    }
+
+    private static void notifications(JMXConnectorServer connector) {
+    	connector.addNotificationListener(new NotificationListener() {
+			public void handleNotification(Notification n, Object arg1) {
+				JMXConnectionNotification cn;
+				JMXMPConnectorServer cs;
+				
+				if (n instanceof JMXConnectionNotification) {
+					cn = (JMXConnectionNotification) n;
+					cs = (JMXMPConnectorServer) n.getSource();
+					LOG.info("connection: " + n.getType() + " " + cn.getConnectionId() + " " + n.getMessage());
+					LOG.info("address: " + cs.getAddress());
+					LOG.info("attributes" + cs.getAttributes());
+				} else {
+					LOG.info("notification " + n.getClass() + ": " + n.getMessage() + " " + arg1);
+					LOG.info("type " + n.getType());
+					LOG.info("source: " + n.getSource());
+				}
+			}}, null, null);
     }
 
     private void javaLogging() throws IOException {
