@@ -1,3 +1,7 @@
+2005-04-13  Michael Hartmeier  <mhm@schlund.de>
+
+    * SSL client authentication for JmxClients
+
 2005-04-05  Adam Habermann  <adam.habermann@schlund.de>
 
 	* example/core/schema/properties200401.xsd:
@@ -533,7 +537,7 @@
 	transformed into according SOAP_Call setEncoding() statements within
 	the webservice stub methods.
 
-2004-11-18  Jörg Häcker <haecker@schlund.de>
+2004-11-18  Jï¿½rg Hï¿½cker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java
 
