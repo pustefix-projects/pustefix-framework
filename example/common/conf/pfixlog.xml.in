@@ -25,6 +25,14 @@
       </cus:choose>
     </layout>
   </appender>
+
+  <appender name="LOGGER_JMX" class="org.apache.log4j.RollingFileAppender">
+    <param name="File"><cus:docroot/>servletconf/log/pustefix-jmx.log</param>
+    <param name="MaxFileSize" value="10MB"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ISO8601} [%t] %-5p %c [%M():%L] %x - %m\n"/>
+    </layout>
+  </appender>
   
   <appender name="LOGGER_TRAIL" class="org.apache.log4j.RollingFileAppender">
     <param name="File"><cus:docroot/>servletconf/log/pustefix-trail.log</param>
@@ -123,11 +131,6 @@
 
   <category name="de.schlund.pfixxml.FactoryInitServlet" additivity="false">
     <priority value="DEBUG"/>
-    <appender-ref ref="LOGGER_GENERAL"/>
-  </category>
-
-  <category name="de.schlund.pfixxml.jmx.Server" additivity="false">
-    <priority value="INFO"/>
     <appender-ref ref="LOGGER_GENERAL"/>
   </category>
 
@@ -262,6 +265,11 @@
   <category name="LOGGER_DEREF" additivity="false">
     <priority value="WARN"/>
     <appender-ref ref="LOGGER_DEREF"/>
+  </category>
+
+  <category name="de.schlund.pfixxml.jmx" additivity="false">
+    <priority value="DEBUG"/>
+    <appender-ref ref="LOGGER_JMX"/>
   </category>
 
   <!-- default category -->
