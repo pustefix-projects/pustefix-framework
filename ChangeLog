@@ -1,3 +1,9 @@
+2005-04-18  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:
+	Added possibility to prevent request-parameter dump on error by 
+	setting property 'servlet.paramdumponerror' to false in pustefix.prop.in.
+	  
 2005-04-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java: get page name and variant id from 
