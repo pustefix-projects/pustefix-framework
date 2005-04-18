@@ -128,7 +128,7 @@ public class DirectOutputServlet extends ServletManager {
          // check the authentification first....
          if (context.checkAuthorization(false) != null) return;
          
-         PageRequest       page  = new PageRequest(preq);
+         PageRequest       page  = PageRequest.createPageRequest(preq, null, null);
          DirectOutputState state = pagemap.getDirectOutputState(page);
          Properties        props = preqprops.getPropertiesForPageRequest(page);
          if (state != null) {

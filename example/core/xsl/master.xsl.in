@@ -62,8 +62,6 @@
   <xsl:param name="lang"><cus:lang/></xsl:param>
   <xsl:param name="product"><cus:product/></xsl:param>
 
-  <xsl:param name="variant"/>
-    
   <xsl:include href="core/xsl/include.xsl"/>
   
   <!-- Needed for navibuttons to work. Normally not needed in the resulting stylesheet -->
@@ -144,7 +142,6 @@
       <ixsl:param name="lang"><xsl:value-of select="$lang"/></ixsl:param>
 
       <ixsl:variable name="product"><xsl:value-of select="$product"/></ixsl:variable>
-      <ixsl:variable name="variant"><xsl:value-of select="$variant"/></ixsl:variable>
 
       <ixsl:include href="core/xsl/include.xsl"/>
 

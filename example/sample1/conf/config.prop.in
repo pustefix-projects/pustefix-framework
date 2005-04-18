@@ -38,20 +38,35 @@
   </context>
   
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
-  <pageflow name="OrderFlow">
-  
-    <flowstep name="home"/>
-    <flowstep name="order">
-      <oncontinue applyall="true">
-        <when test="/formresult/counter/@counter = 2">
-          <action type="jumpto" page="test" pageflow="OrderFlow"/>
-        </when>
-        <when>
-          <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Hi Ho ****"/>
-        </when>
-      </oncontinue>
-    </flowstep>
-    <flowstep name="overview"/>
+  <pageflow name="OrderFlow" final="home">
+    <default>
+      <flowstep name="home"/>
+      <flowstep name="order">
+        <oncontinue applyall="true">
+          <when test="/formresult/counter/@counter = 2">
+            <action type="jumpto" page="test" pageflow="OrderFlow"/>
+          </when>
+          <when>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Hi Ho ****"/>
+          </when>
+        </oncontinue>
+      </flowstep>
+      <flowstep name="overview"/>
+    </default>
+    <variant name="foo">
+      <flowstep name="home" stophere="true"/>
+      <flowstep name="order" stophere="true">
+        <oncontinue applyall="true">
+          <when test="/formresult/counter/@counter = 1">
+            <action type="jumpto" page="test" pageflow="OrderFlow"/>
+          </when>
+          <when>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** FOO FOO ****"/>
+          </when>
+        </oncontinue>
+      </flowstep>
+      <flowstep name="overview" stophere="true"/>
+    </variant>
   </pageflow>
   
   <!-- *** PageRequests and associated properties *** -->
@@ -61,12 +76,21 @@
   <pagerequest name="test"/>
   
   <pagerequest name="home">
-    <state class="de.schlund.pfixcore.example.RandomVariantState"/>
-    <input>
-      <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
-    </input>
-    
-    
+    <default>
+      <input>
+        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+      </input>
+    </default>
+    <variant name="foo">
+      <input>
+        <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+      </input>
+      <output>
+        <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
+        <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+        <resource node="trouser" class="de.schlund.pfixcore.example.ContextTrouser"/>
+      </output>
+    </variant>
   </pagerequest>
   
   <pagerequest name="order">
@@ -104,21 +128,7 @@
     </output>
   </pagerequest>
   
-  <pagerequest name="gencss" nostore="true">
-    <properties>
-      <prop name="mimetype">text/css</prop>
-      <choose>
-        <test mode="prod">
-          <prop name="responseheader.Cache-Control">max-age=3600</prop>
-        </test>
-        <test>
-          <prop name="responseheader.Cache-Control">max-age=60</prop>
-        </test>
-      </choose>
-    </properties>
-  </pagerequest>
-
-	<pagerequest name="encoding">
+  <pagerequest name="encoding">
     <state class="de.schlund.pfixcore.example.EncodingTestState"/>
     <input>
       <interface prefix="text" class="de.schlund.pfixcore.example.iwrapper.EncodingTest"/>
@@ -126,12 +136,11 @@
     <output>
       <resource node="text" class="de.schlund.pfixcore.example.ContextEncodingTest"/>
     </output>
-    <!--
-      <properties>
-      <prop name="mimetype">text/html; charset=utf-8</prop>
-      </properties>-->
-	</pagerequest>
-
+    <!-- <properties> -->
+    <!--   <prop name="mimetype">text/html; charset=utf-8</prop> -->
+    <!-- </properties> -->
+  </pagerequest>
+  
   <properties>
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
@@ -141,5 +150,8 @@
     <prop name="contexttrouser.feature.0">Waterproof</prop>
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
+
+    <prop name="context.startinterceptor">de.schlund.pfixcore.example.SampleStartIC</prop>
   </properties>
+
 </contextxmlserver>

@@ -31,7 +31,8 @@ public class PageRequest {
     public  static final String            PAGEPARAM = "__page";
     private static final Category          CAT       = Category.getInstance(PageRequest.class.getName());
     private              PageRequestStatus status    = PageRequestStatus.UNDEF;
-    private              String            pagename;
+    private              String            preqname;
+    private              String            rootname;
 
     /**
      * Describe <code>getName</code> method here.
@@ -39,7 +40,7 @@ public class PageRequest {
      * @return a <code>String</code> value
      */
     public String getName() {
-        return pagename;
+        return preqname;
     }
 
     /**
@@ -77,7 +78,7 @@ public class PageRequest {
      */
     public boolean equals(Object arg) {
         if ((arg != null) && (arg instanceof PageRequest)) {
-            return pagename.equals(((PageRequest) arg).getName());
+            return preqname.equals(((PageRequest) arg).getName());
         } else {
             return false;
         }
@@ -89,10 +90,10 @@ public class PageRequest {
      * @return an <code>int</code> value
      */
     public int hashCode() {
-        if (pagename == null) {
+        if (preqname == null) {
 	    return 0;
         } else {
-	    return pagename.hashCode();
+	    return preqname.hashCode();
         }
     }
 
@@ -101,21 +102,36 @@ public class PageRequest {
      *
      * @return a <code>boolean</code> value
      */
-    public boolean isEmpty() {
-        if (pagename == null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//     public boolean isEmpty() {
+//         if (preqname == null) {
+//             return true;
+//         } else {
+//             return false;
+//         }
+//     }
     
     /**
      * Creates a new <code>PageRequest</code> instance.
      *
-     * @param preq a <code>PfixServletRequest</code> value
+     * @param name a <code>String</code> value
      */
-    public PageRequest(PfixServletRequest preq) {
-        pagename = null;
+    public PageRequest(String name) {
+        preqname = name;
+        if (name != null && name.indexOf("::") > 0) {
+            rootname = name.substring(0, name.indexOf("::"));
+        } else {
+            rootname = name;
+        }
+        CAT.debug("=== PR: " + preqname + " (" + rootname + ") ===");
+    }
+
+    public String getRootName() {
+        return rootname;
+    }
+
+
+    public static PageRequest createPageRequest(PfixServletRequest preq, Variant variant, PageRequestProperties preqprops) {
+        String       pagename = "";
         String       pathinfo = preq.getPathInfo();
         RequestParam name     = preq.getRequestParam(PAGEPARAM);
         if (name != null && !name.getValue().equals("")) {
@@ -123,15 +139,22 @@ public class PageRequest {
         } else if (pathinfo != null && !pathinfo.equals("") && 
                    pathinfo.startsWith("/") && pathinfo.length() > 1) {
             pagename = pathinfo.substring(1);
+        } else {
+            return null;
         }
+        // We must remove any '::' that may have slipped in through the request
+        if (pagename.indexOf("::") > 0) {
+            pagename = pagename.substring(0, pagename.indexOf("::"));
+        }
+        return createPageRequest(pagename, variant, preqprops);
     }
+    
+    public static PageRequest createPageRequest(String name, Variant variant, PageRequestProperties preqprops) {
 
-    /**
-     * Creates a new <code>PageRequest</code> instance.
-     *
-     * @param name a <code>String</code> value
-     */
-    public PageRequest(String name){
-        pagename = name;
+        if (variant != null && variant.getVariantFallbackArray() != null && preqprops != null) {
+            return new PageRequest(preqprops.getVariantMatchingPageRequestName(name, variant));
+        } else {
+            return new PageRequest(name);
+        }
     }
 }

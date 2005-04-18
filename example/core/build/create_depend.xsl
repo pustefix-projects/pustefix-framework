@@ -77,7 +77,7 @@
     <xsl:if test="not(@name)">
       <xsl:message terminate="yes">*** standardpage needs to have a "name" attribute given! ***</xsl:message>
     </xsl:if>
-    <xsl:if test="not(/make/standardpage[@name = current()/@name and not(@variant)])">
+    <xsl:if test="not(/make/standardpage[@name = current()/@name and not(@variant)] or /make/target[@page = current()/@name and not(@variant)])">
       <xsl:message terminate="yes">*** Can't create a variant of a page that's not defined! ***</xsl:message>
     </xsl:if>
     <xsl:variable name="thename">
@@ -86,7 +86,10 @@
         <xsl:otherwise><xsl:value-of select="@name"/></xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
-    <target name="{$thename}.xsl" type="xsl">
+    <target name="{$thename}.xsl" type="xsl" page="{@name}">
+      <xsl:if test="@variant">
+        <xsl:attribute name="variant"><xsl:value-of select="@variant"/></xsl:attribute>
+      </xsl:if>
       <xsl:call-template name="render_themes">
         <xsl:with-param name="variant" select="@variant"/>
         <xsl:with-param name="local_themes" select="@themes"/>
@@ -121,9 +124,6 @@
       </xsl:for-each>
       <xsl:apply-templates select="$allp"/>
       <param name="page" value="{@name}"/>
-      <xsl:if test="@variant">
-        <param name="variant" value="{@variant}"/>
-      </xsl:if>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
@@ -210,11 +210,18 @@
   <xsl:template match="target">
     <xsl:param name="project"><xsl:value-of select="/make/@project"/></xsl:param>
     <xsl:param name="lang"><xsl:value-of select="/make/@lang"/></xsl:param>
+    <xsl:if test="@page and not(/make/standardpage[@name = current()/@page and not(@variant)] or
+                                                   /make/target[@page = current()/@page and not(@variant)])">
+      <xsl:message terminate="yes">*** Can't create a variant of a page that's not defined! ***</xsl:message>
+    </xsl:if>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
-      <xsl:apply-templates select="*[not(name() = 'param' and (@name='product' or @name='themes' or @name='lang'))]"/>
+      <xsl:apply-templates select="*[not(name() = 'param' and (@name='page' or @name='product' or @name='lang'))]"/>
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
+      </xsl:if>
+      <xsl:if test="@page">
+        <param name="page" value="{@page}"/>
       </xsl:if>
       <param  name="product" value="{$project}"/>
       <param  name="lang" value="{$lang}"/>

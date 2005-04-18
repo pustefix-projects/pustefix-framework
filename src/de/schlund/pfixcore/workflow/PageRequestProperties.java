@@ -36,11 +36,12 @@ import org.apache.log4j.*;
  */
 
 public class PageRequestProperties implements PropertyObject {
-    public static final String PREFIX = "pagerequest";
-    private Properties properties;
-    private HashSet    preqs     = new HashSet();
-    private HashMap    preqprops = new HashMap();
-    private Category   CAT       = Category.getInstance(this.getClass());
+    private Properties         properties;
+    private HashSet            preqnames        = new HashSet();
+    private HashMap            preqprops        = new HashMap();
+    private HashMap            variantpagecache = new HashMap();
+    private Category           CAT              = Category.getInstance(this.getClass());
+    public static final String PREFIX           = "pagerequest";
     
     public void init(Properties properties) throws Exception {
         this.properties = properties;
@@ -59,17 +60,17 @@ public class PageRequestProperties implements PropertyObject {
         }
         
         for (Iterator i = set.iterator(); i.hasNext();) {
-            PageRequest preq = new PageRequest((String) i.next());
-            preqs.add(preq);
+            String fullname = (String) i.next();
+            preqnames.add(fullname);
             
-            HashMap nmap =PropertiesUtils.selectProperties(properties, PREFIX + "." + preq.getName());
+            HashMap nmap = PropertiesUtils.selectProperties(properties, PREFIX + "." + fullname);
             if (nmap != null) {
-            	Properties props=new Properties();
+            	Properties props = new Properties();
                 for (Iterator it = nmap.keySet().iterator(); it.hasNext();) {
                     String key = (String) it.next();
                     props.setProperty(key, (String) nmap.get(key));
                 }
-                preqprops.put(preq.getName(), props);
+                preqprops.put(fullname, props);
             }
         }
 
@@ -87,15 +88,51 @@ public class PageRequestProperties implements PropertyObject {
     }
 
     public Properties getPropertiesForPageRequest(PageRequest preq) {
-    	return (Properties) preqprops.get(preq.getName());
+    	return getPropertiesForPageRequestName(preq.getName());
     }
-    
+
+    public Properties getPropertiesForPageRequestName(String name) {
+    	return (Properties) preqprops.get(name);
+    }
+
     public boolean pageRequestIsDefined(PageRequest preq) {
-        return (preqs.contains(preq));
+        return pageRequestNameIsDefined(preq.getName());
     }
-    
-    public PageRequest[] getAllDefinedPageRequests() {
-        return (PageRequest[]) preqs.toArray(new PageRequest[] {});
+
+    public boolean pageRequestNameIsDefined(String fullname) {
+        return preqnames.contains(fullname);
+    }
+
+    public String[] getAllDefinedPageRequestNames() {
+        return (String[]) preqnames.toArray(new String[] {});
+    }
+
+    public String getVariantMatchingPageRequestName(String name, Variant variant) {
+        String variant_id = variant.getVariantId();
+        String fullname   = (String) variantpagecache.get(variant_id + "@" + name);
+        
+        if (fullname == null) {
+            // CAT.debug("------ Cache miss " + variant_id + "@" + name);
+            String[] variant_arr = variant.getVariantFallbackArray();
+            for (int i = 0; i < variant_arr.length; i++) {
+                String tmp = name + "::" + variant_arr[i];
+                if (pageRequestNameIsDefined(tmp)) {
+                    CAT.debug("=== Found PR for '" + fullname + "' ===");
+                    fullname = tmp;
+                    break;
+                } else {
+                    CAT.debug("=== PR NOT FOUND for '" + fullname + "' ===");
+                }
+            }
+            if (fullname == null) {
+                fullname = name;
+            }
+            variantpagecache.put(variant_id + "@" + name, fullname);
+        } else {
+            // CAT.debug("###### Cache HIT " + variant_id + "@" + name);
+        }
+
+        return fullname;
     }
     
 } // PageRequestProperties

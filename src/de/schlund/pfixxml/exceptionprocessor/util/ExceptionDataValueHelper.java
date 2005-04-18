@@ -58,7 +58,7 @@ public class ExceptionDataValueHelper {
 		final String id = session.getId();
 		exdata.setSessionid(id);
 		exdata.setServlet(pfixReq.getServletName());
-		exdata.setPage(new PageRequest(pfixReq).getName());
+		exdata.setPage(PageRequest.createPageRequest(pfixReq, null, null).getName());
 		exdata.setQuery(pfixReq.getQueryString());
 		
 		HashMap keysnvalues = new HashMap();
