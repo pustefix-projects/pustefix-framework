@@ -30,9 +30,10 @@ import org.apache.log4j.*;
  */
 
 public class PageFlowManager implements PropertyObject {
-    private              HashMap  flowmap      = new HashMap();
-    private       static Category LOG          = Category.getInstance(PageFlowManager.class.getName());
-    public  final static String   PROP_PREFIX  = "context.pageflow";
+    private              HashMap  flowmap       = new HashMap();
+    private              HashSet  rootflownames = new HashSet();
+    private       static Category LOG           = Category.getInstance(PageFlowManager.class.getName());
+    public  final static String   PROP_PREFIX   = "context.pageflow";
 
     public void init(Properties props) throws Exception {
         HashSet names = new HashSet();
@@ -41,22 +42,25 @@ public class PageFlowManager implements PropertyObject {
             String full = (String) i.next();
             String name = full.substring(0, full.indexOf("."));
             names.add(name);
+            if (name.indexOf("::") == -1) {
+                rootflownames.add(name);
+            }
         }
 
         for (Iterator i = names.iterator(); i.hasNext(); ) {
             String    name = (String) i.next();
             LOG.debug("===> Found flowname: " + name);
-            PageFlow  pf   = new PageFlow(props, name);
+            PageFlow  pf = new PageFlow(props, name);
             flowmap.put(name, pf);
         }
     }
 
-    protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page) {
+    protected PageFlow pageFlowToPageRequest(PageFlow currentflow, PageRequest page, Variant variant) {
         LOG.debug("===> Testing pageflow: " + currentflow.getName() + " / page: " + page);
-        if (!currentflow.containsPageRequest(page)) {
-            for (Iterator i = flowmap.keySet().iterator(); i.hasNext(); ) {
-                PageFlow pf = (PageFlow) flowmap.get(i.next());
-                if (pf.containsPageRequest(page)) {
+        if (!currentflow.containsPage(page.getRootName())) {
+            for (Iterator i = rootflownames.iterator(); i.hasNext(); ) {
+                PageFlow pf = getPageFlowByName((String) i.next(), variant);
+                if (pf.containsPage(page.getRootName())) {
                     LOG.debug("===> Switching to pageflow: " + pf.getName());
                     return pf;
                 }
@@ -68,7 +72,21 @@ public class PageFlowManager implements PropertyObject {
         return currentflow;
     }
 
-    public PageFlow getPageFlowByName(String name) {
-            return (PageFlow) flowmap.get(name);
+    public PageFlow getPageFlowByName(String name, Variant variant) {
+        LOG.debug("=== Requesting FLOW " + name);
+
+        if (variant != null && variant.getVariantFallbackArray() != null) {
+            String[] variant_arr = variant.getVariantFallbackArray();
+            for (int i = 0; i < variant_arr.length; i++) {
+                String   fullname = name + "::" + variant_arr[i];
+                PageFlow flow     = (PageFlow) flowmap.get(fullname);
+                if (flow != null) {
+                    LOG.debug("=== Found FLOW for '" + fullname + "' ===");
+                    return flow;
+                }
+                LOG.debug("=== FLOW NOT FOUND for '" + fullname + "' ===");
+            }
+        }
+        return (PageFlow) flowmap.get(name);
     }
 }

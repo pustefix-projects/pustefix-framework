@@ -1,3 +1,90 @@
+2005-04-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: get page name and variant id from 
+	attributes of the target node. 
+
+	* src/de/schlund/pfixxml/SPDocument.java (getVariantFallbackArray): removed.
+	(getVariant/setVariant): use the Variant type instead of Strings.
+	(docIsUpdateable/setDocIsUpdateable): new methods
+
+	* src/de/schlund/pfixxml/exceptionprocessor/util/ExceptionDataValueHelper.java: 
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java: 
+	* src/de/schlund/pfixxml/DirectOutputServlet.java: changed accordingly to changes in  PageRequest
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: handle variants, and put information about 
+	used page variant into DOM tree 
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java: handle Variants and use Strings instead of 
+	PageRequest objects (maybe this is not a good idea in this case after all, but it's OK for now)
+	(getVariantMatchingPageRequestName) new method to return a page name with matching variantid.
+
+	* src/de/schlund/pfixcore/workflow/PageRequest.java (createPageRequest):
+	new static method to create a PageRequest while taking into account the currently valid variant.
+	(isEmpty): removed. Now we use null to signal when no valid PageRequest is found.
+	(getRootName): new method to return the name of the PageRequest without variantid attached.
+
+	* src/de/schlund/pfixcore/workflow/PageMap.java: use page names, not PageRequest objects.
+
+	* src/de/schlund/pfixcore/workflow/PageFlowManager.java: handle variants for flownames. 
+
+	* src/de/schlund/pfixcore/workflow/PageFlow.java: only use page names internally, not pagerequests.
+	getIndexOfPageRequest(PageRequest page) => getIndexOfPage(String page)
+	containsPageRequest(PageRequest page)   => containsPage(String page) 
+	etc.
+	(getRootName) new method, to return the name of the pageflow without the variant attached.
+
+	* src/de/schlund/pfixcore/workflow/FlowStep.java: Use page names
+	as flow steps, not PageRequests (because of variants)
+
+	* src/de/schlund/pfixcore/workflow/DirectOutputPageMap.java: Use
+	page names, not pagerequests as keys. (because pagerequests also
+	encode the variant id)
+
+	* src/de/schlund/pfixcore/workflow/Context.java: Added start and
+	end interceptors (See ContextInterceptor), which are called before
+	and after the usual processing. These can be used to implement
+	stuff that should be done regardless of the state that's called
+	finally.  Use Variant as the type of variants.  All over the
+	class, fix every creation of PageRequests or PageFlows to take
+	into account the currently set variant.
+
+	* src/de/schlund/pfixxml/Variant.java: added. Store variants in their own type. 
+
+	* example/sample1/xml/two_frames.xml: 
+	* example/sample1/xml/one_frame.xml: use CSS inline
+
+	* example/sample1/txt/pages/main_home.xml: removed the whole layer
+	stuff that's about to be removed anyway.  
+	More cosmetics.
+
+	* example/sample1/txt/styles.xml: cosmetics 
+
+	* example/sample1/conf/depend.xml.in: remove css handling
+	page. It's generating too much noise when testing.
+
+	* example/sample1/conf/config.prop.in: demo new variant stuff 
+
+	* example/core/xsl/master.xsl.in: remove the $variant
+	parameter. You can get the used and requested variant ids from the DOM tree.
+
+	* example/core/build/create_propfiles.xsl: implement variant
+	handling for pagerequests and pageflows.  This is done by
+	optionally allowing <default>..</default><variant
+	name="..">..</variant>... as children for those tags.
+
+	* example/core/build/create_depend.xsl: new attributes "page" and
+	"variant" for targets. standardpage only has "variant". The
+	associated page is now no longer determined by looking at a XSL
+	param defined for a toplevel target, but only by using the page
+	attribute (which will be used to set a XSL parameter, too,
+	automatically)
+
+	* src/de/schlund/pfixcore/workflow/ContextInterceptor.java: Added.
+	* src/de/schlund/pfixcore/example/SampleStartIC.java: Sample
+	ContextInterceptor that is used to set a variant id.
+
+	* src/de/schlund/pfixcore/example/RandomVariantState.java: removed.
+
 2005-04-13  Michael Hartmeier  <mhm@schlund.de>
 
     * SSL client authentication for JmxClients

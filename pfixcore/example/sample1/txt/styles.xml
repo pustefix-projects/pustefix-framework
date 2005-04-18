@@ -40,6 +40,9 @@
 
         .layer    { background-color: #ddccaa; padding: 10px; border: 1px outset threeDFace; position: absolute; min-width: 100px; }
 
+        .info tr td { padding: 2px; border: 1px solid black; }
+        .info tr td:first-child { background-color: #33cc99; }
+        
       </lang>
     </product>
   </part>

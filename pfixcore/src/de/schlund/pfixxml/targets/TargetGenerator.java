@@ -202,17 +202,19 @@ public class TargetGenerator {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < targetnodes.getLength(); i++) {
-            Element      node   = (Element) targetnodes.item(i);
+            Element      node     = (Element) targetnodes.item(i);
             String       nameattr = node.getAttribute("name");
-            String       type   = node.getAttribute("type");
-            String       themes = node.getAttribute("themes");
-            TargetStruct struct = new TargetStruct(nameattr, type, themes);
-            HashMap      params = new HashMap();
-            HashSet      depaux = new HashSet();
-            Element      xmlsub = (Element) node.getElementsByTagName("depxml").item(0);
-            Element      xslsub = (Element) node.getElementsByTagName("depxsl").item(0);
-            NodeList     allaux = node.getElementsByTagName("depaux");
-            NodeList     allpar = node.getElementsByTagName("param");
+            String       type     = node.getAttribute("type");
+            String       themes   = node.getAttribute("themes");
+            String       variant  = node.getAttribute("variant");
+            String       pagename = node.getAttribute("page");
+            TargetStruct struct   = new TargetStruct(nameattr, type, themes, variant, pagename);
+            HashMap      params   = new HashMap();
+            HashSet      depaux   = new HashSet();
+            Element      xmlsub   = (Element) node.getElementsByTagName("depxml").item(0);
+            Element      xslsub   = (Element) node.getElementsByTagName("depxsl").item(0);
+            NodeList     allaux   = node.getElementsByTagName("depaux");
+            NodeList     allpar   = node.getElementsByTagName("param");
             if (xmlsub != null) {
                 String xmldep = xmlsub.getAttribute("name");
                 if (xmldep != null) {
@@ -245,7 +247,7 @@ public class TargetGenerator {
                 Element par     = (Element) allpar.item(j);
                 String  parname = par.getAttribute("name");
                 if ("docroot".equals(parname)) {
-                    throw new XMLException("docroot is no longer needed");
+                    throw new XMLException("The docroot parameter is no longer allowed! [" + nameattr + "]");
                 }
                 String  value   = par.getAttribute("value");
                 params.put(parname, value);
@@ -268,7 +270,8 @@ public class TargetGenerator {
         CAT.warn("\n=====> Init of Pagetree took " + (System.currentTimeMillis() - start) + "ms. Ready...");
     }
 
-    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs, HashSet depxmls, HashSet depxsls, String tgParam) throws XMLException {
+    private TargetRW createTargetFromTargetStruct(TargetStruct struct, HashMap allstructs,
+                                                  HashSet depxmls, HashSet depxsls, String tgParam) throws XMLException {
         String     key     = struct.getName();
         String     type    = struct.getType();
         TargetType reqtype = TargetType.getByTag(type);
@@ -302,10 +305,14 @@ public class TargetGenerator {
                 xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
             }
 
-            VirtualTarget virtual = (VirtualTarget) createTarget(reqtype, key);
+            VirtualTarget virtual     = (VirtualTarget) createTarget(reqtype, key);
+            String        themes      = struct.getThemes();
+            String        variantname = struct.getVariant();
+            String        pagename    = struct.getPage();
+
             virtual.setXMLSource(xmlsource);
             virtual.setXSLSource(xslsource);
-            String themes = struct.getThemes();
+            
             if (themes != null && !themes.equals("")) {
                 StringTokenizer tok  = new StringTokenizer(themes);
                 ArrayList       list = new ArrayList();
@@ -315,7 +322,7 @@ public class TargetGenerator {
                 }
                 virtual.setThemes((String[]) list.toArray(new String[]{}));
             }
-            
+
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
             for (Iterator i = auxdeps.iterator(); i.hasNext();) {
@@ -323,10 +330,7 @@ public class TargetGenerator {
                 manager.addDependency(DependencyType.FILE, path, null, null, null, null, null);
             }
             
-            HashMap params       = struct.getParams();
-            String  pageparam    = null;
-            String  variantparam = null;
-            
+            HashMap params = struct.getParams();
             // we want to remove already defined params (needed when we do a reload)
             virtual.resetParams();
             for (Iterator i = params.keySet().iterator(); i.hasNext();) {
@@ -334,25 +338,21 @@ public class TargetGenerator {
                 String value = (String) params.get(pname);
                 CAT.debug("* Adding Param " + pname + " with value " + value);
                 virtual.addParam(pname, value);
-                if (pname.equals("page")) {
-                    pageparam = value;
-                }
-                if (pname.equals("variant")) {
-                    variantparam = value;
-                }
             }
             virtual.addParam(XSLPARAM_TG, tgParam);
             virtual.addParam(XSLPARAM_TKEY, key);
 
             if (!depxmls.contains(key) && !depxsls.contains(key)) {
                 // it's a toplevel target...
-                if (pageparam == null) {
-                    CAT.warn("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' parameter set! Will use 'Unnamed_"
-                             + unnamedcount + "' instead");
-                    pageparam = "Unamed_" + unnamedcount++;
+                if (pagename == null) {
+                    CAT.warn("*** WARNING *** Target '" + key + "' is top-level, but has no 'page' attribute set! Ignoring it... ***");
+                } else {
+                    //CAT.warn("REGISTER " + pagename + " " + variantname);
+                    PageInfo info = PageInfoFactory.getInstance().getPage(this, pagename, variantname);
+                    pagetree.addEntry(info, virtual);
                 }
-                PageInfo info = PageInfoFactory.getInstance().getPage(this, pageparam, variantparam);
-                pagetree.addEntry(info, virtual);
+            } else if (pagename != null) {
+                throw new RuntimeException("*** ERROR *** Target '" + key + "' is NOT top-level, but has a 'page' attribute set! ***");
             }
             return virtual;
         }
@@ -391,22 +391,40 @@ public class TargetGenerator {
     private class TargetStruct {
         HashSet depaux; 
         HashMap params;
-        String type;
-        String name;
-        String xsldep;
-        String xmldep;
-        String themes;
+        String  type;
+        String  name;
+        String  xsldep;
+        String  xmldep;
+        String  variant = null;
+        String  themes  = null;
+        String  page    = null;
         
-        public TargetStruct(String name, String type, String themes) {
-            this.name   = name;
-            this.type   = type;
-            this.themes = themes;
+        public TargetStruct(String name, String type, String themes, String variant, String page) {
+            this.name    = name;
+            this.type    = type;
+            if (variant != null && !variant.equals("")) {
+                this.variant = variant;
+            }
+            if (themes != null && !themes.equals("")) {
+                this.themes = themes;
+            }
+            if (page != null && !page.equals("")) {
+                this.page = page;
+            }
         }
 
         public String getThemes() {
             return themes;
         }
         
+        public String getVariant() {
+            return variant;
+        }
+
+        public String getPage() {
+            return page;
+        }
+
         public String getXMLDep() {
             return xmldep;
         }

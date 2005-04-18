@@ -42,6 +42,8 @@ public class Context implements AppContext {
     private final static Category LOG                 = Category.getInstance(Context.class.getName());
     private final static String   NOSTORE             = "nostore";
     private final static String   DEFPROP             = "context.defaultpageflow";
+    private final static String   STARTIC             = "context.startinterceptor";
+    private final static String   ENDIC               = "context.endtinterceptor";
     private final static String   NAVPROP             = "xmlserver.depend.xml";
     private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
     private final static String   PROP_NEEDS_SSL      = "needsSSL";
@@ -71,7 +73,9 @@ public class Context implements AppContext {
     private Navigation             navigation    = null;
     private PageRequest            authpage      = null;
     private HashSet                visited_pages = null;
-    private String                 variant       = null;
+    private Variant                variant       = null;
+    private ContextInterceptor     startIC       = null;
+    private ContextInterceptor     endIC         = null;
     
     // values read from properties
     private boolean     autoinvalidate_navi = true;
@@ -139,6 +143,8 @@ public class Context implements AppContext {
             do_update();
         }
 
+        if (startIC != null) startIC.process(this, preq);
+        
         RequestParam fstop = currentpreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null && fstop.getValue().equals("true")) {
             // We already decide here to stay on the page, what ever the state wants...
@@ -157,13 +163,20 @@ public class Context implements AppContext {
         // This helps to reset the state between different request from different windows
         // representing different locations in the same application.
         // The page will be set a bit below in trySettingPageRequestAndFlow, where the "real" pageflow to use is also deduced.
+        // At least, the currentpageflow is updated to be the currently valid variant.
         RequestParam lastflow = currentpreq.getRequestParam(PARAM_LASTFLOW);
         if (lastflow != null && !lastflow.getValue().equals("")) {
-            PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue());
+            PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue(), variant);
             if (tmp != null) {
                 LOG.debug("* Got last pageflow state from request as [" + tmp.getName() + "]");
                 currentpageflow = tmp;
             }
+        } else if (currentpageflow != null) {
+            currentpageflow = pageflowmanager.getPageFlowByName(currentpageflow.getRootName(), variant);
+        }
+        // Update currentpagerequest to currently valid variant
+        if (currentpagerequest != null) {
+            currentpagerequest = PageRequest.createPageRequest(currentpagerequest.getRootName(), variant, preqprops);
         }
         
         SPDocument  spdoc;
@@ -186,6 +199,7 @@ public class Context implements AppContext {
             spdoc.setPagename(admin_pagereq.getName());
             insertPageMessages(spdoc);
             storeCookies(spdoc);
+            if (endIC != null) endIC.process(this, preq);
             return spdoc;
         }
 
@@ -193,16 +207,21 @@ public class Context implements AppContext {
         spdoc = documentFromFlow();
 
         if (spdoc != null && spdoc.getPagename() == null) {
-            spdoc.setPagename(currentpagerequest.getName());
+            spdoc.setPagename(currentpagerequest.getRootName());
         }
 
         if (spdoc != null && currentpageflow != null) {
-            spdoc.setProperty("pageflow", currentpageflow.getName());
+            spdoc.setProperty("pageflow", currentpageflow.getRootName());
+            addPageFlowInfo(currentpageflow, spdoc);
         }
 
         if (spdoc != null && variant != null) {
             spdoc.setVariant(variant);
-            spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", variant);
+            spdoc.getDocument().getDocumentElement().setAttribute("requested-variant", variant.getVariantId());
+            if (currentpagerequest != null) 
+                spdoc.getDocument().getDocumentElement().setAttribute("used-pr", currentpagerequest.getName());
+            if (currentpageflow != null)
+                spdoc.getDocument().getDocumentElement().setAttribute("used-pf", currentpageflow.getName());
         }
         
         if (spdoc.getResponseError() != 0) {
@@ -210,6 +229,7 @@ public class Context implements AppContext {
             currentpageflow    = prevflow;
             insertPageMessages(spdoc);
             storeCookies(spdoc);
+            if (endIC != null) endIC.process(this, preq);
             return spdoc;
         }
 
@@ -229,6 +249,7 @@ public class Context implements AppContext {
         LOG.debug("\n");
         insertPageMessages(spdoc);
         storeCookies(spdoc);
+        if (endIC != null) endIC.process(this, preq);
         return spdoc;
     }
 
@@ -272,7 +293,7 @@ public class Context implements AppContext {
     }
 
     public void setJumpToPageRequest(String pagename) {
-        PageRequest page = new PageRequest(pagename);
+        PageRequest page = PageRequest.createPageRequest(pagename, variant, preqprops);
         if (pagemap.getState(page) != null) {
             jumptopagerequest = page;
         } else {
@@ -287,11 +308,11 @@ public class Context implements AppContext {
 
     public void setJumpToPageFlow(String flowname) {
         if (jumptopagerequest != null) {
-            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname);
+            PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
             if (tmp != null) {
                 jumptopageflow = tmp;
             } else {
-                jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest);
+                jumptopageflow = pageflowmanager.pageFlowToPageRequest(currentpageflow, jumptopagerequest, variant);
             }
         } else {
             jumptopageflow = null;
@@ -345,12 +366,12 @@ public class Context implements AppContext {
         }
     }
 
-    public String getVariant() {
+    public Variant getVariant() {
         return variant;
     }
 
-    public void setVariant(String variant) {
-        this.variant = variant;
+    public void setVariant(Variant var) {
+        variant = var;
     }
     
     /**
@@ -367,7 +388,7 @@ public class Context implements AppContext {
     }
 
     public boolean flowBeforeNeedsData() throws Exception {
-        if (!currentpageflow.containsPageRequest(currentpagerequest)) {
+        if (!currentpageflow.containsPage(currentpagerequest.getRootName())) {
             throw new RuntimeException("*** current pageflow " + currentpageflow.getName() +
                                        " does not contain current pagerequest " + currentpagerequest);
         }
@@ -376,9 +397,10 @@ public class Context implements AppContext {
         FlowStep[]  workflow = currentpageflow.getAllSteps();
 
         for (int i = 0; i < workflow.length; i++) {
-            FlowStep    step = workflow[i];
-            PageRequest page = step.getPageRequest();
-            if (page.equals(current)) {
+            FlowStep    step     = workflow[i];
+            String      pagename = step.getPageName();
+            PageRequest page     = PageRequest.createPageRequest(pagename, variant, preqprops);
+            if (pagename.equals(current.getRootName())) {
                 return false;
             }
             if (checkIsAccessible(page, current.getStatus()) && checkNeedsData(page, current.getStatus())) {
@@ -440,8 +462,8 @@ public class Context implements AppContext {
     }
     
     public boolean currentFlowStepWantsPostProcess() {
-        if (currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
-            if (currentpageflow.getFlowStepForPage(currentpagerequest).hasOnContinueAction()) {
+        if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
+            if (currentpageflow.getFlowStepForPage(currentpagerequest.getRootName()).hasOnContinueAction()) {
                 return true;
             }
         }
@@ -449,14 +471,14 @@ public class Context implements AppContext {
     }
 
     public boolean currentPageNeedsSSL(PfixServletRequest preq) throws Exception {
-        PageRequest page = new PageRequest(preq);
-        if (page.isEmpty() && currentpagerequest != null) {
+        PageRequest page = PageRequest.createPageRequest(preq, variant, preqprops);
+        if (page == null && currentpagerequest != null) {
             page = currentpagerequest;
         }
-        if (!page.isEmpty()) {
+        if (page != null) {
             Properties props = preqprops.getPropertiesForPageRequest(page);
             if (props != null) {
-                String     needssl = props.getProperty(PROP_NEEDS_SSL);
+                String needssl = props.getProperty(PROP_NEEDS_SSL);
                 if (needssl != null && needssl.equals("true")) {
                     return true;
                 }
@@ -502,7 +524,7 @@ public class Context implements AppContext {
     }
 
     private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
-        if (pageflow != null && pageflow.containsPageRequest(page)) {
+        if (pageflow != null && pageflow.containsPage(page.getRootName())) {
             return true;
         } else {
             return false;
@@ -528,8 +550,42 @@ public class Context implements AppContext {
             navigation = NavigationFactory.getInstance().getNavigation(properties.getProperty(NAVPROP));
         }
 
-        currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
-        currentpagerequest = currentpageflow.getFirstStep().getPageRequest();
+        currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP), variant);
+        currentpagerequest = PageRequest.createPageRequest(currentpageflow.getFirstStep().getPageName(), variant, preqprops);
+
+        String sic = properties.getProperty(STARTIC);
+        if (sic != null && !sic.equals("")) {
+            if (startIC == null || !startIC.getClass().getName().equals(sic)) {
+                try {
+                    startIC = (ContextInterceptor) Class.forName(sic).newInstance();
+                } catch (InstantiationException e) {
+                    throw new XMLException("unable to instantiate class [" + sic + "] :" + e.getMessage());
+                } catch (IllegalAccessException e) {
+                    throw new XMLException("unable access class [" + sic + "] :" + e.getMessage());
+                } catch (ClassNotFoundException e) {
+                    throw new XMLException("unable to find class [" + sic + "] :" + e.getMessage());
+                } catch (ClassCastException e) {
+                    throw new XMLException("class [" + sic + "] does not implement the interface ContextInterceptor :" + e.getMessage());
+                }
+            }
+        }
+
+        String eic = properties.getProperty(ENDIC);
+        if (eic != null && !eic.equals("")) {
+            if (endIC == null || !endIC.getClass().getName().equals(eic)) {
+                try {
+                    endIC = (ContextInterceptor) Class.forName(eic).newInstance();
+                } catch (InstantiationException e) {
+                    throw new XMLException("unable to instantiate class [" + eic + "] :" + e.getMessage());
+                } catch (IllegalAccessException e) {
+                    throw new XMLException("unable access class [" + eic + "] :" + e.getMessage());
+                } catch (ClassNotFoundException e) {
+                    throw new XMLException("unable to find class [" + eic + "] :" + e.getMessage());
+                } catch (ClassCastException e) {
+                    throw new XMLException("class [" + eic + "] does not implement the interface ContextInterceptor :" + e.getMessage());
+                }
+            }
+        }
 
         checkForAuthenticationMode();
         checkForAdminMode();
@@ -555,7 +611,7 @@ public class Context implements AppContext {
     private void checkForAuthenticationMode() {
         String authpagename = properties.getProperty(AUTH_PROP);
         if (authpagename != null) {
-            authpage = new PageRequest(authpagename);
+            authpage = PageRequest.createPageRequest(authpagename, variant, preqprops);
         } else {
             authpage = null;
         }
@@ -582,7 +638,7 @@ public class Context implements AppContext {
             String adminpage = properties.getProperty(ADMINPAGE);
             if (adminpage != null && !adminpage.equals("") && adminprop != null && adminprop.equals("on")) {
                 LOG.debug("*** setting Adminmode for : " + watchprop + " ***");
-                admin_pagereq = new PageRequest(adminpage);
+                admin_pagereq = PageRequest.createPageRequest(adminpage, variant, preqprops);
                 in_adminmode  = true;
             }
         }
@@ -658,8 +714,8 @@ public class Context implements AppContext {
             // Now we need to make sure that the current page is accessible, and take the right measures if not.
             if (!checkIsAccessible(currentpagerequest, PageRequestStatus.DIRECT)) {
                 LOG.warn("[" + currentpagerequest + "]: not accessible! Trying first page of default flow.");
-                currentpageflow     = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP));
-                PageRequest defpage = currentpageflow.getFirstStep().getPageRequest();
+                currentpageflow     = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP), variant);
+                PageRequest defpage = PageRequest.createPageRequest(currentpageflow.getFirstStep().getPageName(), variant, preqprops);
                 currentpagerequest  = defpage;
                 if (!checkIsAccessible(defpage, PageRequestStatus.DIRECT)) {
                     throw new XMLException("Even first page [" + defpage + "] of default flow was not accessible! Bailing out.");
@@ -668,8 +724,8 @@ public class Context implements AppContext {
 
             resdoc = documentFromCurrentStep();
             if (!prohibitcontinue &&
-                currentpageflow != null && currentpageflow.containsPageRequest(currentpagerequest)) {
-                FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest);
+                currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
+                FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
                 step.applyActionsOnContinue(this, resdoc);
             }
 
@@ -718,7 +774,7 @@ public class Context implements AppContext {
 
         for (int i = 0; i < workflow.length; i++) {
             FlowStep    step = workflow[i];
-            PageRequest page = step.getPageRequest();
+            PageRequest page = PageRequest.createPageRequest(step.getPageName(), variant, preqprops);
             if (page.equals(saved)) {
                 if (startwithflow && checkIsAccessible(page, PageRequestStatus.WORKFLOW)) {
                     LOG.debug("=> [" + page + "]: STARTWITHFLOW: Pageflow must stop here at last.");
@@ -775,7 +831,7 @@ public class Context implements AppContext {
                 finalpage = saved;
                 LOG.debug("=> STARTWITHFLOW is active, using original target page [" + saved + "] as final page");
             } else {
-                finalpage = currentpageflow.getFinalPage();
+                finalpage = PageRequest.createPageRequest(currentpageflow.getFinalPage(), variant, preqprops);
                 LOG.debug("=> Pageflow [" + currentpageflow + "] defines page [" + finalpage + "] as final page");
             }
             if (finalpage == null) {
@@ -786,7 +842,7 @@ public class Context implements AppContext {
                                        "but FINAL page [" + finalpage + "] is inaccessible ***");
             } else {
                 currentpagerequest = finalpage;
-                currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, finalpage);
+                currentpageflow    = pageflowmanager.pageFlowToPageRequest(currentpageflow, finalpage, variant);
                 finalpage.setStatus(PageRequestStatus.FINAL);
                 resdoc             = documentFromCurrentStep();
                 document           = resdoc.getSPDocument();
@@ -820,42 +876,43 @@ public class Context implements AppContext {
     }
 
     private void trySettingPageRequestAndFlow() {
-        PageRequest page = new PageRequest(currentpreq);
-        if (!page.isEmpty() && (authpage == null || !page.equals(authpage))) {
-            page.setStatus(PageRequestStatus.DIRECT);
-            currentpagerequest    = page;
+        PageRequest tmp = PageRequest.createPageRequest(currentpreq, variant, preqprops);
+        if (tmp != null && (authpage == null || !tmp.equals(authpage))) {
+            currentpagerequest = tmp;
+            currentpagerequest.setStatus(PageRequestStatus.DIRECT);
+
             PageFlow     flow     = null;
             RequestParam flowname = currentpreq.getRequestParam(PARAM_FLOW);
             if (flowname != null && !flowname.getValue().equals("")) {
                 LOG.debug("===> User requesting to switch to flow '" + flowname.getValue() + "'");
-                flow = pageflowmanager.getPageFlowByName(flowname.getValue());
+                flow = pageflowmanager.getPageFlowByName(flowname.getValue(), variant);
                 if (flow != null) {
                     LOG.debug("===> Flow '" + flowname.getValue() + "' exists...");
                     pageflow_requested_by_user = true;
-                    if (flow.containsPageRequest(page)) {
-                    LOG.debug("===> and it contains page '" + page.getName() + "'");
+                    if (flow.containsPage(currentpagerequest.getRootName())) {
+                    LOG.debug("===> and it contains page '" + currentpagerequest.getName() + "'");
                     } else {
                         LOG.debug("===> CAUTION: it doesn't contain page '" +
-                                  page.getName() + "'! Make sure this is what you want...");
+                                  currentpagerequest.getName() + "'! Make sure this is what you want...");
                     }
                 } else {
                     LOG.error("\n\n!!!! CAUTION !!!! Flow '" + flowname +
                               "' is not defined! I'll continue as if no flow was given\n\n");
-                    flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
+                    flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
                     pageflow_requested_by_user = false;
                 }
             } else {
-                flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, page);
+                flow = pageflowmanager.pageFlowToPageRequest(currentpageflow, currentpagerequest, variant);
                 pageflow_requested_by_user = false;
             }
             currentpageflow = flow;
-            LOG.debug("* Setting currentpagerequest to [" + page + "]");
+            LOG.debug("* Setting currentpagerequest to [" + currentpagerequest.getName() + "]");
             LOG.debug("* Setting currentpageflow to [" + currentpageflow.getName() + "]");
         } else {
-            page = currentpagerequest;
-            if (page != null) {
-                page.setStatus(PageRequestStatus.DIRECT);
-                LOG.debug("* Reusing page [" + page + "]");
+            if (currentpagerequest != null) {
+                currentpagerequest = PageRequest.createPageRequest(currentpagerequest.getRootName(), variant, preqprops);
+                currentpagerequest.setStatus(PageRequestStatus.DIRECT);
+                LOG.debug("* Reusing page [" + currentpagerequest + "]");
                 LOG.debug("* Reusing flow [" + currentpageflow.getName() + "]");
             } else {
                 throw new RuntimeException("Don't have a current page to use as output target");
@@ -872,6 +929,20 @@ public class Context implements AppContext {
         }
     }
 
+    private void addPageFlowInfo(PageFlow flow, SPDocument spdoc) throws Exception {
+        Document   doc   = spdoc.getDocument();
+        Element    root  = doc.createElement("pageflow");
+        doc.getDocumentElement().appendChild(root);
+        root.setAttribute("name", flow.getRootName());
+        FlowStep[] steps = flow.getAllSteps();
+        for (int i = 0; i < steps.length; i++) {
+            String  step     = steps[i].getPageName();
+            Element stepelem = doc.createElement("step");
+            root.appendChild(stepelem);
+            stepelem.setAttribute("name", step);
+        }
+    }
+    
     private void addNavigation(Navigation navi, SPDocument spdoc) throws Exception {
         long     start   = System.currentTimeMillis();
         Document doc     = spdoc.getDocument();
@@ -908,8 +979,8 @@ public class Context implements AppContext {
                               HashMap vis_map, StringBuffer warn_buffer, StringBuffer debug_buffer) throws Exception {
         for (int i = 0; i < pages.length; i++) {
             NavigationElement page     = pages[i];
-            String            pagename     = page.getName();
-            PageRequest       pagereq  = new PageRequest(pagename);
+            String            pagename = page.getName();
+            PageRequest       pagereq  = PageRequest.createPageRequest(pagename, variant, preqprops);
             Element           pageelem = doc.createElement("page");
 
             parent.appendChild(pageelem);
@@ -966,9 +1037,6 @@ public class Context implements AppContext {
         }
     }
 
-    /**
-     *
-     */
     private void insertPageMessages(SPDocument spdoc) {
         if (spdoc == null)
             return;

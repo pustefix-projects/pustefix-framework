@@ -327,7 +327,7 @@ class ExceptionContext {
             servletname = servletname.substring(1, servletname.length());
         }
      
-        String page = new PageRequest(pfrequest_).getName();
+        String page = PageRequest.createPageRequest(pfrequest_, null, null).getName();
         Object[] args = { servername, servletname, exceptname, message, page };
         buf = MessageFormat.format("{0}|{1}|{4}|{2}:{3}", args);
         if(CAT.isDebugEnabled())

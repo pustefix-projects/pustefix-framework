@@ -31,17 +31,24 @@ import org.apache.log4j.*;
 
 public class PageFlow {
     private String    flowname;
+    private String    rootname;
     private ArrayList allsteps = new ArrayList();
     private HashMap   stepmap  = new HashMap();
     
     private final static String PROPERTY_PREFIX   = PageFlowManager.PROP_PREFIX;
     private final static String FLAG_FINAL        = "FINAL";
     private static Category     LOG               = Category.getInstance(PageFlow.class.getName());
-    private PageRequest         finalpage         = null;
+    private String              finalpage         = null;
     
     public PageFlow(Properties props, String name) {
-        flowname       = name;
-        Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + name);
+        flowname = name;
+        if (flowname.indexOf("::") > 0) {
+            rootname = flowname.substring(0, flowname.indexOf("::"));
+        } else {
+            rootname = flowname;
+        }
+
+        Map     map    = PropertiesUtils.selectProperties(props, PROPERTY_PREFIX + "." + flowname);
         TreeMap sorted = new TreeMap();
         
         for (Iterator i = map.keySet().iterator(); i.hasNext(); ) {
@@ -50,13 +57,13 @@ public class PageFlow {
             Integer index;
             
             if (key.equals(FLAG_FINAL)) {
-                finalpage = new PageRequest(pagename);
+                finalpage = pagename;
             } else {
                 try {
                     index = new Integer(key);
                     sorted.put(index, pagename);
                 } catch (NumberFormatException e) {
-                    throw new RuntimeException("**** The Pageflow [" + name + "] didn't specifiy a numerical index for page [" +
+                    throw new RuntimeException("**** The Pageflow [" + flowname + "] didn't specifiy a numerical index for page [" +
                                                pagename + "] ****\n" + e.getMessage());
                 }
             }
@@ -64,9 +71,9 @@ public class PageFlow {
 
         for (Iterator i = sorted.values().iterator(); i.hasNext(); ) {
             String   pagename = (String) i.next();
-            FlowStep step     = new FlowStep(new PageRequest(pagename), props, name);
+            FlowStep step     = new FlowStep(pagename, props, flowname);
             allsteps.add(step);
-            stepmap.put(step.getPageRequest(), step);
+            stepmap.put(step.getPageName(), step);
         }
         
         if (LOG.isDebugEnabled()) {
@@ -76,7 +83,7 @@ public class PageFlow {
         }
     }
 
-    public boolean containsPageRequest(PageRequest page) {
+    public boolean containsPage(String page) {
         return stepmap.keySet().contains(page);
     }
 
@@ -84,10 +91,10 @@ public class PageFlow {
      * Return position of page in the PageFlow, starting with 0. Return -1 if
      * page isn't a member of the PageFlow.
      *
-     * @param page a <code>PageRequest</code> value
+     * @param page a <code>String</code> value
      * @return an <code>int</code> value
      */
-    public int getIndexOfPageRequest(PageRequest page) {
+    public int getIndexOfPage(String page) {
         FlowStep step = (FlowStep) stepmap.get(page);
         if (step != null) {
             return allsteps.indexOf(step);
@@ -100,11 +107,15 @@ public class PageFlow {
         return flowname;
     }
 
+    public String getRootName() {
+        return rootname;
+    }
+
     public FlowStep[] getAllSteps() {
         return (FlowStep[]) allsteps.toArray(new FlowStep[] {});
     }
     
-    public FlowStep getFlowStepForPage(PageRequest page) {
+    public FlowStep getFlowStepForPage(String page) {
         return (FlowStep) stepmap.get(page);
     }
 
@@ -112,7 +123,7 @@ public class PageFlow {
         return (FlowStep) allsteps.get(0);
     }
     
-    public PageRequest getFinalPage() {
+    public String getFinalPage() {
         return finalpage;
     }
 
@@ -127,7 +138,7 @@ public class PageFlow {
             ret += "[" + i + ": " + allsteps.get(i) + "]";
         }
         if (finalpage != null) {
-            ret += " FINAL: " + finalpage.getName();
+            ret += " FINAL: " + finalpage;
         }
         
         return ret;

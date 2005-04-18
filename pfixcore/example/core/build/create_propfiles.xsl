@@ -409,7 +409,14 @@
   <xsl:template match="prop:prop">
     <xsl:param name="prefix">
       <xsl:if test="ancestor::prop:pagerequest">
-        <xsl:value-of select="concat('pagerequest.',ancestor::prop:pagerequest/@name)"/>
+        <xsl:choose>
+          <xsl:when test="ancestor::prop:variant">
+            <xsl:value-of select="concat('pagerequest.',ancestor::prop:pagerequest/@name,'::',ancestor::prop:variant/@name)"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat('pagerequest.',ancestor::prop:pagerequest/@name)"/>
+          </xsl:otherwise>
+        </xsl:choose>
       </xsl:if>
     </xsl:param>
     <xsl:param name="key"><xsl:value-of select="./@name"/></xsl:param>
@@ -460,7 +467,6 @@
     </xsl:apply-templates>
   </xsl:template>
 
-  
   <xsl:template match="prop:pagerequest">
     <xsl:param name="name" select="@name"/>
     <xsl:choose>
@@ -477,42 +483,94 @@
             <xsl:otherwise>false</xsl:otherwise>
           </xsl:choose>
         </xsl:variable>
-        <xsl:if test="$nostore = 'true'">
-          <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
-        </xsl:if>
-        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
         <xsl:choose>
-          <xsl:when test="prop:state"><xsl:value-of select="prop:state/@class"/></xsl:when>
-          <xsl:when test="prop:input">
-            <xsl:choose>
-              <xsl:when test="../prop:servletinfo/prop:defaultihandlerstate">
-                <xsl:value-of select="../prop:servletinfo/prop:defaultihandlerstate/@class"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>
+          <xsl:when test="not(./prop:default)">
+            <xsl:if test="$nostore = 'true'">
+              <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+            </xsl:if>
+            <xsl:call-template name="gen_pagerequest">
+              <xsl:with-param name="name" select="$name"/>
+              <xsl:with-param name="nodes" select="."/>
+            </xsl:call-template>
           </xsl:when>
-          <xsl:when test="prop:auth"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</xsl:text></xsl:when>
           <xsl:otherwise>
-            <xsl:choose>
-              <xsl:when test="../prop:servletinfo/prop:defaultstate">
-                <xsl:value-of select="../prop:servletinfo/prop:defaultstate/@class"/>
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text>
-              </xsl:otherwise>
-            </xsl:choose>
+            <xsl:if test="$nostore = 'true'">
+              <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+            </xsl:if>
+            <xsl:call-template name="gen_pagerequest">
+              <xsl:with-param name="name" select="$name"/>
+              <xsl:with-param name="nodes" select="./prop:default"/>
+            </xsl:call-template>
+            <xsl:for-each select="./prop:variant">
+              <xsl:if test="$nostore = 'true'">
+                <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="./@name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+              </xsl:if>
+              <xsl:call-template name="gen_pagerequest">
+                <xsl:with-param name="name" select="$name"/>
+                <xsl:with-param name="nodes" select="current()"/>
+                <xsl:with-param name="variant"><xsl:value-of select="./@name"/></xsl:with-param>
+              </xsl:call-template>
+            </xsl:for-each>
           </xsl:otherwise>
         </xsl:choose>
-        <xsl:text>&#xa;</xsl:text>
-        <xsl:apply-templates>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+
+  <xsl:template name="gen_pagerequest">
+    <xsl:param name="name"/>
+    <xsl:param name="nodes"/>
+    <xsl:param name="variant"/>
+    <!--     <xsl:message>** GEN: <xsl:value-of select="$name"/>::<xsl:value-of select="$variant"/> ** </xsl:message> -->
+    <!--     <xsl:message><xsl:for-each select="$nodes/*"><xsl:value-of select="name()"/>-</xsl:for-each></xsl:message> -->
+    <xsl:choose>
+      <xsl:when test="$variant">
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="$variant"/><xsl:text>.classname=</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="$nodes/prop:state"><xsl:value-of select="$nodes/prop:state/@class"/></xsl:when>
+      <xsl:when test="$nodes/prop:input">
+        <xsl:choose>
+          <xsl:when test="//prop:servletinfo/prop:defaultihandlerstate">
+            <xsl:value-of select="//prop:servletinfo/prop:defaultihandlerstate/@class"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>de.schlund.pfixcore.workflow.app.DefaultIWrapperState</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:when test="$nodes/prop:auth"><xsl:text>de.schlund.pfixcore.workflow.app.DefaultAuthIWrapperState</xsl:text></xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="//prop:servletinfo/prop:defaultstate">
+            <xsl:value-of select="//prop:servletinfo/prop:defaultstate/@class"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:text>de.schlund.pfixcore.workflow.app.StaticState</xsl:text>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#xa;</xsl:text>
+    <xsl:choose>
+      <xsl:when test="$variant">
+        <xsl:apply-templates select="$nodes/*">
+          <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/>\:\:<xsl:value-of select="$variant"/></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="$nodes/*">
           <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/></xsl:with-param>
         </xsl:apply-templates>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
+  
   <xsl:template match="prop:servletinfo/prop:defaultstate | prop:directoutputservletinfo/prop:defaultstate"/>
   <xsl:template match="prop:servletinfo/prop:defaultihandlerstate | prop:directoutputservletinfo/prop:defaultihandlerstate"/>
 
@@ -578,18 +636,55 @@
   <!-- // TODO_REMOVE original location of match="param" ( prop: ) -->
   
   <xsl:template match="prop:pageflow">
-    <xsl:variable name="prefix">context.pageflow.<xsl:value-of select="@name"/>.</xsl:variable>
-    <xsl:variable name="flowname"><xsl:value-of select="@name"/></xsl:variable>
-    <xsl:variable name="stopnext"><xsl:value-of select="@stopnext"/></xsl:variable>
-    <xsl:for-each select="prop:flowstep">
-      <xsl:value-of select="$prefix"/><xsl:value-of select="position()"/>=<xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
+    <xsl:choose>
+      <xsl:when test="not(./prop:default)">
+        <xsl:call-template name="gen_pageflow">
+          <xsl:with-param name="prefix_flow">context.pageflow.<xsl:value-of select="@name"/>.</xsl:with-param>
+          <xsl:with-param name="prefix_prop">context.pageflowproperty.<xsl:value-of select="@name"/>.</xsl:with-param>
+          <xsl:with-param name="stopnext"><xsl:value-of select="@stopnext"/></xsl:with-param>
+          <xsl:with-param name="flowname"><xsl:value-of select="@name"/></xsl:with-param>
+          <xsl:with-param name="final"><xsl:value-of select="@final"/></xsl:with-param>
+          <xsl:with-param name="nodes" select="."/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="gen_pageflow">
+          <xsl:with-param name="prefix_flow">context.pageflow.<xsl:value-of select="@name"/>.</xsl:with-param>
+          <xsl:with-param name="prefix_prop">context.pageflowproperty.<xsl:value-of select="@name"/>.</xsl:with-param>
+          <xsl:with-param name="stopnext"><xsl:value-of select="@stopnext"/></xsl:with-param>
+          <xsl:with-param name="flowname"><xsl:value-of select="@name"/></xsl:with-param>
+          <xsl:with-param name="final"><xsl:value-of select="@final"/></xsl:with-param>
+          <xsl:with-param name="nodes" select="./prop:default"/>
+        </xsl:call-template>
+        <xsl:for-each select="prop:variant">
+          <xsl:call-template name="gen_pageflow">
+            <xsl:with-param name="prefix_flow">context.pageflow.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/>.</xsl:with-param>
+            <xsl:with-param name="prefix_prop">context.pageflowproperty.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/>.</xsl:with-param>
+            <xsl:with-param name="stopnext"><xsl:value-of select="../@stopnext"/></xsl:with-param>
+            <xsl:with-param name="flowname"><xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/></xsl:with-param>
+            <xsl:with-param name="final"><xsl:value-of select="../@final"/></xsl:with-param>
+            <xsl:with-param name="nodes" select="current()"/>
+          </xsl:call-template>
+        </xsl:for-each>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template name="gen_pageflow">  
+    <xsl:param name="flowname"/>
+    <xsl:param name="prefix_flow"/>
+    <xsl:param name="prefix_prop"/>
+    <xsl:param name="stopnext"/>
+    <xsl:param name="final"/>
+    <xsl:param name="nodes"/>
+    <!-- <xsl:message><xsl:value-of select="concat($flowname, '|', $prefix_flow, '|', $prefix_prop, '|', $stopnext)"/></xsl:message>-->
+    <xsl:for-each select="$nodes/prop:flowstep">
+      <xsl:value-of select="$prefix_flow"/><xsl:value-of select="position()"/>=<xsl:value-of select="@name"/><xsl:text>&#xa;</xsl:text>
       <xsl:if test="@stophere = 'true' or $stopnext = 'true'">
-        <xsl:text>context.pageflowproperty.</xsl:text>
-        <xsl:value-of select="$flowname"/>.<xsl:value-of select="@name"/>.stophere=true<xsl:text>&#xa;</xsl:text>
+        <xsl:value-of select="$prefix_prop"/><xsl:value-of select="@name"/>.stophere=true<xsl:text>&#xa;</xsl:text>
       </xsl:if>
       <xsl:if test="prop:oncontinue/@applyall = 'true'">
-        <xsl:text>context.pageflowproperty.</xsl:text>
-        <xsl:value-of select="$flowname"/>.<xsl:value-of select="@name"/>.oncontinue.applyall=true<xsl:text>&#xa;</xsl:text>
+        <xsl:value-of select="$prefix_prop"/><xsl:value-of select="@name"/>.oncontinue.applyall=true<xsl:text>&#xa;</xsl:text>
       </xsl:if>
       <xsl:if test="prop:oncontinue">
         <xsl:call-template name="prop:render_tests">
@@ -600,8 +695,8 @@
         </xsl:call-template>
       </xsl:if>
     </xsl:for-each>
-    <xsl:if test="@final">
-      <xsl:value-of select="$prefix"/>FINAL=<xsl:value-of select="@final"/><xsl:text>&#xa;</xsl:text>
+    <xsl:if test="$final">
+      <xsl:value-of select="$prefix_flow"/>FINAL=<xsl:value-of select="$final"/><xsl:text>&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
 
@@ -682,9 +777,16 @@
     <xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
-  <xsl:template match="prop:pagerequest/prop:ssl">
+  <xsl:template match="prop:pagerequest//prop:ssl">
     <xsl:variable name="applicable"><xsl:call-template name="prop:modeApplicable"></xsl:call-template></xsl:variable>
-    <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/><xsl:text>.needsSSL=</xsl:text>
+    <xsl:choose>
+      <xsl:when test="ancestor::prop:variant">
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/>\:\:<xsl:value-of select="ancestor::prop:variant/@name"/><xsl:text>.needsSSL=</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/><xsl:text>.needsSSL=</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:choose>
       <xsl:when test="$applicable = 'true'">
         <xsl:value-of select="@force"/>

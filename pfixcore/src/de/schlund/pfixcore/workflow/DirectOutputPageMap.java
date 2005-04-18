@@ -51,11 +51,11 @@ public class DirectOutputPageMap implements PropertyObject,Reloader {
         PageRequestProperties preqprops = (PageRequestProperties) PropertyObjectManager.getInstance().
             getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
         
-        PageRequest[] pages = preqprops.getAllDefinedPageRequests();
+        String[] pages = preqprops.getAllDefinedPageRequestNames();
         
         for (int i = 0; i < pages.length; i++) {
-            PageRequest       page      = pages[i];
-            Properties        props     = preqprops.getPropertiesForPageRequest(page);
+            String            page      = pages[i];
+            Properties        props     = preqprops.getPropertiesForPageRequestName(page);
             String            classname = props.getProperty(CLASSNAMEPROP);
             DirectOutputState state     = DirectOutputStateFactory.getInstance().getDirectOutputState(classname);
             if (state == null) {
@@ -66,8 +66,8 @@ public class DirectOutputPageMap implements PropertyObject,Reloader {
             }
         }
         
-        AppLoader appLoader=AppLoader.getInstance();
-        if(appLoader.isEnabled()) {
+        AppLoader appLoader = AppLoader.getInstance();
+        if (appLoader.isEnabled()) {
             appLoader.addReloader(this);
         }
     }
@@ -80,7 +80,11 @@ public class DirectOutputPageMap implements PropertyObject,Reloader {
      * @return a <code>DirectOutputState</code> value
      */
     public DirectOutputState getDirectOutputState(PageRequest page) {
-	return (DirectOutputState) pagemap.get(page);
+	return getDirectOutputState(page.getName());
+    }
+
+    public DirectOutputState getDirectOutputState(String  pagename) {
+	return (DirectOutputState) pagemap.get(pagename);
     }
 
     public String toString() {
@@ -89,22 +93,22 @@ public class DirectOutputPageMap implements PropertyObject,Reloader {
 	    if (ret.length() > 0) {
 		ret += ", ";
 	    }
-	    PageRequest k = (PageRequest) i.next();
-	    ret += k + " -> " + ((DirectOutputState) pagemap.get(k)).getClass().getName();
+	    String key = (String) i.next();
+	    ret += key + " -> " + ((DirectOutputState) pagemap.get(key)).getClass().getName();
 	}
 	return ret;
     }
     
     public void reload() {
-        HashMap pageNew=new HashMap();
-        Iterator it=pagemap.keySet().iterator();
-        while(it.hasNext()) {
-            PageRequest page=(PageRequest)it.next();
-            DirectOutputState stOld=(DirectOutputState)pagemap.get(page);
-            DirectOutputState stNew=(DirectOutputState)StateTransfer.getInstance().transfer(stOld);
+        HashMap  pageNew = new HashMap();
+        Iterator it      = pagemap.keySet().iterator();
+        while (it.hasNext()) {
+            String            page  = (String) it.next();
+            DirectOutputState stOld = (DirectOutputState) pagemap.get(page);
+            DirectOutputState stNew = (DirectOutputState) StateTransfer.getInstance().transfer(stOld);
             pageNew.put(page,stNew);
         }
-        pagemap=pageNew;
+        pagemap = pageNew;
     }
     
 }

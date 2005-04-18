@@ -37,14 +37,14 @@ public class PageMap implements   PropertyObject, Reloader {
     public void init(Properties properties) throws Exception {
 
         //Get PageRequestProperties object from PropertyObjectManager 
-        PageRequestProperties preqprops = (PageRequestProperties)PropertyObjectManager.getInstance().
+        PageRequestProperties preqprops = (PageRequestProperties) PropertyObjectManager.getInstance().
             getPropertyObject(properties,"de.schlund.pfixcore.workflow.PageRequestProperties");
         
-        PageRequest[] pages = preqprops.getAllDefinedPageRequests();
+        String[] pages = preqprops.getAllDefinedPageRequestNames();
         
         for (int i = 0; i < pages.length; i++) {
-            PageRequest page      = pages[i];
-            Properties  props     = preqprops.getPropertiesForPageRequest(page);
+            String      page      = pages[i];
+            Properties  props     = preqprops.getPropertiesForPageRequestName(page);
             String      classname = props.getProperty(CLASSNAMEPROP);
             State       state     = StateFactory.getInstance().getState(classname);
 
@@ -63,7 +63,11 @@ public class PageMap implements   PropertyObject, Reloader {
     }
 
     public State getState(PageRequest page) {
-        return (State) pagemap.get(page);
+        return getState(page.getName());
+    }
+
+    public State getState(String pagename) {
+        return (State) pagemap.get(pagename);
     }
 
     public String toString() {
@@ -72,8 +76,8 @@ public class PageMap implements   PropertyObject, Reloader {
             if (ret.length() > 0) {
                 ret += ", ";
             }
-            PageRequest k = (PageRequest) i.next();
-            ret += k + " -> " + ((State) pagemap.get(k)).getClass().getName();
+            String key = (String) i.next();
+            ret += key + " -> " + ((State) pagemap.get(key)).getClass().getName();
         }
         return ret;
     }
@@ -82,9 +86,9 @@ public class PageMap implements   PropertyObject, Reloader {
         HashMap  pageNew = new HashMap();
         Iterator i       = pagemap.keySet().iterator();
         while (i.hasNext()) {
-            PageRequest page  = (PageRequest) i.next();
-            State       stOld = (State) pagemap.get(page);
-            State       stNew = (State) StateTransfer.getInstance().transfer(stOld);
+            String page  = (String) i.next();
+            State  stOld = (State) pagemap.get(page);
+            State  stNew = (State) StateTransfer.getInstance().transfer(stOld);
             pageNew.put(page,stNew);
         }
         pagemap = pageNew;

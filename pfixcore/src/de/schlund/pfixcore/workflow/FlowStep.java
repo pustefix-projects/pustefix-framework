@@ -35,8 +35,8 @@ import javax.xml.transform.TransformerException;
  */
 
 public class FlowStep {
-    private PageRequest page;
-    private boolean     isstophere = false;
+    private String  page;
+    private boolean isstophere = false;
 
     private boolean   applyall_oncontinue = false;
     private ArrayList actions_oncontinue  = new ArrayList();
@@ -46,9 +46,9 @@ public class FlowStep {
     private final static String PROPERTY_PAGEFLOW = "context.pageflowproperty";
     private final static String ACTION_PAGEFLOW   = "context.pageflowaction";
     
-    public FlowStep(PageRequest page, Properties props, String flowname) {
+    public FlowStep(String page, Properties props, String flowname) {
         this.page      = page;
-        String prefix  = PROPERTY_PAGEFLOW + "." + flowname + "." + page.getName();
+        String prefix  = PROPERTY_PAGEFLOW + "." + flowname + "." + page;
         Map    propmap = PropertiesUtils.selectProperties(props, prefix);
         String stop    = (String) propmap.get("stophere");
         if (stop != null && stop.equals("true")) {
@@ -59,7 +59,7 @@ public class FlowStep {
             applyall_oncontinue = true;
         }
         
-        prefix  = ACTION_PAGEFLOW + "." + flowname + "." + page.getName() + ".oncontinue";
+        prefix  = ACTION_PAGEFLOW + "." + flowname + "." + page + ".oncontinue";
         propmap = PropertiesUtils.selectProperties(props, prefix);
 
         if (propmap != null && !propmap.isEmpty()) {
@@ -122,12 +122,12 @@ public class FlowStep {
         }
     }
     
-    public PageRequest getPageRequest() {
+    public String getPageName() {
         return page;
     }
     
     public String getName() {
-        return page.getName();
+        return page;
     }
 
     public boolean wantsToStopHere() {
@@ -135,6 +135,6 @@ public class FlowStep {
     }
 
     public String toString() {
-        return("[page=" + page.getName() + " stophere=" + isstophere + " #cont_actions=" + actions_oncontinue.size()+ "]");
+        return("[page=" + page + " stophere=" + isstophere + " #cont_actions=" + actions_oncontinue.size()+ "]");
     }
 }

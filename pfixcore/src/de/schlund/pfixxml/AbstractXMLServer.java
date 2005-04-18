@@ -18,32 +18,8 @@
  */
 package de.schlund.pfixxml;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.jmx.JmxServer;
 import de.schlund.pfixxml.jmx.TrailLogger;
@@ -59,6 +35,31 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /**
@@ -351,9 +352,6 @@ public abstract class AbstractXMLServer extends ServletManager {
             preq.endLogEntry(et);
             
             TrailLogger.log(preq, spdoc, session);
-            if (isDebugEnabled()) {
-                CAT.debug("* Generated document:" + spdoc);
-            }
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
             Map            anchormap;
             if (anchors != null && anchors.length > 0) {
@@ -365,10 +363,8 @@ public abstract class AbstractXMLServer extends ServletManager {
                 // thats a request to an unkown page!
                 // do nothing, cause we  want a 404 and no NPExpection
                 if (CAT.isDebugEnabled()) {
-                    CAT.debug("Having a null-document as parameter. Unkown page? Returning null...");
+                    CAT.debug("Having a null-document in the SPDoc. Unkown page? Returning 404...");
                 }
-            } else {
-                spdoc.setDocument(Xml.parse(spdoc.getDocument()));
             }
 
             if (!spdoc.getNostore()) {
@@ -450,8 +446,20 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
         }
+
         preq.startLogEntry();
+        if (spdoc.docIsUpdateable()) {
+            if (stylesheet.indexOf("::") > 0) {
+                spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
+            }
+            spdoc.setDocument(Xml.parse(spdoc.getDocument()));
+            spdoc.setDocIsUpdateable(false);
+        }
+
         if (! doreuse) {
+            if (isDebugEnabled()) {
+                CAT.debug("*** Using document:" + spdoc);
+            }
             if (isInfoEnabled()) {
                 CAT.info(" *** Using stylesheet: " + stylesheet + " ***");
             }
@@ -550,33 +558,14 @@ public abstract class AbstractXMLServer extends ServletManager {
                 if (isInfoEnabled()) {
                     CAT.info("[Ignored TransformerException]", e);
                 }
-            } else if(e.getException() != null &&  e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+            } else if(e.getException() != null &&
+                      e.getException().getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
                 CAT.warn("[Ignored TransformerException] : " + e.getMessage());
             } else
                 throw e;
         }
     }
 
-//     private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
-//         Document ext_doc = Xml.createDocument();
-//         Element  root    = ext_doc.createElement("render_external");
-//         ext_doc.appendChild(root);
-//         Element  ssheet  = ext_doc.createElement("stylesheet");
-//         root.appendChild(ssheet);
-//         ssheet.setAttribute("name", generator.getDisccachedir() + File.separator + stylesheet);
-//         for (Iterator i = paramhash.keySet().iterator(); i.hasNext();) {
-//             String  key   = (String) i.next();
-//             String  val   = (String) paramhash.get(key);
-//             Element param = ext_doc.createElement("param");
-//             param.setAttribute("key", key);
-//             param.setAttribute("value", val);
-//             root.appendChild(param);
-//         }
-//         Node imported = ext_doc.importNode(spdoc.getDocument().getDocumentElement(), true);
-//         root.appendChild(imported);
-//         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext_doc),
-//                                                                     new StreamResult(res.getOutputStream()));
-//     }
 
     private void renderExternal(SPDocument spdoc, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
         TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError, IOException {
@@ -683,18 +672,21 @@ public abstract class AbstractXMLServer extends ServletManager {
         // First look if the pagename is set
         String pagename             = spdoc.getPagename();
         if (pagename != null) {
-            String[]       variants = spdoc.getVariantFallbackArray();
-            PageTargetTree pagetree = generator.getPageTargetTree();
-            PageInfo       pinfo    = null;
-            Target         target   = null;
-            String         variant  = null;
-            if (variants != null) {
+            Variant        variant    = spdoc.getVariant();
+            PageTargetTree pagetree   = generator.getPageTargetTree();
+            PageInfo       pinfo      = null;
+            Target         target     = null;
+            String         variant_id = null;
+            if (variant != null && variant.getVariantFallbackArray() != null) {
+                String[] variants = variant.getVariantFallbackArray();
                 for (int i = 0; i < variants.length; i++) {
-                    variant = variants[i];
-                    CAT.info("   ** Trying variant '" + variant + "' **");
-                    pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant);
+                    variant_id = variants[i];
+                    CAT.info("   ** Trying variant '" + variant_id + "' **");
+                    pinfo   = PageInfoFactory.getInstance().getPage(generator, pagename, variant_id);
                     target  = pagetree.getTargetForPageInfo(pinfo);
-                    if (target != null) break;
+                    if (target != null) {
+                        return target.getTargetKey();
+                    }
                 }
             }
             if (target == null) {
