@@ -183,6 +183,12 @@ class ExceptionContext {
         StringBuffer err = new StringBuffer();
         HttpSession session = pfrequest_.getSession(false);
         err.append(createInfoText());
+        err.append("\n");
+        if(!props_.getProperty("servlet.paramdumponerror", "").equals("false")) {
+            String[] pnames = pfrequest_.getRequestParamNames();
+            err.append(dumpParameters(pnames));
+        }
+        err.append("\n");
         if (session != null) {
             StringBuffer sb = createLastSteps();
             err.append(sb);
@@ -239,7 +245,6 @@ class ExceptionContext {
             scheme = pfrequest_.getScheme();
             port = pfrequest_.getServerPort();
         }
-        String[] pnames = pfrequest_.getRequestParamNames();
         if (session != null) {
             err.append("[SessionId: " + session.getId() + "]\n");
         }
@@ -247,7 +252,18 @@ class ExceptionContext {
         if ((que != null) && (que != "")) {
             err.append("?" + que);
         }
-        err.append("\n");
+        
+        if(CAT.isDebugEnabled())
+            CAT.debug("Create info text start.");
+        return err.toString();
+    }
+
+    /**
+     * @param err
+     * @param pnames
+     */
+    private String dumpParameters(String[] pnames) {
+        StringBuffer err = new StringBuffer();
         err.append("\n\nParameter: \n");
         if (pnames.length == 0) {
             err.append(" " + "None" + "\n");
@@ -256,9 +272,6 @@ class ExceptionContext {
             RequestParam param = pfrequest_.getRequestParam(pnames[ii]);
             err.append(" " + pnames[ii] + " = " + param.toString() + "\n");
         }
-        err.append("\n");
-        if(CAT.isDebugEnabled())
-            CAT.debug("Create info text start.");
         return err.toString();
     }
 
