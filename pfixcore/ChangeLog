@@ -87,7 +87,7 @@
 
 2005-04-13  Michael Hartmeier  <mhm@schlund.de>
 
-    * SSL client authentication for JmxClients
+	* SSL client authentication for JmxClients
 
 2005-04-05  Adam Habermann  <adam.habermann@schlund.de>
 
