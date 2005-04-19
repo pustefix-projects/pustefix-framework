@@ -19,18 +19,10 @@
     <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
     <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
-    
-    <choose>
-      <!--
-    <cus:test mode="prod"/>
-    -->
-      
-      <test>
-        <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
-      </test>
-    </choose>
+    <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
     
     <!-- JMX Server -->
+    <prop name="jmx.server.host"><cus:fqdn/></prop>
     <prop name="jmx.server.port">9334</prop>
     
     <!-- SPCacheFactory -->

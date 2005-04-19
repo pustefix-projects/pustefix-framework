@@ -64,19 +64,22 @@ public class JmxServer implements JmxServerMBean {
         return instance;
     }
     
+    private String host;
     private int port;
     private final List knownClients;
     
     public JmxServer() {
-        this.port = -1; // not started yet
+    	this.host = null; // not started yet
+        this.port = -1;
         this.knownClients = new ArrayList();
     }
     
     public void init(Properties props) throws Exception {
     	LOG.debug("init JmxServer start");
+        this.host = PropertiesUtils.getString(props, "jmx.server.host"); 
         this.port = PropertiesUtils.getInteger(props, "jmx.server.port"); 
         start();
-    	LOG.debug("init JmxServer done");
+    	LOG.debug("init JmxServer done: " + host + ":" + port);
     }
 
 	//--
@@ -88,20 +91,15 @@ public class JmxServer implements JmxServerMBean {
         
         javaLogging();
 		keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
-        try {
-            server = MBeanServerFactory.createMBeanServer();
-            server.registerMBean(this, createServerName());
-            // otherwise, clients cannot instaniate TrailLogger objects:
-            server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
-            connector = JMXConnectorServerFactory.newJMXConnectorServer(
-            		createServerURL(null, port), 
-            		Environment.create(keystore.resolve()), server);
-        	connector.start();
-        	notifications(connector);
-        	LOG.info("server started on port " + port);
-        } finally {
-            port = -1;
-        }
+        server = MBeanServerFactory.createMBeanServer();
+        server.registerMBean(this, createServerName());
+        // otherwise, clients cannot instaniate TrailLogger objects:
+        server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
+        connector = JMXConnectorServerFactory.newJMXConnectorServer(
+           		createServerURL(host, port), 
+           		Environment.create(keystore.resolve()), server);
+       	connector.start();
+       	notifications(connector);
     }
 
     private static void notifications(JMXConnectorServer connector) {
@@ -149,9 +147,9 @@ public class JmxServer implements JmxServerMBean {
 
     //--
 
-    public static JMXServiceURL createServerURL(String hostname, int port) {
+    public static JMXServiceURL createServerURL(String host, int port) {
         try { 
-            return new JMXServiceURL("jmxmp", hostname, port);
+            return new JMXServiceURL("jmxmp", host, port);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
