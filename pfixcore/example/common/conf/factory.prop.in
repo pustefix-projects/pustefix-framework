@@ -18,6 +18,7 @@
     <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
     <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
     
+    <prop name="jmx.server.host"><cus:fqdn/></prop>
     <prop name="jmx.server.port">9334</prop>
 
     <!-- part index -->
