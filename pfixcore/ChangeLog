@@ -1,3 +1,9 @@
+2005-04-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/build/create_propfiles.xsl: also escape all ":" for compunt variants as "\:"
+
+	* src/de/schlund/util/StringUtil.java: new class, collect useful static String methods for xpath extensions here
+
 2005-04-18  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionContext.java:

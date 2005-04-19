@@ -2,6 +2,7 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:prop="http://pustefix.sourceforge.net/properties200401"
+                xmlns:su="xalan://de.schlund.util.StringUtil"
                 xmlns:x="http://x.nocom"
                 >
 
@@ -503,7 +504,7 @@
             </xsl:call-template>
             <xsl:for-each select="./prop:variant">
               <xsl:if test="$nostore = 'true'">
-                <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="./@name"/><xsl:text>.nostore=true&#xa;</xsl:text>
+                <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="su:replaceAll(./@name, ':', '\\:')"/><xsl:text>.nostore=true&#xa;</xsl:text>
               </xsl:if>
               <xsl:call-template name="gen_pagerequest">
                 <xsl:with-param name="name" select="$name"/>
@@ -526,7 +527,7 @@
     <!--     <xsl:message><xsl:for-each select="$nodes/*"><xsl:value-of select="name()"/>-</xsl:for-each></xsl:message> -->
     <xsl:choose>
       <xsl:when test="$variant">
-        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="$variant"/><xsl:text>.classname=</xsl:text>
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/>\:\:<xsl:value-of select="su:replaceAll($variant, ':', '\\:')"/><xsl:text>.classname=</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
@@ -560,7 +561,7 @@
     <xsl:choose>
       <xsl:when test="$variant">
         <xsl:apply-templates select="$nodes/*">
-          <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/>\:\:<xsl:value-of select="$variant"/></xsl:with-param>
+          <xsl:with-param name="prefix">pagerequest.<xsl:value-of select="$name"/>\:\:<xsl:value-of select="su:replaceAll($variant, ':', '\\:')"/></xsl:with-param>
         </xsl:apply-templates>
       </xsl:when>
       <xsl:otherwise>
@@ -658,10 +659,10 @@
         </xsl:call-template>
         <xsl:for-each select="prop:variant">
           <xsl:call-template name="gen_pageflow">
-            <xsl:with-param name="prefix_flow">context.pageflow.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/>.</xsl:with-param>
-            <xsl:with-param name="prefix_prop">context.pageflowproperty.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/>.</xsl:with-param>
+            <xsl:with-param name="prefix_flow">context.pageflow.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="su:replaceAll(current()/@name, ':', '\\:')"/>.</xsl:with-param>
+            <xsl:with-param name="prefix_prop">context.pageflowproperty.<xsl:value-of select="../@name"/>\:\:<xsl:value-of select="su:replaceAll(current()/@name, ':', '\\:')"/>.</xsl:with-param>
             <xsl:with-param name="stopnext"><xsl:value-of select="../@stopnext"/></xsl:with-param>
-            <xsl:with-param name="flowname"><xsl:value-of select="../@name"/>\:\:<xsl:value-of select="current()/@name"/></xsl:with-param>
+            <xsl:with-param name="flowname"><xsl:value-of select="../@name"/>\:\:<xsl:value-of select="su:replaceAll(current()/@name, ':', '\\:')"/></xsl:with-param>
             <xsl:with-param name="final"><xsl:value-of select="../@final"/></xsl:with-param>
             <xsl:with-param name="nodes" select="current()"/>
           </xsl:call-template>
@@ -781,7 +782,7 @@
     <xsl:variable name="applicable"><xsl:call-template name="prop:modeApplicable"></xsl:call-template></xsl:variable>
     <xsl:choose>
       <xsl:when test="ancestor::prop:variant">
-        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/>\:\:<xsl:value-of select="ancestor::prop:variant/@name"/><xsl:text>.needsSSL=</xsl:text>
+        <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/>\:\:<xsl:value-of select="su:replaceAll(ancestor::prop:variant/@name, ':', '\\:')"/><xsl:text>.needsSSL=</xsl:text>
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>pagerequest.</xsl:text><xsl:value-of select="ancestor::prop:pagerequest/@name"/><xsl:text>.needsSSL=</xsl:text>
