@@ -520,7 +520,7 @@
                               string($__target_gen),string($__target_key))"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message terminate="yes">
+        <xsl:message terminate="no">
           *** Need either the 'src' attribute XOR both of 'themed-img' and 'themed-path' given. ***
         </xsl:message>
       </xsl:otherwise>
