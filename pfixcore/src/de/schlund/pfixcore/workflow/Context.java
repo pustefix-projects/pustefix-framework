@@ -43,7 +43,7 @@ public class Context implements AppContext {
     private final static String   NOSTORE             = "nostore";
     private final static String   DEFPROP             = "context.defaultpageflow";
     private final static String   STARTIC             = "context.startinterceptor";
-    private final static String   ENDIC               = "context.endtinterceptor";
+    private final static String   ENDIC               = "context.endinterceptor";
     private final static String   NAVPROP             = "xmlserver.depend.xml";
     private final static String   PROP_NAVI_AUTOINV   = "navigation.autoinvalidate";
     private final static String   PROP_NEEDS_SSL      = "needsSSL";

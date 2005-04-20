@@ -1,3 +1,7 @@
+2005-04-20  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: new value for static field ENDIC
+
 2005-04-20  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/include.xsl.in (pfx:image_register_src): don't terminate when src/themed-path/themed-img 
