@@ -1,6 +1,11 @@
+2005-04-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/include.xsl.in (pfx:image_register_src): don't terminate when src/themed-path/themed-img 
+	attributes are missing 
+
 2005-04-19  Jens Lautenbacher  <jtl@schlund.de>
 
-	* example/core/build/create_propfiles.xsl: also escape all ":" for compunt variants as "\:"
+	* example/core/build/create_propfiles.xsl: also escape all ":" for compount variants as "\:"
 
 	* src/de/schlund/util/StringUtil.java: new class, collect useful static String methods for xpath extensions here
 
