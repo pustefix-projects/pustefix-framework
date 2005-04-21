@@ -151,7 +151,8 @@
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
 
-    <prop name="context.startinterceptor">de.schlund.pfixcore.example.SampleStartIC</prop>
+    <prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>
+    
   </properties>
 
 </contextxmlserver>

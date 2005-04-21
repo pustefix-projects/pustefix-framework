@@ -13,7 +13,6 @@ import java.util.Properties;
  * @version 1.0
  */
 public interface ContextInterceptor {
-    void init(Properties props);
     void process(Context context, PfixServletRequest preq);
 }
 

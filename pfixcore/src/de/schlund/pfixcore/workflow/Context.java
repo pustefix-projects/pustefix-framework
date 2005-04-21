@@ -19,6 +19,7 @@
 
 package de.schlund.pfixcore.workflow;
 
+import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.*;
 import de.schlund.util.statuscodes.StatusCode;
@@ -74,8 +75,8 @@ public class Context implements AppContext {
     private PageRequest            authpage      = null;
     private HashSet                visited_pages = null;
     private Variant                variant       = null;
-    private ContextInterceptor     startIC       = null;
-    private ContextInterceptor     endIC         = null;
+    private ContextInterceptor[]   startIC       = null;
+    private ContextInterceptor[]   endIC         = null;
     
     // values read from properties
     private boolean     autoinvalidate_navi = true;
@@ -83,7 +84,7 @@ public class Context implements AppContext {
     private PageRequest admin_pagereq;
 
     // the request state
-    private PfixServletRequest currentpreq;
+    private PfixServletRequest currentpservreq;
     private PageRequest        currentpagerequest;
     private PageFlow           currentpageflow;
     private PageRequest        jumptopagerequest;
@@ -129,7 +130,7 @@ public class Context implements AppContext {
      * @exception Exception if an error occurs
      */
     public synchronized SPDocument handleRequest(PfixServletRequest preq) throws Exception {
-        currentpreq                = preq;
+        currentpservreq                = preq;
         prohibitcontinue           = false;
         stopnextforcurrentrequest  = false;
         jumptopagerequest          = null;
@@ -143,9 +144,9 @@ public class Context implements AppContext {
             do_update();
         }
 
-        if (startIC != null) startIC.process(this, preq);
+        processIC(startIC);
         
-        RequestParam fstop = currentpreq.getRequestParam(PARAM_FORCESTOP);
+        RequestParam fstop = currentpservreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null && fstop.getValue().equals("true")) {
             // We already decide here to stay on the page, what ever the state wants...
             prohibitContinue();
@@ -155,7 +156,7 @@ public class Context implements AppContext {
             stopnextforcurrentrequest = true;
         }
 
-        RequestParam swflow = currentpreq.getRequestParam(PARAM_STARTWITHFLOW);
+        RequestParam swflow = currentpservreq.getRequestParam(PARAM_STARTWITHFLOW);
         if (swflow != null && swflow.getValue().equals("true")) {
             startwithflow = true;
         }
@@ -164,7 +165,7 @@ public class Context implements AppContext {
         // representing different locations in the same application.
         // The page will be set a bit below in trySettingPageRequestAndFlow, where the "real" pageflow to use is also deduced.
         // At least, the currentpageflow is updated to be the currently valid variant.
-        RequestParam lastflow = currentpreq.getRequestParam(PARAM_LASTFLOW);
+        RequestParam lastflow = currentpservreq.getRequestParam(PARAM_LASTFLOW);
         if (lastflow != null && !lastflow.getValue().equals("")) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue(), variant);
             if (tmp != null) {
@@ -184,7 +185,7 @@ public class Context implements AppContext {
         PageFlow    prevflow = currentpageflow;
 
         if (visit_id == null)
-            visit_id = (String) currentpreq.getSession(false).getAttribute(ServletManager.VISIT_ID);
+            visit_id = (String) currentpservreq.getSession(false).getAttribute(ServletManager.VISIT_ID);
 
         if (in_adminmode) {
             ResultDocument resdoc;
@@ -199,7 +200,7 @@ public class Context implements AppContext {
             spdoc.setPagename(admin_pagereq.getName());
             insertPageMessages(spdoc);
             storeCookies(spdoc);
-            if (endIC != null) endIC.process(this, preq);
+            processIC(endIC);
             return spdoc;
         }
 
@@ -229,7 +230,7 @@ public class Context implements AppContext {
             currentpageflow    = prevflow;
             insertPageMessages(spdoc);
             storeCookies(spdoc);
-            if (endIC != null) endIC.process(this, preq);
+            processIC(endIC);
             return spdoc;
         }
 
@@ -249,10 +250,43 @@ public class Context implements AppContext {
         LOG.debug("\n");
         insertPageMessages(spdoc);
         storeCookies(spdoc);
-        if (endIC != null) endIC.process(this, preq);
+        processIC(endIC);
         return spdoc;
     }
 
+    private void createInterceptors(Properties props) throws Exception {
+        TreeMap sic = PropertiesUtils.selectPropertiesSorted(props, STARTIC);
+        TreeMap eic = PropertiesUtils.selectPropertiesSorted(props, ENDIC);
+        
+        if (sic != null && sic.size() > 0) {
+            ArrayList list = new ArrayList();
+            for (Iterator i = sic.keySet().iterator(); i.hasNext();) {
+                list.add(ContextInterceptorFactory.getInstance().getInterceptor((String) sic.get((String) i.next())));
+            }
+            startIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
+        } else {
+            startIC = null;
+        }
+        
+        if (eic != null && eic.size() > 0) {
+            ArrayList list = new ArrayList();
+            for (Iterator i = eic.keySet().iterator(); i.hasNext();) {
+                list.add(ContextInterceptorFactory.getInstance().getInterceptor((String) eic.get((String) i.next())));
+            }
+            endIC = (ContextInterceptor[]) list.toArray(new ContextInterceptor[]{});
+        } else {
+            endIC = null;
+        }
+    }
+    
+    private void processIC(ContextInterceptor[] icarr) {
+        if (icarr != null) {
+            for (int i = 0; i < icarr.length; i++) {
+                icarr[i].process(this, currentpservreq);
+            }
+        }
+    }
+    
     /**
      * <code>getContextResourceManager</code> returns the ContextResourceManager defined in init(Properties properties).
      *
@@ -353,7 +387,7 @@ public class Context implements AppContext {
 
 
     public Cookie[] getRequestCookies() {
-        return currentpreq.getCookies();
+        return currentpservreq.getCookies();
     }
 
     public void addCookie(Cookie cookie) {
@@ -553,40 +587,8 @@ public class Context implements AppContext {
         currentpageflow    = pageflowmanager.getPageFlowByName(properties.getProperty(DEFPROP), variant);
         currentpagerequest = PageRequest.createPageRequest(currentpageflow.getFirstStep().getPageName(), variant, preqprops);
 
-        String sic = properties.getProperty(STARTIC);
-        if (sic != null && !sic.equals("")) {
-            if (startIC == null || !startIC.getClass().getName().equals(sic)) {
-                try {
-                    startIC = (ContextInterceptor) Class.forName(sic).newInstance();
-                } catch (InstantiationException e) {
-                    throw new XMLException("unable to instantiate class [" + sic + "] :" + e.getMessage());
-                } catch (IllegalAccessException e) {
-                    throw new XMLException("unable access class [" + sic + "] :" + e.getMessage());
-                } catch (ClassNotFoundException e) {
-                    throw new XMLException("unable to find class [" + sic + "] :" + e.getMessage());
-                } catch (ClassCastException e) {
-                    throw new XMLException("class [" + sic + "] does not implement the interface ContextInterceptor :" + e.getMessage());
-                }
-            }
-        }
-
-        String eic = properties.getProperty(ENDIC);
-        if (eic != null && !eic.equals("")) {
-            if (endIC == null || !endIC.getClass().getName().equals(eic)) {
-                try {
-                    endIC = (ContextInterceptor) Class.forName(eic).newInstance();
-                } catch (InstantiationException e) {
-                    throw new XMLException("unable to instantiate class [" + eic + "] :" + e.getMessage());
-                } catch (IllegalAccessException e) {
-                    throw new XMLException("unable access class [" + eic + "] :" + e.getMessage());
-                } catch (ClassNotFoundException e) {
-                    throw new XMLException("unable to find class [" + eic + "] :" + e.getMessage());
-                } catch (ClassCastException e) {
-                    throw new XMLException("class [" + eic + "] does not implement the interface ContextInterceptor :" + e.getMessage());
-                }
-            }
-        }
-
+        createInterceptors(properties);
+        
         checkForAuthenticationMode();
         checkForAdminMode();
         checkForNavigationReuse();
@@ -652,12 +654,12 @@ public class Context implements AppContext {
             throw new XMLException ("*** Can't get a state to check needsData() for page " + page.getName() + " ***");
         }
         page.setStatus(status);
-        currentpreq.startLogEntry();
-        boolean retval     = state.needsData(this, currentpreq);
+        currentpservreq.startLogEntry();
+        boolean retval     = state.needsData(this, currentpservreq);
         PerfEventType et = PerfEventType.PAGE_NEEDSDATA;
         et.setPage(page.toString());
-        currentpreq.endLogEntry(et);
-       // currentpreq.endLogEntry("NEEDS_DATA (" + page + ")", 10);
+        currentpservreq.endLogEntry(et);
+       // currentpservreq.endLogEntry("NEEDS_DATA (" + page + ")", 10);
         currentpagerequest = saved;
         return retval;
     }
@@ -670,13 +672,13 @@ public class Context implements AppContext {
             throw new XMLException ("* Can't get a state to check isAccessible() for page " + page.getName());
         }
         page.setStatus(status);
-        currentpreq.startLogEntry();
-        boolean retval = state.isAccessible(this, currentpreq);
+        currentpservreq.startLogEntry();
+        boolean retval = state.isAccessible(this, currentpservreq);
         PerfEventType et = PerfEventType.PAGE_ISACCESSIBLE;
         et.setPage(page.toString());
-        currentpreq.endLogEntry(et);
+        currentpservreq.endLogEntry(et);
 
-        //currentpreq.endLogEntry("IS_ACCESSIBLE (" + page + ")", 10);
+        //currentpservreq.endLogEntry("IS_ACCESSIBLE (" + page + ")", 10);
         currentpagerequest = saved;
         return retval;
     }
@@ -703,7 +705,7 @@ public class Context implements AppContext {
             }
 
             // Now, check for possibly needed authorization
-            RequestParam sdreq     = currentpreq.getRequestParam(State.SENDAUTHDATA);
+            RequestParam sdreq     = currentpservreq.getRequestParam(State.SENDAUTHDATA);
             boolean      forceauth = (sdreq != null && sdreq.isTrue());
 
             document = checkAuthorization(forceauth);
@@ -872,17 +874,17 @@ public class Context implements AppContext {
 
         LOG.debug("** [" + currentpagerequest + "]: associated state: " + state.getClass().getName());
         LOG.debug("=> [" + currentpagerequest + "]: Calling getDocument()");
-        return state.getDocument(this, currentpreq);
+        return state.getDocument(this, currentpservreq);
     }
 
     private void trySettingPageRequestAndFlow() {
-        PageRequest tmp = PageRequest.createPageRequest(currentpreq, variant, preqprops);
+        PageRequest tmp = PageRequest.createPageRequest(currentpservreq, variant, preqprops);
         if (tmp != null && (authpage == null || !tmp.equals(authpage))) {
             currentpagerequest = tmp;
             currentpagerequest.setStatus(PageRequestStatus.DIRECT);
 
             PageFlow     flow     = null;
-            RequestParam flowname = currentpreq.getRequestParam(PARAM_FLOW);
+            RequestParam flowname = currentpservreq.getRequestParam(PARAM_FLOW);
             if (flowname != null && !flowname.getValue().equals("")) {
                 LOG.debug("===> User requesting to switch to flow '" + flowname.getValue() + "'");
                 flow = pageflowmanager.getPageFlowByName(flowname.getValue(), variant);
@@ -918,11 +920,11 @@ public class Context implements AppContext {
                 throw new RuntimeException("Don't have a current page to use as output target");
             }
         }
-        RequestParam jump = currentpreq.getRequestParam(JUMPPAGE);
+        RequestParam jump = currentpservreq.getRequestParam(JUMPPAGE);
         if (jump != null && !jump.getValue().equals("")) {
             setJumpToPageRequest(jump.getValue());
             // We only search for a special jumpflow when also a jumppage is set
-            RequestParam jumpflow = currentpreq.getRequestParam(JUMPPAGEFLOW);
+            RequestParam jumpflow = currentpservreq.getRequestParam(JUMPPAGEFLOW);
             if (jumpflow != null && !jumpflow.getValue().equals("")) {
                 setJumpToPageFlow(jumpflow.getValue());
             }
@@ -954,24 +956,24 @@ public class Context implements AppContext {
 
         if (autoinvalidate_navi) {
             LOG.debug("=> Add new navigation.");
-            currentpreq.startLogEntry();
+            currentpservreq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, null, warn_buffer, debug_buffer);
             PerfEventType et = PerfEventType.CONTEXT_CREATENAVICOMPLETE;
             et.setPage(spdoc.getPagename());
-            currentpreq.endLogEntry(et);
-            //currentpreq.endLogEntry("CREATE_NAVI_COMPLETE", 25);
+            currentpservreq.endLogEntry(et);
+            //currentpservreq.endLogEntry("CREATE_NAVI_COMPLETE", 25);
         } else {
             if (navigation_visible != null) {
                 LOG.debug("=> Reuse old navigation.");
             } else {
                 LOG.debug("=> Add new navigation (has been invalidated).");
             }
-            currentpreq.startLogEntry();
+            currentpservreq.startLogEntry();
             recursePages(navi.getNavigationElements(), element, doc, navigation_visible, warn_buffer, debug_buffer);
             PerfEventType et = PerfEventType.CONTEXT_CREATENAVIREUSE;
             et.setPage(spdoc.getPagename());
-            currentpreq.endLogEntry(et);
-            //currentpreq.endLogEntry("CREATE_NAVI_REUSE", 2);
+            currentpservreq.endLogEntry(et);
+            //currentpservreq.endLogEntry("CREATE_NAVI_REUSE", 2);
         }
     }
 
@@ -1101,15 +1103,15 @@ public class Context implements AppContext {
     }
 
     public void startLogEntry() {
-        currentpreq.startLogEntry();
+        currentpservreq.startLogEntry();
     }
 
     public void endLogEntry(String info, long min) {
-        currentpreq.endLogEntry(info, min);
+        currentpservreq.endLogEntry(info, min);
     }
 
     public void endLogEntry(PerfEventType t) {
-        currentpreq.endLogEntry(t);
+        currentpservreq.endLogEntry(t);
     }
 
     /**
@@ -1120,7 +1122,7 @@ public class Context implements AppContext {
      * See {@link PfixServletRequest#getLastException() PfixServletRequest} for details.
      */
     public Throwable getLastException() {
-        return currentpreq.getLastException();
+        return currentpservreq.getLastException();
     }
 
     /**
