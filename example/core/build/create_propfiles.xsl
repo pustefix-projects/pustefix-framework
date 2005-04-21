@@ -736,7 +736,7 @@
     </xsl:if>
     <xsl:for-each select="./prop:resource">
       <xsl:text>context.resource.</xsl:text>
-      <xsl:value-of select="format-number(position(),'00')"/>.<xsl:value-of select="./@class"/><xsl:text>=</xsl:text>
+      <xsl:value-of select="format-number(position(),'000')"/>.<xsl:value-of select="./@class"/><xsl:text>=</xsl:text>
       <xsl:for-each select="./prop:implements">
         <xsl:value-of select="./@class"/><xsl:if test="following-sibling::prop:implements"><xsl:text>, </xsl:text></xsl:if>
       </xsl:for-each>

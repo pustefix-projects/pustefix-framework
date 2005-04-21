@@ -41,7 +41,7 @@ public class StateFactory implements Reloader {
         return instance;
     }
     
-    StateFactory() {
+    private StateFactory() {
         AppLoader appLoader = AppLoader.getInstance();
         if (appLoader.isEnabled()) appLoader.addReloader(this);
     }

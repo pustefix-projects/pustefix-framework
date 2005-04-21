@@ -1,3 +1,21 @@
+2005-04-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextInterceptorFactory.java: new class, creates and stores ContextInterceptors 
+
+	* src/de/schlund/pfixcore/workflow/ContextInterceptor.java (init): method removed, no need to init as no state is held.
+	ContextInterceptors are singeltons!
+
+	* src/de/schlund/pfixcore/workflow/Context.java: ContextInterceptors are now two chains of Interceptors, 
+	one for start and one for end of request instead of two single instances. They are now created via a Factory, and
+	are Singletons! For storing data use a ContextResource.
+	* example/sample1/conf/config.prop.in: changed accordingly:
+	<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>
+	Interceptors now need a key to define the natural order.
+
+
+	* example/core/build/create_propfiles.xsl: create index for
+	ContextRessources with 3 instead of 2 digits (001 instead of 01)
+
 2005-04-20  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: new value for static field ENDIC

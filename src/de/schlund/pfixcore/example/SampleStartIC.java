@@ -19,16 +19,6 @@ import java.util.Properties;
 public class SampleStartIC implements ContextInterceptor {
 
     // Implementation of de.schlund.pfixcore.workflow.ContextInterceptor
-
-    /**
-     * Describe <code>init</code> method here.
-     *
-     * @param properties a <code>Properties</code> value
-     */
-    public final void init(final Properties properties) {
-        // nothing this time...
-    }
-
     /**
      * Describe <code>process</code> method here.
      *
