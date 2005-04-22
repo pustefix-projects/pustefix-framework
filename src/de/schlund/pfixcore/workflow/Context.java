@@ -144,8 +144,9 @@ public class Context implements AppContext {
             do_update();
         }
 
-        processIC(startIC);
-        
+        if (visit_id == null)
+            visit_id = (String) currentpservreq.getSession(false).getAttribute(ServletManager.VISIT_ID);
+
         RequestParam fstop = currentpservreq.getRequestParam(PARAM_FORCESTOP);
         if (fstop != null && fstop.getValue().equals("true")) {
             // We already decide here to stay on the page, what ever the state wants...
@@ -166,6 +167,9 @@ public class Context implements AppContext {
         // The page will be set a bit below in trySettingPageRequestAndFlow, where the "real" pageflow to use is also deduced.
         // At least, the currentpageflow is updated to be the currently valid variant.
         RequestParam lastflow = currentpservreq.getRequestParam(PARAM_LASTFLOW);
+        
+        processIC(startIC);
+        
         if (lastflow != null && !lastflow.getValue().equals("")) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(lastflow.getValue(), variant);
             if (tmp != null) {
@@ -183,9 +187,6 @@ public class Context implements AppContext {
         SPDocument  spdoc;
         PageRequest prevpage = currentpagerequest;
         PageFlow    prevflow = currentpageflow;
-
-        if (visit_id == null)
-            visit_id = (String) currentpservreq.getSession(false).getAttribute(ServletManager.VISIT_ID);
 
         if (in_adminmode) {
             ResultDocument resdoc;
