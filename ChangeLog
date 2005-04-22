@@ -1,3 +1,8 @@
+2005-04-22  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/ContextInterceptorFactory.java: need to use the apploader to 
+	so all classes are loaded with the same classloader...
+
 2005-04-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/ContextInterceptorFactory.java: new class, creates and stores ContextInterceptors 

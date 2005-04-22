@@ -79,14 +79,14 @@ public class StateFactory implements Reloader {
     }
     
     public void reload() {
-        HashMap knownNew=new HashMap();
-        Iterator it=knownstates.keySet().iterator();
-        while(it.hasNext()) {
-            String str=(String)it.next();
-            State sOld=(State)knownstates.get(str);
-            State sNew=(State)StateTransfer.getInstance().transfer(sOld);
+        HashMap  knownNew = new HashMap();
+        Iterator it       = knownstates.keySet().iterator();
+        while (it.hasNext()) {
+            String str  = (String) it.next();
+            State  sOld = (State) knownstates.get(str);
+            State  sNew = (State) StateTransfer.getInstance().transfer(sOld);
             knownNew.put(str,sNew);
         }
-        knownstates=knownNew;
+        knownstates = knownNew;
     }
 }
