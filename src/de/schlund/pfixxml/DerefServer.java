@@ -69,7 +69,7 @@ public class DerefServer extends ServletManager {
             display = display.replaceAll("<", "&lt;");
             display = display.replaceAll(">", "&gt;");
             
-            if (goodReferer(preq)) {
+            if (goodReferer(preq) || isLocalUrl(link.getValue())) {
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link.getValue() + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
@@ -93,6 +93,15 @@ public class DerefServer extends ServletManager {
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         }
         writer.flush();
+    }
+
+    private boolean isLocalUrl(String link) {
+        
+        if (link.startsWith("/")) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean goodReferer(PfixServletRequest preq) {
