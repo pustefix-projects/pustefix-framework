@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
     <product name="default">
@@ -31,8 +30,8 @@
               <tr>
                 <td align="right" nowrap="nowrap">
                   <pfx:xinp type="submit" value="Go!"/>
-                  <pfx:xinp type="submit" value="Don't go" forcestop="true"/>
-                  <pfx:xinp type="submit" value="Go Step by Step!" forcestop="step"/>
+                  <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
+                  <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
                 </td>
               </tr>
             </table>
@@ -96,7 +95,17 @@
   <part name="adult">
     <product name="default">
       <lang name="default">
-        Are you really older than 18 years?
+        [DEF] Are you really older than 18 years?
+      </lang>
+    </product>
+    <product name="foo">
+      <lang name="default">
+        [FOO] Are you really older than 18 years?
+      </lang>
+    </product>
+    <product name="bar">
+      <lang name="default">
+        [BAR] Are you really older than 18 years?
       </lang>
     </product>
   </part>

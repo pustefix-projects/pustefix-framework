@@ -21,11 +21,13 @@ package de.schlund.pfixcore.editor.handlers;
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.resources.*;
 import de.schlund.pfixcore.workflow.*;
+import de.schlund.pfixcore.workflow.Navigation.*;
 import de.schlund.pfixcore.workflow.app.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.targets.*;
+import java.util.Iterator;
+import java.util.TreeSet;
 import org.w3c.dom.*;
-import de.schlund.pfixcore.workflow.Navigation.*;
 
 /**
  * PagesFinalizer.java
@@ -60,12 +62,15 @@ public class PagesFinalizer extends ResdocSimpleFinalizer {
         // Render all pages
         NavigationElement[] nelems = navi.getNavigationElements();
         Element root = resdoc.createNode("allpages");
-        renderAllPages(nelems, resdoc, root);
-        
+        renderAllPages(ptree, nelems, resdoc, root);
+
         // Render detailed view of currently selected page
         if (currpage != null) {
             root = resdoc.createNode("currentpageinfo");
             root.setAttribute("name", currpage.getName());
+            if (currpage.getVariant() != null) {
+                root.setAttribute("variant", currpage.getVariant());
+            }
 
             Target  target = ptree.getTargetForPageInfo(currpage);
             Element elem   = resdoc.createSubNode(root, "targetinfo");
@@ -82,16 +87,28 @@ public class PagesFinalizer extends ResdocSimpleFinalizer {
     public void onSuccess(IWrapperContainer container) throws Exception{
         renderDefault(container);
     }
-    
-    private void renderAllPages(NavigationElement[] pages, ResultDocument resdoc, Element root) throws Exception{
+
+    private void renderAllPages(PageTargetTree ptree, NavigationElement[] pages, ResultDocument resdoc, Element root) throws Exception{
         for (int i = 0; i < pages.length; i++) {
             NavigationElement   page   = pages[i];
-            Element             elem   = resdoc.createSubNode(root, "page");
+            String              name   = page.getName();
+
+            TreeSet pinfos = ptree.getPageInfoForPageName(name);
+            Element elem   = null;
+            if (pinfos != null) {
+                for (Iterator j = pinfos.iterator(); j.hasNext();) {
+                    PageInfo pinfo = (PageInfo) j.next();
+                    elem           = resdoc.createSubNode(root, "page");
+                    elem.setAttribute("name", name);
+                    elem.setAttribute("handler", page.getHandler());
+                    if (pinfo.getVariant() != null) {
+                        elem.setAttribute("variant", pinfo.getVariant());
+                    }
+                }
+            }
             NavigationElement[] childs = page.getChildren();
-            elem.setAttribute("name", page.getName());
-            elem.setAttribute("handler", page.getHandler());
             if (childs != null && childs.length > 0) {
-                renderAllPages(childs, resdoc, elem);
+                renderAllPages(ptree, childs, resdoc, elem);
             }
         }
     }

@@ -241,11 +241,12 @@ public class EditorHelper {
         TreeSet targets = aux.getAffectedTargets();
         HashSet prods = new HashSet();
         TreeSet pages = new TreeSet();
-
+        
         prods.addAll(Arrays.asList(EditorProductFactory.getInstance().getAllEditorProducts()));
 
         for (Iterator i = targets.iterator(); i.hasNext();) {
             Target target = (Target) i.next();
+            CAT.warn("AT =>      " + target.getTargetKey());
             pages.addAll(target.getPageInfos());
         }
         renderAffectedPages(pages, prods, resdoc, root);
@@ -280,6 +281,10 @@ public class EditorHelper {
                 if (pgen == gen) {
                     Element newnode = resdoc.createSubNode(elem, "page");
                     newnode.setAttribute("name", pinfo.getName());
+                    if (pinfo.getVariant() != null) {
+                        newnode.setAttribute("variant", pinfo.getVariant());
+                    }
+
                     Target toplevel = pgen.getPageTargetTree().getTargetForPageInfo(pinfo);
                     try {
                         if (toplevel.needsUpdate()) {
@@ -443,13 +448,13 @@ public class EditorHelper {
         for (Iterator i = tmp.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             // Now get all includes recursively
-            getAuxdepsForInclude(allinc, aux, true, DependencyType.TEXT);
+            getAuxdepsForInclude(allinc, aux, true, DependencyType.TEXT, (VirtualTarget) target);
         }
         // now for all includes, get the images they use
         for (Iterator i = allinc.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             // we put what we find into allimgs
-            getAuxdepsForInclude(allimgs, aux, false, DependencyType.IMAGE);
+            getAuxdepsForInclude(allimgs, aux, false, DependencyType.IMAGE, (VirtualTarget) target);
         }
         int j = 0;
         for (Iterator i = allimgs.iterator(); i.hasNext();) {
@@ -462,12 +467,13 @@ public class EditorHelper {
         }
     }
 
+    // FIXME FIXME
     public static void renderIncludes(AuxDependency aux, ResultDocument resdoc, Element root) {
-        TreeSet allaux = aux.getChildren();
+        TreeSet allaux = aux.getChildrenForAllThemeStrings();
         ArrayList count = new ArrayList();
         count.add(new Integer(0));
         if (allaux != null) {
-            renderIncludesRec(allaux, resdoc, root, count);
+            renderIncludesRec(allaux, resdoc, root, count, null);
         }
     }
 
@@ -476,24 +482,26 @@ public class EditorHelper {
         ArrayList count = new ArrayList();
         count.add(new Integer(0));
         getAuxdepsForTarget(allaux, target, false, DependencyType.TEXT);
-        renderIncludesRec(allaux, resdoc, root, count);
+        renderIncludesRec(allaux, resdoc, root, count, target);
     }
 
-    private static void renderIncludesRec(TreeSet allaux, ResultDocument resdoc, Element root, ArrayList count) {
+    private static void renderIncludesRec(TreeSet allaux, ResultDocument resdoc, Element root, ArrayList count, Target target) {
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
+            // CAT.debug(aux.toString());
             if (aux.getType() == DependencyType.TEXT) {
-                Integer cnt = (Integer) count.get(0);
-                TreeSet sub = new TreeSet();
-                getAuxdepsForInclude(sub, aux, false, DependencyType.TEXT);
+                Integer cnt    = (Integer) count.get(0);
+                TreeSet sub    = new TreeSet();
+                getAuxdepsForInclude(sub, aux, false, DependencyType.TEXT, (VirtualTarget) target);
                 Element elem = resdoc.createSubNode(root, "include");
                 elem.setAttribute("dir", aux.getPath().getDir());
                 elem.setAttribute("path", aux.getPath().getRelative());
                 elem.setAttribute("part", aux.getPart());
+                elem.setAttribute("product", aux.getProduct());
                 elem.setAttribute("count", cnt.toString());
                 count.set(0, new Integer(cnt.intValue() + 1));
                 if (sub != null && !sub.isEmpty()) {
-                    renderIncludesRec(sub, resdoc, elem, count);
+                    renderIncludesRec(sub, resdoc, elem, count, target);
                 }
             }
         }
@@ -530,7 +538,7 @@ public class EditorHelper {
 
     public static void renderImagesFlatRecursive(AuxDependency auxin, ResultDocument resdoc, Element root) {
         TreeSet allaux = new TreeSet();
-        getAuxdepsForInclude(allaux, auxin, true, DependencyType.IMAGE);
+        getAuxdepsForInclude(allaux, auxin, true, DependencyType.IMAGE, null);
         int j = 0;
         for (Iterator i = allaux.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
@@ -555,7 +563,7 @@ public class EditorHelper {
                     bucket.add(aux);
                 }
                 if (recurse) {
-                    getAuxdepsForInclude(bucket, aux, recurse, type);
+                    getAuxdepsForInclude(bucket, aux, recurse, type, (VirtualTarget) target);
                 }
             }
             if (recurse) {
@@ -567,8 +575,17 @@ public class EditorHelper {
         }
     }
 
-    private static void getAuxdepsForInclude(TreeSet bucket, AuxDependency aux, boolean recurse, DependencyType type) {
-        TreeSet children = aux.getChildren();
+    // FIXME FIXME
+    private static void getAuxdepsForInclude(TreeSet bucket, AuxDependency aux, boolean recurse,
+                                             DependencyType type, VirtualTarget target) {
+
+        TreeSet children = null;
+        if (target != null) {
+            children = aux.getChildren(target);
+        } else {
+            children = aux.getChildrenForAllThemeStrings();
+        }
+
         if (children != null) {
             for (Iterator i = children.iterator(); i.hasNext();) {
                 AuxDependency child = (AuxDependency) i.next();
@@ -576,7 +593,7 @@ public class EditorHelper {
                     bucket.add(child);
                 }
                 if (recurse) {
-                    getAuxdepsForInclude(bucket, child, recurse, type);
+                    getAuxdepsForInclude(bucket, child, recurse, type, target);
                 }
             }
         }

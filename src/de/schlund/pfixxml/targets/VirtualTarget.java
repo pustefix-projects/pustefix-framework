@@ -78,10 +78,6 @@ public abstract class VirtualTarget extends TargetImpl {
         xslsource = source;
     }
 
-    public void setThemes(String[] themes) {
-        this.themes = themes;
-    }
-
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addParam(java.lang.String, java.lang.String)
      */
@@ -145,10 +141,17 @@ public abstract class VirtualTarget extends TargetImpl {
 
   
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey()
-            + "@" + getTargetGenerator().getName()
-            + " <" + getXMLSource().getTargetKey() + "> <"
-            + getXSLSource().getTargetKey() + ">]";
+        if (getXMLSource() != null && getXSLSource() != null) {
+            return "[TARGET: " + getType() + " " + getTargetKey()
+                + "@" + getTargetGenerator().getName()
+                + "[" + themes.getId() + "]"
+                + " <" + getXMLSource().getTargetKey() + "> <"
+                + getXSLSource().getTargetKey() + ">]";
+        } else {
+            return "[TARGET: " + getType() + " " + getTargetKey()
+                + "@" + getTargetGenerator().getName()
+                + "[" + themes.getId() + "]]";
+        }
     }
 
     /**
@@ -260,7 +263,7 @@ public abstract class VirtualTarget extends TargetImpl {
             throw new XMLException("**** xsl source " +
                                    tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap   tmpparams = getParams();
-        tmpparams.put("themes", getThemesString());
+        tmpparams.put("themes", themes.getId());
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();

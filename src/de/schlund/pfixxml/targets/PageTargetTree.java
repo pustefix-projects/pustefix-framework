@@ -35,18 +35,32 @@ import java.util.TreeSet;
 
 public class PageTargetTree {
     TreeMap toplevels = new TreeMap();
+    TreeMap pageinfos = new TreeMap();
 
     protected void addEntry(PageInfo pageinfo, Target target) {
         synchronized (toplevels) {
             if (toplevels.get(pageinfo) == null) {
                 toplevels.put(pageinfo, target);
+                String name = pageinfo.getName();
+                if (pageinfos.get(name) == null) {
+                    pageinfos.put(name, new TreeSet());
+                }
+                TreeSet pinfos = (TreeSet) pageinfos.get(name);
+                pinfos.add(pageinfo);
             } else {
                 throw new RuntimeException("Can't have another top-level target '" +
                                            target.getTargetKey() + "' for the same page '" +
-                                           pageinfo.getName() + "'");
+                                           pageinfo.getName() + "' variant: '" + pageinfo.getVariant() + "'");
             }
         }
     }
+
+    public TreeSet getPageInfoForPageName(String name) {
+        synchronized (pageinfos) {
+            return (TreeSet) pageinfos.get(name);
+        }
+    }
+
     
     public TreeSet getPageInfos() {
         synchronized (toplevels) {

@@ -2,4 +2,5 @@
 <interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
   <ihandler class="de.schlund.pfixcore.editor.handlers.PagesHandler"/>
   <param name="Page" type="String"/>
+  <param name="Variant" type="String" occurance="optional"/>
 </interface> 

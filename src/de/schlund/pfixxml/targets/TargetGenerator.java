@@ -54,7 +54,7 @@ public class TargetGenerator {
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
     private long                          config_mtime                   = 0;
     private String name;
-    private String[] global_themes;
+    private Themes global_themes;
     
     private String language;
     
@@ -81,7 +81,7 @@ public class TargetGenerator {
         return name;
     }
 
-    public String[] getGlobalThemes() {
+    public Themes getGlobalThemes() {
         return global_themes;
     }
 
@@ -112,11 +112,11 @@ public class TargetGenerator {
     }
 
     public Target createXMLLeafTarget(String key) {
-        return createTarget(TargetType.XML_LEAF, key);
+        return createTarget(TargetType.XML_LEAF, key, null);
     }
 
     public Target createXSLLeafTarget(String key) {
-        return createTarget(TargetType.XSL_LEAF, key);
+        return createTarget(TargetType.XSL_LEAF, key, null);
     }
 
     //-- misc
@@ -180,14 +180,8 @@ public class TargetGenerator {
         if (gl_theme_str == null || gl_theme_str.equals("")) {
             gl_theme_str = name + " default"; 
         }
-        
-        StringTokenizer gl_tok  = new StringTokenizer(gl_theme_str);
-        ArrayList       gl_list = new ArrayList();
-        while (gl_tok.hasMoreElements()) {
-            String currtok = gl_tok.nextToken();
-            gl_list.add(currtok);
-        }
-        global_themes = (String[]) gl_list.toArray(new String[]{});
+
+        global_themes = new Themes(gl_theme_str);
         
         File disccache = getDisccachedir().resolve();
         if (!disccache.exists()) {
@@ -293,35 +287,33 @@ public class TargetGenerator {
             // Check if xmldep is a leaf node or virtual:
 
             if (!allstructs.containsKey(xmldep)) {
-                xmlsource = createTarget(TargetType.XML_LEAF, xmldep);
+                xmlsource = createTarget(TargetType.XML_LEAF, xmldep, null);
             } else {
                 xmlsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xmldep), allstructs, depxmls, depxsls, tgParam);
             } 
 
             // Check if xsldep is a leaf node or virtual:
             if (!allstructs.containsKey(xsldep)) {
-                xslsource = createTarget(TargetType.XSL_LEAF, xsldep);
+                xslsource = createTarget(TargetType.XSL_LEAF, xsldep, null);
             } else {
                 xslsource = createTargetFromTargetStruct((TargetStruct) allstructs.get(xsldep), allstructs, depxmls, depxsls, tgParam);
             }
 
-            VirtualTarget virtual     = (VirtualTarget) createTarget(reqtype, key);
-            String        themes      = struct.getThemes();
+            String themes_str = struct.getThemes();
+            Themes themes = null;
+            
+            if (themes_str != null && !themes_str.equals("")) {
+                themes = new Themes(themes_str);
+            } else {
+                themes = global_themes;
+            }
+            
+            VirtualTarget virtual     = (VirtualTarget) createTarget(reqtype, key, themes);
             String        variantname = struct.getVariant();
             String        pagename    = struct.getPage();
 
             virtual.setXMLSource(xmlsource);
             virtual.setXSLSource(xslsource);
-            
-            if (themes != null && !themes.equals("")) {
-                StringTokenizer tok  = new StringTokenizer(themes);
-                ArrayList       list = new ArrayList();
-                while (tok.hasMoreElements()) {
-                    String currtok = tok.nextToken();
-                    list.add(currtok);
-                }
-                virtual.setThemes((String[]) list.toArray(new String[]{}));
-            }
 
             AuxDependencyManager manager = virtual.getAuxDependencyManager();
             HashSet auxdeps = struct.getDepaux();
@@ -366,16 +358,16 @@ public class TargetGenerator {
     }
 
     private TargetRW createXMLVirtualTarget(String key) {
-        return createTarget(TargetType.XML_VIRTUAL, key);
+        return createTarget(TargetType.XML_VIRTUAL, key, null);
     }
 
     private TargetRW createXSLVirtualTarget(String key) {
-        return createTarget(TargetType.XSL_VIRTUAL, key);
+        return createTarget(TargetType.XSL_VIRTUAL, key, null);
     }
 
-    private TargetRW createTarget(TargetType type, String key) {
+    private TargetRW createTarget(TargetType type, String key, Themes themes) {
         TargetFactory tfac = TargetFactory.getInstance();
-        TargetRW tmp = tfac.getTarget(type, this, key);
+        TargetRW tmp = tfac.getTarget(type, this, key, themes);
         TargetRW tmp2 = getTargetRW(key);
         if (tmp2 == null) {
             synchronized (alltargets) {

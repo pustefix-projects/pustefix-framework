@@ -33,8 +33,7 @@ public interface Target {
     TargetGenerator getTargetGenerator();
     Target          getXMLSource();
     Target          getXSLSource();
-    String[]        getThemes();
-    String          getThemesString();
+    Themes          getThemes();
     TreeMap         getParams();
     TreeSet         getPageInfos();
     long            getModTime();
