@@ -38,10 +38,11 @@ import javax.xml.transform.TransformerException;
 
 public class XSLVirtualTarget extends VirtualTarget {
 
-    public XSLVirtualTarget(TargetType type, TargetGenerator gen, String key) throws Exception {
-        this.type          = type;
-        this.generator     = gen;
-        this.targetkey     = key;
+    public XSLVirtualTarget(TargetType type, TargetGenerator gen, String key, Themes themes) throws Exception {
+        this.type      = type;
+        this.generator = gen;
+        this.targetkey = key;
+        this.themes    = themes;
         this.params        = new TreeMap();
         this.auxdepmanager = new AuxDependencyManager(this);
         auxdepmanager.tryInitAuxdepend();

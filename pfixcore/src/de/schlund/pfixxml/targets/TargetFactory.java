@@ -54,11 +54,11 @@ public class TargetFactory {
         return false;
     }
 
-    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, String targetkey) {
+    public synchronized TargetRW getTarget(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
         String   key = createKey(type, gen, targetkey);
         TargetRW ret = (TargetRW) targetmap.get(key);
         if (ret == null) {
-            ret = createTargetForType(type, gen, targetkey);
+            ret = createTargetForType(type, gen, targetkey, themes);
             targetmap.put(key, ret);
         }
         return ret;
@@ -68,13 +68,13 @@ public class TargetFactory {
         return(type.getTag() + "@" + gen.getName() + "@" + targetkey);
     }
     
-    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey) {
+    private TargetRW createTargetForType(TargetType type, TargetGenerator gen, String targetkey, Themes themes) {
         TargetRW target;
         CAT.debug("===> Creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]");
         try {
             Class       theclass    = type.getTargetClass();
-            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass()});
-            target = (TargetRW) constructor.newInstance(new Object[]{type, gen, targetkey});
+            Constructor constructor = theclass.getConstructor(new Class[]{type.getClass(), gen.getClass(), targetkey.getClass(), Themes.class});
+            target = (TargetRW) constructor.newInstance(new Object[]{type, gen, targetkey, themes});
         } catch (Exception e) {
             throw new RuntimeException("error creating target '" + targetkey + "' " + type + " [" + gen.getName() + "]: " + e.toString(), e);
         }

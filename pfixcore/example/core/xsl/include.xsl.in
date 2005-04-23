@@ -353,7 +353,7 @@
           </xsl:when>
         </xsl:choose>
         <!-- -->
-        <xsl:variable name="used_prod">
+        <xsl:variable name="used_theme">
           <xsl:choose>
             <xsl:when test="$incnodes and $incnodes[name() = 'product' or name() = 'missing']">
               <xsl:value-of select="$incnodes/@name"/>
@@ -488,7 +488,7 @@
           <xsl:when test="not($__target_key = '__NONE__') and $prohibitEdit = 'no'">
             <ixsl:if test="$__editmode = 'admin'">
               <a href="">
-                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Path=<xsl:value-of select="string($realpath)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
+                <ixsl:attribute name="onclick">window.open('/xml/edit/includes;<ixsl:value-of select="$__sessid"/>?extinc.Theme=<xsl:value-of select="string($used_theme)"/>&amp;extinc.Path=<xsl:value-of select="string($realpath)"/>&amp;extinc.Part=<xsl:value-of select="$part"/>&amp;extprod.Name=<xsl:value-of select="$product"/>&amp;__anchor=left_navi|<xsl:value-of select="$realpath"/>','PustefixEditor','menubar=yes,status=yes,resizable=yes');return(false);</ixsl:attribute>
                 <img border="0" src="/core/img/edit.gif"
                      alt="Edit include: '{$part}' in file '{$realpath}'"
                      title="Edit include: '{$part}' in file '{$realpath}'"/>

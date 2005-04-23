@@ -48,15 +48,15 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     protected TargetType           type;
     protected TargetGenerator      generator;
     protected String               targetkey;
-    protected String[]             themes          = null;
+    protected Themes               themes          = null;
     protected TreeMap              params          = null;
     protected Target               xmlsource       = null;
     protected Target               xslsource       = null;
     protected Category             CAT             = Category.getInstance(this.getClass().getName());
     protected Category             TREE            = Category.getInstance(this.getClass().getName() + ".TREE");
     // determine if the target has been generated. This affects production mode only, where
-    // we do not need to handle that the target is always up to date (expect make generate!!!)
-    private boolean                onceLoaded      = false;
+    // we do not need to handle if the target is really up to date (except make generate!!!)
+    private   boolean              onceLoaded      = false;
     // store  exception occured during transformation here. 
     protected Exception            storedException = null;
     
@@ -85,24 +85,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         return generator;
     }
 
-    public String[] getThemes() {
-        if (themes != null) {
-            return themes;
-        } else {
-            return getTargetGenerator().getGlobalThemes();
-        }
-    }
-
-    public String getThemesString() {
-        String[]     allthemes = getThemes();
-        StringBuffer themesstr = new StringBuffer("");
-        for (int i = 0; i < allthemes.length; i++) {
-            if (themesstr.length() > 0) {
-                themesstr.append(" ");
-            }
-            themesstr.append(allthemes[i]);
-        }
-        return themesstr.toString();
+    public Themes getThemes() {
+        return themes;
     }
     
     /**
@@ -198,16 +182,14 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     }
 
     public abstract void addPageInfo(PageInfo info);
-
+    
     public abstract TreeSet getPageInfos();
-
+    
     public abstract void setXMLSource(Target source);
 
     public abstract void setXSLSource(Target source);
-
+    
     public abstract void addParam(String key, String val);
-
-    public abstract void setThemes(String[] themes);
     
     public abstract void storeValue(Object obj);
 

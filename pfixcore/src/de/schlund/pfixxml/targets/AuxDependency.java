@@ -19,65 +19,115 @@
 
 package de.schlund.pfixxml.targets;
 
+import de.schlund.pfixxml.util.Path;
 import java.io.File;
 import java.util.*;
-import de.schlund.pfixxml.util.Path;
+import org.apache.log4j.Category;
 
 /**
  * Additional dependency besides XML and XSL source. 
  */
-public class AuxDependency implements DependencyParent, Comparable {
-
+public class AuxDependency implements Comparable {
+    
+    private static Category      CAT = Category.getInstance(AuxDependency.class.getName());
     private final DependencyType type;
     private final Path           path;
     private final String         part;
     private final String         product;
     private final int            hashCode;
-    private final HashSet        parents; 
-    private final TreeSet        children;
-
+    private final TreeSet        affectedtargets;
+    private final HashMap        themes_children;
+   
     private long last_lastModTime = -1;
     
     public AuxDependency(DependencyType type, Path path, String part, String product) {
         if (path == null) {
-            throw new IllegalArgumentException("Need Path to construct AbstractDependency");
+            throw new IllegalArgumentException("Need Path to construct AuxDependency");
         }
-        this.type = type;
-        this.path = path;
-        this.part = part;
-        this.product = product;
-        this.parents = new HashSet();
-        this.children = new TreeSet();
+        this.type            = type;
+        this.path            = path;
+        this.part            = part;
+        this.product         = product;
+        this.affectedtargets = new TreeSet();
+        this.themes_children = new HashMap();
 
         String key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         this.hashCode = key.hashCode();
     }
 
-    public boolean addChild(AuxDependency aux) {
-        synchronized (children) {
-            aux.addDependencyParent(this);
+    public boolean addChild(AuxDependency aux, VirtualTarget target) {
+        synchronized (themes_children) {
+            aux.addTargetDependency(target);
+            String id = target.getThemes().getId();
+            if (themes_children.get(id) == null) {
+                themes_children.put(id, new TreeSet());
+            }
+            TreeSet children = (TreeSet) themes_children.get(id);
+            //CAT.warn("\n#####> ADD [" + id + "] " + aux);
             return children.add(aux);
         }
     }
 
-    public TreeSet getChildren() {
-        synchronized (children) {
-            return (TreeSet) children.clone();
-        }
-    }
-    
-    public void reset() {
-        synchronized (children) {
-            for (Iterator i = children.iterator(); i.hasNext(); ) {
+    public void removeChildren(VirtualTarget target) {
+        synchronized (themes_children) {
+            String id = target.getThemes().getId();
+            if (themes_children.get(id) == null) {
+                themes_children.put(id, new TreeSet());
+            }
+            TreeSet tmp_children = (TreeSet) themes_children.get(id);
+            for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
-                aux.removeDependencyParent(this);
                 if (aux.getType().isDynamic()) {
+                    //CAT.warn("\n==>REMOVE: " + aux);
                     i.remove();
+                } else {
+                    //CAT.warn("\n==>REMAIN: " + aux);
                 }
             }
         }
     }
     
+    public boolean addTargetDependency(VirtualTarget target) {
+        synchronized (affectedtargets) {
+            return affectedtargets.add(target);
+        }
+    }
+
+    public void resetTargetDependency(VirtualTarget target) { 
+        synchronized (affectedtargets) {
+            affectedtargets.remove(target);
+            TreeSet tmp_children = getChildren(target);
+            for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
+                AuxDependency aux  = (AuxDependency) i.next();
+                if (aux.getType().isDynamic()) {
+                    aux.resetTargetDependency(target);
+                }
+            }
+        }
+    }
+
+    public TreeSet getChildren(VirtualTarget target) {
+        synchronized (themes_children) {
+            String id = target.getThemes().getId();
+            if (themes_children.get(id) == null) {
+                themes_children.put(id, new TreeSet());
+            }
+            return (TreeSet) ((TreeSet) themes_children.get(id)).clone();
+        }
+    }
+
+    public TreeSet getChildrenForAllThemeStrings() {
+        synchronized (themes_children) {
+            TreeSet retval = new TreeSet();
+            for (Iterator i = themes_children.values().iterator(); i.hasNext();) {
+                TreeSet children = (TreeSet) i.next();
+                retval.addAll(children);
+            }
+            return retval;
+        }
+    }
+
+
     public DependencyType getType() {
         return type;
     }
@@ -124,48 +174,37 @@ public class AuxDependency implements DependencyParent, Comparable {
     }
 
     public String toString() {
-        String retval = "[AUXDEP: " + getType() + " " + getPath() + "@" + getPart() + "@" + getProduct() + "]\n";
-        if (!children.isEmpty()) {
-            retval += "        -------------- Children: --------------\n";
-            TreeSet set = getChildren();
-            for (Iterator i = set.iterator(); i.hasNext(); ) {
-                AuxDependency child = (AuxDependency) i.next();
-                retval += "        " + "[AUXDEP: " + child.getType() + " " +
-                    child.getPath() + "@" + child.getPart() + "@" + child.getProduct() + "]\n";
+        StringBuffer retval = new StringBuffer("[AUXDEP: " + getType() + " " + getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]\n");
+        if (!themes_children.isEmpty()) {
+            retval.append("        -------------- Children: --------------\n");
+            for (Iterator i = themes_children.keySet().iterator(); i.hasNext();) {
+                String  theme_id = (String) i.next();
+                TreeSet set      = (TreeSet) themes_children.get(theme_id);
+                if (set != null && !set.isEmpty()) {
+                    retval.append("           ==> ThemeID: " + theme_id + "\n");
+                    for (Iterator j = set.iterator(); j.hasNext(); ) {
+                        AuxDependency child = (AuxDependency) j.next();
+                        retval.append("        " + "[AUXDEP: " + child.getType() + " " +
+                                      child.getPath() + "@" + child.getPart() + "@" + child.getProduct() + "]\n");
+                    }
+                }
             }
         }
-        retval += "        -------------- Targets:  --------------\n";
+        retval.append("        -------------- Targets:  --------------\n");
         TreeSet targets = getAffectedTargets();
         for (Iterator i = targets.iterator(); i.hasNext(); ) {
             Target target = (Target) i.next();
-            retval += "        " + target + "\n";
+            retval.append("        " + target + "\n");
         }
-        return retval;
+        return retval.toString();
     }
     
-    public boolean addDependencyParent(DependencyParent v) {
-        synchronized (parents) {
-            return parents.add(v);
-        }
-    }
-
-    public boolean removeDependencyParent(DependencyParent v) { 
-        synchronized (parents) {
-            return parents.remove(v);
-        }
-    }
-
     public TreeSet getAffectedTargets() {
-        TreeSet tmp = new TreeSet();
-        synchronized (parents) {
-            for (Iterator i = parents.iterator(); i.hasNext(); ) {
-                DependencyParent parent = (DependencyParent) i.next();
-                tmp.addAll(parent.getAffectedTargets());
-            }
+        synchronized (affectedtargets) {
+            return (TreeSet) affectedtargets.clone();
         }
-        return tmp;
     }
-    
+
     public int compareTo(Object inobj) {
         AuxDependency in = (AuxDependency) inobj;
 

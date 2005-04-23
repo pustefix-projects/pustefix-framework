@@ -1,4 +1,63 @@
-2005-04-22  Jens Lautenbacher  <jtl@schlund.de>
+2005-04-24  Jens Lautenbacher  <jtl@schlund.de>
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: 
+	Completely rewrote the way the parent-child relation of auxdependencies are stored.
+	we now store the childs seperate for each themes spec. Also the affected targets are stored locally 
+	in the AuxDependency itself, so no need anymore to store a link to the parent.
+	Basically all of this should fix a bug that has been there forever, but only with the new variants 
+	happens much more often.
+
+	* src/de/schlund/pfixxml/targets/PageTargetTree.java (getPageInfoForPageName): new method
+	(addEntry): now store also a mapping of page name to all pageinfos with that name (aka all variants)
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/targets/TargetFactory.java: 
+	all Target creation now needs a themes argument. Use the new Themes type.
+
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java: 
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java: contructors need Themes parameter 
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (setThemes): removed
+	(getThemes): now return type Themes
+	(getThemesString): removed
+	* src/de/schlund/pfixxml/targets/Target.java (getThemes): now return type Themes
+	(getThemesString): removed
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (setThemes): removed
+	changed according to new Themes class
+	
+	* src/de/schlund/pfixxml/targets/TargetRW.java: 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java (setThemes): removed 
+
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: cosmetics
+
+	* src/de/schlund/pfixxml/targets/Themes.java (Module):
+	added. Themes aggregate the String[] of fallback themes, and the
+	id string (just all themes space separated). This will be contructed one time only.
+	* src/de/schlund/pfixxml/IncludeDocumentExtension.java:
+	* src/de/schlund/pfixxml/ImageThemedSrc.java:
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: changed accordingly
+
+	* src/de/schlund/pfixxml/targets/DependencyParent.java (Module): removed 
+
+	* example/sample1/txt/pages/main_home.xml: added small stuff to demo themes again
+
+	* src/de/schlund/pfixcore/editor/interfaces/Includes.iwrp: 
+	* src/de/schlund/pfixcore/editor/interfaces/Commons.iwrp: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/interfaces/Pages.iwrp: 
+	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/PagesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: 
+	* example/core/editor/xsl/metatags.xsl: changed according to Target/AuxDependency/variant changes
+
+	* example/core/xsl/include.xsl.in: supply used_theme to editor 
+
+	* src/de/schlund/pfixcore/workflow/Context.java: move calling of start ContextInterceptor down where
+	all the stuff like vist_id that's read from the servlet request is already set.
 
 	* src/de/schlund/pfixcore/workflow/ContextInterceptorFactory.java: need to use the apploader to 
 	so all classes are loaded with the same classloader...

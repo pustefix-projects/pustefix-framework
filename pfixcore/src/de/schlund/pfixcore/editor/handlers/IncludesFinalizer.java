@@ -42,6 +42,7 @@ import org.w3c.dom.*;
  */
 
 public class IncludesFinalizer extends ResdocSimpleFinalizer {
+    private static Category CAT = Category.getInstance(IncludesFinalizer.class.getName());
     private static String EDITOR_PERF = "EDITOR_PERF";
     private static Category PERF_LOGGER = Category.getInstance(EDITOR_PERF);
 
@@ -108,7 +109,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
             //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, path, part);
             boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
-            if(allowed) {
+            if (allowed) {
                 lock = esess.getLock(currinclude);
             } else {
                 if(CAT.isDebugEnabled()) {
@@ -117,7 +118,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             }
                        
             
-            if(PERF_LOGGER.isInfoEnabled()) {
+            if (PERF_LOGGER.isInfoEnabled()) {
                 long length = System.currentTimeMillis() - start_time;
                 PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#2: "+length);
             }
@@ -127,15 +128,15 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             // not written yet. So we must NOT call EditorHelper.getAffectedProductsForInclude!!!
             // look if part exists
             Element ele = EditorHelper.getIncludePart(esess.getProduct().getTargetGenerator(), 
-                                                        AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
-                                                        path, part,esess.getProduct().getName()));   
+                                                      AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+                                                                                                          path, part, esess.getProduct().getName()));   
             
             // if ele==null a new include has been referenced, but was not written yet                                           
             if(ele != null ) {
                 // render all affected products for current include
                 Element aff_prods = resdoc.createNode("affectedproducts");
                 
-                for(Iterator iter = affected_products.iterator(); iter.hasNext(); ) {
+                for (Iterator iter = affected_products.iterator(); iter.hasNext(); ) {
                     EditorProduct prod = (EditorProduct) iter.next();
                     String name = prod.getName();
                     Element pr = resdoc.createNode("product");
@@ -145,7 +146,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
                 root.appendChild(aff_prods);
             }
             //</comment>
-            if(PERF_LOGGER.isInfoEnabled()) {
+            if (PERF_LOGGER.isInfoEnabled()) {
                 long length = System.currentTimeMillis() - start_time;
                 PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#3: "+length);
             }

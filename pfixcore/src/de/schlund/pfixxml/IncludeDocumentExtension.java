@@ -115,9 +115,9 @@ public final class IncludeDocumentExtension {
             TargetGenerator tgen = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
             VirtualTarget target = (VirtualTarget) tgen.getTarget(targetkey);
 
-            String[] themes = tgen.getGlobalThemes();
+            String[] themes = tgen.getGlobalThemes().getThemesArr();
             if (!targetkey.equals(NOTARGET)) {
-                themes = target.getThemes();
+                themes = target.getThemes().getThemesArr();
             }
             if (themes == null) {
                 XMLException ex = new XMLException("Target has a 'null' themes array!");

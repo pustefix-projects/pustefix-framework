@@ -37,24 +37,16 @@ import org.w3c.dom.*;
  *
  */
 
-public class AuxDependencyManager implements DependencyParent {
+public class AuxDependencyManager {
     private static Category               CAT    = Category.getInstance(AuxDependencyManager.class.getName());
     private static String                 DEPAUX = "depaux";
 
-    private Target  target;
+    private VirtualTarget  target;
     private HashSet auxset = new HashSet();
     
-    // DependencyParent interface
-
-    public TreeSet getAffectedTargets() {
-        TreeSet tmp = new TreeSet();
-        tmp.add(target);
-        return tmp;
-    }
-
     public boolean addChild(AuxDependency aux) {
         synchronized (auxset) {
-            aux.addDependencyParent(this);
+            aux.addTargetDependency(target);
             return auxset.add(aux);
         }
     }
@@ -65,14 +57,12 @@ public class AuxDependencyManager implements DependencyParent {
         }
     }
 
-    // ----------------------------------
-    
     public AuxDependencyManager(Target target) {
-        this.target = target;
+        this.target = (VirtualTarget) target;
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
-        File   auxfile = new File(target.getTargetGenerator().getDisccachedir().resolve(), target.getTargetKey() + ".aux");
+        File auxfile = new File(target.getTargetGenerator().getDisccachedir().resolve(), target.getTargetKey() + ".aux");
         if (auxfile.exists() && auxfile.canRead() && auxfile.isFile()) {
             Document        doc     = Xml.parseMutable(auxfile);
             NodeList        auxdeps = doc.getElementsByTagName(DEPAUX);
@@ -100,7 +90,7 @@ public class AuxDependencyManager implements DependencyParent {
         Document auxdoc = Xml.createDocument();
         Element  root   = auxdoc.createElement("aux");
         auxdoc.appendChild(root);
-            
+        
         saveIt(DEPAUX, auxdoc, root, auxset, null);
         Xml.serialize(auxdoc, path, true, true);
     }
@@ -110,9 +100,10 @@ public class AuxDependencyManager implements DependencyParent {
         if (path == null) {
             throw new IllegalArgumentException("path null: part=" + part + " product=" + product);
         }
-        AuxDependency    child  = null;
-        DependencyParent parent = null;
-
+        AuxDependency child  = null;
+        AuxDependency parent = null;
+        boolean addtomanager = false;
+        
         if (part != null && part.equals("")) part = null;
         if (product != null && product.equals("")) product = null;
         if (parent_part != null && parent_part.equals("")) parent_part = null;
@@ -134,20 +125,22 @@ public class AuxDependencyManager implements DependencyParent {
             }
         } else if (parent_path == null && parent_part == null && parent_product == null) {
             CAT.debug("*** Has no AuxDependency as parent...");
-            parent = this;
+            addtomanager = true;
         }
         
-        if (parent != null) {
+        if (parent != null || addtomanager) {
+            // we remove the children (if any) of the "child" AuxDependency, because "child" will be processed
+            // now and all current children of "child" will be added again
+            child.removeChildren(target);
             
-            // we remove the new aux from every current childs parent
-            // map. They will add it as a parent later on themself.
-            // After that, we will Reset the children map of the
-            // AuxDep. The children will add themself later on their own.
-            child.reset();
-            
-            // Here we make sure that this AuxDep's parent will get it's children map rebuild.
-            // The parent may be another AuxDependency or the Manager (see above).
-            parent.addChild(child);
+            // Here we make sure that the "child" AuxDep will be added to its parent.
+            // So this is where the parent get's its child map rebuild.
+            // If there's no parent, add it to the manager itself.
+            if (addtomanager) {
+                addChild(child);
+            } else {
+                parent.addChild(child, target);
+            }
 
             // finally we take care of refcounting.
             DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
@@ -165,8 +158,8 @@ public class AuxDependencyManager implements DependencyParent {
         synchronized(auxset) {
             for (Iterator i = auxset.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
-                aux.removeDependencyParent(this);
                 if (aux.getType().isDynamic()) {
+                    aux.resetTargetDependency(target);
                     i.remove();
                 }
             }
@@ -188,7 +181,7 @@ public class AuxDependencyManager implements DependencyParent {
         for (Iterator i = in.iterator(); i.hasNext(); ) {
             AuxDependency aux = (AuxDependency) i.next();
             max = Math.max(max, aux.getModTime());
-            Set children = aux.getChildren();
+            Set children = aux.getChildren(target);
             if (children != null) {
                 max = Math.max(max, lookForTimestamp(children, willrebuild));
             }
@@ -197,7 +190,7 @@ public class AuxDependencyManager implements DependencyParent {
     }
 
     private void saveIt(String name, Document doc, Element root, Set in, AuxDependency parent) {
-        Path parent_path    = null;
+        Path   parent_path    = null;
         String parent_part    = null;
         String parent_product = null;
 
@@ -228,21 +221,21 @@ public class AuxDependencyManager implements DependencyParent {
                 if (parent_product != null) 
                     depaux.setAttribute("parent_product", parent_product);
             }
-            TreeSet children = aux.getChildren();
+            TreeSet children = aux.getChildren(target);
             if (children != null && children.size() > 0) {
                 saveIt(name, doc, root, children, aux);
             }
         }
     }
 
-    private boolean checkLoopFree(DependencyParent parent, AuxDependency aux) {
+    private boolean checkLoopFree(AuxDependency parent, AuxDependency aux) {
         // The simple loop
         if (parent == aux) {
             return false;
         }
         
         // Now iterate over all children of aux recursively and check if any of them is parent.
-        TreeSet children = aux.getChildren();
+        TreeSet children = aux.getChildren(target);
         if (children != null) {
             for (Iterator i = children.iterator(); i.hasNext();) {
                 AuxDependency child = (AuxDependency) i.next();

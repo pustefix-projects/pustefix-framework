@@ -542,7 +542,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         TargetGenerationException, IOException, TransformerException {
         Templates stylevalue;
         Target    target = generator.getTarget(stylesheet);
-        paramhash.put("themes", target.getThemesString());
+        paramhash.put("themes", target.getThemes().getId());
         stylevalue = (Templates) target.getValue();
         if ( stylevalue == null ) { // AH 2004-09-21 added for bugtracing 
             CAT.warn("stylevalue must not be null; stylevalue=" +

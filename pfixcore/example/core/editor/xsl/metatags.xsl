@@ -39,7 +39,8 @@
       <ixsl:for-each select="/formresult/allpages//page">
         <tr>
           <td>
-            <ixsl:if test="/formresult/currentpageinfo[@name = current()/@name]">
+            <ixsl:if test="/formresult/currentpageinfo[string(@name) = string(current()/@name)
+                           and string(@variant) = string(current()/@variant)]">
               <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
             </ixsl:if>
             <a>
@@ -51,8 +52,9 @@
             <ixsl:copy-of select="$ind"/>
             <pfx:button page="pages" mode="force">
               <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
+              <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
               <pfx:anchor   frame="leftnavi"><ixsl:value-of select="@name"/></pfx:anchor>
-              <ixsl:value-of select="@name"/>
+              <ixsl:value-of select="@name"/><ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
             </pfx:button>
           </td>
           <td class="editor_dim" nowrap="nowrap" width="1%">[<ixsl:value-of select="@handler"/>]</td>
@@ -373,9 +375,10 @@
                     <pfx:command  name="SELWRP">uplcom</pfx:command>
                     <pfx:argument name="comsel.Path"><ixsl:value-of select="./@path"/></pfx:argument>
                     <pfx:argument name="comsel.Part"><ixsl:value-of select="./@part"/></pfx:argument>
+                    <pfx:argument name="comsel.Theme"><ixsl:value-of select="./@product"/></pfx:argument>
                     <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                     <ixsl:value-of select="@part"/>
-                  </pfx:button>
+                  </pfx:button> (<ixsl:value-of select="@product"/>)
                 </td>
               </tr>
             </ixsl:if>
@@ -450,9 +453,10 @@
                   <pfx:command  name="SELWRP" page="{$target_page}">uplinc</pfx:command>
                   <pfx:argument name="incsel.Path"><ixsl:value-of select="./@path"/></pfx:argument>
                   <pfx:argument name="incsel.Part"><ixsl:value-of select="./@part"/></pfx:argument>
+                  <pfx:argument name="incsel.Theme"><ixsl:value-of select="./@product"/></pfx:argument>
                   <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                   <ixsl:value-of select="@part"/>
-                </pfx:button>
+                </pfx:button> (<ixsl:value-of select="@product"/>)
               </td>
             </tr>
           </ixsl:for-each>
@@ -502,6 +506,7 @@
                   <pfx:command  name="SELWRP" page="{$target_page}"><xsl:value-of select="$upl"/></pfx:command>
                   <pfx:argument name="{$sel}.Path"><ixsl:value-of select="./@path"/></pfx:argument>
                   <pfx:argument name="{$sel}.Part"><ixsl:value-of select="./@part"/></pfx:argument>
+                  <pfx:argument name="{$sel}.Theme"><ixsl:value-of select="./@product"/></pfx:argument>
                   <ixsl:value-of select="@part"/>
                 </pfx:button>
               </td>
@@ -622,7 +627,7 @@
           <tr>
             <td>
               <a target="_top">
-                <ixsl:attribute name="href"><ixsl:value-of select="$__uri"/>?__page=includes&amp;extinc.Part=<ixsl:value-of select="/formresult/currentincludeinfo/@part"/>&amp;extinc.Path=<ixsl:value-of select="/formresult/currentincludeinfo/@path"/>&amp;extprod.Name=<ixsl:value-of select="./@name"/></ixsl:attribute>
+                <ixsl:attribute name="href"><ixsl:value-of select="$__uri"/>?__page=includes&amp;extinc.Theme=<ixsl:value-of select="/formresult/currentincludeinfo/@product"/>&amp;extinc.Part=<ixsl:value-of select="/formresult/currentincludeinfo/@part"/>&amp;extinc.Path=<ixsl:value-of select="/formresult/currentincludeinfo/@path"/>&amp;extprod.Name=<ixsl:value-of select="./@name"/></ixsl:attribute>
                 <ixsl:value-of select="./@comment"/>
               </a>
             </td>
@@ -666,24 +671,29 @@
                           <ixsl:when test="/formresult/cr_editorsession/product/@name = $theproduct">
                             <pfx:button page="pages" target="_top" frame="_top">
                               <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
-                              <span>
-                                <ixsl:if test="@uptodate = 'false'">
-                                  <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
-                                </ixsl:if>
-                                <ixsl:value-of select="@name"/></span>
-                            </pfx:button>&#160;
-                          </ixsl:when>
-                          <ixsl:otherwise>
-                            <pfx:button page="pages" target="_top" frame="_top">
-                              <pfx:argument name="extprod.Name"><ixsl:value-of select="$theproduct"/></pfx:argument>
-                              <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
+                              <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
                               <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                               <span>
                                 <ixsl:if test="@uptodate = 'false'">
                                   <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
                                 </ixsl:if>
                                 <ixsl:value-of select="@name"/>
+                                <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                              </span>
+                            </pfx:button>&#160;
+                          </ixsl:when>
+                          <ixsl:otherwise>
+                            <pfx:button page="pages" target="_top" frame="_top">
+                              <pfx:argument name="extprod.Name"><ixsl:value-of select="$theproduct"/></pfx:argument>
+                              <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
+                              <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
+                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                              <span>
+                                <ixsl:if test="@uptodate = 'false'">
+                                  <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
+                                </ixsl:if>
+                                <ixsl:value-of select="@name"/>
+                                <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
                               </span>
                             </pfx:button>&#160;
                           </ixsl:otherwise>
@@ -837,9 +847,10 @@
                 <pfx:command  name="SELWRP" page="includes">uplinc</pfx:command>
                 <pfx:argument name="incsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
                 <pfx:argument name="incsel.Part"><ixsl:value-of select="@part"/></pfx:argument>
+                <pfx:argument name="incsel.Theme"><ixsl:value-of select="@product"/></pfx:argument>
                 <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                 <ixsl:value-of select="@part"/>
-              </pfx:button>
+              </pfx:button> (<ixsl:value-of select="@product"/>)
             </td>
             <td>
               <ixsl:value-of select="@path"/>
@@ -1296,7 +1307,7 @@
           <ixsl:value-of select="/formresult/current{$type}info/@part"/>
           <span style="color: #9999cc">@</span>
           <ixsl:value-of select="/formresult/current{$type}info/@path"/>
-          (Product: <ixsl:value-of select="/formresult/current{$type}info/@product"/>)
+          (Theme: <ixsl:value-of select="/formresult/current{$type}info/@product"/>)
         </td>
       </tr>
     </table>
@@ -1326,7 +1337,7 @@
     <table class="editor_box" width="100%"> 
       <tr>
         <td>
-          This is the specific branch for product <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
+          This is the specific branch for theme <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
           of the include part. You can delete this branch to use the default branch again.
         </td>
         <td nowrap="nowrap">
@@ -1349,7 +1360,7 @@
       <tr>
         <td colspan="2">
           <b>This is the default branch of the include.</b><br/>
-          Do you want to create and edit a product specific branch of this part?
+          Do you want to create and edit a theme specific branch of this part?
         </td>
       </tr>
       <tr>

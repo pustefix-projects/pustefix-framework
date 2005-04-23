@@ -63,78 +63,90 @@ public class IncludesHandler extends EditorStdHandler {
         TreeSet                allinc   = tgen.getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
         Path                   path     = PathFactory.getInstance().createPath(includes.getPath());
         String                 part     = includes.getPart();
+        String                 theme    = includes.getTheme();
         String                 realprod = prod.getName();
         
-        AuxDependency incdef  = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
-                                                                                    path, part, "default");
-        AuxDependency incprod = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
-                                                                                    path, part, realprod);
+        AuxDependency usedinc  = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+                                                                                    path, part, theme);
+//         AuxDependency incdef  = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+//                                                                                     path, part, "default");
+//         AuxDependency incprod = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+//                                                                                     path, part, realprod);
 
-        if (allinc.contains(incdef) && !allinc.contains(incprod)) {
-            esess.setCurrentInclude(incdef);
+        if (allinc.contains(usedinc)) {
+            esess.setCurrentInclude(usedinc);
+            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+            if (allowed)
+                esess.getLock(usedinc);
+            else {
+                CAT.debug("User is not allowed to edit this include. No lock required."); 
+            }
+//         if (allinc.contains(incdef) && !allinc.contains(incprod)) {
+//             esess.setCurrentInclude(incdef);
             
      
-            //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
-            //                                esess.getCurrentInclude().getPath(), 
-            //                                esess.getCurrentInclude().getPart());
-            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
+//             //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+//             //                                esess.getCurrentInclude().getPath(), 
+//             //                                esess.getCurrentInclude().getPart());
+//             HashSet affected_products = esess.getAffectedProductsForCurrentInclude();
                                             
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
-            if(allowed)
-                esess.getLock(incdef);
-            else {
-                if(CAT.isDebugEnabled()) 
-                    CAT.debug("User is not allowed to edit this include. No lock required."); 
-            }
-        } else if (!allinc.contains(incdef) && allinc.contains(incprod)) {
-            esess.setCurrentInclude(incprod);
-            //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
-            //                                            esess.getCurrentInclude().getPath(), 
-            //                                            esess.getCurrentInclude().getPart());
-            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                            
-            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+//             boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+//             if(allowed)
+//                 esess.getLock(incdef);
+//             else {
+//                 if(CAT.isDebugEnabled()) 
+//                     CAT.debug("User is not allowed to edit this include. No lock required."); 
+//             }
+//         } else if (!allinc.contains(incdef) && allinc.contains(incprod)) {
+//             esess.setCurrentInclude(incprod);
+//             //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+//             //                                            esess.getCurrentInclude().getPath(), 
+//             //                                            esess.getCurrentInclude().getPart());
+//             HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                            
+//             boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
             
-            if(allowed)
-                esess.getLock(incprod);
-            else {
-                if(CAT.isDebugEnabled())
-                    CAT.debug("User is not allowed to edit this include. No lock required.");
-            }
-        } else if (allinc.contains(incdef) && allinc.contains(incprod)) {
-            // This can be the case when a prod.spec. branch has just been created/deleted but not
-            // all targets have been updated yet. We need to look into the part to make sure.
-            Object LOCK = FileLockFactory.getInstance().getLockObj(incprod.getPath());
-            synchronized (LOCK) {
-                Node partnode = EditorHelper.getIncludePart(tgen, incprod);
-                esess.setCurrentInclude(incprod);
-               // HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
-               //                                             esess.getCurrentInclude().getPath(), 
-               //                                             esess.getCurrentInclude().getPart());
-                HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                           
-                boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
-                if (partnode == null) {
-                    if(allowed)
-                        esess.getLock(incdef);
-                    else {
-                        if(CAT.isDebugEnabled())
-                            CAT.debug("User is not allowed to edit this include. No lock required.");
-                    } 
-                    esess.setCurrentInclude(incdef);
-                } else {
-                    if(allowed)
-                        esess.getLock(incprod);
-                    else {
-                        if(CAT.isDebugEnabled()) 
-                            CAT.debug("User is not allowed to edit this include. No lock required.");
-                    }
-                }
-            }
+//             if(allowed)
+//                 esess.getLock(incprod);
+//             else {
+//                 if(CAT.isDebugEnabled())
+//                     CAT.debug("User is not allowed to edit this include. No lock required.");
+//             }
+//         } else if (allinc.contains(incdef) && allinc.contains(incprod)) {
+//             // This can be the case when a prod.spec. branch has just been created/deleted but not
+//             // all targets have been updated yet. We need to look into the part to make sure.
+//             Object LOCK = FileLockFactory.getInstance().getLockObj(incprod.getPath());
+//             synchronized (LOCK) {
+//                 Node partnode = EditorHelper.getIncludePart(tgen, incprod);
+//                 esess.setCurrentInclude(incprod);
+//                // HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
+//                //                                             esess.getCurrentInclude().getPath(), 
+//                //                                             esess.getCurrentInclude().getPart());
+//                 HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                           
+//                 boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+//                 if (partnode == null) {
+//                     if(allowed)
+//                         esess.getLock(incdef);
+//                     else {
+//                         if(CAT.isDebugEnabled())
+//                             CAT.debug("User is not allowed to edit this include. No lock required.");
+//                     } 
+//                     esess.setCurrentInclude(incdef);
+//                 } else {
+//                     if(allowed)
+//                         esess.getLock(incprod);
+//                     else {
+//                         if(CAT.isDebugEnabled()) 
+//                             CAT.debug("User is not allowed to edit this include. No lock required.");
+//                     }
+//                 }
+//             }
         } else {
             StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.includes");
             StatusCode        scode = sfac.getStatusCode("INCLUDE_UNDEF");
             includes.addSCodePath(scode);
         }
-        if(PERF_LOGGER.isInfoEnabled()) {
+        if (PERF_LOGGER.isInfoEnabled()) {
             long length = System.currentTimeMillis() - start_time;
             PERF_LOGGER.info(this.getClass().getName()+"#handleSubmittedData ended: "+length);
         }
@@ -142,7 +154,7 @@ public class IncludesHandler extends EditorStdHandler {
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
         long start_time = 0;
-        if(PERF_LOGGER.isInfoEnabled()) {
+        if (PERF_LOGGER.isInfoEnabled()) {
             start_time = System.currentTimeMillis();
             PERF_LOGGER.info(this.getClass().getName()+"#retrieveCurrentStatus starting");
         }
@@ -151,20 +163,15 @@ public class IncludesHandler extends EditorStdHandler {
         AuxDependency          currinc  = esess.getCurrentInclude();
 
         if (currinc != null) {
-            
-           //HashSet affected_products = EditorHelper.getAffectedProductsForInclude(esess, 
-           //                                             esess.getCurrentInclude().getPath(), 
-           //                                             esess.getCurrentInclude().getPart());
-           HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                 
-           boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
-           if(allowed)
+            HashSet affected_products = esess.getAffectedProductsForCurrentInclude();                                 
+            boolean allowed = esess.getUser().getUserInfo().isIncludeEditAllowed(esess, affected_products);
+            if (allowed)
                 esess.getLock(currinc);
             else {
-                if(CAT.isDebugEnabled())
-                    CAT.debug("User is not allowed to edit this include. No lock required.");
+                CAT.debug("User is not allowed to edit this include. No lock required.");
             }
         }
-        if(PERF_LOGGER.isInfoEnabled()) {
+        if (PERF_LOGGER.isInfoEnabled()) {
             long length = System.currentTimeMillis() - start_time;
             PERF_LOGGER.info(this.getClass().getName()+"#retrieveCurrentStatus ended: "+length);
         }

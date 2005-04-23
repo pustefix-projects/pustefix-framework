@@ -51,16 +51,6 @@ public abstract class StateImpl implements State {
         RequestParam sdreq = preq.getRequestParam(SENDAUTHDATA);
         return (isSubmitTriggerAny(context, sdreq));
     }
-
-    // private
-//     protected static boolean requestParamSaysTrue(RequestParam sdreq) {
-//         if (sdreq != null && sdreq.getValue() != null) {
-//             String sd = sdreq.getValue();
-//             return (sd.equals("true") || sd.equals("1") || sd.equals("yes"));
-//         }
-//         return false;
-//     }
-    
     
     private boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
         return (!context.flowIsRunning() && !context.finalPageIsRunning() &&

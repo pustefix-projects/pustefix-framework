@@ -38,10 +38,11 @@ import javax.xml.transform.TransformerException;
 
 public class XMLLeafTarget extends LeafTarget {
 
-    public XMLLeafTarget(TargetType type, TargetGenerator gen, String key) throws Exception {
+    public XMLLeafTarget(TargetType type, TargetGenerator gen, String key, Themes themes) throws Exception {
         this.type      = type;
         this.generator = gen;
         this.targetkey = key;
+        this.themes    = themes;
         Path targetpath = PathFactory.getInstance().createPath(key);
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
     }
