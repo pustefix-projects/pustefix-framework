@@ -128,11 +128,11 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             // not written yet. So we must NOT call EditorHelper.getAffectedProductsForInclude!!!
             // look if part exists
             Element ele = EditorHelper.getIncludePart(esess.getProduct().getTargetGenerator(), 
-                                                      AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
-                                                                                                          path, part, esess.getProduct().getName()));   
+                                                      AuxDependencyFactory.getInstance().
+                                                      getAuxDependency(DependencyType.TEXT, path, part, esess.getProduct().getName()));
             
             // if ele==null a new include has been referenced, but was not written yet                                           
-            if(ele != null ) {
+            if (ele != null ) {
                 // render all affected products for current include
                 Element aff_prods = resdoc.createNode("affectedproducts");
                 
@@ -150,7 +150,6 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
                 long length = System.currentTimeMillis() - start_time;
                 PERF_LOGGER.info(this.getClass().getName()+"#renderDefault#3: "+length);
             }
-            
             
             if (!lock) {
                 try {
@@ -183,13 +182,12 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             elem = resdoc.createSubNode(root, "imageinfo");
             EditorHelper.renderImagesFlatRecursive(currinclude, resdoc, elem);
         }
-        if(PERF_LOGGER.isInfoEnabled()) {
+        if (PERF_LOGGER.isInfoEnabled()) {
             long length = System.currentTimeMillis() - start_time;
             PERF_LOGGER.info(this.getClass().getName()+"#renderDefault ended: "+length); 
         }
     }
 
-  
     public void onSuccess(IWrapperContainer container) throws Exception{
         renderDefault(container);
     }
