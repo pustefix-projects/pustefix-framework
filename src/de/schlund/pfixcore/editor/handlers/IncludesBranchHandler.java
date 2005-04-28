@@ -18,7 +18,6 @@
  */
 
 package de.schlund.pfixcore.editor.handlers;
-import java.util.List;
 import de.schlund.pfixcore.editor.*;
 import de.schlund.pfixcore.editor.interfaces.*;
 import de.schlund.pfixcore.editor.resources.*;
@@ -29,8 +28,12 @@ import de.schlund.pfixxml.targets.*;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
-import org.w3c.dom.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 import org.apache.log4j.*;
+import org.w3c.dom.*;
 
 /**
  * IncludesBranchHandler.java
@@ -46,7 +49,8 @@ import org.apache.log4j.*;
 public class IncludesBranchHandler extends EditorStdHandler {
     private        Category               CAT   = Category.getInstance(this.getClass().getName());
     private static final String EMPTY  = "empty";
-    private static final String COPY   = "copy";
+    private static final String COPY   = "copy"; 
+    private static final String CREATE = "create";
     private static final String DELETE = "delete";
     
     public AuxDependency getCurrentInclude(EditorSessionStatus esess) {
@@ -62,71 +66,98 @@ public class IncludesBranchHandler extends EditorStdHandler {
         EditorSessionStatus    esess    = EditorRes.getEditorSessionStatus(crm);
         IncludesBranch         branch   = (IncludesBranch) wrapper;
         String                 type     = branch.getType();
+        // String                 crtype   = branch.getCreateType();
         boolean                dobranch = branch.getDoBranch().booleanValue();
         EditorProduct          prod     = esess.getProduct();
-        String                 prodname = prod.getName();
         TargetGenerator        tgen     = prod.getTargetGenerator();
         AuxDependency          currinc  = getCurrentInclude(esess);
         Path                   path     = currinc.getPath();
         String                 part     = currinc.getPart();
-
+        String                 theme    = branch.getTheme();
+        
         if (currinc != null && dobranch) {
-            if (type.equals(EMPTY) || type.equals(COPY)) {
-                if (currinc.getProduct().equals("default")) {
+            if (type.equals(CREATE)) {
+                if (!currinc.getProduct().equals(theme)) {
                     Object LOCK = FileLockFactory.getInstance().getLockObj(path);
                     synchronized (LOCK) {
-                        EditorHelper.checkForFile(path, prod.getPfixcoreNamespace());
+//                         EditorHelper.checkForFile(path, prod.getPfixcoreNamespace());
 
-                        Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc);
-                        Node     partnode = EditorHelper.getIncludePart(incdoc, currinc);
-                        if (partnode == null) {
-                            partnode = EditorHelper.createEmptyPart(incdoc, currinc);
-                        }
+//                         Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc);
+//                         Node     partnode = EditorHelper.getIncludePart(incdoc, currinc);
+//                         if (partnode == null) {
+//                             partnode = EditorHelper.createEmptyPart(incdoc, currinc);
+//                         }
 
-                        List nl = XPath.select(partnode, "./product[@name = '" + prodname + "']"); 
+//                         List nl = XPath.select(partnode, "./product[@name = '" + theme + "']"); 
                         
-                        if (nl.size() > 1) {
-                            throw new XMLException("FATAL ERROR: Product branch " + prodname + " is multiple times defined!");
-                        } else if (nl.size() == 0) {
-                            Element newbranch = incdoc.createElement("product");
-                            newbranch.setAttribute("name", prodname);
-                            partnode.appendChild(incdoc.createTextNode("  "));
-                            partnode.appendChild(newbranch);
-                            partnode.appendChild(incdoc.createTextNode("\n  "));
-                            if (type.equals(COPY)) {
-                                List defcontent = XPath.select(partnode, "./product[@name = 'default']/node()");
-                                for (int i = 0; i < defcontent.size(); i++) {
-                                    newbranch.appendChild(((Node) defcontent.get(i)).cloneNode(true));
+//                         if (nl.size() > 1) {
+//                             throw new XMLException("FATAL ERROR: Product branch " + theme + " is multiple times defined!");
+//                         } else if (nl.size() == 0) {
+//                             Element newbranch = incdoc.createElement("product");
+//                             newbranch.setAttribute("name", theme);
+//                             partnode.appendChild(incdoc.createTextNode("  "));
+//                             partnode.appendChild(newbranch);
+//                             partnode.appendChild(incdoc.createTextNode("\n  "));
+//                             if (crtype.equals(COPY)) {
+//                                 List defcontent = XPath.select(partnode, "./product[@name = '" + currinc.getProduct() + "']/node()");
+//                                 for (int i = 0; i < defcontent.size(); i++) {
+//                                     newbranch.appendChild(((Node) defcontent.get(i)).cloneNode(true));
+//                                 }
+//                             } else {
+//                                 newbranch.appendChild(incdoc.createTextNode("\n      "));
+//                                 Element langnode = incdoc.createElement("lang");
+//                                 langnode.setAttribute("name", "default");
+//                                 langnode.appendChild(incdoc.createTextNode("    "));
+//                                 newbranch.appendChild(langnode);
+//                                 newbranch.appendChild(incdoc.createTextNode("    \n"));
+//                             }
+
+//                             doSerialize(incdoc, path);
+//                         }
+//                         EditorHelper.doUpdateForAuxDependency(currinc, tgen);
+                        AuxDependency newinc = 
+                            AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, theme);
+                        // add the affected targets of currinc to a list in currentincludeinfo of targets to be up'ed
+                        // when the part is really saved next time
+                        TreeSet afft = currinc.getAffectedTargets();
+                        if (afft != null && !afft.isEmpty()) {
+                            HashSet       tset   = new HashSet();
+                            for (Iterator iter = afft.iterator(); iter.hasNext();) {
+                                VirtualTarget target = (VirtualTarget) iter.next();
+                                Themes        themes = target.getThemes();
+                                if (themes != null && themes.containsTheme(theme)) {
+                                    // this can still identify a target for update that will not use the new include part...
+                                    // to make sure one would need to check if the product branch of newinc ('theme')
+                                    // is more specialized with respect to the themes list of the target than the
+                                    // product branch of currinc, but this is esoteric, so why bother...
+                                    tset.add(target);
                                 }
                             }
-                            doSerialize(incdoc, path);
+                            esess.setTargetsForDelayedUpdate(tset);
                         }
-                        EditorHelper.doUpdateForAuxDependency(currinc, tgen);
-                        AuxDependency newinc =
-                            AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, prodname);
                         setCurrentInclude(esess, newinc);
                         esess.getLock(newinc);
                     }
                 }
             } else if (type.equals(DELETE)) {
-                if (currinc.getProduct().equals(prodname)) {
+                if (currinc.getProduct().equals(theme)) {
                     Object LOCK = FileLockFactory.getInstance().getLockObj(path);
                     synchronized (LOCK) {
                         Document incdoc   = EditorHelper.getIncludeDocument(tgen, currinc);
                         if (incdoc != null) {
                             Node partnode = EditorHelper.getIncludePart(incdoc, currinc);
                             if (partnode != null) {
-                                List nl = XPath.select(partnode, "./product[@name = '" + prodname + "']");
+                                List nl = XPath.select(partnode, "./product[@name = '" + theme + "']");
                                 if (nl.size() == 1) {
                                     EditorHelper.createBackup(esess, getCurrentInclude(esess), (Node) nl.get(0));
                                     partnode.removeChild((Node) nl.get(0));
                                     doSerialize(incdoc, path);
                                 }
                                 EditorHelper.doUpdateForAuxDependency(currinc, tgen);
-                                AuxDependency newinc =
-                                    AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, "default");
-                                setCurrentInclude(esess, newinc);
-                                esess.getLock(newinc);
+                                // AuxDependency newinc =
+                                //    AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, "default");
+                                setCurrentInclude(esess, null);
+                                // esess.getLock(newinc);
                             }
                         }
                     }

@@ -60,7 +60,7 @@ public class ImageThemedSrc {
                 src = src.substring(1);
             }
             CAT.debug("  -> Register image src '" + src + "'");
-            DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey);
+            DependencyTracker.logImage(context, src, parent_part_in, parent_product_in, targetGen, targetKey, "image");
             return src;
         } else if (isThemedSrc(src, themed_path, themed_img)) {
             if (themed_path.startsWith("/")) {
@@ -72,14 +72,19 @@ public class ImageThemedSrc {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
                 CAT.info("  -> Trying to find image src '" + testsrc + "'");
-                DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey);
                 if (existsImage(testsrc)) {
                     CAT.info("    -> Found src '" + testsrc + "'");
+                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     return testsrc;
                 }
                 if (i < (themes.length - 1)) {
+                    // FIXME: this should be done sometime so we can discriminate between "real" missing and "missing, but we found a better version".
+                    // but make sure editor copes with it.
+                    //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
+                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     CAT.info("    -> Image src '" + testsrc + "' not found, trying next theme");
                 } else {
+                    DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     CAT.warn("    -> No themed image found!");
                 }
             }

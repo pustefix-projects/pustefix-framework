@@ -56,7 +56,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     private String             currentdokuid      = null;
     private CurrentIncludeInfo currentIncludeInfo = new CurrentIncludeInfo();
     private boolean            addincshown        = false;
-
+    private HashSet            targetstoupdate    = null;
 
     public void showAdditionalIncfiles(boolean doshow) {
         addincshown = doshow;
@@ -65,7 +65,16 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public boolean getShowAdditionalIncfiles() {
         return addincshown;
     }
-    
+
+
+    public void setTargetsForDelayedUpdate(HashSet tset) {
+        targetstoupdate = tset;
+    }
+
+    public HashSet getTargetsForDelayedUpdate() {
+        return targetstoupdate;
+    }
+        
     public void insertStatus(ResultDocument resdoc, Element root) throws Exception {
         root.setAttribute("loginallowed", "" + getLoginAllowed());
         if (user != null) {
@@ -156,9 +165,15 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
     public void          setCurrentPage(PageInfo page) {currentpage = page;}
     public void          setCurrentTarget(Target target) {currenttarget = target;}
     public void          setCurrentImage(AuxDependency image) {currentimage = image;}
+
     public void          setCurrentInclude(AuxDependency include) {
-        currentIncludeInfo.setCurrentInclude(include);
+        if (include != null) {
+            currentIncludeInfo.setCurrentInclude(include);
+        } else {
+            currentIncludeInfo.resetAll();
+        }
     }
+
     public void          setCurrentCommon(AuxDependency common) {currentcommon = common;}
     public void          setCurrentDocumentationId(String id) { currentdokuid = id; }
     public void          setLoginAllowed(boolean status) {login_allowed = status;}
@@ -167,7 +182,7 @@ public class EditorSessionStatusImpl implements ContextResource, EditorSessionSt
      * @see de.schlund.pfixcore.editor.resources.EditorSessionStatus#getAffectedProductsforCurrentInclude()
      */
     public HashSet getAffectedProductsForCurrentInclude() throws Exception {
-        return currentIncludeInfo.getAfftectedProducts(this);
+        return currentIncludeInfo.getAffectedProducts(this);
     }
 
     /**

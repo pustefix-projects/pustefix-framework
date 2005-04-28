@@ -1,3 +1,33 @@
+2005-04-28  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: use the Themes object as key everywhere, 
+	not just the theme id. 
+	
+	* src/de/schlund/pfixxml/targets/Themes (containsTheme, equals, hashCode): new methods 
+
+	* src/de/schlund/pfixxml/targets/DependencyType.java: 
+	* src/de/schlund/pfixxml/ImageThemedSrc.java: 
+	* src/de/schlund/pfixxml/DependencyTracker.java: New DependencyType "shadow", not used yet.
+	This should someday be used to discriminate between a not-found "normal" image, and a 
+	not-found themed image where a more general version was found. Not that important now.
+
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatusImpl.java: 
+	* src/de/schlund/pfixcore/editor/resources/EditorSessionStatus.java: 
+	* src/de/schlund/pfixcore/editor/resources/CurrentIncludeInfo.java: 
+	* src/de/schlund/pfixcore/editor/interfaces/Pages.iwrp: 
+	* src/de/schlund/pfixcore/editor/interfaces/IncludesBranch.iwrp: 
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesBranchHandler.java: 
+	* src/de/schlund/pfixcore/editor/handlers/CommonsFinalizer.java: 
+	* src/de/schlund/pfixcore/editor/EditorHelper.java: 
+	* example/core/editor/xsl/metatags.xsl: Many more changes with regard to handling themeing for includes and commons.
+	I assume that the logic for permission handling needs some banging, too - but we'll
+	see this in real live.
+	
+	* example/core/editor/conf/depend.xml.in: include runtime stylesheet for targets, too 
+
 2005-04-24  Jens Lautenbacher  <jtl@schlund.de>
 	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
 	* src/de/schlund/pfixxml/targets/AuxDependency.java: 

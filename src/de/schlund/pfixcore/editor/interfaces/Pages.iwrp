@@ -3,4 +3,4 @@
   <ihandler class="de.schlund.pfixcore.editor.handlers.PagesHandler"/>
   <param name="Page" type="String"/>
   <param name="Variant" type="String" occurance="optional"/>
-</interface> 
+</interface>

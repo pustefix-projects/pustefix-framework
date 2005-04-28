@@ -70,4 +70,6 @@ public interface EditorSessionStatus extends ContextResource {
     void           resetAffectedProductsForCurrentInclude();
     void           showAdditionalIncfiles(boolean doshow);
     boolean        getShowAdditionalIncfiles();
+    void           setTargetsForDelayedUpdate(HashSet set);
+    HashSet        getTargetsForDelayedUpdate();
 }// EditorSessionStatus

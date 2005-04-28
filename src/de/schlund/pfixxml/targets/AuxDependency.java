@@ -58,11 +58,11 @@ public class AuxDependency implements Comparable {
     public boolean addChild(AuxDependency aux, VirtualTarget target) {
         synchronized (themes_children) {
             aux.addTargetDependency(target);
-            String id = target.getThemes().getId();
-            if (themes_children.get(id) == null) {
-                themes_children.put(id, new TreeSet());
+            Themes themes = target.getThemes();
+            if (themes_children.get(themes) == null) {
+                themes_children.put(themes, new TreeSet());
             }
-            TreeSet children = (TreeSet) themes_children.get(id);
+            TreeSet children = (TreeSet) themes_children.get(themes);
             //CAT.warn("\n#####> ADD [" + id + "] " + aux);
             return children.add(aux);
         }
@@ -70,11 +70,11 @@ public class AuxDependency implements Comparable {
 
     public void removeChildren(VirtualTarget target) {
         synchronized (themes_children) {
-            String id = target.getThemes().getId();
-            if (themes_children.get(id) == null) {
-                themes_children.put(id, new TreeSet());
+            Themes themes = target.getThemes();
+            if (themes_children.get(themes) == null) {
+                themes_children.put(themes, new TreeSet());
             }
-            TreeSet tmp_children = (TreeSet) themes_children.get(id);
+            TreeSet tmp_children = (TreeSet) themes_children.get(themes);
             for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
                 if (aux.getType().isDynamic()) {
@@ -107,16 +107,20 @@ public class AuxDependency implements Comparable {
     }
 
     public TreeSet getChildren(VirtualTarget target) {
-        synchronized (themes_children) {
-            String id = target.getThemes().getId();
-            if (themes_children.get(id) == null) {
-                themes_children.put(id, new TreeSet());
-            }
-            return (TreeSet) ((TreeSet) themes_children.get(id)).clone();
-        }
+        Themes themes = target.getThemes();
+        return getChildrenForThemes(themes);
     }
 
-    public TreeSet getChildrenForAllThemeStrings() {
+    public TreeSet getChildrenForThemes(Themes themes) {
+        synchronized (themes_children) {
+            if (themes_children.get(themes) == null) {
+                themes_children.put(themes, new TreeSet());
+            }
+            return (TreeSet) ((TreeSet) themes_children.get(themes)).clone();
+        }
+    }
+    
+    public TreeSet getChildrenForAllThemes() {
         synchronized (themes_children) {
             TreeSet retval = new TreeSet();
             for (Iterator i = themes_children.values().iterator(); i.hasNext();) {
@@ -127,6 +131,11 @@ public class AuxDependency implements Comparable {
         }
     }
 
+    public HashSet getThemesList() {
+        synchronized (themes_children) {
+            return new HashSet(themes_children.keySet());
+        }
+    }
 
     public DependencyType getType() {
         return type;
@@ -178,10 +187,10 @@ public class AuxDependency implements Comparable {
         if (!themes_children.isEmpty()) {
             retval.append("        -------------- Children: --------------\n");
             for (Iterator i = themes_children.keySet().iterator(); i.hasNext();) {
-                String  theme_id = (String) i.next();
-                TreeSet set      = (TreeSet) themes_children.get(theme_id);
+                Themes  themes = (Themes) i.next();
+                TreeSet set    = (TreeSet) themes_children.get(themes);
                 if (set != null && !set.isEmpty()) {
-                    retval.append("           ==> ThemeID: " + theme_id + "\n");
+                    retval.append("           ==> ThemeID: " + themes.getId() + "\n");
                     for (Iterator j = set.iterator(); j.hasNext(); ) {
                         AuxDependency child = (AuxDependency) j.next();
                         retval.append("        " + "[AUXDEP: " + child.getType() + " " +

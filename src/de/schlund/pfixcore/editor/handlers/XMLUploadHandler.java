@@ -18,12 +18,35 @@
  */
 package de.schlund.pfixcore.editor.handlers;
 
+
+
+import de.schlund.pfixcore.editor.EditorHelper;
+import de.schlund.pfixcore.editor.EditorPageUpdater;
+import de.schlund.pfixcore.editor.EditorUser;
+import de.schlund.pfixcore.editor.FileLockFactory;
+import de.schlund.pfixcore.editor.PfixcoreNamespace;
+import de.schlund.pfixcore.editor.interfaces.IncludesUpload;
+import de.schlund.pfixcore.editor.resources.EditorRes;
+import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
+import de.schlund.pfixcore.generator.IWrapper;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.ContextResourceManager;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixxml.util.Xml;
+import de.schlund.util.statuscodes.StatusCode;
+import de.schlund.util.statuscodes.StatusCodeFactory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
 import org.apache.log4j.Category;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;
@@ -38,25 +61,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
-
-import de.schlund.pfixcore.editor.EditorHelper;
-import de.schlund.pfixcore.editor.EditorUser;
-import de.schlund.pfixcore.editor.FileLockFactory;
-import de.schlund.pfixcore.editor.PfixcoreNamespace;
-import de.schlund.pfixcore.editor.interfaces.IncludesUpload;
-import de.schlund.pfixcore.editor.resources.EditorRes;
-import de.schlund.pfixcore.editor.resources.EditorSessionStatus;
-import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixcore.workflow.ContextResourceManager;
-import de.schlund.pfixxml.XMLException;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.util.XPath;
-import de.schlund.pfixxml.util.Xml;
-import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
  * @author jh
@@ -191,6 +195,19 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                     EditorHelper.resetIncludeDocumentTarget(tgen, currinc);
                 }
                 // make sure that the new include is used at least once before we leave here.
+                HashSet uptarg = esess.getTargetsForDelayedUpdate();
+                if (uptarg != null) {
+                    Iterator iter = uptarg.iterator();
+                    if (iter.hasNext()) {
+                        Target tmp = (Target) iter.next();
+                        tmp.getValue();
+                    }
+                    while (iter.hasNext()) {
+                        Target tmp = (Target) iter.next();
+                        EditorPageUpdater.getInstance().addTarget(tmp);
+                    }
+                    esess.setTargetsForDelayedUpdate(null);
+                }
                 EditorHelper.doUpdateForAuxDependency(currinc, tgen);
             }
 
@@ -209,7 +226,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
             String product = currinc.getProduct();
             Element thepart = EditorHelper.getIncludePart(tgen, currinc);
             if (thepart != null) {
-                Element ele = (Element) XPath.selectOne(thepart, "./product[@name = '" + product + "']");
+                Element ele = (Element) XPath.selectNode(thepart, "./product[@name = '" + product + "']");
                 if (ele != null) {
                     PfixcoreNamespace[] nspaces = esess.getProduct().getPfixcoreNamespace();
                     if (nspaces != null) {

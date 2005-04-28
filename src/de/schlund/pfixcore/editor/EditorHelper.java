@@ -246,7 +246,7 @@ public class EditorHelper {
 
         for (Iterator i = targets.iterator(); i.hasNext();) {
             Target target = (Target) i.next();
-            CAT.warn("AT =>      " + target.getTargetKey());
+            // CAT.warn("AT =>      " + target.getTargetKey());
             pages.addAll(target.getPageInfos());
         }
         renderAffectedPages(pages, prods, resdoc, root);
@@ -454,7 +454,7 @@ public class EditorHelper {
         for (Iterator i = allinc.iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             // we put what we find into allimgs
-            getAuxdepsForInclude(allimgs, aux, false, DependencyType.IMAGE, (VirtualTarget) target);
+            getAuxdepsForInclude(allimgs, aux, false, DependencyType.IMAGE,  (VirtualTarget) target);
         }
         int j = 0;
         for (Iterator i = allimgs.iterator(); i.hasNext();) {
@@ -469,7 +469,7 @@ public class EditorHelper {
 
     // FIXME FIXME
     public static void renderIncludes(AuxDependency aux, ResultDocument resdoc, Element root) {
-        TreeSet allaux = aux.getChildrenForAllThemeStrings();
+        TreeSet allaux = aux.getChildrenForAllThemes();
         ArrayList count = new ArrayList();
         count.add(new Integer(0));
         if (allaux != null) {
@@ -583,7 +583,7 @@ public class EditorHelper {
         if (target != null) {
             children = aux.getChildren(target);
         } else {
-            children = aux.getChildrenForAllThemeStrings();
+            children = aux.getChildrenForAllThemes();
         }
 
         if (children != null) {
@@ -693,48 +693,27 @@ public class EditorHelper {
 
     public static HashSet getAffectedProductsForInclude(AuxDependency current_include)
         throws Exception, XMLException, TransformerException {
-      
-      
-        String include_prod = current_include.getProduct();      
-            
-        long start_time = 0;
-        if(PERF_LOGGER.isInfoEnabled()) {
-            start_time = System.currentTimeMillis();     
-        }
-        
-        
-        HashSet affedprod = new HashSet();
 
+        TreeSet targets = current_include.getAffectedTargets();
+        HashSet prjs    = new HashSet();
+        HashSet retval  = new HashSet();
 
-    
-        EditorProduct[] eprods = null;
-        if (include_prod.equals("default")) {
-            eprods = EditorProductFactory.getInstance().getAllEditorProducts();
-        } else {
-            EditorProduct tmpprod = EditorProductFactory.getInstance().getEditorProduct(include_prod);
-            if (tmpprod != null) {
-                eprods = new EditorProduct[] { tmpprod };
-            }
+        for (Iterator i = targets.iterator(); i.hasNext();) {
+            Target target = (Target) i.next();
+            prjs.add(target.getTargetGenerator());
         }
 
+        EditorProduct[] eprods = EditorProductFactory.getInstance().getAllEditorProducts();
         if (eprods != null) {
-            PERF_LOGGER.info("1:"+(System.currentTimeMillis() - start_time));
             for (int j = 0; j < eprods.length; j++) {
                 EditorProduct epr = eprods[j];
-                TreeSet allinc = epr.getTargetGenerator().getDependencyRefCounter().getDependenciesOfType(DependencyType.TEXT);
-                PERF_LOGGER.info("getDependenciesOfType/" + epr.getName() + "=>" + (System.currentTimeMillis() - start_time));
-                if (allinc.contains(current_include)) {
-                    affedprod.add(epr);
+                 if (prjs.contains(TargetGeneratorFactory.getInstance().createGenerator(epr.getDepend()))) {
+                     retval.add(epr);
                 }
-            }
+             }
         }
-        
-        if(PERF_LOGGER.isInfoEnabled()) {
-            long length = System.currentTimeMillis() - start_time;
-            PERF_LOGGER.info(EditorHelper.class.getName()+"#getAffectedProductsForInclude: "+length);
-        }
-
-        return affedprod;
+         
+        return retval;
     }
 
     /** Get all products which use the image specified by its path */

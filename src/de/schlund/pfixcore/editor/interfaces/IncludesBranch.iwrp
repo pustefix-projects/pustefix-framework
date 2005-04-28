@@ -3,9 +3,10 @@
   <ihandler class="de.schlund.pfixcore.editor.handlers.IncludesBranchHandler"/>
   <param name="Type" type="String">
     <precheck class="de.schlund.pfixcore.generator.prechecks.RegexpCheck">
-      <cparam name="regexp" value="/^(empty|copy|delete)$/"/>
+      <cparam name="regexp" value="/^(create|delete)$/"/>
     </precheck>
   </param>
+  <param name="Theme" type="String"/>
   <param name="DoBranch" type="Boolean">
     <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
   </param>
