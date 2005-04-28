@@ -94,7 +94,6 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
         if (currinclude != null) {
             boolean lock    = false;
             
-            
             long    mod     = currinclude.getModTime();
             Path    path    = currinclude.getPath();
             String  part    = currinclude.getPart();
@@ -116,7 +115,29 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
                     CAT.debug("User is not allowed to edit this include. No lock required.");
                 }
             }
-                       
+
+            TreeSet afftargets = currinclude.getAffectedTargets();
+            TreeSet allthemes  = new TreeSet();
+            for (Iterator i = afftargets.iterator(); i.hasNext();) {
+                Target target = (Target) i.next();
+                if (target.getTargetGenerator() == tgen) {
+                    String[] tgthemes = target.getThemes().getThemesArr();
+                    for (int j = 0; j < tgthemes.length; j++) {
+                        if (tgthemes[j].equals(product)) {
+                            break;
+                        }
+                        allthemes.add(tgthemes[j]);
+                    }
+                }
+            }
+            
+            Element themeselem = resdoc.createNode("themes");
+            root.appendChild(themeselem);
+            for (Iterator i = allthemes.iterator(); i.hasNext();) {
+                String  theme = (String) i.next();
+                resdoc.addTextChild(themeselem, "option", theme);
+            }
+
             
             if (PERF_LOGGER.isInfoEnabled()) {
                 long length = System.currentTimeMillis() - start_time;
@@ -129,7 +150,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             // look if part exists
             Element ele = EditorHelper.getIncludePart(esess.getProduct().getTargetGenerator(), 
                                                       AuxDependencyFactory.getInstance().
-                                                      getAuxDependency(DependencyType.TEXT, path, part, esess.getProduct().getName()));
+                                                      getAuxDependency(DependencyType.TEXT, path, part, currinclude.getProduct()));
             
             // if ele==null a new include has been referenced, but was not written yet                                           
             if (ele != null ) {
@@ -178,7 +199,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
 
             elem = resdoc.createSubNode(root, "includeinfo");
             EditorHelper.renderIncludes(currinclude, resdoc, elem);
-
+            
             elem = resdoc.createSubNode(root, "imageinfo");
             EditorHelper.renderImagesFlatRecursive(currinclude, resdoc, elem);
         }

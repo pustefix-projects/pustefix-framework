@@ -640,74 +640,76 @@
 
   <xsl:template match="displayaffectedpages">
     <xsl:variable name="path"><xsl:value-of select="@path"/>/affectedpages/product</xsl:variable>
-    <table><tr><td class="editor_main_emph">Affected pages:</td></tr></table>
     <ixsl:if test="{$path}/node()">
-      <table width="100%" class="editor_box">
-        <ixsl:if test="{$path}/page/@uptodate = 'false'">
-          <tr>
-            <td>
-              <table class="editor_note" width="100%">
-                <tr>
-                  <td>
-                    <u>Note</u>: pages printed in <span class="editor_page_old">this
-                      style</span> are no longer up-to-date. They will be rebuild automatically over time.
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </ixsl:if>
-        <ixsl:for-each select="{$path}">
-          <ixsl:variable name="theproduct"><ixsl:value-of select="@name"/></ixsl:variable>
-          <ixsl:if test="./node()">
+      <table><tr><td class="editor_main_emph">Affected pages:</td></tr></table>
+      <ixsl:if test="{$path}/node()">
+        <table width="100%" class="editor_box">
+          <ixsl:if test="{$path}/page/@uptodate = 'false'">
             <tr>
               <td>
-                <table><tr><td><b>Pages in product  "<i><ixsl:value-of select="@comment"/></i>":</b></td></tr></table>
-                <table width="100%" class="editor_box">
+                <table class="editor_note" width="100%">
                   <tr>
                     <td>
-                      <ixsl:for-each select="./page">
-                        <ixsl:choose>
-                          <ixsl:when test="/formresult/cr_editorsession/product/@name = $theproduct">
-                            <pfx:button page="pages" target="_top" frame="_top">
-                              <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-                              <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
-                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
-                              <span>
-                                <ixsl:if test="@uptodate = 'false'">
-                                  <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
-                                </ixsl:if>
-                                <ixsl:value-of select="@name"/>
-                                <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
-                              </span>
-                            </pfx:button>&#160;
-                          </ixsl:when>
-                          <ixsl:otherwise>
-                            <pfx:button page="pages" target="_top" frame="_top">
-                              <pfx:argument name="extprod.Name"><ixsl:value-of select="$theproduct"/></pfx:argument>
-                              <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
-                              <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
-                              <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
-                              <span>
-                                <ixsl:if test="@uptodate = 'false'">
-                                  <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
-                                </ixsl:if>
-                                <ixsl:value-of select="@name"/>
-                                <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
-                              </span>
-                            </pfx:button>&#160;
-                          </ixsl:otherwise>
-                        </ixsl:choose>
-                      </ixsl:for-each>
+                      <u>Note</u>: pages printed in <span class="editor_page_old">this
+                      style</span> are no longer up-to-date. They will be rebuild automatically over time.
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
           </ixsl:if>
-        </ixsl:for-each>
-      </table>
-      <br/>
+          <ixsl:for-each select="{$path}">
+            <ixsl:variable name="theproduct"><ixsl:value-of select="@name"/></ixsl:variable>
+            <ixsl:if test="./node()">
+              <tr>
+                <td>
+                  <table><tr><td><b>Pages in product  "<i><ixsl:value-of select="@comment"/></i>":</b></td></tr></table>
+                  <table width="100%" class="editor_box">
+                    <tr>
+                      <td>
+                        <ixsl:for-each select="./page">
+                          <ixsl:choose>
+                            <ixsl:when test="/formresult/cr_editorsession/product/@name = $theproduct">
+                              <pfx:button page="pages" target="_top" frame="_top">
+                                <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
+                                <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
+                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <span>
+                                  <ixsl:if test="@uptodate = 'false'">
+                                    <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
+                                  </ixsl:if>
+                                  <ixsl:value-of select="@name"/>
+                                  <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                                </span>
+                                </pfx:button>&#160;
+                            </ixsl:when>
+                            <ixsl:otherwise>
+                              <pfx:button page="pages" target="_top" frame="_top">
+                                <pfx:argument name="extprod.Name"><ixsl:value-of select="$theproduct"/></pfx:argument>
+                                <pfx:argument name="psel.Page"><ixsl:value-of select="@name"/></pfx:argument>
+                                <pfx:argument name="psel.Variant"><ixsl:value-of select="@variant"/></pfx:argument>
+                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <span>
+                                  <ixsl:if test="@uptodate = 'false'">
+                                    <ixsl:attribute name="class">editor_page_old</ixsl:attribute>
+                                  </ixsl:if>
+                                  <ixsl:value-of select="@name"/>
+                                  <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                                </span>
+                                </pfx:button>&#160;
+                            </ixsl:otherwise>
+                          </ixsl:choose>
+                        </ixsl:for-each>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </ixsl:if>
+          </ixsl:for-each>
+        </table>
+        <br/>
+      </ixsl:if>
     </ixsl:if>
   </xsl:template>
   
@@ -1000,19 +1002,10 @@
           <xsl:with-param name="type" select="$type"/>
         </xsl:call-template>
         <br/>
-        <ixsl:choose>
-          <ixsl:when test="/formresult/currentincludeinfo/@product='default'">
-            <xsl:call-template name="create_specific_branch">
-              <xsl:with-param name="upload" select="$upload"/>
-            </xsl:call-template>
-          </ixsl:when>
-          <ixsl:otherwise>
-            <xsl:call-template name="handle_specific_branch">
-              <xsl:with-param name="upload" select="$upload"/>
-              <xsl:with-param name="type" select="$type"/>
-            </xsl:call-template>
-          </ixsl:otherwise>
-        </ixsl:choose>
+        <xsl:call-template name="handlethemebranches">
+          <xsl:with-param name="upload" select="$upload"/>
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
       </ixsl:when>
       <ixsl:otherwise>
         <ixsl:choose>
@@ -1021,19 +1014,72 @@
              <ixsl:with-param name="prods" select="$forbidden_inc"/>
            </ixsl:call-template>
            <br/>
-           <xsl:call-template name="create_specific_branch">
+           <xsl:call-template name="handlethemebranches">
              <xsl:with-param name="upload" select="$upload"/>
+             <xsl:with-param name="type" select="$type"/>
            </xsl:call-template>
           </ixsl:when>
           <ixsl:otherwise>
             <ixsl:call-template name="incl_perm_denied_usedby_other_prods_no_branch">
-             <ixsl:with-param name="prods" select="$forbidden_inc"/>
+              <ixsl:with-param name="prods" select="$forbidden_inc"/>
             </ixsl:call-template>
           </ixsl:otherwise>
         </ixsl:choose>
       </ixsl:otherwise>
     </ixsl:choose>
   </xsl:template>
+
+
+  <xsl:template name="handlethemebranches">
+    <xsl:param name="type"/>
+    <xsl:param name="upload"/>
+    <table class="editor_box" width="100%"> 
+      <tr>
+        <td colspan="2">
+          This is the branch for theme <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
+          of the include part.
+        </td>
+      </tr>
+      <ixsl:if test="/formresult/current{$type}info/themes/node()">
+        <tr><td colspan="2"><hr/></td></tr>
+        <tr>
+          <td nowrap="nowrap">
+            Select other possible theme for current targets:
+            <pfx:xinp type="select" name="create.Theme">
+              <pfx:dynoptions optionpath="/formresult/current{$type}info/themes"/>
+            </pfx:xinp>
+          </td>
+          <td>
+            <pfx:xinp type="submit" class="editor_submit" value="Switch branch">
+              <pfx:command  name="SELWRP">create</pfx:command>
+              <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+              <pfx:argument name="create.DoBranch">true</pfx:argument>
+              <pfx:argument name="create.Type">create</pfx:argument>
+            </pfx:xinp>
+          </td>
+        </tr>
+      </ixsl:if>
+      <ixsl:if test="not(/formresult/current{$type}info/@product = 'default')">
+        <tr><td colspan="2"><hr/></td></tr>
+        <tr>
+          <td>
+            <b>CAUTION:</b> Current theme branch can be removed: 
+          </td>
+          <td>
+            <pfx:button normalclass="editor_submit" mode="force">
+              <pfx:command  name="SELWRP">create</pfx:command>
+              <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
+              <pfx:argument name="create.DoBranch">true</pfx:argument>
+              <pfx:argument name="create.Type">delete</pfx:argument>
+              <pfx:argument name="create.Theme"><ixsl:value-of select="/formresult/current{$type}info/@product"/></pfx:argument>
+              Delete
+            </pfx:button>
+          </td>
+        </tr>
+      </ixsl:if>
+    </table>
+  </xsl:template>
+
 
    <xsl:template name="partdetails_dyn"> 
       <xsl:param name="type"/>
@@ -1072,8 +1118,9 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                   <br/>
-                  <xsl:call-template name="create_specific_branch">
+                  <xsl:call-template name="handlethemebranches">
                     <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
                 <ixsl:otherwise><!-- edit_dyn_currprj != 'true' --> 
@@ -1089,8 +1136,10 @@
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
                   <xsl:call-template name="edit_default_branch_denied_but_specific"/>
-                  <xsl:call-template name="create_specific_branch">
+                  <br/>
+                  <xsl:call-template name="handlethemebranches">
                     <xsl:with-param name="upload" select="$upload"/>
+                    <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
                 <ixsl:otherwise><!-- edit_dyn_currprj != 'true' -->
@@ -1110,7 +1159,7 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                   <br/>
-                  <xsl:call-template name="handle_specific_branch">
+                  <xsl:call-template name="handlethemebranches">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
@@ -1128,7 +1177,7 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                   <br/>
-                  <xsl:call-template name="handle_specific_branch">
+                  <xsl:call-template name="handlethemebranches">
                     <xsl:with-param name="upload" select="$upload"/>
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
@@ -1146,19 +1195,19 @@
 
   <xsl:template name="edit_specific_branch_denied">
     <xsl:call-template name="permission_denied">
-      <xsl:with-param name="text" select="'You do not have the permission to edit the product specific branch.'"/>
+      <xsl:with-param name="text" select="'You do not have the permission to edit a theme specific branch.'"/>
     </xsl:call-template>
   </xsl:template>
   
   <xsl:template name="edit_default_branch_denied">
     <xsl:call-template name="permission_denied">
-      <xsl:with-param name="text" select="'You have neither the permission to edit the default branch nor to create a product specific branch.'"/>
+      <xsl:with-param name="text" select="'You have neither the permission to edit the default branch nor to create a theme specific branch.'"/>
     </xsl:call-template>
   </xsl:template>
 
   <xsl:template name="edit_default_branch_denied_but_specific">
     <xsl:call-template name="permission_denied">
-      <xsl:with-param name="text" select="'You do not have the permission to edit the default branch, but you can create a specific branch.'"/>
+      <xsl:with-param name="text" select="'You do not have the permission to edit the default branch, but you can create a theme specific branch.'"/>
     </xsl:call-template>
   </xsl:template>
 
@@ -1192,7 +1241,7 @@
           Warning!
         </td>
         <td class="core_errortext" colspan="2">
-          You are not allowed to create a product specific branch of this dynamic include.
+          You are not allowed to create a theme specific branch of this dynamic include.
         </td>
       </tr>
     </table>
@@ -1328,80 +1377,8 @@
       </ixsl:if>
     </table>
   </xsl:template>
-    
 
-
-  <xsl:template name="handle_specific_branch">
-    <xsl:param name="type"/>
-    <xsl:param name="upload"/>
-    <table class="editor_box" width="100%"> 
-      <tr>
-        <td>
-          This is the specific branch for theme <b><ixsl:value-of select="/formresult/current{$type}info/@product"/></b>
-          of the include part. You can delete this branch to use the default branch again.
-        </td>
-        <td nowrap="nowrap">
-          <pfx:button normalclass="editor_submit" page="{$type}s" mode="force">
-            <pfx:command  name="SELWRP">create</pfx:command>
-            <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-            <pfx:argument name="create.DoBranch">true</pfx:argument>
-            <pfx:argument name="create.Type">delete</pfx:argument>
-            Delete branch
-          </pfx:button>
-        </td>
-      </tr>
-    </table>
-    <br/>
-  </xsl:template>
   
-  <xsl:template name="create_specific_branch">
-    <xsl:param name="upload"/>
-    <table class="editor_box" width="100%">
-      <tr>
-        <td colspan="2">
-          <b>This is the default branch of the include.</b><br/>
-          Do you want to create and edit a theme specific branch of this part?
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <table class="editor_box" width="100%">
-            <tr valign="bottom">
-              <td>
-                <table>
-                  <tr>
-                    <td>
-                      <pfx:xinp type="radio" name="create.Type" value="empty"/>
-                    </td>
-                    <td>
-                      Create new, empty branch.
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <pfx:xinp type="radio" name="create.Type" value="copy"/>
-                    </td>
-                    <td>
-                      Create new branch and use the <i>default</i> branch as the initial content.
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td align="right" nowrap="nowrap">
-                <pfx:xinp class="editor_submit" type="submit" value="Create Branch">
-                  <pfx:command  name="SELWRP"><xsl:value-of select="$upload"/></pfx:command>
-                  <pfx:command  name="SELWRP">create</pfx:command>
-                  <pfx:argument name="create.DoBranch">true</pfx:argument>
-                </pfx:xinp>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </xsl:template>
-
-
   <xsl:template name="include_perm_denied">
     <xsl:param name="type"/>
     <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>

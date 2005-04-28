@@ -108,6 +108,8 @@
         [BAR] Are you really older than 18 years?
       </lang>
     </product>
+  
+    
   </part>
 
   <part name="yes">
@@ -256,4 +258,12 @@
 
 
   
+
+  <part name="XXX">
+    <product name="default">
+      <lang name="default">
+  Hallo
+      </lang>
+    </product>
+  </part>
 </include_parts>

@@ -20,6 +20,7 @@
 package de.schlund.pfixxml.targets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 /**
@@ -32,27 +33,28 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 public class Themes {
-    String[] themes;
-    String   id;
+    ArrayList themes;
+    String    id;
     
     /**
      * Creates a new <code>Themes</code> instance.
      *
      */
-    public Themes(String[] themes) {
-        if (themes == null) {
+    public Themes(String[] themesarr) {
+        if (themesarr == null) {
             throw new RuntimeException("Themes array must not be null");
         }
-        if (themes.length == 0) {
+        if (themesarr.length == 0) {
             throw new RuntimeException("Themes array must not be empty");
         }
-        this.themes = themes;
+        this.themes = new ArrayList();
+        themes.addAll(Arrays.asList(themesarr));
         StringBuffer themesstr = new StringBuffer("");
-        for (int i = 0; i < themes.length; i++) {
+        for (int i = 0; i < themesarr.length; i++) {
             if (themesstr.length() > 0) {
                 themesstr.append(" ");
             }
-            themesstr.append(themes[i]);
+            themesstr.append(themesarr[i]);
         }
         id = themesstr.toString();
     }
@@ -65,13 +67,13 @@ public class Themes {
             throw new RuntimeException("Themes id must not be empty");
         }
         this.id = id;
-        StringTokenizer tok  = new StringTokenizer(id);
-        ArrayList       list = new ArrayList();
+        themes = new ArrayList();
+        StringTokenizer tok    = new StringTokenizer(id);
+        this.themes = new ArrayList();
         while (tok.hasMoreElements()) {
             String currtok = tok.nextToken();
-            list.add(currtok);
+            themes.add(currtok);
         }
-        themes = (String[]) list.toArray(new String[]{});
     }
     
     public String getId() {
@@ -79,6 +81,23 @@ public class Themes {
     }
 
     public String[] getThemesArr() {
-        return themes;
+        return (String[]) themes.toArray(new String[]{});
     }
+
+    public boolean equals(Object input) {
+        if (!(input instanceof Themes)) {
+            return false;
+        } else {
+            return id.equals(((Themes) input).getId());
+        }
+    }
+
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    public boolean containsTheme(String themepart) {
+        return themes.contains(themepart);
+    }
+    
 }

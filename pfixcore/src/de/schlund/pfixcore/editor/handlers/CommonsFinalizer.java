@@ -90,6 +90,12 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
             root.setAttribute("modtime", "" + mod);
             root.setAttribute("havelock", "" + lock);
             
+            String[] allthemes  = tgen.getGlobalThemes().getThemesArr();
+            Element  themeselem = resdoc.createNode("themes");
+            root.appendChild(themeselem);
+            for (int i = 0; i < allthemes.length; i++) {
+                resdoc.addTextChild(themeselem, "option", allthemes[i]);
+            }
             
             
             if (!lock) {

@@ -32,7 +32,7 @@ class CurrentIncludeInfo {
     private AuxDependency currentInclude;
     private HashSet affectedProducts;
 
-    public HashSet getAfftectedProducts(EditorSessionStatus esess) throws Exception  {
+    public HashSet getAffectedProducts(EditorSessionStatus esess) throws Exception  {
         if(affectedProducts == null) {
             affectedProducts = EditorHelper.getAffectedProductsForInclude(currentInclude);
         }

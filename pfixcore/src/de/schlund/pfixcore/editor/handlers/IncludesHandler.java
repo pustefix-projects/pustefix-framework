@@ -66,7 +66,8 @@ public class IncludesHandler extends EditorStdHandler {
         String                 theme    = includes.getTheme();
         String                 realprod = prod.getName();
         
-        AuxDependency usedinc  = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
+        AuxDependency currinc = esess.getCurrentInclude();
+        AuxDependency usedinc = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
                                                                                     path, part, theme);
 //         AuxDependency incdef  = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,
 //                                                                                     path, part, "default");

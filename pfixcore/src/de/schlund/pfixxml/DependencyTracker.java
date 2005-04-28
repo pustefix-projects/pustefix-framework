@@ -32,7 +32,7 @@ public class DependencyTracker {
     /** xslt extension */
     public static String logImage(Context context, String path,
                                   String parent_part_in, String parent_product_in,
-                                  String targetGen, String targetKey) throws Exception {
+                                  String targetGen, String targetKey, String type) throws Exception {
 
         if (targetKey.equals("__NONE__")) {
             return "0";
@@ -63,7 +63,7 @@ public class DependencyTracker {
         Path relativePath   = PathFactory.getInstance().createPath(path);
         Path relativeParent = parent_path.equals("") ? null : PathFactory.getInstance().createPath(parent_path);
         try {
-            logTyped("image", relativePath, "", "", relativeParent, parent_part, parent_product, target);
+            logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_product, target);
             return "0";
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 

@@ -40,8 +40,9 @@
 
   <standardpage name="home"              xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="pages"             xml="core/editor/xml/three_frames_wide.xml"/>
-  <standardpage name="targets"           xml="core/editor/xml/three_frames_wide.xml"/>
-
+  <standardpage name="targets"           xml="core/editor/xml/three_frames_wide.xml">
+    <include stylesheet="core/editor/xsl/runtime.xsl"/>
+  </standardpage>
   <standardpage name="images"            xml="core/editor/xml/three_frames.xml">
     <include stylesheet="core/editor/xsl/runtime.xsl"/>
   </standardpage>

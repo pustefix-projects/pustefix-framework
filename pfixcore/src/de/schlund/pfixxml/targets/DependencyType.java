@@ -33,11 +33,12 @@ import de.schlund.pfixxml.util.Path;
  */
 
 public final class DependencyType {
-    public static final DependencyType TEXT  = new DependencyType("text", true);
-    public static final DependencyType IMAGE = new DependencyType("image", true);
-    public static final DependencyType FILE  = new DependencyType("file", false);
+    public static final DependencyType TEXT   = new DependencyType("text", true);
+    public static final DependencyType IMAGE  = new DependencyType("image", true);
+    public static final DependencyType SHADOW = new DependencyType("shadow", true);
+    public static final DependencyType FILE   = new DependencyType("file", false);
 
-    private static final DependencyType[] typearray = {TEXT, IMAGE, FILE}; 
+    private static final DependencyType[] typearray = {TEXT, IMAGE, FILE, SHADOW}; 
     
     private final String tag;
     private final boolean isDynamic;
