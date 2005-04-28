@@ -38,8 +38,8 @@ import org.w3c.dom.*;
  */
 
 public class AuxDependencyManager {
-    private static Category               CAT    = Category.getInstance(AuxDependencyManager.class.getName());
-    private static String                 DEPAUX = "depaux";
+    private static Category CAT    = Category.getInstance(AuxDependencyManager.class.getName());
+    private static String   DEPAUX = "depaux";
 
     private VirtualTarget  target;
     private HashSet auxset = new HashSet();
@@ -141,7 +141,6 @@ public class AuxDependencyManager {
             } else {
                 parent.addChild(child, target);
             }
-
             // finally we take care of refcounting.
             DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
             refcounter.ref(child, target);
@@ -199,7 +198,7 @@ public class AuxDependencyManager {
             parent_part    = parent.getPart();
             parent_product = parent.getProduct();
         }
-
+        
         for (Iterator i = in.iterator(); i.hasNext(); ) {
             AuxDependency aux = (AuxDependency) i.next();
             if (aux.getType().isDynamic()) {
