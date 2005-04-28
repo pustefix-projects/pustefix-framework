@@ -66,8 +66,8 @@ public class ImageThemedSrc {
             if (themed_path.startsWith("/")) {
                 themed_path = themed_path.substring(1);
             }
-            
-            String   testsrc = null;
+
+            String testsrc = null;
             for (int i = 0; i < themes.length; i++) {
                 String currtheme = themes[i];
                 testsrc = themed_path + "/" + currtheme + "/" + themed_img;
@@ -78,8 +78,8 @@ public class ImageThemedSrc {
                     return testsrc;
                 }
                 if (i < (themes.length - 1)) {
-                    // FIXME: this should be done sometime so we can discriminate between "real" missing and "missing, but we found a better version".
-                    // but make sure editor copes with it.
+                    // FIXME: the next commented line should be used sometime so we can discriminate between
+                    // "real" missing and "missing, but we found a better version" -- but make sure editor copes with it.
                     //DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "shadow");
                     DependencyTracker.logImage(context, testsrc, parent_part_in, parent_product_in, targetGen, targetKey, "image");
                     CAT.info("    -> Image src '" + testsrc + "' not found, trying next theme");
