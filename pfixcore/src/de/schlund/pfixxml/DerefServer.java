@@ -54,25 +54,35 @@ public class DerefServer extends ServletManager {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        if (link.getValue().indexOf("\"") != -1) {
+            // we don't want \" within link!!
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         
         OutputStream       out    = res.getOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
         if (session == null) {
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
-            // DON'T DO IT LIKE THIS! this will not remove the referer header!
-            // res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-            // res.setHeader("Pragma", "no-cache");
-            // res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-            // res.setHeader("Location", link.getValue());
-            // res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             String display = link.getValue();
             display = display.replaceAll("<", "&lt;");
             display = display.replaceAll(">", "&gt;");
+            
+            if (goodReferer(preq) || isLocalUrl(link.getValue())) {
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link.getValue() + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + URLEncoder.encode(link.getValue()) + "\">" + display + "</a>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"" + link.getValue() + "\">" + display + "</a>");
             writer.write("</small></center></body></html>");
+            } else {
+                writer.write("<html><head>");
+                writer.write("</head><body bgcolor=\"#ffffff\">");                
+                writer.write("<h2>You will now enter another website!</h1>");
+                writer.write("Please click on the following link:<br/>");                
+                writer.write("<a href=\"" + link.getValue() + "\">" + display + "</a>");
+                writer.write("</body></html>");                
+            }
         } else {
             String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
                 SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
@@ -83,5 +93,34 @@ public class DerefServer extends ServletManager {
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         }
         writer.flush();
+    }
+
+    private boolean isLocalUrl(String link) {
+        
+        if (link.startsWith("/")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean goodReferer(PfixServletRequest preq) {
+//        String referer = preq.getRequest().getHeader("Referer");
+//        String server = preq.getServerName();
+       
+//        if (referer == null) {
+//            // got no referer, maybe disabled or bad request...
+//            return false;
+//        }
+
+//        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
+//        	   // ok, referer and servername match!!
+//            return true;
+//        }
+       
+//        return false;
+
+        // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
+        return true;
     }
 }
