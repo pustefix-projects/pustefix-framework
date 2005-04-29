@@ -589,7 +589,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         TransformerFactory.newInstance().newTransformer().transform(new DOMSource(ext),
                                                                     new StreamResult(res.getOutputStream()));
     }
-    
+
     private void renderFontify(SPDocument spdoc, HttpServletResponse res) throws TargetGenerationException, IOException {
         Templates stylevalue = (Templates) generator.createXSLLeafTarget(FONTIFY_SSHEET).getValue();
         try {
