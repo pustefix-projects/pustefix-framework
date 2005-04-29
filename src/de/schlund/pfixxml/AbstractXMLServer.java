@@ -599,6 +599,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         
     }
+
     private int getRendering(PfixServletRequest pfreq) {
         String value;
         int rendering;
