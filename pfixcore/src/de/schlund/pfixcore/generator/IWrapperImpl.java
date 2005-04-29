@@ -49,7 +49,7 @@ public abstract class IWrapperImpl implements IWrapper {
     protected HashMap     errors   = null; // errors on single parameters
     protected HashMap     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
     protected IHandler    handler  = null; // Make sure that you set the handler in the
-                                          // constructor of a derived class
+                                           // constructor of a derived class
     
     public void initLogging(String logdir, String pagename, String visitid) {
         CAT.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
@@ -60,16 +60,16 @@ public abstract class IWrapperImpl implements IWrapper {
 
     public void tryErrorLogging() throws IOException {
         if (logdir != null && pagename != null && visitid != null) {
-            File                log    = new File(logdir + "/" + pagename + "#" + prefix);
-            Writer              out    = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
-            IWrapperParamInfo[] tmperrors = gimmeAllParamInfosWithErrors();
+            File            log    = new File(logdir + "/" + pagename + "#" + prefix);
+            Writer          out    = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
+            IWrapperParam[] tmperrors = gimmeAllParamsWithErrors();
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
                 for (int j = 0; j < tmperrors.length; j++) {
-                    IWrapperParamInfo param  = tmperrors[j];
+                    IWrapperParam param  = tmperrors[j];
                     StatusCode[]      scodes = param.getStatusCodes();
                     if (scodes != null) {
-                        appendErrorInfoLog(param, buff);
+                        appendErrorLog(param, buff);
                     }
                 }
                 out.write(buff.toString() + "\n");
@@ -84,13 +84,13 @@ public abstract class IWrapperImpl implements IWrapper {
             Writer       out  = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(log, true)));
             StringBuffer buff = getLogBuffer("VALUES");
             for (Iterator iter = params.values().iterator(); iter.hasNext(); ) {
-                appendParamInfoLog((IWrapperParamInfo) iter.next(), buff);
+                appendParamLog((IWrapperParam) iter.next(), buff);
             }
             for (Iterator iter = idxprms.values().iterator(); iter.hasNext();) {
                 IWrapperIndexedParam pindex  = (IWrapperIndexedParam) iter.next();
-                IWrapperParamInfo[] pinfoarr = pindex.getAllParamInfos();
+                IWrapperParam[] pinfoarr = pindex.getAllParams();
                 for (int i = 0; i < pinfoarr.length; i++) {
-                    appendParamInfoLog((IWrapperParamInfo) iter.next(), buff);
+                    appendParamLog((IWrapperParam) iter.next(), buff);
                 }
             }
             out.write(buff.toString() + "\n");
@@ -103,21 +103,21 @@ public abstract class IWrapperImpl implements IWrapper {
         errors  = new HashMap();
         idxprms = new HashMap();
         this.prefix = prefix;
-        registerParamInfos();
+        registerParams();
     }
 
     public final void load(RequestData req) throws Exception {
         this.req = req;
 
         for (Iterator i = params.values().iterator(); i.hasNext();) {
-            IWrapperParamInfo pinfo = (IWrapperParamInfo) i.next();
+            IWrapperParam pinfo = (IWrapperParam) i.next();
             if (CAT.isDebugEnabled()) {
-                CAT.debug("===> Doing init for ParamInfo: " + pinfo.getName());
+                CAT.debug("===> Doing init for Param: " + pinfo.getName());
             }
             pinfo.initValueFromRequest(prefix, req);
             if (pinfo.errorHappened()) {
                 if (CAT.isDebugEnabled()) {
-                    CAT.debug("*** ERROR happened for ParamInfo: " + pinfo.getName());
+                    CAT.debug("*** ERROR happened for Param: " + pinfo.getName());
                 }
                 synchronized (errors) {
                     errors.put(pinfo.getName(), pinfo);
@@ -172,7 +172,7 @@ public abstract class IWrapperImpl implements IWrapper {
         return !noerr;
     }
 
-    public final IWrapperParamInfo[] gimmeAllParamInfos() {
+    public final IWrapperParam[] gimmeAllParams() {
         TreeSet retpar = new TreeSet();
         synchronized (params) {
             retpar.addAll(params.values());
@@ -180,14 +180,14 @@ public abstract class IWrapperImpl implements IWrapper {
         synchronized (idxprms) {
             for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
                 IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
-                retpar.addAll(Arrays.asList(pindex.getAllParamInfos()));
+                retpar.addAll(Arrays.asList(pindex.getAllParams()));
             }
         }
-        return (IWrapperParamInfo[]) retpar.toArray(new IWrapperParamInfo[] {
+        return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {
         });
     }
 
-    public final IWrapperParamInfo[] gimmeAllParamInfosWithErrors() {
+    public final IWrapperParam[] gimmeAllParamsWithErrors() {
         TreeSet retpar = new TreeSet();
         synchronized (errors) {
             retpar.addAll(errors.values());
@@ -195,14 +195,14 @@ public abstract class IWrapperImpl implements IWrapper {
         synchronized (idxprms) {
             for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
                 IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
-                retpar.addAll(Arrays.asList(pindex.getAllParamInfosWithErrors()));
+                retpar.addAll(Arrays.asList(pindex.getAllParamsWithErrors()));
             }
         }
-        return (IWrapperParamInfo[]) retpar.toArray(new IWrapperParamInfo[] {});
+        return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {});
     }
 
 //     public final Object[] getParamValueByName(String key) {
-//         IWrapperParamInfo pinfo = gimmeParamInfoForKey(key);
+//         IWrapperParam pinfo = gimmeParamForKey(key);
 //         if (pinfo != null) {
 //             return pinfo.getValueArr();
 //         }
@@ -212,7 +212,7 @@ public abstract class IWrapperImpl implements IWrapper {
 //     public final Object[] getIndexedParamValueByNameAndIndex(String key, String index) {
 //         IWrapperIndexedParam pindex = gimmeIndexedParamForKey(key);
 //         if (pindex != null) {
-//             IWrapperParamInfo pinfo = pindex.getParamInfoForIndex(index);
+//             IWrapperParam pinfo = pindex.getParamForIndex(index);
 //             if (pinfo != null) {
 //                 return pinfo.getValueArr();
 //             }
@@ -220,9 +220,9 @@ public abstract class IWrapperImpl implements IWrapper {
 //         return null;
 //     }
 
-    protected final IWrapperParamInfo gimmeParamInfoForKey(String key) {
+    protected final IWrapperParam gimmeParamForKey(String key) {
         synchronized (params) {
-            return (IWrapperParamInfo) params.get(key);
+            return (IWrapperParam) params.get(key);
         }
     }
 
@@ -232,10 +232,10 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
 
-    protected void registerParamInfos() {
+    protected void registerParams() {
         // DO NOTHING.
         // This could be abstract, but descendents should be able to call
-        // super.registerNeededValues() without worrying.
+        // super.registerParams() without worrying.
     }
 
     public final int compareTo(Object inobj) {
@@ -252,7 +252,7 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     
-    private void appendParamInfoLog(IWrapperParamInfo pinfo, StringBuffer buff) {
+    private void appendParamLog(IWrapperParam pinfo, StringBuffer buff) {
         String   name  = pinfo.getName();
         String[] value = pinfo.getStringValue();
         buff.append("|" + name + "=");
@@ -268,7 +268,7 @@ public abstract class IWrapperImpl implements IWrapper {
         }
     }
     
-    private void appendErrorInfoLog(IWrapperParamInfo pinfo, StringBuffer buff) {
+    private void appendErrorLog(IWrapperParam pinfo, StringBuffer buff) {
         String       name   = pinfo.getName(); 
         StatusCode[] scodes = pinfo.getStatusCodes();
         if (scodes != null) {

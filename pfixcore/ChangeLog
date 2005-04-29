@@ -1,3 +1,16 @@
+2005-04-29  Jens Lautenbacher  <jtl@schlund.de>
+
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: added, renamed from IWrapperParamInfo. 
+	Changed all method names containing "ParamInfo" => "Param"
+	* src/de/schlund/pfixcore/generator/IWrapperParamInfo.java (Module): removed
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (Module): 
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (Module): 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java (Module): 
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java (Module): 
+	* src/de/schlund/pfixcore/generator/IWrapper.java (Module): 
+	* example/core/build/iwrapper.xsl (Module): changed accordingly
+
 2005-04-28  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/AuxDependency.java: use the Themes object as key everywhere, 

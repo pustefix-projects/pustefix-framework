@@ -54,10 +54,10 @@ public class IWrapperIndexedParam {
         for (Iterator i = req.getParameterNames(); i.hasNext(); ) {
             String pname = (String) i.next();
             if (pname.startsWith(wholename)) {
-                // Now initialize the IWrapperParamInfos
+                // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
                 CAT.debug("~~~ Found index: " + idx + " for IndexedParam " + name);
-                IWrapperParamInfo pinfo = new IWrapperParamInfo(name + "." + idx, true, null);
+                IWrapperParam pinfo = new IWrapperParam(name + "." + idx, true, null);
                 pinfo.setParamCaster(caster);
                 synchronized (params) {
                     params.put(pinfo.getName(), pinfo);
@@ -70,7 +70,7 @@ public class IWrapperIndexedParam {
                 }
                 pinfo.initValueFromRequest(prefix, req);
                 if (pinfo.errorHappened()) {
-                    CAT.debug("*** ERROR happened for ParamInfo: " + pinfo.getName());
+                    CAT.debug("*** ERROR happened for Param: " + pinfo.getName());
                     synchronized (errors) {
                         errors.put(pinfo.getName(), pinfo);
                     }
@@ -97,24 +97,24 @@ public class IWrapperIndexedParam {
         return !errors.isEmpty();
     }
 
-    public IWrapperParamInfo[] getAllParamInfosWithErrors() {
+    public IWrapperParam[] getAllParamsWithErrors() {
         synchronized (errors) {
-            return (IWrapperParamInfo[]) errors.values().toArray(new IWrapperParamInfo[] {});
+            return (IWrapperParam[]) errors.values().toArray(new IWrapperParam[] {});
         }
     }
 
-    public IWrapperParamInfo[] getAllParamInfos() {
+    public IWrapperParam[] getAllParams() {
         synchronized (params) {
-            return (IWrapperParamInfo[]) params.values().toArray(new IWrapperParamInfo[] {});
+            return (IWrapperParam[]) params.values().toArray(new IWrapperParam[] {});
         }
     }
 
-    public IWrapperParamInfo getParamInfoForIndex(String idx) {
+    public IWrapperParam getParamForIndex(String idx) {
         String key = name + "." + idx;
         synchronized (params) {
-            IWrapperParamInfo pinfo = (IWrapperParamInfo) params.get(key);
+            IWrapperParam pinfo = (IWrapperParam) params.get(key);
             if (pinfo == null) {
-                pinfo = new IWrapperParamInfo(key, true, null);
+                pinfo = new IWrapperParam(key, true, null);
                 params.put(pinfo.getName(), pinfo);
             }
             return pinfo;
@@ -126,7 +126,7 @@ public class IWrapperIndexedParam {
     }
     
     public void addSCode(StatusCode scode, String[] args, String idx) {
-        IWrapperParamInfo pinfo = getParamInfoForIndex(idx);
+        IWrapperParam pinfo = getParamForIndex(idx);
         pinfo.addSCode(scode);
         synchronized (errors) {
             errors.put(pinfo.getName(), pinfo);
