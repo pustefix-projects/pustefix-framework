@@ -43,19 +43,20 @@ import java.io.IOException;
  */
      
 public interface IWrapper extends Comparable {
-    void init(String prefix) throws Exception;
-    void initLogging(String logdir, String pagename, String visitid);
-    void tryParamLogging() throws IOException;
-    void tryErrorLogging() throws IOException;
-    void load(RequestData req) throws Exception;
+    void    init(String prefix) throws Exception;
+    void    initLogging(String logdir, String pagename, String visitid);
+    void    tryParamLogging() throws IOException;
+    void    tryErrorLogging() throws IOException;
+    void    load(RequestData req) throws Exception;
     boolean errorHappened();
-    void defineOrder(int order);
+    void    defineOrder(int order);
     // The reason for these to not being called get* is to avoid nameclashes with
     // descendents who may want to use a Parameter called e.g. "Prefix" (which would
     // result in a method getPrefix be generated)
-    Integer             gimmeOrder(); 
-    String              gimmePrefix();
-    IHandler            gimmeIHandler();
-    IWrapperParamInfo[] gimmeAllParamInfos();
-    IWrapperParamInfo[] gimmeAllParamInfosWithErrors();
+    Integer         gimmeOrder(); 
+    String          gimmePrefix();
+    IHandler        gimmeIHandler();
+    IWrapperParam[] gimmeAllParams();
+    IWrapperParam[] gimmeAllParamsWithErrors();
+    
 }

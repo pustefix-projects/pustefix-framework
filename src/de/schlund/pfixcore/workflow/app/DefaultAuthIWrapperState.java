@@ -197,10 +197,10 @@ public class DefaultAuthIWrapperState extends StateImpl {
     }
 
     private void userInsertErrors(Properties props, IWrapper user, ResultForm resform) {
-        IWrapperParamInfo[] pinfos = user.gimmeAllParamInfos();
+        IWrapperParam[] pinfos = user.gimmeAllParams();
         String              prefix = user.gimmePrefix(); 
         for (int i = 0; i < pinfos.length; i++) {
-            IWrapperParamInfo pinfo  = pinfos[i];
+            IWrapperParam pinfo  = pinfos[i];
             StatusCode[]      scodes = pinfo.getStatusCodes();
             String            name   = pinfo.getName();
             String[]          value  = pinfo.getStringValue();
@@ -221,10 +221,10 @@ public class DefaultAuthIWrapperState extends StateImpl {
         for (Iterator i = aux.iterator(); i.hasNext(); ) {
             IWrapper tmp = (IWrapper) i.next();
             tmp.load(rdata);
-            IWrapperParamInfo[] params = tmp.gimmeAllParamInfos();
+            IWrapperParam[] params = tmp.gimmeAllParams();
             String              prefix = tmp.gimmePrefix();
             for (int j = 0; j < params.length; j++) {
-                IWrapperParamInfo par  = params[j];
+                IWrapperParam par  = params[j];
                 String[]          sarr = par.getStringValue();
                 String            val  = "";
                 if (sarr != null && sarr.length > 0) {

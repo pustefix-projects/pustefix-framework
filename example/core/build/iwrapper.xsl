@@ -66,9 +66,9 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
       <xsl:with-param name="classname" select="$classname"/> 
     </xsl:call-template>
     
-    protected synchronized void registerParamInfos() {
-        super.registerParamInfos();
-        IWrapperParamInfo      pinfo;
+    protected synchronized void registerParams() {
+        super.registerParams();
+        IWrapperParam          pinfo;
         IWrapperIndexedParam   pindx;
         IWrapperParamCaster    caster;
         IWrapperParamPreCheck  pre;
@@ -111,7 +111,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
 
         <xsl:otherwise>
         // <xsl:value-of select="$pname"/>
-        pinfo  = new IWrapperParamInfo("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurence"/><xsl:text>, </xsl:text>
+        pinfo  = new IWrapperParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurence"/><xsl:text>, </xsl:text>
           <xsl:choose>
             <xsl:when test="./iwrp:default">
               <xsl:text>new de.schlund.pfixxml.RequestParam[] {</xsl:text>
@@ -176,7 +176,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         <xsl:when test="$occurence = 'indexed'">
     // <xsl:value-of select="$pname"/>
     public <xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> get<xsl:value-of select="$cpname"/>(String index) {
-        return (<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/>) gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamInfoForIndex(index).getValue<xsl:if test="not(string($freq) = '')">Arr</xsl:if>();
+        return (<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/>) gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamForIndex(index).getValue<xsl:if test="not(string($freq) = '')">Arr</xsl:if>();
     }
 
     public java.lang.String[] getKeys<xsl:value-of select="$cpname"/>() {
@@ -184,13 +184,13 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     }
           
     public void setStringVal<xsl:value-of select="$cpname"/>(String<xsl:value-of select="$freq"/> v, String index) {
-        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamInfoForIndex(index).
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamForIndex(index).
           <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new String[] {v});</xsl:when>
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
     }
 
     public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v, String index) {
-        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamInfoForIndex(index).
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").getParamForIndex(index).
           <xsl:choose><xsl:when test="string($freq) = ''">setSimpleObjectValue(new Object[] {v});</xsl:when>
             <xsl:otherwise>setSimpleObjectValue(v);</xsl:otherwise></xsl:choose>
     }
@@ -206,32 +206,32 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         <xsl:otherwise>
     // <xsl:value-of select="$pname"/>
     public <xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> get<xsl:value-of select="$cpname"/>() {
-        return (<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/>) gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getValue<xsl:if test="not(string($freq) = '')">Arr</xsl:if>();
+        return (<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/>) gimmeParamForKey("<xsl:value-of select="$pname"/>").getValue<xsl:if test="not(string($freq) = '')">Arr</xsl:if>();
     }
     
     public void setStringVal<xsl:value-of select="$cpname"/>(String<xsl:value-of select="$freq"/> v) {
-        gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").
+        gimmeParamForKey("<xsl:value-of select="$pname"/>").
           <xsl:choose><xsl:when test="string($freq) = ''">setStringValue(new String[] {v});</xsl:when>
             <xsl:otherwise>setStringValue(v);</xsl:otherwise></xsl:choose>
     }
 
     public void set<xsl:value-of select="$cpname"/>(<xsl:value-of select="$ptype"/><xsl:value-of select="$freq"/> v) {
-        gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").
+        gimmeParamForKey("<xsl:value-of select="$pname"/>").
           <xsl:choose><xsl:when test="string($freq) = ''">setSimpleObjectValue(new Object[] {v});</xsl:when>
             <xsl:otherwise>setSimpleObjectValue(v);</xsl:otherwise></xsl:choose>
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode) {
-        gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").addSCode(scode);
+        gimmeParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode);
         synchronized (errors) {
-            errors.put(gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamInfoForKey("<xsl:value-of select="$pname"/>"));
+            errors.put(gimmeParamForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamForKey("<xsl:value-of select="$pname"/>"));
         }
     }
 
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
-        gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args);
+        gimmeParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args);
         synchronized (errors) {
-            errors.put(gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamInfoForKey("<xsl:value-of select="$pname"/>"));
+            errors.put(gimmeParamForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamForKey("<xsl:value-of select="$pname"/>"));
         }
     }
         </xsl:otherwise>
@@ -309,7 +309,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
            <xsl:choose>
             <xsl:when test="@frequency = 'multiple'">
               <xsl:variable name="arrayname"><xsl:value-of select="$pname"/>Arr</xsl:variable>
-              <xsl:value-of select="$ptype"/>[] <xsl:value-of select="$arrayname"/>= (<xsl:value-of select="$ptype"/>[])gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getValueArr(); 
+              <xsl:value-of select="$ptype"/>[] <xsl:value-of select="$arrayname"/>= (<xsl:value-of select="$ptype"/>[])gimmeParamForKey("<xsl:value-of select="$pname"/>").getValueArr(); 
         if (<xsl:value-of select="$arrayname"/> == null) {
             sb.append("<xsl:value-of select="$pname"/>[] = NULL");
         } else {
@@ -319,7 +319,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         }
              </xsl:when>
              <xsl:otherwise>
-        sb.append("<xsl:value-of select="$pname"/> = " + gimmeParamInfoForKey("<xsl:value-of select="$pname"/>").getValue()).append("\n");
+        sb.append("<xsl:value-of select="$pname"/> = " + gimmeParamForKey("<xsl:value-of select="$pname"/>").getValue()).append("\n");
             </xsl:otherwise>
            </xsl:choose> 
         </xsl:for-each>

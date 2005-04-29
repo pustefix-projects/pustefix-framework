@@ -26,14 +26,14 @@ import java.util.*;
 import org.apache.log4j.*;
 
 /**
- * Describe class <code>IWrapperParamInfo</code> here.
+ * Describe class <code>IWrapperParam</code> here.
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  *
  */
 
-public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
+public class IWrapperParam implements IWrapperParamCheck, Comparable {
     private String              name;
     private boolean             optional;
     private String[]            stringval  = null;
@@ -47,7 +47,7 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
     private Category            CAT        = Category.getInstance(this.getClass().getName());
     private StatusCode          missing    = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");
     
-    public IWrapperParamInfo(String name, boolean optional, RequestParam[] defaultval) {
+    public IWrapperParam(String name, boolean optional, RequestParam[] defaultval) {
         this.name       = name;
         this.optional   = optional;
         this.caster     = null;
@@ -97,9 +97,9 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
         }
     }
     
-    public String   getName() { return name; }
+    public String getName() { return name; }
     
-    public Object   getValue() {
+    public Object getValue() {
         if (value != null && value.length > 0) {
             return value[0];
         } else {
@@ -239,7 +239,7 @@ public class IWrapperParamInfo implements IWrapperParamCheck, Comparable {
     }
 
     public int compareTo(Object inobj) {
-        IWrapperParamInfo in = (IWrapperParamInfo) inobj;
+        IWrapperParam in = (IWrapperParam) inobj;
         return name.compareTo(in.getName());
     }
 }

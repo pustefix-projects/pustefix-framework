@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
-import de.schlund.pfixcore.generator.IWrapperParamInfo;
+import de.schlund.pfixcore.generator.IWrapperParam;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
@@ -178,11 +178,11 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         for (int i = 0; i < cwrappers.length; i++) {
             IWrapper            wrapper = cwrappers[i];
             String              prefix  = wrapper.gimmePrefix();
-            IWrapperParamInfo[] errors = wrapper.gimmeAllParamInfosWithErrors();
+            IWrapperParam[] errors = wrapper.gimmeAllParamsWithErrors();
             if (errors != null) {
                 wrapper.tryErrorLogging();
                 for (int j = 0; j < errors.length; j++) {
-                    IWrapperParamInfo param  = errors[j];
+                    IWrapperParam param  = errors[j];
                     StatusCode[]      scodes = param.getStatusCodes();
                     String            name   = prefix + "." + param.getName(); 
                     if (scodes != null) {
@@ -214,9 +214,9 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
         for (int i = 0; i < cwrappers.length; i++) {
             IWrapper            wrapper  = cwrappers[i];
             String              prfx     = wrapper.gimmePrefix();
-            IWrapperParamInfo[] pinfoall = wrapper.gimmeAllParamInfos();
+            IWrapperParam[] pinfoall = wrapper.gimmeAllParams();
             for (int j = 0; j < pinfoall.length; j++) {
-                IWrapperParamInfo pinfo  = pinfoall[j];
+                IWrapperParam pinfo  = pinfoall[j];
                 String            name   = pinfo.getName();
                 String[]          strval = pinfo.getStringValue();
                 if (strval != null) {
