@@ -1,3 +1,11 @@
+2005-05-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/metatags.xsl.in: 
+	* example/core/xsl/master.xsl.in: 
+	* example/core/xsl/forminput.xsl.in: 
+	* example/core/xsl/default_copy.xsl.in: 
+	* example/core/xsl/customizemaster.xsl: use xsl:import, not xsl:include. This allows for overwriting specific templates
+
 2005-05-03  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in (pfx:formwarn): new templated called 
