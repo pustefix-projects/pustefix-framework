@@ -522,31 +522,7 @@ public class TargetGenerator {
     public void generateAll() throws Exception {
         for (Iterator e = getAllTargets().keySet().iterator(); e.hasNext();) {
             Target current = getTarget((String) e.next());
-            if (current.getType() != TargetType.XML_LEAF && current.getType() != TargetType.XSL_LEAF) {
-                System.out.println(">>>>> Generating " + getDisccachedir().getRelative() + File.separator +
-                                   current.getTargetKey() + " from " + current.getXMLSource().getTargetKey() +
-                                   " and " + current.getXSLSource().getTargetKey());
-                
-                boolean needs_update = false;
-                needs_update = current.needsUpdate();
-                if (needs_update) {
-                    try {
-                        current.getValue();
-                        notifyListenerTargetDone(current);
-                    } catch(TargetGenerationException tgex) {
-                        notifyListenerTargetException(current,tgex);
-                        report.addError(tgex, getName());
-                        tgex.printStackTrace();
-                    }
-                }
-                else {
-                    notifyListenerTargetDone(current);
-                }
-                System.out.println("done.");
-            }
-            else {
-                notifyListenerTargetDone(current);
-            }
+            generateTarget(current);
             /* if all listeners want to stop, 
              * there is no point in continuing ... */
             if (needsToStop()) {
@@ -554,6 +530,41 @@ public class TargetGenerator {
             }
         }
     }
+    
+    
+    public void generateTarget(Target target) throws Exception {
+        if (target.getType() != TargetType.XML_LEAF && target.getType() != TargetType.XSL_LEAF) {
+            System.out.println(">>>>> Generating " + getDisccachedir().getRelative() + File.separator +
+                    target.getTargetKey() + " from " + target.getXMLSource().getTargetKey() +
+                               " and " + target.getXSLSource().getTargetKey());
+            
+            boolean needs_update = false;
+            needs_update = target.needsUpdate();
+            if (needs_update) {
+                try {
+                    target.getValue();
+                    notifyListenerTargetDone(target);
+                } catch(TargetGenerationException tgex) {
+                    notifyListenerTargetException(target,tgex);
+                    report.addError(tgex, getName());
+                    tgex.printStackTrace();
+                }
+            }
+            else {
+                notifyListenerTargetDone(target);
+            }
+            System.out.println("done.");
+        }
+        else {
+            notifyListenerTargetDone(target);
+        }
+    }
+    
+    
+    
+    
+    
+    
     
     /**
      * This method checks, if a TargetGeneratorListener wants to stop,

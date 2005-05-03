@@ -1,3 +1,8 @@
+2005-05-03  Niels Schelbach <niels@schlund.de>
+    * src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: stopped TimerThread in cancel method
+    * src/de/schlund/pfixxml/targets/TargetGenerator.java: splitted generateAll in two method, to be able to invoke
+    a single Target Generation call
+    
 2005-04-29  Jens Lautenbacher  <jtl@schlund.de>
 
 
