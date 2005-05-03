@@ -68,6 +68,7 @@ public class SPCacheStatistic {
     private Timer tickTimer = new Timer(true);
 
     public static void reset() {
+        theInstance.tickTimer.cancel();
         theInstance = new SPCacheStatistic();
     }
 
