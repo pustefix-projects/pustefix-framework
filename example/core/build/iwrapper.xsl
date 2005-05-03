@@ -74,6 +74,12 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
         IWrapperParamPreCheck  pre;
         IWrapperParamPostCheck post;
     <xsl:for-each select="/iwrp:interface/iwrp:param">
+      <xsl:variable name="freqparam">
+        <xsl:choose>
+          <xsl:when test="@frequency = 'multiple'">true</xsl:when>
+          <xsl:otherwise>false</xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
       <xsl:variable name="occurence">
         <xsl:choose>
           <xsl:when test="@occurance = 'optional'">true</xsl:when>
@@ -87,7 +93,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
       <xsl:choose>
         <xsl:when test="$occurence = 'indexed'">
         // <xsl:value-of select="$pname"/>
-        pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>");
+        pindx  = new IWrapperIndexedParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>);
         idxprms.put("<xsl:value-of select="$pname"/>", pindx);
           <xsl:if test="./iwrp:caster">
             <xsl:call-template name="fmt_caster">
@@ -111,7 +117,7 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
 
         <xsl:otherwise>
         // <xsl:value-of select="$pname"/>
-        pinfo  = new IWrapperParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$occurence"/><xsl:text>, </xsl:text>
+        pinfo  = new IWrapperParam("<xsl:value-of select="$pname"/>", <xsl:value-of select="$freqparam"/>, <xsl:value-of select="$occurence"/><xsl:text>, </xsl:text>
           <xsl:choose>
             <xsl:when test="./iwrp:default">
               <xsl:text>new de.schlund.pfixxml.RequestParam[] {</xsl:text>

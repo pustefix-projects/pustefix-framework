@@ -34,19 +34,45 @@ import org.apache.log4j.*;
  *
  */
 
-public class IWrapperIndexedParam {
+public class IWrapperIndexedParam implements IWrapperParamDefinition {
+
+    private static final String TYPE_INDEXED  = "indexed";
+    private static final String TYPE_MULTIPLE = "multiple";
+    private static final String TYPE_SINGLE   = "single";
     private String              name;
+    private boolean             multiple;
     private IWrapperParamCaster caster;
-    private ArrayList           precheck  = new ArrayList();
-    private ArrayList           postcheck = new ArrayList();
-    private HashMap             params = new HashMap();
-    private HashMap             errors = new HashMap();
+    private ArrayList           precheck      = new ArrayList();
+    private ArrayList           postcheck     = new ArrayList();
+    private HashMap             params        = new HashMap();
+    private HashMap             errors        = new HashMap();
     private String              prefix;
-    private Category            CAT    = Category.getInstance(this.getClass().getName());
+    private Category            CAT           = Category.getInstance(this.getClass().getName());
     
-    public IWrapperIndexedParam(String name) {
+    public IWrapperIndexedParam(String name, boolean multiple) {
         this.name     = name;
         this.caster   = null;
+        this.multiple = multiple;
+    }
+
+    public String getOccurance() {
+        return TYPE_INDEXED;
+    }
+
+    public String getFrequency() {
+        return multiple ? TYPE_MULTIPLE : TYPE_SINGLE;
+    }
+    
+    public IWrapperParamCaster getCaster() {
+        return caster;
+    }
+
+    public IWrapperParamPreCheck[] getPreChecks() {
+        return (IWrapperParamPreCheck[]) precheck.toArray(new IWrapperParamPreCheck[]{});
+    }
+
+    public IWrapperParamPostCheck[] getPostChecks() {
+        return (IWrapperParamPostCheck[]) precheck.toArray(new IWrapperParamPostCheck[]{});
     }
 
     protected void initValueFromRequest(String prefix, RequestData req) {
@@ -57,7 +83,7 @@ public class IWrapperIndexedParam {
                 // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
                 CAT.debug("~~~ Found index: " + idx + " for IndexedParam " + name);
-                IWrapperParam pinfo = new IWrapperParam(name + "." + idx, true, null);
+                IWrapperParam pinfo = new IWrapperParam(name + "." + idx, multiple, true, null);
                 pinfo.setParamCaster(caster);
                 synchronized (params) {
                     params.put(pinfo.getName(), pinfo);
@@ -114,7 +140,7 @@ public class IWrapperIndexedParam {
         synchronized (params) {
             IWrapperParam pinfo = (IWrapperParam) params.get(key);
             if (pinfo == null) {
-                pinfo = new IWrapperParam(key, true, null);
+                pinfo = new IWrapperParam(key, multiple, true, null);
                 params.put(pinfo.getName(), pinfo);
             }
             return pinfo;

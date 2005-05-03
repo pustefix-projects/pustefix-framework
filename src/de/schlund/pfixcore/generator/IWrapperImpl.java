@@ -172,6 +172,18 @@ public abstract class IWrapperImpl implements IWrapper {
         return !noerr;
     }
 
+    public final IWrapperParamDefinition[] gimmeAllParamDefinitions() {
+        TreeSet retpar = new TreeSet();
+        synchronized (params) {
+            retpar.addAll(params.values());
+        }
+        synchronized (idxprms) {
+            retpar.addAll(idxprms.values());
+        }
+        return (IWrapperParamDefinition[]) retpar.toArray(new IWrapperParamDefinition[] {});
+    }
+    
+    
     public final IWrapperParam[] gimmeAllParams() {
         TreeSet retpar = new TreeSet();
         synchronized (params) {
@@ -183,8 +195,7 @@ public abstract class IWrapperImpl implements IWrapper {
                 retpar.addAll(Arrays.asList(pindex.getAllParams()));
             }
         }
-        return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {
-        });
+        return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {});
     }
 
     public final IWrapperParam[] gimmeAllParamsWithErrors() {

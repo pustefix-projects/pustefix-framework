@@ -58,5 +58,5 @@ public interface IWrapper extends Comparable {
     IHandler        gimmeIHandler();
     IWrapperParam[] gimmeAllParams();
     IWrapperParam[] gimmeAllParamsWithErrors();
-    
+    IWrapperParamDefinition[] gimmeAllParamDefinitions();
 }
