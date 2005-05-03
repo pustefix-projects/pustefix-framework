@@ -33,25 +33,52 @@ import org.apache.log4j.*;
  *
  */
 
-public class IWrapperParam implements IWrapperParamCheck, Comparable {
+public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinition, Comparable {
+
+    private static final String TYPE_OPTIONAL  = "optional";
+    private static final String TYPE_MANDATORY = "mandatory";
+    private static final String TYPE_MULTIPLE  = "multiple";
+    private static final String TYPE_SINGLE    = "single";
     private String              name;
     private boolean             optional;
-    private String[]            stringval  = null;
-    private Object[]            value      = null;
-    private RequestParam[]      defaultval = null;
+    private boolean             multiple;
+    private String[]            stringval      = null;
+    private Object[]            value          = null;
+    private RequestParam[]      defaultval     = null;
     private IWrapperParamCaster caster;
-    private ArrayList           precheck   = new ArrayList();
-    private ArrayList           postcheck  = new ArrayList();
-    private HashSet             scodes     = new HashSet();
-    private HashMap             scodesargs = new HashMap();
-    private Category            CAT        = Category.getInstance(this.getClass().getName());
-    private StatusCode          missing    = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");
+    private ArrayList           precheck       = new ArrayList();
+    private ArrayList           postcheck      = new ArrayList();
+    private HashSet             scodes         = new HashSet();
+    private HashMap             scodesargs     = new HashMap();
+    private Category            CAT            = Category.getInstance(this.getClass().getName());
+    private StatusCode          missing        = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");    
     
-    public IWrapperParam(String name, boolean optional, RequestParam[] defaultval) {
+    public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval) {
         this.name       = name;
         this.optional   = optional;
+        this.multiple   = multiple;
         this.caster     = null;
         this.defaultval = defaultval;
+    }
+
+    public String getOccurance() {
+        return optional ? TYPE_OPTIONAL : TYPE_MANDATORY;
+    }
+
+    public String getFrequency() {
+        return multiple ? TYPE_MULTIPLE : TYPE_SINGLE;
+    }
+
+    public IWrapperParamCaster getCaster() {
+        return caster;
+    }
+
+    public IWrapperParamPreCheck[] getPreChecks() {
+        return (IWrapperParamPreCheck[]) precheck.toArray(new IWrapperParamPreCheck[]{});
+    }
+
+    public IWrapperParamPostCheck[] getPostChecks() {
+        return (IWrapperParamPostCheck[]) precheck.toArray(new IWrapperParamPostCheck[]{});
     }
 
     public void setCustomSCode(String scode) {

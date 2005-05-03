@@ -13,6 +13,64 @@
   <xsl:key name="xinp_hidden" match="pfx:xinp[@type='hidden']" use="'hidden'"/>
   <xsl:key name="xinp_password" match="pfx:xinp[@type='password']" use="'password'"/>
 
+  <xsl:template name="pfx:formwarn">
+    <xsl:param name="type"/>
+    <xsl:param name="data"/>
+    <xsl:variable name="style_err">position: absolute; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px;</xsl:variable>
+    <xsl:variable name="theform" select="ancestor::pfx:forminput[position()=1]"/>
+    <xsl:if test="$prohibitEdit = 'no' and not($theform/@send-to-page)">
+      <xsl:choose>
+        <xsl:when test="$type = 'unknown'">
+          <xsl:variable name="fullname" select="$data/@name"/>
+          <xsl:variable name="prefix" select="substring-before($fullname, '.')"/>
+          <xsl:variable name="tmp" select="substring-after($fullname, '.')"/>
+          <xsl:variable name="name">
+            <xsl:choose>
+              <xsl:when test="contains($tmp, '.')"><xsl:value-of select="substring-before($tmp, '.')"/></xsl:when>
+              <xsl:otherwise><xsl:value-of select="$tmp"/></xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+          <xsl:variable name="index" select="substring-after($tmp, '.')"/>
+          <ixsl:choose>
+            <!-- don't check wrappers that are marked as not to check...-->
+            <ixsl:when test="/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/@docheck = 'false'"/>
+            <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}'])">
+              <div style="{$style_err}" onclick="this.style.display='none'">
+                Warning: Unknown wrapper <b><xsl:value-of select="$prefix"/></b>
+              </div>
+            </ixsl:when>
+            <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}'])">
+              <div style="{$style_err}" onclick="this.style.display='none'">
+                Warning: Unknown parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>
+              </div>
+            </ixsl:when>
+            <xsl:choose>
+              <xsl:when test="$index">
+                <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}' and @occurance = 'indexed'])">
+                  <div style="{$style_err}" onclick="this.style.display='none'">
+                    Warning: No indexed parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/></b>
+                  </div>
+                </ixsl:when>
+              </xsl:when>
+              <xsl:otherwise>
+                <ixsl:when test="not(/formresult/iwrapperinfo/wrapper[@prefix = '{$prefix}']/param[@name = '{$name}' and @occurance != 'indexed'])">
+                  <div style="{$style_err}" onclick="this.style.display='none'">
+                    Warning: Parameter <b><xsl:value-of select="$name"/></b> in wrapper <b><xsl:value-of select="$prefix"/> must be indexed</b>
+                  </div>
+                </ixsl:when>
+              </xsl:otherwise>
+            </xsl:choose>
+          </ixsl:choose>
+        </xsl:when>
+        <xsl:otherwise>
+          <div style="{$style}" onclick="this.style.display='none'">
+            <xsl:apply-templates/>
+          </div>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
+  </xsl:template>
+  
   <xsl:template name="pfx:get_position">
     <xsl:param name="set"/>
     <xsl:param name="cnode"/>
@@ -470,6 +528,10 @@
       <ixsl:attribute name="value"><xsl:value-of select="@pageflow"/></ixsl:attribute></input>
     </xsl:if>
     <xsl:for-each select="./pfx:argument">
+      <xsl:call-template name="pfx:formwarn">
+        <xsl:with-param name="type">unknown</xsl:with-param>
+        <xsl:with-param name="data" select="current()"/>
+      </xsl:call-template>
       <input type="hidden">
         <ixsl:attribute name="name">__SYNT:<ixsl:value-of select="$genname_{$current}"/>:<xsl:value-of select="@name"/></ixsl:attribute>
       <ixsl:attribute name="value"><xsl:apply-templates select="./node()"/></ixsl:attribute></input>
@@ -650,6 +712,8 @@
     </cus:documentation>  
   </xsl:template>
 
+  <xsl:template match="pfx:value"/>
+  
   <xsl:template match="pfx:xinp[@type='hidden']">
     <input type="hidden">
       <xsl:copy-of select="@name"/>
@@ -691,6 +755,10 @@
   
   <xsl:template match="pfx:xinp[@type='select']">
     <xsl:variable name="name" select="string(@name)"/>
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <select name="{$name}">
       <xsl:copy-of select="@*[name()!='type']"/>
       <xsl:if test="@multiple"><xsl:attribute name="multiple">multiple</xsl:attribute></xsl:if>
@@ -740,26 +808,32 @@
 
   <xsl:template match="pfx:option">
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
-    <xsl:variable name="value">
-      <xsl:choose>
-        <xsl:when test="@value">
-          <xsl:value-of select="@value"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-templates select="./node()"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
     <option>
-      <xsl:copy-of select="@*[name()!= 'default']"/>
+      <xsl:copy-of select="@*[name()!= 'default' and name()!= 'value']"/>
+      <ixsl:variable name="thevalue">
+        <xsl:choose>
+          <xsl:when test="@value">
+            <xsl:value-of select="@value"/>
+          </xsl:when>
+          <xsl:when test="./pfx:value">
+            <xsl:apply-templates select="./pfx:value/node()"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="./node()"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </ixsl:variable>
+      <xsl:if test="@value or ./pfx:value">
+        <ixsl:attribute name="value"><ixsl:value-of select="$thevalue"/></ixsl:attribute>
+      </xsl:if>
       <xsl:choose>
         <xsl:when test="@default = 'true'">
-          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()='{$value}' or not(/formresult/formvalues/param[@name='{$name}'])">
+          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()=$thevalue or not(/formresult/formvalues/param[@name='{$name}'])">
             <ixsl:attribute name="selected">selected</ixsl:attribute>
           </ixsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()='{$value}'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{$name}']/text()=$thevalue">
             <ixsl:attribute name="selected">selected</ixsl:attribute>
           </ixsl:if>
         </xsl:otherwise>
@@ -833,16 +907,27 @@
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='radio']">
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <input type="radio">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='value']"/>
+      <ixsl:variable name="thevalue">
+        <xsl:choose>
+          <xsl:when test="@value"><xsl:value-of select="@value"/></xsl:when>
+          <xsl:when test="./pfx:value"><xsl:apply-templates select="./pfx:value/node()"/></xsl:when>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:attribute name="value"><ixsl:value-of select="$thevalue"/></ixsl:attribute>
       <xsl:choose>
         <xsl:when test="@default = 'true'">
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()=$thevalue or not(/formresult/formvalues/param[@name='{@name}'])">
             <ixsl:attribute name="checked">checked</ixsl:attribute>
           </ixsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()=$thevalue">
             <ixsl:attribute name="checked">checked</ixsl:attribute>
           </ixsl:if>
         </xsl:otherwise>
@@ -859,6 +944,10 @@
         <values><string/></values>
         <description>name of the radiobutton</description>
       </param>
+      <children>
+        <name>pfx:value</name>
+        <description>the value of the radio button (instead of using the value attribute)</description>
+      </children>
       <example>
         <input>
           <xmlcode>
@@ -883,16 +972,27 @@
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='check']">
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <input type="checkbox">
-      <xsl:copy-of select="@*[name()!='type' and name()!='default']"/>
+      <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='value']"/>
+      <ixsl:variable name="thevalue">
+        <xsl:choose>
+          <xsl:when test="@value"><xsl:value-of select="@value"/></xsl:when>
+          <xsl:when test="./pfx:value"><xsl:apply-templates select="./pfx:value/node()"/></xsl:when>
+        </xsl:choose>
+      </ixsl:variable>
+      <ixsl:attribute name="value"><ixsl:value-of select="$thevalue"/></ixsl:attribute>
       <xsl:choose>
         <xsl:when test="@default = 'true'">
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}' or not(/formresult/formvalues/param[@name='{@name}'])">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()=$thevalue or not(/formresult/formvalues/param[@name='{@name}'])">
             <ixsl:attribute name="checked">checked</ixsl:attribute>
           </ixsl:if>
         </xsl:when>
         <xsl:otherwise>
-          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()='{@value}'">
+          <ixsl:if test="/formresult/formvalues/param[@name='{@name}']/text()=$thevalue">
             <ixsl:attribute name="checked">checked</ixsl:attribute>
           </ixsl:if>
         </xsl:otherwise>
@@ -927,6 +1027,10 @@
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='text']">
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <input type="text" size="40" maxlength="200">
       <xsl:copy-of select="@*[name()!='type' and name()!='default' and name()!='position']"/>
       <xsl:variable name="thename" select="@name"/>
@@ -1005,6 +1109,10 @@
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='password']">
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <input type="password" size="40" maxlength="200">
       <xsl:copy-of select="@*[name()!='type']"/>
       <xsl:variable name="thename" select="@name"/>
@@ -1039,6 +1147,10 @@
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='area']">
+    <xsl:call-template name="pfx:formwarn">
+      <xsl:with-param name="type">unknown</xsl:with-param>
+      <xsl:with-param name="data" select="current()"/>
+    </xsl:call-template>
     <textarea cols="38" rows="20">
       <xsl:copy-of select="@*[name()!='type' and name()!='position']"/>
       <xsl:variable name="thename" select="@name"/>

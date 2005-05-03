@@ -1,10 +1,35 @@
+2005-05-03  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in (pfx:formwarn): new templated called 
+	from every pfx:xinp template to check if the current name is allowed in the set of wrappers
+	of this page. This check can only be done when the pfx:forminput submits to the current page
+	=> @send-to-page must not be set.
+	(pfx:xinp type="check|radio", pfx:option): added pfx:value as a possible subnode to pfx:xinp and pfx:option nodes.
+	This way any expression can be given to retrieve the value of the input element, even runtime 
+	evaluated ixsl: expressions and the input element will still put its selected or checked attribute into the 
+	right checkbox, radiofield or option.
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamDefinition.java (Module): new class, super class
+	of IWrapperParam and IWrapperIndexedParam
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: implement new methods as required
+	by super class. change constructors to handle new parameter frequency.
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java (gimmeAllParamDefinitions): new method in interface. 
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: implement it. 
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (addIWrapperStatus): 
+	use information from IWrapperParamDefinitions to print out information on the wrapper and parameters
+
+	* example/core/build/iwrapper.xsl: changed so IWrapperParam and IWrapperIndexedParam will 
+	be created with the new constructor that needs the frequency information
+
 2005-05-03  Niels Schelbach <niels@schlund.de>
-    * src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: stopped TimerThread in cancel method
-    * src/de/schlund/pfixxml/targets/TargetGenerator.java: splitted generateAll in two method, to be able to invoke
-    a single Target Generation call
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java: stopped TimerThread in cancel method
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: splitted generateAll in two method, to be able to invoke
+	a single Target Generation call
     
 2005-04-29  Jens Lautenbacher  <jtl@schlund.de>
-
 
 	* src/de/schlund/pfixcore/generator/IWrapperParam.java: added, renamed from IWrapperParamInfo. 
 	Changed all method names containing "ParamInfo" => "Param"

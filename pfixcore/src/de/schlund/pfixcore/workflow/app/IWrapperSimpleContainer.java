@@ -21,25 +21,13 @@ package de.schlund.pfixcore.workflow.app;
 
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
-import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
+import de.schlund.pfixcore.generator.IWrapperParamDefinition;
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
@@ -53,6 +41,19 @@ import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
 import de.schlund.util.statuscodes.StatusCode;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import javax.servlet.http.HttpSession;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
 
 /**
  * Default implementation of the <code>IWrapperContainer</code> interface.
@@ -76,18 +77,20 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     private   IWrapperGroup      contwrappers       = null;
     private   IWrapperGroup      always_retrieve    = null;
 
-    private   Context            context            = null;
-    private   ResultDocument     resdoc             = null;
-    private   PfixServletRequest preq               = null;
-    private   RequestData        reqdata            = null;
-    private   boolean            is_splitted        = false;
-    private   boolean            is_loaded          = false;
-    protected Category           CAT                = Category.getInstance(this.getClass().getName());
+    private   Context            context        = null;
+    private   ResultDocument     resdoc         = null;
+    private   PfixServletRequest preq           = null;
+    private   RequestData        reqdata        = null;
+    private   boolean            is_splitted    = false;
+    private   boolean            is_loaded      = false;
+    protected Category           CAT            = Category.getInstance(this.getClass().getName());
+    private   boolean            extendedstatus = false;
     
-    public  static final String  PROP_CONTAINER     = "iwrappercontainer";
-    private static final String  PROP_INTERFACE     = "interface";
-    public  static final String  PROP_RESTRICED     = "restrictedcontinue";
-    public  static final String  PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
+    public  static final String PROP_CONTAINER       = "iwrappercontainer";
+    private static final String PROP_INTERFACE       = "interface";
+    public  static final String PROP_RESTRICED       = "restrictedcontinue";
+    public  static final String PROP_ALWAYS_RETRIEVE = "alwaysretrieve";
+    private static final String PROP_NOEDITMODE      = "xmlserver.noeditmodeallowed";
     
     private static final String  GROUP_STATUS_PARAM = "__groupdisplay";
     private static final String  GROUP_STATUS       = "__GROUPDISPLAY__STATUS__";
@@ -343,6 +346,28 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 wrap.setAttribute("prefix", wrapper.gimmePrefix());
             }
         }
+        if (extendedstatus) {
+            Element extstatus = resdoc.createNode("iwrapperinfo");
+            for (Iterator iter = wrappers.values().iterator(); iter.hasNext();) {
+                IWrapper                  tmp     = (IWrapper) iter.next();
+                IWrapperParamDefinition[] def     = tmp.gimmeAllParamDefinitions();
+                String                    prefix  = tmp.gimmePrefix();
+                Element                   wrpelem = resdoc.createSubNode(extstatus, "wrapper");
+                wrpelem.setAttribute("prefix", prefix);
+                for (int i = 0; i < def.length ; i++) {
+                    IWrapperParamDefinition tmpdef = def[i];
+                    
+                    Element parelem = resdoc.createSubNode(wrpelem, "param");
+                    parelem.setAttribute("name", tmpdef.getName());
+                    parelem.setAttribute("occurance", tmpdef.getOccurance());
+                    parelem.setAttribute("frequency", tmpdef.getFrequency());
+                    // FIXME: Use more information
+                }
+
+            }
+
+        }
+
     }
 
 
@@ -534,9 +559,16 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
 
     private void readIWrappersConfigFromProperties() throws Exception  {
+        Properties allprops   = context.getProperties();
+        String     noeditmode = allprops.getProperty(PROP_NOEDITMODE);
+        if (noeditmode != null && noeditmode.equals("false")) {
+            extendedstatus = true;
+        }
+
         Properties props      = context.getPropertiesForCurrentPageRequest();
         HashMap    interfaces = PropertiesUtils.selectProperties(props, PROP_INTERFACE);
-
+        
+        
         if (interfaces.isEmpty()) {
             CAT.debug("*** Found no interfaces for this page (page=" + context.getCurrentPageRequest().getName() + ")");
         } else {
