@@ -15,14 +15,12 @@
   <xsl:param name="stylesheets_to_include"/>
 
   <xsl:template match="cus:custom_xsl">
-    <xsl:call-template name="gen_xsl_include">
-      <xsl:with-param name="ns">xsl</xsl:with-param>
+    <xsl:call-template name="gen_xsl_import">
       <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
     </xsl:call-template>
   </xsl:template>
 
-  <xsl:template name="gen_xsl_include">
-    <xsl:param name="ns"/>
+  <xsl:template name="gen_xsl_import">
     <xsl:param name="ssheets"/>
     <xsl:variable name="first">
       <xsl:value-of select="normalize-space(substring-before(concat($ssheets, ' '), ' '))"/>
@@ -31,31 +29,13 @@
       <xsl:value-of select="normalize-space(substring-after($ssheets, ' '))"/>
     </xsl:variable>
     <xsl:if test="$first != ''">
-      <xsl:choose>
-        <xsl:when test="$ns = 'xsl'">
-          <xsl:element name="xsl:include">
-            <xsl:attribute name="href"><xsl:value-of select="$first"/></xsl:attribute>
-          </xsl:element><xsl:text>
-        </xsl:text>
-        </xsl:when>
-        <xsl:when test="$ns = 'ixsl'">
-          <xsl:element name="ixsl:include">
-            <xsl:attribute name="href"><xsl:value-of select="$first"/></xsl:attribute>
-          </xsl:element><xsl:text>
-        </xsl:text>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:message terminate="yes">
-            **** Unknown Namespace: <xsl:value-of select="$ns"/>
-          </xsl:message>
-        </xsl:otherwise>
-      </xsl:choose>
+      <xsl:element name="xsl:import">
+        <xsl:attribute name="href"><xsl:value-of select="$first"/></xsl:attribute>
+        </xsl:element><xsl:text>
+      </xsl:text>
     </xsl:if>
     <xsl:if test="$rest != ''">
-      <xsl:call-template name="gen_xsl_include">
-        <xsl:with-param name="ns">
-          <xsl:value-of select="$ns"/>
-        </xsl:with-param>
+      <xsl:call-template name="gen_xsl_import">
         <xsl:with-param name="ssheets">
           <xsl:value-of select="$rest"/>
         </xsl:with-param>

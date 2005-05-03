@@ -5,11 +5,11 @@
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
   
 <!--  this stylesheet defines the default action: copy through unchanged. -->
-<!--  The funny variables defined here (_var?) are a very dirty hack to -->
-<!--  introduce 10 dynamically scoped variables into XSLT. Of course these -->
-<!--  work only when the default rule actually is called... -->
+<!--  The funny variable defined here (__env) is a very dirty hack to -->
+<!--  introduce a dynamically scoped variable into XSLT. Of course this -->
+<!--  works only when the default rule actually is called... -->
 
-  <xsl:template match="*">
+  <xsl:template match="*|/">
     <xsl:param name="__env"/>
     <xsl:copy>
       <xsl:copy-of select="./@*"/>
