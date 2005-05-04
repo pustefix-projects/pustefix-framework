@@ -354,20 +354,21 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 String                    prefix  = tmp.gimmePrefix();
                 Element                   wrpelem = resdoc.createSubNode(extstatus, "wrapper");
                 wrpelem.setAttribute("prefix", prefix);
-                for (int i = 0; i < def.length ; i++) {
-                    IWrapperParamDefinition tmpdef = def[i];
-                    
-                    Element parelem = resdoc.createSubNode(wrpelem, "param");
-                    parelem.setAttribute("name", tmpdef.getName());
-                    parelem.setAttribute("occurance", tmpdef.getOccurance());
-                    parelem.setAttribute("frequency", tmpdef.getFrequency());
-                    // FIXME: Use more information
+                if (def == null) {
+                    wrpelem.setAttribute("docheck", "false");
+                } else {
+                    for (int i = 0; i < def.length ; i++) {
+                        IWrapperParamDefinition tmpdef = def[i];
+                        
+                        Element parelem = resdoc.createSubNode(wrpelem, "param");
+                        parelem.setAttribute("name", tmpdef.getName());
+                        parelem.setAttribute("occurance", tmpdef.getOccurance());
+                        parelem.setAttribute("frequency", tmpdef.getFrequency());
+                        // FIXME: Use more information
+                    }
                 }
-
             }
-
         }
-
     }
 
 

@@ -1,5 +1,12 @@
 2005-05-04  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (compareTo): changed to allow comparisons 
+	with all IWrapperParamDefinitions
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java (compareTo): new method
+
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java (addIWrapperStatus): set 
+	the docheck=false attribute for wrappers that return a null object for gimmeAllParamDefinitions()
+
 	* example/core/xsl/metatags.xsl.in: 
 	* example/core/xsl/master.xsl.in: 
 	* example/core/xsl/forminput.xsl.in: 

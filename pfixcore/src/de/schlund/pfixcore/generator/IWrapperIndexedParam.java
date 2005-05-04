@@ -34,7 +34,7 @@ import org.apache.log4j.*;
  *
  */
 
-public class IWrapperIndexedParam implements IWrapperParamDefinition {
+public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable {
 
     private static final String TYPE_INDEXED  = "indexed";
     private static final String TYPE_MULTIPLE = "multiple";
@@ -172,4 +172,8 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition {
         return keys;
     }
     
+    public int compareTo(Object inobj) {
+        IWrapperParamDefinition in = (IWrapperParamDefinition) inobj;
+        return name.compareTo(in.getName());
+    }
 }// IWrapperIndexedParam
