@@ -16,7 +16,7 @@
   <xsl:template name="pfx:formwarn">
     <xsl:param name="type"/>
     <xsl:param name="data"/>
-    <xsl:variable name="style_err">position: absolute; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px;</xsl:variable>
+    <xsl:variable name="style_err">position: absolute; color: #000000; background-color: #eeaaaa; border: solid 1px #aa8888; font-family: sans-serif; font-size:9px; font-weight: normal;</xsl:variable>
     <xsl:variable name="theform" select="ancestor::pfx:forminput[position()=1]"/>
     <xsl:if test="$prohibitEdit = 'no' and not($theform/@send-to-page)">
       <xsl:choose>

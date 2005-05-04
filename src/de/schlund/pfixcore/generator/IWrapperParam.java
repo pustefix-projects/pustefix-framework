@@ -266,7 +266,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     }
 
     public int compareTo(Object inobj) {
-        IWrapperParam in = (IWrapperParam) inobj;
+        IWrapperParamDefinition in = (IWrapperParamDefinition) inobj;
         return name.compareTo(in.getName());
     }
 }
