@@ -137,18 +137,8 @@
             <option>hidden</option>
           </oneof>
         </values>
-        <description>Label is hidden (it will not be displayed in the page, only the error icon is shown in case of an error)</description>
+        <description>label is hidden (it will not be displayed in the page, only the error icon is shown in case of an error)</description>
       </param>
-      <example>
-        <input>
-          <xmlcode><pfx:label name="shirt.Color">Color-No.</pfx:label></xmlcode>
-        </input>
-        <output>
-          Displayed as <xmlcode width="80">Color-No.:</xmlcode> when no error happened;<br/><br/>
-          if and error has been detected it's displayed as
-          <xmlcode>[Displayed Error icon]<span class="core_errorlabel_text">Color-No.</span></xmlcode>
-        </output>
-      </example>
     </cus:documentation>  
   </xsl:template>
 
@@ -206,7 +196,7 @@
     <cus:documentation>
       <description>Creates an errorbox,
         that displays all (or a subset of the) errors that happened on
-        form submit. You are encouraged to overwrite this template with
+        while processing submitted data. You are encouraged to overwrite this template with
         your own definition.  Usually the errorbox shows errors
         for each field on the page. If you want do show only special fields, you'll
         have to specify each field by &lt;pfx:paramref name="FIELDNAME"/&gt;</description>
@@ -217,6 +207,10 @@
           <html default="auto"/>
         </values>
       </param>
+      <children>
+        <name>pfx:paramref</name>
+        <description>use the referenced parameter (via the name attribute of pfx:paramref) in the errorbox</description>
+      </children>
       <example>
         <input>
           <xmlcode><pfx:errorbox width="200"/></xmlcode>
@@ -261,17 +255,17 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      <description>Two cases: if the prefix-argument is given, it
+      <description>If the prefix attribute is given, it
         checks if the corresponding Handler is active and if this is
-        true, everything under &lt;pfx:active&lt; will be displayed. If the
-        page argument is given, it checks if the named page is
-        visible instead. If this is true, it everything will be displayed, too</description>
-      <param required="0">
+        true, the content will be displayed. If the
+        page attribute is given, it checks if the named page is
+        visible instead. If this is true, the content will be displayed.</description>
+      <param required="1">
         <name>prefix</name>
-        <description>The prefix of the observed Handler, according to the configuration file</description>
         <values>
           <string/>
         </values>
+        <description>The prefix of the observed Handler, according to the configuration file</description>
       </param>
       <param required="0">
         <name>page</name>
@@ -280,20 +274,6 @@
         </values>
         <description>The name of the observed page</description>
       </param>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:checkactive prefix="shirt">
-              T-Shirt Handler is active
-            </pfx:checkactive>
-            <pfx:checknotactive prefix="shirt">
-              T-Shirt Handler is not active
-            </pfx:checknotactive></xmlcode>
-        </input>
-        <output>If the shirt-handler is active
-          <xmlcode width="150">T-Shirt is active</xmlcode>will be displayed
-        </output>
-      </example>
     </cus:documentation>  
   </xsl:template>
 
@@ -319,11 +299,11 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      <description>Two cases: if the prefix-argument is given, it
-        checks if the corresponding Handler is active and if this is
-        true, everything under &lt;pfx:active&lt; will be displayed. If the
-        page argument is given, it checks if the named page is
-        visible instead. If this is true, it everything will be displayed, too</description>
+      <description>If the prefix attribute is given, it
+        checks if the corresponding Handler is NOT active and if this is
+        true, the content will be displayed. If the
+        page attribute is given, it checks if the named page is
+        NOT visible instead. If this is true, the content will be displayed.</description>
       <param required="1">
         <name>prefix</name>
         <values>
@@ -338,20 +318,6 @@
         </values>
         <description>The name of the observed page</description>
       </param>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:checkactive prefix="shirt">
-              T-Shirt Handler is active
-            </pfx:checkactive>
-            <pfx:checknotactive prefix="shirt">
-              T-Shirt Handler is not active
-            </pfx:checknotactive></xmlcode>
-        </input>
-        <output>If the shirt-handler is not active
-          <xmlcode width="150">T-Shirt is not active</xmlcode>will be displayed
-        </output>
-      </example>
     </cus:documentation>  
   </xsl:template> 
 
