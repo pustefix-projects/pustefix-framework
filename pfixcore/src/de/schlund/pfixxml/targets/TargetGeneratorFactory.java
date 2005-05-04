@@ -26,10 +26,6 @@ import java.io.File;
 import java.util.HashMap;
 import org.apache.log4j.Category;
 
-/**
- *
- *
- */
 
 public class TargetGeneratorFactory {
     private static TargetGeneratorFactory instance     = new TargetGeneratorFactory();
