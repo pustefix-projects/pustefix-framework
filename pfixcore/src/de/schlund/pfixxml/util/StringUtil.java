@@ -1,4 +1,4 @@
-package de.schlund.util;
+package de.schlund.pfixxml.util;
 
 /**
  * Describe class StringUtil here.
@@ -16,6 +16,11 @@ public class StringUtil {
             return input;
         }
         return input.replaceAll(regexp, replacement);
+    }
+
+    public static String sign(String input, String secret) {
+        
+        return "";
     }
     
 }

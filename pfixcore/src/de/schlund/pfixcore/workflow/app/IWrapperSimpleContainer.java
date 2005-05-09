@@ -140,7 +140,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     }
     
     /**
-     * Use this methods at any time to check if any error has happened in
+     * Use this method at any time to check if any error has happened in
      * any of the "currently active" IWrappers of this Container.
      * Depending on the use of grouping, or restricting to certain
      * IWrappers the term "currently active" means something between
@@ -277,8 +277,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
 
     /**
      * Returns the {@link ResultDocument ResultDocument} that's associated with this IWrapperContainer.
-     * Do not call this method if you initialized the instance with a null ResultDocument!
-     * The method will fail with a RuntimeException if you try to do nevertheless.
      * @return a <code>ResultDocument</code> value
      * @see de.schlund.pfixcore.workflow.app.IWrapperContainer#getAssociatedResultDocument()
      */
