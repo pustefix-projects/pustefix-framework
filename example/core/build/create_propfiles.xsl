@@ -2,8 +2,7 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:prop="http://pustefix.sourceforge.net/properties200401"
-                xmlns:su="xalan://de.schlund.util.StringUtil"
-                xmlns:x="http://x.nocom"
+                xmlns:su="xalan://de.schlund.pfixxml.util.StringUtil"
                 >
 
   <xsl:output method="text" encoding="ISO-8859-1" indent="no"/>
