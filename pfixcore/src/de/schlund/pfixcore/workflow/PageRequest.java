@@ -122,7 +122,7 @@ public class PageRequest {
         } else {
             rootname = name;
         }
-        CAT.debug("=== PR: " + preqname + " (" + rootname + ") ===");
+        // CAT.debug("=== PR: " + preqname + " (" + rootname + ") ===");
     }
 
     public String getRootName() {
