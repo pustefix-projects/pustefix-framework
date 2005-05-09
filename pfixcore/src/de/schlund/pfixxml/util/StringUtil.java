@@ -19,8 +19,8 @@ public class StringUtil {
     }
 
     public static String sign(String input, String secret) {
-        
-        return "";
+        String sign = MD5Utils.hex_md5(input + secret);
+        return input + "SIGN=" + sign;
     }
     
 }
