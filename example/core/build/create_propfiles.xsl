@@ -695,7 +695,7 @@
         </xsl:call-template>
       </xsl:if>
     </xsl:for-each>
-    <xsl:if test="$final">
+    <xsl:if test="not($final = '')">
       <xsl:value-of select="$prefix_flow"/>FINAL=<xsl:value-of select="$final"/><xsl:text>&#xa;</xsl:text>
     </xsl:if>
   </xsl:template>
