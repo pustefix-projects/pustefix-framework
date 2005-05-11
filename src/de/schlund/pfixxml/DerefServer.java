@@ -105,19 +105,22 @@ public class DerefServer extends ServletManager {
     }
 
     private boolean goodReferer(PfixServletRequest preq) {
-       String referer = preq.getRequest().getHeader("Referer");
-       String server = preq.getServerName();
+//        String referer = preq.getRequest().getHeader("Referer");
+//        String server = preq.getServerName();
        
-       if (referer == null) {
-           // got no referer, maybe disabled or bad request...
-           return false;
-       }
+//        if (referer == null) {
+//            // got no referer, maybe disabled or bad request...
+//            return false;
+//        }
 
-       if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
-       	   // ok, referer and servername match!!
-           return true;
-       }
+//        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
+//        	   // ok, referer and servername match!!
+//            return true;
+//        }
        
-       return false;
+//        return false;
+
+        // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
+        return true;
     }
 }

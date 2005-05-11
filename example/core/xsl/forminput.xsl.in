@@ -780,19 +780,17 @@
     <xsl:param name="name" select="ancestor::pfx:xinp[@type='select']/@name"/>
     <option>
       <xsl:copy-of select="@*[name()!= 'default' and name()!= 'value']"/>
-      <ixsl:variable name="thevalue">
-        <xsl:choose>
-          <xsl:when test="@value">
-            <xsl:value-of select="@value"/>
-          </xsl:when>
-          <xsl:when test="./pfx:value">
-            <xsl:apply-templates select="./pfx:value/node()"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates select="./node()[name() != 'ixsl:attribute']"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </ixsl:variable>
+      <ixsl:variable name="thevalue"><xsl:choose>
+        <xsl:when test="@value">
+          <xsl:value-of select="@value"/>
+        </xsl:when>
+        <xsl:when test="./pfx:value">
+          <xsl:apply-templates select="./pfx:value/node()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="./node()[name() != 'ixsl:attribute']"/>
+        </xsl:otherwise>
+      </xsl:choose></ixsl:variable>
       <xsl:if test="@value or ./pfx:value">
         <ixsl:attribute name="value"><ixsl:value-of select="$thevalue"/></ixsl:attribute>
       </xsl:if>
