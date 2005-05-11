@@ -20,7 +20,9 @@
 package de.schlund.pfixxml.jmx;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -79,7 +81,6 @@ public class JmxServer implements JmxServerMBean {
         this.host = PropertiesUtils.getString(props, "jmx.server.host"); 
         this.port = PropertiesUtils.getInteger(props, "jmx.server.port"); 
         start();
-    	LOG.debug("init JmxServer done: " + host + ":" + port);
     }
 
 	//--
@@ -100,6 +101,7 @@ public class JmxServer implements JmxServerMBean {
            		Environment.create(keystore.resolve()), server);
        	connector.start();
        	notifications(connector);
+		LOG.debug("started: " + connector.getAddress());
     }
 
     private static void notifications(JMXConnectorServer connector) {
@@ -128,7 +130,7 @@ public class JmxServer implements JmxServerMBean {
 
 		logger = Logger.getLogger("javax.management.remote");
 		logger.setLevel(Level.FINER);
-		handler = new FileHandler("jmpx.log");
+		handler = new FileHandler("jmx.log");
 		handler.setFormatter(new SimpleFormatter());
 		logger.addHandler(handler);
     }

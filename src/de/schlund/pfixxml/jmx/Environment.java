@@ -22,7 +22,8 @@ public class Environment {
     public static HashMap create(File keystore) {
         HashMap env = new HashMap();
 
-        env.put("jmx.remote.profiles", "TLS");
+		env.put("jmx.remote.server.address.wildcard", "false");
+		env.put("jmx.remote.profiles", "TLS");
         env.put("jmx.remote.tls.socket.factory", createSSLFactory(keystore));
         env.put("jmx.remote.tls.enabled.protocols", "TLSv1");
         env.put("jmx.remote.tls.need.client.authentication", "true");
@@ -39,7 +40,6 @@ public class Environment {
     
     private static SSLSocketFactory createSSLFactory(File keystore) {
         SSLContext ctx;
-        SSLSocketFactory result;
         
         try {
 			ctx = SSLContext.getInstance("TLSv1");
@@ -49,8 +49,7 @@ public class Environment {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-        result = ctx.getSocketFactory();
-        return result;
+        return ctx.getSocketFactory();
     }
 
     private static KeyManager[] getKeyManagers(File keystore)  throws GeneralSecurityException, IOException {
