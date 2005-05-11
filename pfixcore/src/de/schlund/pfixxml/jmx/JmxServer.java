@@ -89,7 +89,7 @@ public class JmxServer implements JmxServerMBean {
         JMXConnectorServer connector;
         Path keystore;
         
-        javaLogging();
+        // javaLogging();
 		keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
         server = MBeanServerFactory.createMBeanServer();
         server.registerMBean(this, createServerName());
@@ -128,7 +128,7 @@ public class JmxServer implements JmxServerMBean {
 
 		logger = Logger.getLogger("javax.management.remote");
 		logger.setLevel(Level.FINER);
-		handler = new FileHandler("log");
+		handler = new FileHandler("jmpx.log");
 		handler.setFormatter(new SimpleFormatter());
 		logger.addHandler(handler);
     }
