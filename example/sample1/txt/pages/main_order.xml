@@ -80,9 +80,6 @@
                 <pfx:option default="true" value="L">L</pfx:option>
                 <pfx:option value="XL">XL</pfx:option>
                 <pfx:option value="XXL">XXL</pfx:option>
-                <pfx:option>
-                  <ixsl:attribute name="value">Eeeek</ixsl:attribute>FooooBar
-                </pfx:option>
               </pfx:xinp>
             </td>
           </tr>
