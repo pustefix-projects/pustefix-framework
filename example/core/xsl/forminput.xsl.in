@@ -789,7 +789,7 @@
             <xsl:apply-templates select="./pfx:value/node()"/>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:apply-templates select="./node()"/>
+            <xsl:apply-templates select="./node()[name() != 'ixsl:attribute']"/>
           </xsl:otherwise>
         </xsl:choose>
       </ixsl:variable>
