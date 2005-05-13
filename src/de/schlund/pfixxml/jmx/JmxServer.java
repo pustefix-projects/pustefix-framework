@@ -20,6 +20,7 @@
 package de.schlund.pfixxml.jmx;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,19 +65,16 @@ public class JmxServer implements JmxServerMBean {
         return instance;
     }
     
-    private String host;
     private int port;
     private final List knownClients;
     
     public JmxServer() {
-    	this.host = null; // not started yet
-        this.port = -1;
+        this.port = -1; 
         this.knownClients = new ArrayList();
     }
     
     public void init(Properties props) throws Exception {
     	LOG.debug("init JmxServer start");
-        this.host = PropertiesUtils.getString(props, "jmx.server.host"); 
         this.port = PropertiesUtils.getInteger(props, "jmx.server.port"); 
         start();
     }
@@ -84,6 +82,7 @@ public class JmxServer implements JmxServerMBean {
 	//--
     
     public void start() throws Exception {
+        InetAddress host;
         MBeanServer server;
         JMXConnectorServer connector;
         Path keystore;
@@ -94,12 +93,26 @@ public class JmxServer implements JmxServerMBean {
         server.registerMBean(this, createServerName());
         // otherwise, clients cannot instaniate TrailLogger objects:
         server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
+        // TODO: i'd like to 
+        //    getenv("MACHINE")
+        // but it throws an exception in Java 1.4
+        host = InetAddress.getLocalHost(); 
+        LOG.debug("host: " + host.getHostName());
+        if (host.getHostName().equals("pem.schlund.de")) {
+            host = InetAddress.getByName(System.getProperty("user.name") +
+                    "." + host.getHostName());
+            LOG.debug("hacked host: " + host.getHostName());
+        }
         connector = JMXConnectorServerFactory.newJMXConnectorServer(
-           		createServerURL(host, port), 
+           		createServerURL(host.getHostName(), port), 
            		Environment.create(keystore.resolve()), server);
-       	connector.start();
-       	notifications(connector);
-		LOG.debug("started: " + connector.getAddress());
+       	try {
+            connector.start();
+       	    notifications(connector);
+            LOG.debug("started: " + connector.getAddress());
+        } catch (Exception e) { // TODO: dump if it works on life machines
+            LOG.debug("not started", e);
+        }
     }
 
     private static void notifications(JMXConnectorServer connector) {
