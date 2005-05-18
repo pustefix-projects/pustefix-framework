@@ -47,7 +47,6 @@ public class EditorHelper {
     
     
     public static void doUpdateForAuxDependency(AuxDependency currinc, TargetGenerator tgen) throws Exception {
-        //Path path = currinc.getPath();
         TreeSet targets = currinc.getAffectedTargets();
         HashSet pages = new HashSet();
         for (Iterator i = targets.iterator(); i.hasNext();) {
@@ -66,7 +65,7 @@ public class EditorHelper {
                 } else {
                     try {
                         toplevel.getValue();
-                    } catch (Exception e) {
+                    } catch (Exception e) { 
                         CAT.warn("*** CAUTION: Exception on updating of " + toplevel.getTargetKey());
                     }
                 }
