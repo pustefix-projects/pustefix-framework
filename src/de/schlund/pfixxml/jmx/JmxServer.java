@@ -22,6 +22,7 @@ package de.schlund.pfixxml.jmx;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,7 +48,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
 
-import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -65,17 +65,18 @@ public class JmxServer implements JmxServerMBean {
         return instance;
     }
     
-    private int port;
     private final List knownClients;
+
+    /** don't store this in a config file, because client apps can access values where */
+    public static final int PORT_A = 9334;
+    public static final int PORT_B = 9335;
     
     public JmxServer() {
-        this.port = -1; 
         this.knownClients = new ArrayList();
     }
     
     public void init(Properties props) throws Exception {
     	LOG.debug("init JmxServer start");
-        this.port = PropertiesUtils.getInteger(props, "jmx.server.port"); 
         start();
     }
 
@@ -87,32 +88,54 @@ public class JmxServer implements JmxServerMBean {
         JMXConnectorServer connector;
         Path keystore;
         
-        // javaLogging();
-		keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
-        server = MBeanServerFactory.createMBeanServer();
-        server.registerMBean(this, createServerName());
-        // otherwise, clients cannot instaniate TrailLogger objects:
-        server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
-        // TODO: i'd like to 
-        //    getenv("MACHINE")
-        // but it throws an exception in Java 1.4
-        host = InetAddress.getLocalHost(); 
-        LOG.debug("host: " + host.getHostName());
-        if (host.getHostName().equals("pem.schlund.de")) {
-            host = InetAddress.getByName(System.getProperty("user.name") +
-                    "." + host.getHostName());
-            LOG.debug("hacked host: " + host.getHostName());
-        }
-        connector = JMXConnectorServerFactory.newJMXConnectorServer(
-           		createServerURL(host.getHostName(), port), 
+        try {
+            // javaLogging();
+            keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
+            server = MBeanServerFactory.createMBeanServer();
+            server.registerMBean(this, createServerName());
+            // otherwise, clients cannot instaniate TrailLogger objects:
+            server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
+            host = getHost();
+            Environment.assertCipher();
+            connector = JMXConnectorServerFactory.newJMXConnectorServer(
+           		createServerURL(host.getHostName(), getPort(host)), 
            		Environment.create(keystore.resolve()), server);
-       	try {
             connector.start();
        	    notifications(connector);
             LOG.debug("started: " + connector.getAddress());
         } catch (Exception e) { // TODO: dump if it works on life machines
             LOG.debug("not started", e);
         }
+    }
+
+    private static InetAddress getHost() throws UnknownHostException {
+        InetAddress host;
+        
+        host = InetAddress.getLocalHost(); 
+        // TODO: i'd like to use
+        //    getenv("MACHINE")
+        // (instead of the hack below) but it throws an exception in Java 1.4
+        if (host.getHostName().equals("pem.schlund.de")) {
+            host = InetAddress.getByName(System.getProperty("user.name") +
+                    "." + host.getHostName());
+            LOG.debug("hacked host: " + host.getHostName());
+        }
+        return host;
+    }
+    
+    private static int getPort(InetAddress host) {
+        String name;
+        
+        LOG.debug("host: " + host.getHostName());
+        LOG.debug("path: " + PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath());
+        if (host.getHostName().startsWith("pustefix")) {
+            LOG.debug("pustefix life port hack");
+            name = PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath();
+            if (name.endsWith("/pfixschlund_b/projects/foo")) {
+                return PORT_B;
+            }
+        }
+        return PORT_A;
     }
 
     private static void notifications(JMXConnectorServer connector) {
@@ -195,7 +218,7 @@ public class JmxServer implements JmxServerMBean {
 
         lst = new ArrayList();
         admin = SessionAdmin.getInstance();
-        iter = SessionAdmin.getInstance().getAllSessionIds().iterator();
+        iter = admin.getAllSessionIds().iterator();
         while (iter.hasNext()) {
             id = (String) iter.next();
             info = admin.getInfo(id);

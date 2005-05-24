@@ -40,10 +40,10 @@ public class TrailWriter implements NotificationListener {
     
     //--
     
-    public static TrailWriter createTmp() throws IOException {
+    public static TrailWriter createTmp(String name) throws IOException {
         File file;
         
-        file = File.createTempFile("recorded", TRAIL_FILE_SUFFIX);
+        file = File.createTempFile(name, TRAIL_FILE_SUFFIX);
         file.deleteOnExit();
         return new TrailWriter(file);
     }
