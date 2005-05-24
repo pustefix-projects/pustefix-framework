@@ -5,7 +5,6 @@ import de.schlund.pfixcore.workflow.ContextInterceptor;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.Variant;
-import java.util.Properties;
 
 /**
  * Describe class SampleStartIC here.
