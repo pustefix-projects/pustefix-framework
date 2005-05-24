@@ -649,7 +649,7 @@
                   <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
                       <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
                   <xsl:if test="$target = '_popup'">
-                    <ixsl:attribute name="onclick">javascript:top.__js_popup('<xsl:copy-of select="$fulllink"/>','<xsl:value-of select="$popupid"/>','<xsl:value-of select="$popupwidth"/>','<xsl:value-of select="$popupheight"/>');return(false);</ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="$popupid"/>','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=<xsl:value-of select="$popupwidth"/>,height=<xsl:value-of select="$popupheight"/>,screenX=100,screenY=100');</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
                   <xsl:choose>
@@ -702,17 +702,7 @@
                   <xsl:copy-of select="@*"/>
                   <xsl:if test="@target = '_popup'">
                     <xsl:attribute name="target">_blank</xsl:attribute>
-                    <ixsl:attribute name="onclick">
-                      <xsl:text>javascript:top.__js_popup('</xsl:text>
-                      <xsl:copy-of select="$href"/>
-                      <xsl:text>','</xsl:text>
-                      <xsl:value-of select="@popupid"/>
-                      <xsl:text>','</xsl:text>
-                      <xsl:value-of select="@popupwidth"/>
-                      <xsl:text>','</xsl:text>
-                      <xsl:value-of select="@popupheight"/>
-                      <xsl:text>');return(false);</xsl:text>
-                    </ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="@popupid"/>','width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>');</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href">
                     <xsl:copy-of select="$href"/>
@@ -798,9 +788,9 @@
           </xmlcode>
         </input>
         <output>
-          <xmlcode><a href="/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR" target="_blank"
-          onclick="javascript:top.__js_popup('/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR','','','');return(false);">
-          Goto Gimp!</a>
+          <xmlcode>
+            <a href="/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR" target="_blank"
+               onclick="return !window.open(this.getAttribute('href'),'','width=,height=');">Goto Gimp!</a>
           </xmlcode>
         </output>
       </example>
@@ -974,8 +964,3 @@
 
 </xsl:stylesheet>
 
-<!--
-Local Variables:
-mode: xsl
-End:
--->
