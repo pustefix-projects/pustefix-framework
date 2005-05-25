@@ -99,7 +99,7 @@ public class JmxServer implements JmxServerMBean {
             Environment.assertCipher();
             connector = JMXConnectorServerFactory.newJMXConnectorServer(
            		createServerURL(host.getHostName(), getPort(host)), 
-           		Environment.create(keystore.resolve()), server);
+           		Environment.create(keystore.resolve(), true), server);
             connector.start();
        	    notifications(connector);
             LOG.debug("started: " + connector.getAddress());
