@@ -130,7 +130,7 @@ public class Xml {
         return "file://" + file.getAbsolutePath();
     }
 
-    public static Document parse(Source input) throws  TransformerException, TransformerConfigurationException {
+    public static Document parse(Source input) throws TransformerException, TransformerConfigurationException {
         try {
             Transformer trans  = Xslt.createIdentityTransformer();
             DOMResult   result = new DOMResult();

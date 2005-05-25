@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface JmxServerMBean {
+    public ApplicationList getApplicationList(boolean tomcat);
     public List getSessions(String serverName, String remoteAddr);
     public void invalidateSession(String id) throws IOException;
     public boolean isKnownClient(String remoteAddr);
