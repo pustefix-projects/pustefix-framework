@@ -1,3 +1,7 @@
+2005-05-25  Daniel Hopp <daniel.hopp@schlund.de>
+
+  * removed functions __js_getFormElement, __js_getFormElementWithValue from example/core/script/baselib.js
+
 2005-05-24  Daniel Hopp <daniel.hopp@schlund.de>
 
   * removed calls to __js_popup from example/core/xsl/navigation.xsl.in
