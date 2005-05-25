@@ -90,15 +90,18 @@ public class Environment {
         }
     }
     
-    public static HashMap create(File keystore) {
+    /** you might want to switch off security to access with jmx consoles */
+    public static HashMap create(File keystore, boolean secure) {
         HashMap env = new HashMap();
 
 		env.put("jmx.remote.server.address.wildcard", "false");
-		env.put("jmx.remote.profiles", "TLS");
-        env.put("jmx.remote.tls.socket.factory", createSSLFactory(keystore));
-        env.put("jmx.remote.tls.enabled.protocols", "TLSv1");
-        env.put("jmx.remote.tls.need.client.authentication", "true");
-		env.put("jmx.remote.tls.enabled.cipher.suites", CIPHER_SUITE);
+        if (secure) {
+            env.put("jmx.remote.profiles", "TLS");
+            env.put("jmx.remote.tls.socket.factory", createSSLFactory(keystore));
+            env.put("jmx.remote.tls.enabled.protocols", "TLSv1");
+            env.put("jmx.remote.tls.need.client.authentication", "true");
+            env.put("jmx.remote.tls.enabled.cipher.suites", CIPHER_SUITE);
+        }
         return env;
     }
 
