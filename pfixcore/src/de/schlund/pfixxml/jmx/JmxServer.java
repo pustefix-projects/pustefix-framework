@@ -19,6 +19,7 @@
 
 package de.schlund.pfixxml.jmx;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -45,13 +46,16 @@ import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.management.remote.jmxmp.JMXMPConnectorServer;
 import javax.servlet.http.HttpSession;
+import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
+import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
 
 /** 
  * Jmx Server, started via factory.init
@@ -66,6 +70,7 @@ public class JmxServer implements JmxServerMBean {
     }
     
     private final List knownClients;
+    private ApplicationList applicationList;
 
     /** don't store this in a config file, because client apps can access values where */
     public static final int PORT_A = 9334;
@@ -73,6 +78,7 @@ public class JmxServer implements JmxServerMBean {
     
     public JmxServer() {
         this.knownClients = new ArrayList();
+        this.applicationList = null;
     }
     
     public void init(Properties props) throws Exception {
@@ -181,6 +187,21 @@ public class JmxServer implements JmxServerMBean {
         knownClients.remove(remoteAddr);
     }
 
+    public ApplicationList getApplicationList(boolean tomcat) {
+        File file;
+        Document doc;
+        
+        if (applicationList == null) {
+            file = PathFactory.getInstance().createPath("servletconf/tomcat/conf/server.xml").resolve();
+            try {
+                doc = Xml.parse(file);
+                applicationList = ApplicationList.load(Xml.parse(file), tomcat);
+            } catch (TransformerException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return applicationList;
+    }
     //--
 
     public static JMXServiceURL createServerURL(String host, int port) {
