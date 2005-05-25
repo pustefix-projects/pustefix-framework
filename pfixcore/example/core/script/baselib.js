@@ -342,26 +342,3 @@ function __js_Layer(layer_id) {
 
 }
 
-
-//
-// Misc 
-//
-
-function __js_getFormElement(obj, formindex, elemname) {
-    var form = obj.forms[formindex];
-    for (var i = 0; i < form.length; i++) {
-        if (form[i].name == elemname) { 
-            return form[i];
-        }
-    }
-}
-
-function __js_getFormElementWithValue(obj, formindex, elemname, elemvalue) {
-    var form = obj.forms[formindex];
-    for (var i = 0; i < form.length; i++) {
-        if (form[i].name == elemname && form[i].value == elemvalue) { 
-            return form[i];
-        }
-    }
-}
-
