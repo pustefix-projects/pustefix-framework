@@ -7,35 +7,53 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.Attr;
+import org.apache.log4j.Logger;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 
 import de.schlund.pfixxml.util.XPath;
 
 public class ApplicationList implements Serializable {
-    public static ApplicationList load(Document serverXml, boolean tomcat) throws TransformerException {
+    private static final Logger LOG = Logger.getLogger(ApplicationList.class);
+    
+    public static ApplicationList load(Document projectsXml, boolean tomcat, String sessionSuffix) throws TransformerException {
         ApplicationList result;
-        List hosts;
         Iterator iter;
-        Element host;
-        String server;
-        String docBase;
+        Element project;
         String name;
+        String server;
+        String defpath;
         
         result = new ApplicationList();
-        hosts = XPath.select(serverXml, "/Server/Service/Engine/Host");
-        iter = hosts.iterator();
+        iter = XPath.select(projectsXml, "/projects/project").iterator();
         while (iter.hasNext()) {
-            host = (Element) iter.next();
-            server = host.getAttribute("name");
-            docBase = ((Attr) XPath.selectOne(host, "Context[@path='/xml']/@docBase")).getValue();
-            name = docBase.substring(docBase.lastIndexOf('/') + 1); // ok for - 1
-            result.add(Application.create(name, server, tomcat));
+            project = (Element) iter.next();
+            name = project.getAttribute("name");
+            defpath = getTextOpt(project, "defpath");
+            if (defpath == null) {
+                LOG.warn("application " + name + " has no defpath - ignored");
+            } else {
+                server = getText(project, "servername");
+                result.add(new Application(name, server, tomcat, defpath, sessionSuffix));
+            }
         }
         return result;
     }
+    
+    private static String getTextOpt(Node root, String path) throws DOMException, TransformerException {
+        if (XPath.select(root, path).size() == 0) {
+            return null;
+        } else {
+            return getText(root, path);
+        }
+    }
 
+    private static String getText(Node root, String path) throws DOMException, TransformerException {
+        return ((Text) XPath.selectOne(root, path + "/text()")).getNodeValue();        
+    }
     
     //--
     

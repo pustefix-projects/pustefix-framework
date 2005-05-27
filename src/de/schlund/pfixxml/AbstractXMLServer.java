@@ -21,7 +21,34 @@ package de.schlund.pfixxml;
 
 
 
-import de.schlund.pfixxml.jmx.JmxServer;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+
+import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
@@ -35,31 +62,6 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 
 /**
@@ -620,7 +622,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         } else {
             throw new IllegalArgumentException("invalid value for " + PARAM_XMLONLY + ": " + value);
         }
-        if (editmodeAllowed || JmxServer.getInstance().isKnownClient(pfreq.getRemoteAddr())) {
+        if (editmodeAllowed || JmxServerFactory.getServer().isKnownClient(pfreq.getRemoteAddr())) {
             return rendering;
         } else {
             return RENDER_NORMAL;
