@@ -20,6 +20,7 @@ import javax.net.ssl.TrustManagerFactory;
  * o  client authentication
  */
 public class Environment {
+	/** prints available cipher suites */
     public static void main(String[] args) {
         String[] suites;
         int i;

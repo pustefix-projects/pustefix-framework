@@ -19,18 +19,21 @@
 
 package de.schlund.pfixxml.jmx;
 
-import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.pfixxml.RequestParam;
-import de.schlund.pfixxml.SPDocument;
-import de.schlund.pfixxml.util.Xml;
 import java.io.IOException;
+
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.servlet.http.HttpSession;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.RequestParam;
+import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.util.Xml;
 
 /**
  * Creates a trail by logging request/response pairs.
@@ -58,16 +61,14 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
     
 	//--
 
-	private final String name;
 	private int sequenceNumber;
 	private final HttpSession session;
 	
-	public TrailLogger(String name, String sessionId) throws IOException {
-	    this(name, JmxServer.getSession(sessionId));
+	public TrailLogger(String sessionId) throws IOException {
+	    this(JmxServer.getSession(sessionId));
 	}
 	
-	public TrailLogger(String name, HttpSession session) {
-	    this.name = name;
+	public TrailLogger(HttpSession session) {
 		this.sequenceNumber = 0;
 		this.session = session;
    		session.setAttribute(SESS_TRAIL_LOGGER, this);

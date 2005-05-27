@@ -16,7 +16,7 @@
     <prop name="factory.initialize.07">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
     <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.09">de.schlund.pfixxml.PerfEventTypeConfig</prop>
-    <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServer</prop>
+    <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
     
     <!-- part index -->
     <prop name="partindex.reloadchanges">true</prop>

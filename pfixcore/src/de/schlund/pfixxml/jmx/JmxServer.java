@@ -23,20 +23,21 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
@@ -63,85 +64,34 @@ import de.schlund.pfixxml.util.Xml;
 public class JmxServer implements JmxServerMBean {
     private static Category LOG = Category.getInstance(JmxServer.class.getName());
 
-    private static JmxServer instance = new JmxServer();
-
-    public static JmxServer getInstance() {
-        return instance;
-    }
-    
+    private final MBeanServer server;
     private final List knownClients;
     private ApplicationList applicationList;
-
-    /** don't store this in a config file, because client apps can access values where */
-    public static final int PORT_A = 9334;
-    public static final int PORT_B = 9335;
     
     public JmxServer() {
+        this.server = MBeanServerFactory.createMBeanServer();
         this.knownClients = new ArrayList();
         this.applicationList = null;
     }
     
-    public void init(Properties props) throws Exception {
-    	LOG.debug("init JmxServer start");
-        start();
-    }
-
 	//--
     
-    public void start() throws Exception {
-        InetAddress host;
-        MBeanServer server;
+    public void start(InetAddress host, int port) throws Exception {
         JMXConnectorServer connector;
         Path keystore;
         
-        try {
-            // javaLogging();
-            keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
-            server = MBeanServerFactory.createMBeanServer();
-            server.registerMBean(this, createServerName());
-            // otherwise, clients cannot instaniate TrailLogger objects:
-            server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
-            host = getHost();
-            Environment.assertCipher();
-            connector = JMXConnectorServerFactory.newJMXConnectorServer(
-           		createServerURL(host.getHostName(), getPort(host)), 
-           		Environment.create(keystore.resolve(), true), server);
-            connector.start();
-       	    notifications(connector);
-            LOG.debug("started: " + connector.getAddress());
-        } catch (Exception e) { // TODO: dump if it works on life machines
-            LOG.debug("not started", e);
-        }
-    }
-
-    private static InetAddress getHost() throws UnknownHostException {
-        InetAddress host;
-        
-        host = InetAddress.getLocalHost(); 
-        // TODO: i'd like to use
-        //    getenv("MACHINE")
-        // (instead of the hack below) but it throws an exception in Java 1.4
-        if (host.getHostName().equals("pem.schlund.de")) {
-            host = InetAddress.getByName(System.getProperty("user.name") +
-                    "." + host.getHostName());
-            LOG.debug("hacked host: " + host.getHostName());
-        }
-        return host;
-    }
-    
-    private static int getPort(InetAddress host) {
-        String name;
-        
-        LOG.debug("host: " + host.getHostName());
-        LOG.debug("path: " + PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath());
-        if (host.getHostName().startsWith("pustefix")) {
-            LOG.debug("pustefix life port hack");
-            name = PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath();
-            if (name.endsWith("/pfixschlund_b/projects/foo")) {
-                return PORT_B;
-            }
-        }
-        return PORT_A;
+        // javaLogging();
+        keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
+        server.registerMBean(this, createServerName());
+        // otherwise, clients cannot instaniate TrailLogger objects:
+        server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
+        Environment.assertCipher();
+        connector = JMXConnectorServerFactory.newJMXConnectorServer(
+       		createServerURL(host.getHostName(), port), 
+       		Environment.create(keystore.resolve(), true), server);
+        connector.start();
+   	    notifications(connector);
+        LOG.debug("started: " + connector.getAddress());
     }
 
     private static void notifications(JMXConnectorServer connector) {
@@ -175,6 +125,8 @@ public class JmxServer implements JmxServerMBean {
 		logger.addHandler(handler);
     }
 
+    //-- client authentication
+    
     public boolean isKnownClient(String remoteAddr) {
         return knownClients.contains(remoteAddr);
     }
@@ -187,15 +139,15 @@ public class JmxServer implements JmxServerMBean {
         knownClients.remove(remoteAddr);
     }
 
-    public ApplicationList getApplicationList(boolean tomcat) {
+    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
         File file;
         Document doc;
         
         if (applicationList == null) {
-            file = PathFactory.getInstance().createPath("servletconf/tomcat/conf/server.xml").resolve();
+            file = PathFactory.getInstance().createPath("servletconf/projects.xml").resolve();
             try {
                 doc = Xml.parse(file);
-                applicationList = ApplicationList.load(Xml.parse(file), tomcat);
+                applicationList = ApplicationList.load(Xml.parse(file), tomcat, sessionSuffix);
             } catch (TransformerException e) {
                 throw new RuntimeException(e);
             }
@@ -216,13 +168,37 @@ public class JmxServer implements JmxServerMBean {
         return createName(JmxServer.class.getName());
     }
 
-    public static ObjectName createName() {
-        return createName(TrailLogger.class.getName());
+    // TODO: who's responsible for unregister?
+    public ObjectName startRecording(String sessionId) throws IOException {
+    	ObjectName name;
+    	TrailLogger logger;
+    	
+    	logger = new TrailLogger(getSession(sessionId));
+    	name = createName(TrailLogger.class.getName(), sessionId);
+        try {
+			server.registerMBean(logger, name);
+		} catch (InstanceAlreadyExistsException e) {
+			throw new RuntimeException(e);
+		} catch (MBeanRegistrationException e) {
+			throw new RuntimeException(e);
+		} catch (NotCompliantMBeanException e) {
+			throw new RuntimeException(e);
+		}
+    	
+    	return name;
     }
 
     private static ObjectName createName(String type) {
         try {
             return new ObjectName("testalizer:type=" + type);
+        } catch (MalformedObjectNameException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static ObjectName createName(String type, String session) {
+        try {
+            return new ObjectName("testalizer:type=" + type + ",session=" + session);
         } catch (MalformedObjectNameException e) {
             throw new RuntimeException(e);
         }

@@ -22,8 +22,11 @@ package de.schlund.pfixxml.jmx;
 import java.io.IOException;
 import java.util.List;
 
+import javax.management.ObjectName;
+
 public interface JmxServerMBean {
-    public ApplicationList getApplicationList(boolean tomcat);
+	public ObjectName startRecording(String sessionId) throws IOException;
+    public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix);
     public List getSessions(String serverName, String remoteAddr);
     public void invalidateSession(String id) throws IOException;
     public boolean isKnownClient(String remoteAddr);
