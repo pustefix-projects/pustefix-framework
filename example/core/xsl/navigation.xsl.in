@@ -703,10 +703,10 @@
                   <xsl:if test="@target = '_popup'">
                     <xsl:variable name="windowFeatures">
                       <xsl:choose>
-                        <xsl:when test="@popupwidth and @popupheight">,'width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
-                        <xsl:when test="@popupwidth">,'width=<xsl:value-of select="@popupwidth"/>'</xsl:when>
-                        <xsl:when test="@popupheight">,'height=<xsl:value-of select="@popupheight"/>'</xsl:when>
-                        <xsl:otherwise/>
+                        <xsl:when test="@popupwidth and @popupheight">,'resizable=yes,width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
+                        <xsl:when test="@popupwidth">,'resizable=yes,width=<xsl:value-of select="@popupwidth"/>'</xsl:when>
+                        <xsl:when test="@popupheight">,'resizable=yes,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
+                        <xsl:otherwise>,'resizable=yes'</xsl:otherwise>
                       </xsl:choose>
                     </xsl:variable>
                     <xsl:attribute name="target">_blank</xsl:attribute>
