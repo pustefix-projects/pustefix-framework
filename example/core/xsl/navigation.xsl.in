@@ -701,8 +701,16 @@
                 <a>
                   <xsl:copy-of select="@*"/>
                   <xsl:if test="@target = '_popup'">
+                    <xsl:variable name="windowFeatures">
+                      <xsl:choose>
+                        <xsl:when test="@popupwidth and @popupheight">,'width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
+                        <xsl:when test="@popupwidth">,'width=<xsl:value-of select="@popupwidth"/>'</xsl:when>
+                        <xsl:when test="@popupheight">,'height=<xsl:value-of select="@popupheight"/>'</xsl:when>
+                        <xsl:otherwise/>
+                      </xsl:choose>
+                    </xsl:variable>
                     <xsl:attribute name="target">_blank</xsl:attribute>
-                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="@popupid"/>','width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>');</ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="@popupid"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href">
                     <xsl:copy-of select="$href"/>
