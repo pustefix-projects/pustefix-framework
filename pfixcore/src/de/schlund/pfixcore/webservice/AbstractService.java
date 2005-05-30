@@ -8,10 +8,10 @@ import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 /**
- * AbstractService.java 
- * 
+ * AbstractService.java
+ *
  * Created: 29.06.2004
- * 
+ *
  * @author mleidig
  */
 public abstract class AbstractService {
@@ -21,13 +21,20 @@ public abstract class AbstractService {
         ContextResourceManager crm=(ContextResourceManager)msgContext.getProperty(Constants.MSGCTX_PROP_CTXRESMAN);
         return crm;
     }
-    
+
+    protected ContextResource getContextResource(Class clazz) {
+        if ( clazz == null ) {
+            throw new IllegalArgumentException("clazz="+clazz);
+        }
+        return getContextResource(clazz.getName());
+    }
+
     protected ContextResource getContextResource(String name) {
         ContextResourceManager crm=getContextResourceManager();
         if(crm!=null) return crm.getResource(name);
         return null;
     }
-    
+
 }
 
 
