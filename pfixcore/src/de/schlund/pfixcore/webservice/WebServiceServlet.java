@@ -19,6 +19,7 @@ import org.apache.axis.AxisEngine;
 import org.apache.axis.description.OperationDesc;
 import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
+import org.apache.axis.utils.ClassUtils;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
@@ -41,9 +42,17 @@ public class WebServiceServlet extends AxisServlet {
     private static final String MONITOR_XSL="core/xsl/wsmonitor.xsl";
     
     private WebServiceContext wsc;
-    
+    private ClassLoader currentLoader;
     
     public void init(ServletConfig config) throws ServletException {
+
+    	AppLoader loader=AppLoader.getInstance();
+    	if(loader.isEnabled()) {
+    		ClassLoader newLoader=loader.getAppClassLoader();
+    		//ClassUtils.setDefaultClassLoader(newLoader);
+    		Thread.currentThread().setContextClassLoader(newLoader);
+            currentLoader=newLoader;
+    	}
         super.init(config);
         ArrayList al=new ArrayList();
         String common=config.getInitParameter(Constants.PROP_COMMON_FILE);
@@ -88,18 +97,24 @@ public class WebServiceServlet extends AxisServlet {
         writer.println("<h2>Internal server error!</h2>");
         writer.close();
     }
-    
+ 
     public void doPost(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
             ClassLoader newLoader=loader.getAppClassLoader();
-            if(newLoader!=null) {
-                ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
-                if(!newLoader.equals(currentLoader)) {
-                    Thread.currentThread().setContextClassLoader(newLoader);
-                    axisServer=null;
-                    getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
-                }
+           	//ClassLoader currentLoader=org.apache.axis.utils.ClassUtils.getDefaultClassLoader();
+           	Thread.currentThread().setContextClassLoader(newLoader);
+            synchronized(this) {
+            	if(newLoader!=currentLoader) {
+            		if(DEBUG) CAT.debug("Reload Axis Engine.");
+            		//ClassUtils.setDefaultClassLoader(newLoader);
+            		Thread.currentThread().setContextClassLoader(newLoader);
+            		currentLoader=newLoader;
+            		axisServer=null;
+            		getServletContext().removeAttribute(ATTR_AXIS_ENGINE);
+            		getServletContext().removeAttribute(getServletName() + ATTR_AXIS_ENGINE);
+            		init();
+            	}
             }
         }
         if(DEBUG) CAT.debug("Process webservice request: "+req.getPathInfo());

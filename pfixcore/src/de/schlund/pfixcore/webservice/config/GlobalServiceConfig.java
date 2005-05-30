@@ -29,6 +29,11 @@ public class GlobalServiceConfig extends AbstractConfig {
     private final static String PROP_MONITORSCOPE=PROP_PREFIX+"monitoring.scope";
     private final static String PROP_MONITORSIZE=PROP_PREFIX+"monitoring.historysize";
     private final static String PROP_LOGGING=PROP_PREFIX+"logging.enabled";
+    private final static String PROP_SESSTYPE=PROP_PREFIX+"session.type";
+    private final static String PROP_SCOPETYPE=PROP_PREFIX+"scope.type";
+    
+    private final static String DEFAULT_SESSTYPE=Constants.SESSION_TYPE_SERVLET;
+    private final static String DEFAULT_SCOPETYPE=Constants.SERVICE_SCOPE_APPLICATION;
     
     String server;
     String reqPath;
@@ -39,6 +44,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     String encStyle;
     String encUse;
     String sessType;
+    String scopeType;
     boolean admin;
     boolean monitoring;
     String monitorScope;
@@ -61,6 +67,8 @@ public class GlobalServiceConfig extends AbstractConfig {
         if(wsdlSupport) wsdlRepo=props.getStringProperty(PROP_WSDLREPOSITORY,true);
         stubGeneration=props.getBooleanProperty(PROP_STUBGENERATION,true,false);
         if(stubGeneration) stubRepo=props.getStringProperty(PROP_STUBREPOSITORY,true);
+        sessType=props.getStringProperty(PROP_SESSTYPE,Constants.SESSION_TYPES,DEFAULT_SESSTYPE);
+        scopeType=props.getStringProperty(PROP_SCOPETYPE,Constants.SERVICE_SCOPES,DEFAULT_SCOPETYPE);
         encStyle=props.getStringProperty(PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,true);
         encUse=props.getStringProperty(PROP_ENCODINGUSE,Constants.ENCODING_USES,true);
         admin=props.getBooleanProperty(PROP_ADMIN,true,false);
@@ -146,6 +154,14 @@ public class GlobalServiceConfig extends AbstractConfig {
     
     public void setSessionType(String sessType) {
         this.sessType=sessType;
+    }
+    
+    public void setScopeType(String scopeType) {
+        this.scopeType=scopeType;
+    }
+    
+    public String getScopeType() {
+        return scopeType;
     }
     
     public boolean getAdminEnabled() {

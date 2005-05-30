@@ -19,6 +19,10 @@ public class Constants {
     public static final String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
     public static final String MSGCTX_PROP_MONITORSTART="PFX_MONITORSTART";
   
+    public static final String SERVICE_SCOPE_APPLICATION="application";
+    public static final String SERVICE_SCOPE_SESSION="session";
+    public static final String SERVICE_SCOPE_REQUEST="request";
+    public static final String[] SERVICE_SCOPES={SERVICE_SCOPE_APPLICATION,SERVICE_SCOPE_SESSION,SERVICE_SCOPE_REQUEST};
     
     public final static String MONITOR_SCOPE_SESSION="session";
     public final static String MONITOR_SCOPE_IP="ip";
