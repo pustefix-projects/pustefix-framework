@@ -227,9 +227,9 @@ public abstract class TargetImpl implements TargetRW, Comparable {
                     //          will always trigger getValueFromDiscCache().
                     storeValue(obj);
 
-                    // after the newer file on disk is reread and stored in memory cache it isnt't
-                    // newer any more, so set the mod time of the target to the mod time of the
-                    // file in disk cache
+                    // after the newer file on disk is reread and stored in memory cache it isn't
+                    // newer any more, so set the mod time of the target to the mod time of the file
+                    // in disk cache
                     if (isDiskCacheNewerThenMemCache()) {
                         setModTime(new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey()).lastModified());
                     }

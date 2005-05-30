@@ -1,11 +1,11 @@
 2005-05-25  Daniel Hopp <daniel.hopp@schlund.de>
 
-  * removed functions __js_getFormElement, __js_getFormElementWithValue from example/core/script/baselib.js
+	* removed functions __js_getFormElement, __js_getFormElementWithValue from example/core/script/baselib.js
 
 2005-05-24  Daniel Hopp <daniel.hopp@schlund.de>
 
-  * removed calls to __js_popup from example/core/xsl/navigation.xsl.in
-  * removed functions __js_Browser, __js_popup and __js_switchFrame from example/core/script/baselib.js
+	* removed calls to __js_popup from example/core/xsl/navigation.xsl.in
+	* removed functions __js_Browser, __js_popup and __js_switchFrame from example/core/script/baselib.js
     
 2005-05-04  Jens Lautenbacher  <jtl@schlund.de>
 
