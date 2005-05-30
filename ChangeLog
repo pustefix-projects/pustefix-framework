@@ -1,3 +1,63 @@
+2005-05-26  Martin Leidig <mleidig@schlund.de>
+
+	Added support for Axis 1.2 to Pustefix webservices. 
+	
+	WARNING: Due to incompatible changes in the WSDL types/XML Schema description
+	generated from Java interfaces by Axis the message style RPC/literal does no
+	longer work for Pustefix webservices in combination with Axis 1.1. You should
+	switch to RPC/encoded by setting encoding/use in webservice.conf.in.
+
+	* lib/wsif-2.0.jar: Removed. This library was used for WSDL types/XML schema
+	processing during JS stub generation, as it doesn't support Axis 1.2, the schema
+	handling now is done without help, low-level-style using the DOM directly.
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Js.java: Added DOM-style
+	WSDL types/XML schema processing.
+
+	Added the scope option to the global and webservice specific configuration.
+	Up to now the default scope ("request") of Axis was always used, meaning that
+	the webservice class was created on every request. Now you can additionally 
+	set the scope to "session" (create once per session) or "application" (create
+	once at all). 
+
+	WARNING: The new default scope is "application", so check if you hold any 
+	session or request specific state in your webservice class, if so change to
+	the appropriate scope in webservice.conf.in.
+
+	Added support for "scope" configuration option:
+	* example/core/schema/wsconfig200401.xsd
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/Constants.java
+
+	* src/de/schlund/pfixcore/webservice/generate/Wsdl2Java.java: API changes from
+	Axis 1.1 to 1.2 now are handled via Reflection, so both APIs can be used without
+	changes.
+	* src/de/schlund/pfixcore/webservice/generate/Java2Wsdl.java: Use the default
+	namespace also for interfaces (to keep interface and bean conventions unique).	
+	* example/core/script/webservice.js: ArrayDeserializer no longer presupposes 
+	any specific constraints on the name of value enumeration elements within 
+	a SOAP encoded array (according to the SOAP 1.1 Encoding specification). 
+	Removed creation of soapenc namespace declarations within literal style 
+	serialization.
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Changed the
+	development mode classloading mechanism (AppLoader usage), now Axis is forced 
+	to use the custom classloader already on the servlet level by setting the current 
+	thread's context classloader (at the start of request processing), it also has to 
+	be set before starting the servlet initialization (before calling super.init()),
+	as the AxisEngine already loads the classes while reading in the server
+	deployment descriptor file. An AppLoader reload is simply done by 
+	invalidating and reloading/reinitializing the AxisEngine (necessary because
+ 	the class cache isn't accessible/can't be cleared).
+	* src/de/schlund/pfixcore/webservice/ResetClassLoaderHandler.java: Removed 
+	Handler ClassLoader-setting/resetting
+	* src/de/schlund/pfixcore/webservice/SetClassLoaderHandler.java: Also removed
+	* ./example/common/conf/server-config.wsdd: Removed Axis-Handler for 
+	Classloader-setting/resetting from request and response handler chain.
+	* ./skel/projects/common/conf/server-config.wsdd: Also removed.	
+	
+
 2005-05-25  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* removed functions __js_getFormElement, __js_getFormElementWithValue from example/core/script/baselib.js

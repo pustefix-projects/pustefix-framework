@@ -56,10 +56,12 @@ public class WebServiceTask extends Task {
     private Transformer trfSerializer;
     
     private boolean shortNamespaces=false;
+    private String deployScope="Application";
     //SOAP encoding style: rpc|document
     private String encStyle="rpc";
     //SOAP encoding use: encoded|literal
     private String encUse="encoded";
+    
     
     public void checkAttributes() throws BuildException {
     	if(srcdir==null) throw new BuildException("No source directory specified.");
@@ -100,6 +102,9 @@ public class WebServiceTask extends Task {
                     ConfigProperties cfgProps=new ConfigProperties(new File[] {wsConfFile});
                     Configuration srvConf=new Configuration(cfgProps);
                     GlobalServiceConfig globConf=srvConf.getGlobalServiceConfig();
+                    
+                    //Get default webservice scope
+                    deployScope=globConf.getScopeType();
                     
                     //Get default message style
                     encStyle=globConf.getEncodingStyle();
@@ -194,6 +199,10 @@ public class WebServiceTask extends Task {
                         String wsImpl=conf.getImplementationName();
                         String wsItfPkg=getPackageName(wsItf);
                         
+                        //Get service specific webservice scope
+                        String wsDeployScope=deployScope;
+                        if(conf.getScopeType()!=null) wsDeployScope=conf.getScopeType();
+                        
                         //Get service specific message style, if not present take default
                         String wsEncStyle=encStyle;
                         if(conf.getEncodingStyle()!=null) wsEncStyle=conf.getEncodingStyle();
@@ -257,7 +266,7 @@ public class WebServiceTask extends Task {
                             wsddCnt++;
                             Wsdl2Java task=new Wsdl2Java();
                             task.setOutput(tmpDir);
-                            task.setDeployScope("Application");
+                            task.setDeployScope(wsDeployScope);
                             task.setServerSide(true);
                             task.setURL(wsdlFile.getAbsolutePath());
                             //task.setPackageName(wsItfPkg);
