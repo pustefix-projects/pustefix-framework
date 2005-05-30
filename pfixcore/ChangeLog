@@ -1,5 +1,9 @@
 2005-05-30  Daniel Hopp <daniel.hopp@schlund.de>
 
+	* pfx:elink window feature 'resizable' added
+
+2005-05-30  Daniel Hopp <daniel.hopp@schlund.de>
+
 	* made pfx:elink/@popupwidth and height optional in example/core/xsl/navigation.xsl.in
 
 2005-05-30  Martin Leidig <mleidig@schlund.de>
