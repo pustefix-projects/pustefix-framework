@@ -1,13 +1,15 @@
 package de.schlund.pfixcore.webservice.generate;
 
-import org.apache.axis.enum.Scope;
 import org.apache.axis.wsdl.toJava.Emitter;
 import org.apache.tools.ant.BuildException;
 
 import org.apache.axis.tools.ant.wsdl.TypeMappingVersionEnum;
 
+import de.schlund.pfixcore.webservice.Constants;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 
@@ -33,6 +35,8 @@ public class Wsdl2Java {
     private String password=null;
     private String pkgName=null;
     
+    private final static String SCOPE_11_CLASS="org.apache.axis.enum.Scope";
+    private final static String SCOPE_12_CLASS="org.apache.axis.constants.Scope";
     
     public Wsdl2Java() {
     }
@@ -54,15 +58,18 @@ public class Wsdl2Java {
             // Instantiate the emitter
             Emitter emitter = new Emitter();
 
-            //extract the scope
-            Scope scope = Scope.getScope(deployScope, null);
-            if (scope != null) {
-                emitter.setScope(scope);
-            } else if (deployScope.length()==0
-                    ||  "none".equalsIgnoreCase(deployScope)) {
-                /* leave default (null, or not-explicit) */;
-            } 
-
+            //Set webservice scope
+            if(deployScope==null) deployScope=Constants.SERVICE_SCOPE_REQUEST;
+            Class scopeClass=null;
+            try {
+            	scopeClass=Class.forName(SCOPE_12_CLASS);
+            } catch(ClassNotFoundException x) {
+            	scopeClass=Class.forName(SCOPE_11_CLASS);
+            }
+            Method getMeth=scopeClass.getMethod("getScope", new Class[] {String.class});
+            Object scopeObj=getMeth.invoke(null,new Object[] {deployScope});
+            Method setMeth=emitter.getClass().getMethod("setScope",new Class[] {scopeClass});
+            setMeth.invoke(emitter,new Object[] {scopeObj});
             
             if (!namespaceMap.isEmpty()) {
                 emitter.setNamespaceMap(namespaceMap);

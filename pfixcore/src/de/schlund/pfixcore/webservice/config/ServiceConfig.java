@@ -21,6 +21,7 @@ public class ServiceConfig extends AbstractConfig {
     private final static String PROP_IMPLNAME=".implementation.name";
     private final static String PROP_CTXNAME=".context.name";
     private final static String PROP_SESSTYPE=".session.type";
+    private final static String PROP_SCOPETYPE=".scope.type";
     private final static String PROP_SSLFORCE=".ssl.force";
     private final static String PROP_ENCODINGSTYLE=".encoding.style";
     private final static String PROP_ENCODINGUSE=".encoding.use";
@@ -29,7 +30,8 @@ public class ServiceConfig extends AbstractConfig {
     String  itfName;
     String  implName;
     String  ctxName;
-    String  sessType = Constants.SESSION_TYPE_SERVLET;
+    String  sessType=Constants.SESSION_TYPE_SERVLET;
+    String scopeType;
     boolean sslForce;
     String  encStyle;
     String  encUse;
@@ -51,6 +53,7 @@ public class ServiceConfig extends AbstractConfig {
         implName      = props.getStringProperty(prefix + PROP_IMPLNAME,true);
         ctxName       = props.getStringProperty(prefix + PROP_CTXNAME,false);
         sessType      = props.getStringProperty(prefix + PROP_SESSTYPE,Constants.SESSION_TYPES,true);
+        scopeType=props.getStringProperty(prefix+PROP_SCOPETYPE,Constants.SERVICE_SCOPES,false);
         sslForce      = props.getBooleanProperty(prefix + PROP_SSLFORCE,false,false);
         encStyle      = props.getStringProperty(prefix + PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
         encUse        = props.getStringProperty(prefix + PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
@@ -100,6 +103,14 @@ public class ServiceConfig extends AbstractConfig {
     
     public String getSessionType() {
         return sessType;
+    }
+    
+    public void setScopeType(String scopeType) {
+    	this.scopeType=scopeType;
+    }
+    
+    public String getScopeType() {
+    	return scopeType;
     }
     
     public boolean getSSLForce() {
