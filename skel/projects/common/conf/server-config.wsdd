@@ -11,19 +11,15 @@
   <parameter name="axis.sendMinimizedElements" value="true"/>
   
   <requestFlow>
-  	<handler type="SetCLHandler"/>
    <handler type="AuthHandler"/>
   </requestFlow>
   <responseFlow>
-  	<handler type="ResetCLHandler"/>
   </responseFlow>
  </globalConfiguration>
  
  <handler name="AuthHandler" type="java:de.schlund.pfixcore.webservice.handler.AuthenticationHandler"/>
  <handler name="LoggingHandler" type="java:de.schlund.pfixcore.webservice.handler.LoggingHandler"/>
  <handler name="MonitoringHandler" type="java:de.schlund.pfixcore.webservice.handler.MonitoringHandler"/>
- <handler name="SetCLHandler" type="java:de.schlund.pfixcore.webservice.SetClassLoaderHandler"/>
- <handler name="ResetCLHandler" type="java:de.schlund.pfixcore.webservice.ResetClassLoaderHandler"/>
  
  <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
  <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>

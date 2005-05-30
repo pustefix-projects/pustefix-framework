@@ -116,6 +116,17 @@ public class ConfigProperties {
         throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
     }
     
+    public String getStringProperty(String propName,String[] allowedValues,String defaultValue) throws ConfigException {
+        String val=properties.getProperty(propName);
+        if(val==null) return defaultValue;
+        else {
+        	for(int i=0;i<allowedValues.length;i++) {
+        		if(val.equals(allowedValues[i])) return val;
+        	}
+        	throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
+        }
+    }
+    
     public String getStringProperty(String propName,String regex,boolean mandatory) throws ConfigException {
         String val=properties.getProperty(propName);
         if(val==null) {

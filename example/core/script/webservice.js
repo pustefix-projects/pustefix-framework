@@ -83,7 +83,7 @@ function XML_Utilities() {
   this.scopeSupport=false;
 }
 
-XML_Utilities.prototype.getChildElements=function(node,name) {
+XML_Utilities.prototype.getChildElements=function(node) {
   var nodes=new Array();
   for(var i=0;i<node.childNodes.length;i++) {
     if(node.childNodes[i].nodeType==1) nodes.push(node.childNodes[i]);
@@ -597,8 +597,9 @@ SOAP_ArraySerializer.prototype.serializeSub=function(value,name,typeInfo,dim,wri
       prefix=writer.getPrefix(nsuri);
       writer.writeNamespaceDeclaration(nsuri);
     }
-    
-    writer.writeAttribute(SOAP_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.xmlType.localpart+dimStr);
+    if(ctx.use==SOAP_ENCUSE_ENCODED) {	
+    	writer.writeAttribute(SOAP_ARRAY_TYPE,prefix+":"+typeInfo.arrayType.xmlType.localpart+dimStr);
+    }
     for(var i=0;i<value.length;i++) {
       this.serializeSub(value[i],"item",typeInfo,dim-1,writer,ctx);
     }
@@ -616,15 +617,15 @@ SOAP_ArraySerializer.prototype.serialize=function(value,name,typeInfo,writer,ctx
 
 SOAP_ArraySerializer.prototype.deserializeSub=function(typeInfo,dim,element) {
   if(dim>1) {
-    var items=XML_Utilities.getChildrenByName(element,"item");
-    var array=new Array();
+    var items=XML_Utilities.getChildElements(element);
+		var array=new Array();
     for(var i=0;i<items.length;i++) {
       var subArray=this.deserializeSub(typeInfo,dim-1,items[i]);
       array.push(subArray);
     }
     return array;
   } else if(dim==1) {
-    var items=XML_Utilities.getChildrenByName(element,"item");
+		var items=XML_Utilities.getChildElements(element);
     var array=new Array();
     if(items!=null) {
       var deserializer=SOAP_TypeMapping.getSerializerByInfo(typeInfo.arrayType);
@@ -773,7 +774,9 @@ function SOAP_RPCSerializer(opName,params,retTypeInfo,serCtx) {
 
 SOAP_RPCSerializer.prototype.serialize=function(writer) {
   writer.startElement(this.opName);
-  writer.writeAttribute(new XML_QName(XML_NS_SOAPENV,"encodingStyle"),XML_NS_SOAPENC);
+  if(this.serCtx.use=='encoded') {
+  	writer.writeAttribute(new XML_QName(XML_NS_SOAPENV,"encodingStyle"),XML_NS_SOAPENC);
+ 	}
   for(var i=0;i<this.params.length;i++) {
     var serializer=SOAP_TypeMapping.getSerializerByInfo(this.params[i].typeInfo);
     serializer.serialize(this.params[i].value,this.params[i].name,this.params[i].typeInfo,writer,this.serCtx);

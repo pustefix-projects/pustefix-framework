@@ -42,6 +42,7 @@
         </xsd:element>
         <xsd:element ref="encoding"/>
         <xsd:element ref="session"/>
+        <xsd:element ref="scope"/>
         <xsd:choice>
           <xsd:group ref="GlobalCustoms"/>
           <xsd:element name="choose">
@@ -99,6 +100,7 @@
     	</xsd:element>
         <xsd:element ref="encoding" minOccurs="0"/>
         <xsd:element ref="session" minOccurs="0"/>
+        <xsd:element ref="scope" minOccurs="0"/>
         <xsd:element ref="ssl" minOccurs="0"/>
         <xsd:element name="context" minOccurs="0">
           <xsd:complexType>
@@ -120,6 +122,12 @@
   <xsd:element name="session">
     <xsd:complexType>
       <xsd:attribute name="type" type="SessionType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+	<xsd:element name="scope">
+    <xsd:complexType>
+      <xsd:attribute name="type" type="ScopeType" use="required"/>
     </xsd:complexType>
   </xsd:element>
   
@@ -185,6 +193,14 @@
     <xsd:restriction base="xsd:integer">
       <xsd:minInclusive value="1"/>
       <xsd:maxInclusive value="100"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+	<xsd:simpleType name="ScopeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="application"/>
+      <xsd:enumeration value="session"/>
+      <xsd:enumeration value="request"/>
     </xsd:restriction>
   </xsd:simpleType>
 
