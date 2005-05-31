@@ -45,11 +45,16 @@ public class Application implements Serializable {
     }
     
     public URL getUrl(String path) {
-        return getUrl(path, "nosuchsession." + sessionSuffix);
+        return getUrl(path, "nosuchsession." + sessionSuffix, true);
     }
 
     public URL getUrl(String path, String sessionId) {
+        return getUrl(path, sessionId, false);
+    }
+
+    public URL getUrl(String path, String sessionId, boolean forceLocal) {
         String port;
+        String suffix;
         
         if (!path.startsWith("/") || path.endsWith("/")) {
             throw new IllegalArgumentException("invalid path: " + path);
@@ -59,8 +64,13 @@ public class Application implements Serializable {
         } else {
             port = "";
         }
+        if (forceLocal) {
+            suffix = "&__forcelocal=1";
+        } else {
+            suffix = "";
+        }
         try {
-            return new URL("http://" + server + port + path + ";jsessionid=" + sessionId + "&__forcelocal=1");
+            return new URL("http://" + server + port + path + ";jsessionid=" + sessionId + suffix);
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }

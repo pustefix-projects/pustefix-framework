@@ -86,6 +86,7 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
 
 	public void stop() {
 		session.setAttribute(SESS_TRAIL_LOGGER, null);
+        session.invalidate();
 	    sendNotification(new Notification(CLOSE_TYPE, this, sequenceNumber++));
 	}
 
