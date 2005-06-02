@@ -66,12 +66,10 @@ public class JmxServer implements JmxServerMBean {
 
     private final MBeanServer server;
     private final List knownClients;
-    private ApplicationList applicationList;
     
     public JmxServer() {
         this.server = MBeanServerFactory.createMBeanServer();
         this.knownClients = new ArrayList();
-        this.applicationList = null;
     }
     
 	//--
@@ -143,17 +141,15 @@ public class JmxServer implements JmxServerMBean {
         File file;
         Document doc;
         
-        if (applicationList == null) {
-            file = PathFactory.getInstance().createPath("servletconf/projects.xml").resolve();
-            try {
-                doc = Xml.parse(file);
-                applicationList = ApplicationList.load(Xml.parse(file), tomcat, sessionSuffix);
-            } catch (TransformerException e) {
-                throw new RuntimeException(e);
-            }
+        file = PathFactory.getInstance().createPath("servletconf/projects.xml").resolve();
+        try {
+            doc = Xml.parse(file);
+            return ApplicationList.load(Xml.parse(file), tomcat, sessionSuffix);
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
         }
-        return applicationList;
     }
+
     //--
 
     public static JMXServiceURL createServerURL(String host, int port) {
@@ -173,7 +169,7 @@ public class JmxServer implements JmxServerMBean {
     	ObjectName name;
     	TrailLogger logger;
     	
-    	logger = new TrailLogger(getSession(sessionId));
+    	logger = new TrailLogger(TrailLogger.getVisit(getSession(sessionId)));
     	name = createName(TrailLogger.class.getName(), sessionId);
         try {
 			server.registerMBean(logger, name);

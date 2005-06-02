@@ -102,4 +102,8 @@ public class ApplicationList implements Serializable {
     public List getApplications() {
         return apps;
     }
+    
+    public String toString() {
+        return "applications(" + apps.toString() + ")";
+    }
 }

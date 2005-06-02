@@ -5,7 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 
-/** Pustefix application running on a given tomcat */
+/**
+ * Pustefix application running on a given tomcat.
+ * Note that https is not a property of an application because the same application
+ * may run secure and insecure.
+ */
 public class Application implements Serializable {
     private final String name;
     private final String server;
@@ -40,37 +44,29 @@ public class Application implements Serializable {
         return startPath;
     }
 
-    public URL getUrl() {
-        return getUrl(startPath);
-    }
-    
-    public URL getUrl(String path) {
-        return getUrl(path, "nosuchsession." + sessionSuffix, true);
+    public URL getUrl(boolean https, String path) {
+        return getUrl(https, path, "nosuchsession." + sessionSuffix);
     }
 
-    public URL getUrl(String path, String sessionId) {
-        return getUrl(path, sessionId, false);
-    }
-
-    public URL getUrl(String path, String sessionId, boolean forceLocal) {
+    public URL getUrl(boolean https, String path, String sessionId) {
+        String protocol;
         String port;
-        String suffix;
         
         if (!path.startsWith("/") || path.endsWith("/")) {
             throw new IllegalArgumentException("invalid path: " + path);
         }
+        if (https) {
+            protocol = "https";
+        } else {
+            protocol = "http";
+        }
         if (tomcat) {
-            port = ":8080";  // /xml/config not needed here, it's part of the test case
+            port = https ? ":8443" : ":8080";
         } else {
             port = "";
         }
-        if (forceLocal) {
-            suffix = "&__forcelocal=1";
-        } else {
-            suffix = "";
-        }
         try {
-            return new URL("http://" + server + port + path + ";jsessionid=" + sessionId + suffix);
+            return new URL(protocol + "://" + server + port + path + ";jsessionid=" + sessionId);
         } catch (MalformedURLException e) {
             throw new RuntimeException("TODO", e);
         }
@@ -78,5 +74,9 @@ public class Application implements Serializable {
 
     public String getName() {
         return name;
+    }
+    
+    public String toString() {
+        return "application(name=" + name + ", tomcat=" + tomcat + ", server=" + server + ")";
     }
 }

@@ -20,11 +20,15 @@
 package de.schlund.pfixxml.jmx;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,6 +37,7 @@ import org.w3c.dom.Text;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.SPDocument;
+import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -41,37 +46,64 @@ import de.schlund.pfixxml.util.Xml;
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class TrailLogger extends NotificationBroadcasterSupport implements TrailLoggerMBean {
+    private static Logger LOG = Logger.getLogger(TrailLogger.class);
+    
     public static final String NOTIFICATION_TYPE = "step";
 	public static final String CLOSE_TYPE ="close";
 	
     /** session attribute name */
     private static final String SESS_TRAIL_LOGGER = "__TRAIL_LOGGER__";
 
+    // TODO: ugly static thing code. 
+    // maps visit_ids auf TrailLogger
+    public static final Map map = new HashMap();
+    
     public static void log(PfixServletRequest preq, SPDocument resdoc, HttpSession session) throws IOException {
 		TrailLogger logger;
-		
+		String visit;
+        
 		if (session == null) {
 			return; // no sessions, no trails ...
 		}
-        logger = (TrailLogger) session.getAttribute(SESS_TRAIL_LOGGER);
-        if (logger != null) {
-            logger.log(preq, resdoc);
+        visit = lookupVisit(session);
+        if (visit != null) {
+            logger = (TrailLogger) map.get(visit);
+            if (logger != null) {
+                logger.log(preq, resdoc);
+            }
         }
     }
-    
-	//--
 
-	private int sequenceNumber;
-	private final HttpSession session;
+    public static String getVisit(HttpSession session) {
+        String visit;
+        
+        visit = lookupVisit(session);
+        if (visit == null) {
+            // TODO
+            Enumeration enm = session.getAttributeNames();
+            System.out.println("session " + session);
+            while (enm.hasMoreElements()) {
+                String valName = (String)enm.nextElement();
+                System.out.println("  " + valName + " -> " + session.getAttribute(valName));
+            }
+            throw new RuntimeException("no visit");
+        }
+        return visit;
+    }
+
+    public static String lookupVisit(HttpSession session) {
+        return (String) session.getAttribute(ServletManager.VISIT_ID);
+    }
+
+    //--
+
+	private final String visit;
+    private int sequenceNumber;
 	
-	public TrailLogger(String sessionId) throws IOException {
-	    this(JmxServer.getSession(sessionId));
-	}
-	
-	public TrailLogger(HttpSession session) {
-		this.sequenceNumber = 0;
-		this.session = session;
-   		session.setAttribute(SESS_TRAIL_LOGGER, this);
+	public TrailLogger(String visit) throws IOException {
+		this.visit = visit;
+        this.sequenceNumber = 0;
+        map.put(visit, this);
 	}
 
 	public void log(PfixServletRequest request, SPDocument response) {
@@ -79,15 +111,17 @@ public class TrailLogger extends NotificationBroadcasterSupport implements Trail
 		Notification n;
 
 		step = Xml.serialize(createStep(request, response), true, false);
+        LOG.debug("step " + sequenceNumber + " "+ step);
 		n = new Notification(NOTIFICATION_TYPE, this, sequenceNumber++);
 		n.setUserData(step);
 		sendNotification(n);
 	}
 
 	public void stop() {
-		session.setAttribute(SESS_TRAIL_LOGGER, null);
-        session.invalidate();
-	    sendNotification(new Notification(CLOSE_TYPE, this, sequenceNumber++));
+        if (map.remove(visit) != this) {
+            throw new IllegalStateException();
+        }
+        sendNotification(new Notification(CLOSE_TYPE, this, sequenceNumber++));
 	}
 
 	//-- create xml

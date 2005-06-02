@@ -20,60 +20,6 @@ import javax.net.ssl.TrustManagerFactory;
  * o  client authentication
  */
 public class Environment {
-	/** prints available cipher suites */
-    public static void main(String[] args) {
-        String[] suites;
-        int i;
-        
-        suites = getCipherSuites();
-        for (i = 0; i < suites.length; i++) {
-            System.out.println(i + " " + suites[i]);
-        }
-
-     /* environment on horst
-          0 SSL_RSA_WITH_RC4_128_MD5
-          1 SSL_RSA_WITH_RC4_128_SHA
-          2 TLS_RSA_WITH_AES_128_CBC_SHA
-          3 TLS_DHE_RSA_WITH_AES_128_CBC_SHA
-          4 TLS_DHE_DSS_WITH_AES_128_CBC_SHA
-          5 SSL_RSA_WITH_3DES_EDE_CBC_SHA
-          6 SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA
-          7 SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA
-          8 SSL_RSA_WITH_DES_CBC_SHA
-          9 SSL_DHE_RSA_WITH_DES_CBC_SHA
-          10 SSL_DHE_DSS_WITH_DES_CBC_SHA
-          11 SSL_RSA_EXPORT_WITH_RC4_40_MD5
-          12 SSL_RSA_EXPORT_WITH_DES40_CBC_SHA
-          13 SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA
-          14 SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
-          15 SSL_RSA_WITH_NULL_MD5
-          16 SSL_RSA_WITH_NULL_SHA
-          17 SSL_DH_anon_WITH_RC4_128_MD5
-          18 TLS_DH_anon_WITH_AES_128_CBC_SHA
-          19 SSL_DH_anon_WITH_3DES_EDE_CBC_SHA
-          20 SSL_DH_anon_WITH_DES_CBC_SHA
-          21 SSL_DH_anon_EXPORT_WITH_RC4_40_MD5
-          22 SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA
-
-     cipher suites on pustefix51
-         0 SSL_RSA_WITH_RC4_128_MD5
-         1 SSL_RSA_WITH_RC4_128_SHA
-         2 SSL_RSA_WITH_3DES_EDE_CBC_SHA
-         3 SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA
-         4 SSL_RSA_WITH_DES_CBC_SHA
-         5 SSL_DHE_DSS_WITH_DES_CBC_SHA
-         6 SSL_RSA_EXPORT_WITH_RC4_40_MD5
-         7 SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
-         8 SSL_RSA_WITH_NULL_MD5
-         9 SSL_RSA_WITH_NULL_SHA
-         10 SSL_DH_anon_WITH_RC4_128_MD5
-         11 SSL_DH_anon_WITH_3DES_EDE_CBC_SHA
-         12 SSL_DH_anon_WITH_DES_CBC_SHA
-         13 SSL_DH_anon_EXPORT_WITH_RC4_40_MD5
-         14 SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA
-     */ 
-    }
-
     private static String[] getCipherSuites() {
         return ((SSLSocketFactory) SSLSocketFactory.getDefault()).getSupportedCipherSuites();
     }
@@ -144,5 +90,59 @@ public class Environment {
         KeyStore ks = KeyStore.getInstance("JKS");
         ks.load(new FileInputStream(file), keystorepass);
         return ks;
+    }
+
+    /** prints available cipher suites */
+    public static void main(String[] args) {
+        String[] suites;
+        int i;
+        
+        suites = getCipherSuites();
+        for (i = 0; i < suites.length; i++) {
+            System.out.println(i + " " + suites[i]);
+        }
+
+     /* environment on horst
+          0 SSL_RSA_WITH_RC4_128_MD5
+          1 SSL_RSA_WITH_RC4_128_SHA
+          2 TLS_RSA_WITH_AES_128_CBC_SHA
+          3 TLS_DHE_RSA_WITH_AES_128_CBC_SHA
+          4 TLS_DHE_DSS_WITH_AES_128_CBC_SHA
+          5 SSL_RSA_WITH_3DES_EDE_CBC_SHA
+          6 SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA
+          7 SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA
+          8 SSL_RSA_WITH_DES_CBC_SHA
+          9 SSL_DHE_RSA_WITH_DES_CBC_SHA
+          10 SSL_DHE_DSS_WITH_DES_CBC_SHA
+          11 SSL_RSA_EXPORT_WITH_RC4_40_MD5
+          12 SSL_RSA_EXPORT_WITH_DES40_CBC_SHA
+          13 SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA
+          14 SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
+          15 SSL_RSA_WITH_NULL_MD5
+          16 SSL_RSA_WITH_NULL_SHA
+          17 SSL_DH_anon_WITH_RC4_128_MD5
+          18 TLS_DH_anon_WITH_AES_128_CBC_SHA
+          19 SSL_DH_anon_WITH_3DES_EDE_CBC_SHA
+          20 SSL_DH_anon_WITH_DES_CBC_SHA
+          21 SSL_DH_anon_EXPORT_WITH_RC4_40_MD5
+          22 SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA
+
+     cipher suites on pustefix51
+         0 SSL_RSA_WITH_RC4_128_MD5
+         1 SSL_RSA_WITH_RC4_128_SHA
+         2 SSL_RSA_WITH_3DES_EDE_CBC_SHA
+         3 SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA
+         4 SSL_RSA_WITH_DES_CBC_SHA
+         5 SSL_DHE_DSS_WITH_DES_CBC_SHA
+         6 SSL_RSA_EXPORT_WITH_RC4_40_MD5
+         7 SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
+         8 SSL_RSA_WITH_NULL_MD5
+         9 SSL_RSA_WITH_NULL_SHA
+         10 SSL_DH_anon_WITH_RC4_128_MD5
+         11 SSL_DH_anon_WITH_3DES_EDE_CBC_SHA
+         12 SSL_DH_anon_WITH_DES_CBC_SHA
+         13 SSL_DH_anon_EXPORT_WITH_RC4_40_MD5
+         14 SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA
+     */ 
     }
 }

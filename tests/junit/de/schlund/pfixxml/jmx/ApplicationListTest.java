@@ -15,13 +15,22 @@ public class ApplicationListTest extends TestCase {
         assertTrue(Serializable.class.isAssignableFrom(Application.class));
     }
 
-    public void testApplication() throws Exception {
+    public void testApplicationTomcat() throws Exception {
         Application app;
         ApplicationList lst;
         
         app = new Application("foo", "bar", true, "/a", "mhm");
-        assertEquals("http://bar:8080/a;jsessionid=nosuchsession.mhm&__forcelocal=1", app.getUrl().toString());
-        assertEquals("http://bar:8080/xy;jsessionid=gg&__forcelocal=1", app.getUrl("/xy", "gg").toString());
+        assertEquals("https://bar:8443/foo;jsessionid=nosuchsession.mhm", app.getUrl(true, "/foo").toString());
+        assertEquals("http://bar:8080/xy;jsessionid=gg", app.getUrl(false, "/xy", "gg").toString());
+    }
+
+    public void testApplicationApache() throws Exception {
+        Application app;
+        ApplicationList lst;
+        
+        app = new Application("foo", "bar", false, "/a", "mhm");
+        assertEquals("http://bar/back;jsessionid=nosuchsession.mhm", app.getUrl(false, "/back").toString());
+        assertEquals("http://bar/xy;jsessionid=gg", app.getUrl(false, "/xy", "gg").toString());
     }
 
     public void testNotFound() throws Exception {
