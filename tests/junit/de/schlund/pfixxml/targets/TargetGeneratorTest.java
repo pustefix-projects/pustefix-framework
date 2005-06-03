@@ -66,7 +66,7 @@ public class TargetGeneratorTest extends TestCase {
     }
     
 
-    public void testDocrootNoLongerNeeded() throws Exception {
+    public void testDocrootNoLongerAllowed() throws Exception {
         createInvalid("<make project='foo' lang='bar'>" +
                       "  <target name='master.xsl' type='xsl'>" +
                       "    <depxml name='core/xsl/master.xsl'/>" + 
@@ -74,7 +74,7 @@ public class TargetGeneratorTest extends TestCase {
                       "    <param name='docroot' value='foo'/>" +
                       "  </target>" +
                       "</make>",                
-                      "docroot is no longer needed");
+                      "The docroot parameter is no longer allowed");
     }
 
     public void createInvalid(String str, String msg) throws Exception {

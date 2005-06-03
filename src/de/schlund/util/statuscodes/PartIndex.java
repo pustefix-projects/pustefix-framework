@@ -65,7 +65,7 @@ public class PartIndex {
 
     //--
     public StatusCode lookup(String name) throws TransformerException {
-        if (src.lastModified() > mtime) {
+        if (src != null && src.lastModified() > mtime) {
             addAll(src);
         }
 
