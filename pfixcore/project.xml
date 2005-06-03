@@ -13,17 +13,16 @@
   </organization>
   <description>Pustefix is a framework that helps you to develop web based applications.</description>
   <shortDescription>Web application framework</shortDescription>
-  
-  <url>http://pustefix.sourceforge.net</url>
-  <inceptionYear>2002</inceptionYear>
+
   <package>de.schlund</package>
   <logo>/images/logo.gif</logo>
 
   <!-- disabled on sourceforge: issueTrackingUrl>http://sourceforge.net/tracker/?group_id=72089</issueTrackingUrl -->
 
-  <siteAddress>pustefix.sourceforge.net</siteAddress>
-  
-  <siteDirectory>/home/groups/p/pu/pustefix/htdocs/maven</siteDirectory>
+  <siteAddress>horst.ue.schlund.de</siteAddress>
+  <siteDirectory>ivar/public/sites/pfixcore</siteDirectory>
+  <!-- siteAddress>pustefix.sourceforge.net</siteAddress>
+  <siteDirectory>/home/groups/p/pu/pustefix/htdocs/maven</siteDirectory -->
 
   <repository>
     <!-- TODO: using the devel connection avoids sourceforge's 3+ hours delay -->
@@ -92,9 +91,9 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
     </dependency>
-    <dependency>
+    <dependency><!-- CAUTION: the original servlet api from ibiblio has no ServletResponse.setCharacterEncoding -->
       <groupId>servletapi</groupId>
-      <artifactId>servletapi</artifactId>
+      <artifactId>tomcat-servlet-api</artifactId>
       <version>2.3</version>
     </dependency>
     <dependency>

@@ -149,7 +149,7 @@ public class XmlTest extends TestCase {
     }
 
     public void testSerializeEncoding() throws Exception {
-        final String STR = "<x>ö</x>";
+        final String STR = "<x>\u00c4</x>";
         ByteArrayOutputStream dest;
         
         dest= new ByteArrayOutputStream();
