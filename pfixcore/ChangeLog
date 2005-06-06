@@ -1,3 +1,7 @@
+2005-06-06  Daniel Hopp <daniel.hopp@schlund.de>
+
+	* pfx:button popup scrollbars set to 'auto'
+
 2005-06-02  Martin Leidig <mleidig@schlund.de>
 
 	Updated to Axis 1.2:
