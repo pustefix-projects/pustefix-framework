@@ -26,9 +26,9 @@ import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Category;
-import org.apache.xpath.NodeSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.icl.saxon.Context;
@@ -137,7 +137,7 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_product, target);
                 }
-                return errorNodeSet(DEF_THEME);
+                return errorNode(DEF_THEME);
                 //return new EmptyNodeSet();
             }
             // get the includedocument
@@ -169,7 +169,7 @@ public final class IncludeDocumentExtension {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
                                                parent_path, parent_part, parent_product, target);
                 }
-                return errorNodeSet(DEF_THEME);
+                return errorNode(DEF_THEME);
                 //return new EmptyNodeSet();
             } else if (length > 1) {
                 // too many parts. Error!
@@ -270,7 +270,7 @@ public final class IncludeDocumentExtension {
                             ok = false;
                         }
                     }
-                    return ok? (Object) ns.get(0) : errorNodeSet(curr_theme);
+                    return ok? (Object) ns.get(0) : errorNode(curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
                 } else {
                     // too many specific products found. Error!
@@ -295,7 +295,7 @@ public final class IncludeDocumentExtension {
                     ok = false;
                 }
             }
-            return errorNodeSet(DEF_THEME);
+            return errorNode(DEF_THEME);
             //return new EmptyNodeSet();
             
         } catch (Exception e) {
@@ -308,13 +308,13 @@ public final class IncludeDocumentExtension {
         }
     }
 
-    private static final NodeSet errorNodeSet(String prodname) {
+    private static final Node errorNode(String prodname) {
         Document retdoc  = Xml.createDocumentBuilder().newDocument();
         Element  retelem = retdoc.createElement("missing");
         retelem.setAttribute("name", prodname);
         retdoc.appendChild(retelem);
         retdoc = Xml.parse(retdoc);
-        return new NodeSet(retdoc.getDocumentElement());
+        return retdoc.getDocumentElement();  
     }
     
     

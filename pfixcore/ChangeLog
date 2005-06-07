@@ -1,3 +1,23 @@
+2005-07-06  Michael Hartmeier <mhm@schlund.de>
+
+	* fixes for Java 1.5. 
+	Changed the default compiler to "modern" because Jikes is not 
+	available for Java 1.5. Also added a javac.encoding property
+	to configure the java file encoding.
+
+2005-07-06  Michael Hartmeier <mhm@schlund.de>
+
+	* Platform independent build process configuration.
+	For things like makemode or standalone.tomcat=true. 
+	
+	Added build.properties.sample. To adjust the build process, 
+	create your own copy called build.properties (which is cvs-ignored)
+	and adjust it to your needs. 
+	
+	Note: for technical reasons, the default value for standalone.tomcat 
+	was changed to false. You might want to change it in your local 
+	copy of build.properties 
+
 2005-06-06  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* pfx:button popup scrollbars set to 'auto'
