@@ -649,7 +649,7 @@
                   <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
                       <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
                   <xsl:if test="$target = '_popup'">
-                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="$popupid"/>','toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,width=<xsl:value-of select="$popupwidth"/>,height=<xsl:value-of select="$popupheight"/>,screenX=100,screenY=100');</ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="$popupid"/>','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=<xsl:value-of select="$popupwidth"/>,height=<xsl:value-of select="$popupheight"/>,screenX=100,screenY=100');</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
                   <xsl:choose>
