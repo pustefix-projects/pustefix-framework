@@ -163,7 +163,7 @@ public class XPath {
             try {
                 // jdk 1.4
                 cls = Class.forName("org.apache.xpath.XPathAPI");
-                xobject = Class.forName("org.apache.xpath.internal.objects.XObject");
+                xobject = Class.forName("org.apache.xpath.objects.XObject");
             } catch (ClassNotFoundException f) {
                 throw new RuntimeException(f);
             }
