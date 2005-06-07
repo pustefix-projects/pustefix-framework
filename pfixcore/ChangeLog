@@ -1,15 +1,15 @@
-2005-06-06  Daniel Hopp <daniel.hopp@schlund.de>
+2005-06-07  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* pfx:button popup scrollbars set to 'auto' reverted to 'yes'
 
-2005-07-06  Michael Hartmeier <mhm@schlund.de>
+2005-06-07  Michael Hartmeier <mhm@schlund.de>
 
 	* fixes for Java 1.5. 
 	Changed the default compiler to "modern" because Jikes is not 
 	available for Java 1.5. Also added a javac.encoding property
 	to configure the java file encoding.
 
-2005-07-06  Michael Hartmeier <mhm@schlund.de>
+2005-06-07  Michael Hartmeier <mhm@schlund.de>
 
 	* Platform independent build process configuration.
 	For things like makemode or standalone.tomcat=true. 
