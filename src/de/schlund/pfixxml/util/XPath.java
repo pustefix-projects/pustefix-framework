@@ -18,13 +18,17 @@
  */
 package de.schlund.pfixxml.util;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.transform.TransformerException;
-import org.apache.xpath.XPathAPI;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
+
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.Expression;
 import com.icl.saxon.expr.NodeSetValue;
@@ -32,42 +36,22 @@ import com.icl.saxon.expr.StandaloneContext;
 import com.icl.saxon.om.NodeEnumeration;
 import com.icl.saxon.om.NodeInfo;
 
+import de.schlund.pfixxml.FactoryInitServlet;
+
 
 /**
- *  <b>PFXPathEvaluator</b> evaluates XPath-expressions. Currently saxon is used.
- *   @author <a href="mailto:haecker@schlund.de">Joerg Haecker</a>
+ *  Evaluates XPath-expressions. Some ugly reflection stuff to work with jdk 1.4 and 1.5.
  */
 public class XPath {
-    // TODO: xalan cannot evaluable saxon trees an vice versa ...
-
+    // TODO: use java.xml.xpath if we've completed transition to java 1.5 ...
     public static List select(Node context, String xpath) throws TransformerException {
-        List result;
+        // TODO: xalan cannot evaluable saxon trees an vice versa ...
 
-        result = new ArrayList();
         if (context instanceof NodeInfo) {
-        	NodeInfo   cNode   = (NodeInfo) context;
-        	Expression exp     = Expression.make(xpath, new StandaloneContext());
-        	Context    ctx = new Context();
-        	ctx.setContextNode(cNode);
-        	ctx.setPosition(1);
-        	ctx.setLast(1);
-        	NodeSetValue nodeSet = exp.evaluateAsNodeSet(ctx);
-        	NodeEnumeration enm = nodeSet.enumerate();
-        	while (enm.hasMoreElements()) {
-        	    result.add(enm.nextElement());
-        	}
+            return saxonSelect(context, xpath);
     	} else {
-    	    NodeIterator iter = XPathAPI.selectNodeIterator(context, xpath);
-    	    Node node;
-    	    while (true) {
-    	        node = iter.nextNode();
-    	        if (node == null) {
-    	            break;
-    	        }
-    	        result.add(node);
-    	    }
+            return xalanSelect(context, xpath);
     	}
-        return result;
     }
 
     public static Node selectOne(Node context, String xpath) throws TransformerException {
@@ -103,7 +87,7 @@ public class XPath {
         	ctx.setLast(1);
         	return exp.evaluateAsBoolean(ctx);
         } else {
-            return XPathAPI.eval(context, test).bool();
+            return xalanTest(context, test);
         }
     }
 
@@ -118,5 +102,110 @@ public class XPath {
             throw new RuntimeException("unkown document");
         }
         return doc;
+    }
+    
+    //-- xalan xpath
+    
+    //--
+
+    private static List saxonSelect(Node context, String xpath) throws TransformerException {
+        List result;
+        result = new ArrayList();
+        NodeInfo   cNode   = (NodeInfo) context;
+        Expression exp     = Expression.make(xpath, new StandaloneContext());
+        Context    ctx = new Context();
+        ctx.setContextNode(cNode);
+        ctx.setPosition(1);
+        ctx.setLast(1);
+        NodeSetValue nodeSet = exp.evaluateAsNodeSet(ctx);
+        NodeEnumeration enm = nodeSet.enumerate();
+        while (enm.hasMoreElements()) {
+            result.add(enm.nextElement());
+        }
+        return result;
+        
+    }
+    /**
+     * @return &lt;{@link Node}&gt;List
+     */
+    public static List xalanSelect(Node context, String xpath) throws TransformerException {
+        List result;
+        NodeIterator iter;
+        Node node;
+
+        result = new ArrayList();
+        iter = (NodeIterator) doInvoke(SELECT, context, xpath);
+        while (true) {
+            node = iter.nextNode();
+            if (node == null) {
+                break;
+            }
+            result.add(node);
+        }
+        return result;
+    }
+
+    //-- jdk 1.4/1.5 switch
+
+    private static final Method SELECT;
+    private static final Method EVAL;
+    private static final Method BOOL;
+
+    static {
+        Class cls;
+        Class xobject;
+        
+        try {
+            // jdk 1.5
+            cls = Class.forName("com.sun.org.apache.xpath.internal.XPathAPI");
+            xobject = Class.forName("com.sun.org.apache.xpath.internal.objects.XObject");
+        } catch (ClassNotFoundException e) {
+            try {
+                // jdk 1.4
+                cls = Class.forName("org.apache.xpath.XPathAPI");
+                xobject = Class.forName("org.apache.xpath.internal.objects.XObject");
+            } catch (ClassNotFoundException f) {
+                throw new RuntimeException(f);
+            }
+        }
+        try {
+            SELECT = cls.getMethod("selectNodeIterator", new Class[] { Node.class, String.class });
+            EVAL = cls.getMethod("eval", new Class[] { Node.class, String.class });
+            BOOL = xobject.getMethod("bool", FactoryInitServlet.NO_CLASSES);
+        } catch (SecurityException g) {
+            throw new RuntimeException(g);
+        } catch (NoSuchMethodException g) {
+            throw new RuntimeException(g);
+        }
+    }
+
+    public static boolean xalanTest(Node context, String test) throws TransformerException {
+        Object xobject;
+        
+        xobject = doInvoke(EVAL, context, test);
+        return ((Boolean) doInvoke(BOOL, xobject, FactoryInitServlet.NO_OBJECTS)).booleanValue();
+    }
+    
+    private static Object doInvoke(Method meth, Node node, String xpath) throws TransformerException {
+        return doInvoke(meth, null, new Object[] { node, xpath });
+    }
+    
+    private static Object doInvoke(Method meth, Object obj, Object[] args) throws TransformerException {
+        Throwable t;
+
+        try {
+            return meth.invoke(obj, args);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            t = e.getTargetException();
+            if (t instanceof TransformerException) {
+                throw (TransformerException) t;
+            } else {
+                throw new RuntimeException(t);
+            }
+        }
     }
 }

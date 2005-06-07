@@ -59,6 +59,7 @@ or delete the DOCTYPE definition -->
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
+     encoding="${javac.encoding}"
      >
     </javac>
   </target>
