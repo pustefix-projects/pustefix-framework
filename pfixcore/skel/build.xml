@@ -77,10 +77,7 @@ or delete the DOCTYPE definition -->
     </condition>
     <property       name="prohibitedit" value="no"/>
 
-    <condition property="debug"        value="false">
-      <equals arg1="${makemode}" arg2="prod"/>
-    </condition>
-    <property  name="debug"            value="true"/>
+    <property name="debug" value="true"/>
 
     <condition property="machine"       value="${env.MACHINE}">
       <and>
