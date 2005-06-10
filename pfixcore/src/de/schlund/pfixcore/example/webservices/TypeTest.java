@@ -37,6 +37,8 @@ public interface TypeTest {
     
     public boolean[] echoBooleanArray(boolean[] vals);
     
+    public Boolean echoBooleanObject(Boolean val);
+    
     public Calendar echoDate(Calendar date);
     
     public Calendar[] echoDateArray(Calendar[] dates);

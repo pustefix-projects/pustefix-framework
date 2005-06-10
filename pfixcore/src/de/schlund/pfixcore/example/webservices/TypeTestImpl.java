@@ -57,6 +57,10 @@ public class TypeTestImpl implements TypeTest {
         return vals;
     }
     
+    public Boolean echoBooleanObject(Boolean val) {
+        return val;
+    }
+    
     public Calendar echoDate(Calendar date) {
         return date;
     }

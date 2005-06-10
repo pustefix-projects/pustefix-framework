@@ -721,14 +721,21 @@ function SOAP_TypeMapping() {
 
 //init()
 SOAP_TypeMapping.prototype.init=function() {
-  this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=new SOAP_BooleanSerializer();
+	var boolSer=new SOAP_BooleanSerializer();
+  this.mappings[XML_Types.XSD_BOOLEAN.hashKey()]=boolSer;
+  this.mappings[XML_Types.SOAP_BOOLEAN.hashKey()]=boolSer;
   var numSer=new SOAP_NumberSerializer();
   this.mappings[XML_Types.XSD_INT.hashKey()]=numSer;
+  this.mappings[XML_Types.SOAP_INT.hashKey()]=numSer;
   this.mappings[XML_Types.XSD_LONG.hashKey()]=numSer;
-  this.mappings[XML_Types.XSD_FLOAT.hashKey()]=new SOAP_FloatSerializer();  
-  this.mappings[XML_Types.XSD_STRING.hashKey()]=new SOAP_StringSerializer();
+  this.mappings[XML_Types.SOAP_LONG.hashKey()]=numSer;
+  var floatSer=new SOAP_FloatSerializer();  
+  this.mappings[XML_Types.XSD_FLOAT.hashKey()]=floatSer;
+  this.mappings[XML_Types.SOAP_FLOAT.hashKey()]=floatSer;
+  var strSer=new SOAP_StringSerializer();
+  this.mappings[XML_Types.XSD_STRING.hashKey()]=strSer;
+  this.mappings[XML_Types.SOAP_STRING.hashKey()]=strSer;
   this.mappings[XML_Types.XSD_DATETIME.hashKey()]=new SOAP_DateTimeSerializer();
-  this.mappings[XML_Types.SOAP_STRING.hashKey()]=new SOAP_StringSerializer();
   this.mappings["ARRAY"]=new SOAP_ArraySerializer();
   this.mappings["BEAN"]=new SOAP_BeanSerializer();
   this.mappings[XML_Types.APACHESOAP_ELEMENT.hashKey()]=new SOAP_ElementSerializer();
