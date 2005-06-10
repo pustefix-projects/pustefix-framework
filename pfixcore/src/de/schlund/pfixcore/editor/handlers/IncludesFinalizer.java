@@ -135,7 +135,7 @@ public class IncludesFinalizer extends ResdocSimpleFinalizer {
             root.appendChild(themeselem);
             for (Iterator i = allthemes.iterator(); i.hasNext();) {
                 String  theme = (String) i.next();
-                resdoc.addTextChild(themeselem, "option", theme);
+                ResultDocument.addTextChild(themeselem, "option", theme);
             }
 
             
