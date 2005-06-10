@@ -227,6 +227,19 @@ function pfxsoapCall() {
 			var t2=(new Date()).getTime();
 			pfxsoapPrint("echoBooleanArray",(t2-t1),ex);
 		}
+		
+		//echoBooleanObject
+		t1=(new Date()).getTime();
+		try {
+			var boolVal=true;
+			var resVal=wsType.echoBooleanObject(boolVal);
+			var t2=(new Date()).getTime();
+			if(resVal!=boolVal) throw "Wrong result";
+			pfxsoapPrint("echoBooleanObject",(t2-t1));
+		} catch(ex) {
+			var t2=(new Date()).getTime();
+   		pfxsoapPrint("echoBooleanObject",(t2-t1),ex);
+   	}
 
    	//echoDate
 		t1=(new Date()).getTime();
@@ -263,6 +276,7 @@ function pfxsoapCall() {
 			bean["intVal"]=2;
 			bean["name"]="TestBean";
 			bean["children"]=new Array();
+			bean["boolVal"]=true;
 			var resBean=wsType.echoDataBean(bean);
 			var t2=(new Date()).getTime();
 			if(!equals(resBean,bean)) throw "Wrong result";
@@ -281,18 +295,21 @@ function pfxsoapCall() {
 			bean1["intVal"]=2;
 			bean1["name"]="TestBean1";
 			bean1["children"]=new Array();
+			bean1["boolVal"]=true;
 			var bean2=new Object();
 			bean2["date"]=new Date();
 			bean2["floatVals"]=new Array(1.2,2.1);
 			bean2["intVal"]=2;
 			bean2["name"]="TestBean2";
 			bean2["children"]=new Array();
+			bean2["boolVal"]=true;
 			var bean3=new Object();
 			bean3["date"]=new Date();
 			bean3["floatVals"]=new Array(1.2,2.1);
 			bean3["intVal"]=2;
 			bean3["name"]="TestBean3";
 			bean3["children"]=new Array(bean1,bean2);
+			bean3["boolVal"]=true;
 			var beans=new Array(bean3);
 			var resBeans=wsType.echoDataBeanArray(beans);
 			var t2=(new Date()).getTime();

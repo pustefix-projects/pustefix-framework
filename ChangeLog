@@ -1,3 +1,11 @@
+2005-06-10  Martin Leidig <mleidig@schlund.de>
+
+	* example/core/script/webservice.js: Added typemappings for primitive
+	types from the 'http://schemas.xmlsoap.org/soap/encoding/' namespace, 
+	which now is used by Axis 1.2 ('rpc/encoded style') in the generated 
+	WSDL description for Java's primitive type wrapper classes (instead 
+	of the XML Schema namespace 'http://www.w3.org/2001/XMLSchema'). 
+
 2005-06-07  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* pfx:button popup scrollbars set to 'auto' reverted to 'yes'

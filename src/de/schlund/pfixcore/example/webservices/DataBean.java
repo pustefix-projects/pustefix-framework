@@ -18,6 +18,7 @@ public class DataBean {
     Calendar date;
     int intVal;
     float[] floatVals;
+    Boolean boolVal;
     DataBean[] children;
     
     public DataBean() {}
@@ -69,5 +70,12 @@ public class DataBean {
         this.children=children;
     }
     
+    public Boolean getBoolVal() {
+        return boolVal;
+    }
+    
+    public void setBoolVal(Boolean boolVal) {
+        this.boolVal=boolVal;
+    }
     
 }
