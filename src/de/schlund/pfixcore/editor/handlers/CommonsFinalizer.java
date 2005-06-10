@@ -94,7 +94,7 @@ public class CommonsFinalizer extends ResdocSimpleFinalizer {
             Element  themeselem = resdoc.createNode("themes");
             root.appendChild(themeselem);
             for (int i = 0; i < allthemes.length; i++) {
-                resdoc.addTextChild(themeselem, "option", allthemes[i]);
+                ResultDocument.addTextChild(themeselem, "option", allthemes[i]);
             }
             
             
