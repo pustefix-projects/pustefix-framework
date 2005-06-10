@@ -1,5 +1,10 @@
 2005-06-10  Martin Leidig <mleidig@schlund.de>
 
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Override
+	the AxisServlet method processAxisFault() to log the stacktrace of all
+	AxisFaults caused by a Throwable before proceeding fault processing by
+	calling its super implementation.
+
 	* example/core/script/webservice.js: Added typemappings for primitive
 	types from the 'http://schemas.xmlsoap.org/soap/encoding/' namespace, 
 	which now is used by Axis 1.2 ('rpc/encoded style') in the generated 

@@ -203,8 +203,17 @@ public class WebServiceServlet extends AxisServlet {
         } else sendBadRequest(req,res,writer);
     }
     
+    protected void processAxisFault(AxisFault fault) {
+        Throwable t=fault.getCause();
+        if(t!=null) {
+            CAT.error("Exception while processing request",t);
+        }
+        super.processAxisFault(fault);
+    }
+
+    
     public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
-        
+      
         AppLoader loader=AppLoader.getInstance();
         if(loader.isEnabled()) {
           
