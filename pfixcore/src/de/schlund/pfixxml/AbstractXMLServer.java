@@ -339,13 +339,11 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
 
         // Now we will store the time needed from the creation of the request up to now
-        currtime    = System.currentTimeMillis();
-        PerfEventType pet = PerfEventType.XMLSERVER_PREPROCESS;
-        preq.endLogEntry(pet);
-        preproctime = pet.getDuration();
+        preproctime = System.currentTimeMillis() - preq.getCreationTimeStamp();
        
         if (spdoc == null) {
             preq.startLogEntry();
+            currtime        = System.currentTimeMillis();
             spdoc           = getDom(preq);
             String pagename = spdoc.getPagename();
             PerfEventType et = PerfEventType.XMLSERVER_GETDOM;
@@ -360,7 +358,6 @@ public abstract class AbstractXMLServer extends ServletManager {
                 anchormap = createAnchorMap(anchors);
                 spdoc.storeFrameAnchors(anchormap);
             }
-            currtime = System.currentTimeMillis();
             if (spdoc.getDocument() == null) {
                 // thats a request to an unkown page!
                 // do nothing, cause we  want a 404 and no NPExpection

@@ -85,6 +85,11 @@ public class PfixServletRequest {
     private LinkedList            perfstack        = null;
     private long                  starttime        = 0;
 
+
+    public long getCreationTimeStamp() {
+        return starttime;
+    }
+    
     /**
      *
      */
