@@ -1,3 +1,9 @@
+2005-06-13 Joerg Haecker <haecker@schlund.de>
+	* src/de/schlund/pfixxml/perflogging: added new package for
+	performance logging. Not used yet. More information will follow.
+
+	* lib/concurrent.jar: added for performance logging.
+
 2005-06-10  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/PfixServletRequest.java (getCreationTimestamp): 
