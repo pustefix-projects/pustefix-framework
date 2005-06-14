@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
@@ -154,8 +153,10 @@
       <xsl:with-param name="jumptopage" select="@jumptopage"/>
       <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
       <xsl:with-param name="forcestop" select="@forcestop"/>
+      <xsl:with-param name="popup" select="@popup"/>
       <xsl:with-param name="popupwidth" select="@popupwidth"/>
       <xsl:with-param name="popupheight" select="@popupheight"/>
+      <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
     <cus:documentation>
@@ -249,19 +250,39 @@
         different target frame.</description>
       </param>
       <param required="0">
+        <name>popup</name>
+        <values><html/></values>
+        <values><oneof><option>true</option><option>false</option></oneof></values>
+        <description>
+          Open link in new window (JavaScript).
+        </description>
+      </param>
+      <param required="0">
         <name>popupwidth</name>
         <values><html/></values>
         <description>Width of the popup window</description>
       </param>
       <param required="0">
-        <name>popupheigh</name>
+        <name>popupheight</name>
         <values><html/></values>
         <description>Height of the popup window</description>
       </param>
       <param required="0">
+        <name>popupfeatures</name>
+        <values><string/></values>
+        <description>
+          <p>
+            JavaScript <code>window.open()</code>: window-features parameter;
+          </p>
+          Overrides <code>@popupwidth</code> and <code>@popupheight</code>
+        </description>
+      </param>
+      <param required="0">
         <name>popupid</name>
         <values><string/></values>
-        <description>The id of the popup window</description>
+        <description>
+          The id of the popup window: <strong>deprecated</strong> use <code>@target</code> instead
+        </description>
       </param>
       <param required="0">
         <name>nodata</name>
@@ -414,8 +435,10 @@
       <xsl:with-param name="startwithflow" select="@startwithflow"/>
       <xsl:with-param name="mode" select="@mode"/>
       <xsl:with-param name="forcestop" select="@forcestop"/>
+      <xsl:with-param name="popup" select="@popup"/>
       <xsl:with-param name="popupwidth" select="@popupwidth"/>
       <xsl:with-param name="popupheight" select="@popupheight"/>
+      <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
     <cus:documentation>
@@ -506,8 +529,10 @@
     <xsl:param name="target"/>
     <xsl:param name="mode"/>
     <xsl:param name="forcestop"/>
+    <xsl:param name="popup"/>
     <xsl:param name="popupwidth"/>
     <xsl:param name="popupheight"/>
+    <xsl:param name="popupfeatures"/>
     <xsl:param name="popupid"/>
     <xsl:param name="nodata"/>
     <xsl:param name="args"/>
@@ -648,8 +673,26 @@
                     <xsl:attribute name="onmouseover"><xsl:value-of select="$omover"/></xsl:attribute></xsl:if>
                   <xsl:if test="$omout and not($mode_impl = 'desc' and $thebuttpage//page[@name=$page])">
                       <xsl:attribute name="onmouseout"><xsl:value-of select="$omout"/></xsl:attribute></xsl:if>
-                  <xsl:if test="$target = '_popup'">
-                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="$popupid"/>','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=<xsl:value-of select="$popupwidth"/>,height=<xsl:value-of select="$popupheight"/>,screenX=100,screenY=100');</ixsl:attribute>
+                  <xsl:if test="@popup='true' or @target='_popup'">
+                    <xsl:variable name="windowName">
+                      <xsl:choose>
+                        <xsl:when test="@popupid"><xsl:value-of select="@popupid"/></xsl:when>
+                        <xsl:when test="@target"><xsl:value-of select="@target"/></xsl:when>
+                        <xsl:otherwise>_blank</xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:variable>                  
+                    <xsl:variable name="windowFeatures">
+                      <xsl:choose>
+                        <xsl:when test="$popupfeatures">,'<xsl:value-of select="$popupfeatures"/>'</xsl:when>
+                        <xsl:otherwise>
+                          <xsl:text>,'toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes</xsl:text>
+                          <xsl:if test="$popupwidth">,width=<xsl:value-of select="$popupwidth"/></xsl:if>
+                          <xsl:if test="$popupheight">,height=<xsl:value-of select="$popupheight"/></xsl:if>
+                          <xsl:text>,screenX=100,screenY=100'</xsl:text>
+                        </xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:variable>
+                    <ixsl:attribute name="onclick">return !window.open(this.href),'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
                   <xsl:choose>
@@ -699,18 +742,28 @@
                   </xsl:if>
                 </xsl:variable>
                 <a>
-                  <xsl:copy-of select="@*"/>
-                  <xsl:if test="@target = '_popup'">
-                    <xsl:variable name="windowFeatures">
+                  <xsl:copy-of select="@*[not(starts-with(name(),'popup'))]"/>
+                  <xsl:if test="@popup='true' or @target='_popup'">
+                    <xsl:variable name="windowName">
                       <xsl:choose>
-                        <xsl:when test="@popupwidth and @popupheight">,'resizable=yes,width=<xsl:value-of select="@popupwidth"/>,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
-                        <xsl:when test="@popupwidth">,'resizable=yes,width=<xsl:value-of select="@popupwidth"/>'</xsl:when>
-                        <xsl:when test="@popupheight">,'resizable=yes,height=<xsl:value-of select="@popupheight"/>'</xsl:when>
-                        <xsl:otherwise>,'resizable=yes'</xsl:otherwise>
+                        <xsl:when test="@popupid"><xsl:value-of select="@popupid"/></xsl:when>
+                        <xsl:when test="@target"><xsl:value-of select="@target"/></xsl:when>
+                        <xsl:otherwise>_blank</xsl:otherwise>
                       </xsl:choose>
                     </xsl:variable>
-                    <xsl:attribute name="target">_blank</xsl:attribute>
-                    <ixsl:attribute name="onclick">return !window.open(this.getAttribute('href'),'<xsl:value-of select="@popupid"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
+                    <xsl:variable name="windowFeatures">
+                      <xsl:choose>
+                        <xsl:when test="@popupfeatures">,'<xsl:value-of select="@popupfeatures"/>'</xsl:when>
+                        <xsl:otherwise>
+                          <xsl:text>,'toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes</xsl:text>
+                          <xsl:if test="@popupwidth">,width=<xsl:value-of select="@popupwidth"/></xsl:if>
+                          <xsl:if test="@popupheight">,height=<xsl:value-of select="@popupheight"/></xsl:if>
+                          <xsl:text>,screenX=100,screenY=100'</xsl:text>
+                        </xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:variable>
+                    <xsl:attribute name="target"><xsl:value-of select="$windowName"/></xsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.href),'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href">
                     <xsl:copy-of select="$href"/>
@@ -749,19 +802,39 @@
         <description>_popup/_blank opens the new page in a popup window. You can also use other targets</description>
       </param>
       <param required="0">
+        <name>popup</name>
+        <values><html/></values>
+        <values><oneof><option>true</option><option>false</option></oneof></values>
+        <description>
+          Open link in new window (JavaScript).
+        </description>
+      </param>
+      <param required="0">
         <name>popupwidth</name>
         <values><html/></values>
         <description>Width of the popup window</description>
       </param>
       <param required="0">
-        <name>popupheigh</name>
+        <name>popupheight</name>
         <values><html/></values>
         <description>Height of the popup window</description>
       </param>
       <param required="0">
+        <name>popupfeatures</name>
+        <values><string/></values>
+        <description>
+          <p>
+            JavaScript <code>window.open()</code>: window-features parameter;
+          </p>
+          Overrides <code>@popupwidth</code> and <code>@popupheight</code>
+        </description>
+      </param>
+      <param required="0">
         <name>popupid</name>
         <values><string/></values>
-        <description>name of the popup-window</description>
+        <description>
+          name of the popup-window: <strong>deprecated</strong> use <code>@target</code> instead
+        </description>
       </param>
       <children>
         <name>pfx:argument</name>
@@ -798,7 +871,7 @@
         <output>
           <xmlcode>
             <a href="/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR" target="_blank"
-               onclick="return !window.open(this.getAttribute('href'),'','width=,height=');">Goto Gimp!</a>
+               onclick="return !window.open(this.href,'','toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,screenX=100,screenY=100');">Goto Gimp!</a>
           </xmlcode>
         </output>
       </example>
