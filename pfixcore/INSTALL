@@ -11,7 +11,7 @@ Prerequisites:
           they exist. There may be even more places where the thing
           wouldn't work on win32.
 
-        * A Java installation.  Version 1.4.1 is recommended. 
+        * A Java installation.  Version 1.5 is recommended. 
           The environment variable JAVA_HOME must be set to the 
           root directory of your java installation.
           
@@ -22,11 +22,13 @@ Prerequisites:
           is evaluated within the ant start script contained in the ant
           distribution.
 
+	----------snip: not valid until jikes can really generate 1.5 code -----------
         * jikes if you want to compile out-of-the-box.  Compilation
           with javac is of course possible, just set the build.compiler
           property to modern if you want to compile with the javac of
           your java installation. But belive me, you really want to use
           jikes, it's just lightning fast compared to javac.
+	----------snap----------------------------------------------------------------
 
         * A working apache installation with a working mod_jk
           (the apache connection module for tomcat). You need
@@ -132,12 +134,10 @@ Prerequisites:
 FINAL NOTE:
 
 You could now start building your own applications, but unfortunately
-there is still not much  documentation about how to achieve this. Therefore 
+there is still not much documentation about how to achieve this. Therefore
 I suggest you refer to the mailing list (see pustefix.sf.net).
 
-Just one warning for people trying to use the editor app as an example
-for their own application: The editor works, but is quite old and in a
-lot of ways can't be considered anymore a good example on how to
-write a pustefix application. Of course we should rewrite the editor
-to better conform to the pustefix programming model, but this will take
-time.
+Just one warning for people trying to use the editor app as an example for their own application:
+The editor "just works", but is quite old, hacked up and in a lot of ways can't be considered a good
+example on how to write a pustefix application. Of course we should rewrite the editor to better
+conform to the pustefix programming model, but this will take time.
