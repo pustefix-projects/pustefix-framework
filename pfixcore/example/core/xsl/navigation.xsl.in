@@ -692,7 +692,7 @@
                         </xsl:otherwise>
                       </xsl:choose>
                     </xsl:variable>
-                    <ixsl:attribute name="onclick">return !window.open(this.href),'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.href,'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href"><xsl:copy-of select="$fulllink"/></ixsl:attribute>
                   <xsl:choose>
@@ -763,7 +763,7 @@
                       </xsl:choose>
                     </xsl:variable>
                     <xsl:attribute name="target"><xsl:value-of select="$windowName"/></xsl:attribute>
-                    <ixsl:attribute name="onclick">return !window.open(this.href),'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
+                    <ixsl:attribute name="onclick">return !window.open(this.href,'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href">
                     <xsl:copy-of select="$href"/>
