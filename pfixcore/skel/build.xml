@@ -78,6 +78,7 @@ or delete the DOCTYPE definition -->
     <property       name="prohibitedit" value="no"/>
 
     <property name="debug" value="true"/>
+    <property name="debuglevel" value="lines,vars"/>
 
     <condition property="machine"       value="${env.MACHINE}">
       <and>
@@ -195,6 +196,7 @@ or delete the DOCTYPE definition -->
      srcdir="${dir.src}"
      destdir="${dir.build}"
      debug="${debug}"
+     debuglevel="${debuglevel}"
      classpathref="cp.classpath"
      source="${javac.source}"
      nowarn="${javac.nowarn}"
