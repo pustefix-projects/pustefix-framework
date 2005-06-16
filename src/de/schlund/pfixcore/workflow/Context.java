@@ -391,6 +391,10 @@ public class Context implements AppContext {
         return currentpservreq.getCookies();
     }
 
+    public void setLanguage(String lang) {
+        currentpservreq.getSession(false).setAttribute(AbstractXMLServer.SESS_LANG, lang);        
+    }
+
     public void addCookie(Cookie cookie) {
         cookielist.add(cookie);
     }
@@ -410,7 +414,7 @@ public class Context implements AppContext {
     }
     
     /**
-     * <code>getCurrentSessionId</code> returns the visit_id.
+     * <code>getCurrentVisitId</code> returns the visit_id.
      *
      * @return <code>String</code> visit_id
      */
