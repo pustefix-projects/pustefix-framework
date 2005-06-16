@@ -1,3 +1,14 @@
+2005-06-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/sample1/conf/project.xml.in: added (as a comment) an example of
+	a <sessiontimeout> node to explain how you can change that.
+
+	* src/de/schlund/pfixcore/workflow/Context.java (runPageFlow):
+	Eeeek. Forgot about doing a check to see if
+	pageflow.getFinalPage() returns something else than null...  So
+	basically we didn't die gracefully in the situation of needing a
+	final page but having none defined
+
 2005-06-15  Daniel Hopp <daniel.hopp@schlund.de>
 
 	* typo corrected

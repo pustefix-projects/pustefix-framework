@@ -10,6 +10,7 @@
   <virtualhost><cus:fqdn/></virtualhost>
   <servername>sample1.<cus:fqdn/></servername>
   <serveralias>sample1.<cus:machine/></serveralias>
+  <!-- <sessiontimeout>60</sessiontimeout> -->
   <!-- The default path you will be sent to when using the url -->
   <!-- "http://sample1.<servername>/" -->
   <defpath>/xml/config</defpath>
