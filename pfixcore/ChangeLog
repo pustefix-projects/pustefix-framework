@@ -1,5 +1,9 @@
 2005-06-16  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): moved the setting of the xslt parameter
+	for the currently used language after we called the getDom method, this way we are able
+	to set the language from the business logic.
+
 	* example/sample1/conf/project.xml.in: added (as a comment) an example of
 	a <sessiontimeout> node to explain how you can change that.
 
@@ -8,6 +12,8 @@
 	pageflow.getFinalPage() returns something else than null...  So
 	basically we didn't die gracefully in the situation of needing a
 	final page but having none defined
+	(setLanguage): new method to be able to set the desired language for the UI from the java side (may be
+	needed e.g. for setting the UI for users that have some language preference stored in the backend.)
 
 2005-06-15  Daniel Hopp <daniel.hopp@schlund.de>
 
