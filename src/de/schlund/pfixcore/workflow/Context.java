@@ -833,7 +833,7 @@ public class Context implements AppContext {
             if (startwithflow) {
                 finalpage = saved;
                 LOG.debug("=> STARTWITHFLOW is active, using original target page [" + saved + "] as final page");
-            } else {
+            } else if (currentpageflow.getFinalPage() != null) {
                 finalpage = PageRequest.createPageRequest(currentpageflow.getFinalPage(), variant, preqprops);
                 LOG.debug("=> Pageflow [" + currentpageflow + "] defines page [" + finalpage + "] as final page");
             }
