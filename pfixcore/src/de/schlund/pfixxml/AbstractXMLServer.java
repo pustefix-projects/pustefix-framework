@@ -83,7 +83,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final int RENDER_XMLONLY  = 3;
 
     private static final String   FONTIFY_SSHEET          = "core/xsl/xmlfontify.xsl";
-    private static final String   SESS_LANG               = "__SELECTED_LANGUAGE__";
+    public  static final String   SESS_LANG               = "__SELECTED_LANGUAGE__";
     private static final String   XML_CONTENT_TYPE        = "text/xml; charset=iso-8859-1";
     public  static final String   PARAM_XMLONLY           = "__xmlonly";
     public  static final String   PARAM_XMLONLY_FONTIFY   = "1"; // -> RENDER_FONFIFY
@@ -314,17 +314,14 @@ public abstract class AbstractXMLServer extends ServletManager {
                 }
             }
            
-            // Now look for the parameter __editmode, and store it in the
-            // session if it's there. Get the parameter from the session, and hand it over to the
-            // Stylesheet params. Do the same for the parameter __language.
             if ((value = preq.getRequestParam(PARAM_LANG)) != null) {
                 if (value.getValue() != null) {
                     session.setAttribute(SESS_LANG, value.getValue());
                 }
             }
-            if (session.getAttribute(SESS_LANG) != null) {
-                params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
-            }
+            // Now look for the parameter __editmode, and store it in the
+            // session if it's there. Get the parameter from the session, and hand it over to the
+            // Stylesheet params.
             if ((value = preq.getRequestParam(PARAM_EDITMODE)) != null) {
                 if (value.getValue() != null) {
                     session.setAttribute(PARAM_EDITMODE, value.getValue());
@@ -380,6 +377,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
         currtime = System.currentTimeMillis();
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
+        if (session != null && session.getAttribute(SESS_LANG) != null) {
+            params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
+        }
         handleDocument(preq, res, spdoc, params, doreuse);
         handletime = System.currentTimeMillis() - currtime;
         if (isInfoEnabled()) {
