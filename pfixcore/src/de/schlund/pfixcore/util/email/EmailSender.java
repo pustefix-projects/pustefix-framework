@@ -234,7 +234,7 @@ public class EmailSender {
             Properties properties = new Properties();
             properties.put("mail.smtp.host", smtphost);
             MimeMessage msg =
-                new MimeMessage(Session.getDefaultInstance(properties, null));
+                new MimeMessage(Session.getInstance(properties));
 
             StringBuffer strError = new StringBuffer();
 
