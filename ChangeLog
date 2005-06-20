@@ -11,6 +11,8 @@
 	* example/common/conf/factory.prop.in: now initialize de.schlund.pfixxml.perflogging.PerfLogging.
 	Added new and removed old properties.
 
+	* ./src/de/schlund/pfixxml/PerfEventType.java, ./src/de/schlund/pfixxml/PerfEventTypeConfig.java: removed
+
 2005-06-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): moved the setting of the xslt parameter
