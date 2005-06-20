@@ -1,3 +1,16 @@
+2005-06-20  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java (doGet): Use new perflogging.
+	* src/de/schlund/pfixxml/PfixServletRequest.java: removed old perflogging.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument, process): Use new perflogging.
+	* src/de/schlund/pfixcore/workflow/app/IHandlerSimpleContainer.java: Use new perflogging.
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java: Use new perflogging.
+	* src/de/schlund/pfixcore/workflow/StateImpl.java: Use new perflogging.
+	* src/de/schlund/pfixcore/workflow/Context.java: Use new perflogging.
+	
+	* example/common/conf/factory.prop.in: now initialize de.schlund.pfixxml.perflogging.PerfLogging.
+	Added new and removed old properties.
+
 2005-06-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (process): moved the setting of the xslt parameter

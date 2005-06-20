@@ -50,6 +50,8 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.targets.PageInfo;
@@ -339,14 +341,19 @@ public abstract class AbstractXMLServer extends ServletManager {
         preproctime = System.currentTimeMillis() - preq.getCreationTimeStamp();
        
         if (spdoc == null) {
-            preq.startLogEntry();
+            
+            // Performace tracking
+            PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
+            pe.start();
             currtime        = System.currentTimeMillis();
-            spdoc           = getDom(preq);
-            String pagename = spdoc.getPagename();
-            PerfEventType et = PerfEventType.XMLSERVER_GETDOM;
-            et.setPage(pagename);
-         
-            preq.endLogEntry(et);
+            
+            // Now get the document
+            spdoc = getDom(preq);
+            
+            //Performance tracking
+            pe.setIdentfier(spdoc.getPagename());
+            pe.save();
+	    
             
             TrailLogger.log(preq, spdoc, session);
             RequestParam[] anchors   = preq.getAllRequestParams(PARAM_ANCHOR);
@@ -445,8 +452,11 @@ public abstract class AbstractXMLServer extends ServletManager {
             throw new XMLException("Wasn't able to extract any stylesheet specification from page '" +
                                    spdoc.getPagename() + "' ... bailing out.");
         }
-
-        preq.startLogEntry();
+        
+        //Performance tracking
+        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_HANDLEDOCUMENT, spdoc.getPagename());
+        pe.start();
+        
         if (spdoc.docIsUpdateable()) {
             if (stylesheet.indexOf("::") > 0) {
                 spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
@@ -508,9 +518,9 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
-        PerfEventType et = PerfEventType.XMLSERVER_HANDLEDOCUMENT;
-        et.setPage(spdoc.getPagename());
-        preq.endLogEntry(et);
+        
+        
+        pe.save();
     }
     
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws

@@ -18,15 +18,11 @@
  */
 package de.schlund.pfixxml;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.multipart.MultipartHandler;
 import de.schlund.pfixxml.multipart.PartData;
@@ -61,14 +56,11 @@ public class PfixServletRequest {
 
     //~ Instance/static variables ..................................................................
 
-    private static final Logger   PFXPERF             = Logger.getLogger("PFXPERF");
-    private static final String   INDENT              = "   ";
     private static final String   SBMT_PREFIX         = "__SBMT:";
     private static final String   SYNT_PREFIX         = "__SYNT:";
     private static final String   PROP_TMPDIR         = "pfixservletrequest.tmpdir";
     private static final String   PROP_MAXPARTSIZE    = "pfixservletrequest.maxpartsize";
     private static final String   ATTR_LASTEXCEPTION  = "REQ_LASTEXCEPTION";
-    private static DecimalFormat  FORMAT              = new DecimalFormat("0000");
     private static String         DEF_TMPDIR          = "/tmp";
     private static String         DEF_MAXPARTSIZE     = "" + (10 * 1024 * 1024); // 10 MB
     private HashMap               parameters          = new HashMap();
@@ -81,8 +73,6 @@ public class PfixServletRequest {
     private HttpSession           session          = null;
     private int                   serverport;
     private HttpServletRequest    request;
-    private LinkedList            perflog          = null;
-    private LinkedList            perfstack        = null;
     private long                  starttime        = 0;
 
 
@@ -90,186 +80,7 @@ public class PfixServletRequest {
         return starttime;
     }
     
-    /**
-     *
-     */
-    public synchronized void initPerfLog() {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-        if (perflog == null) {
-            perflog = new LinkedList();
-        }
-        if (perfstack == null) {
-            perfstack = new LinkedList();
-        }
-    }
-
-    /**
-     *
-     */
-    public synchronized void startLogEntry() {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-
-        if (perflog != null) {
-            long      now = System.currentTimeMillis();
-            PerfEvent evn = new PerfEvent(now, "START ", PerfEvent.START);
-            perflog.add(evn);
-            perfstack.add(evn); // this will be decreased by stop events
-        }
-    }
-
-    /**
-     *
-     */
-    public synchronized void endLogEntry(String info, long delay) {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-
-        if (perflog != null) {
-            long      now   = System.currentTimeMillis();
-            PerfEvent start = null;
-            if (perfstack.size() > 0) {
-                start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
-            }
-            if (start != null) {
-                long stime = start.getTime();
-                if (now - stime >= delay) {
-                    String    msg = "<<<" + " " + info + " [" + (now - stime) + "ms]";
-                    PerfEvent evn = new PerfEvent(now, msg, PerfEvent.END);
-                    perflog.add(evn);
-                } else {
-                    perflog.remove(start);
-                }
-            } else {
-                CAT.error("got end log event without a start log on the perfstack");
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    public synchronized void endLogEntry(PerfEventType p) {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-
-        if (perflog != null) {
-            long      now   = System.currentTimeMillis();
-            PerfEvent start = null;
-            if (perfstack.size() > 0) {
-                start = (PerfEvent) perfstack.removeLast(); // the matching StartEvent
-            }
-            if (start != null) {
-                long stime = start.getTime();
-                p.setDuration(now - stime);
-                if (now - stime >= p.getDelay()) {
-                    String    msg = "[event name=\"" + p.getTag() +
-                                    "\" page=\"" + p.getPage() +
-                                    "\" class=\"" + p.getHandlingClass() +
-                                    "\" totaltime=\"" + (now - stime)+
-                                    "\" allowedtime=\"" + p.getDelay() +
-                                    "\"]";
-                    PerfEvent evn = new PerfEvent(now, msg, PerfEvent.END);
-                    perflog.add(evn);
-                } else {
-                    perflog.remove(start);
-                }
-            } else {
-                CAT.error("got end log event without a start log on the perfstack: "+p);
-            }
-        }
-    }
-
-    /**
-     *
-     */
-    public void printLog2() {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-        if (session != null && perflog != null) {
-            int depth  = 0;
-            for (int i = 0; i < perflog.size(); i++) {
-                StringBuffer indent = new StringBuffer("");
-                PerfEvent    entry  = (PerfEvent) perflog.get(i);
-                if (entry.getType() == PerfEvent.START) {
-                    for (int j = 0; j < depth; j++) {
-                        indent.append(INDENT);
-                    }
-                    depth++;
-                } else {
-                    depth--;
-                    for (int j = 0; j < depth; j++) {
-                        indent.append(INDENT);
-                    }
-                }
-                PFXPERF.debug(session.getId() + "|" + FORMAT.format(entry.getTime() - starttime) + "|" +
-                              indent.toString() + entry.getMessage());
-            }
-            PFXPERF.debug("--------------------------------------");
-        }
-    }
-
-    public void printLog() {
-        if (!PFXPERF.isDebugEnabled()) {
-            return;
-        }
-        StringBuffer sb = new StringBuffer(255);
-        for (int i = 0; i < perflog.size(); i++) {
-            PerfEvent entry = (PerfEvent)perflog.get(i);
-            if(entry.getType() == PerfEvent.START) {
-                continue;
-            }
-            String msg = entry.getMessage();
-            if(msg != null || !msg.equals("")) {
-                if(i != perflog.size() - 1)
-                    sb.append(entry.getMessage()+"|");
-                else
-                    sb.append(entry.getMessage());
-            }
-        }
-        String str = sb.toString();
-        if (!str.equals("")) {
-            StringBuffer sb2 = new StringBuffer();
-            sb2.append("[servletrequest servername=\""+getServerName()+"\"");
-            sb2.append(" sessionid=\""+(getSession(false) == null ? "NULL" : getSession(false).getId()));
-
-            String localhost= null;
-            try {
-                localhost = InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException e) {
-                CAT.error(e);
-                localhost = "UNKOWN";
-            }
-            sb2.append("\" machine=\""+localhost+"\"");
-            sb2.append(" ]|");
-            PFXPERF.debug(sb2.toString()+sb.toString());
-        }
-    }
-
-    private class PerfEvent {
-        static final int START = 1;
-        static final int END   = -1;
-        long             time;
-        int              type;
-        String           msg;
-
-        public PerfEvent (long time, String msg, int type) {
-            this.time = time;
-            this.msg  = msg;
-            this.type = type;
-        }
-
-        public int getType() { return type; }
-        public long getTime() { return time; }
-        public String getMessage() { return msg; }
-    }
-
+   
     //~ Constructors ...............................................................................
 
     /**
@@ -279,10 +90,7 @@ public class PfixServletRequest {
      * @param cUtil
      */
     public PfixServletRequest(HttpServletRequest req, Properties properties) {
-        starttime   = System.currentTimeMillis();
-        initPerfLog();
-        startLogEntry();
-
+        starttime = System.currentTimeMillis();
         getRequestParams(req, properties);
         servername  = req.getServerName();
         querystring = req.getQueryString();

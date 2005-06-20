@@ -21,6 +21,9 @@ package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -96,11 +99,13 @@ public abstract class StateImpl implements State {
                     if (cr == null) {
                         throw new XMLException("ContextResource not found: " + classname);
                     }
-                    context.startLogEntry();
+                   
+                    PerfEvent pe = new PerfEvent(PerfEventType.CONTEXTRESOURCE_INSERTSTATUS,
+                            classname);
+                    pe.start();
                     cr.insertStatus(resdoc, resdoc.createNode(nodename));
-                    PerfEventType et = PerfEventType.CONTEXTRESOURCE_INSERTSTATUS;
-                    et.setClass(classname);
-                    context.endLogEntry(et);
+                    pe.save();
+                  
                 }
             }
         }

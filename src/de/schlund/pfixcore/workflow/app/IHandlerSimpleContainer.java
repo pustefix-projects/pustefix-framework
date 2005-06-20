@@ -31,8 +31,9 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IHandlerFactory;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.PerfEventType;
 import de.schlund.pfixxml.loader.*;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 
 /**
  * This class is a default implementation of the <code>IHandlerContainer</code> interface.
@@ -124,13 +125,11 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         // synchronized (handlers) {
             for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
-                context.startLogEntry();
+                PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_PREREQUISITESMET, handler.getClass().getName());
+                pe.start();
                 boolean  test = handler.prerequisitesMet(context);
-                PerfEventType et = PerfEventType.IHANDLER_PREREQUISITESMET;
-                et.setClass(handler.getClass().getName());
-                //et.setPage(context.getCurrentPageRequest().getName());
-                context.endLogEntry(et);
-                //context.endLogEntry("HANDLER_PREREQUISITES_MET (" + handler.getClass().getName() + ")", 3);
+                pe.save();
+            
                 if (!test) {
                     return false;
                 }
@@ -165,13 +164,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             // synchronized (activeset) {
             for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
-                context.startLogEntry();
-                boolean  test = handler.isActive(context);
                 
-                //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
-                PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                et.setClass(handler.getClass().getName());
-                context.endLogEntry(et);
+                boolean test = doIsActive(handler, context);
                 if (!test) {
                     retval = false;
                     break;
@@ -183,13 +177,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             // synchronized (activeset) {
             for (Iterator iter = activeset.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
-                context.startLogEntry();
-                boolean  test = handler.isActive(context);
-                //context.endLogEntry("HANDLER_IS_ACTIVE (" + handler.getClass().getName() + ")", 3);
-                
-                PerfEventType et = PerfEventType.IHANDLER_ISACTIVE;
-                et.setClass(handler.getClass().getName());
-                context.endLogEntry(et);
+               
+                boolean test = doIsActive(handler, context);
                 if (test) {
                     retval = true;
                     break;
@@ -202,6 +191,43 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
         
         return (retval);
     }
+    
+    /**
+     * Call the <see>isActive</see>-Method of the passed <see>IHandler</see>
+     * with the given context.
+     * 
+     * @param handler
+     * @param ctx
+     * @return
+     * @throws Exception
+     */
+    private boolean doIsActive(IHandler handler, Context ctx) throws Exception{
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_ISACTIVE, 
+                handler.getClass().getName());
+        pe.start();
+        boolean  test = handler.isActive(ctx);
+        pe.save();
+        return test;
+    }
+    
+    /**
+     * Call the <see>needsData/see>-Method of the passed <see>IHandler</see>
+     * with the given context.
+     * 
+     * @param handler
+     * @param ctx
+     * @return
+     * @throws Exception
+     */
+    private boolean doNeedsData(IHandler handler, Context ctx) throws Exception{
+        PerfEvent pe = new PerfEvent(PerfEventType.IHANDLER_NEEDSDATA, 
+                handler.getClass().getName());
+        pe.start();
+        boolean  test = handler.needsData(ctx);
+        pe.save();
+        return test;
+    }
+    
 
     /**
      * The method <code>needsData</code> tells if any of the IHandlers this instance 
@@ -218,12 +244,8 @@ public class IHandlerSimpleContainer implements IHandlerContainer, Reloader {
             for (Iterator iter = handlers.iterator(); iter.hasNext(); ) {
                 IHandler handler = (IHandler) iter.next();
                 if (handler.isActive(context)) {
-                    context.startLogEntry();
-                    boolean test = handler.needsData(context);
-                    PerfEventType et = PerfEventType.IHANDLER_NEEDSDATA;
-                    et.setClass(handler.getClass().getName());
-                    context.endLogEntry(et);
-                    // context.endLogEntry("HANDLER_NEEDS_DATA (" + handler.getClass().getName() + ")", 3);
+                    
+                    boolean test = doNeedsData(handler, context);
                     if (test) {
                         return true;
                     }

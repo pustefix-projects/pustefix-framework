@@ -24,6 +24,8 @@ import de.schlund.pfixxml.exceptionhandler.ExceptionHandler;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionConfig;
 import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 import de.schlund.pfixxml.loader.AppLoader;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
@@ -347,14 +349,10 @@ public abstract class ServletManager extends HttpServlet {
 
         CAT.debug("*** >>> End of redirection management, handling request now.... <<< ***\n");
 
-        //preq.initPerfLog();
-        preq.startLogEntry();
+        PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_CALLPROCESS, "unkown page");
+        pe.start();
         callProcess(preq, req, res);
-        PerfEventType et = PerfEventType.XMLSERVER_CALLPROCESS;
-        //et.setMessage(preq);
-        preq.endLogEntry(et);
-        //preq.endLogEntry("CALLPROCESS", 0);
-        preq.printLog();
+        pe.save();
     }
 
     private void redirectToClearedRequest(HttpServletRequest req, HttpServletResponse res) {
