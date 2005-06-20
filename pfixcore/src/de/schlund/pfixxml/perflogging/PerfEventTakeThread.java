@@ -37,7 +37,7 @@ public class PerfEventTakeThread extends Thread {
                 Thread.currentThread().sleep(20);
                 PerfStatistic.getInstance().process(pe);
             } catch (InterruptedException e) {
-                LOG.warn("Perflogging may be disabled. Buffersize: "+bufsize, e);
+                LOG.warn("InterruptedException. Perflogging may be disabled. Buffersize: "+bufsize);
                 return;
             }
         }
