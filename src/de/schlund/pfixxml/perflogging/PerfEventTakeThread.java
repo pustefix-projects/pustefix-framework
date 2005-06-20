@@ -34,7 +34,7 @@ public class PerfEventTakeThread extends Thread {
             try {
                 PerfEvent pe = (PerfEvent) bBuffer.take();
                 LOG.info("Took ("+pe+") from channel. Buffersize: "+bufsize);
-                Thread.currentThread().sleep(20);
+                //testing: Thread.currentThread().sleep(20);
                 PerfStatistic.getInstance().process(pe);
             } catch (InterruptedException e) {
                 LOG.warn("InterruptedException. Perflogging may be disabled. Buffersize: "+bufsize);
