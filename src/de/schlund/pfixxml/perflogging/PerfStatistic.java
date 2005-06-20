@@ -35,7 +35,7 @@ public class PerfStatistic {
     }
         
    synchronized void reset() {
-       category_map = null;
+       category_map = new HashMap();
    }
 
     /**

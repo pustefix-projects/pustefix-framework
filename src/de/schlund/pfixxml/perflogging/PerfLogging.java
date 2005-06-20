@@ -135,6 +135,7 @@ public class PerfLogging {
         }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
+            PerfStatistic.getInstance().reset();
             stopPerfEventTakeThread();
             stopLogFileWriterThread();
             perfActive = false;
