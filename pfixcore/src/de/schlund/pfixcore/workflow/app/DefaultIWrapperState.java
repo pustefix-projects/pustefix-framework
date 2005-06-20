@@ -21,6 +21,9 @@ package de.schlund.pfixcore.workflow.app;
 
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
+
 import java.util.Properties;
 
 /**
@@ -73,20 +76,22 @@ public class DefaultIWrapperState extends StateImpl {
         
         CAT.debug("[[[[[ " + context.getCurrentPageRequest().getName() + " ]]]]]"); 
 
-        preq.startLogEntry();
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_INITIWRAPPERS,
+                context.getCurrentPageRequest().toString());
+       
+        pe.start();
         container.initIWrappers(context, preq, resdoc);
-        PerfEventType etw = PerfEventType.PAGE_INITIWRAPPERS;
-        etw.setPage(context.getCurrentPageRequest().toString());
-        preq.endLogEntry(etw);
-       // preq.endLogEntry("CONTAINER_INIT_IWRAPPERS", 5);
+        pe.save();
         
         if (isSubmitTrigger(context, preq)) {
             CAT.debug(">>> In SubmitHandling...");
-            preq.startLogEntry();
+            
+            pe = new PerfEvent(PerfEventType.PAGE_HANDLESUBMITTEDDATA,
+                    context.getCurrentPageRequest().toString());
+            pe.start();
             container.handleSubmittedData();
-            PerfEventType et = PerfEventType.PAGE_HANDLESUBMITTEDDATA;
-            et.setPage(context.getCurrentPageRequest().toString());
-            preq.endLogEntry(et);
+            pe.save();
+         
             if (container.errorHappened()) {
                 CAT.debug("    => Can't continue, as errors happened during load/work.");
                 container.addErrorCodes();
@@ -97,12 +102,13 @@ public class DefaultIWrapperState extends StateImpl {
                 if (!context.isJumptToPageSet() && container.stayAfterSubmit()) {
                     CAT.debug("... Container says he wants to stay on this page and context.requestWantsContinue() doesn't object:");
                     CAT.debug("    => retrieving current status.");
-                    preq.startLogEntry();
+                    
+                    pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
+                            context.getCurrentPageRequest().toString());
+                    pe.start();
                     container.retrieveCurrentStatus();
-                    PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                    pet.setPage(context.getCurrentPageRequest().toString());
-                    pet.setAdditionalInfo("SUCCESS_STAY");
-                    preq.endLogEntry(pet);
+                    pe.save();
+                    //SUCCESS_STAY
                     context.prohibitContinue();
                 } else {
                     CAT.debug("... Container says he is ready");
@@ -110,12 +116,13 @@ public class DefaultIWrapperState extends StateImpl {
                     if (!context.canContinue()) {
                         CAT.debug(">>> Context can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");
-                        preq.startLogEntry();
+                        pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
+                                context.getCurrentPageRequest().toString());
+                        
+                        pe.start();
                         container.retrieveCurrentStatus();
-                        PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                        pet.setPage(context.getCurrentPageRequest().toString());
-                        pet.setAdditionalInfo("SUCESS_STAY_NOWF");
-                        preq.endLogEntry(pet);
+                        pe.save();
+                        //SUCESS_STAY_NOWF"
                         context.prohibitContinue();
                     }
                 }
@@ -123,26 +130,18 @@ public class DefaultIWrapperState extends StateImpl {
             }
         } else if (isDirectTrigger(context, preq) || context.finalPageIsRunning() || context.flowIsRunning()) {
             CAT.debug(">>> Retrieving current status...");
-            preq.startLogEntry();
+            
+            pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
+                    context.getCurrentPageRequest().toString());
+            pe.start();
             container.retrieveCurrentStatus();
+            pe.save();
             if (isDirectTrigger(context,preq)) {
                 CAT.debug("    => REASON: DirectTrigger");
-                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setPage(context.getCurrentPageRequest().toString());
-                pet.setAdditionalInfo("DIRECT");
-                preq.endLogEntry(pet);
             } else if (context.finalPageIsRunning()) {
                 CAT.debug("    => REASON: FinalPage");
-                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setPage(context.getCurrentPageRequest().toString());
-                pet.setAdditionalInfo("FINAL");
-                preq.endLogEntry(pet);
             } else {
                 CAT.debug("    => REASON: WorkFlow");
-                PerfEventType pet = PerfEventType.PAGE_RETRIEVECURRENTSTATUS;
-                pet.setPage(context.getCurrentPageRequest().toString());
-                pet.setAdditionalInfo("FLOW");
-                preq.endLogEntry(pet);
             }
             rfinal.onRetrieveStatus(container);
             context.prohibitContinue();
@@ -161,6 +160,8 @@ public class DefaultIWrapperState extends StateImpl {
         }
         return resdoc;
     }
+    
+  
     
 
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)

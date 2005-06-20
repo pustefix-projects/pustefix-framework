@@ -22,6 +22,8 @@ package de.schlund.pfixcore.workflow;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.perflogging.PerfEvent;
+import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.util.statuscodes.StatusCode;
 import java.util.*;
 import javax.servlet.http.Cookie;
@@ -659,12 +661,13 @@ public class Context implements AppContext {
             throw new XMLException ("*** Can't get a state to check needsData() for page " + page.getName() + " ***");
         }
         page.setStatus(status);
-        currentpservreq.startLogEntry();
+      
+        
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_NEEDSDATA, page.getName());
+        pe.start();
         boolean retval     = state.needsData(this, currentpservreq);
-        PerfEventType et = PerfEventType.PAGE_NEEDSDATA;
-        et.setPage(page.toString());
-        currentpservreq.endLogEntry(et);
-       // currentpservreq.endLogEntry("NEEDS_DATA (" + page + ")", 10);
+        pe.save();
+       
         currentpagerequest = saved;
         return retval;
     }
@@ -677,13 +680,12 @@ public class Context implements AppContext {
             throw new XMLException ("* Can't get a state to check isAccessible() for page " + page.getName());
         }
         page.setStatus(status);
-        currentpservreq.startLogEntry();
+        
+        PerfEvent pe = new PerfEvent(PerfEventType.PAGE_ISACCESSIBLE, page.getName());
+        pe.start();
         boolean retval = state.isAccessible(this, currentpservreq);
-        PerfEventType et = PerfEventType.PAGE_ISACCESSIBLE;
-        et.setPage(page.toString());
-        currentpservreq.endLogEntry(et);
-
-        //currentpservreq.endLogEntry("IS_ACCESSIBLE (" + page + ")", 10);
+        pe.save();
+        
         currentpagerequest = saved;
         return retval;
     }
@@ -961,24 +963,22 @@ public class Context implements AppContext {
 
         if (autoinvalidate_navi) {
             LOG.debug("=> Add new navigation.");
-            currentpservreq.startLogEntry();
+           
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVICOMPLETE, spdoc.getPagename());
+            pe.start();
             recursePages(navi.getNavigationElements(), element, doc, null, warn_buffer, debug_buffer);
-            PerfEventType et = PerfEventType.CONTEXT_CREATENAVICOMPLETE;
-            et.setPage(spdoc.getPagename());
-            currentpservreq.endLogEntry(et);
-            //currentpservreq.endLogEntry("CREATE_NAVI_COMPLETE", 25);
+            pe.save();
         } else {
             if (navigation_visible != null) {
                 LOG.debug("=> Reuse old navigation.");
             } else {
                 LOG.debug("=> Add new navigation (has been invalidated).");
             }
-            currentpservreq.startLogEntry();
+           
+            PerfEvent pe = new PerfEvent(PerfEventType.CONTEXT_CREATENAVIREUSE, spdoc.getPagename());
+            pe.start();
             recursePages(navi.getNavigationElements(), element, doc, navigation_visible, warn_buffer, debug_buffer);
-            PerfEventType et = PerfEventType.CONTEXT_CREATENAVIREUSE;
-            et.setPage(spdoc.getPagename());
-            currentpservreq.endLogEntry(et);
-            //currentpservreq.endLogEntry("CREATE_NAVI_REUSE", 2);
+            pe.save();
         }
     }
 
@@ -1107,17 +1107,7 @@ public class Context implements AppContext {
         return name;
     }
 
-    public void startLogEntry() {
-        currentpservreq.startLogEntry();
-    }
-
-    public void endLogEntry(String info, long min) {
-        currentpservreq.endLogEntry(info, min);
-    }
-
-    public void endLogEntry(PerfEventType t) {
-        currentpservreq.endLogEntry(t);
-    }
+  
 
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
@@ -1187,4 +1177,6 @@ public class Context implements AppContext {
         
         messageSCodes.put(scode, list);
     }
+
+    
 }
