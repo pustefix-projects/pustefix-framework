@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class PerfLogServlet extends HttpServlet {
     private String  PARAM_ACTIVATE = "active"; 
+    private String  PARAM_DUMP = "dump";
     private String ON = "1";
     private String OFF = "0";
     private static Logger LOG = Logger.getLogger(PerfLogServlet.class);
@@ -33,6 +34,11 @@ public class PerfLogServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.setContentType("text/plain");
+        
+        if(req.getParameter(PARAM_DUMP) != null && req.getParameter(PARAM_DUMP).equals(ON)) {
+            LOG.info("Triggering dump");
+            PerfLogging.getInstance().triggerDump();
+        }
         
         if(req.getParameter(PARAM_ACTIVATE) != null) {
             if(req.getParameter(PARAM_ACTIVATE).equals(ON)) {

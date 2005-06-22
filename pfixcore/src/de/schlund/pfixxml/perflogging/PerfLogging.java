@@ -35,7 +35,7 @@ public class PerfLogging {
     private int DEFAULT_OFFER_MAX_WAIT = 5;
     private int DEFAULT_LOG_WRITE = 1000 * 60 * 10; //10 min
     private boolean perfLoggingEnabled = false;
-    private boolean perfActive;
+    private boolean perfActive = false;
     private BoundedBufferWrapper boundedBuffer;
     private PerfEventTakeThread perfEventTakeThread;
     private LogFileWriterThread logFileWriterThread;
@@ -85,15 +85,7 @@ public class PerfLogging {
         boundedBuffer = new BoundedBufferWrapper(size, wait);
         
         
-        String prop_autostart = props.getProperty(PROP_AUTOSTART);
-        if(prop_autostart.equals(ON)) {
-            perfActive = true;
-            activatePerflogging();
-        } else {
-            perfActive = false;
-        }
-        LOG.info("Perflogging active: "+perfActive);
-        
+        String prop_autostart = props.getProperty(PROP_AUTOSTART, OFF);
         
         String prop_logwrite = props.getProperty(PROP_LOG_WRITE);
         
@@ -103,6 +95,25 @@ public class PerfLogging {
         } else {
             logFileWriterThreadSchedule = Integer.parseInt(prop_logwrite);
         }
+        
+        if(LOG.isInfoEnabled()) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("After init: \n").
+                append("Enabled: "+perfLoggingEnabled+"\n").
+                append("Active: "+perfActive+"\n").
+                append("logFileSchedule: "+logFileWriterThreadSchedule+"\n").
+                append("Buffersize: "+size+"\n").
+                append("Bufferwait: "+wait+"\n");
+            LOG.info(sb.toString());
+               
+        }
+        
+        if(prop_autostart.equals(ON)) {
+            activatePerflogging();
+        } else {
+            perfActive = false;
+        }
+        
     }
     
     synchronized boolean isPerfLogggingEnabled() {
@@ -124,6 +135,7 @@ public class PerfLogging {
             startPerfEventTakeThread();
             startLogFileWriterThread();
             perfActive = true;
+            LOG.info("Perflogging now active");
         } else {
             LOG.info("perflogging already active");
         }
@@ -135,6 +147,7 @@ public class PerfLogging {
         }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
+            
             PerfStatistic.getInstance().reset();
             stopPerfEventTakeThread();
             stopLogFileWriterThread();
@@ -144,6 +157,12 @@ public class PerfLogging {
         } else {
             LOG.info("perflogging already inactive");
         }
+    }
+    
+    synchronized void triggerDump() {
+        LogFileWriterThread logFileWriter = new LogFileWriterThread();
+        // run in same thread 
+        logFileWriter.run();
     }
     
     private void startPerfEventTakeThread() {
