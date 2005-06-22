@@ -43,8 +43,7 @@ public class PerfStatistic {
      */
    synchronized void process(PerfEvent pe) {
       
-       
-        List intervals = IntervalFactory.getInstance().getIntervalForCategory(pe.getCategory());
+       List intervals = IntervalFactory.getInstance().getIntervalForCategory(pe.getCategory());
         
         if(!category_map.containsKey(pe.getCategory())) {
             category_map.put(pe.getCategory(), new HashMap());
@@ -123,28 +122,46 @@ public class PerfStatistic {
             
             for(Iterator j = identity_map.keySet().iterator(); j.hasNext(); ) {
                 String identfier = (String) j.next();
-                sb.append("\t"+identfier+":").append("\n");
                 
                 int[] cc = (int[]) identity_map.get(identfier);
                 
                 List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
                 
                 int count = 0;
+                int total = getTotal(category, identfier);
+                sb.append("\t"+identfier+"["+total+"]"+":").append("\n");
                 for(Iterator k = intervals.iterator(); k.hasNext();) {
                     Interval interval = (Interval) k.next();
                     if(cc[count] > 0) {
+                        int per = total == 0 ? total : (cc[count] * 100 / total);
                         sb.append("\t\t["+interval.getFrom()+
                                "-"+interval.getUntil()+"]"+  
-                               "=>"+cc[count]).append("\n");
+                               "=>"+cc[count]+"|"+per).append("\n");
                     }
                     count++;
-                }
-                
+                }                
             }
         }
         sb.append("----------------------------------------------\n");
         return sb.toString();
     }
+    
+    
+    private int getTotal(String category, String ident) {
+        HashMap identity_map = (HashMap)category_map.get(category);
+        int[] cc = (int[]) identity_map.get(ident);
+        List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
+        int count = 0;
+        int total = 0;
+        for(Iterator k = intervals.iterator(); k.hasNext(); k.next()) {
+            if(cc[count] > 0) {
+                total += cc[count];
+            }
+            count++;
+        }
+        return total;
+    }
+    
     
     String toStr() {
         return category_map.toString();
