@@ -19,6 +19,8 @@ import de.schlund.pfixxml.util.XPath;
 public class ApplicationList implements Serializable {
     private static final Logger LOG = Logger.getLogger(ApplicationList.class);
     
+    private static final long serialVersionUID = 4898818721473076365L;
+
     public static ApplicationList load(Document projectsXml, boolean tomcat, String sessionSuffix) throws TransformerException {
         ApplicationList result;
         Iterator iter;
