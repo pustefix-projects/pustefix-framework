@@ -20,12 +20,12 @@
 package de.schlund.pfixcore.workflow;
 
 
-import org.apache.log4j.Category;
-
-import de.schlund.pfixxml.FactoryInitServlet;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import org.apache.log4j.Category;
+
+import de.schlund.pfixxml.util.Misc;
 
 /**
  * @author: jtl
@@ -49,8 +49,8 @@ public class FlowStepActionFactory {
             act = new FlowStepJumpToAction();
         } else {
             try {
-                Constructor constr = Class.forName(action).getConstructor(FactoryInitServlet.NO_CLASSES);
-                act                = (FlowStepAction) constr.newInstance(FactoryInitServlet.NO_OBJECTS);
+                Constructor constr = Class.forName(action).getConstructor(Misc.NO_CLASSES);
+                act                = (FlowStepAction) constr.newInstance(Misc.NO_OBJECTS);
             } catch (InstantiationException e) {
                 CAT.error("unable to instantiate class [" + action + "]", e);
             } catch (IllegalAccessException e) {

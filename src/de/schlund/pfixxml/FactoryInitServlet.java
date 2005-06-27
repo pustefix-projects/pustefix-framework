@@ -42,6 +42,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
 import de.schlund.pfixxml.loader.StateTransfer;
+import de.schlund.pfixxml.util.Misc;
 
 
 /**
@@ -96,10 +97,6 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
             }
         }
     }
-    
-    // TODO: there might be a better place for this ...
-    public static final Class[] NO_CLASSES = new Class[] {};
-    public static final Object[] NO_OBJECTS = new Object[] {};
     
     /**
      * Initialize this servlet. Also call the 'init' method of all classes
@@ -161,7 +158,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                             long      stop      = 0;
                             if (appLoader.isEnabled() && appLoader.isReloadableClass(the_class)) {
                                 Class       clazz   = appLoader.loadClass(the_class);
-                                Object      factory = clazz.getMethod("getInstance", NO_CLASSES).invoke(null, NO_OBJECTS);
+                                Object      factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
                                 CAT.debug("     Object ID: " + factory);
                                 start               = System.currentTimeMillis();
                                 clazz.getMethod("init", new Class[] { Properties.class } ).invoke(factory, new Object[] { properties });
@@ -173,7 +170,7 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
                                 factories.add(factory);
                             } else {
                                 Class clazz = Class.forName(the_class);
-                                Object factory = clazz.getMethod("getInstance", NO_CLASSES).invoke(null, NO_OBJECTS);
+                                Object factory = clazz.getMethod("getInstance", Misc.NO_CLASSES).invoke(null, Misc.NO_OBJECTS);
                                 CAT.debug("     Object ID: " + factory);
                                 start               = System.currentTimeMillis();
                                 clazz.getMethod("init", new Class[] { Properties.class }).invoke(factory, new Object[] { properties });

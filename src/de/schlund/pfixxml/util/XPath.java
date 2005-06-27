@@ -36,8 +36,6 @@ import com.icl.saxon.expr.StandaloneContext;
 import com.icl.saxon.om.NodeEnumeration;
 import com.icl.saxon.om.NodeInfo;
 
-import de.schlund.pfixxml.FactoryInitServlet;
-
 
 /**
  *  Evaluates XPath-expressions. Some ugly reflection stuff to work with jdk 1.4 and 1.5.
@@ -171,7 +169,7 @@ public class XPath {
         try {
             SELECT = cls.getMethod("selectNodeIterator", new Class[] { Node.class, String.class });
             EVAL = cls.getMethod("eval", new Class[] { Node.class, String.class });
-            BOOL = xobject.getMethod("bool", FactoryInitServlet.NO_CLASSES);
+            BOOL = xobject.getMethod("bool", Misc.NO_CLASSES);
         } catch (SecurityException g) {
             throw new RuntimeException(g);
         } catch (NoSuchMethodException g) {
@@ -183,7 +181,7 @@ public class XPath {
         Object xobject;
         
         xobject = doInvoke(EVAL, context, test);
-        return ((Boolean) doInvoke(BOOL, xobject, FactoryInitServlet.NO_OBJECTS)).booleanValue();
+        return ((Boolean) doInvoke(BOOL, xobject, Misc.NO_OBJECTS)).booleanValue();
     }
     
     private static Object doInvoke(Method meth, Node node, String xpath) throws TransformerException {
