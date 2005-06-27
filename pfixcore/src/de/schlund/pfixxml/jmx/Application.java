@@ -17,6 +17,8 @@ public class Application implements Serializable {
     private final String startPath;
     private final String sessionSuffix;
     
+    private static final long serialVersionUID = 6157375568733984286L;
+
     public Application(String name, String server, boolean tomcat, String startPath, String sessionSuffix) {
         if (server.indexOf('/') != -1) {
             throw new IllegalArgumentException(server);
