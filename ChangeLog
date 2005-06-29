@@ -1,7 +1,7 @@
 2005-06-28  Michael Hartmeier <mhm@schlund.de>
 
-    * lib/log4j-1.2.9.jar: upgrade to latest release; 
-    deprecated methods have been removed, otherwise same as 1.2.8
+	* lib/log4j-1.2.9.jar: upgrade to latest release; 
+	deprecated methods have been removed, otherwise same as 1.2.8
 
 2005-06-20  Joerg Haecker <haecker@schlund.de>
 
