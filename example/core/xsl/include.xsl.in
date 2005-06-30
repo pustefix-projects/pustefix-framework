@@ -533,7 +533,7 @@
     <xsl:param name="themed-path" select="@themed-path"/> 
     <xsl:param name="themed-img"  select="@themed-img"/>
     <xsl:param name="exclude-attributes"/>
-    <xsl:variable name="always-exclude-attributes" select="'src|alt|title|themed-path|themed-img'"/>
+    <xsl:variable name="always-exclude-attributes" select="'src|alt|themed-path|themed-img'"/>
     <xsl:variable name="real_src">
       <xsl:call-template name="pfx:image_register_src">
         <xsl:with-param name="src" select="$src"/>
