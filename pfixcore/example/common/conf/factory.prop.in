@@ -17,6 +17,7 @@
     <prop name="factory.initialize.08">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
     <prop name="factory.initialize.09">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
+    <prop name="factory.initialize.11">de.schlund.lucefix.core.PfixEngine</prop>
     
     <!-- part index -->
     <prop name="partindex.reloadchanges">true</prop>
@@ -63,6 +64,11 @@
     <prop name="perflogging.autostart">0</prop>
     <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
     <prop name="perflogging.offermaxwait">5</prop>
+    
+    <!-- Lucefix -->
+    <!-- milliseconds to wait after each run -->
+    <prop name="lucefix.queueidle">1000</prop>
+	<prop name="lucefix.pfixreadjustidle">10000</prop>
     
   </properties>
 </standardprops>
