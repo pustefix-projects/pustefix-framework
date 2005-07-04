@@ -1,3 +1,12 @@
+2005-07-04  Martin Leidig <mleidig@schlund.de>
+
+	Updated to Axis 1.2.1
+
+	* lib/axis-1.2.jar: Removed
+	* lib/axis-ant-1.2.jar: Removed
+	* lib/axis-1.2.1.jar: Added
+	* lib/axis-ant-1.2.1.jar: Added
+
 2005-07-01  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.6-pre
