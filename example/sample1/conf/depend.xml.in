@@ -9,10 +9,11 @@
   </global>
   
   <navigation>
-    <page name="home"     handler="/xml/config" accesskey="H"/>
-    <page name="order"    handler="/xml/config" accesskey="O"/>
-    <page name="overview" handler="/xml/config" accesskey="S"/>
-
+    <page name="home"     handler="/xml/config" accesskey="H">
+      <page name="order"    handler="/xml/config" accesskey="O"/>
+      <page name="overview" handler="/xml/config" accesskey="S"/>
+    </page>
+    
     <page name="admin"    handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
     <page name="encoding" handler="/xml/config"/>
