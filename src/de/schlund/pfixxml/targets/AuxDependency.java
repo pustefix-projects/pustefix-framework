@@ -36,6 +36,7 @@ public class AuxDependency implements Comparable {
     private final String         product;
     private final int            hashCode;
     private final TreeSet        affectedtargets;
+    private final HashMap        affectedtargetgenerators;
     private final HashMap        themes_children;
    
     private long last_lastModTime = -1;
@@ -44,14 +45,15 @@ public class AuxDependency implements Comparable {
         if (path == null) {
             throw new IllegalArgumentException("Need Path to construct AuxDependency");
         }
-        this.type            = type;
-        this.path            = path;
-        this.part            = part;
-        this.product         = product;
-        this.affectedtargets = new TreeSet();
-        this.themes_children = new HashMap();
+        this.type                     = type;
+        this.path                     = path;
+        this.part                     = part;
+        this.product                  = product;
+        this.affectedtargets          = new TreeSet();
+        this.affectedtargetgenerators = new HashMap();
+        this.themes_children          = new HashMap();
 
-        String key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
+        String key    = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         this.hashCode = key.hashCode();
     }
 
@@ -89,6 +91,13 @@ public class AuxDependency implements Comparable {
     
     public boolean addTargetDependency(VirtualTarget target) {
         synchronized (affectedtargets) {
+            TargetGenerator tgen = target.getTargetGenerator();
+            if (affectedtargetgenerators.containsKey(tgen)) {
+                int count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
+                affectedtargetgenerators.put(tgen, new Integer(count++));
+            } else {
+                affectedtargetgenerators.put(tgen, new Integer(1));
+            }
             return affectedtargets.add(target);
         }
     }
@@ -96,6 +105,13 @@ public class AuxDependency implements Comparable {
     public void resetTargetDependency(VirtualTarget target) { 
         synchronized (affectedtargets) {
             affectedtargets.remove(target);
+            TargetGenerator tgen  = target.getTargetGenerator();
+            int             count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
+            if (count > 1) {
+                affectedtargetgenerators.put(tgen, new Integer(count--));
+            } else {
+                affectedtargetgenerators.remove(tgen);
+            }
             TreeSet tmp_children = getChildren(target);
             for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
@@ -214,6 +230,15 @@ public class AuxDependency implements Comparable {
         }
     }
 
+    public TreeSet getAffectedTargetGenerators() {
+        synchronized (affectedtargets) { // Note: this is right, we only change
+                                         // affectedtargetgenerators when in synchronized blocks of
+                                         // affectedtargets.
+            return new TreeSet(affectedtargetgenerators.keySet());
+        }
+    }
+
+    
     public int compareTo(Object inobj) {
         AuxDependency in = (AuxDependency) inobj;
 

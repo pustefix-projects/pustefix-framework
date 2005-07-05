@@ -481,25 +481,8 @@ public class Context implements AppContext {
         return jumptopagerequest != null;
     }
     
-    public boolean canContinue() {
-        if (prohibitcontinue) {
-            LOG.debug(">>> Have already set prohibitcontinue to true!");
-            LOG.debug("    => must stay on this page");
-            return false;
-        } else if (isCurrentPageRequestInCurrentFlow()) {
-            LOG.debug(">>> Page is part of current pageflow:");
-            LOG.debug("    => continue with pagflow...");
-            return true;
-        } else if (isCurrentPageFlowRequestedByUser()) {
-            LOG.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
-            LOG.debug("    => continue with pagflow...");
-            return true;
-        } else if (isJumptToPageSet()) {
-            LOG.debug(">>> Have been called with a jumptopage set:");
-            LOG.debug("    => continue so we can jump to this page...");
-            return true;
-        }
-        return false;
+    public boolean isJumptToPageFlowSet() {
+        return jumptopageflow != null;
     }
     
     public boolean currentFlowStepWantsPostProcess() {
@@ -572,7 +555,7 @@ public class Context implements AppContext {
         }
     }
 
-    private boolean isCurrentPageFlowRequestedByUser() {
+    public boolean isCurrentPageFlowRequestedByUser() {
         return pageflow_requested_by_user;
     }
 

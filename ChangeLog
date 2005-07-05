@@ -1,3 +1,20 @@
+2005-07-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/StaticState.java (getDocument): call the canContinue from DefaultIWrapperState
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (canContinue): moved here from context, made static so 
+	StaticState can call it, too.
+
+	* src/de/schlund/pfixcore/workflow/FlowStepJumpToAction.java (doAction): only set jumptopage or 
+	jumptopageflow if not already set by the UI.
+
+	* src/de/schlund/pfixcore/workflow/Context.java (isCurrentPageFlowRequestedByUser): made public.
+	(isJumptToPageFlowSet): new method
+	(canContinue): removed here, now in DefaultIWrapperState. 
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (getAffectedTargetGenerators): new method to quickly 
+	retrieve all projects (==targetgenerators) that use the auxdependency
+
 2005-07-04  Martin Leidig <mleidig@schlund.de>
 
 	Updated to Axis 1.2.1

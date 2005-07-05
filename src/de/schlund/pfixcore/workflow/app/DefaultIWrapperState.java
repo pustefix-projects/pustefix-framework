@@ -19,12 +19,13 @@
 
 package de.schlund.pfixcore.workflow.app;
 
+
 import de.schlund.pfixcore.workflow.*;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
-
 import java.util.Properties;
+import org.apache.log4j.Category;
 
 /**
  * DefaultIWrapperState.java
@@ -36,6 +37,7 @@ import java.util.Properties;
  */
 
 public class DefaultIWrapperState extends StateImpl {
+    private static Category CAT             = Category.getInstance(DefaultIWrapperState.class);
     private static String DEF_WRP_CONTAINER = "de.schlund.pfixcore.workflow.app.IWrapperSimpleContainer";
     private static String DEF_FINALIZER     = "de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer";
 
@@ -113,7 +115,7 @@ public class DefaultIWrapperState extends StateImpl {
                 } else {
                     CAT.debug("... Container says he is ready");
                     CAT.debug("    => end of submit reached successfully. Asking Context if it can continue:");
-                    if (!context.canContinue()) {
+                    if (!canContinue(context)) {
                         CAT.debug(">>> Context can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");
                         pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
@@ -122,7 +124,7 @@ public class DefaultIWrapperState extends StateImpl {
                         pe.start();
                         container.retrieveCurrentStatus();
                         pe.save();
-                        //SUCESS_STAY_NOWF"
+                        //SUCESS_STAY_NOW
                         context.prohibitContinue();
                     }
                 }
@@ -162,7 +164,27 @@ public class DefaultIWrapperState extends StateImpl {
     }
     
   
-    
+    protected static boolean canContinue(Context context) {
+        if (context.getProhibitContinue()) {
+            CAT.debug(">>> Have already set prohibitcontinue to true!");
+            CAT.debug("    => must stay on this page");
+            return false;
+        } else if (context.isCurrentPageRequestInCurrentFlow()) {
+            CAT.debug(">>> Page is part of current pageflow:");
+            CAT.debug("    => continue with pagflow...");
+            return true;
+        } else if (context.isCurrentPageFlowRequestedByUser()) {
+            CAT.debug(">>> Page not part of current pageflow, but flow is explicitely set from request data:");
+            CAT.debug("    => continue with pagflow...");
+            return true;
+        } else if (context.isJumptToPageSet()) {
+            CAT.debug(">>> Have been called with a jumptopage set:");
+            CAT.debug("    => continue so we can jump to this page...");
+            return true;
+        }
+        return false;
+
+    }
 
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
     protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {

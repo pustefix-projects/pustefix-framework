@@ -38,10 +38,10 @@ public class FlowStepJumpToAction implements FlowStepAction {
     }
 
     public void doAction(Context context, ResultDocument resdoc) throws Exception {
-        if (page != null && !page.equals("")) {
+        if (page != null && !page.equals("") && !context.isJumptToPageSet()) {
             context.setJumpToPageRequest(page);
         }
-        if (pageflow != null && !pageflow.equals("")) {
+        if (pageflow != null && !pageflow.equals("") && !context.isJumptToPageFlowSet()) {
             context.setJumpToPageFlow(pageflow);
         }
     }
