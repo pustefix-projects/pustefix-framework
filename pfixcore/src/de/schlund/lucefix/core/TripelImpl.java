@@ -1,5 +1,8 @@
 package de.schlund.lucefix.core;
 
+import java.util.Collection;
+import java.util.Comparator;
+
 /**
  * @author schuppi
  * @date Jun 14, 2005
@@ -9,6 +12,7 @@ public class TripelImpl implements Tripel {
     public static final byte INDEX = 1;
 //    public static final byte UPDATE = 2;
     public static final byte DELETE = 3;
+//    private static Comparator comparator = new TripelImpl.TripelComparator();
 
     private String product;
     private String part;
@@ -100,4 +104,37 @@ public class TripelImpl implements Tripel {
         sb.append(getProduct());
         return sb.toString();
     }
+//    public static class TripelComparator implements Comparator{
+//
+//        public int compare(Object arg0, Object arg1) {
+//            if (arg0 instanceof TripelImpl) {
+//                TripelImpl eins = (TripelImpl) arg0;
+//                if (arg1 instanceof TripelImpl) {
+//                    TripelImpl zwei = (TripelImpl) arg1;
+//                    if (eins.equals(zwei))
+//                        return 0;
+//                }
+//            }
+//            return 1;
+//        }
+//        
+//    }
+
+    public boolean equals(Object arg0) {
+        if (arg0 instanceof TripelImpl) {
+            TripelImpl c = (TripelImpl) arg0;
+            return (c.getFilename().equals(getFilename()) && c.getPart().equals(getPart()) && c.getProduct().equals(getProduct()));
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return getPath().hashCode();
+    }
+    
+    
+
+//    public static Comparator getComparator() {
+//        return comparator;
+//    }
 }

@@ -11,6 +11,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
+import de.schlund.pfixxml.PathFactory;
+
 /**
  * @author schuppi
  * @date Jun 7, 2005
@@ -20,7 +22,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
 
     public IncludeFileHandler(String path, long lastTouchOfFile) {
         this.lasttouch = lastTouchOfFile;
-        this.path = path;
+        this.path = PathFactory.getInstance().makePathStringRelative(path);
         alleDokumente = new Vector();
     }
 

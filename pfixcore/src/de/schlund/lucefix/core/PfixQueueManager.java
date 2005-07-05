@@ -19,6 +19,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
 
 /**
@@ -30,7 +31,7 @@ public class PfixQueueManager implements Runnable {
     private static PfixQueueManager _instance       = null;
     private static Category         LOG             = Category.getInstance(PfixQueueManager.class);
     public static final String      WAITMS_PROP     = "lucefix.queueidle";
-    public static final String      LUCENE_DATA     = "lucdata";
+    public static String      lucene_data_path;
 
     private Queue                   queue           = null;
     private DocumentCache           cache           = null;
@@ -53,7 +54,8 @@ public class PfixQueueManager implements Runnable {
         } catch (NumberFormatException e) {
             throw new XMLException("property " + WAITMS_PROP + " is not a valid integer");
         }
-
+        lucene_data_path = PathFactory.getInstance().createPath(".index").resolve().getAbsolutePath();
+        
         queue = new Queue();
         documents2write = new Vector();
     }
@@ -77,10 +79,10 @@ public class PfixQueueManager implements Runnable {
                         case TripelImpl.INDEX :
                             
                             try {
-                                if (reader == null) reader = IndexReader.open(LUCENE_DATA);
+                                if (reader == null) reader = IndexReader.open(lucene_data_path);
                             } catch (IOException e) {
                                 createDB();
-                                reader = IndexReader.open(LUCENE_DATA);
+                                reader = IndexReader.open(lucene_data_path);
                             }
                             size = reader.numDocs();
                             if (searcher == null) searcher = new IndexSearcher(reader);
@@ -95,7 +97,9 @@ public class PfixQueueManager implements Runnable {
                                 added++;
                                 cache.remove(newdoc);
                             }else if (hits.length() == 1){
-                                File f = new File(current.getPath());
+                                File f = PathFactory.getInstance().createPath(current.getFilename()).resolve();
+                                
+//                                File f = new File(current.getPath());
                                 if (f.lastModified() == DateField.stringToTime(hits.doc(0).get("lasttouch")))
                                     cache.remove(hits.doc(0));
                                 else{
@@ -111,7 +115,7 @@ public class PfixQueueManager implements Runnable {
                             break;
 
                         case TripelImpl.DELETE :
-                            if (reader == null) reader = IndexReader.open(LUCENE_DATA);
+                            if (reader == null) reader = IndexReader.open(lucene_data_path);
                             reader.delete(new Term("path",current.getPath()));
                             removed++;
                             break;
@@ -132,7 +136,7 @@ public class PfixQueueManager implements Runnable {
                 reader = null;
                 
                 if (documents2write.size() > 0) {
-                    if (writer == null) writer = new IndexWriter(LUCENE_DATA, new GermanAnalyzer(), false);
+                    if (writer == null) writer = new IndexWriter(lucene_data_path, new GermanAnalyzer(), false);
                     for (Iterator iter = documents2write.iterator(); iter.hasNext();) {
                         Document element = (Document) iter.next();
                         writer.addDocument(element);
@@ -144,12 +148,17 @@ public class PfixQueueManager implements Runnable {
                 
             } catch (IOException e) {
                 LOG.error("error writing new index", e);
+                try {
+                    writer.close();
+                } catch (IOException e1) {
+                    LOG.error("unable to close indexwriter...", e1);
+                    e1.printStackTrace();
+                }
             }
-            
             
             documents2write.clear();
             cache.flush();
-            size += added-removed;
+            size += added-removed+updated;
             stopLoop = System.currentTimeMillis();
             LOG.debug("queueloop done, needed " + (stopLoop-startLoop) + "ms | " + added + " new docs, " + updated + " updated docs, " + removed + " deleted docs | indexsize: " + (size));
             
@@ -161,7 +170,7 @@ public class PfixQueueManager implements Runnable {
 
     private void createDB() throws IOException {
         LOG.debug("created db");
-        writer = new IndexWriter(LUCENE_DATA, new GermanAnalyzer(), true);
+        writer = new IndexWriter(lucene_data_path, new GermanAnalyzer(), true);
         writer.optimize();
         writer.close();
         writer = null;

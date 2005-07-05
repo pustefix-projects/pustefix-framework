@@ -12,6 +12,7 @@ import org.apache.lucene.document.Document;
 import org.xml.sax.SAXException;
 
 import de.schlund.lucefix.core.Tripel;
+import de.schlund.pfixxml.PathFactory;
 
 /**
  * @author schuppi
@@ -32,12 +33,14 @@ public class DocumentCache {
         if (retval == null){
             String filename = stripAddition(path);
             // file was not scanned (?)
-            Collection newest = PfxDocument.getDocumentsFromFileAsCollection(new File(filename));
+            Collection newest = PfxDocument.getDocumentsFromFileAsCollection(PathFactory.getInstance().createPath(filename).resolve());
             for (Iterator iter = newest.iterator(); iter.hasNext();) {
                 Document element = (Document) iter.next();
                 cache.put(element.get("path"),element);
-                if (path.equals(element.get("path")))
+                if (path.equals(element.get("path"))){
                     retval = element;
+                    break;
+                }
             }
         }
         return retval;

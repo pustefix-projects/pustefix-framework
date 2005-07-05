@@ -3,9 +3,11 @@ package de.schlund.lucefix.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Vector;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.apache.lucene.document.DateField;
@@ -29,7 +31,7 @@ public class PfixReadjustment implements Runnable {
     private static PfixReadjustment _instance     = null;
     private static Category         LOG           = Category.getInstance(PfixReadjustment.class);
     public static final String      WAITMS_PROP   = "lucefix.pfixreadjustidle";
-    public static final String      LUCENE_DATA   = PfixQueueManager.LUCENE_DATA;
+    public static final String      LUCENE_DATA   = PfixQueueManager.lucene_data_path;
 
     // TODO: das muessen wir woanders herholen...
     private static final String     PROJECTS_PATH = "/home/schuppi/workspace/pfixschlund/projects/"; ;
@@ -97,7 +99,8 @@ public class PfixReadjustment implements Runnable {
                             currentdoc = reader.document(i);
                         } catch (RuntimeException e) {
                             // TODO Auto-generated catch block
-                            LOG.error("error", e);
+                            // this happens if we want to access a deleted
+                            // document -> continue
                             continue docloop;
                         }
 
@@ -146,8 +149,10 @@ public class PfixReadjustment implements Runnable {
     }
 
 
-    private Collection getUsedTripels() throws Exception {
+    private Set getUsedTripels() throws Exception {
         // TODO an pustefix ranploeppen -> jtl
+        Set retval = new HashSet();
+//        Set retval = new TreeSet(new TripelImpl.TripelComparator());
         EditorProductFactory factory = EditorProductFactory.getInstance();
         EditorProduct[] allProducts = factory.getAllEditorProducts();
         for (int i = 0; i < allProducts.length; i++) {
@@ -155,34 +160,63 @@ public class PfixReadjustment implements Runnable {
             Collection targets = currentproduct.getTargetGenerator().getAllTargets().values();
             for (Iterator iter = targets.iterator(); iter.hasNext();) {
                 Target currenttarget = (Target) iter.next();
+//                LOG.debug("READAUX: " + currenttarget);
                 if (currenttarget instanceof VirtualTarget) {
                     VirtualTarget vtarget = (VirtualTarget) currenttarget;
                     Collection depc = vtarget.getAuxDependencyManager().getChildren();
                     for (Iterator iterator = depc.iterator(); iterator.hasNext();) {
                         AuxDependency currentdependency = (AuxDependency) iterator.next();
-                        if (currentdependency.getType() == DependencyType.TEXT)
-                            LOG.debug("found auxdep: " + currentdependency.getPath().getRelative() + " | "
-                                    + currentdependency.getPart() + " | " + currentdependency.getProduct());
-
+//                        LOG.debug("READAUXdep: " + currentdependency);
+                        if (currentdependency.getType() == DependencyType.TEXT) {
+                            retval.add(new TripelImpl(currentdependency.getProduct(), currentdependency.getPart(),
+                                    currentdependency.getPath().getRelative()));
+                            // LOG.debug("new auxdep: " +
+                            // currentdependency.getPath().getRelative() + "|" +
+                            // currentdependency.getPart() + "|" +
+                            // currentdependency.getProduct());
+                            // LOG.debug("found auxdep: " +
+                            // currentdependency.getPath().getRelative() + " | "
+                            // + currentdependency.getPart() + " | " +
+                            // currentdependency.getProduct());
+                        }
+                        recurse(retval, currentdependency, vtarget);
                     }
-
+                    // }else if(currenttarget instanceof LeafTarget){
+                    // LeafTarget ltarget = (LeafTarget) currenttarget;
+                    // ltarget.g
                 }
 
             }
 
         }
-
-
-        Collection retval = new Vector();
-        retval.add(new TripelImpl("default", "content", PROJECTS_PATH
-                + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
-        retval.add(new TripelImpl("default", "box_title", PROJECTS_PATH
-                + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
-        retval.add(new TripelImpl("default", "box_main", PROJECTS_PATH
-                + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
-        retval.add(new TripelImpl("default", "box_help", PROJECTS_PATH
-                + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
+        //
+        //
+        // retval.add(new TripelImpl("default", "content", PROJECTS_PATH
+        // + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
+        // retval.add(new TripelImpl("default", "box_title", PROJECTS_PATH
+        // + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
+        // retval.add(new TripelImpl("default", "box_main", PROJECTS_PATH
+        // + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
+        // retval.add(new TripelImpl("default", "box_help", PROJECTS_PATH
+        // + "euecommon/txt/pages/main_RootSSLDomainSelect.xml"));
         return retval;
+    }
+
+    private void recurse(Set set, AuxDependency currentdependency, VirtualTarget vtarget) {
+        TreeSet children = null;
+        if (vtarget != null)
+            children = currentdependency.getChildren(vtarget);
+        else
+            children = currentdependency.getChildrenForAllThemes();
+
+        if (children != null)
+            for (Iterator iter = children.iterator(); iter.hasNext();) {
+                AuxDependency element = (AuxDependency) iter.next();
+//                LOG.debug("READAUXelem: " + element);
+                if (element.getType() == DependencyType.TEXT)
+                    set.add(new TripelImpl(element.getProduct(), element.getPart(), element.getPath().getRelative()));
+                recurse(set, element, vtarget);
+            }
     }
 
     /**

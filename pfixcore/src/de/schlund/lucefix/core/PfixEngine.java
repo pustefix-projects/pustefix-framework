@@ -18,20 +18,13 @@ public class PfixEngine {
     private PfixEngine(){}
     
     public void init(Properties p) throws XMLException{
-        System.out.println("Lucefixengine INIT WIRD HIER GEMACHT!");
-        PfixReadjustment pr = PfixReadjustment.getInstance(p);
         PfixQueueManager pq = PfixQueueManager.getInstance(p);
-        Thread readjustT = new Thread(pr);
         Thread queueT = new Thread(pq);
+        PfixReadjustment pr = PfixReadjustment.getInstance(p);
+        Thread readjustT = new Thread(pr);
         
         EditorProductFactory fac = EditorProductFactory.getInstance();
-        System.out.println("b" + fac.hashCode());
-        try {
-            EditorProduct[] asdf = fac.getAllEditorProducts();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
         
         queueT.start();
         readjustT.start();
