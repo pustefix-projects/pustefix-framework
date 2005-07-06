@@ -36,6 +36,8 @@ public class FlowStepActionFactory {
     private static Category              CAT      = Category.getInstance(FlowStepActionFactory.class.getName());
     private static FlowStepActionFactory instance = new FlowStepActionFactory();
     private static String                JUMPTO   = "jumpto";
+    private static String                SETFLOW  = "setflow";
+    private static String                STOP     = "stop";
     
     private FlowStepActionFactory() {}
         
@@ -47,6 +49,10 @@ public class FlowStepActionFactory {
         FlowStepAction act = null;
         if (action.equals(JUMPTO)) {
             act = new FlowStepJumpToAction();
+        } else if (action.equals(SETFLOW)) {
+            act = new FlowStepSetFlowAction();
+        } else if (action.equals(STOP)) {
+            act = new FlowStepForceStopAction();
         } else {
             try {
                 Constructor constr = Class.forName(action).getConstructor(Misc.NO_CLASSES);

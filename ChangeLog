@@ -1,3 +1,13 @@
+2005-07-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/FlowStepSetFlowAction.java: 
+	* src/de/schlund/pfixcore/workflow/FlowStepForceStopAction.java: new classes. 2 new shortcut flow step actions to set
+	the pageflow or call prohibitContinue().
+
+	* src/de/schlund/pfixcore/workflow/FlowStepActionFactory.java (createAction): know about the new shortcuts "setflow" and "stop"
+
+	* src/de/schlund/pfixcore/workflow/Context.java (setPageFlow): new method. allowes to reset the pageflow programatically.
+
 2005-07-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/StaticState.java (getDocument): call the canContinue from DefaultIWrapperState
