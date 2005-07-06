@@ -329,6 +329,17 @@ public class Context implements AppContext {
         return currentpagerequest;
     }
 
+    public void setPageFlow(String flowname) {
+        PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
+        if (tmp != null) {
+            LOG.debug("===> Setting currentpageflow to user-requested flow " + flowname);
+            currentpageflow            = tmp;
+            pageflow_requested_by_user = true;
+        } else {
+            LOG.warn("*** Trying to set currentpageflow to " + flowname + ", but it's not defined ***");
+        }
+    }
+    
     public void setJumpToPageRequest(String pagename) {
         PageRequest page = PageRequest.createPageRequest(pagename, variant, preqprops);
         if (pagemap.getState(page) != null) {
