@@ -24,12 +24,7 @@
     <xsl:apply-templates select="node()"/>
    </xsl:copy>
   </xsl:template>
-<!--
-  <xsl:template match="*">
-    <xsl:element name="{name()}" namespace="{namespace-uri()}"> 
-      <xsl:copy-of select="./@*"/>  <xsl:apply-templates/> </xsl:element>
-  </xsl:template>
-  -->
+  
   <xsl:template match="cus:documentation" />
   
 </xsl:stylesheet>
