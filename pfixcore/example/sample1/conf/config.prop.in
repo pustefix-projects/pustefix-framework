@@ -79,11 +79,13 @@
     <default>
       <input>
         <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
       </input>
     </default>
     <variant name="foo:bar:baz">
       <input>
         <interface prefix="info" class="de.schlund.pfixcore.example.iwrapper.AdultInfo"/>
+        <interface prefix="prefix" class="de.schlund.pfixcore.example.iwrapper.IndexedTest"/>
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
@@ -108,12 +110,6 @@
     </output>
     <!-- The next properties can be set additonally for DefaultIWrapperState and descendants (default is shown) -->
     <!-- <finalizer class="de.schlund.pfixcore.workflow.app.ResdocSimpleFinalizer"/> -->
-    <!-- <param name="forcegroupdisplay">false</param> -->
-    
-    <properties>
-      <prop name="group.01-Shirt">shirt counter cinput pic</prop>
-      <prop name="group.02-Trouser">trouser</prop>
-    </properties>
   </pagerequest>
   
   <!-- Here we have a simple state which extends StaticState so we can render ContextResources. -->

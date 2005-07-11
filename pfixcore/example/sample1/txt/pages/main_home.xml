@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
-
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
   <part name="content">
     <product name="default">
       <lang name="default">
         <center>
           <pfx:forminput target="_top">
-            <pfx:errorbox width="500"/>
-            <br/>
             <table width="400">
               <tr>
                 <td align="left">
@@ -15,9 +15,10 @@
               </tr>
             </table>
             <table bgcolor="#bbccff" class="boxed" width="400">
+              <errormsg name="info.Adult"/>
               <tr valign="top">
                 <td>
-                  <pfx:label name="info.Adult"><pfx:include part="adult"/></pfx:label><br/>
+                  <pfx:checkerror name="info.Adult"><pfx:include part="adult"/></pfx:checkerror>
                 </td>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
@@ -35,11 +36,36 @@
                 </td>
               </tr>
             </table>
+            <br/>
+            <table class="boxed" bgcolor="#bbcc88">
+              <tr>
+                <td colspan="2" align="left">
+                  <b>Indexed parameter test:</b>
+                </td>
+              </tr>
+              <ixsl:for-each select="/formresult/navigation//page">
+                <errormsg>
+                  <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                </errormsg>
+                <tr>
+                  <td>
+                    <pfx:checkerror>
+                      <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                      FooBar No. <ixsl:value-of select="position()"/>
+                    </pfx:checkerror>
+                  </td>
+                  <td>
+                    <pfx:xinp type="text">
+                      <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                      <pfx:default><ixsl:value-of select="@name"/></pfx:default>
+                    </pfx:xinp>
+                  </td>
+                </tr>
+              </ixsl:for-each>
+            </table>
           </pfx:forminput>
           <br/>
           <pfx:include part="buttons"/>
-          <br/>
-          <pfx:include part="display"/>
           <br/>
           <table cellpadding="10">
             <tr valign="top">
@@ -70,28 +96,6 @@
     </product>
   </part>
   
-  <part name="display">
-    <product name="default">
-      <lang name="default">
-        <b>Display type is:
-        <ixsl:choose>
-          <ixsl:when test="/formresult/iwrappergroups/@groupdisplay = 'true'">
-            <pfx:button accesskey="W" mode="force" nodata="true">
-              <pfx:argument name="__groupdisplay">off</pfx:argument>
-            Wizard</pfx:button>
-          </ixsl:when>
-          <ixsl:otherwise>
-            <pfx:button accesskey="W" mode="force" nodata="true">
-              <pfx:argument name="__groupdisplay">on</pfx:argument>
-            Flat</pfx:button>
-          </ixsl:otherwise>
-        </ixsl:choose>
-        </b> (click to toggle)
-      </lang>
-    </product>
-  </part>
-
-
   <part name="adult">
     <product name="default">
       <lang name="default">
@@ -108,8 +112,6 @@
         [BAR] Are you really older than 18 years?
       </lang>
     </product>
-  
-    
   </part>
 
   <part name="yes">
