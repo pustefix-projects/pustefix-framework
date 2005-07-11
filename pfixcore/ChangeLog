@@ -1,3 +1,8 @@
+2005-07-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: cometics, renaming of some internal methods. 
+	* src/de/schlund/pfixcore/workflow/app/DefaultIWrapperState.java (getDocument): change accordingly
+
 2005-07-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/FlowStepSetFlowAction.java: 
