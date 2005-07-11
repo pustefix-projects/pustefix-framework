@@ -19,9 +19,13 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-import de.schlund.pfixxml.PfixServletRequest;
-
+import java.io.IOException;
 import java.util.Properties;
+
+import javax.servlet.ServletException;
+
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.exceptionprocessor.ExceptionProcessor;
 
 
 /**
@@ -40,11 +44,13 @@ public class ExceptionHandler {
 
     private static ExceptionHandler instance_ = new ExceptionHandler();
     private static final String PROP_FILE_  = "exceptionhandler.propertyfile";
+    private static final String PROP_LOGGER_  = "exceptionhandler.logger";
     private Cubbyhole cubbyhole_  = null;
     private String propfile_  = null;
     private PropertyManager propman_  = null;
     private PFXThreadedHandler xhandler_  = null;
-
+    private ExceptionProcessor xlogger;
+    
     //~ Constructors ...........................................................
 
     /**
@@ -76,6 +82,16 @@ public class ExceptionHandler {
      * @param properties the current properties.
      */
     synchronized public void handle(Throwable t, PfixServletRequest req, Properties properties) {
+        if (xlogger != null) {
+            try {
+                xlogger.processException(t, null, req, null, null, null, properties);
+            } catch (IOException e) {
+                throw new RuntimeException("TODO", e);
+            } catch (ServletException e) {
+                throw new RuntimeException("TODO", e);
+            }
+        }
+        
         PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
@@ -132,6 +148,19 @@ public class ExceptionHandler {
             xhandler_.setErrorFlag(true);
             xhandler_.doIt();
             return;
+        }
+
+        String loggerName = properties.getProperty(PROP_LOGGER_);
+        if (loggerName != null) {
+            try {
+                xlogger = (ExceptionProcessor) Class.forName(loggerName).newInstance();
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 } //ExceptionHandler
