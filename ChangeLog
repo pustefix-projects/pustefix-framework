@@ -1,3 +1,46 @@
+2005-07-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: marked pfx:errorbox, pfx:paramref, pfx:groupdisplayonly, pfx:flatdisplayonly
+	as DEPRECAED. pfx:label is fixed to work with pfx:name child node.
+
+	<xinp type="hidden"> added pfx:name, pfx:default
+	<xinp type="text"> added pfx:name, pfx:default
+	<xinp type="area"> added pfx:name
+	<xinp type="password"> added pfx:name
+	<xinp type="check"> added pfx:name, pfx:default
+	<xinp type="radio"> added pfx:name, pfx:default
+	<xinp type="select"> added pfx:name
+	<pfx:option> added pfx:default
+
+	NEW templates:
+
+	<pfx:checkerror>, <pfx:error>, <pfx:normal>, <pfx:scode> 
+	(the latter three must be children of <pfx:checkerror>)
+
+	* example/sample1/conf/config.prop.in: removed properties for
+	group wizard stuff. Add indexed test handler to order page
+
+	* example/common/dyntxt/statusmessages.xml: new scode
+
+	* example/sample1/txt/styles.xml: 
+	* example/sample1/txt/pages/main_gencss.xml: 
+	* example/sample1/txt/pages/main_encoding.xml: 
+	* example/sample1/txt/pages/main_admin.xml: cosmetics
+
+	* example/sample1/txt/pages/main_overview.xml: 
+	* example/sample1/txt/pages/main_order.xml: 
+	* example/sample1/txt/pages/main_home.xml: removed 
+	groupdisplay/flatdisplay wizard stuff, pfx:label, pfx:errorbox (all three pages). 
+
+	* example/sample1/xsl/metatags.xsl: helper template <errmsg> to format statuscodes.
+
+	* src/de/schlund/pfixcore/example/iwrapper/IndexedTest.iwrp: 
+	* src/de/schlund/pfixcore/example/IndexedTestHandler.java: new handler to test indexed param
+
+	* src/de/schlund/pfixcore/example/ContextAdultInfoImpl.java: 
+	* src/de/schlund/pfixcore/example/ContextAdultInfo.java (setIndexedTest)
+	(getIndexedTest): store the indexed stuff here for convenience
+
 2005-07-11  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java: pluggable exception logger

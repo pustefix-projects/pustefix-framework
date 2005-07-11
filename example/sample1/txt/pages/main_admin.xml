@@ -3,10 +3,10 @@
   <part name="content">
     <product name="default">
       <lang name="default">
-  <center>
-    This page is currently offline for administrative reasons
-  </center>
-</lang>
+        <center>
+          This page is currently offline for administrative reasons
+        </center>
+      </lang>
     </product>
   </part>
 </include_parts>

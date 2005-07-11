@@ -5,11 +5,13 @@
     <product name="default">
       <lang name="default">
 
-        .core_errorbox_table  { border-width: 1px; border-color: #000000; 
-                                border-style: solid; }
+        .smpl_errmsg           { background-color: #eeaaaa; border: 1px solid #995555;}
         
-        .core_button_active    { color: #0050f0; font-weight: bold; }
-        .core_button_invisible { color: #a0a0a0; }
+        .core_label_error      { font-weight: bold; }
+        .core_label_error:before  { content: url("/core/img/error.gif"); }
+        
+        .core_button_active { color: #0050f0; font-weight: bold; } .core_button_invisible { color:
+        #a0a0a0; }
         
         .core_wizprev_active   { padding: 2px; border-style: outset; border-width: 2px; 
                                  background-color: #dddddd; color: #000000; }

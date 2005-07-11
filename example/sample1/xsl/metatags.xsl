@@ -2,7 +2,25 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
                 xmlns:pfx="http://www.schlund.de/pustefix/core" 
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
-  
+
+
+
+  <xsl:template match="errormsg">
+    <tr>
+      <td colspan="2">
+        <pfx:checkerror errorclass="NONE">
+          <pfx:name>
+            <xsl:choose>
+              <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
+              <xsl:otherwise><xsl:apply-templates select="./pfx:name/node()"/></xsl:otherwise>
+            </xsl:choose>
+          </pfx:name>
+          <pfx:error><div class="smpl_errmsg"><pfx:scode/></div></pfx:error>
+        </pfx:checkerror>
+      </td>
+    </tr>
+  </xsl:template>
+
   <xsl:template match="overviewinfo">
     <table width="500" class="boxed" bgcolor="#ffcccc">
       <tr>

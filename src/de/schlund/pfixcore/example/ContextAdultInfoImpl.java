@@ -18,12 +18,14 @@
  */
 
 package de.schlund.pfixcore.example;
-import org.apache.log4j.Category;
-import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
+import org.apache.log4j.Category;
+import org.w3c.dom.Element;
+import java.util.HashMap;
+
 /**
  * ContextAdultInfo.java
  *
@@ -37,6 +39,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
     private Boolean adult = null;
+    private HashMap test  = new HashMap();
     Category CAT = Category.getInstance(this.getClass().getName());
     
     public void init(Context context) {}
@@ -45,6 +48,14 @@ public class ContextAdultInfoImpl implements ContextResource, ContextAdultInfo {
         adult = null;
     }
 
+    public void setIndexedTest(HashMap inmap) {
+        test = inmap;
+    }
+
+    public HashMap getIndexedTest() {
+        return test;
+    }
+    
     public Boolean getAdult() { return adult; }
 
     public void setAdult(Boolean adult) {
