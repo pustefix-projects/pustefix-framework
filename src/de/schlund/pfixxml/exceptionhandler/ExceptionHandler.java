@@ -80,7 +80,7 @@ public class ExceptionHandler {
      * @param properties the current properties.
      */
     synchronized public void handle(Throwable t, PfixServletRequest req, Properties properties) {
-        MESSAGES.info(t);
+        MESSAGES.error(t);
         
         PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
