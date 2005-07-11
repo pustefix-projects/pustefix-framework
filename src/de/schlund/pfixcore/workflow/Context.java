@@ -156,7 +156,7 @@ public class Context implements AppContext {
         }
         if (fstop != null && fstop.getValue().equals("step")) {
             // We want to behave the current pageflow as if it would have the stopnext attribute set to true
-            stopnextforcurrentrequest = true;
+            forceStopAtNextStep(true);
         }
 
         RequestParam swflow = currentpservreq.getRequestParam(PARAM_STARTWITHFLOW);
@@ -350,10 +350,6 @@ public class Context implements AppContext {
         }
     }
 
-//     public PageRequest getJumpToPageRequest() {
-//         return jumptopagerequest;
-//     }
-
     public void setJumpToPageFlow(String flowname) {
         if (jumptopagerequest != null) {
             PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
@@ -367,32 +363,12 @@ public class Context implements AppContext {
         }
     }
 
-//     public PageFlow getJumpToPageFlow() {
-//         return jumptopageflow;
-//     }
-
-    /**
-     * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
-     * It returnes true if the pagerequest has already been jumped to internally after a successful submit.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean jumpToPageIsRunning() {
-        return on_jumptopage;
+    public void forceStopAtNextStep(boolean force) {
+        stopnextforcurrentrequest = force;
     }
 
-    /**
-     * <code>flowIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
-     * It returned true if the Context is currently running one of the defined pageflows.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean flowIsRunning() {
-        if (currentpagerequest.getStatus() == PageRequestStatus.WORKFLOW) {
-            return true;
-        } else {
-            return false;
-        }
+    public void prohibitContinue() {
+        prohibitcontinue = true;
     }
 
     public void invalidateNavigation() {
@@ -410,12 +386,6 @@ public class Context implements AppContext {
 
     public void addCookie(Cookie cookie) {
         cookielist.add(cookie);
-    }
-
-    private void storeCookies(SPDocument spdoc) {
-        for (Iterator i = cookielist.iterator(); i.hasNext();) {
-            spdoc.addCookie((Cookie) i.next());
-        }
     }
 
     public Variant getVariant() {
@@ -462,40 +432,40 @@ public class Context implements AppContext {
         return false;
     }
 
-    public void prohibitContinue() {
-        prohibitcontinue = true;
-    }
-
-    public boolean getProhibitContinue() {
-        return prohibitcontinue;
-    }
-    
     /**
      * <code>finalPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
-     * It returned true if the Context is currently running a FINAL page of a defined workflow.
+     * It returnes true if the Context is currently running a FINAL page of a defined workflow.
      *
      * @return a <code>boolean</code> value
      */
     public boolean finalPageIsRunning() {
-        if (currentpagerequest.getStatus() == PageRequestStatus.FINAL) {
+        return (currentpagerequest.getStatus() == PageRequestStatus.FINAL);
+    }
+
+    /**
+     * <code>jumpToPageIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
+     * It returnes true if the pagerequest has already been jumped to internally after a successful submit.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean jumpToPageIsRunning() {
+        return on_jumptopage;
+    }
+
+    /**
+     * <code>flowIsRunning</code> can be called from inside a {@link de.schlund.pfixcore.workflow.State State}
+     * It returned true if the Context is currently running one of the defined pageflows.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean flowIsRunning() {
+        if (currentpagerequest.getStatus() == PageRequestStatus.WORKFLOW) {
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean isCurrentPageRequestInCurrentFlow() {
-        return isPageRequestInFlow(currentpagerequest, currentpageflow);
-    }
-
-    public boolean isJumptToPageSet() {
-        return jumptopagerequest != null;
-    }
-    
-    public boolean isJumptToPageFlowSet() {
-        return jumptopageflow != null;
-    }
-    
     public boolean currentFlowStepWantsPostProcess() {
         if (currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
             if (currentpageflow.getFlowStepForPage(currentpagerequest.getRootName()).hasOnContinueAction()) {
@@ -521,6 +491,31 @@ public class Context implements AppContext {
         }
         return false;
     }
+
+    public boolean isCurrentPageRequestInCurrentFlow() {
+        return isPageRequestInFlow(currentpagerequest, currentpageflow);
+    }
+
+    public boolean isCurrentPageFlowRequestedByUser() {
+        return pageflow_requested_by_user;
+    }
+
+    public boolean isJumptToPageSet() {
+        return jumptopagerequest != null;
+    }
+    
+    public boolean isJumptToPageFlowSet() {
+        return jumptopageflow != null;
+    }
+    
+    public boolean isProhibitContinueSet() {
+        return prohibitcontinue;
+    }
+    
+    public boolean isForceStopAtNextStepSet() {
+        return stopnextforcurrentrequest;
+    }
+
 
     public synchronized SPDocument checkAuthorization(boolean forceauth) throws Exception {
         if (authpage != null) {
@@ -558,18 +553,6 @@ public class Context implements AppContext {
         return null;
     }
 
-    private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
-        if (pageflow != null && pageflow.containsPage(page.getRootName())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isCurrentPageFlowRequestedByUser() {
-        return pageflow_requested_by_user;
-    }
-
     private void do_update() throws Exception {
     	// get PropertyObjects from PropertyObjectManager
     	PropertyObjectManager pom = PropertyObjectManager.getInstance();
@@ -595,6 +578,10 @@ public class Context implements AppContext {
         checkForNavigationReuse();
 
         needs_update = false;
+    }
+
+    private boolean isPageRequestInFlow(PageRequest page, PageFlow pageflow) {
+        return (pageflow != null && pageflow.containsPage(page.getRootName()));
     }
 
     private boolean pageIsSidestepPage(PageRequest page) {
@@ -799,8 +786,8 @@ public class Context implements AppContext {
             } else {
                 LOG.debug("* Page flow is at step " + i + ": [" + page + "]");
                 boolean needsdata;
-                if (after_current && (step.wantsToStopHere() || stopnextforcurrentrequest)) {
-                    if (stopnextforcurrentrequest) LOG.debug("=> Request specifies to act like stophere='true'");
+                if (after_current && (step.wantsToStopHere() || isForceStopAtNextStepSet())) {
+                    if (isForceStopAtNextStepSet()) LOG.debug("=> Request specifies to act like stophere='true'");
                     LOG.debug("=> [" + page + "]: Page flow wants to stop, getting document now.");
                     currentpagerequest = page;
                     currentpagerequest.setStatus(PageRequestStatus.WORKFLOW);
@@ -946,6 +933,12 @@ public class Context implements AppContext {
         }
     }
     
+    private void storeCookies(SPDocument spdoc) {
+        for (Iterator i = cookielist.iterator(); i.hasNext();) {
+            spdoc.addCookie((Cookie) i.next());
+        }
+    }
+
     private void addNavigation(Navigation navi, SPDocument spdoc) throws Exception {
         long     start   = System.currentTimeMillis();
         Document doc     = spdoc.getDocument();

@@ -154,7 +154,7 @@ public class DefaultIWrapperState extends StateImpl {
         // SPDocument, as we will advance in the pageflow anyway; so only add it when we stop OR
         // when we need the Status of the Context Resources for the "FlowStepWantsPostProcess" case,
         // to decide where to jump to.
-        if (context.getProhibitContinue() || context.currentFlowStepWantsPostProcess()) {
+        if (context.isProhibitContinueSet() || context.currentFlowStepWantsPostProcess()) {
             container.addStringValues();
             container.addIWrapperStatus();
             renderContextResources(context, resdoc);
@@ -165,7 +165,7 @@ public class DefaultIWrapperState extends StateImpl {
     
   
     protected static boolean canContinue(Context context) {
-        if (context.getProhibitContinue()) {
+        if (context.isProhibitContinueSet()) {
             CAT.debug(">>> Have already set prohibitcontinue to true!");
             CAT.debug("    => must stay on this page");
             return false;
