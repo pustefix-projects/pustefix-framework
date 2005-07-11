@@ -1,3 +1,7 @@
+2005-07-11  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java: pluggable exception logger
+
 2005-07-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: cometics, renaming of some internal methods. 
