@@ -1,3 +1,8 @@
+2005-07-12  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java:
+	* src/de/schlund/pfixxml/exceptionhandler/MessageBuilder.java: log more, in a generic format
+
 2005-07-11  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: marked pfx:errorbox, pfx:paramref, pfx:groupdisplayonly, pfx:flatdisplayonly
