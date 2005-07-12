@@ -19,11 +19,9 @@
 
 package de.schlund.pfixxml.exceptionhandler;
 
-import de.schlund.pfixxml.PfixServletRequest;
-
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import de.schlund.pfixxml.PfixServletRequest;
 
 
 /**
@@ -37,9 +35,6 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto: haecker@schlund.de">Joerg Haecker</a>
  */
 public class ExceptionHandler {
-    public static final String MESSAGES_NAME = "de.schlund.pfixxml.MESSAGES";
-    public static final Logger MESSAGES = Logger.getLogger(MESSAGES_NAME);
-    
     //~ Instance/static variables ..............................................
 
     private static ExceptionHandler instance_ = new ExceptionHandler();
@@ -80,7 +75,7 @@ public class ExceptionHandler {
      * @param properties the current properties.
      */
     synchronized public void handle(Throwable t, PfixServletRequest req, Properties properties) {
-        MESSAGES.error(t);
+        MessageBuilder.log(t, req);
         
         PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
