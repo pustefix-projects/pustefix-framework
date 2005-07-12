@@ -1,3 +1,22 @@
+2005-07-12  Niels Schelbach    <niels@schlund.de>
+
+	*   example/core/build/create_propfiles.xsl: added conversion of <interceptor @class="some.class"/> to context.(start|end)interceptor.($formattednumber)=some.class
+	see schema change
+	*	example/core/schema/properties200401.xsd: added new toplevel tag: interceptors right after the context element:
+	an example:
+	...
+	</context>
+	<interceptors>
+	   <start>
+	      <interceptor class="some.start.interceptor.class"/>
+	   </start>   
+	   <end>
+	      <interceptor class="some.end.interceptor.class"/>
+	   </end>   
+	</interceptors>
+	...  
+	*	example/sample1/conf/config.prop.in: adopted the config.prop.in to the new convience Tag
+	
 2005-07-12  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java:

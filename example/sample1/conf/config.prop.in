@@ -36,6 +36,19 @@
     </resource>
     
   </context>
+<!-- 
+  <interceptors>
+	<start>
+		<interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>	
+	</start>
+  </interceptors>	
+-->
+  <interceptors>
+	<end>
+		<interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>	
+	</end>
+  </interceptors>	
+
   
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -147,7 +160,7 @@
     <prop name="contexttrouser.feature.1">Extra warm</prop>
     <prop name="contexttrouser.feature.2">Windproof</prop>
 
-    <prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>
+    <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->
     
   </properties>
 

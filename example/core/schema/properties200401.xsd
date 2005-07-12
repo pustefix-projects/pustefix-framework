@@ -27,6 +27,7 @@
     <xs:sequence>
       <xs:element name="servletinfo" type="prop:contextxmlserverservletinfoType"/>
       <xs:element ref="prop:context"/>
+      <xs:element ref="prop:interceptors" maxOccurs="1" minOccurs="0"/>
       <xs:choice minOccurs="1" maxOccurs="unbounded">
         <xs:element ref="prop:pageflow"/>
         <xs:element ref="prop:pagerequest"/>
@@ -168,6 +169,40 @@
     <xs:attribute name="class" use="required"/>
   </xs:complexType>
   <!-- </context> -->
+
+  <!-- <interceptors> -->
+  
+  <xs:element name="interceptors" type="prop:interceptorsType" />
+  <xs:complexType name="interceptorsType">
+    <xs:sequence>
+      <xs:element ref="prop:start" maxOccurs="1" minOccurs="0"/>
+      <xs:element ref="prop:end" maxOccurs="1" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:element name="start" type="prop:interceptorGroupType"/>	
+  <xs:element name="end" type="prop:interceptorGroupType"/>	
+
+
+  <xs:complexType name="interceptorGroupType">
+	<xs:sequence>
+		<xs:element ref="prop:interceptor" maxOccurs="unbounded" minOccurs="0"/>
+	</xs:sequence>
+  </xs:complexType>
+  
+  
+
+  <xs:element name="interceptor" type="prop:interceptorType"/>
+  <xs:complexType name="interceptorType">
+	<xs:attribute name="class" type="xs:normalizedString" use="required"/>
+  </xs:complexType>
+  
+  
+  <!-- </interceptors> -->
+	
+	
+
+
 
   <!-- <pageflow> -->
   <xs:element name="pageflow" type="prop:pageflowType"/>
