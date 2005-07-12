@@ -258,6 +258,11 @@
     </xsl:for-each>
   </xsl:template>
 
+
+  
+
+
+
   <xsl:template match="servletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
     <xsl:value-of select="@depend"/>
@@ -752,6 +757,20 @@
       </xsl:apply-templates>
     </xsl:for-each>
   </xsl:template>
+
+  <xsl:template match="prop:interceptors">
+      <xsl:for-each select="prop:start/prop:interceptor">
+		<xsl:text>context.startinterceptor.</xsl:text>
+        <xsl:value-of select="format-number(position(),'000')"/>=<xsl:value-of select="@class"/>
+        <xsl:text>&#xa;</xsl:text>
+      </xsl:for-each>
+      <xsl:for-each select="prop:end/prop:interceptor">
+		<xsl:text>context.endinterceptor.</xsl:text>
+        <xsl:value-of select="format-number(position(),'000')"/>=<xsl:value-of select="@class"/>
+        <xsl:text>&#xa;</xsl:text>
+      </xsl:for-each>
+  </xsl:template>
+
 
   <xsl:template match="prop:servletinfo | prop:directoutputservletinfo">
     <xsl:text>xmlserver.depend.xml=</xsl:text>
