@@ -16,6 +16,7 @@ import org.apache.lucene.index.IndexReader;
 
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorProductFactory;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -62,16 +63,29 @@ public class PfixReadjustment implements Runnable {
         IndexReader reader = null;
         PfixQueueManager queue;
         boolean jobDone;
-        long startLoop, stopLoop;
+        long startLoop, stopLoop, startCollect, stopCollect, startIndexLoop, stopIndexLoop, startAddLoop, stopAddLoop;
+        
+        long collectTime = 0;
+        
+        int indexSize, knownDocsSize, newDocs, deleteDocs, numDocs;
+        
         while (true) {
             try {
                 Thread.sleep(waitms);
             } catch (InterruptedException e) {}
+            
+            startLoop = stopLoop = startCollect = stopCollect = startIndexLoop = stopIndexLoop = startAddLoop = stopAddLoop = 0;
+            indexSize = newDocs = knownDocsSize = deleteDocs = numDocs = 0;
+            
             startLoop = System.currentTimeMillis();
             try {
                 jobDone = false;
                 try {
+                    startCollect = System.currentTimeMillis();
                     partsKnownByPustefix = getUsedTripels();
+                    stopCollect = System.currentTimeMillis();
+                    collectTime = stopCollect - startCollect;
+                    knownDocsSize = partsKnownByPustefix.size();
                 } catch (Exception e1) {
                     LOG.error("error while getting known tripels", e1);
                     e1.printStackTrace();
@@ -87,12 +101,14 @@ public class PfixReadjustment implements Runnable {
                     for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
                         Tripel element = (Tripel) iter.next();
                         element.setType(TripelImpl.INDEX);
+                        newDocs++;
                         queue.queue(element);
                     }
                     jobDone = true;
                 }
                 if (!jobDone) {
-                    int numDocs = reader.numDocs();
+                    numDocs = reader.numDocs();
+                    startIndexLoop = System.currentTimeMillis();
                     docloop: for (int i = 0; i < numDocs; i++) {
                         Document currentdoc;
                         try {
@@ -117,26 +133,37 @@ public class PfixReadjustment implements Runnable {
 
                         if (pfixTripel != null) {
                             // checkTs
-                            File f = new File(currentdoc.get(PreDoc.FILENAME));
+                            File f = PathFactory.getInstance().createPath(currentdoc.get(PreDoc.FILENAME)).resolve();
+                            
                             if (f.lastModified() != DateField.stringToTime(currentdoc.get(PreDoc.LASTTOUCH))) {
                                 // ts differs
                                 pfixTripel.setType(TripelImpl.INDEX);
+//                                LOG.debug("adding " + pfixTripel + " to queue (TSDIFFERS) [file: " + f.lastModified() + " doc: " + DateField.stringToTime(currentdoc.get(PreDoc.LASTTOUCH)) + "]");
+                                newDocs++;
                                 queue.queue(pfixTripel);
                             }
                         } else {
                             // part not needed anymore
                             Tripel newTripel = new TripelImpl(currentdoc.get(PreDoc.PATH), TripelImpl.DELETE);
+//                            LOG.debug("adding " + newTripel + " to queue (DELETE)");
+                            deleteDocs++;
                             queue.queue(newTripel);
                         }
                         partsKnownByPustefix.remove(pfixTripel);
                     }
+                    stopIndexLoop = System.currentTimeMillis();
+                    
                     // now partsKnownByPustefix only contains parts which are
                     // NOT indexed...
+                    startAddLoop = System.currentTimeMillis();
                     for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
                         Tripel element = (Tripel) iter.next();
                         element.setType(TripelImpl.INDEX);
+//                        LOG.debug("adding " + element + " to queue (INDEX)");
+                        newDocs++;
                         queue.queue(element);
                     }
+                    stopAddLoop = System.currentTimeMillis();
                 }
             } catch (XMLException e) {
                 LOG.error("xmlexception in " + this.getClass().getName(), e);
@@ -144,7 +171,18 @@ public class PfixReadjustment implements Runnable {
                 LOG.fatal("error reading index", ioe);
             }
             stopLoop = System.currentTimeMillis();
-            LOG.debug("one loop done, needed " + (stopLoop - startLoop) + "ms");
+            long needed = stopLoop - startLoop;
+//            if (needed > 10)
+                LOG.debug(needed + "ms (getUsedTripels(): " + collectTime + "ms (" + knownDocsSize + "u) indexloop: " + (stopIndexLoop-startIndexLoop) + "|" + (stopAddLoop-startAddLoop) + "ms (" + numDocs + "u), added " + newDocs + "+" + deleteDocs + " queueitems");
+                
+                try {
+                    if (reader != null){
+                        reader.close();
+                        reader = null;
+                    }
+                } catch (IOException e) {
+                    LOG.error("error while closing reader",e);
+                }
         }
     }
 

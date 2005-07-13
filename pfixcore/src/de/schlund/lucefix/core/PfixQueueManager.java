@@ -66,14 +66,12 @@ public class PfixQueueManager implements Runnable {
     public void run() {
         Tripel current;
         long startLoop, stopLoop;
-        int added, updated, removed;
+        int added, updated, removed,size;
         cache = new DocumentCache();
-        int size = 0;
         while (true) {
             startLoop = System.currentTimeMillis();
-            added = updated = removed = 0;
+            added = updated = removed = size = 0;
             while ((current = queue.next()) != null) {
-                
                 try {
                     switch (current.getType()) {
                         case TripelImpl.INDEX :
@@ -84,7 +82,7 @@ public class PfixQueueManager implements Runnable {
                                 createDB();
                                 reader = IndexReader.open(lucene_data_path);
                             }
-                            size = reader.numDocs();
+                            if (size == 0) size = reader.numDocs();
                             if (searcher == null) searcher = new IndexSearcher(reader);
                             
                             Term term = new Term("path", current.getPath());
@@ -93,6 +91,10 @@ public class PfixQueueManager implements Runnable {
                             if (hits.length() == 0){
                                 // current queued is NOT indexed
                                 Document newdoc = cache.getDocument(current);
+                                if (newdoc == null){
+                                    LOG.warn("wanted to work on " + current + " but there is no part for it...");
+                                    break;
+                                }
                                 documents2write.add(newdoc);
                                 added++;
                                 cache.remove(newdoc);
@@ -116,6 +118,7 @@ public class PfixQueueManager implements Runnable {
 
                         case TripelImpl.DELETE :
                             if (reader == null) reader = IndexReader.open(lucene_data_path);
+                            if (size == 0) size = reader.numDocs();
                             reader.delete(new Term("path",current.getPath()));
                             removed++;
                             break;
@@ -139,7 +142,7 @@ public class PfixQueueManager implements Runnable {
                     if (writer == null) writer = new IndexWriter(lucene_data_path, new GermanAnalyzer(), false);
                     for (Iterator iter = documents2write.iterator(); iter.hasNext();) {
                         Document element = (Document) iter.next();
-                        writer.addDocument(element);
+                        if (element != null) writer.addDocument(element);
                     }
                     writer.optimize();
                     writer.close();
@@ -149,7 +152,7 @@ public class PfixQueueManager implements Runnable {
             } catch (IOException e) {
                 LOG.error("error writing new index", e);
                 try {
-                    writer.close();
+                    if (writer != null) writer.close();
                 } catch (IOException e1) {
                     LOG.error("unable to close indexwriter...", e1);
                     e1.printStackTrace();
@@ -158,9 +161,12 @@ public class PfixQueueManager implements Runnable {
             
             documents2write.clear();
             cache.flush();
-            size += added-removed+updated;
+            size += added-removed;
+            size = Math.abs(size);
             stopLoop = System.currentTimeMillis();
-            LOG.debug("queueloop done, needed " + (stopLoop-startLoop) + "ms | " + added + " new docs, " + updated + " updated docs, " + removed + " deleted docs | indexsize: " + (size));
+            long needed = stopLoop-startLoop;
+//            if (needed > 10)
+                LOG.debug(needed + "ms | " + added + " new docs, " + updated + " updated docs, " + removed + " deleted docs | indexsize: " + (size));
             
             try {
                 Thread.sleep(waitms);
