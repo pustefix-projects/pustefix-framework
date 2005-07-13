@@ -20,6 +20,8 @@ package de.schlund.pfixcore.editor.handlers;
 
 
 
+import de.schlund.lucefix.core.PfixQueueManager;
+import de.schlund.lucefix.core.TripelImpl;
 import de.schlund.pfixcore.editor.EditorHelper;
 import de.schlund.pfixcore.editor.EditorPageUpdater;
 import de.schlund.pfixcore.editor.EditorUser;
@@ -187,6 +189,8 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                         partnode.appendChild(newnode);
                         partnode.appendChild(incdoc.createTextNode("\n  "));
                     }
+                    EDITOR.debug("lucefix: editor says we shoud refresh this: " + currpath.getRelative() + "|" + currpart + "|" + currprod);
+                    PfixQueueManager.getInstance(null).queue(new TripelImpl(currprod,currpart,currpath.getRelative()));
 
                     Xml.serialize(incdoc, currpath.resolve(), false, true);
                     EDITOR.warn("TXT: " + esess.getUser().getId() + ": " + currpart + "@" + currpath.getRelative() + " [" + currprod + "]");
