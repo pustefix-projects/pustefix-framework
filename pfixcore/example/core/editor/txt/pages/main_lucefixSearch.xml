@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+<img src="http://lucene.apache.org/java/docs/images/lucene_green_300.gif"/>
+          <pfx:forminput>
+            <br/>
+            <table border="0" width="600">
+              <tr>
+                <td>
+                  <span style="color: #ffffff; font-weight: bold;">Enter your searchword expression below:</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table border="0" class="editor_box" width="100%">
+                    <ixsl:if test="/formresult/formerrors/error">
+                      <tr>
+                        <td colspan="4">
+                          <pfx:errorbox width="100%"/><br/>
+                        </td>
+                      </tr>
+                    </ixsl:if>
+                    <tr>
+                      <td><b><pfx:label name="lucefix.Contents">Contents:</pfx:label></b></td>
+ 	                  <td nowrap="nowrap"><pfx:xinp type="text" name="lucefix.Contents"/></td>
+                    </tr>
+                    <tr>
+                      <td><b><pfx:label name="lucefix.Comments">Comments:</pfx:label></b></td>
+ 	                  <td nowrap="nowrap"><pfx:xinp type="text" name="lucefix.Comments"/></td>
+                    </tr>
+                    <tr>
+                      <td><b><pfx:label name="lucefix.Tags">Tags:</pfx:label></b></td>
+ 	                  <td nowrap="nowrap"><pfx:xinp type="text" name="lucefix.Tags"/></td>
+                    </tr>
+                    <tr>
+                      <td><b><pfx:label name="lucefix.Attribkeys">Attribkeys:</pfx:label></b></td>
+ 	                  <td nowrap="nowrap"><pfx:xinp type="text" name="lucefix.Attribkeys"/></td>
+                    </tr>
+                    <tr>
+                      <td><b><pfx:label name="lucefix.Attribvalues">Attribvalues:</pfx:label></b></td>
+ 	                  <td nowrap="nowrap"><pfx:xinp type="text" name="lucefix.Attribvalues"/></td>
+                    </tr>
+					  
+
+                    <tr><!--
+                      <td align="left">
+                        <pfx:button mode="force" normalclass="editor_submit" page="search">
+                          <pfx:argument name="search.Reset">true</pfx:argument>
+                          <pfx:argument name="search.Regexp">dummy</pfx:argument>Reset</pfx:button>
+                      </td> -->
+                      <td align="right" colspan="2"><pfx:xinp type="submit" value="Submit">
+						  <pfx:argument name="lucefix.Doit">true</pfx:argument>
+					  </pfx:xinp>  </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <ixsl:choose>
+                <ixsl:when test="count(/formresult/lucefix/hit) > 0">
+                  <tr>
+                    <td>
+						matches for <ixsl:value-of select="/formresult/lucefix/@lastQuery"/>:<br/>
+						<ixsl:for-each select="/formresult/lucefix/hit">
+							<ixsl:value-of select="@path"/><br/>
+						</ixsl:for-each>
+                    </td>
+                  </tr>
+      			</ixsl:when>
+                <ixsl:when test="/formresult/lucefix/@lastQuery != ''">
+                  <tr>
+                    <td>
+						no matches for <ixsl:value-of select="/formresult/lucefix/@lastQuery"/>
+                    </td>
+                  </tr>
+                </ixsl:when>
+              </ixsl:choose>
+            </table>
+          </pfx:forminput>
+          <pfx:editconsole/>
+        </center>
+      </lang>
+    </product>
+  </part>
+
+
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

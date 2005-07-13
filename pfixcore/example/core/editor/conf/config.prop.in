@@ -13,6 +13,9 @@
     <resource class="de.schlund.pfixcore.editor.resources.EditorSearchImpl">
       <implements class="de.schlund.pfixcore.editor.resources.EditorSearch"/>
     </resource>
+   <resource class="de.schlund.lucefix.ContextSearchImpl">
+	   <implements class="de.schlund.lucefix.ContextSearch"/>
+   </resource>
   </context>
   
   <pageflow name="Editor">
@@ -104,6 +107,15 @@
       <interface prefix="search" class="de.schlund.pfixcore.editor.interfaces.Search"/>
     </input>
   </pagerequest>
+	<pagerequest name="lucefixSearch">
+		<state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
+		<input>
+	      <interface prefix="lucefix" class="de.schlund.lucefix.interfaces.Search"/>
+		</input>
+		<output>
+			<resource node="lucefix" class="de.schlund.lucefix.ContextSearch"/>
+		</output>
+	</pagerequest>
   
   <pagerequest name="commons">
     <finalizer class="de.schlund.pfixcore.editor.handlers.CommonsFinalizer"/>

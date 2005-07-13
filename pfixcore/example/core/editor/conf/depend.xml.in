@@ -15,6 +15,7 @@
     <page name="commons"           handler="/xml/edit"/>
     <page name="targets"           handler="/xml/edit"/>
     <page name="search"            handler="/xml/edit"/>
+    <page name="lucefixSearch"            handler="/xml/edit"/>
     <page name="logout"            handler="/xml/edit"/>
     <page name="documentation"     handler="/xml/edit"/>
   </navigation>
@@ -53,6 +54,7 @@
   </standardpage>
 
   <standardpage name="search"            xml="core/editor/xml/two_frames.xml"/>
+  <standardpage name="lucefixSearch"            xml="core/editor/xml/two_frames.xml"/>
   <standardpage name="documentation"     xml="core/editor/xml/three_frames_doku.xml"/>
   <standardpage name="logout"            xml="core/editor/xml/empty.xml"/>
 
