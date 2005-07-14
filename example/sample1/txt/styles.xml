@@ -5,10 +5,9 @@
     <product name="default">
       <lang name="default">
 
-        .smpl_errmsg           { background-color: #eeaaaa; border: 1px solid #995555;}
-        
-        .core_label_error      { font-weight: bold; }
-        .core_label_error:before  { content: url("/core/img/error.gif"); }
+        .errmsg              { background-color: #eeaaaa; border: 1px solid #995555;}
+        .PfxError            { font-weight: bold; }
+        #special .PfxError   { color: blue; }
         
         .core_button_active { color: #0050f0; font-weight: bold; } .core_button_invisible { color:
         #a0a0a0; }

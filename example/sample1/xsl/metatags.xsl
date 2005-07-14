@@ -4,19 +4,22 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias" version="1.0">
 
 
-
   <xsl:template match="errormsg">
     <tr>
       <td colspan="2">
-        <pfx:checkerror errorclass="NONE">
+        <pfx:checkfield>
           <pfx:name>
             <xsl:choose>
               <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
-              <xsl:otherwise><xsl:apply-templates select="./pfx:name/node()"/></xsl:otherwise>
+              <xsl:otherwise><xsl:apply-templates select="./name/node()"/></xsl:otherwise>
             </xsl:choose>
           </pfx:name>
-          <pfx:error><div class="smpl_errmsg"><pfx:scode/></div></pfx:error>
-        </pfx:checkerror>
+          <pfx:error>
+            <div class="errmsg">
+              <pfx:scode/>
+            </div>
+          </pfx:error>
+        </pfx:checkfield>
       </td>
     </tr>
   </xsl:template>

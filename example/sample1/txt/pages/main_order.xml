@@ -49,11 +49,8 @@
           </tr>
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
-          <errormsg name="shirt.Size"/>
           <tr>
-            <td nowrap="nowrap">
-              <pfx:checkerror name="shirt.Size">Size [S,M,L,XL,XXL]</pfx:checkerror>
-            </td>
+            <pfx:checkfield name="shirt.Size"><td nowrap="nowrap" class="{$cf_class}">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
             <td>
               <pfx:xinp name="shirt.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -65,20 +62,18 @@
               </pfx:xinp>
             </td>
           </tr>
-          <errormsg name="shirt.Color"/>
+          <errormsg name="shirt.Size"/>
           <tr>
-            <td nowrap="nowrap">
-              <pfx:checkerror name="shirt.Color">Color-No.</pfx:checkerror>:
-            </td>
+            <pfx:checkfield name="shirt.Color">
+              <td nowrap="nowrap" class="{$cf_class}">Color-No.:</td>
+            </pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
             </td>
           </tr>
-          <errormsg name="shirt.Feature"/>
+          <errormsg name="shirt.Color"/>
           <tr valign="top">
-            <td>
-              <pfx:checkerror name="shirt.Feature">Features</pfx:checkerror>:
-            </td>
+            <pfx:checkfield name="shirt.Feature"><td class="{$cf_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
@@ -86,6 +81,7 @@
               <pfx:xinp name="shirt.Feature" type="check" value="3"/>[=&gt; Error]
             </td>
           </tr>
+          <errormsg name="shirt.Feature"/>
         </table>
         <br/>
       </lang>
@@ -129,20 +125,18 @@
                   </pfx:xinp>
                 </td>
               </tr>
-              <errormsg name="cinput.Set"/>
               <tr>
+                <pfx:checkfield name="cinput.Set">
+                  <td class="{$cf_class}">Set Counter:</td>
+                </pfx:checkfield>
                 <td>
-                  <br/>
-                  <pfx:checkerror name="cinput.Set">Set Counter:</pfx:checkerror>
-                </td>
-                <td>
-                  <br/>
                   <pfx:xinp name="cinput.Set" size="3" type="text"/>
                   <pfx:xinp type="submit" value="Set">
                     <pfx:command name="SELWRP">cinput</pfx:command>
                   </pfx:xinp>
                 </td>
               </tr>
+              <errormsg name="cinput.Set"/>
             </ixsl:otherwise>
           </ixsl:choose>
           <tr>
@@ -191,11 +185,8 @@
           </tr>
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
-          <errormsg name="trouser.Size"/>
           <tr>
-            <td nowrap="nowrap">
-              <pfx:checkerror name="trouser.Size">Size [M,L,XL]</pfx:checkerror>:
-            </td>
+            <pfx:checkfield name="trouser.Size"><td nowrap="nowrap" class="{$cf_class}">Size [M,L,XL]:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -206,26 +197,23 @@
               </pfx:xinp>
             </td>
           </tr>
-          <errormsg name="trouser.Color"/>
+          <errormsg name="trouser.Size"/>
           <tr>
-            <td nowrap="nowrap">
-              <pfx:checkerror name="trouser.Color">Color-No.</pfx:checkerror>:
-            </td>
+            <pfx:checkfield name="trouser.Color"><td nowrap="nowrap" class="{$cf_class}">Color-No.:</td></pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
             </td>
           </tr>
-          <errormsg name="trouser.Features"/>
+          <errormsg name="trouser.Color"/>
           <tr valign="top">
-            <td>
-              <pfx:checkerror name="trouser.Feature">Features</pfx:checkerror>:
-            </td>
+            <pfx:checkfield name="trouser.Feature"><td class="{$cf_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Feature" type="check" value="0"/>Waterproof<br/>
               <pfx:xinp name="trouser.Feature" type="check" value="1"/>Extra warm<br/>
               <pfx:xinp name="trouser.Feature" type="check" value="2"/>Windproof<br/>
             </td>
           </tr>
+          <errormsg name="trouser.Features"/>
         </table>
       </lang>
     </product>

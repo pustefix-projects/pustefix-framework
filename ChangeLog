@@ -1,8 +1,19 @@
+2005-07-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: pfx:checkerror is now pfx:checkfield,
+	new pfx:checkerror only checks for _any_ error, pfx:checkmessages does the same for pagemessages
+	The pfx:checkfield template is a stripped down version of the old pfx:checkerror. First time using
+	ixsl variables to store information to be used in the body.
+	* example/sample1/txt/pages/main_order.xml: 
+	* example/sample1/txt/pages/main_home.xml: 
+	* example/sample1/xsl/metatags.xsl: 
+	* example/sample1/txt/styles.xml: changed accordingly
+
 2005-07-12  Niels Schelbach    <niels@schlund.de>
 
-	*   example/core/build/create_propfiles.xsl: added conversion of <interceptor @class="some.class"/> to context.(start|end)interceptor.($formattednumber)=some.class
+	* example/core/build/create_propfiles.xsl: added conversion of <interceptor @class="some.class"/> to context.(start|end)interceptor.($formattednumber)=some.class
 	see schema change
-	*	example/core/schema/properties200401.xsd: added new toplevel tag: interceptors right after the context element:
+	* example/core/schema/properties200401.xsd: added new toplevel tag: interceptors right after the context element:
 	an example:
 	...
 	</context>
