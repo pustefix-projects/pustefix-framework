@@ -1,3 +1,9 @@
+2005-07-14  Daniel Hopp  <daniel.hopp@schlund.de>
+
+  * example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
+	* example/sample1/txt/pages/main_order.xml: 
+	* example/sample1/txt/pages/main_home.xml: changed accordingly
+
 2005-07-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: pfx:checkerror is now pfx:checkfield,
