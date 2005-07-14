@@ -16,7 +16,7 @@
             </table>
             <table bgcolor="#bbccff" class="boxed" width="400">
               <tr valign="top">
-                <pfx:checkfield name="info.Adult"><td class="{$cf_class}"><pfx:include part="adult"/></td></pfx:checkfield>
+                <pfx:checkfield name="info.Adult"><td class="{$pfx_class}"><pfx:include part="adult"/></td></pfx:checkfield>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
                   <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
@@ -46,7 +46,7 @@
                 <tr>
                   <pfx:checkfield>
                     <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
-                    <td class="{$cf_class}" nowrap="nowrap">
+                    <td class="{$pfx_class}" nowrap="nowrap">
                       <pfx:error><pfx:image style="vertical-align: middle;" src="/core/img/error.gif"/></pfx:error>
                       FooBar No. <ixsl:value-of select="position()"/>
                     </td>

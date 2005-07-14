@@ -50,7 +50,7 @@
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="shirt.Size"><td nowrap="nowrap" class="{$cf_class}">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
+            <pfx:checkfield name="shirt.Size"><td nowrap="nowrap" class="{$pfx_class}">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
             <td>
               <pfx:xinp name="shirt.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -65,7 +65,7 @@
           <errormsg name="shirt.Size"/>
           <tr>
             <pfx:checkfield name="shirt.Color">
-              <td nowrap="nowrap" class="{$cf_class}">Color-No.:</td>
+              <td nowrap="nowrap" class="{$pfx_class}">Color-No.:</td>
             </pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
@@ -73,7 +73,7 @@
           </tr>
           <errormsg name="shirt.Color"/>
           <tr valign="top">
-            <pfx:checkfield name="shirt.Feature"><td class="{$cf_class}">Features:</td></pfx:checkfield>
+            <pfx:checkfield name="shirt.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="0"/>Waterproof<br/>
               <pfx:xinp default="true" name="shirt.Feature" type="check" value="1"/>Extra warm<br/>
@@ -127,7 +127,7 @@
               </tr>
               <tr>
                 <pfx:checkfield name="cinput.Set">
-                  <td class="{$cf_class}">Set Counter:</td>
+                  <td class="{$pfx_class}">Set Counter:</td>
                 </pfx:checkfield>
                 <td>
                   <pfx:xinp name="cinput.Set" size="3" type="text"/>
@@ -186,7 +186,7 @@
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="trouser.Size"><td nowrap="nowrap" class="{$cf_class}">Size [M,L,XL]:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Size"><td nowrap="nowrap" class="{$pfx_class}">Size [M,L,XL]:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -199,14 +199,14 @@
           </tr>
           <errormsg name="trouser.Size"/>
           <tr>
-            <pfx:checkfield name="trouser.Color"><td nowrap="nowrap" class="{$cf_class}">Color-No.:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Color"><td nowrap="nowrap" class="{$pfx_class}">Color-No.:</td></pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
             </td>
           </tr>
           <errormsg name="trouser.Color"/>
           <tr valign="top">
-            <pfx:checkfield name="trouser.Feature"><td class="{$cf_class}">Features:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Feature"><td class="{$pfx_class}">Features:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Feature" type="check" value="0"/>Waterproof<br/>
               <pfx:xinp name="trouser.Feature" type="check" value="1"/>Extra warm<br/>

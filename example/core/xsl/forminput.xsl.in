@@ -98,8 +98,8 @@
 
   <xsl:template match="pfx:checkerror">
     <ixsl:if test="true()">
-      <ixsl:variable name="ce_allerrors" select="/formresult/formerrors/error"/>
-      <ixsl:if test="$ce_allerrors">
+      <ixsl:variable name="pfx_allerrors" select="/formresult/formerrors/error"/>
+      <ixsl:if test="$pfx_allerrors">
         <xsl:apply-templates/>
       </ixsl:if>
     </ixsl:if>
@@ -107,8 +107,8 @@
 
   <xsl:template match="pfx:checkmessage">
     <ixsl:if test="true()">
-      <ixsl:variable name="cm_allmessages" select="/formresult/pagemessages/message"/>
-      <ixsl:if test="$cm_allmessages">
+      <ixsl:variable name="pfx_allmessages" select="/formresult/pagemessages/message"/>
+      <ixsl:if test="$pfx_allmessages">
         <xsl:apply-templates/>
       </ixsl:if>
     </ixsl:if>
@@ -116,19 +116,19 @@
 
   <xsl:template match="pfx:checkfield">
     <ixsl:if test="true()"> <!-- make sure to have a local scope --> 
-      <ixsl:variable name="cf_name">
+      <ixsl:variable name="pfx_name">
         <xsl:choose>
           <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
           <xsl:when test="./pfx:name"><xsl:apply-templates select="./pfx:name/node()"/></xsl:when>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="cf_error" select="/formresult/formerrors/error[@name=string($cf_name)]"/>
-      <ixsl:variable name="cf_level" select="$cf_error/@level"/>
-      <ixsl:variable name="cf_class">
+      <ixsl:variable name="pfx_error" select="/formresult/formerrors/error[@name=string($pfx_name)]"/>
+      <ixsl:variable name="pfx_level" select="$pfx_error/@level"/>
+      <ixsl:variable name="pfx_class">
         <ixsl:choose>
-          <ixsl:when test="not($cf_error)"/>
-          <ixsl:when test="not($cf_level)">PfxError</ixsl:when>
-          <ixsl:otherwise>PfxError PfxErrorLevel_<ixsl:value-of select="string($cf_level)"/></ixsl:otherwise>
+          <ixsl:when test="not($pfx_error)"/>
+          <ixsl:when test="not($pfx_level)">PfxError</ixsl:when>
+          <ixsl:otherwise>PfxError PfxErrorLevel_<ixsl:value-of select="string($pfx_level)"/></ixsl:otherwise>
         </ixsl:choose>
       </ixsl:variable>
       <xsl:apply-templates/>
@@ -136,22 +136,22 @@
   </xsl:template>
 
   <xsl:template match="pfx:error">
-    <!-- $cf_error is defined in parent pfx:checkfield -->
-    <ixsl:if test="$cf_error">
+    <!-- $pfx_error is defined in parent pfx:checkfield -->
+    <ixsl:if test="$pfx_error">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
   
   <xsl:template match="pfx:normal">
-    <!-- $cf_error is defined in parent pfx:checkfield -->
-    <ixsl:if test="not($cf_error)">
+    <!-- $pfx_error is defined in parent pfx:checkfield -->
+    <ixsl:if test="not($pfx_error)">
       <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:scode">
-    <!-- $cf_name is defined in parent pfx:checkfield -->
-    <ixsl:apply-templates select="/formresult/formerrors/error[@name=string($cf_name)]/node()"/>
+    <!-- $pfx_name is defined in parent pfx:checkfield -->
+    <ixsl:apply-templates select="/formresult/formerrors/error[@name=string($pfx_name)]/node()"/>
   </xsl:template>
   
   <xsl:template match="pfx:forminput">
