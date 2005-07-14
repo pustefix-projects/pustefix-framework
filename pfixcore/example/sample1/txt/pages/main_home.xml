@@ -15,17 +15,15 @@
               </tr>
             </table>
             <table bgcolor="#bbccff" class="boxed" width="400">
-              <errormsg name="info.Adult"/>
               <tr valign="top">
-                <td>
-                  <pfx:checkerror name="info.Adult"><pfx:include part="adult"/></pfx:checkerror>
-                </td>
+                <pfx:checkfield name="info.Adult"><td class="{$cf_class}"><pfx:include part="adult"/></td></pfx:checkfield>
                 <td>
                   <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
                   <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
                   <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
                 </td>
               </tr>
+              <errormsg name="info.Adult"/>
             </table>
             <table width="400">
               <tr>
@@ -37,23 +35,22 @@
               </tr>
             </table>
             <br/>
-            <table class="boxed" bgcolor="#bbcc88">
+
+            <table class="boxed" bgcolor="#bbcc88" id="special">
               <tr>
                 <td colspan="2" align="left">
                   <b>Indexed parameter test:</b>
                 </td>
               </tr>
               <ixsl:for-each select="/formresult/navigation//page">
-                <errormsg>
-                  <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
-                </errormsg>
                 <tr>
-                  <td>
-                    <pfx:checkerror>
-                      <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                  <pfx:checkfield>
+                    <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                    <td class="{$cf_class}" nowrap="nowrap">
+                      <pfx:error><pfx:image style="vertical-align: middle;" src="/core/img/error.gif"/></pfx:error>
                       FooBar No. <ixsl:value-of select="position()"/>
-                    </pfx:checkerror>
-                  </td>
+                    </td>
+                  </pfx:checkfield>
                   <td>
                     <pfx:xinp type="text">
                       <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
@@ -61,6 +58,7 @@
                     </pfx:xinp>
                   </td>
                 </tr>
+                <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
               </ixsl:for-each>
             </table>
           </pfx:forminput>

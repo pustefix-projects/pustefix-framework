@@ -96,82 +96,62 @@
     </cus:documentation>  
   </xsl:template> 
 
-  <xsl:template match="pfx:error"/>
-  <xsl:template match="pfx:normal"/>
-  
   <xsl:template match="pfx:checkerror">
-    <xsl:variable name="err_class">
-      <xsl:choose>
-        <xsl:when test="@errorclass">
-          <xsl:value-of select="@errorclass"/>
-        </xsl:when>
-        <xsl:otherwise>core_label_error</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <xsl:variable name="norm_class">
-      <xsl:choose>
-        <xsl:when test="@normalclass">
-          <xsl:value-of select="@normalclass"/>
-        </xsl:when>
-        <xsl:otherwise>core_label_normal</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-    <ixsl:if test="1 = 1"> <!-- make sure to have a local scope --> 
-      <ixsl:variable name="realname">
+    <ixsl:if test="true()">
+      <ixsl:variable name="ce_allerrors" select="/formresult/formerrors/error"/>
+      <ixsl:if test="$ce_allerrors">
+        <xsl:apply-templates/>
+      </ixsl:if>
+    </ixsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:checkmessage">
+    <ixsl:if test="true()">
+      <ixsl:variable name="cm_allmessages" select="/formresult/pagemessages/message"/>
+      <ixsl:if test="$cm_allmessages">
+        <xsl:apply-templates/>
+      </ixsl:if>
+    </ixsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:checkfield">
+    <ixsl:if test="true()"> <!-- make sure to have a local scope --> 
+      <ixsl:variable name="cf_name">
         <xsl:choose>
           <xsl:when test="@name"><xsl:value-of select="@name"/></xsl:when>
           <xsl:when test="./pfx:name"><xsl:apply-templates select="./pfx:name/node()"/></xsl:when>
         </xsl:choose>
       </ixsl:variable>
-      <ixsl:variable name="generror">
-        <xsl:choose>
-          <xsl:when test="@generror"><xsl:value-of select="@generror"/></xsl:when>
-          <xsl:otherwise>pfixcore.GEN_ERROR</xsl:otherwise>
-        </xsl:choose>
+      <ixsl:variable name="cf_error" select="/formresult/formerrors/error[@name=string($cf_name)]"/>
+      <ixsl:variable name="cf_level" select="$cf_error/@level"/>
+      <ixsl:variable name="cf_class">
+        <ixsl:choose>
+          <ixsl:when test="not($cf_error)"/>
+          <ixsl:when test="not($cf_level)">PfxError</ixsl:when>
+          <ixsl:otherwise>PfxError PfxErrorLevel_<ixsl:value-of select="string($cf_level)"/></ixsl:otherwise>
+        </ixsl:choose>
       </ixsl:variable>
-      <ixsl:choose>
-        <ixsl:when test="(string($realname) = '' and /formresult/formerrors/error) or
-                         (string($realname) != '' and /formresult/formerrors/error[@name=string($realname)])">
-          <xsl:choose>
-            <xsl:when test="$err_class != 'NONE'">
-              <span class="{$err_class}"><xsl:apply-templates/>
-              <xsl:apply-templates select="./pfx:error/node()"/></span>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates/>
-              <xsl:apply-templates select="./pfx:error/node()"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </ixsl:when>
-        <ixsl:otherwise>
-          <xsl:choose>
-            <xsl:when test="$norm_class != 'NONE'">
-              <span class="{$norm_class}"><xsl:apply-templates/>
-              <xsl:apply-templates select="./pfx:normal/node()"/></span>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:apply-templates/>
-              <xsl:apply-templates select="./pfx:normal/node()"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </ixsl:otherwise>
-      </ixsl:choose>
+      <xsl:apply-templates/>
+    </ixsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:error">
+    <!-- $cf_error is defined in parent pfx:checkfield -->
+    <ixsl:if test="$cf_error">
+      <xsl:apply-templates/>
+    </ixsl:if>
+  </xsl:template>
+  
+  <xsl:template match="pfx:normal">
+    <!-- $cf_error is defined in parent pfx:checkfield -->
+    <ixsl:if test="not($cf_error)">
+      <xsl:apply-templates/>
     </ixsl:if>
   </xsl:template>
 
   <xsl:template match="pfx:scode">
-    <!-- $realname, $generror are defined in parent pfx:checkerror -->
-    <ixsl:choose>
-      <ixsl:when test="string($realname) = ''">
-        <ixsl:call-template name="pfx:include">
-          <ixsl:with-param name="href">common/dyntxt/statusmessages.xml</ixsl:with-param>
-          <ixsl:with-param name="part"><ixsl:value-of select="$generror"/></ixsl:with-param>
-        </ixsl:call-template>
-      </ixsl:when>
-      <ixsl:otherwise>
-        <ixsl:apply-templates select="/formresult/formerrors/error[@name=string($realname)]"/>
-      </ixsl:otherwise>
-    </ixsl:choose>
+    <!-- $cf_name is defined in parent pfx:checkfield -->
+    <ixsl:apply-templates select="/formresult/formerrors/error[@name=string($cf_name)]/node()"/>
   </xsl:template>
   
   <xsl:template match="pfx:forminput">
