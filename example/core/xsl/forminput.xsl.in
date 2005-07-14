@@ -412,19 +412,14 @@
     <ixsl:variable><xsl:attribute name="name">genname_<xsl:value-of select="generate-id(.)"/></xsl:attribute><xsl:value-of select="generate-id(.)"/><ixsl:value-of select="generate-id(.)"/></ixsl:variable>
     <input type="submit">
       <xsl:copy-of select="@*[not(contains(concat('|',$always-exclude-attributes,'|',$exclude-attributes,'|') , concat('|',name(),'|')))]"/>
-      <!-- <xsl:copy-of select="./@*[name()!='name']"/> -->
-      <xsl:choose>
-        <xsl:when test="not(@value)">
-          <xsl:attribute name="value">
-            <xsl:apply-templates/>
-          </xsl:attribute>
-          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
-        </xsl:when>
-        <xsl:otherwise>
-          <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
-          <xsl:apply-templates/>
-        </xsl:otherwise>
-      </xsl:choose>
+      <ixsl:attribute name="name">__SBMT:<ixsl:value-of select="$genname_{generate-id(.)}"/>:</ixsl:attribute>
+      <ixsl:attribute name="value">
+        <xsl:choose>
+          <xsl:when test="@value"><xsl:value-of select="@value"/></xsl:when>
+          <xsl:when test="./pfx:value"><xsl:apply-templates select="./pfx:value/node()"/></xsl:when>
+          <xsl:otherwise><xsl:apply-templates/></xsl:otherwise>
+        </xsl:choose>
+      </ixsl:attribute>
     </input>
     <xsl:call-template name="generate_coded_input"/>
     <cus:documentation>
