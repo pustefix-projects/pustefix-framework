@@ -1,3 +1,8 @@
+2005-07-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: fixed <pfx:xinp type="submit"> to also know about 
+	a pfx:value child node.
+
 2005-07-14  Daniel Hopp  <daniel.hopp@schlund.de>
 
   * example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
