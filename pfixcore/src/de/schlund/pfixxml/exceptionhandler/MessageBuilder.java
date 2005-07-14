@@ -1,7 +1,8 @@
 package de.schlund.pfixxml.exceptionhandler;
 
-import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -11,16 +12,23 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
 /**
- * Creates a tree-like message and logs it. Uses Standard classes only to avoid
- * classes shared between different apps.
+ * Creates an xml messsage and logs it. Note that log4j does not serialize 
+ * objects passed as messages, it renders them to strings ...
+ * 
+ * Note that we don't share code with the actual Message class because
+ * 1) building via strings is more efficient
+ * 2) code modifications are more expensive 
  */
-public class MessageBuilder implements Serializable {
+public class MessageBuilder {
     private static final String LOGGER_NAME = "de.schlund.pfixxml.MESSAGES";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+
     private static Logger LOGGER;
     private static boolean enabled = false;
     
@@ -33,45 +41,88 @@ public class MessageBuilder implements Serializable {
             LOGGER.error(MessageBuilder.run(t, req));
         }
     }
+
+    public static String run(Throwable t, PfixServletRequest req) {
+        MessageBuilder result;
+        
+        result = new MessageBuilder();
+        result.startSection("message");
+        result.add("date", DATE_FORMAT.format(new Date()));
+        result.add("message", t.getMessage());
+        result.add("exception", t.toString());
+        request(result, req);
+        session(result, req.getSession(false));
+        result.endSection();
+        return result.dest.toString();
+    }
+
+    private static void request(MessageBuilder result, PfixServletRequest req) {
+        String servername;
+        String servletname;
+        PageRequest pr;
+        
+        pr = PageRequest.createPageRequest(req, null, null);
+        result.startSection("request");
+        result.add("remoteAddr", req.getRemoteAddr());
+        result.add("serverName", req.getOriginalServerName());
+        result.add("servletPath", req.getServletPath());
+        result.add("page", pr != null ? pr.getName() : null);
+        result.add("url", extractURL(req));
+        result.addParameter(req);
+        result.endSection();
+    }
     
-
-    public static List run(Throwable t, PfixServletRequest req) {
-        List result;
-        HttpSession session;
-        
-        result = new ArrayList();
-        session = req.getSession(false);
-        add(result, "url", extractURL(req));
-        add(result, "session", extractSession(session));
-        add(result, "trail", extractTrail(session).toString());
-        add(result, "exception", t.toString());
-        addParameter(addNode(result, "parameter"), req);
-        addData(addNode(result, "data"), session);
-        return result;
-    }
-
-    private static void add(List dest, String name, String value) {
-        dest.add(name);
-        dest.add(value);
-    }
-
-    private static List addNode(List dest, String name) {
-        List result;
-        
-        result = new ArrayList();
-        dest.add(name);
-        dest.add(result);
-        return result;
+    private static void session(MessageBuilder result, HttpSession session) {
+        if (session == null) {
+            return;
+        }
+        result.startSection("session");
+        result.add("id", session.getId());
+        result.add("trail", extractTrail(session).toString());
+        result.addData(session);
+        result.endSection();
     }
 
     //--
     
-    public static void addData(List dest, HttpSession session) {
+    private final StringBuffer dest;
+    
+    public MessageBuilder() {
+        dest = new StringBuffer();
+    }
+    
+    public void add(String name, String value) {
+        dest.append("<field");
+        dest.append(" name='");
+        escapeEntities(name, dest);
+        dest.append("' value='");
+        if (value == null) {
+            dest.append("(null)");
+        } else {
+            escapeEntities(value, dest);
+        }
+        dest.append("'/>");
+    }
+
+    public void startSection(String name) {
+        dest.append("<section name='");
+        escapeEntities(name, dest);
+        dest.append("'>"); 
+    }
+    
+    public void endSection() {
+        dest.append("</section>");
+    }
+
+    //--
+    
+    public void addData(HttpSession session) {
         Enumeration enm;
         Object o;
         String name;
         String value;
-        
+
+        startSection("data");
         enm = session.getAttributeNames();
         while (enm.hasMoreElements()) {
             name = (String) enm.nextElement();
@@ -81,25 +132,26 @@ public class MessageBuilder implements Serializable {
             } catch (Exception e) {
                 value = "[exception: " + e.getMessage() + "]";
             }
-            add(dest, name, value);
+            add(name, value);
         }
+        endSection();
     }
     
-    public static void addParameter(List dest, PfixServletRequest req) {
+    public void addParameter(PfixServletRequest req) {
         String[] names;
         String name;
         int i;
         
+        startSection("parameter");
         names = req.getRequestParamNames();
         for (i = 0; i < names.length; i++) {
             name = names[i];
-            add(dest, name, req.getRequestParam(name).toString());
+            add(name, req.getRequestParam(name).toString());
         }
+        endSection();
     }
 
-    public static String extractSession(HttpSession session) {
-        return session == null ? null : session.getId();
-    }
+    //--
     
     public static String extractURL(PfixServletRequest pfrequest_) {
         StringBuffer err = new StringBuffer();
@@ -146,5 +198,42 @@ public class MessageBuilder implements Serializable {
             }
         }
         return result;
+    }
+    
+    //--
+    
+    // same method used for attributes and elements ...
+    public static void escapeEntities(String str, StringBuffer dest) {
+        char ch;
+        String entity;
+
+        for (int i = 0; i < str.length(); i++) {
+            ch = str.charAt(i);
+            switch(ch) {
+                case '<' :
+                    entity = "&lt;";
+                    break;
+                case '>' :
+                    entity = "&gt;";
+                    break;
+                case '\'' :
+                    entity = "&apos;";
+                    break;
+                case '\"' :
+                    entity = "&quot;";
+                    break;
+                case '&' :
+                    entity = "&amp;";
+                    break;
+                default :
+                    entity = null;
+                    break;
+            }
+            if (entity == null) {
+                dest.append(ch);
+            } else {
+                dest.append(entity);
+            }
+        }
     }
 }
