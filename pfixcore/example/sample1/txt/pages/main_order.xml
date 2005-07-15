@@ -6,9 +6,7 @@
     <product name="default">
       <lang name="default">
         <center>
-          [<pfx:image themed-path="sample1/img" themed-img="test.gif"/>]<br/>
-          <pfx:pagemessages/>
-          <br/>
+          <pagemsgs/>
           <pfx:forminput name="main" target="_top">
             <pfx:include part="shirt"/>
             <table>
@@ -33,6 +31,7 @@
               </tr>
             </table>
           </pfx:forminput>
+          <br/>[<pfx:image themed-path="sample1/img" themed-img="test.gif"/>]
         </center>
       </lang>
     </product>

@@ -16,7 +16,7 @@
   <defpath>/xml/config</defpath>
   <passthrough>sample1/img</passthrough>
   <!-- The Apache DocumentRoot for static content -->
-  <documentroot><cus:docroot/>htdocs</documentroot>
+  <documentroot><cus:docroot/>sample1/htdocs</documentroot>
   <!-- Here you can enter any additional apache config stuff -->
   <literalapache>
     # Add something here...

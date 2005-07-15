@@ -14,13 +14,4 @@
   
   <pagerequest name="ssltest"/>
   
-  
-  
-  
 </contextxmlserver>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->

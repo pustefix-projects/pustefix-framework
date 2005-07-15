@@ -7,11 +7,7 @@
     <pfx:frame name="top_navi">
       <html>
         <head>
-          <style>
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="common/txt/styles.xml" part="standard"/> 
-            <pfx:include href="sample1/txt/styles.xml" part="standard"/>
-          </style>
+          <link href="/style.css" media="all" rel="stylesheet" type="text/css"/>
         </head>
         <body>
           <pfx:include href="sample1/txt/navigation.xml" part="top"/>
@@ -21,11 +17,7 @@
     <pfx:frame name="bottom">
       <html>
         <head>
-          <style>
-            <pfx:include href="core/txt/styles.xml" part="standard"/>
-            <pfx:include href="common/txt/styles.xml" part="standard"/> 
-            <pfx:include href="sample1/txt/styles.xml" part="standard"/>
-          </style>
+          <link href="/style.css" media="all" rel="stylesheet" type="text/css"/>
         </head>
         <body>
           <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
