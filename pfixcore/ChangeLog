@@ -1,3 +1,31 @@
+2005-07-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: <pfx:messageloop> new template
+	added class attributes in case of errors to all formfields
+
+	* example/webservice/conf/depend.xml.in (Module): 
+	* example/webservice/xml/two_frames.xml (Module): don't use stupid sample1 css stuff
+
+	* example/core/xsl/include.xsl.in (Module): 
+	* example/core/xsl/utils.xsl.in (Module): reordering and deprecating of older stuff. cosmetics.
+
+	* example/sample1/htdocs/style.css (Module): added.
+
+	* example/sample1/txt/styles.xml (Module): 
+	* example/sample1/txt/pages/main_gencss.xml (Module): 
+	* example/sample1/xml/styles.xml (Module): 
+	* example/webservice/xml/styles.xml (Module): removed
+
+	* example/sample1/conf/config.prop.in (Module): 
+	* example/sample1/conf/depend.xml.in (Module): 
+	* example/sample1/conf/project.xml.in (Module): 
+	* example/sample1/conf/secure.prop.in (Module): 
+	* example/sample1/txt/pages/main_order.xml (Module): 
+	* example/sample1/txt/pages/main_overview.xml (Module): 
+	* example/sample1/xml/one_frame.xml (Module): 
+	* example/sample1/xml/two_frames.xml (Module): 
+	* example/sample1/xsl/metatags.xsl (Module): changed accordingly
+
 2005-07-15  Joerg Haecler <haecker@schlund.de>
 
 	* example/core/build/create_depend.xsl: copy page-param in target
@@ -10,7 +38,7 @@
 
 2005-07-14  Daniel Hopp  <daniel.hopp@schlund.de>
 
-  * example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
+	* example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
 	* example/sample1/txt/pages/main_order.xml: 
 	* example/sample1/txt/pages/main_home.xml: changed accordingly
 
