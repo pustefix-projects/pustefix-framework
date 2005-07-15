@@ -3,7 +3,7 @@
   
   <servletinfo depend="sample1/conf/depend.xml" name="pfixcore_project:sample1::servlet:config">
     <editmode allow="true"/>
-    <adminmode watch="default" page="admin"/>
+    <!-- <adminmode watch="default" page="admin"/> -->
   </servletinfo>
   
   <context defaultflow="OrderFlow">
@@ -36,19 +36,15 @@
     </resource>
     
   </context>
-<!-- 
-  <interceptors>
-	<start>
-		<interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>	
-	</start>
-  </interceptors>	
--->
-  <interceptors>
-	<end>
-		<interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>	
-	</end>
-  </interceptors>	
 
+<!--   <interceptors> -->
+<!--     <start> -->
+<!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
+<!--     </start> -->
+<!--     <end> -->
+<!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
+<!--     </end> -->
+<!--   </interceptors> -->
   
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -83,8 +79,6 @@
   </pageflow>
   
   <!-- *** PageRequests and associated properties *** -->
-  
-  <pagerequest name="admin"/>
   
   <pagerequest name="test"/>
   
