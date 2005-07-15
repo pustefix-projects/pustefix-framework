@@ -1,3 +1,8 @@
+2005-07-15  Joerg Haecler <haecker@schlund.de>
+
+	* example/core/build/create_depend.xsl: copy page-param in target
+	definition to resulting target. 
+
 2005-07-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: fixed <pfx:xinp type="submit"> to also know about 

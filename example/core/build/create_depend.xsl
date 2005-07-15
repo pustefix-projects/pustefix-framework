@@ -220,9 +220,14 @@
       <xsl:if test="not($prohibitEdit = 'no')">
         <param name="prohibitEdit" value="{$prohibitEdit}"/>
       </xsl:if>
-      <xsl:if test="@page">
-        <param name="page" value="{@page}"/>
-      </xsl:if>
+      <xsl:choose>
+         <xsl:when test="@page">
+	   <param name="page" value="{@page}"/>
+	 </xsl:when>
+	 <xsl:when test="./param[@name='page']">
+	   <xsl:apply-templates select="./param[@name='page']"/>
+	 </xsl:when>
+      </xsl:choose>
       <param  name="product" value="{$project}"/>
       <param  name="lang" value="{$lang}"/>
     </xsl:copy>
