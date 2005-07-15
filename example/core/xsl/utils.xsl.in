@@ -5,18 +5,6 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
 
-  <xsl:template match="pfx:on">
-    <cus:documentation>
-       <description>Always a child of pfx:layer_check (see there)</description>
-    </cus:documentation>
-  </xsl:template>
-  
-  <xsl:template match="pfx:off">
-    <cus:documentation>
-       <description>Always a child of pfx:layer_check (see there)</description>
-    </cus:documentation>
-  </xsl:template>
-
   <xsl:template match="pfx:maincontent">
     <xsl:param name="noerror" select="@noerror"/>  
     <xsl:variable name="path">
@@ -87,6 +75,79 @@
     </cus:documentation>
   </xsl:template>
 
+  <xsl:template match="pfx:editconsole">
+    <cus:documentation>
+      <responsible>JTL</responsible>
+      <description>Generates a toolbar when in development mode</description>
+    </cus:documentation>
+    <xsl:if test="$prohibitEdit = 'no'">
+      <form target="_top">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="1px">
+              <ixsl:choose>
+                <ixsl:when test="$__editmode='admin'">
+                  <a target="_top">
+                    <ixsl:attribute name="href">
+                      <ixsl:value-of select="$__uri"/>?__editmode=none</ixsl:attribute>
+                    <img border="0" title="Switch edit mode OFF" src="/core/img/do_noedit.gif"/>
+                  </a>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <a target="_top">
+                    <ixsl:attribute name="href">
+                      <ixsl:value-of select="$__uri"/>?__editmode=admin</ixsl:attribute>
+                    <img border="0" title="Switch edit mode ON" src="/core/img/do_edit.gif"/>
+                  </a>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </td>
+            <td align="left">
+              <a target="__xml_source__">
+                <ixsl:attribute name="href">
+                  <ixsl:value-of select="$__uri"/>?__reuse=<ixsl:value-of select="$__reusestamp"/>&amp;__xmlonly=1</ixsl:attribute>
+                <img border="0" title="Show last XML tree" src="/core/img/show_xml.gif"/></a>
+            </td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+              P: <ixsl:value-of select="$page"/>
+            </td>
+          </tr>
+          <tr>
+            <td nowrap="nowrap" colspan="2" style="font-family: Verdana,Sans; font-size: 10px; background-color: black; color: white; padding-left: 5px; padding-right: 2px;">
+              F: <ixsl:value-of select="$pageflow"/>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template match="pfx:webserviceconsole">
+    <cus:documentation>
+      <responsible>mleidig</responsible>
+      <description>Generates a toolbar for web service tools when in development mode</description>
+    </cus:documentation>
+    <xsl:if test="$prohibitEdit = 'no'">
+      <span>
+        Web service tools:
+        <a target="__WEB_SERVICE_MONITOR__">
+          <ixsl:attribute name="href">
+            <ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?monitor')"/>
+          </ixsl:attribute>
+          Monitor
+        </a>
+        <a target="__WEB_SERVICE_ADMIN__">
+          <ixsl:attribute name="href">
+            <ixsl:value-of select="concat('/xml/webservice;',$__sessid,'?admin')"/>
+          </ixsl:attribute>
+          Admin
+        </a>
+      </span>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="pfx:blank">
     <img src="/core/img/blank.gif" width="1" height="1" border="0" alt="">
       <xsl:copy-of select="@*"/>
@@ -121,6 +182,31 @@
           <xmlcode><img src="/core/img/blank.gif" width="10" height="1" border="0" alt=""/></xmlcode>
         </output>
       </example>
+    </cus:documentation>
+  </xsl:template>
+
+
+
+
+
+
+
+  <!-- ************************************************************************************************************* -->
+  <!-- ****************************   NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE ************************************** -->
+  <!-- ************************************************************************************************************* -->
+  <!-- All the following templates are DEPRECATED and may be removed any time in the future without -->
+  <!-- further warning. Please don't use them in new code -->
+
+  
+  <xsl:template match="pfx:on">
+    <cus:documentation>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
+  </xsl:template>
+  
+  <xsl:template match="pfx:off">
+    <cus:documentation>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
 
@@ -160,52 +246,7 @@
       </xsl:if>
     </script>
     <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Creates a layer object which can be shown/hidden and moved on demand.</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>id of this layer object</description>
-      </param>
-      <param required="0">
-        <name>element</name>
-        <values><oneof><option default="true">div</option><option>span</option><option>tr</option><option>table</option></oneof></values>
-        <description>The html element that is used as the container for the layer content</description>
-      </param>
-      <param required="0">
-        <name>pos-left</name>
-        <values><html/></values>
-        <description>left position</description>
-      </param>
-      <param required="0">
-        <name>pos-right</name>
-        <values><html/></values>
-        <description>right position</description>
-      </param>
-      <param required="0">
-        <name>pos-top</name>
-        <values><html/></values>
-        <description>top position</description>
-      </param>
-      <param required="0">
-        <name>pos-bottom</name>
-        <values><html/></values>
-        <description>bottom  position</description>
-      </param>
-      <param required="0">
-        <name>visible</name>
-        <values><oneof><option>true</option><option>false</option></oneof></values>
-        <description>Visibility</description>
-      </param>
-      <param required="0">
-        <name>store</name>
-        <values><oneof><option default="true">true</option><option>false</option></oneof></values>
-        <description>If the status of the layer should be stored over different invocations of the page</description>
-      </param>
-      <children>
-        <name>pfx:switch</name>
-        <description>see pfx:switch</description>        
-      </children>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
   
@@ -249,34 +290,8 @@
       <xsl:apply-templates/>
     </a>
     <cus:documentation>
-    <responsible>JTL</responsible>
-     <description>Creates a "switch" (a link) to show/hide layers (see &lt;pfx:layer&gt;)</description>
-      <param required="0">
-        <name>class</name>
-        <values><string default="core_button_normal"/></values>
-        <description>link stylesheet</description>
-      </param>
-      <param required="0">
-        <name>method</name>
-        <values><oneof><option>on</option><option>off</option><option default="true">toggle</option></oneof></values>
-        <description>The method called on the associated layer. "On"
-        shows the layer, "off" hides it and "toggle" toggles it's state.</description>
-      </param>
-      <children>
-        <name>pfx:layer_ref</name>
-        <description>Can occur multiple times. See &lt;pfx:layer_ref&gt;</description>        
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:switch>
-              <pfx:layer_ref name="C"/>
-              Toggle Layer C
-            </pfx:switch>
-          </xmlcode>
-        </input>
-      </example>
-    </cus:documentation>  
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:layer_check">
@@ -329,74 +344,7 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Checks the visibility of a pfx:layer. </description>
-      <param required="0">
-        <name>name</name>
-        <values><string/></values>
-        <description>Name of the pfx:layer</description>
-      </param>
-      <param required="0">
-        <name>type</name>
-        <values><oneof><option>radio</option><option>checkbox</option></oneof></values>
-        <description>If type is given and one of the allowed options, create an input tag of the resp. type whose state
-        mirrors the visibility of the referenced pfx:layer.
-        </description>
-      </param>
-      <param required="0">
-        <name>class</name>
-        <values><string/></values>
-        <description>
-          Applies only when the type attribute is given and one of the allowed options. Sets the "class" attribute of the created input tag
-        </description>
-      </param>
-      <param required="0">
-        <name>style</name>
-        <values><string/></values>
-        <description>
-          Applies only when the type attribute is given and one of the allowed options. Sets the "style" attribute of the created input tag
-        </description>
-      </param>
-      <param required="0">
-        <name>disabled</name>
-        <values><oneof><option>disabled</option></oneof></values>
-        <description>
-          Applies only when the type attribute is given and one of the allowed options. Sets the "disabled" attribute of the created input tag
-        </description>
-      </param>
-      <parent>
-        <name>pfx:switch (Note: This tag can also be used without a pfx:switch to create a view only element that mirrors the state of a pfx:layer.)
-        </name>
-      </parent>
-      <children>
-        <name>pfx:on</name>
-        <description>Will displayed, if the sub-layer is visible (does not apply when the type attribute is given)</description>        
-      </children>
-      <children>
-        <name>pfx:off</name>
-        <description>Will displayed, if the sub-layer is invisible (does not apply when the type attribute is given)</description>        
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:layer_check name="B">
-              <pfx:on>Switch Layer B OFF</pfx:on>
-              <pfx:off>Switch Layer B ON</pfx:off>
-            </pfx:layer_check>
-          </xmlcode>
-        </input>
-        <output>
-          The "user visible part" (there is also some javascript generated):
-          <xmlcode>
-            <span id="SWITCH_ON_d1e174">
-              Switch Layer B OFF
-            </span>
-            <span id="SWITCH_OFF_d1e174">
-              Switch Layer B ON
-            </span>
-          </xmlcode>
-        </output>
-      </example>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
   
@@ -422,28 +370,7 @@
       top.__js_getLayer('<xsl:value-of select="$child"/>').addParent(top.__js_getLayer('<xsl:value-of select="$parent"/>'));
     </script>
     <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Always a child of &lt;pfx:switch&gt;. This selects which layer
-      should be toggled by the switch. Multiple
-      &lt;pfx:layer_ref&gt; are possible.</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>This must be a layer defined via &lt;pfx:layer&gt;. </description>
-      </param>
-      <param required="0">
-        <name>method</name>
-        <values><oneof><option>on</option><option>off</option><option default="true">toggle</option></oneof></values>
-        <description>The method called on the associated layer. "On"
-        shows the layer, "off" hides it. Don't specifying the
-        attribute or giving it the value "toggle" toggles the layer's state.</description>
-      </param>
-      <param required="0">
-        <name>autoclose</name>
-        <values><oneof><option>true</option><option default="true">false</option></oneof></values>
-        <description>if autoclose is "true", and the pfx:layer_ref tag is contained in another pfx:layer (which is the "parent"),
-        automatically close the referenced layer when the parent layer is closed.</description>
-      </param>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
     
