@@ -29,6 +29,7 @@
 
   .core_pagemessage_error  { padding: 5px; font-family: Arial, Helvetica; font-weight:bold; color: #ff0000; background-color:#ffd4d4; }
   .core_pagemessage_header_error  { padding: 5px; font-family: Arial, Helvetica; font-size:16px; font-weight:bold; color: #ff0000; background-color:#ffd4d4; }
+
       </lang>
     </product>
     
