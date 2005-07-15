@@ -7,78 +7,70 @@
     <pfx:frame name="top_navi">
       <html>
         <head>
-          <link rel="stylesheet" type="text/css">
-            <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
-          </link>
-		  <link rel="stylesheet" type="text/css" href="/webservice.css"/>
-		  
+          <link rel="stylesheet" type="text/css" href="/webservice.css"/>
         </head>
         <body>
-			<div style="background:#000000;color:#FFFFFF;font-size:16pt;padding:5pt;padding-left:10pt;">
-				<span style="padding-right:20pt">Web service test application:</span>
-				<pfx:button page="calculator" activeclass="navi" normalclass="navi">Calculator</pfx:button>
-                <pfx:button page="chat" activeclass="navi" normalclass="navi">Chat</pfx:button>
-				<pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button>
-				<pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
-				<pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
-			</div>	
+          <div style="background:#000000;color:#FFFFFF;font-size:16pt;padding:5pt;padding-left:10pt;">
+            <span style="padding-right:20pt">Web service test application:</span>
+            <pfx:button page="calculator" activeclass="navi" normalclass="navi">Calculator</pfx:button>
+            <pfx:button page="chat" activeclass="navi" normalclass="navi">Chat</pfx:button>
+            <pfx:button page="counter" activeclass="navi" normalclass="navi">Counter</pfx:button>
+            <pfx:button page="data" activeclass="navi" normalclass="navi">Data</pfx:button>
+            <pfx:button page="typetest" activeclass="navi" normalclass="navi">TypeTest</pfx:button>
+          </div>	
         </body>
       </html>
     </pfx:frame>
     <pfx:frame name="bottom">
       <html>
         <head>
-          <link rel="stylesheet" type="text/css">
-            <ixsl:attribute name="href">/xml/config/gencss;<ixsl:value-of select="$__sessid"/></ixsl:attribute>
-          </link>
-		  <link rel="stylesheet" type="text/css" href="/webservice.css"/>
+          <link rel="stylesheet" type="text/css" href="/webservice.css"/>
           <script type="text/javascript" src="/application.js"></script>
-		  <script type="text/javascript" src="/core/script/xmlRequest.js"></script>
-		  <script type="text/javascript" src="/core/script/webservice.js"></script>
-		   <ixsl:choose>
-			<ixsl:when test="$page='calculator'">
-				<script type="text/javascript" src="/calc-soap.js"></script>
-				<script type="text/javascript" src="/calc-wsdl.js"></script>
-				<script type="text/javascript" src="/calc-mysoap.js"></script>
-				<script type="text/javascript" src="/xml/wsscript/Calculator.js"></script>
-				<script type="text/javascript" src="/calc-pfxsoap.js"></script>		
-			</ixsl:when>
-            <ixsl:when test="$page='chat'">
-                <script type="text/javascript" src="/xml/wsscript/Chat.js"></script>
-                <script type="text/javascript" src="/chat-pfxsoap.js"></script>
+          <script type="text/javascript" src="/core/script/xmlRequest.js"></script>
+          <script type="text/javascript" src="/core/script/webservice.js"></script>
+          <ixsl:choose>
+            <ixsl:when test="$page='calculator'">
+              <script type="text/javascript" src="/calc-soap.js"></script>
+              <script type="text/javascript" src="/calc-wsdl.js"></script>
+              <script type="text/javascript" src="/calc-mysoap.js"></script>
+              <script type="text/javascript" src="/xml/wsscript/Calculator.js"></script>
+              <script type="text/javascript" src="/calc-pfxsoap.js"></script>		
             </ixsl:when>
-			<ixsl:when test="$page='counter'">
-				<script type="text/javascript" src="/counter-soap.js"></script>
-				<script type="text/javascript" src="/counter-wsdl.js"></script>
-				<script type="text/javascript" src="/xml/wsscript/Counter.js"></script>
-				<script type="text/javascript" src="/counter-pfxsoap.js"></script>		
-			</ixsl:when>
-			
-			<ixsl:when test="$page='data'">
-				<script type="text/javascript" src="/data-soap.js"></script>
-				<script type="text/javascript" src="/data-wsdl.js"></script>
-				<script type="text/javascript" src="/xml/wsscript/Data.js"></script>
-				<script type="text/javascript" src="/data-pfxsoap.js"></script>		
-			</ixsl:when>
-			<ixsl:when test="$page='typetest'">
-				<script type="text/javascript" src="/xml/wsscript/TypeTest.js"></script>
-				<script type="text/javascript" src="/typetest-pfxsoap.js"></script>		
-			</ixsl:when>
-			
-		  </ixsl:choose>
-                 <!-- <script type="text/javascript" src="/webservice_helper.js"></script>
-                  <script type="text/javascript" src="/webservice.js"></script>-->
+            <ixsl:when test="$page='chat'">
+              <script type="text/javascript" src="/xml/wsscript/Chat.js"></script>
+              <script type="text/javascript" src="/chat-pfxsoap.js"></script>
+            </ixsl:when>
+            <ixsl:when test="$page='counter'">
+              <script type="text/javascript" src="/counter-soap.js"></script>
+              <script type="text/javascript" src="/counter-wsdl.js"></script>
+              <script type="text/javascript" src="/xml/wsscript/Counter.js"></script>
+              <script type="text/javascript" src="/counter-pfxsoap.js"></script>		
+            </ixsl:when>
+            
+            <ixsl:when test="$page='data'">
+              <script type="text/javascript" src="/data-soap.js"></script>
+              <script type="text/javascript" src="/data-wsdl.js"></script>
+              <script type="text/javascript" src="/xml/wsscript/Data.js"></script>
+              <script type="text/javascript" src="/data-pfxsoap.js"></script>		
+            </ixsl:when>
+            <ixsl:when test="$page='typetest'">
+              <script type="text/javascript" src="/xml/wsscript/TypeTest.js"></script>
+              <script type="text/javascript" src="/typetest-pfxsoap.js"></script>		
+            </ixsl:when>
+            
+          </ixsl:choose>
+          <!-- <script type="text/javascript" src="/webservice_helper.js"></script>
+               <script type="text/javascript" src="/webservice.js"></script>-->
         </head>
         <body style="padding-left:10pt;" onload="setupDisplay();">
           <pfx:maincontent part="content" path="webservice/txt/pages" prefix="main_"/>
           <div name="no_disp" style="display:none">
-			<h2 style="color:red">Browser has no native webservice support!</h2>
-        	</div>
-			
-			
+            <h2 style="color:red">Browser has no native webservice support!</h2>
+          </div>
+          
           <pfx:editconsole/>
-			<pfx:webserviceconsole/>
-			
+          <pfx:webserviceconsole/>
+          
         </body>
       </html>
     </pfx:frame>
