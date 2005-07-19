@@ -1,3 +1,9 @@
+2005-07-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (suppliedInRequest): new method,
+	returns false when the whole parameter wasn't even supplied at all in the request (as opposed
+	to just being supplied empty which would both result in the same null value)
+
 2005-07-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: <pfx:messageloop> new template
