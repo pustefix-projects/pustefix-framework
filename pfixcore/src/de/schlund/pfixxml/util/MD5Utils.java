@@ -38,7 +38,7 @@ public class MD5Utils {
     }
     
     public static String hex_md5(String message){ 
-        return hex_md5(message,CHARSET_UTF8);
+        return hex_md5(message,CHARSET_LATIN1);
     }
     
     
