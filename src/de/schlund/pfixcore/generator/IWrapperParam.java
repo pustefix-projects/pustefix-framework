@@ -52,6 +52,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private HashMap             scodesargs     = new HashMap();
     private Category            CAT            = Category.getInstance(this.getClass().getName());
     private StatusCode          missing        = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");    
+    private boolean             inrequest      = false;
     
     public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval) {
         this.name       = name;
@@ -97,6 +98,10 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         postcheck.add(check);
     }
 
+    public boolean suppliedInRequest() {
+        return inrequest;
+    }
+    
     public boolean errorHappened() {
         return !scodes.isEmpty();
     }
@@ -170,6 +175,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         CAT.debug(">>> [" + thename + "] Optional: " + optional);
         
         if (rparamv != null) {
+            inrequest = true;
             ArrayList in  = new ArrayList(Arrays.asList(rparamv));
             ArrayList out = new ArrayList();
             for (Iterator i = in.iterator(); i.hasNext(); ) {
@@ -200,6 +206,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                 rparamv = null;
             }
         } else {
+            inrequest = false;
             CAT.debug(">>> [" + thename + "] InputArray is null!!!");
         }
         
