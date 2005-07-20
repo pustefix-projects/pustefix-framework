@@ -59,4 +59,6 @@ public interface IWrapper extends Comparable {
     IWrapperParam[] gimmeAllParams();
     IWrapperParam[] gimmeAllParamsWithErrors();
     IWrapperParamDefinition[] gimmeAllParamDefinitions();
+    void            addSCode(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode);
+    void            addSCodeWithArgs(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode, String[] args);
 }

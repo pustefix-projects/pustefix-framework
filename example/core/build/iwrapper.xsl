@@ -61,7 +61,6 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     </xsl:choose>
     }
     
-    
     <xsl:call-template name="generatetostring">
       <xsl:with-param name="classname" select="$classname"/> 
     </xsl:call-template>
@@ -228,17 +227,11 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode) {
-        gimmeParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode);
-        synchronized (errors) {
-            errors.put(gimmeParamForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamForKey("<xsl:value-of select="$pname"/>"));
-        }
+        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode);
     }
 
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
-        gimmeParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args);
-        synchronized (errors) {
-            errors.put(gimmeParamForKey("<xsl:value-of select="$pname"/>").getName(), gimmeParamForKey("<xsl:value-of select="$pname"/>"));
-        }
+        addSCodeWithArgs(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args);
     }
         </xsl:otherwise>
       </xsl:choose>
