@@ -94,7 +94,7 @@ public class AuxDependency implements Comparable {
             TargetGenerator tgen = target.getTargetGenerator();
             if (affectedtargetgenerators.containsKey(tgen)) {
                 int count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
-                affectedtargetgenerators.put(tgen, new Integer(count++));
+                affectedtargetgenerators.put(tgen, new Integer(++count));
             } else {
                 affectedtargetgenerators.put(tgen, new Integer(1));
             }
@@ -108,7 +108,7 @@ public class AuxDependency implements Comparable {
             TargetGenerator tgen  = target.getTargetGenerator();
             int             count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
             if (count > 1) {
-                affectedtargetgenerators.put(tgen, new Integer(count--));
+                affectedtargetgenerators.put(tgen, new Integer(--count));
             } else {
                 affectedtargetgenerators.remove(tgen);
             }
