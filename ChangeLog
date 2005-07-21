@@ -1,8 +1,8 @@
 2005-07-20  Michael Hartmeier  <mhm@schlund.de>
 
 	* example/core/build/iwrapper.xsl, 
-    src/de/schlund/pfixcore/generator/IWrapper.java,
-    src/de/schlund/pfixcore/generator/IWrapperImpl.java:
+	src/de/schlund/pfixcore/generator/IWrapper.java,
+	src/de/schlund/pfixcore/generator/IWrapperImpl.java:
 	add generic addSCode methods      
 
 2005-07-20  Jens Lautenbacher  <jtl@schlund.de>
