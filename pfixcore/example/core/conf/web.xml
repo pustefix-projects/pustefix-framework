@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- CAUTION: don't specifiy a doctype - we'd get problems when generation is done on firewalled machines -->
+<web-app xmlns:cus="http://www.schlund.de/pustefix/customize">
+  <cus:servlet />
+  <cus:servlet-mapping />
+  <cus:session-config />
+  <cus:error-page />
+</web-app>

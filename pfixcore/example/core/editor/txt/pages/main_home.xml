@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <div class="box">
+        <pfx:include href="core/editor/txt/pages/main_home.xml" part="welcome"/>
+
+        <ul class="jobs">
+        <li>
+        <pfx:button mode="force" normalclass="editor_submit" page="home">
+          <pfx:command name="SELWRP">update</pfx:command>
+          <pfx:argument name="update.DoUpdate">true</pfx:argument>
+          <ixsl:text>Schedule all pages of the product for updating</ixsl:text>
+        </pfx:button>
+
+        </li>
+        </ul>
+        </div>
+      </lang>
+    </product>
+  </part>
+
+  <part name="welcome">
+    <product name="default">
+      <lang name="default">
+        <h1>Pustefix Content Management System</h1>
+        <p>
+         Please use the menubar to go to the different sections of the CMS.
+        </p>
+      </lang>
+    </product>
+  </part>
+
+</include_parts><!--
+Local Variables:
+mode: xml
+End:
+-->

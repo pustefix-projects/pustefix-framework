@@ -1,0 +1,14 @@
+build.properties
+xrefdb
+dist
+apidocs
+prj.el
+build
+semantic.cache
+testskel
+.externalToolBuilders
+.classpath
+.project
+target
+velocity.log*
+.settings

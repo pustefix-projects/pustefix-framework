@@ -1,0 +1,11 @@
+.cache
+.webservice
+tmp
+local
+.ALLIMAGES
+.ALLINCFILES
+.ALLPROJECTS
+CHECKOUTPUT.xml
+UnusedInfo.txt
+Cleanup.xml
+

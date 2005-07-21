@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<interface xmlns="http://pustefix.sourceforge.net/interfacewrapper200401" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/interfacewrapper200401 http://pustefix.sourceforge.net/interfacewrapper200401.xsd">
+  <ihandler class="de.schlund.pfixcore.editor.handlers.SearchIncludeHandler"/>
+  <param name="Regexp" type="org.apache.oro.text.regex.Perl5Pattern">
+    <caster class="de.schlund.pfixcore.generator.casters.ToPerl5Pattern"/>
+  </param>    
+  <param name="FullSource" type="java.lang.Boolean" occurence="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+  <param name="Reset" type="java.lang.Boolean" occurence="optional">
+    <caster class="de.schlund.pfixcore.generator.casters.ToBoolean"/>
+  </param>
+</interface>
