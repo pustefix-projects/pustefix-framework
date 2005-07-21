@@ -29,6 +29,7 @@ import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.PfxProperties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -202,7 +203,7 @@ public abstract class ServletManager extends HttpServlet {
                         CAT.debug("    ... and session is secure.");
                         if (does_cookies) {
                             CAT.debug("*** Client does cookies: Double checking SSL cookie for session ID");
-                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + session.getId());
+                            String sec_testid = (String) session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(session.getId()));
                             CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                             Cookie cookie = getSecureSessionCookie(req, session.getId());
                             if (cookie != null) {
@@ -376,7 +377,7 @@ public abstract class ServletManager extends HttpServlet {
             HttpSession secure_session = SessionAdmin.getInstance().getChildSessionForParentId(parentid);
             if (secure_session != null) {
                 String secure_id  = secure_session.getId();
-                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + secure_id);
+                String sec_testid = (String) secure_session.getAttribute(SECURE_SESS_COOKIE + MD5Utils.hex_md5(secure_id));
                 CAT.debug("*** We have found a candidate: SessionId=" + secure_id + " now search for cookie...");
                 CAT.debug("*** Session expects to see the cookie value " + sec_testid);
                 // But we need to make sure that the current request comes
@@ -445,8 +446,9 @@ public abstract class ServletManager extends HttpServlet {
         }
         String sec_testid = req.getRemoteAddr() + ":" + Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
         CAT.debug("*** Secure Test-ID used in session and cookie: " + sec_testid);
-        session.setAttribute(SECURE_SESS_COOKIE + session.getId(), sec_testid);
-        cookie = new Cookie(SECURE_SESS_COOKIE + session.getId(), sec_testid);
+        String sec_cookie = MD5Utils.hex_md5(session.getId());
+        session.setAttribute(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
+        cookie = new Cookie(SECURE_SESS_COOKIE + sec_cookie, sec_testid);
         cookie.setPath("/");
         cookie.setMaxAge(-1);
         cookie.setSecure(true);
@@ -549,13 +551,13 @@ public abstract class ServletManager extends HttpServlet {
             return false;
         }
 
-    private Cookie getSecureSessionCookie(HttpServletRequest req, String id) {
+    private Cookie getSecureSessionCookie(HttpServletRequest req, String sessionid) {
         Cookie[] cookies = req.getCookies();
         Cookie   tmp;
         if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 tmp = cookies[i];
-                if (tmp.getName().equals(SECURE_SESS_COOKIE + id))
+                if (tmp.getName().equals(SECURE_SESS_COOKIE + MD5Utils.hex_md5(sessionid)))
                     return tmp;
             }
         }

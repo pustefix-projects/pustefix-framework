@@ -1,3 +1,20 @@
+2005-07-20  Michael Hartmeier  <mhm@schlund.de>
+
+	* example/core/build/iwrapper.xsl, 
+	src/de/schlund/pfixcore/generator/IWrapper.java,
+	src/de/schlund/pfixcore/generator/IWrapperImpl.java:
+	add generic addSCode methods      
+
+2005-07-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: SECURITY: No longer use the plain session ID in a 
+	cookie name (for the test of the secure cookie), but instead just the MD5. This way now there is no
+	possibility to get to a valid secure session id without really reading the URL
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (suppliedInRequest): new method,
+	returns false when the whole parameter wasn't even supplied at all in the request (as opposed
+	to just being supplied empty which would both result in the same null value)
+
 2005-07-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/forminput.xsl.in: <pfx:messageloop> new template

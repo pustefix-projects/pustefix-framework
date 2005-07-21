@@ -19,11 +19,24 @@
 
 package de.schlund.pfixcore.generator;
 
-import de.schlund.util.statuscodes.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
-import org.apache.log4j.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.TreeSet;
+
+import org.apache.log4j.Category;
+
+import de.schlund.util.statuscodes.StatusCode;
 
 /**
  * IWrapperImpl.java
@@ -212,6 +225,19 @@ public abstract class IWrapperImpl implements IWrapper {
         return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {});
     }
 
+    public void addSCode(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode) {
+        param.addSCode(scode);
+        synchronized (errors) {
+            errors.put(param.getName(), param);
+        }
+    }     
+    public void addSCodeWithArgs(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode, String[] args) {
+        param.addSCode(scode, args);
+        synchronized (errors) {
+            errors.put(param.getName(), param);
+        }
+    }
+    
 //     public final Object[] getParamValueByName(String key) {
 //         IWrapperParam pinfo = gimmeParamForKey(key);
 //         if (pinfo != null) {
