@@ -43,7 +43,7 @@ public class PathResolverServiceImpl implements PathResolverService {
      * @see de.schlund.pfixcore.editor2.core.spring.PathResolverService#resolve(java.lang.String)
      */
     public String resolve(String path) {
-        if (!path.startsWith("/")) {
+        if (path.startsWith("/")) {
             return docroot + path;
         } else {
             return docroot + "/" + path;
