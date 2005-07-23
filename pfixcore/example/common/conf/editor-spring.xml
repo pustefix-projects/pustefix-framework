@@ -103,6 +103,21 @@
   </bean>
 
   <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
+    <constructor-arg index="0">
+		<ref bean="filesystem"/>
+	</constructor-arg>
+    <constructor-arg index="1">
+		<ref bean="pathresolver"/>
+	</constructor-arg>
   </bean>
-				
+
+  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
+    <constructor-arg index="0">
+		<ref bean="filesystem"/>
+	</constructor-arg>
+    <constructor-arg index="1">
+		<ref bean="pathresolver"/>
+	</constructor-arg>
+  </bean>	
+					
 </beans>

@@ -18,30 +18,159 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.security.Principal;
+
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 
 /**
- * This service is responsible for handling security issues.
- * It provides methods to check whether a user is allowed to trigger a certain action.
+ * This service is responsible for handling security issues. It provides methods
+ * to check whether a user is allowed to trigger a certain action.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public interface SecurityManagerService {
     // Login-Handling should be done by another component
     // boolean checkCredentials(String username, String password);
-    void setAuthContext(SecurityContext auth);
-    SecurityContext getAuthContext();
-    
+    /**
+     * Sets the principal that is identifying the current user. This method is
+     * used to "login" a user or do a "logout" (using <code>null</code> as the
+     * supplied principal.
+     */
+    void setPrincipal(Principal auth);
+
+    /**
+     * Returns the principal that is identifying the current user.
+     * 
+     * @return Principal identifying the user currently logged in or
+     *         <code>null</code> if no user is currently logged in.
+     */
+    Principal getPrincipal();
+
+    /**
+     * Tells the SecurityManager to reload its configuration. This method should
+     * be used after changes to the configuration have been made, so that the
+     * SecurityManager can use the new configuration.
+     * 
+     * @throws EditorIOException
+     *             If configuration file cannot be read.
+     * @throws EditorParsingException
+     *             If configuration file does not match expected format.
+     */
+    void reloadConfiguration() throws EditorIOException, EditorParsingException;
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit the
+     * specified {@link IncludePartThemeVariant}.
+     * 
+     * @param part
+     *            The part variant to do the check for
+     * @return <code>true</code> if the user is allowed to edit,
+     *         <code>false</code> otherwise
+     */
     boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part);
-    void checkEditIncludePartThemeVariant(IncludePartThemeVariant part) throws EditorSecurityException;
-    
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit the
+     * specified {@link IncludePartThemeVariant}.
+     * 
+     * @param part
+     *            The part variant to do the check for
+     * @throws EditorSecurityException
+     *             if the current user is not allowed to edit
+     */
+    void checkEditIncludePartThemeVariant(IncludePartThemeVariant part)
+            throws EditorSecurityException;
+
+    /**
+     * Checks whether the user currently logged in is allowed to create a new
+     * {@link IncludePartThemeVariant} for the specified {@link IncludePart} and
+     * the specified {@link Theme}.
+     * 
+     * @param part
+     *            The part to do the check for
+     * @param theme
+     *            The theme to do the check for
+     * @return <code>true</code> if the user is allowed to create the variant,
+     *         <code>false</code> otherwise
+     */
     boolean mayCreateIncludePartThemeVariant(IncludePart part, Theme theme);
-    void checkCreateIncludePartThemeVariant(IncludePart part, Theme theme) throws EditorSecurityException;
-    
+
+    /**
+     * Checks whether the user currently logged in is allowed to create a new
+     * {@link IncludePartThemeVariant} for the specified {@link IncludePart} and
+     * the specified {@link Theme}.
+     * 
+     * @param part
+     *            The part to do the check for
+     * @param theme
+     *            The theme to do the check for
+     * @throws EditorSecurityException
+     *             if the user is not allowed to create the variant
+     */
+    void checkCreateIncludePartThemeVariant(IncludePart part, Theme theme)
+            throws EditorSecurityException;
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit the
+     * specified {@link Image}.
+     * 
+     * @param image
+     *            The image to do the check for
+     * @return <code>true</code> if the user is allowed to edit,
+     *         <code>false</code> otherwise
+     */
     boolean mayEditImage(Image image);
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit the
+     * specified {@link Image}.
+     * 
+     * @param image
+     *            The image to do the check for
+     * @throws EditorSecurityException
+     *             if the current user is not allowed to edit
+     */
     void checkEditImage(Image image) throws EditorSecurityException;
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit dynamic
+     * includes.
+     * 
+     * @return <code>true</code> if the user is allowed to edit,
+     *         <code>false</code> otherwise.
+     */
+    boolean mayEditDynInclude();
+
+    /**
+     * Checks whether the user currently logged in is allowed to edit dynamic
+     * includes.
+     * 
+     * @throws EditorSecurityException
+     *             if the current user is not allowed to edit
+     */
+    void checkEditDynInclude() throws EditorSecurityException;
+
+    /**
+     * Checks whether the user currently logged in is allowed to perform
+     * administrative tasks.
+     * 
+     * @return <code>true</code> if the user is an admin, <code>false</code>
+     *         otherwise.
+     */
+    boolean mayAdmin();
+
+    /**
+     * Checks whether the user currently logged in is allowed to perform
+     * administrative tasks.
+     * 
+     * @throws EditorSecurityException
+     *             if the current user is no admin
+     */
+    void checkAdmin() throws EditorSecurityException;
 }
