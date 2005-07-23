@@ -42,7 +42,7 @@ public final class EditorApplicationContextFactory {
         // Exists only to force singleton pattern
     }
 
-    public EditorApplicationContextFactory getInstance() {
+    public static EditorApplicationContextFactory getInstance() {
         return instance;
     }
 
