@@ -42,12 +42,4 @@ public interface Image {
      * @see Page
      */
     Collection getAffectedPages();
-    
-    
-    /**
-     * Returns project this Image belongs to
-     * 
-     * @return Project this Image is part of
-     */
-    Project getProject();
 }

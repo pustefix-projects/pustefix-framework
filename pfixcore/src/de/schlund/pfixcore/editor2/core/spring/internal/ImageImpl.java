@@ -38,21 +38,15 @@ public class ImageImpl extends AbstractImage {
 
     private String path;
 
-    private Project project;
-
     private AuxDependency auxdep;
 
     private ProjectFactoryService projectfactory;
 
     private VariantFactoryService variantfactory;
 
-    public ImageImpl(ProjectFactoryService projectfactory,
-            VariantFactoryService variantfactory, String path) {
-        this.projectfactory = projectfactory;
+    public ImageImpl(VariantFactoryService variantfactory, String path) {
         this.variantfactory = variantfactory;
         this.path = path;
-        String projectName = path.substring(0, path.indexOf("/"));
-        this.project = this.projectfactory.getProjectByName(projectName);
         this.auxdep = AuxDependencyFactory.getInstance().getAuxDependency(
                 DependencyType.IMAGE,
                 PathFactory.getInstance().createPath(path), null, null);
@@ -87,9 +81,4 @@ public class ImageImpl extends AbstractImage {
 
         return pages;
     }
-
-    public Project getProject() {
-        return this.project;
-    }
-
 }
