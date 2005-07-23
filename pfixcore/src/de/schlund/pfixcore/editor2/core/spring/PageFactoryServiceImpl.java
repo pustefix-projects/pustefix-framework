@@ -80,8 +80,11 @@ public class PageFactoryServiceImpl implements PageFactoryService {
     private TargetFactoryService targetfactory;
     private Hashtable cache;
     
-    public PageFactoryServiceImpl(TargetFactoryService targetfactory) {
+    public void setTargetFactoryService(TargetFactoryService targetfactory) {
         this.targetfactory = targetfactory;
+    }
+    
+    public PageFactoryServiceImpl() {
         this.cache = new Hashtable();
     }
     

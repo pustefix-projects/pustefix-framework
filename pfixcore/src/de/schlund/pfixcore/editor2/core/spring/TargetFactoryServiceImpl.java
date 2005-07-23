@@ -54,28 +54,47 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
 
     private PathResolverService pathresolver;
 
-    public TargetFactoryServiceImpl(ProjectFactoryService projectfactory,
-            PageFactoryService pagefactory,
-            VariantFactoryService variantfactory,
-            TargetFactoryService targetfactory,
-            ThemeFactoryService themefactory,
-            IncludeFactoryService includefactory,
-            ImageFactoryService imagefactory,
-            FileSystemService filesystem,
-            PathResolverService pathresolver) {
+    public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
-        this.pagefactory = pagefactory;
-        this.targetfactory = targetfactory;
-        this.variantfactory = variantfactory;
+    }
+    
+    public void setThemeFactoryService(ThemeFactoryService themefactory) {
         this.themefactory = themefactory;
+    }
+    
+    public void setVariantFactoryService(VariantFactoryService variantfactory) {
+        this.variantfactory = variantfactory;
+    }
+    
+    public void setIncludeFactoryService(IncludeFactoryService includefactory) {
         this.includefactory = includefactory;
+    }
+    
+    public void setImageFactoryService(ImageFactoryService imagefactory) {
         this.imagefactory = imagefactory;
+    }
+    
+    public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
+    }
+    
+    public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
+    }
+    
+    public void setPageFactoryService(PageFactoryService pagefactory) {
+        this.pagefactory = pagefactory;
+    }
+    
+    public void setTargetFactoryService(TargetFactoryService targetfactory) {
+        this.targetfactory = targetfactory;
+    }
+    
+    public TargetFactoryServiceImpl() {
         this.cachePfixTarget = new Hashtable();
         this.cacheAuxDepTarget = new Hashtable();
     }
-
+    
     /*
      * (non-Javadoc)
      * 

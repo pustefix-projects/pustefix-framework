@@ -32,14 +32,13 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
 
     private VariantFactoryService variantfactory;
 
-    private ProjectFactoryService projectfactory;
-    
     private Hashtable cache;
-
-    public ImageFactoryServiceImpl(ProjectFactoryService projectfactory,
-            VariantFactoryService variantfactory) {
-        this.projectfactory = projectfactory;
+    
+    public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
+    }
+    
+    public ImageFactoryServiceImpl() {
         this.cache = new Hashtable();
     }
 
@@ -49,7 +48,7 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
         }
         synchronized (this.cache) {
             if (!this.cache.containsKey(path)) {
-                Image image = new ImageImpl(this.projectfactory, this.variantfactory, path);
+                Image image = new ImageImpl(this.variantfactory, path);
                 this.cache.put(path, image);
             }
         }

@@ -39,9 +39,23 @@ import de.schlund.pfixxml.util.XPath;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
     private HashMap map;
+    private PathResolverService pathresolver;
+    private FileSystemService filesystem;
+    private String projectsFile;
     
-    public ConfigurationServiceImpl(FileSystemService filesystem,
-            PathResolverService pathresolver, String projectsFile) throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
+    public void setPathResolverService(PathResolverService pathresolver) {
+        this.pathresolver = pathresolver;
+    }
+    
+    public void setFileSystemService(FileSystemService filesystem) {
+        this.filesystem = filesystem;
+    }
+    
+    public void setProjectsFilePath(String path) {
+        this.projectsFile = path;
+    }
+    
+    public void init() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
         Document doc = filesystem.readXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)));
         List nlist;
         this.map = new HashMap();

@@ -57,32 +57,43 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     private Hashtable projects;
 
     private FileSystemService filesystem;
-    
-    /**
-     * Constructor reads the projects.xml file to get a list of all projects
-     * 
-     * @param pathresolver
-     * @param variantfactory
-     * @param projectsFile
-     * @throws SAXException
-     * @throws IOException
-     * @throws ParserConfigurationException
-     * @throws FactoryConfigurationError
-     * @throws TransformerException
-     * @throws EditorInitializationException
-     */
-    public ProjectFactoryServiceImpl(PathResolverService pathresolver,
-            VariantFactoryService variantfactory,
-            ThemeFactoryService themefactory, PageFactoryService pagefactory,
-            FileSystemService filesystem, String projectsFile)
-            throws SAXException, IOException, ParserConfigurationException,
-            FactoryConfigurationError, TransformerException,
-            EditorInitializationException {
+
+    private ThemeFactoryService themefactory;
+
+    private String projectsFile;
+
+    public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
+    }
+
+    public void setThemeFactoryService(ThemeFactoryService themefactory) {
+        this.themefactory = themefactory;
+    }
+
+    public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
+    }
+
+    public void setPageFactoryService(PageFactoryService pagefactory) {
         this.pagefactory = pagefactory;
+    }
+
+    public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
+    }
+
+    public void setProjectsFilePath(String path) {
+        this.projectsFile = path;
+    }
+
+    public ProjectFactoryServiceImpl() {
         this.projects = new Hashtable();
+    }
+
+    public void init() throws SAXException, IOException,
+            ParserConfigurationException, FactoryConfigurationError,
+            TransformerException, EditorInitializationException {
+
         /*
          * Document doc = DocumentBuilderFactory.newInstance()
          * .newDocumentBuilder().parse( new
@@ -105,8 +116,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             }
             String projectName = projectElement.getAttribute("name");
             Node tempNode;
-            tempNode = XPath.selectNode(projectElement,
-                    "comment/text()");
+            tempNode = XPath.selectNode(projectElement, "comment/text()");
             if (tempNode == null) {
                 String err = "Project " + projectName
                         + " does not have mandatory <comment> element!";
@@ -114,8 +124,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                 throw new EditorInitializationException(err);
             }
             String projectComment = tempNode.getNodeValue();
-            tempNode = XPath.selectNode(projectElement,
-                    "depend/text()");
+            tempNode = XPath.selectNode(projectElement, "depend/text()");
             if (tempNode == null) {
                 String err = "Project " + projectName
                         + " does not have mandatory <depend> element!";

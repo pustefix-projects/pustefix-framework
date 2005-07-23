@@ -63,25 +63,44 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     private ConfigurationService configuration;
     
     private SecurityManagerService securitymanager;
-
-    public IncludeFactoryServiceImpl(ProjectFactoryService projectfactory,
-            ThemeFactoryService themefactory,
-            VariantFactoryService variantfactory,
-            IncludeFactoryService includefactory,
-            ImageFactoryService imagefactory,
-            PathResolverService pathresolver,
-            FileSystemService filesystem,
-            ConfigurationService configuration,
-            SecurityManagerService securitymanager) {
+    
+    public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
+    }
+    
+    public void setThemeFactoryService(ThemeFactoryService themefactory) {
         this.themefactory = themefactory;
+    }
+    
+    public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
+    }
+    
+    public void setIncludeFactoryService(IncludeFactoryService includefactory) {
         this.includefactory = includefactory;
+    }
+    
+    public void setImageFactoryService(ImageFactoryService imagefactory) {
         this.imagefactory = imagefactory;
+    }
+    
+    public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
+    }
+    
+    public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
+    }
+    
+    public void setConfigurationService(ConfigurationService configuration) {
         this.configuration = configuration;
+    }
+    
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
+    }
+    
+    public IncludeFactoryServiceImpl() {
         this.cache = new Hashtable();
     }
 

@@ -54,11 +54,16 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     private PathResolverService pathresolver;
 
     private HashMap configuration;
-
-    public SecurityManagerServiceImpl(FileSystemService filesystem,
-            PathResolverService pathresolver) {
+    
+    public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
+    }
+    
+    public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
+    }
+    
+    public SecurityManagerServiceImpl() {
         this.configuration = new HashMap();
     }
 

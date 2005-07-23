@@ -44,9 +44,15 @@ public class UserPasswordAuthenticationServiceImpl implements
     private PathResolverService pathresolver;
     private HashMap passwords;
 
-    public UserPasswordAuthenticationServiceImpl(FileSystemService filesystem, PathResolverService pathresolver) {
-        this.filesystem = filesystem;
+    public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
+    }
+    
+    public void setFileSystemService(FileSystemService filesystem) {
+        this.filesystem = filesystem;
+    }
+    
+    public UserPasswordAuthenticationServiceImpl() {
         this.passwords = new HashMap();
     }
     
