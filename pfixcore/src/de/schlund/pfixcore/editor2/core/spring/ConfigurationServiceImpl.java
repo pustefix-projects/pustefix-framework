@@ -60,7 +60,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         List nlist;
         this.map = new HashMap();
         try {
-            nlist = XPath.select(doc.getParentNode(), "common/namespaces/namespace-declaration");
+            nlist = XPath.select(doc.getDocumentElement(), "common/namespaces/namespace-declaration");
         } catch (TransformerException e) {
             // Should never happen
             String err = "XPath error!";

@@ -18,6 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
@@ -32,27 +33,25 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
 
     private VariantFactoryService variantfactory;
 
-    private Hashtable cache;
+    private HashMap cache;
     
     public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
     }
     
     public ImageFactoryServiceImpl() {
-        this.cache = new Hashtable();
+        this.cache = new HashMap();
     }
 
     public Image getImage(String path) {
-        if (this.cache.containsKey(path)) {
-            return (Image) this.cache.get(path);
-        }
         synchronized (this.cache) {
             if (!this.cache.containsKey(path)) {
                 Image image = new ImageImpl(this.variantfactory, path);
                 this.cache.put(path, image);
             }
+            return (Image) this.cache.get(path);
         }
-        return (Image) this.cache.get(path);
+        
     }
 
 }

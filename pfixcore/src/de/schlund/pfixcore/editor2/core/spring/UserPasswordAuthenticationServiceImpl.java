@@ -56,6 +56,10 @@ public class UserPasswordAuthenticationServiceImpl implements
         this.passwords = new HashMap();
     }
     
+    public void init() throws EditorIOException, EditorParsingException {
+        this.reloadConfiguration();
+    }
+    
     public void reloadConfiguration() throws EditorIOException,
             EditorParsingException {
         File configFile = new File(this.pathresolver.resolve("common/conf/userdata.xml"));

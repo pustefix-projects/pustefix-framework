@@ -153,7 +153,7 @@ public class IncludeFileImpl extends AbstractIncludeFile {
 
     public Collection getParts() {
         // Make sure all physically existing parts are in cache
-        Node xml = this.getContentXML().getParentNode();
+        Node xml = this.getContentXML().getDocumentElement();
         if (xml != null) {
             try {
                 List nlist = XPath.select(xml, "part/@name");

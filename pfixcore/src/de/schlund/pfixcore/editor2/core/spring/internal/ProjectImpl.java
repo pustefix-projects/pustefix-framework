@@ -127,8 +127,8 @@ public class ProjectImpl extends AbstractProject {
 
         // Create collection containing all page objects
         HashSet allpages = new HashSet();
-        while (pagemap.values().iterator().hasNext()) {
-            HashMap map = (HashMap) pagemap.values().iterator().next();
+        for (Iterator i = pagemap.values().iterator(); i.hasNext();) {
+            HashMap map = (HashMap) i.next();
             allpages.addAll(map.values());
         }
     }
@@ -185,6 +185,10 @@ public class ProjectImpl extends AbstractProject {
                     .getTargetForPageInfo(pinfo).getThemes());
             MutablePage page = this.pagefactory.getMutablePage(pageName,
                     pageVariant, pageHandler, pageThemes, null, this, pinfo);
+            if (page == null) {
+                String err = "Page returned by pagefactory is null!";
+                Logger.getLogger(this.getClass()).error(err);
+            }
             pages.add(page);
             if (pageVariant == null) {
                 defaultPage = page;
@@ -204,6 +208,10 @@ public class ProjectImpl extends AbstractProject {
 
         for (Iterator iter = pages.iterator(); iter.hasNext();) {
             PageImpl page = (PageImpl) iter.next();
+            if (page == null) {
+                String err = "Page returned by iteration is null!";
+                Logger.getLogger(this.getClass()).error(err);
+            }
             page.addSubPages(subpages);
         }
 

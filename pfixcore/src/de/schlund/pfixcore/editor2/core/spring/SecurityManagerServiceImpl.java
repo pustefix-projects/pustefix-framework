@@ -74,7 +74,11 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     public Principal getPrincipal() {
         return (Principal) this.principal.get();
     }
-
+    
+    public void init() throws EditorIOException, EditorParsingException {
+        this.reloadConfiguration();
+    }
+    
     public void reloadConfiguration() throws EditorIOException,
             EditorParsingException {
         File configFile = new File(this.pathresolver

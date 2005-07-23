@@ -4,19 +4,19 @@
 <beans>
   
   <bean id="projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">
-    <property name="PathResolverService">
+    <property name="pathResolverService">
 	  <ref bean="pathresolver"/>
 	</property>  
-    <property name="VariantFactoryService">
+    <property name="variantFactoryService">
 	  <ref bean="variantfactory"/>
 	</property>  
-    <property name="ThemeFactoryService">
+    <property name="themeFactoryService">
 	  <ref bean="themefactory"/>
 	</property>
-    <property name="PageFactoryService">
+    <property name="pageFactoryService">
 	  <ref bean="pagefactory"/>
 	</property>
-    <property name="FileSystemService">
+    <property name="fileSystemService">
 	  <ref bean="filesystem"/>
 	</property>
 	<property name="projectsFilePath">
@@ -34,67 +34,67 @@
   </bean>	
   
   <bean id="targetfactory" class="de.schlund.pfixcore.editor2.core.spring.TargetFactoryServiceImpl">
-    <property name="ProjectFactoryService">
+    <property name="projectFactoryService">
 	  <ref bean="projectfactory"/>
 	</property>  
-    <property name="PageFactoryService">
+    <property name="pageFactoryService">
 	  <ref bean="pagefactory"/>
 	</property>
-    <property name="VariantFactoryService">
+    <property name="variantFactoryService">
 	  <ref bean="variantfactory"/>
 	</property>  
-	<property name="TargetFactoryService">
+	<property name="targetFactoryService">
 	  <ref bean="targetfactory"/>
 	</property>
-    <property name="ThemeFactoryService">
+    <property name="themeFactoryService">
 	  <ref bean="themefactory"/>
 	</property>
-    <property name="IncludeFactoryService">
+    <property name="includeFactoryService">
       <ref bean="includefactory"/>
     </property>
-	<property name="ImageFactoryService">
+	<property name="imageFactoryService">
 	  <ref bean="imagefactory"/>
 	</property>
   </bean>
 	
   <bean id="pagefactory" class="de.schlund.pfixcore.editor2.core.spring.PageFactoryServiceImpl">
-    <property name="TargetFactoryService">
+    <property name="targetFactoryService">
 	  <ref bean="targetfactory"/>
 	</property>
   </bean>
 	
   <bean id="includefactory" class="de.schlund.pfixcore.editor2.core.spring.IncludeFactoryServiceImpl">
-    <property name="ProjectFactoryService">
+    <property name="projectFactoryService">
 	  <ref bean="projectfactory"/>
 	</property>  
-    <property name="ThemeFactoryService">
+    <property name="themeFactoryService">
 	  <ref bean="themefactory"/>
 	</property>
-    <property name="VariantFactoryService">
+    <property name="variantFactoryService">
 	  <ref bean="variantfactory"/>
 	</property>  
-    <property name="IncludeFactoryService">
+    <property name="includeFactoryService">
       <ref bean="includefactory"/>
     </property>
-    <property name="PathResolverService">
+    <property name="pathResolverService">
 	  <ref bean="pathresolver"/>
 	</property>  
-    <property name="FileSystemService">
+    <property name="fileSystemService">
 	  <ref bean="filesystem"/>
 	</property>
-    <property name="ConfigurationService">
+    <property name="configurationService">
       <ref bean="configuration"/>
     </property>  
-    <property name="SecurityManagerService">
+    <property name="securityManagerService">
 	  <ref bean="securitymanager"/>
 	</property>
-    <property name="ImageFactoryService">
+    <property name="imageFactoryService">
 	  <ref bean="imagefactory"/>
 	</property>
   </bean>
 
   <bean id="imagefactory" class="de.schlund.pfixcore.editor2.core.spring.ImageFactoryServiceImpl">
-    <property name="VariantFactoryService">
+    <property name="variantFactoryService">
       <ref bean="variantfactory"/>
     </property>
   </bean>
@@ -102,32 +102,32 @@
   <bean id="filesystem" class="de.schlund.pfixcore.editor2.core.spring.FileSystemServiceImpl">
   </bean>
 
-  <bean id="configuration" class="de.schlund.pfixcore.editor2.core.spring.ConfigurationServiceImpl">
-    <constructor-arg index="0">
+  <bean id="configuration" class="de.schlund.pfixcore.editor2.core.spring.ConfigurationServiceImpl" init-method="init">
+    <property name="fileSystemService">
 		<ref bean="filesystem"/>
-	</constructor-arg>
-    <constructor-arg index="1">
+	</property>
+    <property name="pathResolverService">
 		<ref bean="pathresolver"/>
-	</constructor-arg>
-    <constructor-arg index="2">
+	</property>
+    <property name="projectsFilePath">
 		<value>servletconf/projects.xml</value>
-	</constructor-arg>	  
+	</property>	  
   </bean>
 
   <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl" init-method="init">
-    <property name="FileSystemService">
+    <property name="fileSystemService">
 		<ref bean="filesystem"/>
 	</property>
-    <property name="PathResolverService">
+    <property name="pathResolverService">
 		<ref bean="pathresolver"/>
 	</property>
   </bean>
 
-  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
-    <property name="FileSystemService">
+  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl" init-method="init">
+    <property name="fileSystemService">
 		<ref bean="filesystem"/>
 	</property>
-    <property name="PathResolverService">
+    <property name="pathResolverService">
 		<ref bean="pathresolver"/>
 	</property>
   </bean>	

@@ -18,7 +18,10 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -35,74 +38,96 @@ import de.schlund.pfixxml.targets.PageInfo;
  */
 public class PageFactoryServiceImpl implements PageFactoryService {
     /**
-     * Simple class used as a key for the page cache 
+     * Simple class used as a key for the page cache
      * 
      * @author Sebastian Marsching <sebastian.marsching@1und1.de>
      */
     private class PageKey {
         private Project project;
+
         private String pagename;
+
         private Variant variant;
-        
+
         private PageKey(Project project, String pagename, Variant variant) {
             this.project = project;
             this.pagename = pagename;
             this.variant = variant;
         }
-        
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#equals(java.lang.Object)
          */
         public boolean equals(Object obj) {
             if (obj instanceof PageKey) {
                 PageKey pk = (PageKey) obj;
                 if (this.variant == null) {
-                    return (this.project.equals(pk.project)) && (this.pagename.equals(pk.pagename)) && (pk.variant == null);
+                    return (this.project.equals(pk.project))
+                            && (this.pagename.equals(pk.pagename))
+                            && (pk.variant == null);
                 } else {
-                    return (this.project.equals(pk.project)) && (this.pagename.equals(pk.pagename)) && (this.variant.equals(pk.variant));
+                    return (this.project.equals(pk.project))
+                            && (this.pagename.equals(pk.pagename))
+                            && (this.variant.equals(pk.variant));
                 }
             } else {
                 return false;
             }
         }
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see java.lang.Object#hashCode()
          */
         public int hashCode() {
             if (this.variant == null) {
-                return ("PAGEKEY: " + this.project.getName() + "/" + this.pagename).hashCode();
+                return ("PAGEKEY: " + this.project.getName() + "/" + this.pagename)
+                        .hashCode();
             } else {
-                return ("PAGEKEY: " + this.project.getName() + "/" + this.pagename + "::" + this.variant.getName()).hashCode();
+                return ("PAGEKEY: " + this.project.getName() + "/"
+                        + this.pagename + "::" + this.variant.getName())
+                        .hashCode();
             }
         }
     }
-    
+
     private TargetFactoryService targetfactory;
-    private Hashtable cache;
-    
+
+    private HashMap cache;
+
     public void setTargetFactoryService(TargetFactoryService targetfactory) {
         this.targetfactory = targetfactory;
     }
-    
+
     public PageFactoryServiceImpl() {
-        this.cache = new Hashtable();
-    }
-    
-    /* (non-Javadoc)
-     * @see de.schlund.pfixcore.editor2.core.spring.PageFactoryService#createPage(java.lang.String, de.schlund.pfixcore.editor2.core.dom.Variant, java.lang.String, de.schlund.pfixcore.editor2.core.dom.ThemeList, de.schlund.pfixcore.editor2.core.dom.Page, de.schlund.pfixcore.editor2.core.dom.Project, de.schlund.pfixxml.targets.PageInfo)
-     */
-    public MutablePage getMutablePage(String pageName, Variant variant, String handler,
-            ThemeList themes, Page parent, Project project, PageInfo pinfo) {
-        PageKey pk = new PageKey(project, pageName, variant);
-        if (this.cache.containsKey(pk)) {
-            return (MutablePage) this.cache.get(pk);
-        }
-        synchronized (this.cache) {
-            if (!this.cache.containsKey(pk)) {
-                this.cache.put(pk, new PageImpl(this.targetfactory, pageName, variant, handler, themes, parent, project, pinfo));
-            }
-        }
-        return (MutablePage) this.cache.get(pk);        
+        this.cache = new HashMap();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.schlund.pfixcore.editor2.core.spring.PageFactoryService#createPage(java.lang.String,
+     *      de.schlund.pfixcore.editor2.core.dom.Variant, java.lang.String,
+     *      de.schlund.pfixcore.editor2.core.dom.ThemeList,
+     *      de.schlund.pfixcore.editor2.core.dom.Page,
+     *      de.schlund.pfixcore.editor2.core.dom.Project,
+     *      de.schlund.pfixxml.targets.PageInfo)
+     */
+    public MutablePage getMutablePage(String pageName, Variant variant,
+            String handler, ThemeList themes, Page parent, Project project,
+            PageInfo pinfo) {
+        PageKey pk = new PageKey(project, pageName, variant);
+
+        synchronized (this.cache) {
+            if (!this.cache.containsKey(pk)) {
+                Page page = new PageImpl(this.targetfactory, pageName, variant,
+                        handler, themes, parent, project, pinfo);
+                this.cache.put(pk, page);
+            }
+            return (MutablePage) this.cache.get(pk);
+        }
+    }
 }
