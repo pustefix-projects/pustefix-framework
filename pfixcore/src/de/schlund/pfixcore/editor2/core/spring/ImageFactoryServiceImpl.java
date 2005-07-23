@@ -19,8 +19,6 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.HashMap;
-import java.util.Hashtable;
-
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.spring.internal.ImageImpl;
 

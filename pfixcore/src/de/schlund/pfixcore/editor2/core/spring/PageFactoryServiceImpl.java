@@ -19,10 +19,6 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.HashMap;
-import java.util.Hashtable;
-
-import org.apache.log4j.Logger;
-
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;

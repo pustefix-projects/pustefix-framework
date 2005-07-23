@@ -37,9 +37,6 @@
     <property name="projectFactoryService">
 	  <ref bean="projectfactory"/>
 	</property>  
-    <property name="pageFactoryService">
-	  <ref bean="pagefactory"/>
-	</property>
     <property name="variantFactoryService">
 	  <ref bean="variantfactory"/>
 	</property>  

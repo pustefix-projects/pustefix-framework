@@ -35,11 +35,8 @@ import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
-import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.util.XPath;
 
 /**
@@ -54,27 +51,15 @@ public class IncludePartImpl extends AbstractIncludePart {
 
     private ThemeFactoryService themefactory;
 
-    private ProjectFactoryService projectfactory;
-
-    private VariantFactoryService variantfactory;
-
     private String name;
 
     private IncludeFactoryService includefactory;
 
-    private ImageFactoryService imagefactory;
-
     public IncludePartImpl(ThemeFactoryService themefactory,
-            ProjectFactoryService projectfactory,
-            VariantFactoryService variantfactory,
-            IncludeFactoryService includefactory,
-            ImageFactoryService imagefactory, String partName,
+            IncludeFactoryService includefactory, String partName,
             IncludeFile file) {
         this.themefactory = themefactory;
-        this.projectfactory = projectfactory;
-        this.variantfactory = variantfactory;
         this.includefactory = includefactory;
-        this.imagefactory = imagefactory;
         this.name = partName;
         this.file = file;
         this.cache = new Hashtable();
@@ -110,8 +95,8 @@ public class IncludePartImpl extends AbstractIncludePart {
         Node parentXml = this.getIncludeFile().getContentXML()
                 .getDocumentElement();
         try {
-            return XPath.selectNode(parentXml, "part[@name='"
-                    + this.getName() + "']");
+            return XPath.selectNode(parentXml, "part[@name='" + this.getName()
+                    + "']");
         } catch (TransformerException e) {
             // This should never happen, so log error, and do like
             // nothing happened
@@ -135,8 +120,8 @@ public class IncludePartImpl extends AbstractIncludePart {
                     return null;
                 }
                 try {
-                    if (!XPath.test(this.getContentXML(),
-                            "product[@name='" + theme.getName() + "']")) {
+                    if (!XPath.test(this.getContentXML(), "product[@name='"
+                            + theme.getName() + "']")) {
                         return null;
                     }
                 } catch (TransformerException e) {
@@ -145,7 +130,8 @@ public class IncludePartImpl extends AbstractIncludePart {
                     Logger.getLogger(this.getClass()).error("XPath error!", e);
                     return null;
                 }
-                IncludePartThemeVariant incPartVariant = this.includefactory.getIncludePartThemeVariant(theme, this);
+                IncludePartThemeVariant incPartVariant = this.includefactory
+                        .getIncludePartThemeVariant(theme, this);
                 this.cache.put(theme, incPartVariant);
             }
         }
@@ -163,8 +149,7 @@ public class IncludePartImpl extends AbstractIncludePart {
             return new ArrayList();
         }
         try {
-            nlist = XPath.select(this.getContentXML(),
-                    "product/@name");
+            nlist = XPath.select(this.getContentXML(), "product/@name");
         } catch (TransformerException e) {
             // This should never happen, so log error and do like
             // nothing happened
@@ -212,7 +197,8 @@ public class IncludePartImpl extends AbstractIncludePart {
         }
         synchronized (cache) {
             if (!this.cache.containsKey(theme)) {
-                variant = this.includefactory.getIncludePartThemeVariant(theme, this);
+                variant = this.includefactory.getIncludePartThemeVariant(theme,
+                        this);
                 this.cache.put(theme, variant);
             }
         }
@@ -224,8 +210,8 @@ public class IncludePartImpl extends AbstractIncludePart {
             return false;
         }
         try {
-            return XPath.test(this.getContentXML(),
-                    "product[@name='" + theme.getName() + "']");
+            return XPath.test(this.getContentXML(), "product[@name='"
+                    + theme.getName() + "']");
         } catch (TransformerException e) {
             // Should NEVER happen
             // So if it does, assume variant for theme is not existing

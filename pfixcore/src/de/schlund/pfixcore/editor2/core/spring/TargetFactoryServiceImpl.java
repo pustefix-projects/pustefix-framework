@@ -38,8 +38,6 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
 
     private ProjectFactoryService projectfactory;
 
-    private PageFactoryService pagefactory;
-
     private VariantFactoryService variantfactory;
 
     private TargetFactoryService targetfactory;
@@ -57,52 +55,48 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
     public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
     }
-    
+
     public void setThemeFactoryService(ThemeFactoryService themefactory) {
         this.themefactory = themefactory;
     }
-    
+
     public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
     }
-    
+
     public void setIncludeFactoryService(IncludeFactoryService includefactory) {
         this.includefactory = includefactory;
     }
-    
+
     public void setImageFactoryService(ImageFactoryService imagefactory) {
         this.imagefactory = imagefactory;
     }
-    
+
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
     }
-    
+
     public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
     }
-    
-    public void setPageFactoryService(PageFactoryService pagefactory) {
-        this.pagefactory = pagefactory;
-    }
-    
+
     public void setTargetFactoryService(TargetFactoryService targetfactory) {
         this.targetfactory = targetfactory;
     }
-    
+
     public TargetFactoryServiceImpl() {
         this.cachePfixTarget = new Hashtable();
         this.cacheAuxDepTarget = new Hashtable();
     }
-    
+
     /*
      * (non-Javadoc)
      * 
      * @see de.schlund.pfixcore.editor2.core.spring.TargetFactoryService#createTarget(de.schlund.pfixxml.targets.Target,
      *      de.schlund.pfixcore.editor2.core.dom.Project)
      */
-    public Target getTargetFromPustefixTarget(de.schlund.pfixxml.targets.Target pfixTarget,
-            Project project) {
+    public Target getTargetFromPustefixTarget(
+            de.schlund.pfixxml.targets.Target pfixTarget, Project project) {
         // TODO Make sure Target object is unique within the whole installation
         if (this.cachePfixTarget.containsKey(pfixTarget)) {
             return (Target) this.cachePfixTarget.get(pfixTarget);
@@ -111,8 +105,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
             if (!this.cachePfixTarget.containsKey(pfixTarget)) {
                 this.cachePfixTarget.put(pfixTarget, new TargetPfixImpl(
                         targetfactory, projectfactory, variantfactory,
-                        includefactory, themefactory, imagefactory, pathresolver, filesystem, pfixTarget,
-                        project));
+                        includefactory, themefactory, imagefactory,
+                        pathresolver, filesystem, pfixTarget, project));
             }
         }
         return (Target) this.cachePfixTarget.get(pfixTarget);
@@ -131,8 +125,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
         synchronized (this.cacheAuxDepTarget) {
             if (!this.cacheAuxDepTarget.containsKey(auxdep)) {
                 this.cacheAuxDepTarget.put(auxdep, new TargetAuxDepImpl(
-                        this.projectfactory, this.pagefactory,
-                        this.variantfactory, this.pathresolver, this.filesystem, auxdep));
+                        this.projectfactory, this.variantfactory,
+                        this.pathresolver, this.filesystem, auxdep));
             }
         }
         return (Target) this.cacheAuxDepTarget.get(auxdep);

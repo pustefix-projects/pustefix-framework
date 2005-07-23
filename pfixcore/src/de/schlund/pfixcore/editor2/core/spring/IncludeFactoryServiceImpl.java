@@ -59,47 +59,47 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     private PathResolverService pathresolver;
 
     private FileSystemService filesystem;
-    
+
     private ConfigurationService configuration;
-    
+
     private SecurityManagerService securitymanager;
-    
+
     public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
     }
-    
+
     public void setThemeFactoryService(ThemeFactoryService themefactory) {
         this.themefactory = themefactory;
     }
-    
+
     public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
     }
-    
+
     public void setIncludeFactoryService(IncludeFactoryService includefactory) {
         this.includefactory = includefactory;
     }
-    
+
     public void setImageFactoryService(ImageFactoryService imagefactory) {
         this.imagefactory = imagefactory;
     }
-    
+
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
     }
-    
+
     public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
     }
-    
+
     public void setConfigurationService(ConfigurationService configuration) {
         this.configuration = configuration;
     }
-    
+
     public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
     }
-    
+
     public IncludeFactoryServiceImpl() {
         this.cache = new Hashtable();
     }
@@ -119,9 +119,8 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
             if (!cache.containsKey(filename)) {
                 IncludeDocument incdoc = this
                         .getIncludeDocumentForFile(filename);
-                IncludeFile incfile = new IncludeFileImpl(projectfactory,
-                        themefactory, variantfactory, includefactory,
-                        imagefactory, filename, incdoc);
+                IncludeFile incfile = new IncludeFileImpl(themefactory,
+                        includefactory, filename, incdoc);
                 cache.put(filename, incfile);
             }
         }
@@ -172,8 +171,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
         return new IncludePartThemeVariantImpl(this.projectfactory,
                 this.variantfactory, this.includefactory, this.themefactory,
                 this.imagefactory, this.filesystem, this.pathresolver,
-                this.configuration, this.securitymanager, theme,
-                part);
+                this.configuration, this.securitymanager, theme, part);
     }
 
 }

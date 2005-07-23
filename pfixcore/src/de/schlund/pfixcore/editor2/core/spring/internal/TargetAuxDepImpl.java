@@ -43,7 +43,6 @@ import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
-import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
@@ -64,8 +63,6 @@ public class TargetAuxDepImpl extends AbstractTarget {
 
     private ProjectFactoryService projectfactory;
 
-    private PageFactoryService pagefactory;
-
     private VariantFactoryService variantfactory;
 
     private PathResolverService pathresolver;
@@ -77,21 +74,17 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @param projectfactory
      *            Reference to ProjectFactoryService
-     * @param pagefactory
-     *            Reference to PageFactoryService
      * @param variantfactory
      *            Reference to VariantFactoryService
      * @param auxdep
      *            AuxDependency object to use
      */
     public TargetAuxDepImpl(ProjectFactoryService projectfactory,
-            PageFactoryService pagefactory,
             VariantFactoryService variantfactory,
             PathResolverService pathresolver, FileSystemService filesystem,
             AuxDependency auxdep) {
         this.auxdep = auxdep;
         this.projectfactory = projectfactory;
-        this.pagefactory = pagefactory;
         this.variantfactory = variantfactory;
         this.pathresolver = pathresolver;
         this.filesystem = filesystem;

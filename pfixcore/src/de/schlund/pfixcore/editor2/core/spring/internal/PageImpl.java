@@ -30,7 +30,6 @@ import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixxml.targets.PageInfo;
-import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
  * Implementation of Page using classes from PFIXCORE
@@ -45,7 +44,6 @@ public class PageImpl extends AbstractPage implements MutablePage {
     private Project project;
     private Page parentPage;
     private Collection childPages;
-    private TargetGenerator tgen;
     private PageInfo pinfo;
     private TargetFactoryService targetfactory;
 

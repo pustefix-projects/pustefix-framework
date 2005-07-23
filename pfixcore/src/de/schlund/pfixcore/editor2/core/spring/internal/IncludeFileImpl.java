@@ -29,13 +29,11 @@ import javax.xml.transform.TransformerException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
-import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
-import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.IncludeDocument;
 import de.schlund.pfixxml.util.XPath;
 
@@ -47,11 +45,7 @@ import de.schlund.pfixxml.util.XPath;
 public class IncludeFileImpl extends AbstractIncludeFile {
     private String path;
 
-    private ProjectFactoryService projectfactory;
-
     private ThemeFactoryService themefactory;
-
-    private VariantFactoryService variantfactory;
 
     private Hashtable cache;
 
@@ -59,19 +53,11 @@ public class IncludeFileImpl extends AbstractIncludeFile {
 
     private IncludeFactoryService includefactory;
 
-    private ImageFactoryService imagefactory;
-
-    public IncludeFileImpl(ProjectFactoryService projectfactory,
-            ThemeFactoryService themefactory,
-            VariantFactoryService variantfactory,
-            IncludeFactoryService includefactory,
-            ImageFactoryService imagefactory, String path,
+    public IncludeFileImpl(ThemeFactoryService themefactory,
+            IncludeFactoryService includefactory, String path,
             IncludeDocument pfixIncDoc) {
-        this.projectfactory = projectfactory;
         this.themefactory = themefactory;
-        this.variantfactory = variantfactory;
         this.includefactory = includefactory;
-        this.imagefactory = imagefactory;
         this.path = path;
         this.pfixIncDoc = pfixIncDoc;
         this.cache = new Hashtable();
@@ -111,8 +97,7 @@ public class IncludeFileImpl extends AbstractIncludeFile {
                     return null;
                 }
                 IncludePart incPart = new IncludePartImpl(this.themefactory,
-                        this.projectfactory, this.variantfactory,
-                        this.includefactory, this.imagefactory, name, this);
+                        this.includefactory, name, this);
                 this.cache.put(name, incPart);
             }
         }
@@ -139,8 +124,7 @@ public class IncludeFileImpl extends AbstractIncludeFile {
         synchronized (cache) {
             if (!this.cache.containsKey(name)) {
                 IncludePart incPart = new IncludePartImpl(this.themefactory,
-                        this.projectfactory, this.variantfactory,
-                        this.includefactory, this.imagefactory, name, this);
+                        this.includefactory, name, this);
                 this.cache.put(name, incPart);
             }
         }

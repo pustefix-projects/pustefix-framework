@@ -223,7 +223,6 @@ public class TargetPfixImpl extends AbstractTarget {
             }
 
             if (recursive) {
-                Iterator i;
                 if (this.getParentXML() != null) {
                     deps.addAll(this.getParentXML().getAuxDependencies(true));
                 }
@@ -269,7 +268,6 @@ public class TargetPfixImpl extends AbstractTarget {
             }
 
             if (recursive) {
-                Iterator i;
                 if (this.getParentXML() != null) {
                     deps.addAll(this.getParentXML().getIncludeDependencies(true));
                 }
@@ -317,7 +315,6 @@ public class TargetPfixImpl extends AbstractTarget {
             }
 
             if (recursive) {
-                Iterator i;
                 if (this.getParentXML() != null) {
                     deps.addAll(this.getParentXML().getImageDependencies(true));
                 }
