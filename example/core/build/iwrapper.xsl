@@ -201,11 +201,18 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String index) {
-        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, index);
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, null, null, index);
     }
 
+    public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String level, String index) {
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, level, index);
+    }
+    
+    /**
+      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, level, index)
+      */
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String index) {
-        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, index);
+        gimmeIndexedParamForKey("<xsl:value-of select="$pname"/>").addSCode(scode, args, null, index);
     }
         </xsl:when>
         <xsl:otherwise>
@@ -227,11 +234,18 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
     }
 
     public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode) {
-        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode);
+        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, null, null);
     }
 
+    public void addSCode<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args, String level) {
+        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args, level);
+    }
+
+    /**
+      * @deprecated use addScode<xsl:value-of select="$cpname"/>(scode, args, level)
+      */
     public void addSCodeWithArgs<xsl:value-of select="$cpname"/>(de.schlund.util.statuscodes.StatusCode scode, String[] args) {
-        addSCodeWithArgs(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args);
+        addSCode(gimmeParamForKey("<xsl:value-of select="$pname"/>"), scode, args, null);
     }
         </xsl:otherwise>
       </xsl:choose>

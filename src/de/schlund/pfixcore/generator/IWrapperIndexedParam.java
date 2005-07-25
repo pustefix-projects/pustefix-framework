@@ -147,13 +147,10 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         }
     }
     
-    public void addSCode(StatusCode scode, String idx) {
-        addSCode(scode, null, idx);
-    }
     
-    public void addSCode(StatusCode scode, String[] args, String idx) {
+    public void addSCode(StatusCode scode, String[] args, String level, String idx) {
         IWrapperParam pinfo = getParamForIndex(idx);
-        pinfo.addSCode(scode);
+        pinfo.addSCode(scode, args, level);
         synchronized (errors) {
             errors.put(pinfo.getName(), pinfo);
         }

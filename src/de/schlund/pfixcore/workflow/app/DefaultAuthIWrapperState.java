@@ -151,7 +151,6 @@ public class DefaultAuthIWrapperState extends StateImpl {
         IHandler       userhandler = user.gimmeIHandler();
         Properties     properties  = context.getProperties();
         ResultDocument resdoc      = super.createDefaultResultDocument(context);
-        ResultForm     resform     = resdoc.createResultForm();
         RequestData    rdata       = new RequestDataImpl(context, preq);
         ArrayList      aux         = getAuxWrapper(context);
 
@@ -165,8 +164,8 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 CAT.debug("====> Error during loading of wrapper data");
                 // Try loading the aux interfaces, just to echo the stringvals.
                 // so no error handling needs to take place.
-                auxEchoData(aux, rdata, resform);
-                userInsertErrors(properties, user, resform);
+                auxEchoData(aux, rdata, resdoc);
+                userInsertErrors(properties, user, resdoc);
                 context.prohibitContinue();
             } else {
                 CAT.debug("====> Calling handleSubmittedData on " + userhandler.getClass().getName());
@@ -176,8 +175,8 @@ public class DefaultAuthIWrapperState extends StateImpl {
                     userhandler.retrieveCurrentStatus(context, user);
                     // Try loading the aux interfaces, just to echo the stringvals.
                     // so no error handling needs to take place.
-                    auxEchoData(aux, rdata, resform);
-                    userInsertErrors(properties, user, resform);
+                    auxEchoData(aux, rdata, resdoc);
+                    userInsertErrors(properties, user, resdoc);
                     context.prohibitContinue();
                 } else {
                     // Try loading the aux interfaces, and call
@@ -189,40 +188,41 @@ public class DefaultAuthIWrapperState extends StateImpl {
             userhandler.retrieveCurrentStatus(context, user);
             // Try loading the aux interfaces, just to echo the stringvals.
             // so no error handling needs to take place.
-            auxEchoData(aux, rdata, resform);
-            userInsertErrors(properties, user, resform);
+            auxEchoData(aux, rdata, resdoc);
+            userInsertErrors(properties, user, resdoc);
             context.prohibitContinue();
         }
         return resdoc;
     }
 
-    private void userInsertErrors(Properties props, IWrapper user, ResultForm resform) {
+    private void userInsertErrors(Properties props, IWrapper user, ResultDocument resdoc) {
         IWrapperParam[] pinfos = user.gimmeAllParams();
-        String              prefix = user.gimmePrefix(); 
+        String          prefix = user.gimmePrefix();
         for (int i = 0; i < pinfos.length; i++) {
             IWrapperParam pinfo  = pinfos[i];
-            StatusCode[]      scodes = pinfo.getStatusCodes();
+            StatusCodeInfo[]  scodeinfos = pinfo.getStatusCodeInfos();
             String            name   = pinfo.getName();
             String[]          value  = pinfo.getStringValue();
             if (value != null) {
                 for (int j = 0; j < value.length; j++) {
-                    resform.addValue(prefix + "." + name, value[j]);
+                    resdoc.addValue(prefix + "." + name, value[j]);
                 }
             }
-            if (scodes != null) {
-                for (int j = 0; j < scodes.length; j++) {
-                    resform.addStatusCode(props, scodes[j], prefix + "." + name);
+            if (scodeinfos != null) {
+                for (int j = 0; j < scodeinfos.length; j++) {
+                    StatusCodeInfo sci = scodeinfos[i];
+                    resdoc.addStatusCode(props, sci.getStatusCode(), sci.getArgs(), sci.getLevel(), prefix + "." + name);
                 }
             }
         }
     }
 
-    private void auxEchoData(ArrayList aux, RequestData rdata, ResultForm resform) throws Exception {
+    private void auxEchoData(ArrayList aux, RequestData rdata, ResultDocument resdoc) throws Exception {
         for (Iterator i = aux.iterator(); i.hasNext(); ) {
             IWrapper tmp = (IWrapper) i.next();
             tmp.load(rdata);
             IWrapperParam[] params = tmp.gimmeAllParams();
-            String              prefix = tmp.gimmePrefix();
+            String          prefix = tmp.gimmePrefix();
             for (int j = 0; j < params.length; j++) {
                 IWrapperParam par  = params[j];
                 String[]          sarr = par.getStringValue();
@@ -232,7 +232,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
                 }
                 // put the stringvals into hidden variables,
                 // so the next submit will supply them again.
-                resform.addHiddenValue(prefix + "." + par.getName(), val);
+                resdoc.addHiddenValue(prefix + "." + par.getName(), val);
             }
         }
         for (Iterator i = rdata.getParameterNames(); i.hasNext(); ) {
@@ -240,7 +240,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
             if (name.equals(AbstractXMLServer.PARAM_ANCHOR)) {
                 RequestParam[] vals = rdata.getParameters(name);
                 for (int j = 0; j < vals.length; j++) {
-                    resform.addHiddenValue(name, vals[j].getValue());
+                    resdoc.addHiddenValue(name, vals[j].getValue());
                 }
             }
         }

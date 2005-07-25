@@ -27,6 +27,6 @@ import de.schlund.util.statuscodes.*;
  */
 
 public interface IWrapperParamCheck {
-    boolean      errorHappened();
-    StatusCode[] getStatusCodes();
+    boolean          errorHappened();
+    StatusCodeInfo[] getStatusCodeInfos();
 }
