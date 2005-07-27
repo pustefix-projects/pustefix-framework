@@ -47,16 +47,25 @@ public class DerefServer extends ServletManager {
     }
 
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        HttpSession  session = preq.getSession(false);
-        RequestParam link    = preq.getRequestParam("link");
-
-        if (link == null || link.getValue() == null) {
+        HttpSession  session   = preq.getSession(false);
+        RequestParam linkparam = preq.getRequestParam("link");
+        
+        if (linkparam == null || linkparam.getValue() == null) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-
-        if (link.getValue().indexOf("\"") != -1) {
-            // we don't want \" within link!!
+        String link = linkparam.getValue();
+        if (link != null) {
+            link = link.trim();
+        }
+        
+        if (link == null || link.equals("")) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
+        if (link.indexOf("\"") != -1 || !isValidProtocol(link)) {
+            // we don't want neither \" within a link nor a link starting with javascript:!!
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -65,27 +74,27 @@ public class DerefServer extends ServletManager {
         OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
         if (session == null) {
             DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
-            String display = link.getValue();
+            String display = link;
             display = display.replaceAll("<", "&lt;");
             display = display.replaceAll(">", "&gt;");
             
-            if (goodReferer(preq) || isLocalUrl(link.getValue())) {
+            if (goodReferer(preq) || isLocalUrl(link)) {
             writer.write("<html><head>");
-            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link.getValue() + "\">");
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + link.getValue() + "\">" + display + "</a>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"" + link + "\">" + display + "</a>");
             writer.write("</small></center></body></html>");
             } else {
                 writer.write("<html><head>");
                 writer.write("</head><body bgcolor=\"#ffffff\">");                
                 writer.write("<h2>You will now enter another website!</h1>");
                 writer.write("Please click on the following link:<br/>");                
-                writer.write("<a href=\"" + link.getValue() + "\">" + display + "</a>");
+                writer.write("<a href=\"" + link + "\">" + display + "</a>");
                 writer.write("</body></html>");                
             }
         } else {
             String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-                SessionHelper.getClearedURI(preq) + "?link=" + link.getValue();
+                SessionHelper.getClearedURI(preq) + "?link=" + link;
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
@@ -104,6 +113,24 @@ public class DerefServer extends ServletManager {
         return false;
     }
 
+
+    private boolean isValidProtocol(String link) {
+        if (link == null || link.equals("")) {
+            return false;
+        }
+
+        String lc = link.toLowerCase();
+
+        if (lc.startsWith("http://")  ||
+            lc.startsWith("https://") ||
+            lc.startsWith("ftp://")   ||
+            lc.startsWith("/")) {
+            return true;
+        }
+        
+        return false;
+    }
+    
     private boolean goodReferer(PfixServletRequest preq) {
 //        String referer = preq.getRequest().getHeader("Referer");
 //        String server = preq.getServerName();

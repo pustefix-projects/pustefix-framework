@@ -210,7 +210,7 @@ public class DefaultAuthIWrapperState extends StateImpl {
             }
             if (scodeinfos != null) {
                 for (int j = 0; j < scodeinfos.length; j++) {
-                    StatusCodeInfo sci = scodeinfos[i];
+                    StatusCodeInfo sci = scodeinfos[j];
                     resdoc.addStatusCode(props, sci.getStatusCode(), sci.getArgs(), sci.getLevel(), prefix + "." + name);
                 }
             }
