@@ -1,3 +1,12 @@
+2005-07-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (userInsertErrors): bug fix: 
+	loop over j, not i.
+
+	* src/de/schlund/pfixxml/DerefServer.java (process): Security fix: don't allow for links to be
+	started with anything else than "/", "http://", "https://" or "ftp://"
+	
+
 2005-07-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java: PageMessages are now also implemented in 
