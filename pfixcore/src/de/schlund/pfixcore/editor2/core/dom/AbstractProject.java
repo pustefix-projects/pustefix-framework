@@ -30,7 +30,7 @@ public abstract class AbstractProject implements Project {
      */
     public boolean equals(Object obj) {
         if (obj instanceof Project) {
-            return this.equals(((Project) obj).getName());
+            return this.getName().equals(((Project) obj).getName());
         } else {
             return false;
         }
