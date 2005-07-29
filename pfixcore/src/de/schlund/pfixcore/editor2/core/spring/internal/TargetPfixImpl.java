@@ -40,6 +40,7 @@ import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.TargetType;
+import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
@@ -184,8 +185,8 @@ public class TargetPfixImpl extends AbstractTarget {
         if (this.pfixTarget.getXMLSource() == null) {
             return null;
         }
-        return this.targetfactory.getTargetFromPustefixTarget(this.pfixTarget.getXMLSource(),
-                this.getProject());
+        return this.targetfactory.getTargetFromPustefixTarget(this.pfixTarget
+                .getXMLSource(), this.getProject());
     }
 
     /*
@@ -197,8 +198,8 @@ public class TargetPfixImpl extends AbstractTarget {
         if (this.pfixTarget.getXSLSource() == null) {
             return null;
         }
-        return this.targetfactory.getTargetFromPustefixTarget(this.pfixTarget.getXSLSource(),
-                this.getProject());
+        return this.targetfactory.getTargetFromPustefixTarget(this.pfixTarget
+                .getXSLSource(), this.getProject());
     }
 
     /*
@@ -218,7 +219,8 @@ public class TargetPfixImpl extends AbstractTarget {
             for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if (auxdep.getType() == DependencyType.FILE) {
-                    deps.add(this.targetfactory.getLeafTargetFromPustefixAuxDependency(auxdep));
+                    deps.add(this.targetfactory
+                            .getLeafTargetFromPustefixAuxDependency(auxdep));
                 }
             }
 
@@ -247,9 +249,12 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
+                    .getThemes());
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
-                String msg = "Could not get AuxDependencyManager for target " + this.getName() + "!";
+                String msg = "Could not get AuxDependencyManager for target "
+                        + this.getName() + "!";
                 Logger.getLogger(this.getClass()).warn(msg);
                 return new ArrayList();
             }
@@ -264,23 +269,27 @@ public class TargetPfixImpl extends AbstractTarget {
                                             .getProduct()));
                     deps.add(variant);
                     if (recursive) {
-                        deps.addAll(variant.getIncludeDependencies(true));
+                        deps.addAll(variant
+                                .getIncludeDependencies(themes, true));
                     }
                 }
             }
 
             if (recursive) {
                 if (this.getParentXML() != null) {
-                    deps.addAll(this.getParentXML().getIncludeDependencies(true));
+                    deps.addAll(this.getParentXML()
+                            .getIncludeDependencies(true));
                 }
                 if (this.getParentXSL() != null) {
-                    deps.addAll(this.getParentXSL().getIncludeDependencies(true));
+                    deps.addAll(this.getParentXSL()
+                            .getIncludeDependencies(true));
                 }
             }
 
             return deps;
         } else {
-            String msg = "Page target " + this.getName() + " is no VirtualTarget!";
+            String msg = "Page target " + this.getName()
+                    + " is no VirtualTarget!";
             Logger.getLogger(this.getClass()).warn(msg);
             return new ArrayList();
         }
@@ -296,6 +305,8 @@ public class TargetPfixImpl extends AbstractTarget {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
+                    .getThemes());
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
                 return new ArrayList();
@@ -310,7 +321,7 @@ public class TargetPfixImpl extends AbstractTarget {
                                     this.themefactory.getTheme(auxdep
                                             .getProduct()));
 
-                    deps.addAll(variant.getImageDependencies(true));
+                    deps.addAll(variant.getImageDependencies(themes, true));
                 } else if (auxdep.getType() == DependencyType.IMAGE) {
                     Image dep = this.imagefactory.getImage(auxdep.getPath()
                             .getRelative());
@@ -347,8 +358,7 @@ public class TargetPfixImpl extends AbstractTarget {
             Project project = projectfactory.getProjectByName(projectName);
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
-                variant = this.variantfactory.getVariant(pageinfo
-                        .getVariant());
+                variant = this.variantfactory.getVariant(pageinfo.getVariant());
             }
             Page page = project.getPage(pageinfo.getName(), variant);
             pages.add(page);

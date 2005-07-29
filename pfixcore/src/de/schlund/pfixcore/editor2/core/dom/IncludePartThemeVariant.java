@@ -32,7 +32,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludePartThemeVariant {
+public interface IncludePartThemeVariant extends Comparable {
     /**
      * Returns theme of this part
      * 
@@ -69,7 +69,9 @@ public interface IncludePartThemeVariant {
     /**
      * Returns all include parts this IncludePart is depending on. Actually
      * IncludePartThemeVariant objects are returned to honor the fact, that this
-     * IncludePart depends on a specific version of another IncludePart
+     * IncludePart depends on a specific version of another IncludePart.
+     * This method returns all variants of an IncludePart this part is
+     * depending on - not just the variant for a specific ThemeList.
      * 
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
@@ -82,6 +84,8 @@ public interface IncludePartThemeVariant {
 
     /**
      * Returns all images this Include is depending on.
+     * This method returns all variants of an IncludePart this part is
+     * depending on - not just the variant for a specific ThemeList.
      * 
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
@@ -93,6 +97,35 @@ public interface IncludePartThemeVariant {
      */
      Collection getImageDependencies(boolean recursive) throws EditorParsingException;
 
+     /**
+      * Returns all include parts this IncludePart is depending on. Actually
+      * IncludePartThemeVariant objects are returned to honor the fact, that this
+      * IncludePart depends on a specific version of another IncludePart
+      * 
+      * @param themes Themes to select the variants for
+      * @param recursive
+      *            If set to <code>true</code> all dependendencies, including
+      *            those which are dependencies of other dependencies themselves
+      *            are included in the returned list
+      * @return All dependend include parts
+      * @throws EditorParsingException 
+      */
+     Collection getIncludeDependencies(ThemeList themes, boolean recursive) throws EditorParsingException;
+
+     /**
+      * Returns all images this Include is depending on.
+      * 
+      * @param themes Themes to select the variants for
+      * @param recursive
+      *            If set to <code>true</code> all dependendencies, including
+      *            those which are dependencies of other dependencies themselves
+      *            are included in the returned list
+      * @return All dependend images
+      * @throws EditorParsingException 
+      * @see Image
+      */
+      Collection getImageDependencies(ThemeList themes, boolean recursive) throws EditorParsingException;
+     
     /**
      * Returns pages which are using this IncludePart (directly or inderectly)
      * 

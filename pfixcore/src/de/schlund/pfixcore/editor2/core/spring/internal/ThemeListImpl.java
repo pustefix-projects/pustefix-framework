@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
@@ -42,6 +44,10 @@ public class ThemeListImpl implements ThemeList {
     * @param themes Themes object as used by the Pustefix generator
     */
     public ThemeListImpl(ThemeFactoryService themefactory, Themes themes) {
+        if (themes.getThemesArr().length == 0) {
+            String msg = "Themes array should not be empty!";
+            Logger.getLogger(this.getClass()).warn(msg);
+        }
         this.themes = new ArrayList();
         String[] array = themes.getThemesArr();
         for (int i = 0; i < array.length; i++) {

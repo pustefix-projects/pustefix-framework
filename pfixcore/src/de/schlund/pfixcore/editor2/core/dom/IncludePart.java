@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludePart {
+public interface IncludePart extends Comparable {
     /**
      * Returns the name of this IncludePart. The name is used to distinctly
      * identify an IncludePart within an IncludeFile.

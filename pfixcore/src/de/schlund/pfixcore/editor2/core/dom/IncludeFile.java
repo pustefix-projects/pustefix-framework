@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludeFile {
+public interface IncludeFile extends Comparable {
     /**
      * Returns path and filename of this IncludeFile (relative to docroot)
      * 

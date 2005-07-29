@@ -27,6 +27,24 @@ package de.schlund.pfixcore.editor2.core.dom;
 public abstract class AbstractIncludePartThemeVariant implements
         IncludePartThemeVariant {
 
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object arg0) {
+        IncludePartThemeVariant variant = (IncludePartThemeVariant) arg0;
+        int ret;
+        ret = this.getIncludePart().getIncludeFile().compareTo(variant.getIncludePart().getIncludeFile());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = this.getIncludePart().compareTo(variant.getIncludePart());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = this.getTheme().compareTo(variant.getTheme());
+        return ret;
+    }
+
     /*
      * (non-Javadoc)
      * 

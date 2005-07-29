@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,12 +37,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.editor2.core.dom.AbstractIncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
+import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
@@ -60,6 +63,7 @@ import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.Themes;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
@@ -68,7 +72,8 @@ import de.schlund.pfixxml.util.Xml;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
+public class IncludePartThemeVariantImpl extends
+        AbstractIncludePartThemeVariant {
 
     private Theme theme;
 
@@ -87,9 +92,9 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
     private FileSystemService filesystem;
 
     private PathResolverService pathresolver;
-    
+
     private ConfigurationService configuration;
-    
+
     private SecurityManagerService securitymanager;
 
     private AuxDependency auxdep;
@@ -100,8 +105,8 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
             ThemeFactoryService themefactory, ImageFactoryService imagefactory,
             FileSystemService filesystem, PathResolverService pathresolver,
             ConfigurationService configuration,
-            SecurityManagerService securitymanager,
-            Theme theme, IncludePart part) {
+            SecurityManagerService securitymanager, Theme theme,
+            IncludePart part) {
         this.projectfactory = projectfactory;
         this.variantfactory = variantfactory;
         this.includefactory = includefactory;
@@ -165,7 +170,8 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#setXML(org.w3c.dom.Node)
      */
-    public void setXML(Node xml) throws EditorIOException, EditorParsingException, EditorSecurityException {
+    public void setXML(Node xml) throws EditorIOException,
+            EditorParsingException, EditorSecurityException {
         File xmlFile = new File(this.pathresolver.resolve(this.getIncludePart()
                 .getIncludeFile().getPath()));
         Object lock = this.filesystem.getLock(xmlFile);
@@ -177,9 +183,10 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
             if (this.getIncludePart().getIncludeFile().getContentXML() == null) {
                 // File does not yet exist and has to be created
                 // Honor default namespace-prefixes during creation!
-                
+
                 // Do security check
-                this.securitymanager.checkCreateIncludePartThemeVariant(this.getIncludePart(), this.getTheme());
+                this.securitymanager.checkCreateIncludePartThemeVariant(this
+                        .getIncludePart(), this.getTheme());
                 if (!xmlFile.exists()) {
                     try {
                         xmlFile.createNewFile();
@@ -193,15 +200,17 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
                 doc = Xml.createDocument();
                 root = doc.createElement("include_parts");
                 doc.appendChild(root);
-                
+
                 // Add predefined namespace mappings
-                Map nsMappings = this.configuration.getPrefixToNamespaceMappings();
+                Map nsMappings = this.configuration
+                        .getPrefixToNamespaceMappings();
                 for (Iterator i = nsMappings.keySet().iterator(); i.hasNext();) {
                     String prefix = (String) i.next();
                     String url = (String) nsMappings.get(prefix);
-                    root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:" + prefix, url);
+                    root.setAttributeNS("http://www.w3.org/2000/xmlns/",
+                            "xmlns:" + prefix, url);
                 }
-                
+
                 part = doc.createElement("part");
                 root.appendChild(part);
                 part.setAttribute("name", this.getIncludePart().getName());
@@ -211,31 +220,38 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
             } else {
                 // Do security check
                 this.securitymanager.checkEditIncludePartThemeVariant(this);
-                
+
                 try {
                     doc = this.filesystem.readXMLDocumentFromFile(xmlFile);
                 } catch (FileNotFoundException e) {
-                    String err = "File " + xmlFile.getAbsolutePath() + " could not be found although Pustefix core could obviously read it!";
+                    String err = "File "
+                            + xmlFile.getAbsolutePath()
+                            + " could not be found although Pustefix core could obviously read it!";
                     Logger.getLogger(this.getClass()).error(err, e);
                     throw new EditorIOException(err, e);
                 } catch (SAXException e) {
-                    String err = "Error during parsing file " + xmlFile.getAbsolutePath() + "!";
+                    String err = "Error during parsing file "
+                            + xmlFile.getAbsolutePath() + "!";
                     Logger.getLogger(this.getClass()).error(err, e);
                     throw new EditorParsingException(err, e);
                 } catch (IOException e) {
-                    String err = "File " + xmlFile.getAbsolutePath() + " could not be read although Pustefix core could obviously read it!";
+                    String err = "File "
+                            + xmlFile.getAbsolutePath()
+                            + " could not be read although Pustefix core could obviously read it!";
                     Logger.getLogger(this.getClass()).error(err, e);
                     throw new EditorIOException(err, e);
                 } catch (ParserConfigurationException e) {
                     String err = "Error during initialization of XML parser!";
                     Logger.getLogger(this.getClass()).error(err, e);
-                    throw new RuntimeException(err, e);                  
+                    throw new RuntimeException(err, e);
                 }
                 root = doc.getDocumentElement();
                 try {
-                    part = (Element) XPath.selectNode(root, "part[@name='" + this.getIncludePart().getName() + "']");
+                    part = (Element) XPath.selectNode(root, "part[@name='"
+                            + this.getIncludePart().getName() + "']");
                 } catch (TransformerException e) {
-                    // Should never happen as a DOM document is always well-formed!
+                    // Should never happen as a DOM document is always
+                    // well-formed!
                     String err = "XPath error!";
                     Logger.getLogger(this.getClass()).error(err, e);
                     throw new RuntimeException(err, e);
@@ -247,13 +263,15 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
                     root.appendChild(part);
                 }
                 try {
-                    theme = (Element) XPath.selectNode(part, "product[@name='" + this.getTheme().getName() + "']");
+                    theme = (Element) XPath.selectNode(part, "product[@name='"
+                            + this.getTheme().getName() + "']");
                 } catch (TransformerException e) {
-                    // Should never happen as a DOM document is always well-formed!
+                    // Should never happen as a DOM document is always
+                    // well-formed!
                     String err = "XPath error!";
                     Logger.getLogger(this.getClass()).error(err, e);
                     throw new RuntimeException(err, e);
-                }            
+                }
                 if (theme == null) {
                     // No branch for this theme - create it
                     theme = doc.createElement("product");
@@ -261,7 +279,7 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
                     part.appendChild(theme);
                 }
             }
-            
+
             // Copy over all nodes except attributes to the theme node
             NodeList nlist = xml.getChildNodes();
             for (int i = 0; i < nlist.getLength(); i++) {
@@ -270,18 +288,20 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
                     theme.appendChild(doc.importNode(child, true));
                 }
             }
-            
+
             // Save file
             try {
                 this.filesystem.storeXMLDocumentToFile(xmlFile, doc);
             } catch (IOException e) {
-                String err = "File " + xmlFile.getAbsolutePath() + " could not written!";
+                String err = "File " + xmlFile.getAbsolutePath()
+                        + " could not written!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
-            
+
             // Tell IncludeFactory to refresh
-            this.includefactory.refreshIncludeFile(this.getIncludePart().getIncludeFile().getPath());
+            this.includefactory.refreshIncludeFile(this.getIncludePart()
+                    .getIncludeFile().getPath());
         }
     }
 
@@ -364,5 +384,62 @@ public class IncludePartThemeVariantImpl implements IncludePartThemeVariant {
         }
 
         return pages;
+    }
+
+    public Collection getIncludeDependencies(ThemeList themes, boolean recursive)
+            throws EditorParsingException {
+        HashSet includes = new HashSet();
+
+        ArrayList themesArray = new ArrayList();
+        for (Iterator i = themes.getThemes().iterator(); i.hasNext();) {
+            Theme theme = (Theme) i.next();
+            themesArray.add(theme.getName());
+        }
+
+        Collection childs = this.auxdep.getChildrenForThemes(new Themes(
+                (String[]) themesArray.toArray(new String[0])));
+        for (Iterator i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = (AuxDependency) i.next();
+            if (child.getType() == DependencyType.TEXT) {
+                IncludePartThemeVariant variant = this.includefactory
+                        .getIncludeFile(child.getPath().getRelative())
+                        .createPart(child.getPart()).createThemeVariant(
+                                themefactory.getTheme(child.getProduct()));
+                includes.add(variant);
+                if (recursive) {
+                    includes.addAll(variant.getIncludeDependencies(true));
+                }
+            }
+        }
+        return includes;
+    }
+
+    public Collection getImageDependencies(ThemeList themes, boolean recursive)
+            throws EditorParsingException {
+        HashSet images = new HashSet();
+
+        ArrayList themesArray = new ArrayList();
+        for (Iterator i = themesArray.iterator(); i.hasNext();) {
+            Theme theme = (Theme) i.next();
+            themesArray.add(theme.getName());
+        }
+
+        Collection childs = this.auxdep.getChildrenForThemes(new Themes(
+                (String[]) themesArray.toArray(new String[0])));
+        for (Iterator i = childs.iterator(); i.hasNext();) {
+            AuxDependency child = (AuxDependency) i.next();
+            if (child.getType() == DependencyType.IMAGE) {
+                Image image = this.imagefactory.getImage(child.getPath()
+                        .getRelative());
+                images.add(image);
+            } else if ((child.getType() == DependencyType.TEXT) && recursive) {
+                IncludePartThemeVariant variant = this.includefactory
+                        .getIncludeFile(child.getPath().getRelative())
+                        .createPart(child.getPart()).createThemeVariant(
+                                themefactory.getTheme(child.getProduct()));
+                images.addAll(variant.getImageDependencies(true));
+            }
+        }
+        return images;
     }
 }

@@ -25,7 +25,25 @@ package de.schlund.pfixcore.editor2.core.dom;
  */
 public abstract class AbstractIncludePart implements IncludePart {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object arg0) {
+        IncludePart part = (IncludePart) arg0;
+        int ret;
+        ret = this.getIncludeFile().compareTo(part.getIncludeFile());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = this.getName().compareTo(part.getName());
+        return ret;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object obj) {
@@ -33,15 +51,22 @@ public abstract class AbstractIncludePart implements IncludePart {
             return false;
         }
         IncludePart incPart = (IncludePart) obj;
-        return this.getName().equals(incPart.getName()) && this.getIncludeFile().equals(incPart.getIncludeFile());
+        return this.getName().equals(incPart.getName())
+                && this.getIncludeFile().equals(incPart.getIncludeFile());
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
         return ("INCLUDEPART: " + this.toString()).hashCode();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     public String toString() {

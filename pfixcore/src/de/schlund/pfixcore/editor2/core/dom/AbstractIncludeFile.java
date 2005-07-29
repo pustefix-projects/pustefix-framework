@@ -35,16 +35,26 @@ public abstract class AbstractIncludeFile implements IncludeFile {
         IncludeFile incFile = (IncludeFile) obj;
         return this.getPath().equals(incFile.getPath());
     }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
         return ("INCLUDEFILE: " + this.getPath()).hashCode();
     }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     public String toString() {
         return this.getPath();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object arg0) {
+        IncludeFile file = (IncludeFile) arg0;
+        return this.getPath().compareTo(file.getPath());
     }
 }
