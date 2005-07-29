@@ -39,4 +39,50 @@
       </lang>
     </product>
   </part>
+  
+  <part name="displayimages">
+    <product name="default">
+      <lang name="default">
+        <table><tr><td class="editor_main_emph">Used images:</td></tr></table>
+        <table width="100%" class="editor_box_alpha" cellpadding="0" cellspacing="0"
+               background="/core/editor/img/alpha.gif">
+          <ixsl:for-each select=".//image">
+            <ixsl:variable name="class">
+              <ixsl:choose>
+                <ixsl:when test="(number(@count) mod 2) = 0">editor_even_row</ixsl:when>
+                <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
+              </ixsl:choose>
+            </ixsl:variable>
+            <tr valign="top">
+              <td width="50%" nowrap="nowrap">
+                <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
+                <pfx:button page="images" target="_top" frame="_top">
+                  <pfx:command  name="SELWRP" page="images">imgsel</pfx:command>
+                  <pfx:command  name="SELWRP" page="images">upload</pfx:command>
+                  <pfx:argument name="imgsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
+                  <pfx:argument name="imgsel.Modtime"><ixsl:value-of select="@modtime"/></pfx:argument>
+                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
+                  <ixsl:value-of select="@path"/>
+                </pfx:button>
+              </td>
+              <td width="50%">
+                <ixsl:choose>
+                  <ixsl:when test="@modtime = 0">
+                    <span class="editor_missing_img_txt">MISSING IMAGE</span>
+                  </ixsl:when>
+                  <ixsl:otherwise>
+                    <img border="0">
+                      <ixsl:attribute name="src">/<ixsl:value-of select="@path"/></ixsl:attribute>
+                    </img>
+                  </ixsl:otherwise>
+                </ixsl:choose>
+              </td>
+            </tr>
+          </ixsl:for-each>
+        </table>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
 </include_parts>

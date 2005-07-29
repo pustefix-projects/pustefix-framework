@@ -874,6 +874,7 @@
   </xsl:template>
   -->
 
+  <!--
   <xsl:template match="displayimages">
     <xsl:variable name="thepath"><xsl:value-of select="@path"/></xsl:variable>
     <ixsl:if test="{$thepath}/imageinfo/image">
@@ -917,6 +918,7 @@
       <br/>
     </ixsl:if>
   </xsl:template>
+  -->
 
   <xsl:template match="displayincludedetails">
     <xsl:call-template name="displaypartdetails">

@@ -29,7 +29,9 @@
             <ixsl:for-each select="/formresult/pages/currentpage/includes">
               <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
             </ixsl:for-each>
-            <displayimages path="/formresult/currentpageinfo"/>
+            <ixsl:for-each select="/formresult/pages/currentpage/images">
+              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+            </ixsl:for-each>
           </ixsl:when>
           <ixsl:otherwise>
             <center>
@@ -121,7 +123,7 @@
       </lang>
     </product>
   </part>
-
+  
 </include_parts>
 
 <!--
