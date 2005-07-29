@@ -49,7 +49,7 @@
           <ixsl:for-each select=".//image">
             <ixsl:variable name="class">
               <ixsl:choose>
-                <ixsl:when test="(number(@count) mod 2) = 0">editor_even_row</ixsl:when>
+                <ixsl:when test="(count(ancestor::image) mod 2) = 0">editor_even_row</ixsl:when>
                 <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
               </ixsl:choose>
             </ixsl:variable>
