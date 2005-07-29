@@ -249,6 +249,8 @@ public class TargetPfixImpl extends AbstractTarget {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
+                String msg = "Could not get AuxDependencyManager for target " + this.getName() + "!";
+                Logger.getLogger(this.getClass()).warn(msg);
                 return new ArrayList();
             }
 
@@ -278,6 +280,8 @@ public class TargetPfixImpl extends AbstractTarget {
 
             return deps;
         } else {
+            String msg = "Page target " + this.getName() + " is no VirtualTarget!";
+            Logger.getLogger(this.getClass()).warn(msg);
             return new ArrayList();
         }
     }
