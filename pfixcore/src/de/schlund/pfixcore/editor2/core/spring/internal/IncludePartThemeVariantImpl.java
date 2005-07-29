@@ -419,7 +419,7 @@ public class IncludePartThemeVariantImpl extends
         HashSet images = new HashSet();
 
         ArrayList themesArray = new ArrayList();
-        for (Iterator i = themesArray.iterator(); i.hasNext();) {
+        for (Iterator i = themes.getThemes().iterator(); i.hasNext();) {
             Theme theme = (Theme) i.next();
             themesArray.add(theme.getName());
         }
