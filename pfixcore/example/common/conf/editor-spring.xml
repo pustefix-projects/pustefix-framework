@@ -3,6 +3,22 @@
 
 <beans>
   
+  <!-- WARNING: Do never change the order of UserManagementService and
+                ProjectFactoryService!
+                UserManagementService depends on ProjectFactoryService
+                during initialization and will stop working!           -->
+  <bean id="usermanagement" class="de.schlund.pfixcore.editor2.core.spring.UserManagementServiceImpl" init-method="init">
+    <property name="fileSystemService">
+		  <ref bean="filesystem"/>
+	  </property>
+    <property name="pathResolverService">
+		  <ref bean="pathresolver"/>
+	  </property>
+    <property name="projectFactoryService">
+	    <ref bean="projectfactory"/>
+	  </property>      
+  </bean>
+  
   <bean id="projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">
     <property name="pathResolverService">
 	  <ref bean="pathresolver"/>
@@ -56,8 +72,11 @@
 	
   <bean id="pagefactory" class="de.schlund.pfixcore.editor2.core.spring.PageFactoryServiceImpl">
     <property name="targetFactoryService">
-	  <ref bean="targetfactory"/>
-	</property>
+      <ref bean="targetfactory"/>
+    </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="pustefixtargetupdate"/>
+    </property>
   </bean>
 	
   <bean id="includefactory" class="de.schlund.pfixcore.editor2.core.spring.IncludeFactoryServiceImpl">
@@ -111,22 +130,25 @@
 	</property>	  
   </bean>
 
-  <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl" init-method="init">
-    <property name="fileSystemService">
-		<ref bean="filesystem"/>
-	</property>
-    <property name="pathResolverService">
-		<ref bean="pathresolver"/>
-	</property>
+  <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
+    <property name="sessionService">
+      <ref bean="session"/>
+    </property>
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
   </bean>
 
-  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl" init-method="init">
-    <property name="fileSystemService">
-		<ref bean="filesystem"/>
-	</property>
-    <property name="pathResolverService">
-		<ref bean="pathresolver"/>
-	</property>
-  </bean>	
+  <bean id="userpasswordauthentication" class="de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationServiceImpl">
+    <property name="userManagementService">
+      <ref bean="usermanagement"/>
+    </property>
+  </bean>
+    
+  <bean id="session" class="de.schlund.pfixcore.editor2.core.spring.PustefixSessionServiceImpl">      
+  </bean>
+  
+  <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl">      
+  </bean>
 					
 </beans>

@@ -94,8 +94,15 @@ public class PageFactoryServiceImpl implements PageFactoryService {
 
     private HashMap cache;
 
+    private PustefixTargetUpdateService pustefixtargetupdate;
+
     public void setTargetFactoryService(TargetFactoryService targetfactory) {
         this.targetfactory = targetfactory;
+    }
+
+    public void setPustefixTargetUpdateService(
+            PustefixTargetUpdateService pustefixtargetupdate) {
+        this.pustefixtargetupdate = pustefixtargetupdate;
     }
 
     public PageFactoryServiceImpl() {
@@ -119,8 +126,9 @@ public class PageFactoryServiceImpl implements PageFactoryService {
 
         synchronized (this.cache) {
             if (!this.cache.containsKey(pk)) {
-                Page page = new PageImpl(this.targetfactory, pageName, variant,
-                        handler, themes, parent, project, pinfo);
+                Page page = new PageImpl(this.targetfactory,
+                        this.pustefixtargetupdate, pageName, variant, handler,
+                        themes, parent, project, pinfo);
                 this.cache.put(pk, page);
             }
             return (MutablePage) this.cache.get(pk);

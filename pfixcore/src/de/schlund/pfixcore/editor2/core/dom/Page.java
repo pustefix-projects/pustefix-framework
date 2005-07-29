@@ -103,4 +103,11 @@ public interface Page extends Comparable {
      * @return Whether child pages are existing
      */
     boolean hasSubPages();
+
+    /**
+     * Registers this page for an update. This can be used to recalculate
+     * dependencies after something has changed. The update is not processed
+     * immediately but asynchronously.
+     */
+    void registerForUpdate();
 }
