@@ -83,7 +83,9 @@
   <part name="buttons">
     <product name="default">
       <lang name="default">
-        <pfx:button page="test" target="_top">STARTWITHFLOW test</pfx:button>
+        <pfx:button page="test" target="_top">
+          STARTWITHFLOW test
+        </pfx:button>
         <br/>
         <pfx:elink href="http://www.gimp.org" target="_popup">
           <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
