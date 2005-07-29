@@ -150,6 +150,10 @@ public class ProjectImpl extends AbstractProject {
             allpages.put(page.getName(), pagetable);
         }
         pagetable.put(page.getVariant(), page);
+        for (Iterator i = page.getSubPages().iterator(); i.hasNext();) {
+            Page page2 = (Page) i.next();
+            this.recursePage(page2, allpages);
+        }
     }
 
     /**
@@ -172,29 +176,36 @@ public class ProjectImpl extends AbstractProject {
 
         String pageName = nav.getName();
         String pageHandler = nav.getHandler();
-        for (Iterator iter = ptree.getPageInfos().iterator(); iter.hasNext();) {
-            PageInfo pinfo = (PageInfo) iter.next();
-            String variantName = pinfo.getVariant();
-            Variant pageVariant;
-            if (variantName != null) {
-                pageVariant = this.variantfactory.getVariant(variantName);
-            } else {
-                pageVariant = null;
-            }
-            ThemeList pageThemes = new ThemeListImpl(this.themefactory, ptree
-                    .getTargetForPageInfo(pinfo).getThemes());
-            MutablePage page = this.pagefactory.getMutablePage(pageName,
-                    pageVariant, pageHandler, pageThemes, null, this, pinfo);
-            if (page == null) {
-                String err = "Page returned by pagefactory is null!";
-                Logger.getLogger(this.getClass()).error(err);
-            }
-            pages.add(page);
-            if (pageVariant == null) {
-                defaultPage = page;
+        Collection pinfos = ptree.getPageInfoForPageName(pageName);
+        if (pinfos == null) {
+            String msg = "Could not load PageInfo from PageTree for page "
+                    + pageName + "! No target for page defined?";
+            Logger.getLogger(this.getClass()).warn(msg);
+        } else {
+            for (Iterator iter = pinfos.iterator(); iter.hasNext();) {
+                PageInfo pinfo = (PageInfo) iter.next();
+                String variantName = pinfo.getVariant();
+                Variant pageVariant;
+                if (variantName != null) {
+                    pageVariant = this.variantfactory.getVariant(variantName);
+                } else {
+                    pageVariant = null;
+                }
+                ThemeList pageThemes = new ThemeListImpl(this.themefactory,
+                        ptree.getTargetForPageInfo(pinfo).getThemes());
+                MutablePage page = this.pagefactory
+                        .getMutablePage(pageName, pageVariant, pageHandler,
+                                pageThemes, null, this, pinfo);
+                if (page == null) {
+                    String err = "Page returned by pagefactory is null!";
+                    Logger.getLogger(this.getClass()).error(err);
+                }
+                pages.add(page);
+                if (pageVariant == null) {
+                    defaultPage = page;
+                }
             }
         }
-
         HashSet subpages = new HashSet();
 
         if (nav.hasChildren()) {
