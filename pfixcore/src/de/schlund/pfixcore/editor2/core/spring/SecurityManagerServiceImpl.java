@@ -18,22 +18,9 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -41,142 +28,33 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
-import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
-import de.schlund.pfixxml.util.XPath;
+import de.schlund.pfixcore.editor2.core.exception.EditorUserNotExistingException;
+import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 
 public class SecurityManagerServiceImpl implements SecurityManagerService {
-    private ThreadLocal principal;
+    private SessionService session;
 
-    private FileSystemService filesystem;
+    private UserManagementService usermanagement;
 
-    private PathResolverService pathresolver;
+    private final static String PRINCIPAL_KEY = SecurityManagerServiceImpl.class
+            .getName()
+            + ".principal";
 
-    private HashMap configuration;
-    
-    public void setFileSystemService(FileSystemService filesystem) {
-        this.filesystem = filesystem;
+    public void setSessionService(SessionService session) {
+        this.session = session;
     }
-    
-    public void setPathResolverService(PathResolverService pathresolver) {
-        this.pathresolver = pathresolver;
-    }
-    
-    public SecurityManagerServiceImpl() {
-        this.configuration = new HashMap();
+
+    public void setUserManagementService(UserManagementService usermanagement) {
+        this.usermanagement = usermanagement;
     }
 
     public void setPrincipal(Principal principal) {
-        this.principal.set(principal);
+        this.session.set(PRINCIPAL_KEY, principal);
     }
 
     public Principal getPrincipal() {
-        return (Principal) this.principal.get();
-    }
-    
-    public void init() throws EditorIOException, EditorParsingException {
-        this.reloadConfiguration();
-    }
-    
-    public void reloadConfiguration() throws EditorIOException,
-            EditorParsingException {
-        File configFile = new File(this.pathresolver
-                .resolve("common/conf/userdata.xml"));
-        Document xml = null;
-        synchronized (this.filesystem.getLock(configFile)) {
-            try {
-                xml = this.filesystem.readXMLDocumentFromFile(configFile);
-            } catch (FileNotFoundException e) {
-                String err = "File " + configFile.getAbsolutePath()
-                        + " could not be found!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new EditorIOException(err, e);
-            } catch (SAXException e) {
-                String err = "Error during parsing file "
-                        + configFile.getAbsolutePath() + "!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new EditorParsingException(err, e);
-            } catch (IOException e) {
-                String err = "File " + configFile.getAbsolutePath()
-                        + " could not be read!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new EditorIOException(err, e);
-            } catch (ParserConfigurationException e) {
-                String err = "Error during initialization of XML parser!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new RuntimeException(err, e);
-            }
-        }
-        synchronized (this.configuration) {
-            this.configuration.clear();
-            try {
-                for (Iterator i = XPath.select(xml, "/userinfo/user")
-                        .iterator(); i.hasNext();) {
-                    Element userNode = (Element) i.next();
-                    String userName = userNode.getAttribute("id");
-                    if (userName == null) {
-                        String err = "<user> has to have id attribute!";
-                        Logger.getLogger(this.getClass()).error(err);
-                        throw new EditorParsingException(err);
-                    }
-                    Element globalNode = (Element) XPath.selectNode(userNode,
-                            "permissions/global");
-                    boolean userIsAdmin = false;
-                    boolean userMayEditDynIncludes = false;
-                    if (globalNode != null) {
-                        String temp;
-                        temp = globalNode.getAttribute("admin");
-                        if (temp != null) {
-                            userIsAdmin = temp.equals("true");
-                        }
-                        temp = globalNode.getAttribute("editDynIncludes");
-                        if (temp != null) {
-                            userMayEditDynIncludes = temp.equals("true");
-                        }
-                    }
-                    HashMap userConfiguration = new HashMap();
-                    userConfiguration.put("global_admin", new Boolean(
-                            userIsAdmin));
-                    userConfiguration.put("global_editDynIncludes",
-                            new Boolean(userMayEditDynIncludes));
-                    for (Iterator i2 = XPath.select(userNode,
-                            "permissions/project").iterator(); i2.hasNext();) {
-                        Element projectNode = (Element) i2.next();
-                        String projectName = projectNode.getAttribute("name");
-                        if (projectName == null) {
-                            String err = "<project> has to have name attribute!";
-                            Logger.getLogger(this.getClass()).error(err);
-                            throw new EditorParsingException(err);
-                        }
-                        boolean editIncludes = false;
-                        boolean editImages = false;
-                        String temp;
-                        temp = projectNode.getAttribute("editIncludes");
-                        if (temp != null) {
-                            editIncludes = temp.equals("true");
-                        }
-                        temp = projectNode.getAttribute("editImages");
-                        if (temp != null) {
-                            editImages = temp.equals("true");
-                        }
-                        HashMap projectConfiguration = new HashMap();
-                        projectConfiguration.put("editIncludes", new Boolean(
-                                editIncludes));
-                        projectConfiguration.put("editImages", new Boolean(
-                                editImages));
-                        userConfiguration.put("project_" + projectName,
-                                projectConfiguration);
-                    }
-                    this.configuration.put(userName, userConfiguration);
-                }
-            } catch (TransformerException e) {
-                // Should never happen as a DOM document is always well-formed!
-                String err = "XPath error!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new RuntimeException(err, e);
-            }
-        }
+        return (Principal) this.session.get(PRINCIPAL_KEY);
     }
 
     public boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part) {
@@ -188,7 +66,7 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         return true;
     }
 
-    private boolean mayEditIncludePartForProject(Project project) {
+    public boolean mayEditIncludePartForProject(Project project) {
         if (this.getPrincipal() == null) {
             return false;
         }
@@ -196,22 +74,20 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         if (username == null || username.equals("")) {
             return false;
         }
-        Map userConfig;
-        synchronized (this.configuration) {
-            if (!this.configuration.containsKey(username)) {
-                return false;
-            }
-            userConfig = (Map) this.configuration.get(username);
-        }
 
-        if (((Boolean) userConfig.get("global_admin")).booleanValue()) {
-            return true;
-        }
-        if (!userConfig.containsKey("project_" + project.getName())) {
+        try {
+            EditorUser user = this.usermanagement.getUser(username);
+            if (user.getGlobalPermissions().isAdmin()) {
+                return true;
+            }
+            if (user.getProjectPermissions(project).isEditIncludes()) {
+                return true;
+            }
+        } catch (EditorUserNotExistingException e) {
             return false;
         }
-        Map projectConfig = (Map) userConfig.get("project_" + project.getName());
-        return ((Boolean) projectConfig.get("editIncludes")).booleanValue();
+
+        return false;
     }
 
     public void checkEditIncludePartThemeVariant(IncludePartThemeVariant part)
@@ -275,7 +151,7 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         return true;
     }
 
-    private boolean mayEditImageForProject(Project project) {
+    public boolean mayEditImageForProject(Project project) {
         if (this.getPrincipal() == null) {
             return false;
         }
@@ -283,21 +159,20 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         if (username == null || username.equals("")) {
             return false;
         }
-        Map userConfig;
-        synchronized (this.configuration) {
-            if (!this.configuration.containsKey(username)) {
-                return false;
+
+        try {
+            EditorUser user = this.usermanagement.getUser(username);
+            if (user.getGlobalPermissions().isAdmin()) {
+                return true;
             }
-            userConfig = (Map) this.configuration.get(username);
-        }
-        if (((Boolean) userConfig.get("global_admin")).booleanValue()) {
-            return true;
-        }
-        if (!userConfig.containsKey("project_" + project.getName())) {
+            if (user.getProjectPermissions(project).isEditImages()) {
+                return true;
+            }
+        } catch (EditorUserNotExistingException e) {
             return false;
         }
-        Map projectConfig = (Map) userConfig.get("project_" + project.getName());
-        return ((Boolean) projectConfig.get("editImages")).booleanValue();
+
+        return false;
     }
 
     public void checkEditImage(Image image) throws EditorSecurityException {
@@ -315,17 +190,18 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         if (username == null || username.equals("")) {
             return false;
         }
-        Map userConfig;
-        synchronized (this.configuration) {
-            if (!this.configuration.containsKey(username)) {
+
+        try {
+            EditorUser user = this.usermanagement.getUser(username);
+            if (user.getGlobalPermissions().isAdmin()
+                    || user.getGlobalPermissions().isEditDynIncludes()) {
+                return true;
+            } else {
                 return false;
             }
-            userConfig = (Map) this.configuration.get(username);
+        } catch (EditorUserNotExistingException e) {
+            return false;
         }
-        if (((Boolean) userConfig.get("global_admin")).booleanValue()) {
-            return true;
-        }
-        return ((Boolean) userConfig.get("global_editDynIncludes")).booleanValue();
     }
 
     public void checkEditDynInclude() throws EditorSecurityException {
@@ -343,20 +219,28 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
         if (username == null || username.equals("")) {
             return false;
         }
-        Map userConfig;
-        synchronized (this.configuration) {
-            if (!this.configuration.containsKey(username)) {
+
+        try {
+            EditorUser user = this.usermanagement.getUser(username);
+            if (user.getGlobalPermissions().isAdmin()) {
+                return true;
+            } else {
                 return false;
             }
-            userConfig = (Map) this.configuration.get(username);
+        } catch (EditorUserNotExistingException e) {
+            return false;
         }
-        return ((Boolean) userConfig.get("global_admin")).booleanValue();
     }
 
     public void checkAdmin() throws EditorSecurityException {
         if (!mayAdmin()) {
-            throw new EditorSecurityException(
-                    "User is not an admin!");
+            throw new EditorSecurityException("User is not an admin!");
         }
+    }
+
+    public boolean mayEditProject(Project project) {
+        return (this.mayAdmin() || this.mayEditDynInclude()
+                || this.mayEditIncludePartForProject(project) || this
+                .mayEditImageForProject(project));
     }
 }

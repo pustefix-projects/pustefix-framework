@@ -23,9 +23,8 @@ import java.security.Principal;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
-import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 
 /**
@@ -53,16 +52,16 @@ public interface SecurityManagerService {
     Principal getPrincipal();
 
     /**
-     * Tells the SecurityManager to reload its configuration. This method should
-     * be used after changes to the configuration have been made, so that the
-     * SecurityManager can use the new configuration.
+     * Returns wheter user is allowed to edit specified project. If this method
+     * returns <code>true</code> there might still be access restrictions on
+     * some resources of the project.
      * 
-     * @throws EditorIOException
-     *             If configuration file cannot be read.
-     * @throws EditorParsingException
-     *             If configuration file does not match expected format.
+     * @param project
+     *            Project to do the check for
+     * @return <code>true</code> to signal permission is granted,
+     *         <code>false</code> otherwise
      */
-    void reloadConfiguration() throws EditorIOException, EditorParsingException;
+    boolean mayEditProject(Project project);
 
     /**
      * Checks whether the user currently logged in is allowed to edit the

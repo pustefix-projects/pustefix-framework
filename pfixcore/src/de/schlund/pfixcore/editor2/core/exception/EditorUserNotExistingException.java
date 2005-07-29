@@ -16,21 +16,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.editor2.core.spring;
+package de.schlund.pfixcore.editor2.core.exception;
 
-import java.security.Principal;
+/**
+ * Exception signalling that the specified editor user is not existing.
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public class EditorUserNotExistingException extends EditorException {
 
-public interface UserPasswordAuthenticationService {
-    /**
-     * Returns the principal for the specified user
-     * 
-     * @param username
-     *            Username for the user
-     * @param password
-     *            Password for the user
-     * @return The {@link Principal} for the user or <code>null</code> if no
-     *         user with the specified name can be found or the wrong password
-     *         was supplied.
-     */
-    Principal getPrincipalForUser(String username, String password);
+    public EditorUserNotExistingException() {
+        super();
+    }
+
+    public EditorUserNotExistingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public EditorUserNotExistingException(String message) {
+        super(message);
+    }
+
+    public EditorUserNotExistingException(Throwable cause) {
+        super(cause);
+    }
+
 }

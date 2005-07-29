@@ -18,19 +18,26 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.security.Principal;
+import de.schlund.pfixcore.workflow.Context;
 
-public interface UserPasswordAuthenticationService {
+/**
+ * This service provides methods to set and get the current Pustefix context.
+ * Thus it can be used to identify a specific session.
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public interface PustefixContextService {
     /**
-     * Returns the principal for the specified user
+     * Set the Pustefix context
      * 
-     * @param username
-     *            Username for the user
-     * @param password
-     *            Password for the user
-     * @return The {@link Principal} for the user or <code>null</code> if no
-     *         user with the specified name can be found or the wrong password
-     *         was supplied.
+     * @param context The Pustefix context
      */
-    Principal getPrincipalForUser(String username, String password);
+    void setPustefixContext(Context context);
+    
+    /**
+     * Returns the Pustefix context
+     * 
+     * @return The current Pustefix context
+     */
+    Context getPustefixContext();
 }
