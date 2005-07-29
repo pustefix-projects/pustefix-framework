@@ -1,3 +1,13 @@
+2005-07-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: augmented pfx:anchor to be able to produce anchors also to 
+	non-frames: Just use a single pfx:anchor WITHOUT the @frame attribute to supply the #anchor.
+
+2005-07-21  Jens Lautenbacher  <jtl@schlund.de>
+	Thanks to the eyes of Niels Schelbach:
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (addTargetDependency)
+	(resetTargetDependency): count++ becomes ++count and count-- becomes --count. Stupid me.
+
 2005-07-20  Michael Hartmeier  <mhm@schlund.de>
 
 	* example/core/build/iwrapper.xsl, 
