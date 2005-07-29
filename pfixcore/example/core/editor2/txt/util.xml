@@ -46,10 +46,10 @@
         <table><tr><td class="editor_main_emph">Used images:</td></tr></table>
         <table width="100%" class="editor_box_alpha" cellpadding="0" cellspacing="0"
                background="/core/editor/img/alpha.gif">
-          <ixsl:for-each select=".//image">
+          <ixsl:for-each select="./image">
             <ixsl:variable name="class">
               <ixsl:choose>
-                <ixsl:when test="(count(ancestor::image) mod 2) = 0">editor_even_row</ixsl:when>
+                <ixsl:when test="(count(preceding::image) mod 2) = 0">editor_even_row</ixsl:when>
                 <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
               </ixsl:choose>
             </ixsl:variable>
