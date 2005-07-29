@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<make project="editor" lang="en">
+  <navigation>
+    <page name="editoruserauth" handler="/xml/edit"/>
+    <page name="prodselect" handler="/xml/edit"/>
+    <page name="home" handler="/xml/edit"/>
+    <page name="pages" handler="/xml/edit"/>
+    <page name="targets" handler="/xml/edit"/>
+    <page name="images" handler="/xml/edit"/>
+    <page name="includes" handler="/xml/edit"/>
+    <page name="commons" handler="/xml/edit"/>
+    <page name="search" handler="/xml/edit"/>
+    <page name="logout" handler="/xml/edit"/>
+  </navigation>
+  
+  <global>
+    <param name="outputdoctype-public" value="-//W3C//DTD HTML 4.01//EN"/>
+    <param name="outputdoctype-system" value="http://www.w3.org/TR/html40/strict.dtd"/>    
+  </global>
+    
+  <standardmaster/>
+  
+  <standardmetatags>
+    <include stylesheet="core/editor2/xsl/metatags.xsl"/>
+  </standardmetatags>
+  
+  <standardpage name="editoruserauth" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="prodselect" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="home" xml="core/editor2/xml/two_frames.xml"/>
+  <standardpage name="pages" xml="core/editor2/xml/three_frames.xml"/>
+</make>

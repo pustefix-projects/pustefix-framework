@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<contextxmlserver xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
+
+  <servletinfo depend="core/editor2/conf/depend.xml" name="pfixcore_project:core_editor_servlet:1">
+    <!-- TODO Change for production use -->
+    <editmode allow="true"/>
+  </servletinfo>
+  
+  <context defaultflow="EditorFlow" authpage="editoruserauth">
+		<resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
+    </resource>
+  </context>
+
+  
+  <pageflow name="EditorFlow">
+    <flowstep name="prodselect"/>
+    <flowstep name="home"/>
+    <flowstep name="logout"/>
+  </pageflow>
+  
+  <!--
+  <pageflow name="EditorLoginFlow">
+    <flowstep name="editoruserauth"/>
+    <flowstep name="prodselect"/>
+  </pageflow>
+  
+  
+  <pageflow name="EditorLogutFlow">
+    <flowstep name="logout"/>
+    <flowstep name="editoruserauth"/>
+  </pageflow>
+  -->
+  
+  <pagerequest name="editoruserauth">
+    <auth>
+      <authinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
+    </auth>
+  </pagerequest>
+  
+  <pagerequest name="prodselect">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="home">
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="pages">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="pages" class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="logout">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Logout" prefix="logout"></interface>
+    </input>
+  </pagerequest>
+  
+  <properties>
+    <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
+    <prop name="context.startinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor</prop>
+    <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
+    <prop name="context.endinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor</prop>
+  </properties>
+  
+</contextxmlserver>
