@@ -62,6 +62,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private String projectsFile;
 
+    private boolean initialized;
+
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
     }
@@ -88,17 +90,19 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     public ProjectFactoryServiceImpl() {
         this.projects = new Hashtable();
+        this.initialized = false;
     }
 
     public void init() throws SAXException, IOException,
             ParserConfigurationException, FactoryConfigurationError,
             TransformerException, EditorInitializationException {
-
+        
         /*
          * Document doc = DocumentBuilderFactory.newInstance()
          * .newDocumentBuilder().parse( new
          * File(pathresolver.resolve(projectsFile)));
          */
+        
         File prjFile = new File(pathresolver.resolve(projectsFile));
         Document doc;
         synchronized (filesystem.getLock(prjFile)) {
@@ -136,7 +140,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                     pagefactory, projectName, projectComment, projectDependFile);
             this.projects.put(projectName, project);
         }
-
+        
+        this.initialized = true;
     }
 
     /*
@@ -145,6 +150,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
      * @see de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService#getProjectByName(java.lang.String)
      */
     public Project getProjectByName(String projectName) {
+        checkInitialized();
         return (Project) this.projects.get(projectName);
     }
 
@@ -154,7 +160,14 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
      * @see de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService#getProjects()
      */
     public Collection getProjects() {
+        checkInitialized();
         return new HashSet(this.projects.values());
+    }
+    
+    private void checkInitialized() {
+        if (!this.initialized) {
+            throw new RuntimeException("Service has to be initialized before use!");
+        }
     }
 
 }
