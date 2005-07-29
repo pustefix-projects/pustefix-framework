@@ -18,13 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -60,19 +60,46 @@ public class PagesResourceImpl implements PagesResource {
         if (this.selectedPage != null) {
             Element currentPage = resdoc.createSubNode(elem, "currentpage");
             currentPage.setAttribute("name", this.selectedPage.getName());
-            
-            Element targetsElement = resdoc.createSubNode(currentPage, "targets");
-            this.renderTarget(this.selectedPage.getPageTarget(), targetsElement);
-            
-            Element includesElement = resdoc.createSubNode(currentPage, "includes");
-            Collection includes = this.selectedPage.getPageTarget().getIncludeDependencies(true);
-            for (Iterator i = includes.iterator(); i.hasNext();) {
-                IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
-                Element includeElement = resdoc.createSubNode(includesElement, "include");
-                includesElement.appendChild(includeElement);
-                includeElement.setAttribute("path", part.getIncludePart().getIncludeFile().getPath());
-                includeElement.setAttribute("part", part.getIncludePart().getName());
-                includeElement.setAttribute("theme", part.getTheme().getName());
+
+            Element targetsElement = resdoc.createSubNode(currentPage,
+                    "targets");
+            this
+                    .renderTarget(this.selectedPage.getPageTarget(),
+                            targetsElement);
+
+            // Sort include parts
+            TreeSet includes = new TreeSet(this.selectedPage.getPageTarget()
+                    .getIncludeDependencies(true));
+            if (!includes.isEmpty()) {
+                Element includesElement = resdoc.createSubNode(currentPage,
+                        "includes");
+                for (Iterator i = includes.iterator(); i.hasNext();) {
+                    IncludePartThemeVariant part = (IncludePartThemeVariant) i
+                            .next();
+                    Element includeElement = resdoc.createSubNode(
+                            includesElement, "include");
+                    includesElement.appendChild(includeElement);
+                    includeElement.setAttribute("path", part.getIncludePart()
+                            .getIncludeFile().getPath());
+                    includeElement.setAttribute("part", part.getIncludePart()
+                            .getName());
+                    includeElement.setAttribute("theme", part.getTheme()
+                            .getName());
+                }
+            }
+
+            // Sort images
+            TreeSet images = new TreeSet(this.selectedPage.getPageTarget()
+                    .getImageDependencies(true));
+            if (!images.isEmpty()) {
+                Element imagesElement = resdoc.createSubNode(currentPage,
+                        "images");
+                for (Iterator i = images.iterator(); i.hasNext();) {
+                    Image image = (Image) i.next();
+                    Element imageElement = resdoc.createSubNode(imagesElement,
+                            "image");
+                    imageElement.setAttribute("path", image.getPath());
+                }
             }
         }
     }
