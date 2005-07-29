@@ -25,7 +25,7 @@ import java.util.Collection;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Image {
+public interface Image extends Comparable {
     /**
      * Returns the path to the image file (relative to docroot)
      * 

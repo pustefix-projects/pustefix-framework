@@ -26,6 +26,13 @@ package de.schlund.pfixcore.editor2.core.dom;
 public abstract class AbstractImage implements Image {
     
     /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Object arg0) {
+        Image image = (Image) arg0;
+        return this.getPath().compareTo(image.getPath());
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object obj) {
