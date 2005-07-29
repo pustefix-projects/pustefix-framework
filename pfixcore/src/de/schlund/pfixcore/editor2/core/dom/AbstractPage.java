@@ -30,7 +30,11 @@ public abstract class AbstractPage implements Page {
      */
     public int compareTo(Object o) {
         Page page = (Page) o;
-        int ret = this.getName().compareTo(page);
+        int ret = this.getHandlerPath().compareTo(page.getHandlerPath());
+        if (ret != 0) {
+            return ret;
+        }
+        ret = this.getName().compareTo(page.getName());
         if (ret == 0) {
             if (this.getVariant() == null && page.getVariant() == null) {
                 ret = 0;
