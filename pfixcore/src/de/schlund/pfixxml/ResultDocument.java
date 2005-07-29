@@ -36,44 +36,36 @@ import de.schlund.util.statuscodes.StatusCode;
  */
 
 public class ResultDocument {
-    public  static final String PFIXCORE_NS = "http://www.schlund.de/pustefix/core";
-    public  static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
+    public static final String PFIXCORE_NS = "http://www.schlund.de/pustefix/core";
+    public static final String IXSL_NS     = "http://www.w3.org/1999/XSL/Transform";
     
-    private        Category               CAT   = Category.getInstance(ResultDocument.class.getName());
-    
+    private Category     CAT = Category.getInstance(ResultDocument.class.getName());
     protected Element    formresult;
     protected Element    formvalues;
     protected Element    formerrors;
     protected Element    formhiddenvals;
-    protected ResultForm resultform = null;
     protected Document   doc;
     protected SPDocument spdoc;
-    // protected boolean    do_continue = false;
+    
     
     public ResultDocument() {
-        init();
-    }
-
-    protected void init() {
-        spdoc  = new SPDocument();
-        doc    = Xml.createDocument();
-        
         Date date = new Date();
-
+        spdoc     = new SPDocument();
+        doc       = Xml.createDocument();
         spdoc.setDocument(doc);
         formresult = doc.createElement("formresult");
         formresult.setAttribute("xmlns:pfx", PFIXCORE_NS);
         formresult.setAttribute("serial", "" + date.getTime());
         doc.appendChild(formresult);
+
+        formvalues = doc.createElement("formvalues");
+        formresult.appendChild(formvalues);
+        formerrors = doc.createElement("formerrors");
+        formresult.appendChild(formerrors);
+        formhiddenvals = doc.createElement("formhiddenvals");
+        formresult.appendChild(formhiddenvals);
     }
 
-//     public void setContinue(boolean do_continue) {
-//         this.do_continue = do_continue;
-//     }
-    
-//     public boolean wantsContinue() {
-//         return do_continue;
-//     }
     
     public void addUsedNamespace(String prefix, String uri) {
         formresult.setAttribute("xmlns:" + prefix, uri);
@@ -91,32 +83,33 @@ public class ResultDocument {
         return formresult;
     }
     
-    public ResultForm createResultForm() {
-        if (resultform == null) {
-            formvalues = doc.createElement("formvalues");
-            formresult.appendChild(formvalues);
-            
-            formerrors = doc.createElement("formerrors");
-            formresult.appendChild(formerrors);
-            
-            formhiddenvals = doc.createElement("formhiddenvals");
-            formresult.appendChild(formhiddenvals);
-            resultform = new ResultForm(this);
+    public void addValue(String name, String value) {
+        if (value == null) return;
+        Element param = doc.createElement("param");
+        param.setAttribute("name", name);
+        param.appendChild(doc.createTextNode(value));
+        formvalues.appendChild(param);
+    }
+
+    public void addHiddenValue(String name, String value) {
+        if (value == null) {
+            return;
         }
-        return resultform;
+        Element param = doc.createElement("hidden");
+        param.setAttribute("name", name);
+        param.appendChild(doc.createTextNode(value));
+        formhiddenvals.appendChild(param);
     }
 
-    protected Element getFormValues() {
-        return formvalues;
+    public void addStatusCode(Properties props, StatusCode code, String[] args, String level, String field) {
+        Element elem  = ResultDocument.createIncludeFromStatusCode(doc, props, code, args, level);
+        Element param = doc.createElement("error");
+        param.setAttribute("name", field);
+        param.appendChild(elem);
+        formerrors.appendChild(param);
     }
 
-    protected Element getFormErrors() {
-        return formerrors;
-    }
-
-    protected Element getFormHiddenvals() {
-        return formhiddenvals;
-    }
+    // -----------------------------------------------------------------
     
     public Element createNode(String name) {
         return createSubNode(formresult, name);
@@ -141,10 +134,14 @@ public class ResultDocument {
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
-        return createIncludeFromStatusCode(doc, props, code, null);
+        return createIncludeFromStatusCode(doc, props, code, null, null);
     }
-    
-    public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args) {
+
+    public Element createIncludeFromStatusCode(Properties props, StatusCode code, String[] args) {
+        return createIncludeFromStatusCode(doc, props, code, args, null);
+    }
+
+    public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args, String level) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
         String  part    = code.getStatusCodeId();
         Element include = thedoc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
@@ -156,6 +153,9 @@ public class ResultDocument {
                 arg.setAttribute("value", args[i]);
                 include.appendChild(arg);
             }
+        }
+        if (level != null) {
+            include.setAttribute("level", level);
         }
         return include;
     }

@@ -79,8 +79,8 @@ public abstract class IWrapperImpl implements IWrapper {
             if (tmperrors != null && tmperrors.length > 0) {
                 StringBuffer buff = getLogBuffer("ERRORS");
                 for (int j = 0; j < tmperrors.length; j++) {
-                    IWrapperParam param  = tmperrors[j];
-                    StatusCode[]      scodes = param.getStatusCodes();
+                    IWrapperParam    param  = tmperrors[j];
+                    StatusCodeInfo[] scodes = param.getStatusCodeInfos();
                     if (scodes != null) {
                         appendErrorLog(param, buff);
                     }
@@ -225,37 +225,12 @@ public abstract class IWrapperImpl implements IWrapper {
         return (IWrapperParam[]) retpar.toArray(new IWrapperParam[] {});
     }
 
-    public void addSCode(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode) {
-        param.addSCode(scode);
-        synchronized (errors) {
-            errors.put(param.getName(), param);
-        }
-    }     
-    public void addSCodeWithArgs(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode, String[] args) {
-        param.addSCode(scode, args);
+    public void addSCode(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode, String args[], String level) {
+        param.addSCode(scode, args, level);
         synchronized (errors) {
             errors.put(param.getName(), param);
         }
     }
-    
-//     public final Object[] getParamValueByName(String key) {
-//         IWrapperParam pinfo = gimmeParamForKey(key);
-//         if (pinfo != null) {
-//             return pinfo.getValueArr();
-//         }
-//         return null;
-//     }
-    
-//     public final Object[] getIndexedParamValueByNameAndIndex(String key, String index) {
-//         IWrapperIndexedParam pindex = gimmeIndexedParamForKey(key);
-//         if (pindex != null) {
-//             IWrapperParam pinfo = pindex.getParamForIndex(index);
-//             if (pinfo != null) {
-//                 return pinfo.getValueArr();
-//             }
-//         }
-//         return null;
-//     }
 
     protected final IWrapperParam gimmeParamForKey(String key) {
         synchronized (params) {
@@ -306,13 +281,12 @@ public abstract class IWrapperImpl implements IWrapper {
     }
     
     private void appendErrorLog(IWrapperParam pinfo, StringBuffer buff) {
-        String       name   = pinfo.getName(); 
-        StatusCode[] scodes = pinfo.getStatusCodes();
+        String           name   = pinfo.getName(); 
+        StatusCodeInfo[] scodes = pinfo.getStatusCodeInfos();
         if (scodes != null) {
             buff.append("|" + name + ":");
             for (int i = 0; i < scodes.length; i++) {
-                StatusCode code = scodes[i];
-                buff.append(code.getStatusCodeId());
+                buff.append(scodes[i]);
                 if (i < (scodes.length - 1)) {
                     buff.append(";");
                 }

@@ -18,6 +18,7 @@
  */
 package de.schlund.pfixcore.generator;
 
+import de.schlund.util.statuscodes.StatusCode;
 import java.io.IOException;
 
 
@@ -59,6 +60,5 @@ public interface IWrapper extends Comparable {
     IWrapperParam[] gimmeAllParams();
     IWrapperParam[] gimmeAllParamsWithErrors();
     IWrapperParamDefinition[] gimmeAllParamDefinitions();
-    void            addSCode(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode);
-    void            addSCodeWithArgs(IWrapperParam param, de.schlund.util.statuscodes.StatusCode scode, String[] args);
+    void            addSCode(IWrapperParam param, StatusCode scode, String[] args, String level);
 }

@@ -1,3 +1,41 @@
+2005-07-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (userInsertErrors): bug fix: 
+	loop over j, not i.
+
+	* src/de/schlund/pfixxml/DerefServer.java (process): Security fix: don't allow for links to be
+	started with anything else than "/", "http://", "https://" or "ftp://"
+	
+
+2005-07-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: PageMessages are now also implemented in 
+	terms of StatusCodeInfo objects.
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java: addScodeWithArgs: removed.
+	only one addScode method to handle everything
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: use StatusCodeInfo, remove all but one 
+	fully qualified version of addSCode
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamCheck.java: 
+	* src/de/schlund/pfixcore/generator/SimpleCheck.java: StatusCodeInfo instead of StatusCode used
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: use resdoc instead of resform,
+	also use StatusCodeInfo where needed.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (Module): added public (and useful) methods from ResultForm
+
+	* src/de/schlund/pfixxml/ResultForm.java (Module): removed. Methods are now in ResultDocument
+
+	* src/de/schlund/pfixcore/example/TShirtHandler.java: cosmetics 
+
+	* src/de/schlund/pfixcore/generator/StatusCodeInfo.java (Module): new class. Used to hold the scode
+	and it's associated meta information (arguments, level)
+
 2005-07-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/navigation.xsl.in: augmented pfx:anchor to be able to produce anchors also to 
