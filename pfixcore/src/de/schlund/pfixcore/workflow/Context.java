@@ -330,6 +330,15 @@ public class Context implements AppContext {
         return currentpagerequest;
     }
 
+    /**
+     * <code>getCurrentPageFlow</code> gets the currently active PageRequest.
+     *
+     * @return a <code>PageFlow</code> value
+     */
+    public PageFlow getCurrentPageFow() {
+        return currentpageflow;
+    }
+
     public void setPageFlow(String flowname) {
         PageFlow tmp = pageflowmanager.getPageFlowByName(flowname, variant);
         if (tmp != null) {

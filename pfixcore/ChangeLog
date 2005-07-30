@@ -1,3 +1,7 @@
+2005-07-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFow): new (?) method.
+
 2005-07-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (userInsertErrors): bug fix: 
