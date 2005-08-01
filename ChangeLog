@@ -1,3 +1,8 @@
+2005-08-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in (pfx:xinp type="radio|check"): stupid bug: using "$" 
+	when referencing variables helps a lot.
+
 2005-07-30  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFow): new (?) method.
