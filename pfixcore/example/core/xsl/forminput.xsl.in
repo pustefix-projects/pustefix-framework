@@ -692,7 +692,7 @@
         <xsl:when test="./pfx:default"><xsl:apply-templates select="./pfx:default/node()"/></xsl:when>
       </xsl:choose></ixsl:variable>
       <ixsl:if test="/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
-                     (string(pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
+                     (string($pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
         <ixsl:attribute name="checked">checked</ixsl:attribute>
       </ixsl:if>
       <xsl:apply-templates/>
@@ -768,7 +768,7 @@
         <xsl:when test="./pfx:default"><xsl:apply-templates select="./pfx:default/node()"/></xsl:when>
       </xsl:choose></ixsl:variable>
       <ixsl:if test="/formresult/formvalues/param[@name=string($pfx_name)]/text()=string($pfx_value) or
-                     (string(pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
+                     (string($pfx_default) = 'true' and not(/formresult/formvalues/param[@name=string($pfx_name)]))">
         <ixsl:attribute name="checked">checked</ixsl:attribute>
       </ixsl:if>
       <xsl:apply-templates/>
