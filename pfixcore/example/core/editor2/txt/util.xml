@@ -85,4 +85,60 @@
     </product>
   </part>
   
+  <part name="displayaffectedpages">
+    <product name="default">
+      <lang name="default">
+        <table><tr><td class="editor_main_emph">Affected pages:</td></tr></table>
+        <table width="100%" class="editor_box">
+          <ixsl:for-each select="./project">
+            <ixsl:sort select="@name"/>
+            <ixsl:variable name="theproduct"><ixsl:value-of select="@name"/></ixsl:variable>
+            <ixsl:if test="./node()">
+              <tr>
+                <td>
+                  <table><tr><td><b>Pages in project  "<i><ixsl:value-of select="/formresult/projects/project[@name=$theproduct]/@comment"/></i>":</b></td></tr></table>
+                  <table width="100%" class="editor_box">
+                    <tr>
+                      <td>
+                        <ixsl:for-each select="./page">
+                          <ixsl:sort select="@name"/>
+                          <ixsl:choose>
+                            <ixsl:when test="/formresult/projects/currentproject/@name = $theproduct">
+                              <pfx:button page="pages" target="_top" frame="_top">
+                                <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
+                                <pfx:argument name="selectPage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
+                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <span>
+                                  <ixsl:value-of select="@name"/>
+                                  <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                                </span>
+                                </pfx:button>&#160;
+                            </ixsl:when>
+                            <ixsl:otherwise>
+                              <pfx:button page="jumptopage" target="_top" frame="_top">
+                                <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="$theproduct"/></pfx:argument>
+                                <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
+                                <pfx:argument name="selectpage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
+                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <span>
+                                  <ixsl:value-of select="@name"/>
+                                  <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                                </span>
+                                </pfx:button>&#160;
+                            </ixsl:otherwise>
+                          </ixsl:choose>
+                        </ixsl:for-each>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </ixsl:if>
+          </ixsl:for-each>
+        </table>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
 </include_parts>

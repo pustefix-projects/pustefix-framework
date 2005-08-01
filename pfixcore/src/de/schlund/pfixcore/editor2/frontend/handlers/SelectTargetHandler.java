@@ -19,26 +19,26 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage;
+import de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
- * Handles page selection
+ * Handles target selection
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class SelectPageHandler implements IHandler {
+public class SelectTargetHandler implements IHandler {
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
-        SelectPage input = (SelectPage) wrapper;
-        if (!EditorResourceLocator.getPagesResource(context).selectPage(
-                input.getPageName(), input.getVariantName())) {
-            input.addSCodePageName(StatusCodeFactory.getInstance()
-                    .getStatusCode("pfixcore.editor.pages.PAGE_UNDEF"));
+        SelectTarget input = (SelectTarget) wrapper;
+        if (!EditorResourceLocator.getTargetsResource(context).selectTarget(
+                input.getTargetName())) {
+            input.addSCodeTargetName(StatusCodeFactory.getInstance()
+                    .getStatusCode("pfixcore.editor.targets.TARGET_UNDEF"));
         }
     }
 
@@ -48,18 +48,18 @@ public class SelectPageHandler implements IHandler {
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
-        // Allow page selection only if project is selected
+        // Allow only if project is selected
         return (EditorResourceLocator.getProjectsResource(context)
                 .getSelectedProject() != null);
     }
 
     public boolean isActive(Context context) throws Exception {
-        // Allways allow page selection
+        // Allways allow target selection
         return true;
     }
 
     public boolean needsData(Context context) throws Exception {
-        // Always ask to select page
+        // Always ask to select target
         return true;
     }
 

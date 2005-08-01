@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,12 +35,14 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractTarget;
+import de.schlund.pfixcore.editor2.core.dom.AbstractTheme;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.TargetType;
+import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
@@ -56,6 +59,7 @@ import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyManager;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.VirtualTarget;
 
 /**
@@ -145,6 +149,14 @@ public class TargetPfixImpl extends AbstractTarget {
             file = new File(this.pathresolver.resolve(this.pfixTarget
                     .getTargetKey()));
         } else {
+            // Make sure file is existing
+            try {
+                this.pfixTarget.getValue();
+            } catch (TargetGenerationException e) {
+                String msg = "Could not generate target " + this.getName()
+                        + "!";
+                Logger.getLogger(this.getClass()).warn(msg);
+            }
             file = new File(this.pathresolver.resolve(this.pfixTarget
                     .getTargetGenerator().getDisccachedir().getRelative()
                     + "/" + this.pfixTarget.getTargetKey()));
@@ -354,13 +366,32 @@ public class TargetPfixImpl extends AbstractTarget {
         HashSet pages = new HashSet();
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
-            String projectName = pageinfo.getTargetGenerator().getName();
-            Project project = projectfactory.getProjectByName(projectName);
+            if (pageinfo == null) {
+                continue;
+            }
+            Project project = projectfactory
+                    .getProjectByPustefixTargetGenerator(pageinfo
+                            .getTargetGenerator());
+            if (project == null) {
+                String msg = "Project for generator "
+                        + pageinfo.getTargetGenerator().getName()
+                        + " not found, omitting affected page!";
+                Logger.getLogger(this.getClass()).warn(msg);
+                continue;
+            }
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
                 variant = this.variantfactory.getVariant(pageinfo.getVariant());
             }
             Page page = project.getPage(pageinfo.getName(), variant);
+            if (page == null) {
+                String msg = "Could not get page " + pageinfo.getName()
+                        + " with variant " + variant.getName()
+                        + " from project " + project.getName()
+                        + "! Omitting page!";
+                Logger.getLogger(this.getClass()).warn(msg);
+                continue;
+            }
             pages.add(page);
         }
         return pages;
@@ -377,6 +408,42 @@ public class TargetPfixImpl extends AbstractTarget {
 
     public Map getTransformationParameters() {
         return this.pfixTarget.getParams();
+    }
+
+    public Map getParameters() {
+        Map map = this.pfixTarget.getParams();
+        if (map != null)
+            return map;
+        else
+            return new HashMap();
+    }
+
+    public ThemeList getThemeList() {
+        if (this.pfixTarget instanceof VirtualTarget) {
+            VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
+                    .getThemes());
+            return themes;
+        } else {
+            return new ThemeList() {
+
+                public Collection getThemes() {
+                    ArrayList list = new ArrayList();
+                    list.add(new AbstractTheme("default") {
+                    });
+                    return list;
+                }
+
+                public boolean includesTheme(Theme theme) {
+                    if (theme.getName().equals("default")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+            };
+        }
     }
 
 }

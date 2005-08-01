@@ -51,23 +51,29 @@
   
   <bean id="targetfactory" class="de.schlund.pfixcore.editor2.core.spring.TargetFactoryServiceImpl">
     <property name="projectFactoryService">
-	  <ref bean="projectfactory"/>
-	</property>  
+      <ref bean="projectfactory"/>
+    </property>  
     <property name="variantFactoryService">
-	  <ref bean="variantfactory"/>
-	</property>  
-	<property name="targetFactoryService">
-	  <ref bean="targetfactory"/>
-	</property>
+      <ref bean="variantfactory"/>
+    </property>  
+    <property name="targetFactoryService">
+      <ref bean="targetfactory"/>
+    </property>
     <property name="themeFactoryService">
-	  <ref bean="themefactory"/>
-	</property>
+      <ref bean="themefactory"/>
+    </property>
     <property name="includeFactoryService">
       <ref bean="includefactory"/>
     </property>
-	<property name="imageFactoryService">
-	  <ref bean="imagefactory"/>
-	</property>
+    <property name="imageFactoryService">
+      <ref bean="imagefactory"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
   </bean>
 	
   <bean id="pagefactory" class="de.schlund.pfixcore.editor2.core.spring.PageFactoryServiceImpl">
@@ -93,11 +99,11 @@
       <ref bean="includefactory"/>
     </property>
     <property name="pathResolverService">
-	  <ref bean="pathresolver"/>
-	</property>  
+      <ref bean="pathresolver"/>
+    </property>  
     <property name="fileSystemService">
-	  <ref bean="filesystem"/>
-	</property>
+      <ref bean="filesystem"/>
+    </property>
     <property name="configurationService">
       <ref bean="configuration"/>
     </property>  

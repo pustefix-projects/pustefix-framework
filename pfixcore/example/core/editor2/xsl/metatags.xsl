@@ -531,7 +531,7 @@
     </table>
   </xsl:template>
 
-
+	<!--
   <xsl:template match="displayalltargets">
     <table width="100%" class="editor_sidebar_content">
       <ixsl:for-each select="/formresult/alltargets//target">
@@ -585,6 +585,7 @@
       </ixsl:for-each>
     </table>
   </xsl:template>
+  -->
 
   <!--
   <xsl:template match="displaycurrentpage">
@@ -594,11 +595,13 @@
   </xsl:template>
   -->
   
+  <!--
   <xsl:template match="displaycurrenttarget">
     <div class="editor_main_emph" align="right">
       [TARGET: <ixsl:value-of select="/formresult/currenttargetinfo/@name"/>]
     </div>
   </xsl:template>
+  -->
 
  <xsl:template match="displaycurrentimage">
     <div class="editor_main_emph" align="right">
@@ -752,6 +755,7 @@
   </xsl:template>
   -->
   
+  <!--
   <xsl:template match="displaytargetdetails">
     <ixsl:if test="/formresult/currenttargetinfo/@xmlsrc">
       <table><tr><td class="editor_main_emph">Parents:</td></tr></table>
@@ -805,6 +809,7 @@
       <br/>
     </ixsl:if> 
   </xsl:template>
+  -->
 
   <xsl:template match="displayauxfiles_of_target">
     <ixsl:if test="/formresult/currenttargetinfo/auxfileinfo/auxfile">

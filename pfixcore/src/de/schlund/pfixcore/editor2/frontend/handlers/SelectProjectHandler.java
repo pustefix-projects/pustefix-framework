@@ -59,8 +59,9 @@ public class SelectProjectHandler implements IHandler {
     }
 
     public boolean needsData(Context context) throws Exception {
-        // Always ask to select project
-        return true;
+        // Ask for project, if none is selected
+        return (EditorResourceLocator.getProjectsResource(context)
+                .getSelectedProject() == null);
     }
 
 }

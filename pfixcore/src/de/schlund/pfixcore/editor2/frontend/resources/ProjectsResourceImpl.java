@@ -32,6 +32,7 @@ import de.schlund.pfixxml.ResultDocument;
 
 public class ProjectsResourceImpl implements ProjectsResource {
     private Project selectedProject;
+
     private Context context;
 
     public void init(Context context) throws Exception {
@@ -75,6 +76,8 @@ public class ProjectsResourceImpl implements ProjectsResource {
             this.selectedProject = project;
             // Reset page selection
             EditorResourceLocator.getPagesResource(this.context).unselectPage();
+            EditorResourceLocator.getTargetsResource(this.context)
+                    .unselectTarget();
             return true;
         }
     }

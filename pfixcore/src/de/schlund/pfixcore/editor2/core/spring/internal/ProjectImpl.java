@@ -22,11 +22,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractProject;
 import de.schlund.pfixcore.editor2.core.dom.Page;
+import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
@@ -64,6 +66,10 @@ public class ProjectImpl extends AbstractProject {
     private Collection allpages;
 
     private HashMap pagemap;
+
+    private HashMap targetmap;
+
+    private TargetGenerator tgen;
 
     /**
      * Creates a new Project object
@@ -106,6 +112,7 @@ public class ProjectImpl extends AbstractProject {
             Logger.getLogger(this.getClass()).error(err, e);
             throw new EditorInitializationException(err, e);
         }
+        this.tgen = gen;
 
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
@@ -130,6 +137,29 @@ public class ProjectImpl extends AbstractProject {
         for (Iterator i = pagemap.values().iterator(); i.hasNext();) {
             HashMap map = (HashMap) i.next();
             allpages.addAll(map.values());
+        }
+        this.allpages = allpages;
+
+        // Create target map
+        HashMap targets = new HashMap();
+        for (Iterator i = allpages.iterator(); i.hasNext();) {
+            Page p = (Page) i.next();
+            // Recurse over targets
+            this.recurseTarget(p.getPageTarget(), targets);
+        }
+        this.targetmap = targets;
+    }
+
+    private void recurseTarget(Target target, Map alltargets) {
+        alltargets.put(target.getName(), target);
+        for (Iterator i = target.getAuxDependencies(false).iterator(); i
+                .hasNext();) {
+            Target t = (Target) i.next();
+            alltargets.put(t.getName(), t);
+        }
+        if (!target.isLeafTarget()) {
+            this.recurseTarget(target.getParentXML(), alltargets);
+            this.recurseTarget(target.getParentXSL(), alltargets);
         }
     }
 
@@ -285,6 +315,14 @@ public class ProjectImpl extends AbstractProject {
         } else {
             return new HashSet(((HashMap) this.pagemap.get(name)).values());
         }
+    }
+
+    public Target getTarget(String name) {
+        return (Target) this.targetmap.get(name);
+    }
+    
+    public TargetGenerator getTargetGenerator() {
+        return this.tgen;
     }
 
 }

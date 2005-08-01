@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.frontend.util;
 import de.schlund.pfixcore.editor2.frontend.resources.PagesResource;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
+import de.schlund.pfixcore.editor2.frontend.resources.TargetsResource;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -60,5 +61,16 @@ public abstract class EditorResourceLocator {
     public final static PagesResource getPagesResource(Context context) {
         return (PagesResource) context.getContextResourceManager()
                 .getResource(PagesResource.class.getName());
+    }
+    
+    /**
+     * Returns TargetsResource Implementation
+     * 
+     * @param context Context to use
+     * @return TargetsResource for context
+     */
+    public final static TargetsResource getTargetsResource(Context context) {
+        return (TargetsResource) context.getContextResourceManager()
+                .getResource(TargetsResource.class.getName());
     }
 }

@@ -146,6 +146,21 @@ public interface Target {
     Collection getAffectedPages();
 
     /**
+     * Returns parameters used during generation. Map keys are parameter names,
+     * values their corresponding contents.
+     * 
+     * @return Parameters used by the XSL processor
+     */
+    Map getParameters();
+    
+    /**
+     * Returns a list representing the themes used by this target 
+     * 
+     * @return List of themes used by this target
+     */
+    ThemeList getThemeList();
+
+    /**
      * Returns project this Target belongs to
      * 
      * @return Project this Target is part of

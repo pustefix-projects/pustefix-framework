@@ -35,10 +35,13 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractTarget;
+import de.schlund.pfixcore.editor2.core.dom.AbstractTheme;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.TargetType;
+import de.schlund.pfixcore.editor2.core.dom.Theme;
+import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
@@ -236,6 +239,31 @@ public class TargetAuxDepImpl extends AbstractTarget {
     public Map getTransformationParameters() {
         // Leaf target is not generated - so there are no parameters
         return new HashMap();
+    }
+
+    public Map getParameters() {
+        return new HashMap();
+    }
+
+    public ThemeList getThemeList() {
+        return new ThemeList() {
+
+            public Collection getThemes() {
+                ArrayList list = new ArrayList();
+                list.add(new AbstractTheme("default") {
+                });
+                return list;
+            }
+
+            public boolean includesTheme(Theme theme) {
+                if (theme.getName().equals("default")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+        };
     }
 
 }

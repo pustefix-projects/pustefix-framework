@@ -21,6 +21,7 @@ package de.schlund.pfixcore.editor2.core.spring;
 import java.util.Collection;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
+import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
  * Provides methods to retrieve a project by name and to retrieve a list of all projects
@@ -36,6 +37,14 @@ public interface ProjectFactoryService {
      * @return Project object for the corresponding project or <code>null</code> if no project can be found for the specified projectName
      */
     Project getProjectByName(String projectName);
+    
+    /**
+     * Returns the project that is using the supplied target generator
+     * 
+     * @param tgen target generator to look for
+     * @return Project matching tgen
+     */
+    Project getProjectByPustefixTargetGenerator(TargetGenerator tgen);
     
     /**
      * Returns a list of all projects which are marked as editable

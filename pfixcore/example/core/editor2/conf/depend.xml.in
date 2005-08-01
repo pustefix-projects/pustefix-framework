@@ -11,6 +11,7 @@
     <page name="commons" handler="/xml/edit"/>
     <page name="search" handler="/xml/edit"/>
     <page name="logout" handler="/xml/edit"/>
+    <page name="jumptopage" handler="/xml/edit"/>
   </navigation>
   
   <global>
@@ -28,4 +29,8 @@
   <standardpage name="prodselect" xml="core/editor2/xml/two_frames_inactive.xml"/>
   <standardpage name="home" xml="core/editor2/xml/two_frames.xml"/>
   <standardpage name="pages" xml="core/editor2/xml/three_frames.xml"/>
+  <standardpage name="targets" xml="core/editor2/xml/three_frames.xml">
+    <include stylesheet="core/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+  
 </make>

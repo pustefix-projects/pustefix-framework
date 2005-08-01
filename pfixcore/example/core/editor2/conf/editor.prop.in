@@ -19,13 +19,30 @@
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.PagesResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
     </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
+    </resource>
   </context>
-
   
   <pageflow name="EditorFlow">
     <flowstep name="prodselect"/>
     <flowstep name="home"/>
     <flowstep name="logout"/>
+  </pageflow>
+  
+  <pageflow name="EditorPageFlow" final="pages">
+    <flowstep name="prodselect"/>
+    <flowstep name="pages"/>
+  </pageflow>
+  
+  <pageflow name="EditorTargetFlow" final="targets">
+    <flowstep name="prodselect"/>
+    <flowstep name="targets"/>
+  </pageflow>
+  
+  <pageflow name="EditorJumpToPageFlow">
+    <flowstep name="jumptopage"/>
+    <flowstep name="pages"/>
   </pageflow>
   
   <!--
@@ -74,10 +91,28 @@
       <resource node="pages" class="de.schlund.pfixcore.editor2.frontend.resources.PagesResource"/>
     </output>
   </pagerequest>
+
+  <pagerequest name="targets">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget" prefix="selecttarget"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="targets" class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
+    </output>
+  </pagerequest>
   
   <pagerequest name="logout">
     <input>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Logout" prefix="logout"></interface>
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="jumptopage">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
     </input>
   </pagerequest>
   
@@ -87,5 +122,16 @@
     <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
     <prop name="context.endinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor</prop>
   </properties>
+  
+  <!-- Not in schema yet
+  <interceptors>
+    <start>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor"/>
+    </start>
+    <end>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>
+    </end>
+  </interceptors>  
+  -->
   
 </contextxmlserver>

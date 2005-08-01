@@ -103,7 +103,7 @@
               <td nowrap="nowrap">
                 <ixsl:copy-of select="$ind"/>
                 <pfx:button page="targets" target="_top" frame="_top">
-                  <pfx:argument name="tsel.Target"><ixsl:value-of select="@name"/></pfx:argument>
+                  <pfx:argument name="selecttarget.TargetName"><ixsl:value-of select="@name"/></pfx:argument>
                   <pfx:anchor   frame="left_navi">
                     <ixsl:choose>
                       <ixsl:when test="$count = 0"><ixsl:value-of select="@name"/></ixsl:when>

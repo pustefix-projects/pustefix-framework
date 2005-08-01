@@ -21,8 +21,8 @@ package de.schlund.pfixcore.editor2.core.spring;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,6 +39,7 @@ import org.xml.sax.SAXException;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
 import de.schlund.pfixcore.editor2.core.spring.internal.ProjectImpl;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.util.XPath;
 
 /**
@@ -54,7 +55,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private PageFactoryService pagefactory;
 
-    private Hashtable projects;
+    private HashMap projects;
 
     private FileSystemService filesystem;
 
@@ -63,6 +64,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     private String projectsFile;
 
     private boolean initialized;
+
+    private HashMap generatorToProjectNameMap;
 
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
@@ -89,20 +92,21 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     }
 
     public ProjectFactoryServiceImpl() {
-        this.projects = new Hashtable();
+        this.projects = new HashMap();
+        this.generatorToProjectNameMap = new HashMap();
         this.initialized = false;
     }
 
     public void init() throws SAXException, IOException,
             ParserConfigurationException, FactoryConfigurationError,
             TransformerException, EditorInitializationException {
-        
+
         /*
          * Document doc = DocumentBuilderFactory.newInstance()
          * .newDocumentBuilder().parse( new
          * File(pathresolver.resolve(projectsFile)));
          */
-        
+
         File prjFile = new File(pathresolver.resolve(projectsFile));
         Document doc;
         synchronized (filesystem.getLock(prjFile)) {
@@ -136,11 +140,12 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                 throw new EditorInitializationException(err);
             }
             String projectDependFile = tempNode.getNodeValue();
-            Project project = new ProjectImpl(variantfactory, themefactory,
+            ProjectImpl project = new ProjectImpl(variantfactory, themefactory,
                     pagefactory, projectName, projectComment, projectDependFile);
             this.projects.put(projectName, project);
+            this.generatorToProjectNameMap.put(project.getTargetGenerator()
+                    .getName(), projectName);
         }
-        
         this.initialized = true;
     }
 
@@ -163,11 +168,17 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
         checkInitialized();
         return new HashSet(this.projects.values());
     }
-    
+
     private void checkInitialized() {
         if (!this.initialized) {
-            throw new RuntimeException("Service has to be initialized before use!");
+            throw new RuntimeException(
+                    "Service has to be initialized before use!");
         }
+    }
+
+    public Project getProjectByPustefixTargetGenerator(TargetGenerator tgen) {
+        return this.getProjectByName((String) this.generatorToProjectNameMap
+                .get(tgen.getName()));
     }
 
 }

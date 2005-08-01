@@ -75,11 +75,23 @@ public interface Project {
      *         the specified name / variant can be found
      */
     Page getPage(String pagename, Variant variant);
-    
+
     /**
      * Returns all variants of a page with the specified name.
-     * @param name Name of the page
+     * 
+     * @param name
+     *            Name of the page
      * @return All variants of the page with name <code>name</code>
      */
     Collection getPageByName(String name);
+
+    /**
+     * Returns target belonging to this project.
+     * 
+     * @param name
+     *            Name of the target (either virtual name or path)
+     * @return Target object or <code>null</code> if no target can be found
+     *         for the name
+     */
+    Target getTarget(String name);
 }
