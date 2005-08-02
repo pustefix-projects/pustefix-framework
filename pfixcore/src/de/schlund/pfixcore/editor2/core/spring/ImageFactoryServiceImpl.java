@@ -31,12 +31,36 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
 
     private VariantFactoryService variantfactory;
 
+    private ProjectFactoryService projectfactory;
+
     private HashMap cache;
-    
+
+    private PathResolverService pathresolver;
+
+    private FileSystemService filesystem;
+
+    private SecurityManagerService securitymanager;
+
+    public void setFileSystemService(FileSystemService filesystem) {
+        this.filesystem = filesystem;
+    }
+
+    public void setPathResolverService(PathResolverService pathresolver) {
+        this.pathresolver = pathresolver;
+    }
+
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
     public void setVariantFactoryService(VariantFactoryService variantfactory) {
         this.variantfactory = variantfactory;
     }
-    
+
+    public void setProjectFactoryService(ProjectFactoryService projectfactory) {
+        this.projectfactory = projectfactory;
+    }
+
     public ImageFactoryServiceImpl() {
         this.cache = new HashMap();
     }
@@ -44,12 +68,14 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
     public Image getImage(String path) {
         synchronized (this.cache) {
             if (!this.cache.containsKey(path)) {
-                Image image = new ImageImpl(this.variantfactory, path);
+                Image image = new ImageImpl(this.variantfactory,
+                        this.projectfactory, this.pathresolver,
+                        this.filesystem, this.securitymanager, path);
                 this.cache.put(path, image);
             }
             return (Image) this.cache.get(path);
         }
-        
+
     }
 
 }

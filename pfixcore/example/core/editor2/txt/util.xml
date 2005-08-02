@@ -57,10 +57,8 @@
               <td width="50%" nowrap="nowrap">
                 <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
                 <pfx:button page="images" target="_top" frame="_top">
-                  <pfx:command  name="SELWRP" page="images">imgsel</pfx:command>
-                  <pfx:command  name="SELWRP" page="images">upload</pfx:command>
-                  <pfx:argument name="imgsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
-                  <pfx:argument name="imgsel.Modtime"><ixsl:value-of select="@modtime"/></pfx:argument>
+                  <pfx:command  name="SELWRP" page="images">selectimage</pfx:command>
+                  <pfx:argument name="selectimage.Path"><ixsl:value-of select="@path"/></pfx:argument>
                   <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                   <ixsl:value-of select="@path"/>
                 </pfx:button>
@@ -72,7 +70,7 @@
                   </ixsl:when>
                   <ixsl:otherwise>
                     <img border="0">
-                      <ixsl:attribute name="src">/<ixsl:value-of select="@path"/></ixsl:attribute>
+                      <ixsl:attribute name="src">/<ixsl:value-of select="@path"/>?<ixsl:value-of select="@modtime"/></ixsl:attribute>
                     </img>
                   </ixsl:otherwise>
                 </ixsl:choose>
@@ -137,6 +135,28 @@
           </ixsl:for-each>
         </table>
         <br/>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="perm_denied_usedby_other_prods">
+    <product name="default">
+      <lang name="default">
+        <table class="core_errorbox_table" width="100%">
+          <tr valign="top">
+            <td class="core_errorbox_td">
+              <img src="/core/img/error.gif"/>
+            </td>
+            <td  class="core_errorlabel_text">
+              Permission denied!
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              This object is used by projects you are not allowed to edit.
+            </td>
+          </tr>
+        </table>
       </lang>
     </product>
   </part>

@@ -20,6 +20,7 @@ package de.schlund.pfixcore.editor2.frontend.util;
 
 import org.springframework.context.ApplicationContext;
 
+import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
@@ -69,5 +70,15 @@ public abstract class SpringBeanLocator {
     public static PageFactoryService getPageFactoryService() {
         return (PageFactoryService) getApplicationContext().getBean(
                 "pagefactory");
+    }
+    
+    /**
+     * Returns reference to ImageFactoryService
+     * 
+     * @return Bean retrieved from Spring ApplicationContext
+     */
+    public static ImageFactoryService getImageFactoryService() {
+        return (ImageFactoryService) getApplicationContext().getBean(
+                "imagefactory");
     }
 }

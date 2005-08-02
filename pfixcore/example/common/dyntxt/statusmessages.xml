@@ -63,6 +63,14 @@
       <lang name="default">This seems to be no PNG image.</lang>
     </product>
   </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_HASCHANGED">
+    <product name="default">
+      <lang name="default">
+        Image was changed by another user, while you were uploading.
+        Do upload again, if you still want to replace the image.
+      </lang>
+    </product>
+  </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
     <product name="default">
       <lang name="default">This include does not exist.</lang>

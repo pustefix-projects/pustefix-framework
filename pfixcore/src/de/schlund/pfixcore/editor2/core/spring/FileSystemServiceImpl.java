@@ -19,7 +19,9 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -28,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixxml.util.Xml;
 
 /**
@@ -37,11 +40,11 @@ import de.schlund.pfixxml.util.Xml;
  */
 public class FileSystemServiceImpl implements FileSystemService {
     private HashMap locks;
-    
+
     public FileSystemServiceImpl() {
         this.locks = new HashMap();
     }
-    
+
     public Object getLock(File file) {
         synchronized (this.locks) {
             if (this.locks.containsKey(file)) {
@@ -54,19 +57,61 @@ public class FileSystemServiceImpl implements FileSystemService {
         }
     }
 
-    public Document readXMLDocumentFromFile(File file) throws FileNotFoundException, SAXException, IOException, ParserConfigurationException {
+    public Document readXMLDocumentFromFile(File file)
+            throws FileNotFoundException, SAXException, IOException,
+            ParserConfigurationException {
         /*
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setCoalescing(true);
-        dbf.setNamespaceAware(true);
-        DocumentBuilder builder =  dbf.newDocumentBuilder();
-        return builder.parse(new FileInputStream(file));
-        */
+         * DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+         * dbf.setCoalescing(true); dbf.setNamespaceAware(true); DocumentBuilder
+         * builder = dbf.newDocumentBuilder(); return builder.parse(new
+         * FileInputStream(file));
+         */
         return Xml.parseMutable(file);
     }
 
-    public void storeXMLDocumentToFile(File file, Document document) throws IOException {
+    public void storeXMLDocumentToFile(File file, Document document)
+            throws IOException {
         Xml.serialize(document, file, true, true);
+    }
+
+    public void makeDirectory(File directory, boolean makeParentDirectories)
+            throws EditorIOException {
+        if (directory.exists()) {
+            throw new EditorIOException("Cannot create existing directory "
+                    + directory.getPath() + "!");
+        }
+        boolean ret;
+        if (makeParentDirectories) {
+            ret = directory.mkdirs();
+        } else {
+            ret = directory.mkdir();
+        }
+        if (!ret) {
+            String msg = "Could not create directory " + directory.getPath()
+                    + "!";
+            throw new EditorIOException(msg);
+        }
+    }
+
+    public void copy(File source, File target) throws EditorIOException {
+        try {
+            if (!target.exists()) {
+                target.createNewFile();
+            }
+            FileInputStream fis = new FileInputStream(source);
+            FileOutputStream fos = new FileOutputStream(target);
+            byte[] buf = new byte[1024];
+            int l;
+            while ((l = fis.read(buf)) != -1) {
+                fos.write(buf, 0, l);
+            }
+            fis.close();
+            fos.close();
+        } catch (IOException e) {
+            String err = "Could not copy file \"" + source.getPath()
+                    + "\" to \"" + target.getPath() + "\"!";
+            throw new EditorIOException(err, e);
+        }
     }
 
 }

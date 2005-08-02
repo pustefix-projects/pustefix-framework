@@ -78,6 +78,8 @@ public class ProjectsResourceImpl implements ProjectsResource {
             EditorResourceLocator.getPagesResource(this.context).unselectPage();
             EditorResourceLocator.getTargetsResource(this.context)
                     .unselectTarget();
+            EditorResourceLocator.getImagesResource(this.context)
+                    .unselectImage();
             return true;
         }
     }

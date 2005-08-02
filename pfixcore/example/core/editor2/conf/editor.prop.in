@@ -22,6 +22,9 @@
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
     </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
+    </resource>
   </context>
   
   <pageflow name="EditorFlow">
@@ -38,6 +41,11 @@
   <pageflow name="EditorTargetFlow" final="targets">
     <flowstep name="prodselect"/>
     <flowstep name="targets"/>
+  </pageflow>
+  
+  <pageflow name="EditorImageFlow" final="images">
+    <flowstep name="prodselect"/>
+    <flowstep name="images"/>
   </pageflow>
   
   <pageflow name="EditorJumpToPageFlow">
@@ -102,7 +110,19 @@
       <resource node="targets" class="de.schlund.pfixcore.editor2.frontend.resources.TargetsResource"/>
     </output>
   </pagerequest>
-  
+
+  <pagerequest name="images">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage" prefix="selectimage"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage" prefix="upload"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="images" class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
+    </output>
+  </pagerequest>
+    
   <pagerequest name="logout">
     <input>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Logout" prefix="logout"></interface>

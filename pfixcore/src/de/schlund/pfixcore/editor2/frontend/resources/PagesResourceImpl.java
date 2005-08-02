@@ -99,6 +99,8 @@ public class PagesResourceImpl implements PagesResource {
                     Element imageElement = resdoc.createSubNode(imagesElement,
                             "image");
                     imageElement.setAttribute("path", image.getPath());
+                    imageElement.setAttribute("modtime", Long.toString(image
+                            .getLastModTime()));
                 }
             }
         }

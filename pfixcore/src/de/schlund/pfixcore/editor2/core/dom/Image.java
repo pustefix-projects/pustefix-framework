@@ -18,7 +18,11 @@
 
 package de.schlund.pfixcore.editor2.core.dom;
 
+import java.io.File;
 import java.util.Collection;
+
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 
 /**
  * Represents an image that is used by one or several include parts.
@@ -42,4 +46,22 @@ public interface Image extends Comparable {
      * @see Page
      */
     Collection getAffectedPages();
+    
+    /**
+     * Replaces the current image file with the new one.
+     * 
+     * @param newFile File with new image to use
+     * @throws EditorSecurityException 
+     */
+    void replaceFile(File newFile) throws EditorIOException,
+            EditorSecurityException;
+    
+    /**
+     * Returns the last time this image was modified in microseconds
+     * since 01/01/1970 00:00:00 GMT. If the file cannot be found
+     * <code>0</code> is returned.
+     * 
+     * @return Time of last modification
+     */
+    long getLastModTime();
 }

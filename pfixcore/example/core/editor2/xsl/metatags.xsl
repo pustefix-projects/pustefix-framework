@@ -286,6 +286,7 @@
     </ixsl:choose>
   </xsl:template>
   
+  <!--
   <xsl:template match="displayallimages">
     <table width="100%" class="editor_sidebar_content">
       <ixsl:for-each select="/formresult/allimages/directory">
@@ -322,6 +323,7 @@
       </ixsl:for-each>
     </table>
   </xsl:template>
+  -->
 
   <xsl:template match="displayallcommons">
     <xsl:variable name="path">
@@ -603,11 +605,13 @@
   </xsl:template>
   -->
 
- <xsl:template match="displaycurrentimage">
+  <!--
+  <xsl:template match="displaycurrentimage">
     <div class="editor_main_emph" align="right">
       [IMAGE: <ixsl:value-of select="/formresult/currentimageinfo/@name"/>]
     </div>
   </xsl:template>
+  -->
 
   <xsl:template match="displaycurrentinclude">
     <div class="editor_main_emph" align="right">
@@ -1401,6 +1405,7 @@
     <h1><ixsl:value-of select="/formresult/current{$type}info/@permission_info"/></h1>
   </xsl:template>
   
+  <!--
   <xsl:template match="displayimagedetails">
     <ixsl:if test="/formresult/currentimageinfo">
       <pfx:forminput enctype="multipart/form-data">
@@ -1460,7 +1465,9 @@
       </pfx:forminput>
     </ixsl:if>
   </xsl:template>
+  -->
 
+  <!--
   <xsl:template name="show_image_upload">
     <pfx:checkactive prefix="upload">
         <tr valign="center" class="editor_odd_row">
@@ -1491,6 +1498,7 @@
         </ixsl:if>
     </pfx:checkactive>
   </xsl:template>
+  -->
 
 
   <xsl:template match="gendokumenu">

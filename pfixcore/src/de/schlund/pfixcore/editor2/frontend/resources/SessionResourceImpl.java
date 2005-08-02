@@ -19,7 +19,6 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.security.Principal;
-
 import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Element;
 

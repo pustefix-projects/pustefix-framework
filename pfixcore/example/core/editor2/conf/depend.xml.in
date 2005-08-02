@@ -32,5 +32,6 @@
   <standardpage name="targets" xml="core/editor2/xml/three_frames.xml">
     <include stylesheet="core/editor2/xsl/runtime.xsl"/>
   </standardpage>
+  <standardpage name="images" xml="core/editor2/xml/three_frames.xml"/>
   
 </make>

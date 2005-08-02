@@ -108,8 +108,8 @@
       <ref bean="configuration"/>
     </property>  
     <property name="securityManagerService">
-	  <ref bean="securitymanager"/>
-	</property>
+      <ref bean="securitymanager"/>
+    </property>
     <property name="imageFactoryService">
 	  <ref bean="imagefactory"/>
 	</property>
@@ -119,6 +119,18 @@
     <property name="variantFactoryService">
       <ref bean="variantfactory"/>
     </property>
+    <property name="projectFactoryService">
+      <ref bean="projectfactory"/>
+    </property>
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
   </bean>
     
   <bean id="filesystem" class="de.schlund.pfixcore.editor2.core.spring.FileSystemServiceImpl">
@@ -126,11 +138,11 @@
 
   <bean id="configuration" class="de.schlund.pfixcore.editor2.core.spring.ConfigurationServiceImpl" init-method="init">
     <property name="fileSystemService">
-		<ref bean="filesystem"/>
-	</property>
+      <ref bean="filesystem"/>
+    </property>
     <property name="pathResolverService">
-		<ref bean="pathresolver"/>
-	</property>
+      <ref bean="pathresolver"/>
+    </property>
     <property name="projectsFilePath">
 		<value>servletconf/projects.xml</value>
 	</property>	  

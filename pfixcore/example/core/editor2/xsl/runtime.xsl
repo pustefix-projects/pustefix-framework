@@ -117,6 +117,7 @@
     </table>
   </xsl:template> 
   
+  <!--
   <xsl:template name="image_perm_denied_usedby_other_prods">
     <xsl:param name="prods"/>
     <xsl:call-template name="perm_denied_usedby_other_prods">
@@ -125,5 +126,6 @@
       <xsl:with-param name="text" select="'You are not allowed to edit this image.'"/>
     </xsl:call-template>
   </xsl:template>
+  -->
   
 </xsl:stylesheet>

@@ -114,23 +114,31 @@ public class TargetsResourceImpl implements TargetsResource {
                     IncludePartThemeVariant variant = (IncludePartThemeVariant) i
                             .next();
                     this.renderInclude(variant, includesNode);
-                    allincludes.addAll(variant.getIncludeDependencies(this.selectedTarget.getThemeList(), true));
+                    allincludes.addAll(variant.getIncludeDependencies(
+                            this.selectedTarget.getThemeList(), true));
                 }
             }
-            
+
             // Render images
             // Get images for current target and all include parts
-            TreeSet images = new TreeSet(this.selectedTarget.getImageDependencies(false));
+            TreeSet images = new TreeSet(this.selectedTarget
+                    .getImageDependencies(false));
             for (Iterator i = allincludes.iterator(); i.hasNext();) {
-                IncludePartThemeVariant variant = (IncludePartThemeVariant) i.next();
-                images.addAll(variant.getImageDependencies(this.selectedTarget.getThemeList(), true));
+                IncludePartThemeVariant variant = (IncludePartThemeVariant) i
+                        .next();
+                images.addAll(variant.getImageDependencies(this.selectedTarget
+                        .getThemeList(), true));
             }
             if (!images.isEmpty()) {
-                Element imagesNode = resdoc.createSubNode(currentTarget, "images");
+                Element imagesNode = resdoc.createSubNode(currentTarget,
+                        "images");
                 for (Iterator i = images.iterator(); i.hasNext();) {
                     Image image = (Image) i.next();
-                    Element imageNode = resdoc.createSubNode(imagesNode, "image");
+                    Element imageNode = resdoc.createSubNode(imagesNode,
+                            "image");
                     imageNode.setAttribute("path", image.getPath());
+                    imageNode.setAttribute("modtime", Long.toString(image
+                            .getLastModTime()));
                 }
             }
 

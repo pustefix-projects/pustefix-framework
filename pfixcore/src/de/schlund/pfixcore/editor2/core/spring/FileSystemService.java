@@ -27,6 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+
 /**
  * Provides methods to access files on the filesystem.
  * 
@@ -49,14 +51,18 @@ public interface FileSystemService {
      * @param file
      *            File to read
      * @return DOM Document with the content of the file
-     * @throws IOExceptionParserConfigurationException 
-     * @throws SAXException 
-     * @throws ParserConfigurationException 
-     * @throws IOException 
+     * @throws IOExceptionParserConfigurationException
+     * @throws SAXException
+     * @throws ParserConfigurationException
+     * @throws IOException
      * @t
-     * @throws ParserConfigurationException hrows FileNotFoundExceptio, n 
+     * @throws ParserConfigurationException
+     *             hrows FileNotFoundExceptio, n
      */
-    public Document readXMLDocumentFromFile(File file) throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, IOException, ParserConfigurationException;
+    public Document readXMLDocumentFromFile(File file)
+            throws FileNotFoundException, SAXException, IOException,
+            ParserConfigurationException, IOException,
+            ParserConfigurationException;
 
     /**
      * Stores DOM document to file. If file is not yet existing, it is created,
@@ -67,7 +73,33 @@ public interface FileSystemService {
      * @param document
      *            DOM document containing all data that will be written to the
      *            file.
-     * @throws IOException 
+     * @throws IOException
      */
-    public void storeXMLDocumentToFile(File file, Document document) throws IOException;
+    public void storeXMLDocumentToFile(File file, Document document)
+            throws IOException;
+
+    /**
+     * Creates a directory on the filesystem
+     * 
+     * @param directory
+     *            Path to the directory to create
+     * @param makeParentDirectories
+     *            Set to <code>true</code> to create parent directories, if
+     *            necessary
+     * @throws EditorIOException
+     */
+    public void makeDirectory(File directory, boolean makeParentDirectories)
+            throws EditorIOException;
+
+    /**
+     * Copies a file
+     * 
+     * @param source
+     *            File to read from
+     * @param target
+     *            File to write in
+     * @throws EditorIOException
+     *             If an I/O errors occurs during the copying process
+     */
+    public void copy(File source, File target) throws EditorIOException;
 }
