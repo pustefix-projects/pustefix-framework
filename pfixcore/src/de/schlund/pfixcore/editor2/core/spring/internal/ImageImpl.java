@@ -29,6 +29,7 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
@@ -57,15 +58,19 @@ public class ImageImpl extends AbstractImage {
 
     private SecurityManagerService securitymanager;
 
+    private BackupService backup;
+
     public ImageImpl(VariantFactoryService variantfactory,
             ProjectFactoryService projectfactory,
             PathResolverService pathresolver, FileSystemService filesystem,
-            SecurityManagerService securitymanager, String path) {
+            SecurityManagerService securitymanager, BackupService backup,
+            String path) {
         this.variantfactory = variantfactory;
         this.projectfactory = projectfactory;
         this.pathresolver = pathresolver;
         this.securitymanager = securitymanager;
         this.filesystem = filesystem;
+        this.backup = backup;
         this.path = path;
         this.auxdep = AuxDependencyFactory.getInstance().getAuxDependency(
                 DependencyType.IMAGE,
@@ -102,12 +107,13 @@ public class ImageImpl extends AbstractImage {
         return pages;
     }
 
-    public void replaceFile(File newFile) throws EditorIOException,
+public void replaceFile(File newFile) throws EditorIOException,
             EditorSecurityException {
         this.securitymanager.checkEditImage(this);
         File imageFile = new File(this.pathresolver.resolve(this.getPath()));
 
         synchronized (this.filesystem.getLock(imageFile)) {
+            this.backup.backupImage(this);
             File directory = imageFile.getParentFile();
             if (!directory.exists()) {
                 this.filesystem.makeDirectory(directory, true);
@@ -118,9 +124,7 @@ public class ImageImpl extends AbstractImage {
             filesystem.copy(newFile, imageFile);
         }
 
-    }
-
-    public long getLastModTime() {
+    }    public long getLastModTime() {
         File file = new File(this.pathresolver.resolve(this.getPath()));
         return file.lastModified();
     }

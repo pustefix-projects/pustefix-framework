@@ -1,0 +1,269 @@
+/*
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package de.schlund.pfixcore.editor2.core.spring;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import de.schlund.pfixcore.editor2.core.dom.Image;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixxml.util.Xml;
+
+/**
+ * Implementation of
+ * {@link de.schlund.pfixcore.editor2.core.spring.BackupService} using a
+ * directory on the filesystem to store backups.
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ */
+public class BackupServiceImpl implements BackupService {
+    private final static String BACKUPDIR = ".editorbackup";
+
+    private FileSystemService filesystem;
+
+    private PathResolverService pathresolver;
+
+    private SecurityManagerService securitymanager;
+
+    public void setFileSystemService(FileSystemService filesystem) {
+        this.filesystem = filesystem;
+    }
+
+    public void setPathResolverService(PathResolverService pathresolver) {
+        this.pathresolver = pathresolver;
+    }
+
+    public void setSecurityManagerService(SecurityManagerService securitymanager) {
+        this.securitymanager = securitymanager;
+    }
+
+    private File getBackupFile(String path) {
+        return this.getBackupFile(path, this.getVersion());
+    }
+
+    private File getBackupFile(String path, String version) {
+        String fullPath;
+        if (path.startsWith("/")) {
+            fullPath = BACKUPDIR + path;
+        } else {
+            fullPath = BACKUPDIR + "/" + path;
+        }
+        fullPath = fullPath + File.pathSeparator + version + " ["
+                + this.securitymanager.getPrincipal().getName() + "]";
+        return new File(pathresolver.resolve(fullPath));
+    }
+
+    private File getFile(String path) {
+        return new File(pathresolver.resolve(path));
+    }
+
+    private File getBackupDir(String path) {
+        String fullPath;
+        if (path.startsWith("/")) {
+            fullPath = BACKUPDIR + path;
+        } else {
+            fullPath = BACKUPDIR + "/" + path;
+        }
+        return new File(pathresolver.resolve(fullPath));
+    }
+
+    private String getVersion() {
+        Date date = new Date();
+        return date.toString();
+    }
+
+    public void backupImage(Image image) throws EditorSecurityException {
+        this.securitymanager.checkEditImage(image);
+        File backupFile = this.getBackupFile(image.getPath());
+        File imageFile = this.getFile(image.getPath());
+        try {
+            synchronized (this.filesystem.getLock(imageFile)) {
+                synchronized (this.filesystem.getLock(backupFile)) {
+                    File parentDir = backupFile.getParentFile();
+                    if (!parentDir.exists()) {
+                        this.filesystem.makeDirectory(parentDir, true);
+                    }
+                    this.filesystem.copy(imageFile, backupFile);
+                }
+            }
+        } catch (EditorIOException e) {
+            String err = "Could not create backup for image " + image.getPath()
+                    + "!";
+            Logger.getLogger(this.getClass()).error(err, e);
+        }
+    }
+
+    public boolean restoreImage(Image image, String version)
+            throws EditorSecurityException {
+        this.securitymanager.checkEditImage(image);
+        // Make sure version string is safe
+        if (version.indexOf(File.pathSeparator) != -1) {
+            return false;
+        }
+        File imageFile = this.getFile(image.getPath());
+        File backupFile = this.getBackupFile(image.getPath(), version);
+        if (!backupFile.exists()) {
+            return false;
+        }
+        try {
+            synchronized (this.filesystem.getLock(imageFile)) {
+                synchronized (this.filesystem.getLock(backupFile)) {
+                    File parentDir = imageFile.getParentFile();
+                    if (!parentDir.exists()) {
+                        this.filesystem.makeDirectory(parentDir, true);
+                    }
+                    this.filesystem.copy(backupFile, imageFile);
+                }
+            }
+        } catch (EditorIOException e) {
+            String err = "Could not restore backup " + backupFile.getPath()
+                    + "!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        }
+        return true;
+    }
+
+    public Collection listImageVersions(Image image) {
+        File dir = this.getBackupDir(image.getPath());
+        if (!dir.exists() || !dir.isDirectory()) {
+            return new ArrayList();
+        }
+        File[] files = dir.listFiles();
+        ArrayList filesList = new ArrayList();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile() && !files[i].isHidden()) {
+                filesList.add(files[i].getName());
+            }
+        }
+        return filesList;
+    }
+
+    public void backupInclude(IncludePartThemeVariant include)
+            throws EditorSecurityException {
+        this.securitymanager.checkEditIncludePartThemeVariant(include);
+        File backupFile = this.getBackupFile(include.getIncludePart()
+                .getIncludeFile().getPath()
+                + File.pathSeparator
+                + include.getIncludePart().getName()
+                + File.pathSeparator + include.getTheme().getName());
+        try {
+            File parentDir = backupFile.getParentFile();
+            if (!parentDir.exists()) {
+                this.filesystem.makeDirectory(parentDir, true);
+            }
+            try {
+                Document doc = Xml.createDocument();
+                doc.appendChild(doc.importNode(include.getXML(), true));
+                this.filesystem.storeXMLDocumentToFile(backupFile, doc);
+            } catch (IOException e) {
+                String msg = "Could not write backup!";
+                Logger.getLogger(this.getClass()).error(msg, e);
+            }
+        } catch (EditorIOException e) {
+            String msg = "Could not write backup!";
+            Logger.getLogger(this.getClass()).error(msg, e);
+        }
+    }
+
+    public boolean restoreInclude(IncludePartThemeVariant include,
+            String version) throws EditorSecurityException {
+        this.securitymanager.checkEditIncludePartThemeVariant(include);
+        // Make sure version string is safe
+        if (version.indexOf(File.pathSeparator) != -1) {
+            return false;
+        }
+        File backupFile = this.getBackupFile(include.getIncludePart()
+                .getIncludeFile().getPath()
+                + File.pathSeparator
+                + include.getIncludePart().getName()
+                + File.pathSeparator + include.getTheme().getName(), version);
+        if (!backupFile.exists()) {
+            return false;
+        }
+        try {
+            synchronized (this.filesystem.getLock(backupFile)) {
+                Document doc = this.filesystem
+                        .readXMLDocumentFromFile(backupFile);
+                include.setXML(doc.getDocumentElement());
+            }
+        } catch (FileNotFoundException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (SAXException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (IOException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (ParserConfigurationException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (EditorIOException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (EditorParsingException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        } catch (EditorSecurityException e) {
+            String err = "Could not restore backup!";
+            Logger.getLogger(this.getClass()).error(err, e);
+            return false;
+        }
+        return true;
+    }
+
+    public Collection listIncludeVersions(IncludePartThemeVariant include) {
+        File dir = this.getBackupDir(include.getIncludePart().getIncludeFile()
+                .getPath()
+                + File.pathSeparator
+                + include.getIncludePart().getName()
+                + File.pathSeparator + include.getTheme().getName());
+        if (!dir.exists() || !dir.isDirectory()) {
+            return new ArrayList();
+        }
+        File[] files = dir.listFiles();
+        ArrayList filesList = new ArrayList();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile() && !files[i].isHidden()) {
+                filesList.add(files[i].getName());
+            }
+        }
+        return filesList;
+    }
+
+}

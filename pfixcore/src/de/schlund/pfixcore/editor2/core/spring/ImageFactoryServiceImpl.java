@@ -41,6 +41,8 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
 
     private SecurityManagerService securitymanager;
 
+    private BackupService backup;
+
     public void setFileSystemService(FileSystemService filesystem) {
         this.filesystem = filesystem;
     }
@@ -61,6 +63,10 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
         this.projectfactory = projectfactory;
     }
 
+    public void setBackupService(BackupService backup) {
+        this.backup = backup;
+    }
+
     public ImageFactoryServiceImpl() {
         this.cache = new HashMap();
     }
@@ -70,7 +76,8 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
             if (!this.cache.containsKey(path)) {
                 Image image = new ImageImpl(this.variantfactory,
                         this.projectfactory, this.pathresolver,
-                        this.filesystem, this.securitymanager, path);
+                        this.filesystem, this.securitymanager, this.backup,
+                        path);
                 this.cache.put(path, image);
             }
             return (Image) this.cache.get(path);

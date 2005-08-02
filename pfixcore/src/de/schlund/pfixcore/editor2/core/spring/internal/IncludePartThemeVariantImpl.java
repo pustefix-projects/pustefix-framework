@@ -49,6 +49,7 @@ import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
@@ -97,6 +98,8 @@ public class IncludePartThemeVariantImpl extends
 
     private SecurityManagerService securitymanager;
 
+    private BackupService backup;
+
     private AuxDependency auxdep;
 
     public IncludePartThemeVariantImpl(ProjectFactoryService projectfactory,
@@ -105,8 +108,8 @@ public class IncludePartThemeVariantImpl extends
             ThemeFactoryService themefactory, ImageFactoryService imagefactory,
             FileSystemService filesystem, PathResolverService pathresolver,
             ConfigurationService configuration,
-            SecurityManagerService securitymanager, Theme theme,
-            IncludePart part) {
+            SecurityManagerService securitymanager, BackupService backup,
+            Theme theme, IncludePart part) {
         this.projectfactory = projectfactory;
         this.variantfactory = variantfactory;
         this.includefactory = includefactory;
@@ -116,6 +119,7 @@ public class IncludePartThemeVariantImpl extends
         this.pathresolver = pathresolver;
         this.configuration = configuration;
         this.securitymanager = securitymanager;
+        this.backup = backup;
         this.theme = theme;
         this.part = part;
 
@@ -277,6 +281,9 @@ public class IncludePartThemeVariantImpl extends
                     theme = doc.createElement("product");
                     theme.setAttribute("name", this.getTheme().getName());
                     part.appendChild(theme);
+                } else {
+                    // Branch is already existing, so make a backup
+                    this.backup.backupInclude(this);
                 }
             }
 

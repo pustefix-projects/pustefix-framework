@@ -64,6 +64,8 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
 
     private SecurityManagerService securitymanager;
 
+    private BackupService backup;
+
     public void setProjectFactoryService(ProjectFactoryService projectfactory) {
         this.projectfactory = projectfactory;
     }
@@ -98,6 +100,10 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
 
     public void setSecurityManagerService(SecurityManagerService securitymanager) {
         this.securitymanager = securitymanager;
+    }
+
+    public void setBackupService(BackupService backup) {
+        this.backup = backup;
     }
 
     public IncludeFactoryServiceImpl() {
@@ -171,7 +177,8 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
         return new IncludePartThemeVariantImpl(this.projectfactory,
                 this.variantfactory, this.includefactory, this.themefactory,
                 this.imagefactory, this.filesystem, this.pathresolver,
-                this.configuration, this.securitymanager, theme, part);
+                this.configuration, this.securitymanager, this.backup, theme,
+                part);
     }
 
 }

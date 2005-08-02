@@ -113,6 +113,9 @@
     <property name="imageFactoryService">
 	  <ref bean="imagefactory"/>
 	</property>
+    <property name="backupService">
+      <ref bean="backup"/>
+    </property>
   </bean>
 
   <bean id="imagefactory" class="de.schlund.pfixcore.editor2.core.spring.ImageFactoryServiceImpl">
@@ -130,6 +133,9 @@
     </property>
     <property name="securityManagerService">
       <ref bean="securitymanager"/>
+    </property>
+    <property name="backupService">
+      <ref bean="backup"/>
     </property>
   </bean>
     
@@ -167,6 +173,18 @@
   </bean>
   
   <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl">      
+  </bean>
+  
+  <bean id="backup">
+    <property name="fileSystemService">
+      <ref bean="filesystem"/>
+    </property>
+    <property name="pathResolverService">
+      <ref bean="pathresolver"/>
+    </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
   </bean>
 					
 </beans>
