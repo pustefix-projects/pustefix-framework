@@ -115,6 +115,7 @@
     <input>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage" prefix="selectimage"/>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadImage" prefix="upload"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreImage" prefix="restore"/>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>

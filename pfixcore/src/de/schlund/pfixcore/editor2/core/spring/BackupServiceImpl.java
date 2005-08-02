@@ -76,8 +76,7 @@ public class BackupServiceImpl implements BackupService {
         } else {
             fullPath = BACKUPDIR + File.separator + path;
         }
-        fullPath = fullPath + File.separator + version + " ["
-                + this.securitymanager.getPrincipal().getName() + "]";
+        fullPath = fullPath + File.separator + version;
         return new File(pathresolver.resolve(fullPath));
     }
 
@@ -97,7 +96,8 @@ public class BackupServiceImpl implements BackupService {
 
     private String getVersion() {
         Date date = new Date();
-        return date.toString();
+        return date.toString() + " ["
+                + this.securitymanager.getPrincipal().getName() + "]";
     }
 
     public void backupImage(Image image) throws EditorSecurityException {
@@ -128,21 +128,15 @@ public class BackupServiceImpl implements BackupService {
         if (version.indexOf(File.separator) != -1) {
             return false;
         }
-        File imageFile = this.getFile(image.getPath());
         File backupFile = this.getBackupFile(image.getPath(), version);
         if (!backupFile.exists()) {
             return false;
         }
         try {
-            synchronized (this.filesystem.getLock(imageFile)) {
-                synchronized (this.filesystem.getLock(backupFile)) {
-                    File parentDir = imageFile.getParentFile();
-                    if (!parentDir.exists()) {
-                        this.filesystem.makeDirectory(parentDir, true);
-                    }
-                    this.filesystem.copy(backupFile, imageFile);
-                }
+            synchronized (this.filesystem.getLock(backupFile)) {
+                image.replaceFile(backupFile);
             }
+
         } catch (EditorIOException e) {
             String err = "Could not restore backup " + backupFile.getPath()
                     + "!";

@@ -31,6 +31,7 @@ import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
@@ -80,7 +81,7 @@ public class ImagesResourceImpl implements ImagesResource {
     public void unselectImage() {
         this.selectedImage = null;
     }
-    
+
     public Image getSelectedImage() {
         return this.selectedImage;
     }
@@ -140,6 +141,19 @@ public class ImagesResourceImpl implements ImagesResource {
                     currentImage.setAttribute("mayEdit", "false");
                 }
 
+                // Render backups
+                Collection backups = SpringBeanLocator.getBackupService()
+                        .listImageVersions(this.selectedImage);
+                if (!backups.isEmpty()) {
+                    Element backupsNode = resdoc.createSubNode(currentImage,
+                            "backups");
+                    for (Iterator i = backups.iterator(); i.hasNext();) {
+                        String version = (String) i.next();
+                        ResultDocument.addTextChild(backupsNode, "option",
+                                version);
+                    }
+                }
+
                 // Render affected pages
                 Collection pages = this.selectedImage.getAffectedPages();
                 if (!pages.isEmpty()) {
@@ -174,6 +188,18 @@ public class ImagesResourceImpl implements ImagesResource {
 
     public void reset() throws Exception {
         this.selectedImage = null;
+    }
+
+    public boolean restoreBackup(String version) {
+        if (this.selectedImage == null) {
+            return false;
+        }
+        try {
+            return SpringBeanLocator.getBackupService().restoreImage(
+                    this.selectedImage, version);
+        } catch (EditorSecurityException e) {
+            return false;
+        }
     }
 
 }

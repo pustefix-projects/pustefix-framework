@@ -391,6 +391,8 @@ ul.list li{
                             padding: 0; border-color: black; }
         .editor_box_alpha tr { padding: 0;}
         .editor_box_alpha td { padding: 3px;}
+        
+        .editor_box_alpha tr td { padding: 3px 10px 3px 10px;}
 
         .editor_main_emph { font-weight: bold; }
         .editor_warn { color: #cc0000; font-weight: bold; padding: 5px;}

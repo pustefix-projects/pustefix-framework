@@ -175,7 +175,7 @@
   <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl">      
   </bean>
   
-  <bean id="backup">
+  <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
     <property name="fileSystemService">
       <ref bean="filesystem"/>
     </property>

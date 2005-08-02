@@ -36,6 +36,20 @@
                 </table>                
               </pfx:error>
             </pfx:checkfield>
+            <pfx:checkfield name="restore.Version">
+              <pfx:error>
+                <table class="core_errorbox_table" width="400">
+                  <tr>
+                    <td class="core_errorlabel_text">
+                      Error!
+                    </td>
+                    <td class="core_errortext">
+                      <pfx:scode/>
+                    </td>
+                  </tr>
+                </table>                
+              </pfx:error>
+            </pfx:checkfield>
           </pfx:checkerror>
         </center>
         <ixsl:choose>
@@ -180,20 +194,22 @@
           </td>
         </tr>
         <!-- TODO Handle backup -->
-        <!--
-        <ixsl:if test="/formresult/currentimageinfo/backup/option">
+        <ixsl:if test="/formresult/images/currentimage/backups">
           <tr class="editor_odd_row">
-            <td colspan="3" align="right" nowrap="nowrap">
-              <pfx:xinp type="dynselect" name="upload.Backup" optionpath="/formresult/currentimageinfo/backup"/>
+            <td colspan="3"><hr/></td>
+          </tr>
+          <tr class="editor_odd_row">
+            <td>
+              If you want to return to a previous version of the image, select one of the backups below.
+            </td>
+            <td colspan="2" align="right" nowrap="nowrap">
+              <pfx:xinp type="dynselect" name="restore.Version" optionpath="/formresult/images/currentimage/backups"/>&#160;
               <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
-                <pfx:command  name="SELWRP">upload</pfx:command>
-                <pfx:argument name="upload.HaveUpload">true</pfx:argument>
-                <pfx:argument name="upload.HaveBackup">true</pfx:argument>
+                <pfx:command  name="SELWRP">restore</pfx:command>
               </pfx:xinp>
             </td>
           </tr>
         </ixsl:if>
-        -->
       </lang>
     </product>
   </part>

@@ -50,4 +50,12 @@ public interface ImagesResource extends ContextResource {
      * @return Image that is selected at the moment
      */
     Image getSelectedImage();
+    
+    /**
+     * Restores backup of an image
+     * 
+     * @param version String identifying the version
+     * @return <code>true</code> on success, <code>false</code> otherwise
+     */
+    boolean restoreBackup(String version);
 }
