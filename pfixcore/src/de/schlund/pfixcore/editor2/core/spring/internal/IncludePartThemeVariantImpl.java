@@ -302,6 +302,12 @@ public class IncludePartThemeVariantImpl extends
             // Tell IncludeFactory to refresh
             this.includefactory.refreshIncludeFile(this.getIncludePart()
                     .getIncludeFile().getPath());
+
+            // Register affected pages for regeneration
+            for (Iterator i = this.getAffectedPages().iterator(); i.hasNext();) {
+                Page page = (Page) i.next();
+                page.registerForUpdate();
+            }
         }
     }
 
