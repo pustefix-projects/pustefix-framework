@@ -105,7 +105,7 @@ public class PustefixTargetUpdateServiceImpl implements
                     target.getValue();
                 } catch (TargetGenerationException e) {
                     String msg = "Generation of target "
-                            + target.getTargetKey() + "failed!";
+                            + target.getTargetKey() + " failed!";
                     Logger.getLogger(this.getClass()).warn(msg);
                 }
                 highCopy.remove(0);
@@ -119,7 +119,7 @@ public class PustefixTargetUpdateServiceImpl implements
                     target.getValue();
                 } catch (TargetGenerationException e) {
                     String msg = "Generation of target "
-                            + target.getTargetKey() + "failed!";
+                            + target.getTargetKey() + " failed!";
                     Logger.getLogger(this.getClass()).warn(msg);
                 }
                 lowCopy.remove(0);
