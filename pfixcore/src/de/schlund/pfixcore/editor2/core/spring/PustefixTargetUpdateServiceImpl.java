@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,13 @@ import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
  * Implementation of PageUpdateService using a Thread started upon construction.
+ * This service generates all targets registered by using
+ * {@link #registerTargetForInitialUpdate(Target)} in a background loop. After
+ * the loop has completed the first time, there is a wait time of one second
+ * between the generation of each target. Targets registered by using
+ * {@link #registerTargetForUpdate(Target)} are generated with a higher priority
+ * and without the wait time, but after being generated once, they are
+ * automatically removed from the queue.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
@@ -36,12 +44,18 @@ public class PustefixTargetUpdateServiceImpl implements
 
     private ArrayList highPriorityQueue;
 
+    private HashSet targetList;
+
     private Object lock;
+
+    private boolean firstRunDone;
 
     public PustefixTargetUpdateServiceImpl() {
         this.lowPriorityQueue = new ArrayList();
         this.highPriorityQueue = new ArrayList();
         this.lock = new Object();
+        this.targetList = new HashSet();
+        this.firstRunDone = false;
         Thread thread = new Thread(this);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
@@ -67,13 +81,16 @@ public class PustefixTargetUpdateServiceImpl implements
             return;
         }
         synchronized (this.lock) {
-            this.lowPriorityQueue.add(target);
-            this.lock.notify();
+            if (!this.targetList.contains(target)) {
+                this.targetList.add(target);
+                this.lowPriorityQueue.add(target);
+                this.firstRunDone = false;
+                this.lock.notify();
+            }
         }
     }
 
     public void run() {
-        // TODO Auto-generated method stub
         while (true) {
             ArrayList lowCopy;
             ArrayList highCopy;
@@ -111,9 +128,25 @@ public class PustefixTargetUpdateServiceImpl implements
                     if (!this.highPriorityQueue.isEmpty()) {
                         break;
                     }
+                    if (this.firstRunDone) {
+                        try {
+                            // Wait a second to make sure
+                            // background generation loop
+                            // does not consume to much
+                            // CPU time
+                            this.lock.wait(1000);
+                        } catch (InterruptedException e) {
+                            // Ignore interruption and continue
+                        }
+                    }
                 }
             }
+
             synchronized (this.lock) {
+                if (this.lowPriorityQueue.isEmpty()) {
+                    this.lowPriorityQueue.addAll(this.targetList);
+                    this.firstRunDone = true;
+                }
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
                     try {
