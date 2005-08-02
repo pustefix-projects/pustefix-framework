@@ -45,11 +45,6 @@
             <ixsl:for-each select="/formresult/images/currentimage/pages">
               <pfx:include part="displayaffectedpages" href="core/editor2/txt/util.xml"/>
             </ixsl:for-each>
-            <!--
-            <displaycurrentimage/><br/>
-            <displayimagedetails/>
-            <displayaffectedpages path="/formresult/currentimageinfo"/>
-            -->
           </ixsl:when>
           <ixsl:otherwise>
             <center>
@@ -204,9 +199,3 @@
   </part>
   
 </include_parts>
-
-<!--
-Local Variables:
-mode: xml
-End:
--->
