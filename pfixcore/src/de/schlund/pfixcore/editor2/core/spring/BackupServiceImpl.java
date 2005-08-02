@@ -71,12 +71,12 @@ public class BackupServiceImpl implements BackupService {
 
     private File getBackupFile(String path, String version) {
         String fullPath;
-        if (path.startsWith("/")) {
+        if (path.startsWith(File.separator)) {
             fullPath = BACKUPDIR + path;
         } else {
-            fullPath = BACKUPDIR + "/" + path;
+            fullPath = BACKUPDIR + File.separator + path;
         }
-        fullPath = fullPath + File.pathSeparator + version + " ["
+        fullPath = fullPath + File.separator + version + " ["
                 + this.securitymanager.getPrincipal().getName() + "]";
         return new File(pathresolver.resolve(fullPath));
     }
@@ -87,10 +87,10 @@ public class BackupServiceImpl implements BackupService {
 
     private File getBackupDir(String path) {
         String fullPath;
-        if (path.startsWith("/")) {
+        if (path.startsWith(File.separator)) {
             fullPath = BACKUPDIR + path;
         } else {
-            fullPath = BACKUPDIR + "/" + path;
+            fullPath = BACKUPDIR + File.separator + path;
         }
         return new File(pathresolver.resolve(fullPath));
     }
@@ -125,7 +125,7 @@ public class BackupServiceImpl implements BackupService {
             throws EditorSecurityException {
         this.securitymanager.checkEditImage(image);
         // Make sure version string is safe
-        if (version.indexOf(File.pathSeparator) != -1) {
+        if (version.indexOf(File.separator) != -1) {
             return false;
         }
         File imageFile = this.getFile(image.getPath());
@@ -172,9 +172,9 @@ public class BackupServiceImpl implements BackupService {
         this.securitymanager.checkEditIncludePartThemeVariant(include);
         File backupFile = this.getBackupFile(include.getIncludePart()
                 .getIncludeFile().getPath()
-                + File.pathSeparator
+                + File.separator
                 + include.getIncludePart().getName()
-                + File.pathSeparator + include.getTheme().getName());
+                + File.separator + include.getTheme().getName());
         try {
             File parentDir = backupFile.getParentFile();
             if (!parentDir.exists()) {
@@ -198,14 +198,14 @@ public class BackupServiceImpl implements BackupService {
             String version) throws EditorSecurityException {
         this.securitymanager.checkEditIncludePartThemeVariant(include);
         // Make sure version string is safe
-        if (version.indexOf(File.pathSeparator) != -1) {
+        if (version.indexOf(File.separator) != -1) {
             return false;
         }
         File backupFile = this.getBackupFile(include.getIncludePart()
                 .getIncludeFile().getPath()
-                + File.pathSeparator
+                + File.separator
                 + include.getIncludePart().getName()
-                + File.pathSeparator + include.getTheme().getName(), version);
+                + File.separator + include.getTheme().getName(), version);
         if (!backupFile.exists()) {
             return false;
         }
@@ -250,9 +250,9 @@ public class BackupServiceImpl implements BackupService {
     public Collection listIncludeVersions(IncludePartThemeVariant include) {
         File dir = this.getBackupDir(include.getIncludePart().getIncludeFile()
                 .getPath()
-                + File.pathSeparator
+                + File.separator
                 + include.getIncludePart().getName()
-                + File.pathSeparator + include.getTheme().getName());
+                + File.separator + include.getTheme().getName());
         if (!dir.exists() || !dir.isDirectory()) {
             return new ArrayList();
         }
