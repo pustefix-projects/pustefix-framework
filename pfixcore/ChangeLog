@@ -1,3 +1,8 @@
+2005-08-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java (isDirty): new method to consolidate all the checks. Added more to
+	also get lower case, space separated versions of the "URL=" thingy
+
 2005-08-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java (process): another fix (it won't be the last I fear):

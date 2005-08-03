@@ -23,9 +23,11 @@ import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
+import java.util.regex.Matcher;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -37,7 +39,8 @@ import org.apache.log4j.Category;
 
 public class DerefServer extends ServletManager {
     static protected Category DEREFLOG = Category.getInstance("LOGGER_DEREF");
-
+    static protected Category CAT = Category.getInstance(DerefServer.class);
+    
     protected boolean allowSessionCreate() {
         return (false);
     }
@@ -64,7 +67,7 @@ public class DerefServer extends ServletManager {
             return;
         }
         
-        if (link.indexOf("\"") != -1 || link.indexOf(";URL=") != -1 || !isValidProtocol(link)) {
+        if (isDirty(link)) {
             // we don't want neither \" within a link nor a link starting with javascript: nor
             // do we want to allow any tricks with an additional embedded URL= stuff
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -79,7 +82,7 @@ public class DerefServer extends ServletManager {
             display = display.replaceAll("<", "&lt;");
             display = display.replaceAll(">", "&gt;");
             
-            if (goodReferer(preq) || isLocalUrl(link)) {
+            if (goodReferer(preq) || isLocalUrl(link)) { // This is currently always true, see the comment for goodReferer below :-(
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
@@ -105,33 +108,38 @@ public class DerefServer extends ServletManager {
         writer.flush();
     }
 
-    private boolean isLocalUrl(String link) {
-        
-        if (link.startsWith("/")) {
-            return true;
-        }
-
-        return false;
-    }
-
-
-    private boolean isValidProtocol(String link) {
+    private boolean isDirty(String link) {
         if (link == null || link.equals("")) {
-            return false;
+            return true;
         }
 
-        String lc = link.toLowerCase();
+        String  lc    = link.toLowerCase();
+        Pattern pat   = Pattern.compile("\\s");
+        Matcher match = pat.matcher(lc);
+        String  sane  = match.replaceAll("");
+        
+        if (!sane.startsWith("http://")  &&
+            !sane.startsWith("https://") &&
+            !sane.startsWith("ftp://")   &&
+            !sane.startsWith("/")) {
+            CAT.error("CAUTION: Bad protocoll: " + link);
+            return true;
+        }
 
-        if (lc.startsWith("http://")  ||
-            lc.startsWith("https://") ||
-            lc.startsWith("ftp://")   ||
-            lc.startsWith("/")) {
+        if (sane.indexOf("\"") != -1) {
+            CAT.error("CAUTION: Embedded \": " + link);
+            return true;
+        }
+
+        if (sane.indexOf(";url=") != -1) {
+            CAT.error("CAUTION: Dirty URL= trick: " + link);
             return true;
         }
         
         return false;
     }
-    
+
+        
     private boolean goodReferer(PfixServletRequest preq) {
 //        String referer = preq.getRequest().getHeader("Referer");
 //        String server = preq.getServerName();
@@ -151,4 +159,12 @@ public class DerefServer extends ServletManager {
         // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
         return true;
     }
+
+    private boolean isLocalUrl(String link) {
+        if (link.startsWith("/")) {
+            return true;
+        }
+        return false;
+    }
+
 }
