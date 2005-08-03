@@ -64,8 +64,9 @@ public class DerefServer extends ServletManager {
             return;
         }
         
-        if (link.indexOf("\"") != -1 || !isValidProtocol(link)) {
-            // we don't want neither \" within a link nor a link starting with javascript:!!
+        if (link.indexOf("\"") != -1 || link.indexOf(";URL=") != -1 || !isValidProtocol(link)) {
+            // we don't want neither \" within a link nor a link starting with javascript: nor
+            // do we want to allow any tricks with an additional embedded URL= stuff
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
