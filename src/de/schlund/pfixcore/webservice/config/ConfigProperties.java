@@ -139,6 +139,35 @@ public class ConfigProperties {
         throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val);
     }
     
+    public Object getObjectProperty(String propName,Class superClazz,boolean mandatory) throws ConfigException {
+    	String val=properties.getProperty(propName);
+    	if(val==null) {
+    		if(mandatory) throw new ConfigException(ConfigException.MISSING_PROPERTY,propName);
+    		else return null;
+    	}
+    	try {
+    		Class clazz=Class.forName(val);
+    		Object obj=clazz.newInstance();
+    		if(!superClazz.isInstance(obj)) throw new ClassCastException("Class '"+val+"' can't be casted to '"+superClazz.getName()+"'.");
+    		return obj;
+    	} catch(Exception x) {
+    		throw new ConfigException(ConfigException.ILLEGAL_PROPERTY_VALUE,propName,val,x);
+    	}
+    }
+    
+    public HashMap getHashMap(String propName) {
+        HashMap map=new HashMap();
+        Properties props=getProperties(propName+"\\..+");
+        Enumeration e=props.propertyNames();
+        while(e.hasMoreElements()) {
+            String key=(String)e.nextElement();
+            String val=props.getProperty(key);
+            key=key.substring(propName.length()+1);
+            map.put(key,val);
+        }
+        return map;
+    }
+    
     public Properties getProperties() {
         return getProperties(".*");
     }

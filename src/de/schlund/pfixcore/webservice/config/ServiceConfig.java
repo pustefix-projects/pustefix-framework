@@ -6,6 +6,7 @@ package de.schlund.pfixcore.webservice.config;
 import java.util.*;
 
 import de.schlund.pfixcore.webservice.*;
+import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
  * ServiceConfig.java 
@@ -25,6 +26,8 @@ public class ServiceConfig extends AbstractConfig {
     private final static String PROP_SSLFORCE=".ssl.force";
     private final static String PROP_ENCODINGSTYLE=".encoding.style";
     private final static String PROP_ENCODINGUSE=".encoding.use";
+    private final static String PROP_FAULTHANDLERCLASS=".faulthandler.class";
+    private final static String PROP_FAULTHANDLERPARAM=".faulthandler.param";
 
     String  name;
     String  itfName;
@@ -35,6 +38,7 @@ public class ServiceConfig extends AbstractConfig {
     boolean sslForce;
     String  encStyle;
     String  encUse;
+    FaultHandler faultHandler;
     HashMap params;
     
     public ServiceConfig() {
@@ -57,6 +61,12 @@ public class ServiceConfig extends AbstractConfig {
         sslForce      = props.getBooleanProperty(prefix + PROP_SSLFORCE,false,false);
         encStyle      = props.getStringProperty(prefix + PROP_ENCODINGSTYLE,Constants.ENCODING_STYLES,false);
         encUse        = props.getStringProperty(prefix + PROP_ENCODINGUSE,Constants.ENCODING_USES,false);
+        faultHandler=(FaultHandler)props.getObjectProperty(prefix+PROP_FAULTHANDLERCLASS,FaultHandler.class,false);
+        if(faultHandler!=null) {
+            HashMap faultParams=props.getHashMap(prefix+PROP_FAULTHANDLERPARAM);
+            faultHandler.setParams(faultParams);
+            faultHandler.init();
+        }
         //TODO: get params
         params        = new HashMap();
     }
@@ -127,6 +137,14 @@ public class ServiceConfig extends AbstractConfig {
     
     public String getEncodingUse() {
         return encUse;
+    }
+    
+    public FaultHandler getFaultHandler() {
+    	return faultHandler;
+    }
+    
+    public void setFaultHandler(FaultHandler faultHandler) {
+    	this.faultHandler=faultHandler;
     }
     
     public Iterator getParameterNames() {

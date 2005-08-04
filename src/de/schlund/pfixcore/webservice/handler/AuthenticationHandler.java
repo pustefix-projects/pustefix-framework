@@ -54,6 +54,7 @@ public class AuthenticationHandler extends AbstractHandler {
                     throw AxisFault.makeFault(new Exception("Authorization failed"));
                 }
                 ContextResourceManager crm=pfxContext.getContextResourceManager();
+                messageContext.setProperty(Constants.MSGCTX_PROP_CTX,pfxContext);
                 messageContext.setProperty(Constants.MSGCTX_PROP_CTXRESMAN,crm);
             }
         }
