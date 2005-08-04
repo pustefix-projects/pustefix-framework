@@ -81,7 +81,7 @@ public class DerefServer extends ServletManager {
             String display = link;
             display = display.replaceAll("<", "&lt;");
             display = display.replaceAll(">", "&gt;");
-            
+
             if (goodReferer(preq) || isLocalUrl(link)) { // This is currently always true, see the comment for goodReferer below :-(
             writer.write("<html><head>");
             writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link + "\">");
@@ -114,7 +114,7 @@ public class DerefServer extends ServletManager {
         }
 
         String  lc    = link.toLowerCase();
-        Pattern pat   = Pattern.compile("\\s");
+        Pattern pat   = Pattern.compile("[^\\p{Graph}]");
         Matcher match = pat.matcher(lc);
         String  sane  = match.replaceAll("");
         

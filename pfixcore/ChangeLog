@@ -45,6 +45,7 @@
 
 	* src/de/schlund/pfixxml/DerefServer.java (isDirty): new method to consolidate all the checks. Added more to
 	also get lower case, space separated versions of the "URL=" thingy
+	(isDirty): not only look for whitespace, but remove every non-printable character before checking for ;url=
 
 2005-08-02  Jens Lautenbacher  <jtl@schlund.de>
 
