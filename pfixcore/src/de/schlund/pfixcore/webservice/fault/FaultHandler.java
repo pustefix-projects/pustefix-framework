@@ -13,7 +13,7 @@ public abstract class FaultHandler {
 	
     HashMap params;
     
-	FaultHandler() {
+	protected FaultHandler() {
 	}
     
     public void setParams(HashMap params) {
