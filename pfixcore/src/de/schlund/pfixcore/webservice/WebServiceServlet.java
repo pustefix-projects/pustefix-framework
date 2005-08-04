@@ -16,6 +16,7 @@ import javax.servlet.http.*;
 import org.apache.axis.AxisFault;
 import org.apache.axis.ConfigurationException;
 import org.apache.axis.AxisEngine;
+import org.apache.axis.MessageContext;
 import org.apache.axis.description.OperationDesc;
 import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
@@ -23,6 +24,8 @@ import org.apache.axis.utils.ClassUtils;
 import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.webservice.config.*;
+import de.schlund.pfixcore.webservice.fault.Fault;
+import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.monitor.*;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
@@ -44,8 +47,18 @@ public class WebServiceServlet extends AxisServlet {
     private WebServiceContext wsc;
     private ClassLoader currentLoader;
     
-    public void init(ServletConfig config) throws ServletException {
+    private static ThreadLocal currentFault=new ThreadLocal();
+    
+    public static void setCurrentFault(Fault fault) {
+        currentFault.set(fault);
+    }
+    
+    public static Fault getCurrentFault() {
+        return (Fault)currentFault.get();
+    }
 
+    
+    public void init(ServletConfig config) throws ServletException {
     	AppLoader loader=AppLoader.getInstance();
     	if(loader.isEnabled()) {
     		ClassLoader newLoader=loader.getAppClassLoader();
@@ -203,12 +216,24 @@ public class WebServiceServlet extends AxisServlet {
         } else sendBadRequest(req,res,writer);
     }
     
-    protected void processAxisFault(AxisFault fault) {
-        Throwable t=fault.getCause();
-        if(t!=null) {
-            CAT.error("Exception while processing request",t);
+    protected void processAxisFault(AxisFault axisFault) {
+        Fault fault=WebServiceServlet.getCurrentFault();
+        Throwable t=axisFault.getCause();
+        if(t!=null) CAT.error("Exception while processing request",t);
+        String serviceName=fault.getServiceName();
+        Configuration config=wsc.getConfiguration();
+        ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
+        FaultHandler faultHandler=serviceConfig.getFaultHandler();
+        if(faultHandler==null) {
+            GlobalServiceConfig globalConfig=config.getGlobalServiceConfig();
+            faultHandler=globalConfig.getFaultHandler();
         }
-        super.processAxisFault(fault);
+        if(faultHandler!=null) {
+            fault.setThrowable(t);
+            faultHandler.handleFault(fault);
+            axisFault.setFaultString(fault.getFaultString());
+        }
+        axisFault.removeFaultDetail(org.apache.axis.Constants.QNAME_FAULTDETAIL_STACKTRACE);
     }
 
     

@@ -1,3 +1,46 @@
+2005-08-05  Martin Leidig  <mleidig@schlund.de>
+	
+	Extended webservice error handling: via global and webservice specific
+	faulthandlers SOAP faults can be customized or filtered (e.g. for logging,
+	notification, information hiding). A custom faulthandler is written by
+	deriving from the FaultHandler base class and overwriting the init() and
+	handleFault(Fault) methods. The handler class has to be registered for a
+	webservice or globally for all services by adding a <faulthandler class="..."/> 
+	entry to the according section in the webservice configuration file.
+	The handleFault() method will be automatically be called after a
+	webservice call ended up with an exception. The passed in Fault object
+	contains the Throwable object and some context information, like the
+	request URI and the Pustefix context. You can customize the fault by
+	setting another Throwable object or SOAP faultstring, which then will
+	be used for the further fault processing and which at last will be sent to
+	the SOAP client (instead of the original ones).
+
+	Modified:
+
+	* example/common/conf/server-config.wsdd
+	* example/core/build/create_webservice.xsl
+	* example/webservice/conf/webservice.conf.in
+	* skel/projects/common/conf/server-config.wsdd
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
+
+	Added:	
+
+	* src/de/schlund/pfixcore/webservice/fault/EmailNotifyingHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/InternalServerError.java
+	* src/de/schlund/pfixcore/webservice/fault/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+
 2005-08-04  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java (isDirty): new method to consolidate all the checks. Added more to
