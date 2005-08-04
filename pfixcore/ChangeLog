@@ -7,7 +7,7 @@
 	handleFault(Fault) methods. The handler class has to be registered for a
 	webservice or globally for all services by adding a <faulthandler class="..."/> 
 	entry to the according section in the webservice configuration file.
-	The handleFault() method will be automatically be called after a
+	The handleFault() method will be automatically called after a
 	webservice call ended up with an exception. The passed in Fault object
 	contains the Throwable object and some context information, like the
 	request URI and the Pustefix context. You can customize the fault by
