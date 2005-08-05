@@ -26,10 +26,11 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Category;
 import org.apache.axis.encoding.Base64;
+import org.apache.log4j.Category;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -55,6 +56,10 @@ public class DerefServer extends ServletManager {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
         
+        HttpServletRequest req     = preq.getRequest();
+        String             referer = req.getHeader("Referer");
+        CAT.debug("===> Referer: " + referer);
+        
         if (linkparam != null && linkparam.getValue() != null) {
             CAT.debug(" ==> Handle link: " + linkparam.getValue());
             handleLink(linkparam.getValue(), preq, res);
@@ -71,50 +76,35 @@ public class DerefServer extends ServletManager {
 
 
     private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        HttpSession  session = preq.getSession(false);
-
         link = link.trim();
         if (link == null || link.equals("")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        OutputStream       out    = res.getOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
+        String enclink            = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+            SessionHelper.getClearedURI(preq) + "?enclink=" + Base64.encode(link.getBytes("utf8"));
+
+        CAT.debug("===> Meta Refresh to link: " + enclink);
         
-        if (session == null) {
-            OutputStream       out     = res.getOutputStream();
-            OutputStreamWriter writer  = new OutputStreamWriter(out, res.getCharacterEncoding());
-            String             enclink = Base64.encode(link.getBytes("utf8"));
-            
-            writer.write("<html><head>");
-            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=/xml/deref?enclink=" + enclink + "\">");
-            writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"/xml/deref?enclink=" + enclink + "\">" + "---> Redirect --->" + "</a>");
-            writer.write("</small></center></body></html>");
-            writer.flush();
-        } else {
-            String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-                SessionHelper.getClearedURI(preq) + "?link=" + link;
-            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-            res.setHeader("Pragma", "no-cache");
-            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-            res.setHeader("Location", thelink);
-            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        }
+        writer.write("<html><head>");
+        writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + enclink +  "\">");
+        writer.write("</head><body bgcolor=\"#ffffff\"><center>");
+        writer.write("<a style=\"color:#bbbbbb;\" href=\"" + enclink + "\">" + "---> Redirect --->" + "</a>");
+        writer.write("</center></body></html>");
+        writer.flush();
     }
 
     private void handleEnclink(String enclink, PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        HttpSession  session = preq.getSession(false);
-        
-        if (session == null) {
-            String link =  new String( Base64.decode(enclink), "utf8");
-            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-            res.setHeader("Pragma", "no-cache");
-            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-            res.setHeader("Location", link);
-            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        } else {
-            // This problem should have been taken care of already...
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
-        }
+        String link =  new String( Base64.decode(enclink), "utf8");
+        CAT.debug("===> Relocate to link: " + link);
+        res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+        res.setHeader("Location", link);
+        res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
     }
 
         
