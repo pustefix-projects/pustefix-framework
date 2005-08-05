@@ -1,3 +1,10 @@
+2005-08-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: OK. Stop this insane stuff. Completely rewrote it.
+	Now we base64 encode the link that comes in, and redirect via meta refresh to the derefserver again
+	with this encoded information (in param enclink). This gets rid of the referer header. Then decode and use
+	the location header with the original link without any checks (no JS will be evaled in http headers)
+
 2005-08-05  Martin Leidig  <mleidig@schlund.de>
 	
 	Extended webservice error handling: via global and webservice specific

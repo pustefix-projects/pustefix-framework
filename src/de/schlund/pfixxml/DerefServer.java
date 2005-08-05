@@ -22,12 +22,14 @@ package de.schlund.pfixxml;
 import de.schlund.pfixxml.serverutil.SessionHelper;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Category;
-import java.util.regex.Matcher;
+import org.apache.axis.encoding.Base64;
 
 /**
  * This class implements a "Dereferer" servlet to get rid of Referer
@@ -50,52 +52,44 @@ public class DerefServer extends ServletManager {
     }
 
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        HttpSession  session   = preq.getSession(false);
-        RequestParam linkparam = preq.getRequestParam("link");
+        RequestParam linkparam    = preq.getRequestParam("link");
+        RequestParam enclinkparam = preq.getRequestParam("enclink");
         
-        if (linkparam == null || linkparam.getValue() == null) {
+        if (linkparam != null && linkparam.getValue() != null) {
+            CAT.debug(" ==> Handle link: " + linkparam.getValue());
+            handleLink(linkparam.getValue(), preq, res);
+            return;
+        } else if (enclinkparam != null && enclinkparam.getValue() != null) {
+            CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
+            handleEnclink(enclinkparam.getValue(), preq, res);
+            return;
+        } else {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        String link = linkparam.getValue();
-        if (link != null) {
-            link = link.trim();
-        }
-        
+    }
+
+
+    private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        HttpSession  session = preq.getSession(false);
+
+        link = link.trim();
         if (link == null || link.equals("")) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         
-        if (isDirty(link)) {
-            // we don't want neither \" within a link nor a link starting with javascript: nor
-            // do we want to allow any tricks with an additional embedded URL= stuff
-            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-        
-        OutputStream       out    = res.getOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
         if (session == null) {
-            DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
-            String display = link;
-            display = display.replaceAll("<", "&lt;");
-            display = display.replaceAll(">", "&gt;");
-
-            if (goodReferer(preq) || isLocalUrl(link)) { // This is currently always true, see the comment for goodReferer below :-(
+            OutputStream       out     = res.getOutputStream();
+            OutputStreamWriter writer  = new OutputStreamWriter(out, res.getCharacterEncoding());
+            String             enclink = Base64.encode(link.getBytes("utf8"));
+            
             writer.write("<html><head>");
-            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link + "\">");
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=/xml/deref?enclink=" + enclink + "\">");
             writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + link + "\">" + display + "</a>");
+            writer.write("<a style=\"color:#dddddd;\" href=\"/xml/deref?enclink=" + enclink + "\">" + "---> Redirect --->" + "</a>");
             writer.write("</small></center></body></html>");
-            } else {
-                writer.write("<html><head>");
-                writer.write("</head><body bgcolor=\"#ffffff\">");                
-                writer.write("<h2>You will now enter another website!</h1>");
-                writer.write("Please click on the following link:<br/>");                
-                writer.write("<a href=\"" + link + "\">" + display + "</a>");
-                writer.write("</body></html>");                
-            }
+            writer.flush();
         } else {
             String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
                 SessionHelper.getClearedURI(preq) + "?link=" + link;
@@ -105,66 +99,50 @@ public class DerefServer extends ServletManager {
             res.setHeader("Location", thelink);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         }
-        writer.flush();
     }
 
-    private boolean isDirty(String link) {
-        if (link == null || link.equals("")) {
-            return true;
-        }
-
-        String  lc    = link.toLowerCase();
-        Pattern pat   = Pattern.compile("[^\\p{Graph}]");
-        Matcher match = pat.matcher(lc);
-        String  sane  = match.replaceAll("");
+    private void handleEnclink(String enclink, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        HttpSession  session = preq.getSession(false);
         
-        if (!sane.startsWith("http://")  &&
-            !sane.startsWith("https://") &&
-            !sane.startsWith("ftp://")   &&
-            !sane.startsWith("/")) {
-            CAT.error("CAUTION: Bad protocoll: " + link);
-            return true;
+        if (session == null) {
+            String link =  new String( Base64.decode(enclink), "utf8");
+            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            res.setHeader("Location", link);
+            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        } else {
+            // This problem should have been taken care of already...
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
-
-        if (sane.indexOf("\"") != -1) {
-            CAT.error("CAUTION: Embedded \": " + link);
-            return true;
-        }
-
-        if (sane.indexOf(";url=") != -1) {
-            CAT.error("CAUTION: Dirty URL= trick: " + link);
-            return true;
-        }
-        
-        return false;
     }
 
         
-    private boolean goodReferer(PfixServletRequest preq) {
-//        String referer = preq.getRequest().getHeader("Referer");
-//        String server = preq.getServerName();
+//     private boolean goodReferer(PfixServletRequest preq) {
+// //        String referer = preq.getRequest().getHeader("Referer");
+// //        String server = preq.getServerName();
        
-//        if (referer == null) {
-//            // got no referer, maybe disabled or bad request...
-//            return false;
-//        }
+// //        if (referer == null) {
+// //            // got no referer, maybe disabled or bad request...
+// //            return false;
+// //        }
 
-//        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
-//        	   // ok, referer and servername match!!
-//            return true;
-//        }
+// //        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
+// //        	   // ok, referer and servername match!!
+// //            return true;
+// //        }
        
-//        return false;
+// //        return false;
 
-        // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
-        return true;
-    }
+//         // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
+//         return true;
+//     }
 
-    private boolean isLocalUrl(String link) {
-        if (link.startsWith("/")) {
-            return true;
-        }
-        return false;
-    }
+//     private boolean isLocalUrl(String link) {
+//         if (link.startsWith("/")) {
+//             return true;
+//         }
+//         return false;
+//     }
 
 }
