@@ -20,6 +20,7 @@
 package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.MD5Utils;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLDecoder;
@@ -42,7 +43,9 @@ import org.apache.log4j.Category;
 
 public class DerefServer extends ServletManager {
     static protected Category DEREFLOG = Category.getInstance("LOGGER_DEREF");
-    static protected Category CAT = Category.getInstance(DerefServer.class);
+    static protected Category CAT      = Category.getInstance(DerefServer.class);
+    private static String     rand     = ""+Math.random();
+    
     
     protected boolean allowSessionCreate() {
         return (false);
@@ -55,18 +58,23 @@ public class DerefServer extends ServletManager {
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
+        RequestParam signparam    = preq.getRequestParam("sign");
         
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
+
+        CAT.debug("===> sign key: " + rand);
         CAT.debug("===> Referer: " + referer);
         
-        if (linkparam != null && linkparam.getValue() != null) {
+        if (linkparam != null && linkparam.getValue()              != null) {
             CAT.debug(" ==> Handle link: " + linkparam.getValue());
             handleLink(linkparam.getValue(), preq, res);
             return;
-        } else if (enclinkparam != null && enclinkparam.getValue() != null) {
+        } else if (enclinkparam != null && enclinkparam.getValue() != null &&
+                   signparam != null && signparam.getValue() != null) {
             CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
-            handleEnclink(enclinkparam.getValue(), preq, res);
+            CAT.debug("     with sign: " + signparam.getValue());
+            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -82,29 +90,37 @@ public class DerefServer extends ServletManager {
             return;
         }
 
-        OutputStream       out    = res.getOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
-        String enclink            = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-            SessionHelper.getClearedURI(preq) + "?enclink=" + Base64.encode(link.getBytes("utf8"));
-
-        CAT.debug("===> Meta Refresh to link: " + enclink);
+        OutputStream       out      = res.getOutputStream();
+        OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
+        String             enclink  = Base64.encode(link.getBytes("utf8"));
+        String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+            SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
+            "&sign=" + MD5Utils.hex_md5(enclink+rand, "utf8");
+        
+        CAT.debug("===> Meta Refresh to link: " + reallink);
         
         writer.write("<html><head>");
-        writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + enclink +  "\">");
+        writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + reallink +  "\">");
         writer.write("</head><body bgcolor=\"#ffffff\"><center>");
-        writer.write("<a style=\"color:#bbbbbb;\" href=\"" + enclink + "\">" + "---> Redirect --->" + "</a>");
+        writer.write("<a style=\"color:#bbbbbb;\" href=\"" + reallink + "\">" + "---> Redirect --->" + "</a>");
         writer.write("</center></body></html>");
         writer.flush();
     }
 
-    private void handleEnclink(String enclink, PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        String link =  new String( Base64.decode(enclink), "utf8");
-        CAT.debug("===> Relocate to link: " + link);
-        res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
-        res.setHeader("Pragma", "no-cache");
-        res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-        res.setHeader("Location", link);
-        res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+        if (MD5Utils.hex_md5(enclink+rand, "utf8").equals(sign)) {
+            String link = new String( Base64.decode(enclink), "utf8");
+            CAT.debug("===> Relocate to link: " + link);
+            res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
+            res.setHeader("Pragma", "no-cache");
+            res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
+            res.setHeader("Location", link);
+            res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        } else {
+            CAT.warn("===> Won't relocate because signature is wrong.");
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
     }
 
         

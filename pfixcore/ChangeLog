@@ -1,3 +1,8 @@
+2005-08-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: now sign the encoded link so we don't allow anybody 
+	to directly call us with an encoded link (helps to avoid possible hiding of phishing attempts)
+
 2005-08-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: OK. Stop this insane stuff. Completely rewrote it.
