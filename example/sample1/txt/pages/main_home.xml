@@ -94,6 +94,7 @@
           <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
           <pfx:elink href="ftp://ftp.rz.uni-karlsruhe.de" target="_popup">
           Goto FTP UniKa!</pfx:elink>
+          <br/>
       </lang>
     </product>
   </part>
