@@ -29,7 +29,7 @@ public abstract class AbstractIncludeFile implements IncludeFile {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     public boolean equals(Object obj) {
-        if (!(obj instanceof Image)) {
+        if (!(obj instanceof IncludeFile)) {
             return false;
         }
         IncludeFile incFile = (IncludeFile) obj;
