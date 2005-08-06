@@ -190,15 +190,23 @@ public class ImagesResourceImpl implements ImagesResource {
         this.selectedImage = null;
     }
 
-    public boolean restoreBackup(String version) {
+    public int restoreBackup(String version, long modtime) {
         if (this.selectedImage == null) {
-            return false;
+            return 1;
         }
+        if (this.selectedImage.getLastModTime() != modtime) {
+            return 2;
+        }
+
         try {
-            return SpringBeanLocator.getBackupService().restoreImage(
-                    this.selectedImage, version);
+            if (SpringBeanLocator.getBackupService().restoreImage(
+                    this.selectedImage, version)) {
+                return 0;
+            } else {
+                return 1;
+            }
         } catch (EditorSecurityException e) {
-            return false;
+            return 1;
         }
     }
 

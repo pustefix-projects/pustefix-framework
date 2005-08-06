@@ -50,12 +50,18 @@ public interface ImagesResource extends ContextResource {
      * @return Image that is selected at the moment
      */
     Image getSelectedImage();
-    
+
     /**
      * Restores backup of an image
      * 
-     * @param version String identifying the version
-     * @return <code>true</code> on success, <code>false</code> otherwise
+     * @param version
+     *            String identifying the version
+     * @param modtime
+     *            Integer representing the time / version of the file the user
+     *            hast last seen
+     * @return <code>0</code> on success, <code>1</code> if image could not
+     *         be restored, <code>2</code> if images has been changed by
+     *         another user in the meantime
      */
-    boolean restoreBackup(String version);
+    int restoreBackup(String version, long modtime);
 }

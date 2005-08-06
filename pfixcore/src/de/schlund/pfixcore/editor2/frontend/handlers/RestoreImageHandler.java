@@ -35,10 +35,18 @@ public class RestoreImageHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         RestoreImage input = (RestoreImage) wrapper;
-        if (!EditorResourceLocator.getImagesResource(context).restoreBackup(
-                input.getVersion())) {
+        int ret = EditorResourceLocator.getImagesResource(context)
+                .restoreBackup(input.getVersion(),
+                        input.getLastModTime().longValue());
+        if (ret == 1) {
             input.addSCodeVersion(StatusCodeFactory.getInstance()
                     .getStatusCode("pfixcore.editor.images.IMAGE_UNDEF"));
+        } else if (ret == 2) {
+            input
+                    .addSCodeVersion(StatusCodeFactory
+                            .getInstance()
+                            .getStatusCode(
+                                    "pfixcore.editor.images.IMAGEUPL_HASCHANGED"));
         }
     }
 

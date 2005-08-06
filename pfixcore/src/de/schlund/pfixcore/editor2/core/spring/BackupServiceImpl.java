@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -152,6 +154,21 @@ public class BackupServiceImpl implements BackupService {
             return new ArrayList();
         }
         File[] files = dir.listFiles();
+        Comparator comp = new Comparator() {
+            public int compare(Object arg0, Object arg1) {
+                File file0 = (File) arg0;
+                File file1 = (File) arg1;
+                long ret = file0.lastModified() - file1.lastModified();
+                if (ret == 0) {
+                    return 0;
+                } else if (ret < 0) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }  
+        };
+        Arrays.sort(files, comp);
         ArrayList filesList = new ArrayList();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isFile() && !files[i].isHidden()) {
@@ -251,6 +268,21 @@ public class BackupServiceImpl implements BackupService {
             return new ArrayList();
         }
         File[] files = dir.listFiles();
+        Comparator comp = new Comparator() {
+            public int compare(Object arg0, Object arg1) {
+                File file0 = (File) arg0;
+                File file1 = (File) arg1;
+                long ret = file0.lastModified() - file1.lastModified();
+                if (ret == 0) {
+                    return 0;
+                } else if (ret < 0) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }  
+        };
+        Arrays.sort(files, comp);
         ArrayList filesList = new ArrayList();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isFile() && !files[i].isHidden()) {

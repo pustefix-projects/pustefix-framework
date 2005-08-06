@@ -45,14 +45,16 @@ public class UploadImageHandler implements IHandler {
         info.setInput(new FileInputStream(uploadFile));
         if (!info.check()) {
             input.addSCodeImageFile(StatusCodeFactory.getInstance()
-                    .getStatusCode("IMAGEUPL_NOFILE"));
+                    .getStatusCode(
+                            "pfixcore.editor.imagesupload.IMAGEUPL_NOFILE"));
             return;
         }
         String mimeType = info.getMimeType();
         Image image = EditorResourceLocator.getImagesResource(context)
                 .getSelectedImage();
         if (image == null) {
-            input.addSCodeImageFile(StatusCodeFactory.getInstance().getStatusCode("pfixcore.editor.images.IMAGE_UNDEF"));
+            input.addSCodeImageFile(StatusCodeFactory.getInstance()
+                    .getStatusCode("pfixcore.editor.images.IMAGE_WRONGTYPE"));
         }
         String imagePath = image.getPath();
         String suffix = imagePath.substring(imagePath.lastIndexOf("."));

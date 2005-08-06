@@ -84,7 +84,7 @@
   <part name="displayallimages">
     <product name="default">
       <lang name="default">
-        <table width="100%" class="editor_sidebar_content">
+        <table class="editor_sidebar_content editor_sidebar_content_images">
           <ixsl:for-each select="/formresult/images/directory">
             <tr>
               <td class="editor_sidebar_box" nowrap="nowrap">
@@ -193,16 +193,18 @@
             </pfx:xinp>
           </td>
         </tr>
-        <!-- TODO Handle backup -->
         <ixsl:if test="/formresult/images/currentimage/backups">
           <tr class="editor_odd_row">
-            <td colspan="3"><hr/></td>
+            <td colspan="3" style="padding:0px 10px 0px 10px;"><hr style="margin:0px"/></td>
           </tr>
           <tr class="editor_odd_row">
-            <td>
+            <td colspan="2">
               If you want to return to a previous version of the image, select one of the backups below.
             </td>
-            <td colspan="2" align="right" nowrap="nowrap">
+            <td align="right" nowrap="nowrap">
+              <input type="hidden" name="restore.LastModTime">
+                <ixsl:attribute name="value"><ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
+              </input>
               <pfx:xinp type="dynselect" name="restore.Version" optionpath="/formresult/images/currentimage/backups"/>&#160;
               <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
                 <pfx:command  name="SELWRP">restore</pfx:command>

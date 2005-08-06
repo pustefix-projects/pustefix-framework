@@ -286,6 +286,10 @@ div.docframe div.main ul li span.default{
   width: auto;
   font-size: 10px !important;
 }
+        
+.editor_sidebar_content_images {
+  width:90%;
+}
 
 div.topbar{
   position:absolute;
@@ -392,7 +396,7 @@ ul.list li{
         .editor_box_alpha tr { padding: 0;}
         .editor_box_alpha td { padding: 3px;}
         
-        .editor_box_alpha tr td { padding: 3px 10px 3px 10px;}
+        .editor_box_alpha tr td { padding: 10px;}
 
         .editor_main_emph { font-weight: bold; }
         .editor_warn { color: #cc0000; font-weight: bold; padding: 5px;}
