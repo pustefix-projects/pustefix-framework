@@ -77,7 +77,7 @@ public class DerefServer extends ServletManager {
             handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res);
             return;
         } else {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
     }
@@ -86,7 +86,7 @@ public class DerefServer extends ServletManager {
     private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res) throws Exception {
         link = link.trim();
         if (link == null || link.equals("")) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
