@@ -50,7 +50,7 @@ public class EmailNotifyingHandler extends FaultHandler {
         if(isInternalServerError(fault)) fault.setThrowable(new InternalServerError());
 	}
     
-    public void sendMail(Fault fault) {
+    public void sendDirectMail(Fault fault) {
         try {
             String subject=createSubject(fault);
             String text=createText(fault);
@@ -58,6 +58,13 @@ public class EmailNotifyingHandler extends FaultHandler {
         } catch(EmailSenderException x) {
             LOG.error("Error while sending exception mail.",x);
         }
+    }
+    
+    public void sendMail(Fault fault) {
+        EmailNotifier notifier=EmailNotifier.getInstance();
+        String subject=createSubject(fault);
+        String text=createText(fault);
+        notifier.sendMail(subject,text,recipients,sender,smtpHost);
     }
     
     public String createSubject(Fault fault) {
