@@ -1,3 +1,8 @@
+2005-08-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: Don't use a random sign key per class, as we don't
+	know on which cluster we will land - so now we use a property from pustefix.prop
+
 2005-08-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: now sign the encoded link so we don't allow anybody 

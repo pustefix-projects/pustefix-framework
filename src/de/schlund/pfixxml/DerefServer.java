@@ -44,8 +44,6 @@ import org.apache.log4j.Category;
 public class DerefServer extends ServletManager {
     static protected Category DEREFLOG = Category.getInstance("LOGGER_DEREF");
     static protected Category CAT      = Category.getInstance(DerefServer.class);
-    private static String     rand     = ""+Math.random();
-    
     
     protected boolean allowSessionCreate() {
         return (false);
@@ -55,26 +53,38 @@ public class DerefServer extends ServletManager {
         return (false);
     }
 
+    public static String signString(String input, String key) {
+        return MD5Utils.hex_md5(input+key, "utf8");
+    }
+
+    public static boolean checkSign(String input, String key, String sign) {
+        if (input == null || sign == null) {
+            return false;
+        }
+        return MD5Utils.hex_md5(input+key, "utf8").equals(sign);
+    }
+    
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
         RequestParam signparam    = preq.getRequestParam("sign");
+        String       key          = getProperties().getProperty("derefserver.signkey");
         
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
 
-        CAT.debug("===> sign key: " + rand);
+        CAT.debug("===> sign key: " + key);
         CAT.debug("===> Referer: " + referer);
         
         if (linkparam != null && linkparam.getValue()              != null) {
             CAT.debug(" ==> Handle link: " + linkparam.getValue());
-            handleLink(linkparam.getValue(), preq, res);
+            handleLink(linkparam.getValue(), preq, res, key);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
             CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
             CAT.debug("     with sign: " + signparam.getValue());
-            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res);
+            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res, key);
             return;
         } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -83,7 +93,7 @@ public class DerefServer extends ServletManager {
     }
 
 
-    private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res) throws Exception {
+    private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         link = link.trim();
         if (link == null || link.equals("")) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -95,7 +105,7 @@ public class DerefServer extends ServletManager {
         String             enclink  = Base64.encode(link.getBytes("utf8"));
         String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
             SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
-            "&sign=" + MD5Utils.hex_md5(enclink+rand, "utf8");
+            "&sign=" + signString(enclink, key);
         
         CAT.debug("===> Meta Refresh to link: " + reallink);
         
@@ -107,8 +117,8 @@ public class DerefServer extends ServletManager {
         writer.flush();
     }
 
-    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        if (MD5Utils.hex_md5(enclink+rand, "utf8").equals(sign)) {
+    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        if (checkSign(enclink, key, sign)) {
             String link = new String( Base64.decode(enclink), "utf8");
             CAT.debug("===> Relocate to link: " + link);
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
