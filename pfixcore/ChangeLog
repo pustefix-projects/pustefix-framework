@@ -1,3 +1,7 @@
+2005-08-10  Daniel Hopp  <daniel.hopp@schlund.de>
+
+	* example/core/xsl/master.xsl.in: global variable $__root bound to context root node
+
 2005-08-08  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DerefServer.java: Don't use a random sign key per class, as we don't
