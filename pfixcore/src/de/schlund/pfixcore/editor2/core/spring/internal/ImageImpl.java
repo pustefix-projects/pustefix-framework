@@ -112,14 +112,13 @@ public void replaceFile(File newFile) throws EditorIOException,
         this.securitymanager.checkEditImage(this);
         File imageFile = new File(this.pathresolver.resolve(this.getPath()));
 
-        synchronized (this.filesystem.getLock(imageFile)) {
-            this.backup.backupImage(this);
+        synchronized (this.filesystem.getLock(imageFile)) {            
             File directory = imageFile.getParentFile();
             if (!directory.exists()) {
                 this.filesystem.makeDirectory(directory, true);
             }
             if (imageFile.exists()) {
-                // TODO Handle backup
+                this.backup.backupImage(this);
             }
             filesystem.copy(newFile, imageFile);
         }
