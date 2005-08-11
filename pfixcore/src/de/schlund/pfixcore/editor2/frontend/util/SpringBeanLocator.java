@@ -28,6 +28,7 @@ import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.UserManagementService;
+import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
 
 public abstract class SpringBeanLocator {
     private static ApplicationContext getApplicationContext() {
@@ -112,5 +113,15 @@ public abstract class SpringBeanLocator {
     public static DynIncludeFactoryService getDynIncludeFactoryService() {
         return (DynIncludeFactoryService) getApplicationContext().getBean(
                 "dynincludefactory");
+    }
+    
+    /**
+     * Returns reference to UserPasswortAuthenticationService
+     * 
+     * @return Bean retrieved from Spring ApplicationContext
+     */
+    public static UserPasswordAuthenticationService getUserPasswordAuthenticationService() {
+        return (UserPasswordAuthenticationService) getApplicationContext().getBean(
+                "userpasswordauthentication");
     }
 }

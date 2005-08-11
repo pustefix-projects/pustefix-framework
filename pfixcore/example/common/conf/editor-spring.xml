@@ -188,6 +188,9 @@
     <property name="userManagementService">
       <ref bean="usermanagement"/>
     </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
   </bean>
     
   <bean id="session" class="de.schlund.pfixcore.editor2.core.spring.PustefixSessionServiceImpl">      

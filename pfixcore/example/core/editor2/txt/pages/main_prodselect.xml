@@ -16,8 +16,7 @@
         <div class="info">
         <h1>Hello, <ixsl:value-of select="/formresult/session/user/@fullname"/>.</h1>
 
-        <!-- TODO Add support for locking logins -->
-        <ixsl:if test="/formresult/cr_editorsession/@loginallowed = &apos;false&apos;">
+        <ixsl:if test="/formresult/session/@userLoginsAllowed = 'false'">
           <h2>New logins are currently NOT allowed!</h2>
         </ixsl:if>
         </div>
@@ -28,11 +27,7 @@
             <ixsl:for-each select="/formresult/projects/project">
               <ixsl:sort select="./@name"/>
               <li>
-                <pfx:button normalclass="editor_submit" page="prodselect" mode="force">
-                  <!--
-                  <pfx:command name="SELWRP">prodsel</pfx:command>
-                  <pfx:argument name="__pageflow">Editor</pfx:argument>
-                  -->
+                <pfx:button normalclass="editor_submit" mode="force">
                   <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="./@name"/></pfx:argument>
                   <ixsl:value-of select="./@comment"/>
                 </pfx:button>
@@ -63,15 +58,15 @@
             <li><pfx:button normalclass="editor_submit" page="editorusermanager">Useradmin</pfx:button></li>
             <li>
               <ixsl:choose>
-                <ixsl:when test="/formresult/cr_editorsession/@loginallowed = &apos;true&apos;">
-                  <pfx:button mode="force" normalclass="editor_submit" page="prodselect" target="_top">
-                    <pfx:command name="SELWRP">login</pfx:command>
-                    <pfx:argument name="login.LoginAllowed">false</pfx:argument>Prohibit new logins</pfx:button>
+                <ixsl:when test="/formresult/session/@userLoginsAllowed = 'true'">
+                  <pfx:button mode="force" normalclass="editor_submit">
+                    <pfx:command name="SELWRP">userlogins</pfx:command>
+                    <pfx:argument name="userlogins.Allow">false</pfx:argument>Prohibit new logins</pfx:button>
                 </ixsl:when>
                 <ixsl:otherwise>
-                  <pfx:button mode="force" normalclass="editor_submit" page="prodselect" target="_top">
-                    <pfx:command name="SELWRP">login</pfx:command>
-                    <pfx:argument name="login.LoginAllowed">true</pfx:argument>Allow new logins</pfx:button>
+                  <pfx:button mode="force" normalclass="editor_submit">
+                    <pfx:command name="SELWRP">userlogins</pfx:command>
+                    <pfx:argument name="userlogins.Allow">true</pfx:argument>Allow new logins</pfx:button>
                 </ixsl:otherwise>
               </ixsl:choose>
             </li>

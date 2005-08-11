@@ -95,6 +95,7 @@
   <pagerequest name="prodselect">
     <input>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch" prefix="userlogins"></interface>
     </input>
     <output>
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>

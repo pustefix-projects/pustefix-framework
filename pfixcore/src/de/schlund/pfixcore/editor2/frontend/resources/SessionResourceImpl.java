@@ -19,13 +19,12 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.security.Principal;
-import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
-import de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
@@ -42,12 +41,8 @@ public class SessionResourceImpl implements SessionResource {
     private SecurityManagerService secman;
 
     public SessionResourceImpl() {
-        ApplicationContext appContext = EditorApplicationContextFactory
-                .getInstance().getApplicationContext();
-        this.upas = (UserPasswordAuthenticationService) appContext
-                .getBean("userpasswordauthentication");
-        this.secman = (SecurityManagerService) appContext
-                .getBean("securitymanager");
+        this.upas = SpringBeanLocator.getUserPasswordAuthenticationService();
+        this.secman = SpringBeanLocator.getSecurityManagerService();
     }
 
     public boolean login(String username, String password) {
@@ -73,7 +68,11 @@ public class SessionResourceImpl implements SessionResource {
 
     public void insertStatus(ResultDocument resdoc, Element elem)
             throws Exception {
-        // TODO Auto-generated method stub
+        if (this.upas.isAllowUserLogins()) {
+            elem.setAttribute("userLoginsAllowed", "true");
+        } else {
+            elem.setAttribute("userLoginsAllowed", "false");
+        }
         if (this.isLoggedIn()) {
             // Use security manager to render effective permissions
             SecurityManagerService secman = SpringBeanLocator
@@ -98,6 +97,19 @@ public class SessionResourceImpl implements SessionResource {
 
     public void reset() throws Exception {
         this.logout();
+    }
+
+    public boolean isUserLoginsAllowed() {
+        return this.upas.isAllowUserLogins();
+    }
+
+    public boolean setUserLoginsAllowed(boolean flag) {
+        try {
+            this.upas.setAllowUserLogins(flag);
+        } catch (EditorSecurityException e) {
+            return false;
+        }
+        return true;
     }
 
 }

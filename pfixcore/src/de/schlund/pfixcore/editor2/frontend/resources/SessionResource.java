@@ -49,4 +49,22 @@ public interface SessionResource extends ContextResource {
      *         otherwise
      */
     boolean isLoggedIn();
+
+    /**
+     * Returns wheter users are allowed to login
+     * 
+     * @return <code>true</code> if users can login, <code>false</code>
+     *         otherwise
+     */
+    boolean isUserLoginsAllowed();
+
+    /**
+     * Enables or disables user logins
+     * 
+     * @param flag
+     *            Set to <code>true</code> to enable and <code>false</code>
+     *            to disable user logins
+     * @return <code>true</code> on success, <code>false</code> otherwise
+     */
+    boolean setUserLoginsAllowed(boolean flag);
 }

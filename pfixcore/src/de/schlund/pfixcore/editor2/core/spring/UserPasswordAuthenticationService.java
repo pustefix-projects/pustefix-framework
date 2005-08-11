@@ -20,6 +20,8 @@ package de.schlund.pfixcore.editor2.core.spring;
 
 import java.security.Principal;
 
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+
 public interface UserPasswordAuthenticationService {
     /**
      * Returns the principal for the specified user
@@ -33,4 +35,19 @@ public interface UserPasswordAuthenticationService {
      *         was supplied.
      */
     Principal getPrincipalForUser(String username, String password);
+
+    /**
+     * Enables and disables logins for users. Admins are not affected by this
+     * setting.
+     * @throws EditorSecurityException 
+     */
+    void setAllowUserLogins(boolean flag) throws EditorSecurityException;
+
+    /**
+     * Returns current user login setting
+     * 
+     * @return <code>true</code> if users are allowed to login,
+     *         <code>false</code> otherwise
+     */
+    boolean isAllowUserLogins();
 }

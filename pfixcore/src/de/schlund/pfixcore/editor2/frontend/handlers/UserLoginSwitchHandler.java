@@ -1,4 +1,4 @@
-/*
+/* 
  * This file is part of PFIXCORE.
  *
  * PFIXCORE is free software; you can redistribute it and/or modify
@@ -19,56 +19,44 @@
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
-import de.schlund.pfixcore.editor2.frontend.wrappers.Login;
+import de.schlund.pfixcore.editor2.frontend.wrappers.UserLoginSwitch;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 
 /**
- * Handles login form
+ * Handles enable/disable of user logins
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class LoginHandler implements IHandler {
+public class UserLoginSwitchHandler implements IHandler {
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
-        Login input = (Login) wrapper;
-        if (!EditorResourceLocator.getSessionResource(context).login(
-                input.getUser(), input.getPass())) {
-            if (EditorResourceLocator.getSessionResource(context)
-                    .isUserLoginsAllowed()) {
-                input.addSCodePass(StatusCodeFactory.getInstance()
-                        .getStatusCode(
-                                "pfixcore.editor.auth.WRONG_USER_OR_PASS"));
-            } else {
-                input
-                        .addSCodePass(StatusCodeFactory
-                                .getInstance()
-                                .getStatusCode(
-                                        "pfixcore.editor.auth.NO_LOGIN_ALLOWED"));
-            }
+        UserLoginSwitch input = (UserLoginSwitch) wrapper;
+        if (input.getAllow() != null) {
+            EditorResourceLocator.getSessionResource(context).setUserLoginsAllowed(input.getAllow().booleanValue());
         }
     }
 
     public void retrieveCurrentStatus(Context context, IWrapper wrapper)
             throws Exception {
-        // Do not insert any data
+        // Do not insert data
     }
 
     public boolean prerequisitesMet(Context context) throws Exception {
-        // Always allow login
+        // Always enable this wrapper
         return true;
     }
 
     public boolean isActive(Context context) throws Exception {
-        // Allways allow login
+        // Always enable this wrapper
         return true;
     }
 
     public boolean needsData(Context context) throws Exception {
-        return !EditorResourceLocator.getSessionResource(context).isLoggedIn();
+        // Never ask for input
+        return false;
     }
 
 }
