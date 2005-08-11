@@ -237,10 +237,4 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
             throw new EditorSecurityException("User is not an admin!");
         }
     }
-
-    public boolean mayEditProject(Project project) {
-        return (this.mayAdmin() || this.mayEditDynInclude()
-                || this.mayEditIncludePartForProject(project) || this
-                .mayEditImageForProject(project));
-    }
 }

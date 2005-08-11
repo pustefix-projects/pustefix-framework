@@ -23,7 +23,6 @@ import java.security.Principal;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
-import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 
@@ -50,18 +49,6 @@ public interface SecurityManagerService {
      *         <code>null</code> if no user is currently logged in.
      */
     Principal getPrincipal();
-
-    /**
-     * Returns wheter user is allowed to edit specified project. If this method
-     * returns <code>true</code> there might still be access restrictions on
-     * some resources of the project.
-     * 
-     * @param project
-     *            Project to do the check for
-     * @return <code>true</code> to signal permission is granted,
-     *         <code>false</code> otherwise
-     */
-    boolean mayEditProject(Project project);
 
     /**
      * Checks whether the user currently logged in is allowed to edit the

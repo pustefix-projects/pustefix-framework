@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
-import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
@@ -42,25 +41,18 @@ public class ProjectsResourceImpl implements ProjectsResource {
 
     public void insertStatus(ResultDocument resdoc, Element elem)
             throws Exception {
-        // TODO Auto-generated method stub
         ProjectFactoryService projectfactory = SpringBeanLocator
                 .getProjectFactoryService();
-        SecurityManagerService securitymanager = SpringBeanLocator
-                .getSecurityManagerService();
-
         for (Iterator i = projectfactory.getProjects().iterator(); i.hasNext();) {
             Project project = (Project) i.next();
-            if (securitymanager.mayEditProject(project)) {
-                Element projectElement = resdoc.createSubNode(elem, "project");
-                projectElement.setAttribute("name", project.getName());
-                projectElement.setAttribute("comment", project.getComment());
-                if (this.selectedProject != null
-                        && project.equals(this.selectedProject)) {
-                    projectElement.setAttribute("selected", "true");
-                }
+            Element projectElement = resdoc.createSubNode(elem, "project");
+            projectElement.setAttribute("name", project.getName());
+            projectElement.setAttribute("comment", project.getComment());
+            if (this.selectedProject != null
+                    && project.equals(this.selectedProject)) {
+                projectElement.setAttribute("selected", "true");
             }
         }
-
     }
 
     public void reset() throws Exception {
