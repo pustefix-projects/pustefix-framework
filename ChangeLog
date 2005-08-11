@@ -1,3 +1,17 @@
+2005-08-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: change pfx:elink to use the new runtime template __deref to construct 
+	and sign the link parameter.
+
+	* example/core/xsl/master.xsl.in: new template __deref, this will sign the link parameter, too with the 
+	__derefkey parameter (not only the enclink, but also the "first" stage will now be signed.
+
+	* src/de/schlund/pfixxml/DerefServer.java: Allow to check the sign on the first stage, too (this currently
+	defaults to off, for backwards compatibility)
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: give the sign key for the deref server also 
+	to XSLT in variable __derefkey
+
 2005-08-10  Daniel Hopp  <daniel.hopp@schlund.de>
 
 	* example/core/xsl/master.xsl.in: global variable $__root bound to context root node
