@@ -76,8 +76,10 @@
   <xsl:key name="frame_key"    match="pfx:frame"    use="'frame'"/>
 
   <xsl:template match="/">
-    <ixsl:stylesheet version="1.1" xmlns:url="xalan://java.net.URLEncoder"
-                     exclude-result-prefixes="url pfx cus xsl">
+    <ixsl:stylesheet version="1.1"
+                     xmlns:url="xalan://java.net.URLEncoder"
+                     xmlns:deref="xalan://de.schlund.pfixxml.DerefServer"
+                     exclude-result-prefixes="url pfx cus xsl deref">
 
       <ixsl:import href="core/xsl/default_copy.xsl"/>
       <ixsl:import href="core/xsl/include.xsl"/>
@@ -125,6 +127,7 @@
       <!-- e.g. /xml/static -->
       <ixsl:param name="__servletpath"/>
 
+      <ixsl:param name="__derefkey"/>
       <ixsl:param name="__querystring"/>
       <ixsl:param name="__remote_addr"/>
       <ixsl:param name="__server_name"/>
@@ -151,6 +154,20 @@
         </ixsl:if>
       </ixsl:template>
       
+      <ixsl:template name="__deref">
+        <ixsl:param name="link"/>
+        <ixsl:variable name="enclink">
+          <ixsl:call-template name="__enc">
+            <ixsl:with-param name="in" select="$link"/>
+          </ixsl:call-template>
+        </ixsl:variable>
+        <ixsl:variable name="sign">
+          <ixsl:value-of select="deref:signString($link, $__derefkey)"/>
+        </ixsl:variable>
+        <ixsl:text>/xml/deref?link=</ixsl:text>
+        <ixsl:value-of select="$enclink"/>&amp;sign=<ixsl:value-of select="$sign"/>
+      </ixsl:template>
+
       <ixsl:template match="/">
         <xsl:choose>
           <!-- <xsl:when test="//frameset"> -->

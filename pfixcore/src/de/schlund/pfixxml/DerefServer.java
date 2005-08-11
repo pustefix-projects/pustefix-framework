@@ -42,8 +42,10 @@ import org.apache.log4j.Category;
  */
 
 public class DerefServer extends ServletManager {
-    static protected Category DEREFLOG = Category.getInstance("LOGGER_DEREF");
-    static protected Category CAT      = Category.getInstance(DerefServer.class);
+    protected static Category DEREFLOG        = Category.getInstance("LOGGER_DEREF");
+    protected static Category CAT             = Category.getInstance(DerefServer.class);
+    public static String      PROP_DEREFKEY   = "derefserver.signkey";
+    public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
     
     protected boolean allowSessionCreate() {
         return (false);
@@ -68,17 +70,27 @@ public class DerefServer extends ServletManager {
         RequestParam linkparam    = preq.getRequestParam("link");
         RequestParam enclinkparam = preq.getRequestParam("enclink");
         RequestParam signparam    = preq.getRequestParam("sign");
-        String       key          = getProperties().getProperty("derefserver.signkey");
-        
+        String       key          = getProperties().getProperty(PROP_DEREFKEY);
+        String       ign          = getProperties().getProperty(PROP_IGNORESIGN);
+
+        // This is currently set to true by default for backward compatibility. 
+        boolean ignoresign = true;
+        if (ign != null && ign.equals("false")) {
+            ignoresign = false;
+        }
+
         HttpServletRequest req     = preq.getRequest();
         String             referer = req.getHeader("Referer");
 
         CAT.debug("===> sign key: " + key);
         CAT.debug("===> Referer: " + referer);
         
-        if (linkparam != null && linkparam.getValue()              != null) {
+        if (linkparam != null && linkparam.getValue() != null) {
             CAT.debug(" ==> Handle link: " + linkparam.getValue());
-            handleLink(linkparam.getValue(), preq, res, key);
+            if (signparam != null && signparam.getValue() != null) {
+                CAT.debug("     with sign: " + signparam.getValue());
+            }
+            handleLink(linkparam.getValue(), signparam, ignoresign, preq, res, key);
             return;
         } else if (enclinkparam != null && enclinkparam.getValue() != null &&
                    signparam != null && signparam.getValue() != null) {
@@ -93,33 +105,48 @@ public class DerefServer extends ServletManager {
     }
 
 
-    private void handleLink(String link, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
-        link = link.trim();
-        if (link == null || link.equals("")) {
+    private void handleLink(String link, RequestParam signparam, boolean ignoresign,
+                            PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        boolean checked = false;
+        boolean signed  = false;
+        if  (signparam != null && signparam.getValue() != null) {
+            signed = true;
+        }
+        if (signed && checkSign(link, key, signparam.getValue())) {
+            checked = true;
+        }
+
+        // We don't currently enforce the signing at this stage. We may change this to enforcing mode,
+        // or maybe we will use some clear warning pages in the case of a not signed request.
+        if (checked || (!signed && ignoresign)) {
+            OutputStream       out      = res.getOutputStream();
+            OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
+            String             enclink  = Base64.encode(link.getBytes("utf8"));
+            String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+                SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
+                "&sign=" + signString(enclink, key);
+            
+            CAT.debug("===> Meta refresh to link: " + reallink);
+            
+            writer.write("<html><head>");
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + reallink +  "\">");
+            writer.write("</head><body bgcolor=\"#ffffff\"><center>");
+            writer.write("<a style=\"color:#cccccc;\" href=\"" + reallink + "\">" + "-> Redirect ->" + "</a>");
+            writer.write("</center></body></html>");
+            writer.flush();
+        } else {
+            CAT.warn("===> No meta refresh because signature is wrong.");
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-
-        OutputStream       out      = res.getOutputStream();
-        OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
-        String             enclink  = Base64.encode(link.getBytes("utf8"));
-        String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-            SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
-            "&sign=" + signString(enclink, key);
-        
-        CAT.debug("===> Meta Refresh to link: " + reallink);
-        
-        writer.write("<html><head>");
-        writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + reallink +  "\">");
-        writer.write("</head><body bgcolor=\"#ffffff\"><center>");
-        writer.write("<a style=\"color:#bbbbbb;\" href=\"" + reallink + "\">" + "---> Redirect --->" + "</a>");
-        writer.write("</center></body></html>");
-        writer.flush();
     }
 
     private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
         if (checkSign(enclink, key, sign)) {
             String link = new String( Base64.decode(enclink), "utf8");
+            if (link.startsWith("/")) {
+                link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;
+            }
             CAT.debug("===> Relocate to link: " + link);
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
@@ -132,33 +159,4 @@ public class DerefServer extends ServletManager {
             return;
         }
     }
-
-        
-//     private boolean goodReferer(PfixServletRequest preq) {
-// //        String referer = preq.getRequest().getHeader("Referer");
-// //        String server = preq.getServerName();
-       
-// //        if (referer == null) {
-// //            // got no referer, maybe disabled or bad request...
-// //            return false;
-// //        }
-
-// //        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
-// //        	   // ok, referer and servername match!!
-// //            return true;
-// //        }
-       
-// //        return false;
-
-//         // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
-//         return true;
-//     }
-
-//     private boolean isLocalUrl(String link) {
-//         if (link.startsWith("/")) {
-//             return true;
-//         }
-//         return false;
-//     }
-
 }
