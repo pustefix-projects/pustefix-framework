@@ -90,4 +90,23 @@ public class ProjectsResourceImpl implements ProjectsResource {
         return this.selectedProject;
     }
 
+    public boolean selectProjectByTargetGeneratorName(String targetGenerator) {
+        Project project = SpringBeanLocator.getProjectFactoryService()
+                .getProjectByPustefixTargetGeneratorName(targetGenerator);
+        if (project == null) {
+            return false;
+        } else {
+            this.selectedProject = project;
+            // Reset page selection
+            EditorResourceLocator.getPagesResource(this.context).unselectPage();
+            EditorResourceLocator.getTargetsResource(this.context)
+                    .unselectTarget();
+            EditorResourceLocator.getImagesResource(this.context)
+                    .unselectImage();
+            EditorResourceLocator.getIncludesResource(this.context)
+                    .unselectIncludePart();
+            return true;
+        }
+    }
+
 }

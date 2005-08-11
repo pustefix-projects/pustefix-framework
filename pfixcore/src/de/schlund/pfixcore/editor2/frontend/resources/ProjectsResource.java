@@ -45,4 +45,16 @@ public interface ProjectsResource extends ContextResource {
      * @return Project object or <code>null</code> if no project is selected
      */
     Project getSelectedProject();
+
+    /**
+     * Selects a project using the name of the corresponding
+     * {@link de.schlund.pfixxml.targets.TargetGenerator}.
+     * 
+     * @param targetGenerator
+     *            Name of the target generator
+     * @return <code>true</code> if specified project was found and selected,
+     *         <code>false</code> if an error occured during selection (e.g.
+     *         project not found)
+     */
+    boolean selectProjectByTargetGeneratorName(String targetGenerator);
 }

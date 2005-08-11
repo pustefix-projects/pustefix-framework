@@ -24,7 +24,7 @@
     <servlet name="edit" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
-      <propfile>core/editor2/conf/editor.prop</propfile>
+      <propfile>core/editor2/conf/edit.prop</propfile>
     </servlet>
     <servlet name="deref">
       <active>true</active>

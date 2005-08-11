@@ -69,16 +69,6 @@
     <flowstep name="pages"/>
   </pageflow>
   
-  <pageflow name="EditorJumpToIncludeFlow">
-    <flowstep name="jumptoinclude"/>
-    <flowstep name="pages"/>
-  </pageflow>
-  
-  <pageflow name="EditorJumpToDynIncludeFlow">
-    <flowstep name="jumptodyninclude"/>
-    <flowstep name="pages"/>
-  </pageflow>
-  
   <!--
   <pageflow name="EditorLoginFlow">
     <flowstep name="editoruserauth"/>
@@ -95,6 +85,7 @@
   <pagerequest name="editoruserauth">
     <auth>
       <authinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.Login" prefix="auth"/>
+      <auxinterface class="de.schlund.pfixcore.editor2.frontend.wrappers.JumpToIncludePart" prefix="jump"/>
     </auth>
   </pagerequest>
   

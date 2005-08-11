@@ -181,4 +181,10 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
                 .get(tgen.getName()));
     }
 
+    public Project getProjectByPustefixTargetGeneratorName(
+            String targetGenerator) {
+        return this.getProjectByName((String) this.generatorToProjectNameMap
+                .get(targetGenerator));
+    }
+
 }

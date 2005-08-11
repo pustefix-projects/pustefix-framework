@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<make project="editor" lang="en">
+<make project="editor2" lang="en">
   <navigation>
     <page name="editoruserauth" handler="/xml/edit"/>
     <page name="prodselect" handler="/xml/edit"/>
