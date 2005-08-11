@@ -69,6 +69,11 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
     protected Collection getPossibleThemes(
             IncludePartThemeVariant selectedIncludePart, Project project,
             Collection dummy) {
+        if (!SpringBeanLocator.getSecurityManagerService().mayEditDynInclude()) {
+            // Do not present alternative themes to users who may not
+            // edit DynIncludes at all
+            return new TreeSet();
+        }
         Collection pages = project.getAllPages();
         TreeSet themes = new TreeSet();
         for (Iterator i = pages.iterator(); i.hasNext();) {
