@@ -31,6 +31,9 @@
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
     </resource>
+		<resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
+    </resource>
   </context>
   
   <pageflow name="EditorFlow">
@@ -182,18 +185,10 @@
     </input>
   </pagerequest>
   
-  <pagerequest name="jumptoinclude">
-    <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
-    </input>
-  </pagerequest>
-  
-  <pagerequest name="jumptodyninclude">
-    <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
-    </input>
+  <pagerequest name="sessionmanager">
+    <output>
+      <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource" node="sessioninfo"/>
+    </output>
   </pagerequest>
   
   <properties>

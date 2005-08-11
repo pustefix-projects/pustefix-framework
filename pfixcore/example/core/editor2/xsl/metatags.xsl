@@ -67,6 +67,7 @@
   </xsl:template>
   -->
 
+  <!--
   <xsl:template match="displayallsessions">
     <table class="editor_box" cellspacing="0" width="100%" style="padding:0px;">
       <tr>
@@ -111,7 +112,7 @@
             <ixsl:choose>
               <ixsl:when test="./@editoruserid">
                 <ixsl:variable name="alt">
-                    <ixsl:value-of select="concat(@editorusername, ' (Phone: ', @editoruserphone, ')', ' -- Product: ', @editorproduct)"/>
+                    <ixsl:value-of select="concat(@editorusername, ' (Phone: ', @editoruserphone, ')', ' - - Product: ', @editorproduct)"/>
                 </ixsl:variable>
                 <ixsl:value-of select="./@editoruserid"/>&#160;
                 <pfx:image src="/core/editor/img/info.gif" style="vertical-align: middle">
@@ -152,6 +153,7 @@
       </tr>
     </table>
   </xsl:template>
+  -->
 
 
   <!-- Render all editor users in a table -->

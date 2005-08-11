@@ -12,6 +12,7 @@
     <page name="search" handler="/xml/edit"/>
     <page name="logout" handler="/xml/edit"/>
     <page name="jumptopage" handler="/xml/edit"/>
+    <page name="sessionmanager" handler="/xml/edit"/>
   </navigation>
   
   <global>
@@ -39,5 +40,6 @@
   <standardpage name="dynincludes" xml="core/editor2/xml/three_frames.xml">
     <include stylesheet="core/editor2/xsl/runtime.xsl"/>
   </standardpage>
+  <standardpage name="sessionmanager" xml="core/editor2/xml/two_frames_inactive.xml"/>
    
 </make>
