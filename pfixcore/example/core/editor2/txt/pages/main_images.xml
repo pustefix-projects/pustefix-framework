@@ -7,7 +7,7 @@
       <lang name="default">
         <center>
           <pfx:checkerror>
-            <pfx:checkfield name="imgsel.Path">
+            <pfx:checkfield name="selectimage.Path">
               <pfx:error>
                 <br/>
                 <table class="core_errorbox_table" width="400">
@@ -147,7 +147,7 @@
           </table>
           <ixsl:choose>
             <ixsl:when test="/formresult/images/currentimage/@mayEdit = 'true'">
-              <table width="100%" class="editor_box_alpha" cellspacing="0" background="/core/editor/img/alpha.gif">
+              <table width="100%" class="editor_box_alpha" cellspacing="0" background="/core/editor2/img/alpha.gif">
                 <tr>
                   <td align="center" style="padding-top: 10px; padding-bottom: 10px;" colspan="3">
                     <ixsl:choose>

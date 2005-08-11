@@ -60,72 +60,79 @@ public interface IncludePartThemeVariant extends Comparable {
      * 
      * @param xml
      *            XML Node containing the content to save
-     * @throws EditorIOException 
-     * @throws EditorParsingException 
-     * @throws EditorSecurityException 
+     * @throws EditorIOException
+     * @throws EditorParsingException
+     * @throws EditorSecurityException
      */
-    void setXML(Node xml) throws EditorIOException, EditorParsingException, EditorSecurityException;
+    void setXML(Node xml) throws EditorIOException, EditorParsingException,
+            EditorSecurityException;
 
     /**
      * Returns all include parts this IncludePart is depending on. Actually
      * IncludePartThemeVariant objects are returned to honor the fact, that this
-     * IncludePart depends on a specific version of another IncludePart.
-     * This method returns all variants of an IncludePart this part is
-     * depending on - not just the variant for a specific ThemeList.
+     * IncludePart depends on a specific version of another IncludePart. This
+     * method returns all variants of an IncludePart this part is depending on -
+     * not just the variant for a specific ThemeList.
      * 
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
      *            those which are dependencies of other dependencies themselves
      *            are included in the returned list
      * @return All dependend include parts
-     * @throws EditorParsingException 
+     * @throws EditorParsingException
      */
-    Collection getIncludeDependencies(boolean recursive) throws EditorParsingException;
+    Collection getIncludeDependencies(boolean recursive)
+            throws EditorParsingException;
 
     /**
-     * Returns all images this Include is depending on.
-     * This method returns all variants of an IncludePart this part is
-     * depending on - not just the variant for a specific ThemeList.
+     * Returns all images this Include is depending on. This method returns all
+     * variants of an IncludePart this part is depending on - not just the
+     * variant for a specific ThemeList.
      * 
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
      *            those which are dependencies of other dependencies themselves
      *            are included in the returned list
      * @return All dependend images
-     * @throws EditorParsingException 
+     * @throws EditorParsingException
      * @see Image
      */
-     Collection getImageDependencies(boolean recursive) throws EditorParsingException;
+    Collection getImageDependencies(boolean recursive)
+            throws EditorParsingException;
 
-     /**
-      * Returns all include parts this IncludePart is depending on. Actually
-      * IncludePartThemeVariant objects are returned to honor the fact, that this
-      * IncludePart depends on a specific version of another IncludePart
-      * 
-      * @param themes Themes to select the variants for
-      * @param recursive
-      *            If set to <code>true</code> all dependendencies, including
-      *            those which are dependencies of other dependencies themselves
-      *            are included in the returned list
-      * @return All dependend include parts
-      * @throws EditorParsingException 
-      */
-     Collection getIncludeDependencies(ThemeList themes, boolean recursive) throws EditorParsingException;
+    /**
+     * Returns all include parts this IncludePart is depending on. Actually
+     * IncludePartThemeVariant objects are returned to honor the fact, that this
+     * IncludePart depends on a specific version of another IncludePart
+     * 
+     * @param themes
+     *            Themes to select the variants for
+     * @param recursive
+     *            If set to <code>true</code> all dependendencies, including
+     *            those which are dependencies of other dependencies themselves
+     *            are included in the returned list
+     * @return All dependend include parts
+     * @throws EditorParsingException
+     */
+    Collection getIncludeDependencies(ThemeList themes, boolean recursive)
+            throws EditorParsingException;
 
-     /**
-      * Returns all images this Include is depending on.
-      * 
-      * @param themes Themes to select the variants for
-      * @param recursive
-      *            If set to <code>true</code> all dependendencies, including
-      *            those which are dependencies of other dependencies themselves
-      *            are included in the returned list
-      * @return All dependend images
-      * @throws EditorParsingException 
-      * @see Image
-      */
-      Collection getImageDependencies(ThemeList themes, boolean recursive) throws EditorParsingException;
-     
+    /**
+     * Returns all images this Include is depending on.
+     * 
+     * @param themes
+     *            Themes to select the variants for
+     * @param recursive
+     *            If set to <code>true</code> all dependendencies, including
+     *            those which are dependencies of other dependencies themselves
+     *            are included in the returned list
+     * @return All dependend images
+     * @throws EditorParsingException
+     * @see Image
+     */
+    Collection getImageDependencies(ThemeList themes, boolean recursive)
+            throws EditorParsingException;
+
     /**
      * Returns pages which are using this IncludePart (directly or inderectly)
      * 
@@ -133,4 +140,14 @@ public interface IncludePartThemeVariant extends Comparable {
      * @see Page
      */
     Collection getAffectedPages();
+
+    /**
+     * Returns the MD5 checksum of the serialized XML code. This checksum can
+     * for example be used to check, whether the include part has been changed.
+     * If the part does not yet have any content, the special string "0" is
+     * returned.
+     * 
+     * @return MD5 checksum for this part
+     */
+    String getMD5();
 }

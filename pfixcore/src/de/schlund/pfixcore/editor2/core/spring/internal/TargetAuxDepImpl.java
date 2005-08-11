@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -139,10 +137,6 @@ public class TargetAuxDepImpl extends AbstractTarget {
                         + " could not be read!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
-            } catch (ParserConfigurationException e) {
-                String err = "Error during initialization of XML parser!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new RuntimeException(err, e);
             }
         }
     }

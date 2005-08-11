@@ -20,11 +20,11 @@
               <td nowrap="nowrap">
                 <ixsl:value-of select="$ind"/>
                 <pfx:button page="includes" mode="force" target="_top" frame="_top">
-                  <pfx:command  name="SELWRP" page="includes">incsel</pfx:command>
-                  <pfx:command  name="SELWRP" page="includes">uplinc</pfx:command>
-                  <pfx:argument name="incsel.Path"><ixsl:value-of select="@path"/></pfx:argument>
-                  <pfx:argument name="incsel.Part"><ixsl:value-of select="@part"/></pfx:argument>
-                  <pfx:argument name="incsel.Theme"><ixsl:value-of select="@product"/></pfx:argument>
+                  <pfx:command  name="SELWRP" page="includes">selectinclude</pfx:command>
+                  <pfx:command  name="SELWRP" page="includes">upload</pfx:command>
+                  <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@path"/></pfx:argument>
+                  <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
+                  <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@theme"/></pfx:argument>
                   <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                   <ixsl:value-of select="@part"/>
                 </pfx:button> (<ixsl:value-of select="@theme"/>)
@@ -45,7 +45,7 @@
       <lang name="default">
         <table><tr><td class="editor_main_emph">Used images:</td></tr></table>
         <table width="100%" class="editor_box_alpha" cellpadding="0" cellspacing="0"
-               background="/core/editor/img/alpha.gif">
+               background="/core/editor2/img/alpha.gif">
           <ixsl:for-each select="./image">
             <ixsl:variable name="class">
               <ixsl:choose>

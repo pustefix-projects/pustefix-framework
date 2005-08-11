@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -166,7 +164,7 @@ public class BackupServiceImpl implements BackupService {
                 } else {
                     return -1;
                 }
-            }  
+            }
         };
         Arrays.sort(files, comp);
         ArrayList filesList = new ArrayList();
@@ -238,10 +236,6 @@ public class BackupServiceImpl implements BackupService {
             String err = "Could not restore backup!";
             Logger.getLogger(this.getClass()).error(err, e);
             return false;
-        } catch (ParserConfigurationException e) {
-            String err = "Could not restore backup!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            return false;
         } catch (EditorIOException e) {
             String err = "Could not restore backup!";
             Logger.getLogger(this.getClass()).error(err, e);
@@ -280,7 +274,7 @@ public class BackupServiceImpl implements BackupService {
                 } else {
                     return -1;
                 }
-            }  
+            }
         };
         Arrays.sort(files, comp);
         ArrayList filesList = new ArrayList();

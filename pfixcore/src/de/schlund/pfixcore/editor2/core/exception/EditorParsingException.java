@@ -18,8 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.exception;
 
-import de.schlund.pfixcore.editor.EditorException;
-
 /**
  * Exception signalling something went wrong during the parsing of some file.
  * 

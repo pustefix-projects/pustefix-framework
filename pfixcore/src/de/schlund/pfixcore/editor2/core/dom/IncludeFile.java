@@ -57,30 +57,47 @@ public interface IncludeFile extends Comparable {
      * @return IncludePart object representing the new IncludePart
      */
     IncludePart createPart(String name);
-    
+
     /**
-     * Returns true if there is a part with the specified name,
-     * whereas this does not necessarily mean, that this part is also already stored on filesystem.
+     * Returns true if there is a part with the specified name, whereas this
+     * does not necessarily mean, that this part is also already stored on
+     * filesystem.
      * 
-     * @param name Name of the part to look for
-     * @return <code>true</code> true if the part is existing, <code>false</code> otherwise.
+     * @param name
+     *            Name of the part to look for
+     * @return <code>true</code> true if the part is existing,
+     *         <code>false</code> otherwise.
      */
     boolean hasPart(String name);
-    
+
     /**
      * Returns all parts which are stored in this IncludeFile.
      * 
      * @return Iterator iterating over all parts stored in this file
      */
     Collection getParts();
-    
+
     /**
      * Returns a DOM Document representing the content of this IncludeFile. If
      * this IncludeFile is not yet existing on filesystem, <code>null</code>
-     * is returned.
+     * is returned. This call equals to {@link #getContentXML(boolean)} with
+     * <code>forceUpdate</code> set to <code>false</code>.
      * 
      * @return DOM Document with content of this IncludeFile or
      *         <code>null</code> if file is not yet existing.
      */
     Document getContentXML();
+
+    /**
+     * Returns a DOM Document representing the content of this IncludeFile. If
+     * this IncludeFile is not yet existing on filesystem, <code>null</code>
+     * is returned.
+     * 
+     * @param forceUpdate
+     *            if set to <code>true</code>, the content will be read from
+     *            the filesystem, otherwise the cache might be used
+     * @return DOM Document with content of this IncludeFile or
+     *         <code>null</code> if file is not yet existing.
+     */
+    Document getContentXML(boolean forceUpdate);
 }

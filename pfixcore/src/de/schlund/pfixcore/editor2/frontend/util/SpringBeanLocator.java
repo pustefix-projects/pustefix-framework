@@ -21,6 +21,8 @@ package de.schlund.pfixcore.editor2.frontend.util;
 import org.springframework.context.ApplicationContext;
 
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
+import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
+import de.schlund.pfixcore.editor2.core.spring.DynIncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
@@ -62,7 +64,7 @@ public abstract class SpringBeanLocator {
         return (SecurityManagerService) getApplicationContext().getBean(
                 "securitymanager");
     }
-    
+
     /**
      * Returns reference to PageFactoryService
      * 
@@ -72,7 +74,7 @@ public abstract class SpringBeanLocator {
         return (PageFactoryService) getApplicationContext().getBean(
                 "pagefactory");
     }
-    
+
     /**
      * Returns reference to ImageFactoryService
      * 
@@ -82,14 +84,33 @@ public abstract class SpringBeanLocator {
         return (ImageFactoryService) getApplicationContext().getBean(
                 "imagefactory");
     }
-    
+
     /**
      * Returns reference to BackupService
      * 
      * @return Bean retrieved from Spring ApplicationContext
      */
     public static BackupService getBackupService() {
-        return (BackupService) getApplicationContext().getBean(
-                "backup");
+        return (BackupService) getApplicationContext().getBean("backup");
+    }
+
+    /**
+     * Returns reference to ConfigurationService
+     * 
+     * @return Bean retrieved from Spring ApplicationContext
+     */
+    public static ConfigurationService getConfigurationService() {
+        return (ConfigurationService) getApplicationContext().getBean(
+                "configuration");
+    }
+
+    /**
+     * Returns reference to DynIncludeFactoryService
+     * 
+     * @return Bean retrieved from Spring ApplicationContext
+     */
+    public static DynIncludeFactoryService getDynIncludeFactoryService() {
+        return (DynIncludeFactoryService) getApplicationContext().getBean(
+                "dynincludefactory");
     }
 }

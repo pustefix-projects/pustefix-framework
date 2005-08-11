@@ -94,4 +94,13 @@ public interface Project {
      *         for the name
      */
     Target getTarget(String name);
+
+    /**
+     * Returns a {@link Collection} of all {@link IncludePartThemeVariant}
+     * objects, which are used by this project. This list may not be complete
+     * unless all pages of this project are up to date.
+     * 
+     * @return List of IncludePartThemeVariants for this project
+     */
+    Collection getAllIncludeParts();
 }

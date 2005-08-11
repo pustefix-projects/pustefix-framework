@@ -18,8 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.exception;
 
-import de.schlund.pfixcore.editor.EditorException;
-
 /**
  * Exception signaling something went wrong during the initialization process
  * (e.g. error during loading of configuration file).

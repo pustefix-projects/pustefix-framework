@@ -18,8 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.exception;
 
-import de.schlund.pfixcore.editor.EditorException;
-
 /**
  * Signals some kind of input/output error during editor operation.  
  * 

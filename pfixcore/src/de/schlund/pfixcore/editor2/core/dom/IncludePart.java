@@ -22,6 +22,10 @@ import java.util.Collection;
 
 import org.w3c.dom.Node;
 
+import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+
 /**
  * Represents an include part which can be regarded as a "piece of XML" that can
  * be included in other documents.
@@ -82,6 +86,23 @@ public interface IncludePart extends Comparable {
      *         <code>false</code> otherwise
      */
     boolean hasThemeVariant(Theme theme);
+
+    /**
+     * Deletes an IncludePartThemeVariant (only possible for non "default"
+     * variants).
+     * 
+     * @param variant
+     *            Variant to delete
+     * @throws EditorSecurityException
+     *             If deletion of this variant is not allowed.
+     * @throws EditorIOException
+     *             If I/O operations on inlude file failed
+     * @throws EditorParsingException
+     *             If parsing of include file failed
+     */
+    void deleteThemeVariant(IncludePartThemeVariant variant)
+            throws EditorSecurityException, EditorIOException,
+            EditorParsingException;
 
     /**
      * Returns a list of all theme variants, which are existing for this

@@ -25,8 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -58,8 +56,7 @@ public class FileSystemServiceImpl implements FileSystemService {
     }
 
     public Document readXMLDocumentFromFile(File file)
-            throws FileNotFoundException, SAXException, IOException,
-            ParserConfigurationException {
+            throws FileNotFoundException, SAXException, IOException {
         /*
          * DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
          * dbf.setCoalescing(true); dbf.setNamespaceAware(true); DocumentBuilder
@@ -71,7 +68,7 @@ public class FileSystemServiceImpl implements FileSystemService {
 
     public void storeXMLDocumentToFile(File file, Document document)
             throws IOException {
-        Xml.serialize(document, file, true, true);
+        Xml.serialize(document, file, false, true);
     }
 
     public void makeDirectory(File directory, boolean makeParentDirectories)

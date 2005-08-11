@@ -8,7 +8,7 @@
     <page name="targets" handler="/xml/edit"/>
     <page name="images" handler="/xml/edit"/>
     <page name="includes" handler="/xml/edit"/>
-    <page name="commons" handler="/xml/edit"/>
+    <page name="dynincludes" handler="/xml/edit"/>
     <page name="search" handler="/xml/edit"/>
     <page name="logout" handler="/xml/edit"/>
     <page name="jumptopage" handler="/xml/edit"/>
@@ -33,5 +33,11 @@
     <include stylesheet="core/editor2/xsl/runtime.xsl"/>
   </standardpage>
   <standardpage name="images" xml="core/editor2/xml/three_frames.xml"/>
-  
+  <standardpage name="includes" xml="core/editor2/xml/three_frames.xml">
+    <include stylesheet="core/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+  <standardpage name="dynincludes" xml="core/editor2/xml/three_frames.xml">
+    <include stylesheet="core/editor2/xsl/runtime.xsl"/>
+  </standardpage>
+   
 </make>

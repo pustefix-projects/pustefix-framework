@@ -18,148 +18,48 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.transform.TransformerException;
-
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import de.schlund.pfixcore.editor2.core.dom.AbstractIncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
+import de.schlund.pfixcore.editor2.core.spring.BackupService;
+import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.util.XPath;
 
 /**
  * Implementation of IncludeFile using a Pustefix IncludeDocument as backend
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class IncludeFileImpl extends AbstractIncludeFile {
-    private String path;
-
+public class IncludeFileImpl extends CommonIncludeFileImpl {
     private ThemeFactoryService themefactory;
-
-    private Hashtable cache;
-
-    private IncludeDocument pfixIncDoc;
 
     private IncludeFactoryService includefactory;
 
+    private FileSystemService filesystem;
+
+    private PathResolverService pathresolver;
+
+    private BackupService backup;
+
+    private SecurityManagerService securitymanager;
+
     public IncludeFileImpl(ThemeFactoryService themefactory,
-            IncludeFactoryService includefactory, String path,
-            IncludeDocument pfixIncDoc) {
+            IncludeFactoryService includefactory, FileSystemService filesystem,
+            PathResolverService pathresolver, BackupService backup,
+            SecurityManagerService securitymanager, String path) {
+        super(filesystem, pathresolver, path);
         this.themefactory = themefactory;
         this.includefactory = includefactory;
-        this.path = path;
-        this.pfixIncDoc = pfixIncDoc;
-        this.cache = new Hashtable();
+        this.filesystem = filesystem;
+        this.pathresolver = pathresolver;
+        this.backup = backup;
+        this.securitymanager = securitymanager;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.IncludeFile#getPath()
-     */
-    public String getPath() {
-        return this.path;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.IncludeFile#getPart(java.lang.String)
-     */
-    public IncludePart getPart(String name) {
-        if (this.cache.containsKey(name)) {
-            return (IncludePart) this.cache.get(name);
-        }
-        synchronized (cache) {
-            if (!this.cache.containsKey(name)) {
-                Node xml = this.getContentXML();
-                if (xml == null) {
-                    return null;
-                }
-                try {
-                    if (!XPath.test(xml, "part[@name='" + name + "']")) {
-                        return null;
-                    }
-                } catch (TransformerException e) {
-                    // Should NEVER happen
-                    Logger.getLogger(this.getClass()).error("XPath error!", e);
-                    return null;
-                }
-                IncludePart incPart = new IncludePartImpl(this.themefactory,
-                        this.includefactory, name, this);
-                this.cache.put(name, incPart);
-            }
-        }
-        return (IncludePart) this.cache.get(name);
-    }
-
-    public void setPfixIncludeDocument(IncludeDocument includeDocumentForFile) {
-        this.pfixIncDoc = includeDocumentForFile;
-    }
-
-    public Document getContentXML() {
-        if (this.pfixIncDoc == null) {
-            return null;
-        }
-        return pfixIncDoc.getDocument();
-    }
-
-    public IncludePart createPart(String name) {
-        IncludePart part;
-        part = this.getPart(name);
-        if (part != null) {
-            return part;
-        }
-        synchronized (cache) {
-            if (!this.cache.containsKey(name)) {
-                IncludePart incPart = new IncludePartImpl(this.themefactory,
-                        this.includefactory, name, this);
-                this.cache.put(name, incPart);
-            }
-        }
-        return (IncludePart) this.cache.get(name);
-    }
-
-    public boolean hasPart(String name) {
-        return (this.getPart(name) == null);
-    }
-
-    public Collection getParts() {
-        // Make sure all physically existing parts are in cache
-        Node xml = this.getContentXML().getDocumentElement();
-        if (xml != null) {
-            try {
-                List nlist = XPath.select(xml, "part/@name");
-                for (Iterator i = nlist.iterator(); i.hasNext();) {
-                    this.getPart(((Node) i.next()).getNodeValue());
-                }
-            } catch (TransformerException e) {
-                // Should NEVER happen
-                // Log and go on
-                Logger.getLogger(this.getClass()).error("XPath error!", e);
-            }
-        }
-        // Now use cache to return physical and virtual parts
-        // Synchronize and copy the values to make sure we return a
-        // static version to iterate over.
-        HashSet temp = new HashSet();
-        synchronized (this.cache) {
-            for (Iterator i = this.cache.values().iterator(); i.hasNext();) {
-                temp.add(i.next());
-            }
-        }
-        return temp;
+    protected IncludePart createIncludePartInstance(String name) {
+        return new IncludePartImpl(themefactory, includefactory, filesystem,
+                pathresolver, backup, securitymanager, name, this);
     }
 
 }

@@ -33,26 +33,24 @@ public interface IncludeFactoryService {
     /**
      * Creates an IncludeFile object using the specified filename
      * 
-     * @param filename Relative path to the file
+     * @param filename
+     *            Relative path to the file
      * @return IncludeFile object corresponding to the filename
-     * @throws EditorParsingException If an error occurs during parsing of the IncludeFile
+     * @throws EditorParsingException
+     *             If an error occurs during parsing of the IncludeFile
      */
     IncludeFile getIncludeFile(String filename) throws EditorParsingException;
-    
+
     /**
-     * Creates an IncludePartThemeVariant object which is a child of the specified IncludePart and uses the specified Theme.
+     * Creates an IncludePartThemeVariant object which is a child of the
+     * specified IncludePart and uses the specified Theme.
      * 
-     * @param theme Theme to use
-     * @param part IncludePart the created variant belongs to
+     * @param theme
+     *            Theme to use
+     * @param part
+     *            IncludePart the created variant belongs to
      * @return New IncludePartThemeVariant for the given parameters
      */
-    IncludePartThemeVariant getIncludePartThemeVariant(Theme theme, IncludePart part);
-    
-    /**
-     * Refreshes a cached IncludeFile. This can be used to make a "passive" (only virtual, not existing on FS) IncludeFile "active" after the corresponding file has been created.
-     * 
-     * @param filename Relative path to the IncludeFile
-     * @throws EditorParsingException 
-     */
-    void refreshIncludeFile(String filename) throws EditorParsingException;
+    IncludePartThemeVariant getIncludePartThemeVariant(Theme theme,
+            IncludePart part);
 }

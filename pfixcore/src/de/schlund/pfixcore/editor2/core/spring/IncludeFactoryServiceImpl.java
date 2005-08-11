@@ -18,14 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Hashtable;
-
-import javax.xml.transform.TransformerException;
-
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -34,9 +27,6 @@ import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludeFileImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludePartThemeVariantImpl;
-import de.schlund.pfixxml.IncludeDocument;
-import de.schlund.pfixxml.IncludeDocumentFactory;
-import de.schlund.pfixxml.PathFactory;
 
 /**
  * Implementation of IncludeFactoryService using Pustefix IncludeDocumentFactory
@@ -123,53 +113,13 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
 
         synchronized (cache) {
             if (!cache.containsKey(filename)) {
-                IncludeDocument incdoc = this
-                        .getIncludeDocumentForFile(filename);
                 IncludeFile incfile = new IncludeFileImpl(themefactory,
-                        includefactory, filename, incdoc);
+                        includefactory, this.filesystem, this.pathresolver,
+                        this.backup, this.securitymanager, filename);
                 cache.put(filename, incfile);
             }
         }
         return (IncludeFile) cache.get(filename);
-    }
-
-    public void refreshIncludeFile(String filename)
-            throws EditorParsingException {
-        synchronized (this.cache) {
-
-            if (this.cache.containsKey(filename)) {
-                IncludeFileImpl incFile = (IncludeFileImpl) this.cache
-                        .get(filename);
-                incFile.setPfixIncludeDocument(this
-                        .getIncludeDocumentForFile(filename));
-            } else {
-                return;
-            }
-        }
-    }
-
-    private IncludeDocument getIncludeDocumentForFile(String filename)
-            throws EditorParsingException {
-        IncludeDocument incdoc;
-        try {
-            incdoc = IncludeDocumentFactory.getInstance().getIncludeDocument(
-                    PathFactory.getInstance().createPath(filename), true);
-        } catch (FileNotFoundException e) {
-            incdoc = null;
-        } catch (SAXException e) {
-            String err = "Error on parsing include file " + filename + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            throw new EditorParsingException(err, e);
-        } catch (IOException e) {
-            String err = "Error on parsing include file " + filename + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            throw new EditorParsingException(err, e);
-        } catch (TransformerException e) {
-            String err = "Error on parsing include file " + filename + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            throw new EditorParsingException(err, e);
-        }
-        return incdoc;
     }
 
     public IncludePartThemeVariant getIncludePartThemeVariant(Theme theme,

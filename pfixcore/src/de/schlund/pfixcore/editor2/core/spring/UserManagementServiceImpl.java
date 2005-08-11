@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
@@ -114,10 +113,6 @@ public class UserManagementServiceImpl implements UserManagementService {
                         + " could not be read!";
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
-            } catch (ParserConfigurationException e) {
-                String err = "Error during initialization of XML parser!";
-                Logger.getLogger(this.getClass()).error(err, e);
-                throw new RuntimeException(err, e);
             }
         }
         synchronized (this.users) {

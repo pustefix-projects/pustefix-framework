@@ -291,6 +291,50 @@ div.docframe div.main ul li span.default{
   width:90%;
 }
 
+div.editor_includes_sidebar_content {
+  margin:8px;
+  width:auto;
+}
+
+div.editor_includes_sidebar_content,
+div.editor_includes_sidebar_directory,
+div.editor_includes_sidebar_directory_title,
+div.editor_includes_sidebar_file,
+div.editor_includes_sidebar_part {
+  font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  padding: 2px;
+  white-space:nowrap;
+}
+        
+div.editor_includes_sidebar_directory_title {
+  background-color: #cBd5eF;
+  color: #333333;
+  white-space:nowrap;
+}
+
+div.editor_includes_sidebar_part_selected,
+div.editor_includes_sidebar_part_selected a {
+  background-color: #002276;
+  color:#ffffff;
+}
+
+span.editor_includes_sidebar_directory_showbutton,
+span.editor_includes_sidebar_directory_hidebutton {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+div.editor_includes_sidebar_buttons {
+  margin-bottom: 8px;
+}
+
+div.editor_includes_sidebar_buttons span {
+  text-decoration: underline;
+  color: #002276;
+  cursor: pointer;
+}
+       
 div.topbar{
   position:absolute;
   right: 0;

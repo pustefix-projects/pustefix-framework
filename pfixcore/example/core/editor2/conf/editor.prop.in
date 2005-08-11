@@ -25,6 +25,12 @@
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
     </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+    </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResourceImpl">
+      <implements class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+    </resource>
   </context>
   
   <pageflow name="EditorFlow">
@@ -48,8 +54,28 @@
     <flowstep name="images"/>
   </pageflow>
   
+  <pageflow name="EditorIncludeFlow" final="includes">
+    <flowstep name="prodselect"/>
+    <flowstep name="includes"/>
+  </pageflow>
+  
+  <pageflow name="EditorDynIncludeFlow" final="dynincludes">
+    <flowstep name="prodselect"/>
+    <flowstep name="dynincludes"/>
+  </pageflow>
+  
   <pageflow name="EditorJumpToPageFlow">
     <flowstep name="jumptopage"/>
+    <flowstep name="pages"/>
+  </pageflow>
+  
+  <pageflow name="EditorJumpToIncludeFlow">
+    <flowstep name="jumptoinclude"/>
+    <flowstep name="pages"/>
+  </pageflow>
+  
+  <pageflow name="EditorJumpToDynIncludeFlow">
+    <flowstep name="jumptodyninclude"/>
     <flowstep name="pages"/>
   </pageflow>
   
@@ -123,6 +149,34 @@
       <resource node="images" class="de.schlund.pfixcore.editor2.frontend.resources.ImagesResource"/>
     </output>
   </pagerequest>
+  
+  <pagerequest name="includes">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchIncludePart" prefix="branch"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreIncludePart" prefix="restore"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadIncludePart" prefix="upload"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="includes" class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+    </output>
+  </pagerequest>
+  
+  <pagerequest name="dynincludes">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.BranchDynIncludePart" prefix="branch"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.RestoreDynIncludePart" prefix="restore"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.UploadDynIncludePart" prefix="upload"/>
+    </input>
+    <output>
+      <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
+      <resource node="dynincludes" class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
+    </output>
+  </pagerequest>
     
   <pagerequest name="logout">
     <input>
@@ -134,6 +188,20 @@
     <input>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"></interface>
       <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectPage" prefix="selectpage"/>
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="jumptoinclude">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectIncludePart" prefix="selectinclude"/>
+    </input>
+  </pagerequest>
+  
+  <pagerequest name="jumptodyninclude">
+    <input>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectProject" prefix="selectproject"/>
+      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.SelectDynIncludePart" prefix="selectinclude"/>
     </input>
   </pagerequest>
   

@@ -60,9 +60,7 @@ public interface FileSystemService {
      *             hrows FileNotFoundExceptio, n
      */
     public Document readXMLDocumentFromFile(File file)
-            throws FileNotFoundException, SAXException, IOException,
-            ParserConfigurationException, IOException,
-            ParserConfigurationException;
+            throws FileNotFoundException, SAXException, IOException;
 
     /**
      * Stores DOM document to file. If file is not yet existing, it is created,

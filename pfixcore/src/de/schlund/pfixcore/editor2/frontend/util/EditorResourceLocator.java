@@ -18,7 +18,9 @@
 
 package de.schlund.pfixcore.editor2.frontend.util;
 
+import de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource;
 import de.schlund.pfixcore.editor2.frontend.resources.ImagesResource;
+import de.schlund.pfixcore.editor2.frontend.resources.IncludesResource;
 import de.schlund.pfixcore.editor2.frontend.resources.PagesResource;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
@@ -84,5 +86,27 @@ public abstract class EditorResourceLocator {
     public final static ImagesResource getImagesResource(Context context) {
         return (ImagesResource) context.getContextResourceManager()
                 .getResource(ImagesResource.class.getName());
+    }
+    
+    /**
+     * Returns IncludesResource Implementation
+     * 
+     * @param context Context to use
+     * @return IncludesResource for context
+     */
+    public final static IncludesResource getIncludesResource(Context context) {
+        return (IncludesResource) context.getContextResourceManager()
+                .getResource(IncludesResource.class.getName());
+    }
+    
+    /**
+     * Returns DynIncludesResource Implementation
+     * 
+     * @param context Context to use
+     * @return DynIncludesResource for context
+     */
+    public final static DynIncludesResource getDynIncludesResource(Context context) {
+        return (DynIncludesResource) context.getContextResourceManager()
+                .getResource(DynIncludesResource.class.getName());
     }
 }

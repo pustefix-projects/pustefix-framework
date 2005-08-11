@@ -18,8 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.exception;
 
-import de.schlund.pfixcore.editor.EditorException;
-
 /**
  * Exception signaling an action was triggered, that is not allowed in the 
  * current authentication context.

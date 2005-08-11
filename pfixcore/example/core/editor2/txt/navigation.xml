@@ -20,7 +20,7 @@
             <pfx:button activeclass="active" normalclass="normal" page="includes" target="_top">Includes</pfx:button>
           </li>
           <li>
-            <pfx:button activeclass="active" normalclass="normal" page="commons" target="_top">DynIncludes</pfx:button>
+            <pfx:button activeclass="active" normalclass="normal" page="dynincludes" target="_top">DynIncludes</pfx:button>
           </li>
           <li>
             <pfx:button activeclass="active" normalclass="normal" page="search" target="_top">Search</pfx:button>

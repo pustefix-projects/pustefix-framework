@@ -399,6 +399,7 @@
     </table>
   </xsl:template>
 
+  <!--
   <xsl:template match="displayallincludes">
     <xsl:variable name="path">
       <xsl:choose>
@@ -475,6 +476,7 @@
       </ixsl:for-each>
     </table>
   </xsl:template>
+  -->
 
   <xsl:template match="displaymatchingincludes">
     <xsl:variable name="path"><xsl:value-of select="@path"/></xsl:variable>
@@ -613,11 +615,13 @@
   </xsl:template>
   -->
 
+  <!--
   <xsl:template match="displaycurrentinclude">
     <div class="editor_main_emph" align="right">
       [INCLUDE: <ixsl:value-of select="/formresult/currentincludeinfo/@part"/>]
     </div>
   </xsl:template>
+  -->
 
   <xsl:template match="displaycurrentcommon">
     <div class="editor_main_emph" align="right">
@@ -929,6 +933,7 @@
   </xsl:template>
   -->
 
+  <!--
   <xsl:template match="displayincludedetails">
     <xsl:call-template name="displaypartdetails">
       <xsl:with-param name="type">include</xsl:with-param>
@@ -936,15 +941,19 @@
       <xsl:with-param name="upload">uplinc</xsl:with-param>
     </xsl:call-template>
   </xsl:template> 
+  -->
   
+  <!--
   <xsl:template match="displaycommondetails">
     <xsl:call-template name="displaypartdetails">
       <xsl:with-param name="type">common</xsl:with-param>
       <xsl:with-param name="select">comsel</xsl:with-param>
       <xsl:with-param name="upload">uplcom</xsl:with-param>
     </xsl:call-template>
-  </xsl:template> 
+  </xsl:template>
+  -->
 
+  <!--
   <xsl:template name="displaypartdetails">
     <xsl:param name="type"/>
     <xsl:param name="select"/>
@@ -991,9 +1000,11 @@
       </ixsl:choose>
     </pfx:forminput>
   </xsl:template>
+  -->
  
 
-   <xsl:template name="partdetails_incl"> 
+  <!-- 
+  <xsl:template name="partdetails_incl"> 
       <xsl:param name="type"/>
       <xsl:param name="select"/>
       <xsl:param name="upload"/>
@@ -1049,8 +1060,9 @@
       </ixsl:otherwise>
     </ixsl:choose>
   </xsl:template>
+  -->
 
-
+  <!--
   <xsl:template name="handlethemebranches">
     <xsl:param name="type"/>
     <xsl:param name="upload"/>
@@ -1100,8 +1112,10 @@
       </ixsl:if>
     </table>
   </xsl:template>
+  -->
 
 
+   <!--
    <xsl:template name="partdetails_dyn"> 
       <xsl:param name="type"/>
       <xsl:param name="select"/>
@@ -1144,7 +1158,7 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
-                <ixsl:otherwise><!-- edit_dyn_currprj != 'true' --> 
+                <ixsl:otherwise><!- - edit_dyn_currprj != 'true' - -> 
                   <xsl:call-template name="warning_spec_branch_not_allowed"/>
                   <xsl:call-template name="show_upload">
                     <xsl:with-param name="upload" select="$upload"/>
@@ -1153,7 +1167,7 @@
                 </ixsl:otherwise>
               </ixsl:choose>
             </ixsl:when>
-            <ixsl:otherwise><!-- edit_dyn_default != 'true' -->
+            <ixsl:otherwise><!- - edit_dyn_default != 'true' - ->
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
                   <xsl:call-template name="edit_default_branch_denied_but_specific"/>
@@ -1163,14 +1177,14 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
-                <ixsl:otherwise><!-- edit_dyn_currprj != 'true' -->
+                <ixsl:otherwise><!- - edit_dyn_currprj != 'true' - ->
                   <xsl:call-template name="edit_default_branch_denied"/>
                 </ixsl:otherwise>
               </ixsl:choose>
             </ixsl:otherwise>
           </ixsl:choose>
         </ixsl:when>
-        <ixsl:otherwise> <!--"/formresult/currentcommoninfo/@product!='default'"-->
+        <ixsl:otherwise> <!- -"/formresult/currentcommoninfo/@product!='default'"- ->
           <ixsl:choose>
             <ixsl:when test="$edit_dyn_default = 'true'">
               <ixsl:choose>
@@ -1185,12 +1199,12 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
-                <ixsl:otherwise> <!-- $edit_dyn_currprj != 'true'-->
+                <ixsl:otherwise> <!- - $edit_dyn_currprj != 'true'- ->
                   <xsl:call-template name="edit_specific_branch_denied"/>
                 </ixsl:otherwise>
               </ixsl:choose>
             </ixsl:when>
-            <ixsl:otherwise> <!-- $edit_dyn_default != 'true' -->
+            <ixsl:otherwise> <!- - $edit_dyn_default != 'true' - ->
               <ixsl:choose>
                 <ixsl:when test="$edit_dyn_currprj = 'true'">
                   <xsl:call-template name="show_upload">
@@ -1203,7 +1217,7 @@
                     <xsl:with-param name="type" select="$type"/>
                   </xsl:call-template>
                 </ixsl:when>
-                <ixsl:otherwise> <!-- $edit_dyn_currprj != 'true' -->
+                <ixsl:otherwise> <!- - $edit_dyn_currprj != 'true' - ->
                   <xsl:call-template name="edit_specific_branch_denied"/>
                 </ixsl:otherwise>
               </ixsl:choose> 
@@ -1212,6 +1226,7 @@
         </ixsl:otherwise>
       </ixsl:choose>
   </xsl:template>
+  -->   
 
 
   <xsl:template name="edit_specific_branch_denied">
@@ -1268,6 +1283,7 @@
     </table>
   </xsl:template>
 
+  <!--
   <xsl:template name="show_upload">
     <xsl:param name="upload"/>
     <xsl:param name="type"/>
@@ -1330,6 +1346,7 @@
       </table>
     </pfx:checkactive>
   </xsl:template>
+  -->
 
 
   

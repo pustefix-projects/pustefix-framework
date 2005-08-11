@@ -32,6 +32,7 @@ import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
+import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
@@ -320,9 +321,24 @@ public class ProjectImpl extends AbstractProject {
     public Target getTarget(String name) {
         return (Target) this.targetmap.get(name);
     }
-    
+
     public TargetGenerator getTargetGenerator() {
         return this.tgen;
+    }
+
+    public Collection getAllIncludeParts() {
+        HashSet includes = new HashSet();
+        for (Iterator i = this.getAllPages().iterator(); i.hasNext();) {
+            Page page = (Page) i.next();
+            try {
+                includes.addAll(page.getPageTarget().getIncludeDependencies(true));
+            } catch (EditorParsingException e) {
+                // Log error and continue
+                String err = "Could not get include dependencies for page " + page.getFullName() + "!";
+                Logger.getLogger(this.getClass()).error(err, e);
+            }
+        }
+        return includes;
     }
 
 }
