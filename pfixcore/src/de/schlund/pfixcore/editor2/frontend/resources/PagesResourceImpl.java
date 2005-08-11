@@ -46,7 +46,6 @@ public class PagesResourceImpl implements PagesResource {
 
     public void insertStatus(ResultDocument resdoc, Element elem)
             throws Exception {
-        // TODO Auto-generated method stub
         Project project = EditorResourceLocator.getProjectsResource(
                 this.context).getSelectedProject();
         if (project != null) {
