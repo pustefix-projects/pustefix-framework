@@ -2,6 +2,10 @@
 
 	* src/de/schlund/pfixxml/perflogging/PerfLogging.java:
 	isPerfLogggingEnabled and isPerfLoggingActive  no longer synchronized
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionCounter.java: new
+	class with simple counter
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle):
+	use ExceptionCounter to count exceptions happend in the VM.
 
 2005-08-12  Martin Leidig  <mleidig@schlund.de>
 
