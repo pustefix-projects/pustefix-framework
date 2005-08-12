@@ -116,11 +116,11 @@ public class PerfLogging {
         
     }
     
-    synchronized boolean isPerfLogggingEnabled() {
+    boolean isPerfLogggingEnabled() {
         return perfLoggingEnabled;
     }
     
-    synchronized boolean isPerfLoggingActive() {
+    boolean isPerfLoggingActive() {
         return perfActive;
     }
     
