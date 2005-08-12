@@ -190,6 +190,7 @@ public class DefaultIWrapperState extends StateImpl {
     protected IWrapperContainer getIWrapperContainer(Context context) throws XMLException  {
         Properties        props     = context.getPropertiesForCurrentPageRequest();
         String            classname = props.getProperty(IWrapperSimpleContainer.PROP_CONTAINER);
+        
         IWrapperContainer obj       = null;
         
         if (classname == null) {
