@@ -27,6 +27,7 @@ import de.schlund.pfixcore.webservice.config.*;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
 import de.schlund.pfixcore.webservice.monitor.*;
+import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
 
@@ -130,6 +131,15 @@ public class WebServiceServlet extends AxisServlet {
             	}
             }
         }
+        
+        
+        String serviceName=getServiceName(req);
+        Configuration config=wsc.getConfiguration();
+        ServiceConfig srvConf=config.getServiceConfig(serviceName);
+        HttpSession session=req.getSession(false);
+        Context pfxContext=null;
+        if(session!=null) pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
+        
         if(DEBUG) CAT.debug("Process webservice request: "+req.getPathInfo());
         if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
             if(DEBUG) CAT.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
@@ -139,16 +149,39 @@ public class WebServiceServlet extends AxisServlet {
             String insPI=req.getParameter("insertpi");
             if(insPI!=null) response=new InsertPIResponseWrapper(res);
             if(DEBUG) if(insPI!=null) CAT.debug("contains insertpi parameter");
-            super.doPost(new SOAPActionRequestWrapper(req),response);
+            if(pfxContext!=null) {
+                synchronized(pfxContext) {
+                    super.doPost(new SOAPActionRequestWrapper(req),response);
+                }
+            } else {
+                super.doPost(new SOAPActionRequestWrapper(req),response);
+            }
         } else if(req.getHeader(Constants.HEADER_SOAP_ACTION)!=null) {
             if(DEBUG) CAT.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
             String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
             if(DEBUG) if(reqID!=null) CAT.debug("contains requestID header: "+reqID);
             if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
-            super.doPost(req,res);
+            if(pfxContext!=null) {
+                synchronized(pfxContext) {
+                    super.doPost(req,res);
+                }
+            } else {
+                super.doPost(req,res);
+            }
         } else {
             if(DEBUG) CAT.debug("no SOAPAction header, no soapmessage parameter -> bad request");
             sendBadRequest(req,res,res.getWriter());
+        }
+    }
+    
+    private static String getServiceName(HttpServletRequest req) {
+        String service=req.getPathInfo();
+        if(service==null) throw new IllegalArgumentException("No service name found.");
+        int ind=service.lastIndexOf('/');
+        if(ind<0) throw new IllegalArgumentException("No service name found.");
+        else {
+            if(!((service.length()-ind)>1)) throw new IllegalArgumentException("No service name found.");
+            return service.substring(ind+1);
         }
     }
     
