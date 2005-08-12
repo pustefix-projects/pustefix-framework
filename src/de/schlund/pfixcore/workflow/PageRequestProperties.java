@@ -112,26 +112,28 @@ public class PageRequestProperties implements PropertyObject {
         String fullname   = (String) variantpagecache.get(variant_id + "@" + name);
         
         if (fullname == null) {
-            // CAT.debug("------ Cache miss " + variant_id + "@" + name);
-            String[] variant_arr = variant.getVariantFallbackArray();
-            for (int i = 0; i < variant_arr.length; i++) {
-                String tmp = name + "::" + variant_arr[i];
-                if (pageRequestNameIsDefined(tmp)) {
-                    CAT.debug("=== Found PR for '" + fullname + "' ===");
-                    fullname = tmp;
-                    break;
-                } else {
-                    CAT.debug("=== PR NOT FOUND for '" + fullname + "' ===");
+            synchronized(variantpagecache) {
+                fullname = (String) variantpagecache.get(variant_id + "@" + name);
+                if (fullname == null) {
+                    // CAT.debug("------ Cache miss " + variant_id + "@" + name);
+                    String[] variant_arr = variant.getVariantFallbackArray();
+                    for (int i = 0; i < variant_arr.length; i++) {
+                        String tmp = name + "::" + variant_arr[i];
+                        if (pageRequestNameIsDefined(tmp)) {
+                            CAT.debug("=== Found PR for '" + fullname + "' ===");
+                            fullname = tmp;
+                            break;
+                        } else {
+                            CAT.debug("=== PR NOT FOUND for '" + fullname + "' ===");
+                        }
+                    }
+                    if (fullname == null) {
+                        fullname = name;
+                    }
+                    variantpagecache.put(variant_id + "@" + name, fullname);
                 }
-            }
-            if (fullname == null) {
-                fullname = name;
-            }
-            variantpagecache.put(variant_id + "@" + name, fullname);
-        } else {
-            // CAT.debug("###### Cache HIT " + variant_id + "@" + name);
+            } // Yes, DCL doesn't work, but if we hit the race, it doesn't matter here.
         }
-
         return fullname;
     }
     
