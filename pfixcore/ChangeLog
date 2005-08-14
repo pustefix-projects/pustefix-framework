@@ -1,3 +1,7 @@
+2005-08-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): supress ClientAbortExceptions
+
 2005-08-12  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (getVariantMatchingPageRequestName): 
