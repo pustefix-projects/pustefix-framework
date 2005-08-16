@@ -29,7 +29,7 @@ import de.schlund.util.statuscodes.StatusCode;
 import java.util.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
  *
  */
 public class Context implements AppContext {
-    private final static Category LOG                 = Category.getInstance(Context.class.getName());
+    private final static Logger   LOG                 = Logger.getLogger(Context.class);
     private final static String   NOSTORE             = "nostore";
     private final static String   DEFPROP             = "context.defaultpageflow";
     private final static String   STARTIC             = "context.startinterceptor";
@@ -1100,7 +1100,6 @@ public class Context implements AppContext {
         return name;
     }
 
-  
 
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
@@ -1125,6 +1124,7 @@ public class Context implements AppContext {
         addPageMessage(scode, args, null);
     }
 
+    
     /**
      * <b>NOTE: </b> This should be used only inside the {@link #handleRequest()}-method
      * as it accesses a non-thread-safe field of this class.
@@ -1145,6 +1145,4 @@ public class Context implements AppContext {
             return;
         messages.add(new StatusCodeInfo(scode, args, level));
     }
-
-    
 }
