@@ -5,6 +5,8 @@
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:cus="http://www.schlund.de/pustefix/customize">
 
+  <xsl:param name="maincontentpath"/>
+  
   <xsl:template match="pfx:maincontent">
     <xsl:param name="noerror" select="@noerror"/>  
     <xsl:variable name="path">
@@ -12,6 +14,7 @@
         <xsl:when test="@path">
           <xsl:value-of select="@path"/>
         </xsl:when>
+        <xsl:when test="string($maincontentpath) != ''"><xsl:value-of select="$maincontentpath"/></xsl:when>
         <xsl:otherwise><xsl:value-of select="$product"/>/txt/pages</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
