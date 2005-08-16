@@ -1,3 +1,8 @@
+2005-08-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: added $maincontentpath parameter to be set from depend.xml.in to give a default for the 
+	path of the maincontent template
+
 2005-08-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): supress ClientAbortExceptions
