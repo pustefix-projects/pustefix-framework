@@ -2,6 +2,7 @@
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java (loadConfig): make sure to add " default" to end
 	of global theme string if it's missing.
+	(createTargetFromTargetStruct): do the same for page local themes string (if given at all)
 
 2005-08-16  Jens Lautenbacher  <jtl@schlund.de>
 
