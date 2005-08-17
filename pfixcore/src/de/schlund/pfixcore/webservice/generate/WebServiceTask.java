@@ -153,11 +153,16 @@ public class WebServiceTask extends Task {
                         srvWsdd=new WSDDDocument(wsddDoc);
                     }
                     
-                    WSDDRequestFlow reqFlow=null;
-                    WSDDResponseFlow resFlow=null;
-                    if(globConf.getLoggingEnabled() || globConf.getMonitoringEnabled()) {
-                        reqFlow=new WSDDRequestFlow();
-                        resFlow=new WSDDResponseFlow();
+                    WSDDRequestFlow reqFlow=new WSDDRequestFlow();
+                    WSDDResponseFlow resFlow=new WSDDResponseFlow();
+                    
+                    if(globConf.getFaultHandler()!=null) {
+                        WSDDHandler errorHandler=new WSDDHandler();
+                        errorHandler.setType(new QName("ErrorHandler"));
+                        reqFlow.addHandler(errorHandler);
+                    }
+                    
+                    if(globConf.getLoggingEnabled() || globConf.getMonitoringEnabled()) {         
                         if(globConf.getLoggingEnabled()) {
                             WSDDHandler loggingHandler=new WSDDHandler();
                             loggingHandler.setType(new QName("LoggingHandler"));
@@ -170,14 +175,10 @@ public class WebServiceTask extends Task {
                             reqFlow.addHandler(monitorHandler);
                             resFlow.addHandler(monitorHandler);
                         }
-                        /**
-                        WSDDHandler errorHandler=new WSDDHandler();
-                        errorHandler.setType(new QName("ErrorHandler"));
-                        reqFlow.addHandler(errorHandler);
-                        resFlow.addHandler(errorHandler);
-                        */
                     }
                     
+                    
+                    	
                     Element srvElem=(Element)elem.getElementsByTagName("servername").item(0);
                     if(srvElem==null) throw new BuildException("Missing servername element in configuration of project '"+prjName+"'");
                     String srvName=getServerName(prjName,srvElem);
@@ -284,13 +285,22 @@ public class WebServiceTask extends Task {
                             WSDDDocument wsdd=new WSDDDocument(wsddDoc);
                             WSDDService[] wsddServices=wsdd.getDeployment().getServices();
                             for(int j=0;j<wsddServices.length;j++) {
+                            	
                                 //Change automatically generated name of implementation class to configured name
                                 wsddServices[j].setParameter("className",wsImpl);
                                 
-                                if(globConf.getMonitoringEnabled()||globConf.getLoggingEnabled()) {
+                                if(globConf.getFaultHandler()==null&&conf.getFaultHandler()!=null) {
+                                	WSDDRequestFlow srFlow=new WSDDRequestFlow();
+                                    WSDDHandler errorHandler=new WSDDHandler();
+                                    errorHandler.setType(new QName("ErrorHandler"));
+                                    srFlow.addHandler(errorHandler);
+                                	Iterator srit=reqFlow.getHandlers().iterator();
+                                	while(srit.hasNext()) srFlow.addHandler((WSDDHandler)srit.next());
+                                	wsddServices[j].setRequestFlow(srFlow);
+                                } else {
                                     wsddServices[j].setRequestFlow(reqFlow);
-                                    wsddServices[j].setResponseFlow(resFlow);
                                 }
+                                wsddServices[j].setResponseFlow(resFlow);
                                 
                                 //Update server deployment descriptor
                                 srvWsdd.getDeployment().deployService(wsddServices[j]);

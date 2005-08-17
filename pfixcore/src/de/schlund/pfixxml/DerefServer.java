@@ -20,11 +20,17 @@
 package de.schlund.pfixxml;
 
 import de.schlund.pfixxml.serverutil.SessionHelper;
+import de.schlund.pfixxml.util.MD5Utils;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.axis.encoding.Base64;
 import org.apache.log4j.Category;
 
 /**
@@ -36,8 +42,11 @@ import org.apache.log4j.Category;
  */
 
 public class DerefServer extends ServletManager {
-    static protected Category DEREFLOG = Category.getInstance("LOGGER_DEREF");
-
+    protected static Category DEREFLOG        = Category.getInstance("LOGGER_DEREF");
+    protected static Category CAT             = Category.getInstance(DerefServer.class);
+    public static String      PROP_DEREFKEY   = "derefserver.signkey";
+    public static String      PROP_IGNORESIGN = "derefserver.ignoresign";
+    
     protected boolean allowSessionCreate() {
         return (false);
     }
@@ -46,108 +55,108 @@ public class DerefServer extends ServletManager {
         return (false);
     }
 
+    public static String signString(String input, String key) {
+        return MD5Utils.hex_md5(input+key, "utf8");
+    }
+
+    public static boolean checkSign(String input, String key, String sign) {
+        if (input == null || sign == null) {
+            return false;
+        }
+        return MD5Utils.hex_md5(input+key, "utf8").equals(sign);
+    }
+    
     protected void process(PfixServletRequest preq, HttpServletResponse res) throws Exception {
-        HttpSession  session   = preq.getSession(false);
-        RequestParam linkparam = preq.getRequestParam("link");
+        RequestParam linkparam    = preq.getRequestParam("link");
+        RequestParam enclinkparam = preq.getRequestParam("enclink");
+        RequestParam signparam    = preq.getRequestParam("sign");
+        String       key          = getProperties().getProperty(PROP_DEREFKEY);
+        String       ign          = getProperties().getProperty(PROP_IGNORESIGN);
+
+        // This is currently set to true by default for backward compatibility. 
+        boolean ignoresign = true;
+        if (ign != null && ign.equals("false")) {
+            ignoresign = false;
+        }
+
+        HttpServletRequest req     = preq.getRequest();
+        String             referer = req.getHeader("Referer");
+
+        CAT.debug("===> sign key: " + key);
+        CAT.debug("===> Referer: " + referer);
         
-        if (linkparam == null || linkparam.getValue() == null) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        if (linkparam != null && linkparam.getValue() != null) {
+            CAT.debug(" ==> Handle link: " + linkparam.getValue());
+            if (signparam != null && signparam.getValue() != null) {
+                CAT.debug("     with sign: " + signparam.getValue());
+            }
+            handleLink(linkparam.getValue(), signparam, ignoresign, preq, res, key);
             return;
-        }
-        String link = linkparam.getValue();
-        if (link != null) {
-            link = link.trim();
-        }
-        
-        if (link == null || link.equals("")) {
-            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+        } else if (enclinkparam != null && enclinkparam.getValue() != null &&
+                   signparam != null && signparam.getValue() != null) {
+            CAT.debug(" ==> Handle enclink: " + enclinkparam.getValue());
+            CAT.debug("     with sign: " + signparam.getValue());
+            handleEnclink(enclinkparam.getValue(), signparam.getValue(), preq, res, key);
             return;
-        }
-        
-        if (link.indexOf("\"") != -1 || !isValidProtocol(link)) {
-            // we don't want neither \" within a link nor a link starting with javascript:!!
+        } else {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        
-        OutputStream       out    = res.getOutputStream();
-        OutputStreamWriter writer = new OutputStreamWriter(out, res.getCharacterEncoding());
-        if (session == null) {
-            DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
-            String display = link;
-            display = display.replaceAll("<", "&lt;");
-            display = display.replaceAll(">", "&gt;");
+    }
+
+
+    private void handleLink(String link, RequestParam signparam, boolean ignoresign,
+                            PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        boolean checked = false;
+        boolean signed  = false;
+        if  (signparam != null && signparam.getValue() != null) {
+            signed = true;
+        }
+        if (signed && checkSign(link, key, signparam.getValue())) {
+            checked = true;
+        }
+
+        // We don't currently enforce the signing at this stage. We may change this to enforcing mode,
+        // or maybe we will use some clear warning pages in the case of a not signed request.
+        if (checked || (!signed && ignoresign)) {
+            OutputStream       out      = res.getOutputStream();
+            OutputStreamWriter writer   = new OutputStreamWriter(out, res.getCharacterEncoding());
+            String             enclink  = Base64.encode(link.getBytes("utf8"));
+            String             reallink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
+                SessionHelper.getClearedURI(preq) + "?enclink=" + URLEncoder.encode(enclink, "utf8") +
+                "&sign=" + signString(enclink, key);
             
-            if (goodReferer(preq) || isLocalUrl(link)) {
+            CAT.debug("===> Meta refresh to link: " + reallink);
+            
             writer.write("<html><head>");
-            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + link + "\">");
-            writer.write("</head><body bgcolor=\"#ffffff\"><center><small>");
-            writer.write("<a style=\"color:#dddddd;\" href=\"" + link + "\">" + display + "</a>");
-            writer.write("</small></center></body></html>");
-            } else {
-                writer.write("<html><head>");
-                writer.write("</head><body bgcolor=\"#ffffff\">");                
-                writer.write("<h2>You will now enter another website!</h1>");
-                writer.write("Please click on the following link:<br/>");                
-                writer.write("<a href=\"" + link + "\">" + display + "</a>");
-                writer.write("</body></html>");                
-            }
+            writer.write("<meta http-equiv=\"refresh\" content=\"0; URL=" + reallink +  "\">");
+            writer.write("</head><body bgcolor=\"#ffffff\"><center>");
+            writer.write("<a style=\"color:#cccccc;\" href=\"" + reallink + "\">" + "-> Redirect ->" + "</a>");
+            writer.write("</center></body></html>");
+            writer.flush();
         } else {
-            String thelink = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() +
-                SessionHelper.getClearedURI(preq) + "?link=" + link;
+            CAT.warn("===> No meta refresh because signature is wrong.");
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+    }
+
+    private void handleEnclink(String enclink, String sign, PfixServletRequest preq, HttpServletResponse res, String key) throws Exception {
+        if (checkSign(enclink, key, sign)) {
+            String link = new String( Base64.decode(enclink), "utf8");
+            if (link.startsWith("/")) {
+                link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;
+            }
+            CAT.debug("===> Relocate to link: " + link);
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
-            res.setHeader("Location", thelink);
+            res.setHeader("Location", link);
             res.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+        } else {
+            CAT.warn("===> Won't relocate because signature is wrong.");
+            res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
-        writer.flush();
-    }
-
-    private boolean isLocalUrl(String link) {
-        
-        if (link.startsWith("/")) {
-            return true;
-        }
-
-        return false;
-    }
-
-
-    private boolean isValidProtocol(String link) {
-        if (link == null || link.equals("")) {
-            return false;
-        }
-
-        String lc = link.toLowerCase();
-
-        if (lc.startsWith("http://")  ||
-            lc.startsWith("https://") ||
-            lc.startsWith("ftp://")   ||
-            lc.startsWith("/")) {
-            return true;
-        }
-        
-        return false;
-    }
-    
-    private boolean goodReferer(PfixServletRequest preq) {
-//        String referer = preq.getRequest().getHeader("Referer");
-//        String server = preq.getServerName();
-       
-//        if (referer == null) {
-//            // got no referer, maybe disabled or bad request...
-//            return false;
-//        }
-
-//        if (referer.startsWith("http://" + server) || referer.startsWith("https://" + server)) {
-//        	   // ok, referer and servername match!!
-//            return true;
-//        }
-       
-//        return false;
-
-        // EEEEEEK. IE doesn't send a referer in case of a javascript triggered popup... kill it for now.
-        return true;
     }
 }

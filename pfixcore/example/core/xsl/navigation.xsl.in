@@ -726,18 +726,17 @@
               <xsl:when test="not(contains(@href, '?'))">
                 <xsl:variable name="href">
                   <xsl:if test="@href">
-                    <xsl:value-of select="concat('/xml/deref?link=',@href)"/>
+                    <xsl:value-of select="@href"/>
                   </xsl:if>
                   <xsl:if test="./pfx:host">
-                    <xsl:text>/xml/deref?link=</xsl:text>
                     <xsl:apply-templates select="./pfx:host/node()"/>
                   </xsl:if>
                   <xsl:if test="./pfx:argument">
-                    <xsl:text>%3f</xsl:text>
+                    <xsl:text>?</xsl:text>
                     <xsl:for-each select="pfx:argument">
-                      <xsl:value-of select="@name"/>%3d<xsl:apply-templates select="./node()"/>
+                      <xsl:value-of select="@name"/>=<xsl:apply-templates select="./node()"/>
                       <xsl:if test="following-sibling::pfx:argument">
-                        <xsl:text>%26</xsl:text>
+                        <xsl:text>&amp;</xsl:text>
                       </xsl:if>
                     </xsl:for-each>
                   </xsl:if>
@@ -767,7 +766,7 @@
                     <ixsl:attribute name="onclick">return !window.open(this.href,'<xsl:value-of select="$windowName"/>'<xsl:value-of select="$windowFeatures"/>);</ixsl:attribute>
                   </xsl:if>
                   <ixsl:attribute name="href">
-                    <xsl:copy-of select="$href"/>
+                    <ixsl:call-template name="__deref"><ixsl:with-param name="link"><xsl:copy-of select="$href"/></ixsl:with-param></ixsl:call-template>
                   </ixsl:attribute>
                   <xsl:apply-templates/>
                 </a>
