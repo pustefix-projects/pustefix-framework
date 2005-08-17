@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 version="1.0">
-
   
   <xsl:template match="*" mode="static_disp">
     <xsl:param name="ind">&#160;&#160;</xsl:param>
@@ -62,70 +61,5 @@
   <xsl:template match="comment()" mode="static_disp">
     <br/> <span style="color:#999999">&lt;!--<xsl:value-of select="."/>--&gt;</span>
   </xsl:template>
-
-  <!--Permission stuff below --> 
-  
-  <xsl:template name="incl_perm_denied_usedby_other_prods_no_branch">
-    <xsl:param name="prods"/>
-    <xsl:call-template name="perm_denied_usedby_other_prods">
-      <xsl:with-param name="type" select="'include'"/>
-      <xsl:with-param name="prods" select="$prods"/>
-      <xsl:with-param name="text" select="'You do not have the permission to edit includes of these products.'"/>
-    </xsl:call-template>
-  </xsl:template>
-  
-  <xsl:template name="incl_perm_denied_usedby_other_prods_but_branch">
-    <xsl:param name="prods"/>
-    <xsl:call-template name="perm_denied_usedby_other_prods">
-      <xsl:with-param name="type" select="'include'"/>
-      <xsl:with-param name="prods" select="$prods"/>
-      <xsl:with-param name="text" select="'You do not have the permission to edit includes of these products, but you
-        can create a product specific branch.'"/>
-    </xsl:call-template>
-  </xsl:template>
-  
-  <xsl:template name="perm_denied_usedby_other_prods">
-    <xsl:param name="prods"/>
-    <xsl:param name="text"/>
-    <xsl:param name="type"/>
-    <table class="core_errorbox_table" width="100%">
-      <tr valign="top">
-        <td class="core_errorbox_td">
-          <img src="/core/img/error.gif"/>
-        </td>
-        <td  class="core_errorlabel_text">
-          Permission denied!
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          This <xsl:value-of select="$type"/> is used by the following products:
-        </td>
-      </tr> 
-      <tr>
-        <td colspan="2">
-          <ul>
-            <xsl:copy-of select="$prods"/>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <xsl:value-of select="$text"/>
-        </td>
-      </tr>
-    </table>
-  </xsl:template> 
-  
-  <!--
-  <xsl:template name="image_perm_denied_usedby_other_prods">
-    <xsl:param name="prods"/>
-    <xsl:call-template name="perm_denied_usedby_other_prods">
-      <xsl:with-param name="type" select="'image'"/>
-      <xsl:with-param name="prods" select="$prods"/>
-      <xsl:with-param name="text" select="'You are not allowed to edit this image.'"/>
-    </xsl:call-template>
-  </xsl:template>
-  -->
   
 </xsl:stylesheet>
