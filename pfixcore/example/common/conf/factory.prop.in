@@ -28,9 +28,7 @@
     <!--SPCacheStatistic-->
     <prop name="cachestatistic.queuesize">60</prop>
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
-    
-    <!-- Needed by SPCacheStatistic -->
-    <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
+    <prop name="cachestatistic.productdata">servletconf/projects.xml</prop>
     
     <!-- ApplicationContext factory for editor -->
     <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>
