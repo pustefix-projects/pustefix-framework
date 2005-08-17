@@ -169,7 +169,7 @@
                         </pfx:xinp>
                       </td>
                       <td>
-                        <pfx:label name="user.EditDynIncludesPrivilege">User is allowed to edit the default branch of DynIncludes.</pfx:label>
+                        <pfx:label name="user.EditDynIncludesPrivilege">User is allowed to edit DynIncludes.</pfx:label>
                       </td>
                     </tr>
                     <tr>
