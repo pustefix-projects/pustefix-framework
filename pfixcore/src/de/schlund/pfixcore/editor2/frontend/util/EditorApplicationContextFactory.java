@@ -68,6 +68,7 @@ public final class EditorApplicationContextFactory {
                 configFile, PathFactory.getInstance().createPath("")
                         .getBase().getAbsolutePath());
         this.appContext = context;
+        Logger.getLogger(this.getClass()).info("Initialized ApplicationContext for editor");
     }
     
     /**
