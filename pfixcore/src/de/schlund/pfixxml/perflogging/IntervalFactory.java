@@ -47,18 +47,19 @@ public class IntervalFactory {
     
     private List createInterval() {
         List intervals = new ArrayList(interval_size); 
-        intervals.add(0, new Interval(0, increase_factor));
+        intervals.add(0, new Interval(0, 1));
+        intervals.add(1, new Interval(1, increase_factor));
         
-        for(int i=1; i<interval_size -1; i++) {
+        for(int i=2; i<interval_size -1; i++) {
             long pre_until = ((Interval) intervals.get(i-1)).getUntil(); 
             intervals.add(i,new Interval(
                      pre_until, pre_until * increase_factor)); 
         }
         
         intervals.add(interval_size -1, new Interval(
-                ((Interval) intervals.get(interval_size -3)).getUntil(), Long.MAX_VALUE));
+                ((Interval) intervals.get(interval_size -2)).getUntil(), Long.MAX_VALUE));
         
-        /*for(int i=0; i<interval_size; i++) {
+       /* for(int i=0; i<interval_size; i++) {
             System.out.print(i+":->"+intervals.get(i)+"|");
             System.out.println();
         }*/

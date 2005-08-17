@@ -78,7 +78,7 @@ or delete the DOCTYPE definition -->
     <property       name="prohibitedit" value="no"/>
 
     <property name="debug" value="true"/>
-    <property name="debuglevel" value="lines,vars"/>
+    <property name="debuglevel" value="lines,vars,source"/>
 
     <condition property="machine"       value="${env.MACHINE}">
       <and>

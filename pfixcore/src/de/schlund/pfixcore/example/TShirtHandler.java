@@ -48,12 +48,9 @@ public class TShirtHandler implements IHandler {
         Integer[]              feature = tshirt.getFeature();
 
         if (size.equals("L") && color.equals(new Integer(2))) {
-            // The combination size "X" and color No. "2" is considered invalid (maybe out of stock) 
+            // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
             StatusCode scode = sfac.getStatusCode("SIZECOLOR_OUTOF_STOCK");
-            String[]   args  = new String[2];
-            args[0] = "L";
-            args[1] = "2";
-            tshirt.addSCodeWithArgsSize(scode, args);
+            tshirt.addSCodeSize(scode, new String[]{"L", "2"}, "note");
             return;
         }
 

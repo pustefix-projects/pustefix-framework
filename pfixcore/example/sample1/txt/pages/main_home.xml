@@ -83,13 +83,18 @@
   <part name="buttons">
     <product name="default">
       <lang name="default">
-        <pfx:button page="test" target="_top">STARTWITHFLOW test</pfx:button>
+        <pfx:button page="test" target="_top">
+          STARTWITHFLOW test
+        </pfx:button>
         <br/>
         <pfx:elink href="http://www.gimp.org" target="_popup">
           <pfx:argument name="foo"><ixsl:value-of select="/formresult/@serial"/></pfx:argument>
           Goto Gimp!</pfx:elink>  
           <pfx:button page="ssltest">SSL TEST</pfx:button>  
-          <pfx:button page="install">Download README.1st (text/plain)</pfx:button>
+          <pfx:button page="install">Download README.1st (text/plain)</pfx:button>  
+          <pfx:elink href="ftp://ftp.rz.uni-karlsruhe.de" target="_popup">
+          Goto FTP UniKa!</pfx:elink>
+          <br/>
       </lang>
     </product>
   </part>

@@ -37,12 +37,21 @@
   <xsl:template match="*">
     <xsl:param name="wspref"/>
 	<xsl:variable name="pref" select="concat($wspref,'.',name())"/>
-    <xsl:if test="text()">
+    <xsl:if test="not(normalize-space(text())='')">
       <xsl:value-of select="concat($pref,'=',normalize-space(text()))"/><xsl:text>&#xa;</xsl:text>
     </xsl:if>
     <xsl:for-each select="@*">
       <xsl:value-of select="concat($pref,'.',name(),'=',normalize-space(.))"/><xsl:text>&#xa;</xsl:text>
     </xsl:for-each>
+    <xsl:apply-templates>
+      <xsl:with-param name="wspref" select="$pref"/>
+    </xsl:apply-templates>
+  </xsl:template>
+  
+  <xsl:template match="ws:param">
+    <xsl:param name="wspref"/>
+    <xsl:variable name="pref" select="concat($wspref,'.',name(),'.',@name)"/>
+    <xsl:value-of select="concat($wspref,'.',name(),'.',@name,'=',@value)"/><xsl:text>&#xa;</xsl:text>
   </xsl:template>
 
   <xsl:template match="ws:choose">

@@ -3,9 +3,11 @@
  */
 package de.schlund.pfixcore.webservice.config;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.fault.FaultHandler;
 
 /**
  * GlobalServiceConfig.java 
@@ -31,6 +33,8 @@ public class GlobalServiceConfig extends AbstractConfig {
     private final static String PROP_LOGGING=PROP_PREFIX+"logging.enabled";
     private final static String PROP_SESSTYPE=PROP_PREFIX+"session.type";
     private final static String PROP_SCOPETYPE=PROP_PREFIX+"scope.type";
+    private final static String PROP_FAULTHANDLERCLASS=PROP_PREFIX+"faulthandler.class";
+    private final static String PROP_FAULTHANDLERPARAM=PROP_PREFIX+"faulthandler.param";
     
     private final static String DEFAULT_SESSTYPE=Constants.SESSION_TYPE_SERVLET;
     private final static String DEFAULT_SCOPETYPE=Constants.SERVICE_SCOPE_APPLICATION;
@@ -50,6 +54,7 @@ public class GlobalServiceConfig extends AbstractConfig {
     String monitorScope;
     int monitorSize;
     boolean logging;
+    FaultHandler faultHandler;
     
     public GlobalServiceConfig() {
         
@@ -78,6 +83,12 @@ public class GlobalServiceConfig extends AbstractConfig {
             monitorSize=props.getIntegerProperty(PROP_MONITORSIZE,true,0);
         }
         logging=props.getBooleanProperty(PROP_LOGGING,true,false);
+        faultHandler=(FaultHandler)props.getObjectProperty(PROP_FAULTHANDLERCLASS,FaultHandler.class,false);
+        if(faultHandler!=null) {
+            HashMap faultParams=props.getHashMap(PROP_FAULTHANDLERPARAM);
+            faultHandler.setParams(faultParams);
+            faultHandler.init();
+        }
     }
     
     public void reload() throws ConfigException {
@@ -202,6 +213,14 @@ public class GlobalServiceConfig extends AbstractConfig {
     
     public void setLoggingEnabled(boolean logging) {
         this.logging=logging;
+    }
+    
+    public FaultHandler getFaultHandler() {
+    	return faultHandler;
+    }
+    
+    public void setFaultHandler(FaultHandler faultHandler) {
+    	this.faultHandler=faultHandler;
     }
     
     protected Properties getProperties() {

@@ -29,13 +29,13 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.generator.IWrapperParam;
 import de.schlund.pfixcore.generator.IWrapperParamDefinition;
 import de.schlund.pfixcore.generator.RequestData;
+import de.schlund.pfixcore.generator.StatusCodeInfo;
 import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.pfixxml.ResultForm;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.loader.AppLoader;
 import de.schlund.pfixxml.loader.Reloader;
@@ -176,23 +176,21 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
     public void addErrorCodes() throws Exception {
         if (!is_loaded) throw new XMLException("You first need to have called handleSubmittedData() here!");
         if (!is_splitted) splitIWrappers();
-        ResultForm resform   = resdoc.createResultForm();
         IWrapper[] cwrappers = selectedwrappers.getIWrappers();
         for (int i = 0; i < cwrappers.length; i++) {
-            IWrapper            wrapper = cwrappers[i];
-            String              prefix  = wrapper.gimmePrefix();
-            IWrapperParam[] errors = wrapper.gimmeAllParamsWithErrors();
+            IWrapper        wrapper = cwrappers[i];
+            String          prefix  = wrapper.gimmePrefix();
+            IWrapperParam[] errors  = wrapper.gimmeAllParamsWithErrors();
             if (errors != null) {
                 wrapper.tryErrorLogging();
                 for (int j = 0; j < errors.length; j++) {
-                    IWrapperParam param  = errors[j];
-                    StatusCode[]      scodes = param.getStatusCodes();
-                    String            name   = prefix + "." + param.getName(); 
-                    if (scodes != null) {
-                        for (int k = 0; k < scodes.length; k++) {
-                            StatusCode code = scodes[k];
-                            String[]   args = param.getArgsForStatusCode(code);
-                            resform.addStatusCode(context.getProperties(), code, args, name);
+                    IWrapperParam    param      = errors[j];
+                    StatusCodeInfo[] scodeinfos = param.getStatusCodeInfos();
+                    String           name       = prefix + "." + param.getName();
+                    if (scodeinfos != null) {
+                        for (int k = 0; k < scodeinfos.length; k++) {
+                            StatusCodeInfo sci  = scodeinfos[k];
+                            resdoc.addStatusCode(context.getProperties(), sci.getStatusCode(), sci.getArgs(), sci.getLevel(), name);
                         }
                     }
                 }
@@ -212,7 +210,6 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
      */
     public void addStringValues() throws Exception {
         if (!is_splitted) splitIWrappers();
-        ResultForm resform   = resdoc.createResultForm();
         IWrapper[] cwrappers = currentgroup.getIWrappers();
         for (int i = 0; i < cwrappers.length; i++) {
             IWrapper            wrapper  = cwrappers[i];
@@ -224,7 +221,7 @@ public class IWrapperSimpleContainer implements IWrapperContainer, Reloader {
                 String[]          strval = pinfo.getStringValue();
                 if (strval != null) {
                     for (int k = 0; k < strval.length; k++) {
-                        resform.addValue(prfx + "." + name, strval[k]);
+                        resdoc.addValue(prfx + "." + name, strval[k]);
                     }
                 }
             }

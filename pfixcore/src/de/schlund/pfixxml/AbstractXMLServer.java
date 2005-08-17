@@ -96,7 +96,9 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String   PARAM_FRAME             = "__frame";
     // private static final String   PARAM_NOSTORE           = "__nostore";
     private static final String   PARAM_REUSE             = "__reuse"; // internally used
+
     private static final String   XSLPARAM_LANG           = "lang";
+    private static final String   XSLPARAM_DEREFKEY       = "__derefkey";
     private static final String   XSLPARAM_SESSID         = "__sessid";
     private static final String   XSLPARAM_URI            = "__uri";
     private static final String   XSLPARAM_SERVP          = "__servletpath";
@@ -303,9 +305,10 @@ public abstract class AbstractXMLServer extends ServletManager {
             params.put(XSLPARAM_SERVER_NAME, preq.getServerName());
         if (preq.getScheme() != null)
             params.put(XSLPARAM_REQUEST_SCHEME, preq.getScheme());
-        if (preq.getQueryString() != null) {
+        if (preq.getQueryString() != null)
             params.put(XSLPARAM_QUERYSTRING, preq.getQueryString());
-        }
+
+        params.put(XSLPARAM_DEREFKEY, getProperty(DerefServer.PROP_DEREFKEY));
 
         if (session != null) {
             params.put(XSLPARAM_SESSID,

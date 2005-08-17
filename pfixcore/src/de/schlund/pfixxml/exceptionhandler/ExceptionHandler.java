@@ -77,6 +77,15 @@ public class ExceptionHandler {
     synchronized public void handle(Throwable t, PfixServletRequest req, Properties properties) {
         MessageBuilder.log(t, req);
         
+        // increase number of exceptions happend in this vm
+        if(t instanceof Error) {
+            ExceptionCounter.getInstance().increaseErrors();
+        } else if(t instanceof RuntimeException) {
+            ExceptionCounter.getInstance().increaseRuntime();
+        } else {
+            ExceptionCounter.getInstance().increaseChecked();
+        }
+        
         PFUtil.getInstance().debug("Handling a " + t.getClass().getName());
         // if propertyfile changed reload it, it's done in a tomcat thread (clumsy;-))
         // if it is the first time, skip reinitialisation
