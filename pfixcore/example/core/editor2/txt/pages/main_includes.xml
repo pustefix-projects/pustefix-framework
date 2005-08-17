@@ -69,14 +69,6 @@
             <ixsl:for-each select="/formresult/includes/currentinclude/images">
               <pfx:include part="displayimages" href="core/editor2/txt/util.xml"/>
             </ixsl:for-each>
-            <!--
-            <displaycurrentinclude/><br/>
-            <displayincludedetails/>
-            <displayaffectedpages path="/formresult/currentincludeinfo"/>
-            <displaybranchoptions/>
-            <displayincludes path="/formresult/currentincludeinfo"/>
-            <displayimages path="/formresult/currentincludeinfo"/>
-            -->
             <div>
               <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
               <ixsl:choose>
@@ -106,12 +98,6 @@
   <part name="sidebar">
     <product name="default">
       <lang name="default">
-        <!--
-        <ixsl:if test="/formresult/currentsearchincludes">
-          <span style="font-size: 10px;">(matching last Search)</span>
-          <displayallincludes path="/formresult/currentsearchincludes"/>
-        </ixsl:if>
-        -->
         <ixsl:for-each select="/formresult/includes">
           <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
         </ixsl:for-each>

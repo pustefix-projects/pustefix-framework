@@ -13,8 +13,6 @@
 	  </style>
         </head>
 	  <body class="navi">
-    <!-- TODO Remove for production use -->
-    <pfx:editconsole/>
     <div class="topbar">
       <pfx:maincontent path="core/editor2/txt/pages" prefix="main_" part="logoutbutton"/>
     </div>

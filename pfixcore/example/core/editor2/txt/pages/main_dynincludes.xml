@@ -81,7 +81,6 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-        <pfx:editconsole/>
       </lang>
     </product>
   </part>
@@ -89,12 +88,6 @@
   <part name="sidebar">
     <product name="default">
       <lang name="default">
-        <!--
-        <ixsl:if test="/formresult/currentsearchincludes">
-          <span style="font-size: 10px;">(matching last Search)</span>
-          <displayallincludes path="/formresult/currentsearchincludes"/>
-        </ixsl:if>
-        -->
         <ixsl:for-each select="/formresult/dynincludes">
           <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
         </ixsl:for-each>
