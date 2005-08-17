@@ -81,6 +81,7 @@ public class SessionResourceImpl implements SessionResource {
             EditorUser userinfo = SpringBeanLocator.getUserManagementService()
                     .getUser(this.secman.getPrincipal().getName());
             user.setAttribute("fullname", userinfo.getFullname());
+            user.setAttribute("username", userinfo.getUsername());
             Element permissions = resdoc.createSubNode(user, "permissions");
             if (secman.mayAdmin()) {
                 permissions.setAttribute("admin", "true");

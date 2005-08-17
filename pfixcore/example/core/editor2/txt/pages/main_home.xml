@@ -74,7 +74,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="prodselect" normalclass="editor_importantlink" target="_top">
+            <pfx:button page="start" normalclass="editor_importantlink" target="_top">
               <em>Select another project</em>
             </pfx:button>
             <br/>

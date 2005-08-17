@@ -16,7 +16,10 @@
 	  </property>
     <property name="projectFactoryService">
 	    <ref bean="projectfactory"/>
-	  </property>      
+	  </property>
+    <property name="securityManagerService">
+      <ref bean="securitymanager"/>
+    </property>
   </bean>
   
   <bean id="projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">

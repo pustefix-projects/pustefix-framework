@@ -426,7 +426,11 @@ ul.list li{
   margin-top: 2px;
 }
 
-
+table.editor_pagemessages_box,
+div.editor_pagemessages_box {
+  border:dashed 1px #cccccc;
+  padding: 2px;
+}
 
 
         .core_errorbox_table   { background-color: #f2cf8a;

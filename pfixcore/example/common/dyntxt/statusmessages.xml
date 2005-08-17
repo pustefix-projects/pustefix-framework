@@ -150,6 +150,11 @@
       <lang name="default">The passwords don't match.</lang>
     </product>
   </part>
+  <part name="pfixcore.editor.userdata.CHANGES_SAVED">
+    <product name="default">
+      <lang name="default">The changes have been saved.</lang>
+    </product>
+  </part>
   <part name="pfixcore.editor.userforedit.USER_UNDEF">
     <product name="default">
       <lang name="default">This userid is not known.</lang>

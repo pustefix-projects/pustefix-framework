@@ -213,12 +213,18 @@ public class UserManagementServiceImpl implements UserManagementService {
                         temp = projectNode.getAttribute("editIncludes");
                         if (temp != null) {
                             editIncludes = temp.equals("true");
-                            Logger.getLogger(this.getClass()).debug("Setting permission editIncludes for project " + project.getName() + " and user " + user.getUsername() + ".");
+                            Logger.getLogger(this.getClass()).debug(
+                                    "Setting permission editIncludes for project "
+                                            + project.getName() + " and user "
+                                            + user.getUsername() + ".");
                         }
                         temp = projectNode.getAttribute("editImages");
                         if (temp != null) {
                             editImages = temp.equals("true");
-                            Logger.getLogger(this.getClass()).debug("Setting permission editImages for project " + project.getName() + " and user " + user.getUsername() + ".");
+                            Logger.getLogger(this.getClass()).debug(
+                                    "Setting permission editImages for project "
+                                            + project.getName() + " and user "
+                                            + user.getUsername() + ".");
                         }
                         EditorProjectPermissions projectPermissions = new EditorProjectPermissions();
                         projectPermissions.setEditImages(editImages);
@@ -280,15 +286,16 @@ public class UserManagementServiceImpl implements UserManagementService {
                             .getProjectPermissions(project);
                     Element projectElement = doc.createElement("project");
                     permissionsElement.appendChild(projectElement);
+                    projectElement.setAttribute("name", project.getName());
                     if (projectPermissions.isEditImages()) {
-                        permissionsElement.setAttribute("editImages", "true");
+                        projectElement.setAttribute("editImages", "true");
                     } else {
-                        permissionsElement.setAttribute("editImages", "false");
+                        projectElement.setAttribute("editImages", "false");
                     }
                     if (projectPermissions.isEditIncludes()) {
-                        permissionsElement.setAttribute("editIncludes", "true");
+                        projectElement.setAttribute("editIncludes", "true");
                     } else {
-                        permissionsElement
+                        projectElement
                                 .setAttribute("editIncludes", "false");
                     }
                 }
@@ -323,14 +330,34 @@ public class UserManagementServiceImpl implements UserManagementService {
     public void updateUser(EditorUser user)
             throws EditorUserNotExistingException, EditorSecurityException {
         this.checkInitialized();
-        this.securitymanager.checkAdmin();
-        synchronized (this.users) {
-            if (!this.users.containsKey(user.getUsername())) {
+        EditorUser newuser;
+        if (!this.securitymanager.mayAdmin()
+                && user.getUsername().equals(
+                        this.securitymanager.getPrincipal().getName())) {
+            // Users may edit themselves but not change rights
+            synchronized (this.users) {
+                newuser = this.getUser(user.getUsername());
+            }
+            if (newuser == null) {
                 throw new EditorUserNotExistingException(
-                        "No user found for username " + user.getUsername()
+                        "No user found for username " + newuser.getUsername()
                                 + "!");
             }
-            this.users.put(user.getUsername(), user);
+            newuser.setCryptedPassword(user.getCryptedPassword());
+            newuser.setFullname(user.getFullname());
+            newuser.setPhoneNumber(user.getPhoneNumber());
+            newuser.setSectionName(user.getSectionName());
+        } else {
+            this.securitymanager.checkAdmin();
+            newuser = user;
+        }
+        synchronized (this.users) {
+            if (!this.users.containsKey(newuser.getUsername())) {
+                throw new EditorUserNotExistingException(
+                        "No user found for username " + newuser.getUsername()
+                                + "!");
+            }
+            this.users.put(newuser.getUsername(), newuser);
         }
         this.storeToFile();
     }
@@ -375,10 +402,17 @@ public class UserManagementServiceImpl implements UserManagementService {
             return users;
         }
     }
-    
+
     private void checkInitialized() {
         if (!this.initialized) {
-            throw new RuntimeException("Service has to be initialized before use!");
+            throw new RuntimeException(
+                    "Service has to be initialized before use!");
+        }
+    }
+
+    public boolean hasUser(String username) {
+        synchronized (this.users) {
+            return this.users.containsKey(username);
         }
     }
 

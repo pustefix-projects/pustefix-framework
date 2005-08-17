@@ -46,6 +46,16 @@ public interface UserManagementService {
     EditorUser getUser(String username) throws EditorUserNotExistingException;
 
     /**
+     * Checks wheter a user is existing
+     * 
+     * @param username
+     *            Name of the user
+     * @return <code>true</code> if user is existing, <code>false</code>
+     *         otherwise
+     */
+    boolean hasUser(String username);
+
+    /**
      * Updates information for a user.
      * 
      * @param user
@@ -53,9 +63,10 @@ public interface UserManagementService {
      * @throws EditorUserNotExistingException
      *             if there is no user with an username matching the username of
      *             the supplied EditorUser object
-     * @throws EditorSecurityException 
+     * @throws EditorSecurityException
      */
-    void updateUser(EditorUser user) throws EditorUserNotExistingException, EditorSecurityException;
+    void updateUser(EditorUser user) throws EditorUserNotExistingException,
+            EditorSecurityException;
 
     /**
      * Create a new user
@@ -64,9 +75,10 @@ public interface UserManagementService {
      *            EditorUser object containing the data to use
      * @throws EditorDuplicateUsernameException
      *             If there is already a user with the specified username
-     * @throws EditorSecurityException 
+     * @throws EditorSecurityException
      */
-    void createUser(EditorUser user) throws EditorDuplicateUsernameException, EditorSecurityException;
+    void createUser(EditorUser user) throws EditorDuplicateUsernameException,
+            EditorSecurityException;
 
     /**
      * Deletes an user
@@ -76,9 +88,10 @@ public interface UserManagementService {
      * @throws EditorUserNotExistingException
      *             if there is no user with an username matching the username of
      *             the supplied EditorUser object
-     * @throws EditorSecurityException 
+     * @throws EditorSecurityException
      */
-    void deleteUser(EditorUser user) throws EditorUserNotExistingException, EditorSecurityException;
+    void deleteUser(EditorUser user) throws EditorUserNotExistingException,
+            EditorSecurityException;
 
     /**
      * Returns all user objects which are stored at the moment.

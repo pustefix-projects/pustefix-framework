@@ -157,6 +157,7 @@
 
 
   <!-- Render all editor users in a table -->
+  <!--
   <xsl:template match="displayallusers">
     <table cellspacing="0" class="editor_box" width="100%" style="padding:0px;">
       <tr>
@@ -217,6 +218,7 @@
       </tr>
     </table>
   </xsl:template>
+  -->
   
   <xsl:template match="displayalllocks">
     <ixsl:choose>
@@ -631,11 +633,13 @@
     </div>
   </xsl:template>
 
+  <!--
   <xsl:template match="displaycurrentuserforedit">
     <div class="editor_main_emph" align="right">
       [USERID: <ixsl:value-of select="/formresult/currentuserforedit/@id"/>]
     </div>
   </xsl:template>
+  -->
 
   <xsl:template match="displaybranchoptions">
     <ixsl:if test="/formresult/currentincludeinfo/branchoptions/usedbyproduct[not(@name =

@@ -22,12 +22,15 @@
           <li>
             <pfx:button activeclass="active" normalclass="normal" page="dynincludes" target="_top">DynIncludes</pfx:button>
           </li>
+          <!-- Search is deactivated -->
+          <!--
           <li>
             <pfx:button activeclass="active" normalclass="normal" page="search" target="_top">Search</pfx:button>
           </li>
+          -->
         </ul>
         <div class="topbar">
-          <pfx:button page="prodselect" target="_top" mode="force">
+          <pfx:button page="start" target="_top" mode="force">
             Leave <em><ixsl:value-of select="/formresult/projects/project[@selected='true']/@comment"/></em>
           </pfx:button>
         </div>

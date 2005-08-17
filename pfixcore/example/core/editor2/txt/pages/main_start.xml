@@ -27,7 +27,8 @@
             <ixsl:for-each select="/formresult/projects/project">
               <ixsl:sort select="./@name"/>
               <li>
-                <pfx:button normalclass="editor_submit" mode="force">
+                <pfx:button normalclass="editor_submit" mode="force" jumptopage="home">
+                  <pfx:command  name="SELWRP">selectproject</pfx:command>
                   <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="./@name"/></pfx:argument>
                   <ixsl:value-of select="./@comment"/>
                 </pfx:button>
@@ -42,9 +43,9 @@
           <ul class="jobs">
             <li><pfx:button normalclass="editor_submit" page="sessionmanager">List running sessions</pfx:button></li>
             <li>
-            <pfx:button mode="force" normalclass="editor_submit" page="prodselect" pageflow="EditLoginUser" target="_top">
-              <pfx:command name="SELWRP">edituser</pfx:command>
-              <pfx:argument name="edituser.User"><ixsl:value-of select="/formresult/cr_editorsession/user/@id"/></pfx:argument>
+            <pfx:button mode="force" normalclass="editor_submit" jumptopage="useredit" target="_top">
+              <pfx:command name="SELWRP">selectuser</pfx:command>
+              <pfx:argument name="selectuser.Username"><ixsl:value-of select="/formresult/session/user/@username"/></pfx:argument>
               Change your data
             </pfx:button>
             </li>
@@ -55,7 +56,7 @@
           <div class="box">
             <h1>Congratulations. You have administrator rights</h1>
             <ul class="jobs">
-            <li><pfx:button normalclass="editor_submit" page="editorusermanager">Useradmin</pfx:button></li>
+            <li><pfx:button normalclass="editor_submit" page="useradmin">Useradmin</pfx:button></li>
             <li>
               <ixsl:choose>
                 <ixsl:when test="/formresult/session/@userLoginsAllowed = 'true'">

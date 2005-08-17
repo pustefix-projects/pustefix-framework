@@ -54,7 +54,7 @@ public class EditorUser implements Cloneable {
      */
     public EditorUser(String username) {
         this.username = username;
-        this.cryptedPassword = "";
+        this.cryptedPassword = "!";
         this.fullname = "";
         this.sectionName = "";
         this.phoneNumber = "";
@@ -177,8 +177,18 @@ public class EditorUser implements Cloneable {
      *         {@link #getProjectPermissions(Project)}
      */
     public Collection getProjectsWithPermissions() {
+        HashSet projects = new HashSet();
         synchronized (this.projectsPermissions) {
-            return new HashSet(this.projectsPermissions.keySet());
+            for (Iterator i = this.projectsPermissions.keySet().iterator(); i
+                    .hasNext();) {
+                Project project = (Project) i.next();
+                EditorProjectPermissions permissions = (EditorProjectPermissions) this.projectsPermissions
+                        .get(project);
+                if (permissions.isEditImages() || permissions.isEditIncludes()) {
+                    projects.add(project);
+                }
+            }
+            return projects;
         }
     }
 

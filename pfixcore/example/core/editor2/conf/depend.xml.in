@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <make project="editor2" lang="en">
   <navigation>
-    <page name="editoruserauth" handler="/xml/edit"/>
-    <page name="prodselect" handler="/xml/edit"/>
+    <page name="login" handler="/xml/edit"/>
+    <page name="start" handler="/xml/edit"/>
     <page name="home" handler="/xml/edit"/>
     <page name="pages" handler="/xml/edit"/>
     <page name="targets" handler="/xml/edit"/>
@@ -13,6 +13,8 @@
     <page name="logout" handler="/xml/edit"/>
     <page name="jumptopage" handler="/xml/edit"/>
     <page name="sessionmanager" handler="/xml/edit"/>
+    <page name="useradmin" handler="/xml/edit"/>
+    <page name="useredit" handler="/xml/edit"/>
   </navigation>
   
   <global>
@@ -26,8 +28,8 @@
     <include stylesheet="core/editor2/xsl/metatags.xsl"/>
   </standardmetatags>
   
-  <standardpage name="editoruserauth" xml="core/editor2/xml/two_frames_inactive.xml"/>
-  <standardpage name="prodselect" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="login" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="start" xml="core/editor2/xml/two_frames_inactive.xml"/>
   <standardpage name="home" xml="core/editor2/xml/two_frames.xml"/>
   <standardpage name="pages" xml="core/editor2/xml/three_frames.xml"/>
   <standardpage name="targets" xml="core/editor2/xml/three_frames.xml">
@@ -41,5 +43,6 @@
     <include stylesheet="core/editor2/xsl/runtime.xsl"/>
   </standardpage>
   <standardpage name="sessionmanager" xml="core/editor2/xml/two_frames_inactive.xml"/>
-   
+  <standardpage name="useradmin" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  <standardpage name="useredit" xml="core/editor2/xml/two_frames_inactive.xml"/>
 </make>
