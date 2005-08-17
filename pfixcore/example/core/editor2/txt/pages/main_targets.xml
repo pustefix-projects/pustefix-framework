@@ -25,8 +25,11 @@
         <ixsl:choose>
           <ixsl:when test="/formresult/targets/currenttarget">
             <pfx:include part="displaycurrenttarget"/>
-            <ixsl:if test="not(/formresult/targets//target[@name=/formresult/targets/currenttarget/@name]/@leaf='true')">
+            <ixsl:if test="not(/formresult/targets//target[@selected='true']/@leaf='true')">
               <pfx:include part="displaytargetdetails"/>
+            </ixsl:if>
+            <ixsl:if test="/formresult/targets//target[@selected='true']/target/@type='aux'">
+              <pfx:include part="displayauxfiles_of_target"/>
             </ixsl:if>
             <ixsl:for-each select="/formresult/targets/currenttarget/pages">
               <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
@@ -97,7 +100,7 @@
                 </pfx:button>
               </td>
             </tr>
-            <ixsl:for-each select=".//target">
+            <ixsl:for-each select=".//target[@type='xsl' or @type='xml']">
               <ixsl:variable name="counter"><ixsl:value-of select="count(ancestor::target)"/></ixsl:variable>
               <ixsl:variable name="childs"><ixsl:value-of select="count(./target)"/></ixsl:variable>
               <tr>
@@ -169,6 +172,7 @@
             </td>
           </tr>
         </table>
+        
         <ixsl:if test="/formresult/targets/currenttarget/param">
           <br/>
           <table><tr><td class="editor_main_emph">Applied parameters:</td></tr></table>
@@ -192,6 +196,35 @@
             </ixsl:for-each>
           </table>
         </ixsl:if>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="displayauxfiles_of_target">
+    <product name="default">
+      <lang name="default">
+        <table><tr><td class="editor_main_emph">Additional dependencies:</td></tr></table>
+        <table width="100%" class="editor_box">
+          <ixsl:for-each select="/formresult/targets//target[@selected='true']">
+            <ixsl:if test="position() = 1">
+              <ixsl:for-each select="target[@type='aux']">
+                <ixsl:variable name="class">
+                  <ixsl:choose>
+                    <ixsl:when test="(position() mod 2) = 1">editor_even_row</ixsl:when>
+                    <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
+                  </ixsl:choose>
+                </ixsl:variable>
+                <tr>
+                  <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
+                  <td nowrap="nowrap">
+                    <ixsl:value-of select="@name"/>
+                  </td>
+                </tr>
+              </ixsl:for-each>
+            </ixsl:if>
+          </ixsl:for-each>
+        </table>
         <br/>
       </lang>
     </product>

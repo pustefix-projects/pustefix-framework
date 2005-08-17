@@ -72,8 +72,8 @@ public class SelectUserHandler implements IHandler {
     }
 
     public boolean needsData(Context context) throws Exception {
-        // Always ask for selection
-        return true;
+        // Do not affect pageflow
+        return false;
     }
 
 }

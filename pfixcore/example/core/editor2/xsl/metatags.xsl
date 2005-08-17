@@ -18,29 +18,6 @@
     </ixsl:if>
   </xsl:template>
 
-  <xsl:template match="displayauxfiles_of_target">
-    <ixsl:if test="/formresult/currenttargetinfo/auxfileinfo/auxfile">
-      <table><tr><td class="editor_main_emph">Additional dependencies:</td></tr></table>
-      <table width="100%" class="editor_box">
-        <ixsl:for-each select="/formresult/currenttargetinfo/auxfileinfo/auxfile">
-          <ixsl:variable name="class">
-            <ixsl:choose>
-              <ixsl:when test="(number(@count) mod 2) = 0">editor_even_row</ixsl:when>
-              <ixsl:otherwise>editor_odd_row</ixsl:otherwise>
-            </ixsl:choose>
-          </ixsl:variable>
-          <tr>
-            <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
-            <td nowrap="nowrap">
-              <ixsl:value-of select="@path"/>
-            </td>
-          </tr>
-        </ixsl:for-each>
-      </table>
-      <br/>
-    </ixsl:if>
-  </xsl:template>
-
 </xsl:stylesheet>
 
 

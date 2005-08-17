@@ -187,6 +187,8 @@ public class TargetsResourceImpl implements TargetsResource {
             node.setAttribute("type", "xml");
         } else if (target.getType() == TargetType.TARGET_XSL) {
             node.setAttribute("type", "xsl");
+        } else if (target.getType() == TargetType.TARGET_AUX) {
+            node.setAttribute("type", "aux");
         }
         if (target.isLeafTarget()) {
             node.setAttribute("leaf", "true");
@@ -194,6 +196,10 @@ public class TargetsResourceImpl implements TargetsResource {
             node.setAttribute("leaf", "false");
             this.renderTarget(target.getParentXML(), node);
             this.renderTarget(target.getParentXSL(), node);
+            for (Iterator i = target.getAuxDependencies(false).iterator(); i.hasNext();) {
+                Target auxtarget = (Target) i.next();
+                this.renderTarget(auxtarget, node);
+            }
         }
     }
 
