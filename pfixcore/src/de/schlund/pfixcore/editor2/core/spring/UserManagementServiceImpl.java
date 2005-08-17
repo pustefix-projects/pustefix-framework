@@ -213,18 +213,10 @@ public class UserManagementServiceImpl implements UserManagementService {
                         temp = projectNode.getAttribute("editIncludes");
                         if (temp != null) {
                             editIncludes = temp.equals("true");
-                            Logger.getLogger(this.getClass()).debug(
-                                    "Setting permission editIncludes for project "
-                                            + project.getName() + " and user "
-                                            + user.getUsername() + ".");
                         }
                         temp = projectNode.getAttribute("editImages");
                         if (temp != null) {
                             editImages = temp.equals("true");
-                            Logger.getLogger(this.getClass()).debug(
-                                    "Setting permission editImages for project "
-                                            + project.getName() + " and user "
-                                            + user.getUsername() + ".");
                         }
                         EditorProjectPermissions projectPermissions = new EditorProjectPermissions();
                         projectPermissions.setEditImages(editImages);
