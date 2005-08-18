@@ -24,23 +24,26 @@
   
   <bean id="projectfactory" class="de.schlund.pfixcore.editor2.core.spring.ProjectFactoryServiceImpl" init-method="init">
     <property name="pathResolverService">
-	  <ref bean="pathresolver"/>
-	</property>  
+      <ref bean="pathresolver"/>
+    </property>  
     <property name="variantFactoryService">
-	  <ref bean="variantfactory"/>
-	</property>  
+      <ref bean="variantfactory"/>
+    </property>  
     <property name="themeFactoryService">
-	  <ref bean="themefactory"/>
-	</property>
+      <ref bean="themefactory"/>
+    </property>
     <property name="pageFactoryService">
-	  <ref bean="pagefactory"/>
-	</property>
+      <ref bean="pagefactory"/>
+    </property>
     <property name="fileSystemService">
-	  <ref bean="filesystem"/>
-	</property>
-	<property name="projectsFilePath">
-	  <value>servletconf/projects.xml</value>
-	</property>
+      <ref bean="filesystem"/>
+    </property>
+    <property name="includeFactoryService">
+      <ref bean="includefactory"/>
+    </property>
+    <property name="projectsFilePath">
+      <value>servletconf/projects.xml</value>
+    </property>
   </bean>
 		  
   <bean id="pathresolver" class="de.schlund.pfixcore.editor2.core.spring.PathResolverServiceImpl">
