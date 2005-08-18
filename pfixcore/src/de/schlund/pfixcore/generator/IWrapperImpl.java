@@ -34,7 +34,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.util.statuscodes.StatusCode;
 
@@ -53,7 +53,7 @@ public abstract class IWrapperImpl implements IWrapper {
     protected RequestData req;
     protected String      prefix   = "__undef";
     protected Integer     order    = new Integer(0);
-    private   Category    CAT      = Category.getInstance(this.getClass().getName());
+    private   Logger      LOG      = Logger.getLogger(this.getClass().getName());
     private   String      logdir   = null; 
     private   String      pagename = null;
     private   String      visitid  = null;
@@ -65,7 +65,7 @@ public abstract class IWrapperImpl implements IWrapper {
                                            // constructor of a derived class
     
     public void initLogging(String logdir, String pagename, String visitid) {
-        CAT.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
+        LOG.debug("*** Logging input for " + prefix + " into " + logdir + " " + pagename + " " + visitid + " ***");
         this.logdir   = logdir;
         this.pagename = pagename;
         this.visitid  = visitid;
@@ -124,13 +124,13 @@ public abstract class IWrapperImpl implements IWrapper {
 
         for (Iterator i = params.values().iterator(); i.hasNext();) {
             IWrapperParam pinfo = (IWrapperParam) i.next();
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("===> Doing init for Param: " + pinfo.getName());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("===> Doing init for Param: " + pinfo.getName());
             }
             pinfo.initValueFromRequest(prefix, req);
             if (pinfo.errorHappened()) {
-                if (CAT.isDebugEnabled()) {
-                    CAT.debug("*** ERROR happened for Param: " + pinfo.getName());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("*** ERROR happened for Param: " + pinfo.getName());
                 }
                 synchronized (errors) {
                     errors.put(pinfo.getName(), pinfo);
@@ -139,8 +139,8 @@ public abstract class IWrapperImpl implements IWrapper {
         }
         for (Iterator i = idxprms.values().iterator(); i.hasNext();) {
             IWrapperIndexedParam pindex = (IWrapperIndexedParam) i.next();
-            if (CAT.isDebugEnabled()) {
-                CAT.debug("===> Doing init for IndexedParam: " + pindex.getName());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("===> Doing init for IndexedParam: " + pindex.getName());
             }
             pindex.initValueFromRequest(prefix, req);
             // error handling happens inside the IWRapperIndexedParam...
