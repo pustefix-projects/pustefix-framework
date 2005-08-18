@@ -16,6 +16,7 @@ public class Constants {
     public final static String SESSION_TYPE_SOAPHEADER="soapheader";
     public final static String[] SESSION_TYPES={SESSION_TYPE_NONE,SESSION_TYPE_SERVLET,SESSION_TYPE_SOAPHEADER};
     
+    public static final String MSGCTX_PROP_CTX="PFX_CTX";
     public static final String MSGCTX_PROP_CTXRESMAN="PFX_CTXRESMAN";
     public static final String MSGCTX_PROP_MONITORSTART="PFX_MONITORSTART";
   

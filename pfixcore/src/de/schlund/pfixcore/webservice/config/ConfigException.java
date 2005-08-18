@@ -18,6 +18,7 @@ public class ConfigException extends Exception {
     private int type;
     private String propName;
     private String propVal;
+    private Throwable cause;
     
     public ConfigException(int type,String propName) {
         super();
@@ -32,13 +33,23 @@ public class ConfigException extends Exception {
         this.propVal=propVal;
     }
     
+    public ConfigException(int type,String propName,String propVal,Throwable cause) {
+    	super();
+    	this.type=type;
+    	this.propName=propName;
+    	this.propVal=propVal;
+    	this.cause=cause;
+    }
+    
     public String getMessage() {
+    	String msg="";
         if(type==MISSING_PROPERTY) {
-            return "Mandatory property '"+propName+"' is not set.";
+            msg="Mandatory property '"+propName+"' is not set.";
         } else if(type==ILLEGAL_PROPERTY_VALUE) {
-            return "Property '"+propName+"' has illegal value: '"+propVal+"'.";
-        }
-        return "Unknown error";
+            msg="Property '"+propName+"' has illegal value: '"+propVal+"'.";
+        } else msg="Unknown error";
+        if(cause!=null) msg+="[Cause: "+cause.toString()+"]";
+        return msg;
     }
 
 }

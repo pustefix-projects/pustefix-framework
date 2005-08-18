@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
+               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+	        <pfx:checkerror>
+	          <pfx:checkfield name="selectinclude.Path">
+		          <pfx:error>
+	                <br/>
+	                <table class="core_errorbox_table" width="400">
+	                  <tr>
+	                    <td class="core_errorlabel_text">
+	                      Error!
+	                    </td>
+	                    <td class="core_errortext">
+	                      <pfx:scode/>
+	                    </td>
+	                  </tr>
+	                </table>
+	              </pfx:error>
+	          </pfx:checkfield>
+            <pfx:checkfield name="branch.Action">
+		          <pfx:error>
+	                <br/>
+	                <table class="core_errorbox_table" width="400">
+	                  <tr>
+	                    <td class="core_errorlabel_text">
+	                      Error!
+	                    </td>
+	                    <td class="core_errortext">
+	                      <pfx:scode/>
+	                    </td>
+	                  </tr>
+	                </table>
+	              </pfx:error>
+	          </pfx:checkfield>
+            <pfx:checkfield name="restore.Version">
+		          <pfx:error>
+	                <br/>
+	                <table class="core_errorbox_table" width="400">
+	                  <tr>
+	                    <td class="core_errorlabel_text">
+	                      Error!
+	                    </td>
+	                    <td class="core_errortext">
+	                      <pfx:scode/>
+	                    </td>
+	                  </tr>
+	                </table>
+	              </pfx:error>
+	          </pfx:checkfield>
+	        </pfx:checkerror>
+        </center>
+        <ixsl:choose>
+          <ixsl:when test="/formresult/includes/currentinclude">
+            <pfx:include part="displaycurrentinclude"/>
+            <ixsl:for-each select="/formresult/includes">
+              <pfx:include part="displayincludedetails" href="core/editor2/txt/util_includes.xml"/>
+            </ixsl:for-each>
+            <ixsl:for-each select="/formresult/includes/currentinclude/pages">
+              <pfx:include part="displayaffectedpages" href="core/editor2/txt/util.xml"/>
+            </ixsl:for-each>
+            <ixsl:for-each select="/formresult/includes/currentinclude/includes">
+              <pfx:include part="displayincludes" href="core/editor2/txt/util.xml"/>
+            </ixsl:for-each>
+            <ixsl:for-each select="/formresult/includes/currentinclude/images">
+              <pfx:include part="displayimages" href="core/editor2/txt/util.xml"/>
+            </ixsl:for-each>
+            <div>
+              <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
+              <ixsl:choose>
+                <ixsl:when test="/formresult/includes/currentinclude/content">
+                  <staticdisplay path="/formresult/includes/currentinclude/content/node()"/>
+                </ixsl:when>
+                <ixsl:otherwise>
+                  <div class="editor_box editor_warn">Part is not yet defined!</div>
+                </ixsl:otherwise>
+              </ixsl:choose>
+            </div>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <center>
+              <br/>
+              <div class="editor_main_emph">
+                Please select an include from the list on the left
+              </div>
+            </center>
+          </ixsl:otherwise>
+        </ixsl:choose>
+        <pfx:editconsole/>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="sidebar">
+    <product name="default">
+      <lang name="default">
+        <ixsl:for-each select="/formresult/includes">
+          <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
+        </ixsl:for-each>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="displaycurrentinclude">
+    <product name="default">
+      <lang name="default">
+        <div class="editor_main_emph" align="right">
+          [INCLUDE: <ixsl:value-of select="/formresult/includes/currentinclude/@part"/>]
+        </div>
+        <br/>
+      </lang>
+    </product>
+  </part>
+
+</include_parts>

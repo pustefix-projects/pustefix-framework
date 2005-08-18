@@ -134,7 +134,13 @@ public class DirectOutputServlet extends ServletManager {
          if (state != null) {
              boolean allowed = state.isAccessible(crm, props, preq);
              if (allowed) {
-                 state.handleRequest(crm, props, preq, res);
+                 try {
+                     state.handleRequest(crm, props, preq, res);
+                 } catch (Exception exep) {
+                     if (!exep.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
+                         throw exep;
+                     }
+                 }
              } else {
                  throw new RuntimeException("*** Called DirectOutputState " +
                                             state.getClass().getName() + " for page " + page.getName() +

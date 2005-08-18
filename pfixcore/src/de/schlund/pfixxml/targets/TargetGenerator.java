@@ -179,7 +179,10 @@ public class TargetGenerator {
         }
         if (gl_theme_str == null || gl_theme_str.equals("")) {
             gl_theme_str = name + " default"; 
+        } else if (!gl_theme_str.endsWith(" default")) {
+            gl_theme_str = gl_theme_str + " default"; 
         }
+
 
         global_themes = new Themes(gl_theme_str);
         
@@ -303,6 +306,9 @@ public class TargetGenerator {
             Themes themes = null;
             
             if (themes_str != null && !themes_str.equals("")) {
+                if (!themes_str.endsWith(" default")) {
+                    themes_str = themes_str + " default";
+                }
                 themes = new Themes(themes_str);
             } else {
                 themes = global_themes;

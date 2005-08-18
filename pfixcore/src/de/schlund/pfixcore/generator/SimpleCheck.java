@@ -34,25 +34,29 @@ import org.apache.log4j.*;
  */
 
 public abstract class SimpleCheck implements IWrapperParamCheck {
-    protected HashSet  scodes = new HashSet();
-    protected Category CAT    = Category.getInstance(this.getClass().getName());
+    protected HashSet  scodeinfos = new HashSet();
+    protected Category CAT        = Category.getInstance(this.getClass().getName());
     
     protected void addSCode(StatusCode scode) {
-        scodes.add(scode);
+        addScode(scode, null, null);
+    }
+
+    protected void addScode(StatusCode scode, String[] args, String level) {
+        scodeinfos.add(new StatusCodeInfo(scode, args, level));
     }
     
     protected void reset() {
-        scodes = new HashSet();
+        scodeinfos = new HashSet();
     }
     
-    public StatusCode[] getStatusCodes() {
-        synchronized (scodes) {
-            return (StatusCode[]) scodes.toArray(new StatusCode[] {});
+    public StatusCodeInfo[] getStatusCodeInfos() {
+        synchronized (scodeinfos) {
+            return (StatusCodeInfo[]) scodeinfos.toArray(new StatusCodeInfo[] {});
         }
     }
     
     public boolean errorHappened() {
-        return !scodes.isEmpty();
+        return !scodeinfos.isEmpty();
     }
 
 }

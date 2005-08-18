@@ -9,6 +9,5 @@
       <cparam name="regexp" value="/^[a-zA-Z]*$/"/>
     </precheck>
   </param>
-  
-  
+
 </interface> 

@@ -48,10 +48,10 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private IWrapperParamCaster caster;
     private ArrayList           precheck       = new ArrayList();
     private ArrayList           postcheck      = new ArrayList();
-    private HashSet             scodes         = new HashSet();
-    private HashMap             scodesargs     = new HashMap();
+    private HashSet             scodeinfos     = new HashSet();
     private Category            CAT            = Category.getInstance(this.getClass().getName());
-    private StatusCode          missing        = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM");    
+    private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM"), null, null);  
+    private boolean             inrequest      = false;
     
     public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval) {
         this.name       = name;
@@ -82,7 +82,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     }
 
     public void setCustomSCode(String scode) {
-        missing = StatusCodeFactory.getInstance().getStatusCode(scode);
+        missing = new StatusCodeInfo(StatusCodeFactory.getInstance().getStatusCode(scode), null, null);
     }
 
     public void setParamCaster(IWrapperParamCaster caster) {
@@ -97,31 +97,21 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         postcheck.add(check);
     }
 
+    public boolean suppliedInRequest() {
+        return inrequest;
+    }
+    
     public boolean errorHappened() {
-        return !scodes.isEmpty();
+        return !scodeinfos.isEmpty();
     }
 
-    public String[] getArgsForStatusCode(StatusCode scode) {
-        return (String[]) scodesargs.get(scode);
+    public StatusCodeInfo[] getStatusCodeInfos() {
+        return (StatusCodeInfo[]) scodeinfos.toArray(new StatusCodeInfo[] {});
     }
     
-    public StatusCode[] getStatusCodes() {
-        return (StatusCode[]) scodes.toArray(new StatusCode[] {}); 
-    }
-
-    public void addSCode(StatusCode scode) {
-        addSCode(scode, null);
-    }
-    
-    public void addSCode(StatusCode scode, String[] args) {
-        synchronized (scodes) {
-            scodes.add(scode);
-        }
-        if (args != null) {
-            synchronized (scodesargs) {
-                scodesargs.put(scode, args);
-            }
-        }
+    public void addSCode(StatusCode scode, String[] args, String level) {
+        StatusCodeInfo scinfo = new StatusCodeInfo(scode, args, level);
+        scodeinfos.add(scinfo);
     }
     
     public String getName() { return name; }
@@ -170,6 +160,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         CAT.debug(">>> [" + thename + "] Optional: " + optional);
         
         if (rparamv != null) {
+            inrequest = true;
             ArrayList in  = new ArrayList(Arrays.asList(rparamv));
             ArrayList out = new ArrayList();
             for (Iterator i = in.iterator(); i.hasNext(); ) {
@@ -200,6 +191,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                 rparamv = null;
             }
         } else {
+            inrequest = false;
             CAT.debug(">>> [" + thename + "] InputArray is null!!!");
         }
         
@@ -213,16 +205,16 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
         }
 
         if (rparamv == null && !optional) {
-            synchronized (scodes) {
-                scodes.add(missing);
+            synchronized (scodeinfos) {
+                scodeinfos.add(missing);
             }
         } else if (rparamv != null) {
             for (Iterator i = precheck.iterator(); i.hasNext(); ) {
                 IWrapperParamPreCheck pre = (IWrapperParamPreCheck) i.next();
                 pre.check(rparamv);
                 if (pre.errorHappened()) {
-                    synchronized (scodes) {
-                        scodes.addAll(Arrays.asList(pre.getStatusCodes()));
+                    synchronized (scodeinfos) {
+                        scodeinfos.addAll(Arrays.asList(pre.getStatusCodeInfos()));
                     }
                 }
             }
@@ -232,8 +224,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                     caster.castValue(rparamv);
                 }
                 if (caster != null && caster.errorHappened()) {
-                    synchronized (scodes) {
-                        scodes.addAll(Arrays.asList(caster.getStatusCodes()));
+                    synchronized (scodeinfos) {
+                        scodeinfos.addAll(Arrays.asList(caster.getStatusCodeInfos()));
                     }
                 } else {
                     Object[] tmp;
@@ -250,8 +242,8 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
                         IWrapperParamPostCheck post = (IWrapperParamPostCheck) i.next();
                         post.check(tmp);
                         if (post.errorHappened()) {
-                            synchronized (scodes) {
-                                scodes.addAll(Arrays.asList(post.getStatusCodes()));
+                            synchronized (scodeinfos) {
+                                scodeinfos.addAll(Arrays.asList(post.getStatusCodeInfos()));
                             }
                         }
                     }

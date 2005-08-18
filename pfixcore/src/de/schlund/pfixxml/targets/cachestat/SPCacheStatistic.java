@@ -32,7 +32,6 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import de.schlund.pfixcore.editor.EditorProductFactory;
 import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.targets.SPCache;
 import de.schlund.pfixxml.targets.SPCacheFactory;
@@ -56,6 +55,7 @@ public class SPCacheStatistic {
     private static int REGISTER_HIT = 1;
     private static String PROP_QUEUESIZE =  "cachestatistic.queuesize";
     private static String PROP_QUEUETICKS = "cachestatistic.queueticks";
+    public static String PROP_PRODUCTDATA = "cachestatistic.productdata";
     private static Category CAT = Category.getInstance(SPCacheStatistic.class.getName());
     private int queueSize = 0;
     private int queueTicks = 0;
@@ -104,9 +104,9 @@ public class SPCacheStatistic {
         }
         if(CAT.isDebugEnabled()) CAT.debug("Got property '"+PROP_QUEUETICKS+"' ="+queueTicks);
         
-        String productdatafile = props.getProperty(EditorProductFactory.PROP_PF);
+        String productdatafile = props.getProperty(PROP_PRODUCTDATA);
         if (productdatafile == null || productdatafile.equals("")) {
-            throw new XMLException("Need property '" + EditorProductFactory.PROP_PF + "' for retrieving product data.");
+            throw new XMLException("Need property '" + PROP_PRODUCTDATA + "' for retrieving product data.");
         }
     }
 

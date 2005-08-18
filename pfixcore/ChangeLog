@@ -1,3 +1,230 @@
+2005-08-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (loadConfig): make sure to add " default" to end
+	of global theme string if it's missing.
+	(createTargetFromTargetStruct): do the same for page local themes string (if given at all)
+
+2005-08-16  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/utils.xsl.in: added $maincontentpath parameter to be set from depend.xml.in to give a default for the 
+	path of the maincontent template
+
+2005-08-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DirectOutputServlet.java (process): supress ClientAbortExceptions
+
+2005-08-12  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (getVariantMatchingPageRequestName): 
+	synchronize the building of the pagevariant cache. Bummer.
+
+2005-08-12  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/perflogging/PerfLogging.java:
+	isPerfLogggingEnabled and isPerfLoggingActive  no longer synchronized
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionCounter.java: new
+	class with simple counter
+	* src/de/schlund/pfixxml/exceptionhandler/ExceptionHandler.java(handle):
+	use ExceptionCounter to count exceptions happend in the VM.
+
+2005-08-12  Martin Leidig  <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Now webservice calls and normal
+	Pustefix requests are automatically synchronized on webservice servlet level by using the Pustefix 
+	context as lock object (as it seems to be too risky and unnecessary to do this on application level). 
+
+2005-08-11  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: change pfx:elink to use the new runtime template __deref to construct 
+	and sign the link parameter.
+
+	* example/core/xsl/master.xsl.in: new template __deref, this will sign the link parameter, too with the 
+	__derefkey parameter (not only the enclink, but also the "first" stage will now be signed.
+
+	* src/de/schlund/pfixxml/DerefServer.java: Allow to check the sign on the first stage, too (this currently
+	defaults to off, for backwards compatibility)
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java: give the sign key for the deref server also 
+	to XSLT in variable __derefkey
+
+2005-08-10  Daniel Hopp  <daniel.hopp@schlund.de>
+
+	* example/core/xsl/master.xsl.in: global variable $__root bound to context root node
+
+2005-08-08  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: Don't use a random sign key per class, as we don't
+	know on which cluster we will land - so now we use a property from pustefix.prop
+
+2005-08-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: now sign the encoded link so we don't allow anybody 
+	to directly call us with an encoded link (helps to avoid possible hiding of phishing attempts)
+
+2005-08-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: OK. Stop this insane stuff. Completely rewrote it.
+	Now we base64 encode the link that comes in, and redirect via meta refresh to the derefserver again
+	with this encoded information (in param enclink). This gets rid of the referer header. Then decode and use
+	the location header with the original link without any checks (no JS will be evaled in http headers)
+
+2005-08-05  Martin Leidig  <mleidig@schlund.de>
+	
+	Extended webservice error handling: via global and webservice specific
+	faulthandlers SOAP faults can be customized or filtered (e.g. for logging,
+	notification, information hiding). A custom faulthandler is written by
+	deriving from the FaultHandler base class and overwriting the init() and
+	handleFault(Fault) methods. The handler class has to be registered for a
+	webservice or globally for all services by adding a <faulthandler class="..."/> 
+	entry to the according section in the webservice configuration file.
+	The handleFault() method will be automatically called after a
+	webservice call ended up with an exception. The passed in Fault object
+	contains the Throwable object and some context information, like the
+	request URI and the Pustefix context. You can customize the fault by
+	setting another Throwable object or SOAP faultstring, which then will
+	be used for the further fault processing and which at last will be sent to
+	the SOAP client (instead of the original ones).
+
+	Modified:
+
+	* example/common/conf/server-config.wsdd
+	* example/core/build/create_webservice.xsl
+	* example/webservice/conf/webservice.conf.in
+	* skel/projects/common/conf/server-config.wsdd
+	* src/de/schlund/pfixcore/webservice/Constants.java
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigException.java
+	* src/de/schlund/pfixcore/webservice/config/ConfigProperties.java
+	* src/de/schlund/pfixcore/webservice/config/GlobalServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/config/ServiceConfig.java
+	* src/de/schlund/pfixcore/webservice/generate/WebServiceTask.java
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/MonitoringHandler.java
+
+	Added:	
+
+	* src/de/schlund/pfixcore/webservice/fault/EmailNotifyingHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/Fault.java
+	* src/de/schlund/pfixcore/webservice/fault/FaultHandler.java
+	* src/de/schlund/pfixcore/webservice/fault/InternalServerError.java
+	* src/de/schlund/pfixcore/webservice/fault/LoggingHandler.java
+	* src/de/schlund/pfixcore/webservice/handler/ErrorHandler.java
+
+2005-08-04  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java (isDirty): new method to consolidate all the checks. Added more to
+	also get lower case, space separated versions of the "URL=" thingy
+	(isDirty): not only look for whitespace, but remove every non-printable character before checking for ;url=
+
+2005-08-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java (process): another fix (it won't be the last I fear):
+	don't allow for links containing ";URL=" because stupid IE will us the content after this in the
+	meta refresh statement.
+
+2005-08-01  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in (pfx:xinp type="radio|check"): stupid bug: using "$" 
+	when referencing variables helps a lot.
+
+2005-07-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFow): new (?) method.
+
+2005-07-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java (userInsertErrors): bug fix: 
+	loop over j, not i.
+
+	* src/de/schlund/pfixxml/DerefServer.java (process): Security fix: don't allow for links to be
+	started with anything else than "/", "http://", "https://" or "ftp://"
+	
+
+2005-07-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java: PageMessages are now also implemented in 
+	terms of StatusCodeInfo objects.
+
+	* src/de/schlund/pfixcore/generator/IWrapper.java: addScodeWithArgs: removed.
+	only one addScode method to handle everything
+
+	* src/de/schlund/pfixcore/generator/IWrapperImpl.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java: 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: use StatusCodeInfo, remove all but one 
+	fully qualified version of addSCode
+
+	* src/de/schlund/pfixcore/generator/IWrapperParamCheck.java: 
+	* src/de/schlund/pfixcore/generator/SimpleCheck.java: StatusCodeInfo instead of StatusCode used
+	
+	* src/de/schlund/pfixcore/workflow/app/DefaultAuthIWrapperState.java: 
+	* src/de/schlund/pfixcore/workflow/app/IWrapperSimpleContainer.java: use resdoc instead of resform,
+	also use StatusCodeInfo where needed.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (Module): added public (and useful) methods from ResultForm
+
+	* src/de/schlund/pfixxml/ResultForm.java (Module): removed. Methods are now in ResultDocument
+
+	* src/de/schlund/pfixcore/example/TShirtHandler.java: cosmetics 
+
+	* src/de/schlund/pfixcore/generator/StatusCodeInfo.java (Module): new class. Used to hold the scode
+	and it's associated meta information (arguments, level)
+
+2005-07-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/navigation.xsl.in: augmented pfx:anchor to be able to produce anchors also to 
+	non-frames: Just use a single pfx:anchor WITHOUT the @frame attribute to supply the #anchor.
+
+2005-07-21  Jens Lautenbacher  <jtl@schlund.de>
+	Thanks to the eyes of Niels Schelbach:
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (addTargetDependency)
+	(resetTargetDependency): count++ becomes ++count and count-- becomes --count. Stupid me.
+
+2005-07-20  Michael Hartmeier  <mhm@schlund.de>
+
+	* example/core/build/iwrapper.xsl, 
+	src/de/schlund/pfixcore/generator/IWrapper.java,
+	src/de/schlund/pfixcore/generator/IWrapperImpl.java:
+	add generic addSCode methods      
+
+2005-07-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java: SECURITY: No longer use the plain session ID in a 
+	cookie name (for the test of the secure cookie), but instead just the MD5. This way now there is no
+	possibility to get to a valid secure session id without really reading the URL
+
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (suppliedInRequest): new method,
+	returns false when the whole parameter wasn't even supplied at all in the request (as opposed
+	to just being supplied empty which would both result in the same null value)
+
+2005-07-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/xsl/forminput.xsl.in: <pfx:messageloop> new template
+	added class attributes in case of errors to all formfields
+
+	* example/webservice/conf/depend.xml.in (Module): 
+	* example/webservice/xml/two_frames.xml (Module): don't use stupid sample1 css stuff
+
+	* example/core/xsl/include.xsl.in (Module): 
+	* example/core/xsl/utils.xsl.in (Module): reordering and deprecating of older stuff. cosmetics.
+
+	* example/sample1/htdocs/style.css (Module): added.
+
+	* example/sample1/txt/styles.xml (Module): 
+	* example/sample1/txt/pages/main_gencss.xml (Module): 
+	* example/sample1/xml/styles.xml (Module): 
+	* example/webservice/xml/styles.xml (Module): removed
+
+	* example/sample1/conf/config.prop.in (Module): 
+	* example/sample1/conf/depend.xml.in (Module): 
+	* example/sample1/conf/project.xml.in (Module): 
+	* example/sample1/conf/secure.prop.in (Module): 
+	* example/sample1/txt/pages/main_order.xml (Module): 
+	* example/sample1/txt/pages/main_overview.xml (Module): 
+	* example/sample1/xml/one_frame.xml (Module): 
+	* example/sample1/xml/two_frames.xml (Module): 
+	* example/sample1/xsl/metatags.xsl (Module): changed accordingly
+
 2005-07-15  Joerg Haecler <haecker@schlund.de>
 
 	* example/core/build/create_depend.xsl: copy page-param in target
@@ -10,7 +237,7 @@
 
 2005-07-14  Daniel Hopp  <daniel.hopp@schlund.de>
 
-  * example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
+	* example/core/xsl/forminput.xsl.in: $ce_*, $cf_* and $cm_* renamed to common prefix $pfx_ 
 	* example/sample1/txt/pages/main_order.xml: 
 	* example/sample1/txt/pages/main_home.xml: changed accordingly
 

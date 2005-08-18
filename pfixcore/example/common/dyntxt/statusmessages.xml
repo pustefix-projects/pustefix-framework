@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="pfixcore.GEN_ERROR">
     <product name="default">
       <lang name="default">An error happened.</lang>
@@ -63,9 +62,27 @@
       <lang name="default">This seems to be no PNG image.</lang>
     </product>
   </part>
+  <part name="pfixcore.editor.imagesupload.IMAGEUPL_HASCHANGED">
+    <product name="default">
+      <lang name="default">
+        Image was changed by another user, while you were uploading.
+        Do upload again, if you still want to replace the image.
+      </lang>
+    </product>
+  </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
     <product name="default">
       <lang name="default">This include does not exist.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.includes.BRANCH_CREATE_FAILED">
+    <product name="default">
+      <lang name="default">Creation of include part branch failed.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.includes.BRANCH_DELETE_FAILED">
+    <product name="default">
+      <lang name="default">Removal of include part branch failed.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.includesupload.GEN_ERR">
@@ -76,6 +93,21 @@
   <part name="pfixcore.editor.includesupload.PARSE_ERR">
     <product name="default">
       <lang name="default">Parse error.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.includesupload.PARSE_ERR_WITH_DETAILS">
+    <product name="default">
+      <lang name="default">Parse error on line <pfx:argref pos="1"/>, column <pfx:argref pos="2"/>.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED">
+    <product name="default">
+      <lang name="default">The include part has been changed by another user while you were editing. Please merge the changes in the editor box and upload again.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED_RESTORE">
+    <product name="default">
+      <lang name="default">The include part has been changed by another user. If you still want to restore the backup, please do so again.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.pages.PAGE_UNDEF">
@@ -116,6 +148,11 @@
   <part name="pfixcore.editor.userdata.PWD_NO_MATCH">
     <product name="default">
       <lang name="default">The passwords don't match.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.editor.userdata.CHANGES_SAVED">
+    <product name="default">
+      <lang name="default">The changes have been saved.</lang>
     </product>
   </part>
   <part name="pfixcore.editor.userforedit.USER_UNDEF">
