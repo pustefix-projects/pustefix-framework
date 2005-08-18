@@ -269,10 +269,7 @@ public class TargetPfixImpl extends AbstractTarget {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if (auxdep.getType() == DependencyType.TEXT) {
                     IncludePartThemeVariant variant = this.includefactory
-                            .getIncludeFile(auxdep.getPath().getRelative())
-                            .createPart(auxdep.getPart()).createThemeVariant(
-                                    this.themefactory.getTheme(auxdep
-                                            .getProduct()));
+                            .getIncludePartThemeVariant(auxdep);
                     deps.add(variant);
                     if (recursive) {
                         deps.addAll(variant

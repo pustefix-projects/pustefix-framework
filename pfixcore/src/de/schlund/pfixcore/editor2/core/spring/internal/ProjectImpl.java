@@ -33,6 +33,7 @@ import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
@@ -40,6 +41,8 @@ import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetGenerator;
@@ -72,6 +75,8 @@ public class ProjectImpl extends AbstractProject {
 
     private TargetGenerator tgen;
 
+    private IncludeFactoryService includefactory;
+
     /**
      * Creates a new Project object
      * 
@@ -86,13 +91,14 @@ public class ProjectImpl extends AbstractProject {
      */
     public ProjectImpl(VariantFactoryService variantfactory,
             ThemeFactoryService themefactory, PageFactoryService pagefactory,
-            String name, String comment, String dependFile)
-            throws EditorInitializationException {
+            IncludeFactoryService includefactory, String name, String comment,
+            String dependFile) throws EditorInitializationException {
         this.projectName = name;
         this.projectComment = comment;
         this.variantfactory = variantfactory;
         this.themefactory = themefactory;
         this.pagefactory = pagefactory;
+        this.includefactory = includefactory;
 
         Navigation navi;
         try {
@@ -328,14 +334,15 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection getAllIncludeParts() {
         HashSet includes = new HashSet();
-        for (Iterator i = this.getAllPages().iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
+        for (Iterator i = this.tgen.getDependencyRefCounter()
+                .getDependenciesOfType(DependencyType.TEXT).iterator(); i
+                .hasNext();) {
+            AuxDependency auxdep = (AuxDependency) i.next();
             try {
-                includes.addAll(page.getPageTarget().getIncludeDependencies(true));
+                includes.add(this.includefactory
+                        .getIncludePartThemeVariant(auxdep));
             } catch (EditorParsingException e) {
-                // Log error and continue
-                String err = "Could not get include dependencies for page " + page.getFullName() + "!";
-                Logger.getLogger(this.getClass()).error(err, e);
+                // Ignore exception and go on
             }
         }
         return includes;

@@ -23,6 +23,7 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixxml.targets.AuxDependency;
 
 /**
  * Service providing methods to retrieve IncludeParts
@@ -53,4 +54,20 @@ public interface IncludeFactoryService {
      */
     IncludePartThemeVariant getIncludePartThemeVariant(Theme theme,
             IncludePart part);
+
+    /**
+     * Create an IncludePartThemeVariant object using the information retrieved
+     * from the supplied AuxDependency.
+     * 
+     * @param auxdep
+     *            AuxDependency of type DependencyType.TEXT
+     * @return IncludePartThemeVariant for auxdep
+     * @throws EditorParsingException
+     *             if a parsing error occurs
+     * @throws RuntimeException
+     *             if auxdep is not of type
+     *             {@link de.schlund.pfixxml.targets.DependencyType.TEXT}
+     */
+    IncludePartThemeVariant getIncludePartThemeVariant(AuxDependency auxdep)
+            throws EditorParsingException;
 }

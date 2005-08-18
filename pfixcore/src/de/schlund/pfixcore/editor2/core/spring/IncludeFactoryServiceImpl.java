@@ -20,6 +20,8 @@ package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.Hashtable;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
@@ -27,6 +29,8 @@ import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludeFileImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludePartThemeVariantImpl;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.DependencyType;
 
 /**
  * Implementation of IncludeFactoryService using Pustefix IncludeDocumentFactory
@@ -129,6 +133,21 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
                 this.imagefactory, this.filesystem, this.pathresolver,
                 this.configuration, this.securitymanager, this.backup, theme,
                 part);
+    }
+
+    public IncludePartThemeVariant getIncludePartThemeVariant(
+            AuxDependency auxdep) throws EditorParsingException {
+        if (auxdep.getType() == DependencyType.TEXT) {
+            IncludePartThemeVariant variant = this.includefactory
+                    .getIncludeFile(auxdep.getPath().getRelative()).createPart(
+                            auxdep.getPart()).createThemeVariant(
+                            this.themefactory.getTheme(auxdep.getProduct()));
+            return variant;
+        } else {
+            String err = "Supplied AuxDependency is not of type DependencyType.TEXT!";
+            Logger.getLogger(this.getClass()).error(err);
+            throw new RuntimeException(err);
+        }
     }
 
 }

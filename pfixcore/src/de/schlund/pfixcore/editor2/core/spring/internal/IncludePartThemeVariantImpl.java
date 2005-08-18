@@ -108,9 +108,7 @@ public class IncludePartThemeVariantImpl extends
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(child.getPath().getRelative())
-                        .createPart(child.getPart()).createThemeVariant(
-                                themefactory.getTheme(child.getProduct()));
+                        .getIncludePartThemeVariant(child);
                 includes.add(variant);
                 if (recursive) {
                     includes.addAll(variant.getIncludeDependencies(true));
@@ -193,9 +191,7 @@ public class IncludePartThemeVariantImpl extends
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
                 IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(child.getPath().getRelative())
-                        .createPart(child.getPart()).createThemeVariant(
-                                themefactory.getTheme(child.getProduct()));
+                        .getIncludePartThemeVariant(child);
                 includes.add(variant);
                 if (recursive) {
                     includes.addAll(variant.getIncludeDependencies(true));
