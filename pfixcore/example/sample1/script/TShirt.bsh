@@ -1,0 +1,55 @@
+import de.schlund.util.statuscodes.StatusCodeFactory;
+
+handleSubmittedData(context, wrapper) {
+    var crm = context.getContextResourceManager();
+    crm.getResource("de.schlund.pfixcore.example.ContextAdultInfo").adult = false;
+    
+    var ct = crm.getResource("de.schlund.pfixcore.example.ContextTShirt");
+    
+    var color   = wrapper.color;
+    var size    = wrapper.size;
+    var feature = wrapper.feature;
+
+    if ( size.equals("L") && color.equals(new Integer(2))) {
+        // The combination size "L" and color No. "2" is considered invalid (maybe out of stock)
+        sfac    = new StatusCodeFactory("pfixcore.example.tshirt");
+        wrapper.addSCodeSize(sfac.getStatusCode("SIZECOLOR_OUTOF_STOCK"),
+                            new String[]{"L", "2"}, 
+                            "note");
+        return;
+    }
+
+    // Everything was ok, store it.
+    ct.size = size;
+    ct.color = color;
+    if ( feature != null ) {
+        // same as ct.feature = feature
+        ct{"feature"} = feature;
+    } else {
+        ct.feature = new Integer [] {-1};
+        // This is needed so we produce some output at all on retrieveCurrentStatus when
+        // the user decided to NOT check any checkbox in the UI (this makes defaults work)
+    }
+}
+ 
+needsData(context) {
+    var crm = context.getContextResourceManager();
+    return crm.getResource("de.schlund.pfixcore.example.ContextTShirt").needsData();
+}
+
+prerequisitesMet(context) {
+    return true;
+}
+isActive(context) {
+    return true;
+}
+
+retrieveCurrentStatus(context, wrapper) {
+    var ct = context.getContextResourceManager().getResource("de.schlund.pfixcore.example.ContextTShirt");
+    
+    if ( !ct.needsData() ) {
+        wrapper.color = ct.color;
+        wrapper.size = ct.size;
+        wrapper.feature = ct.feature;
+    }      
+}
