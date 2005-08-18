@@ -103,4 +103,13 @@ public interface Project {
      * @return List of IncludePartThemeVariants for this project
      */
     Collection getAllIncludeParts();
+    
+    /**
+     * Returns a {@link Collection} of all {@link Image}
+     * objects, which are used by this project. This list may not be complete
+     * unless all pages of this project are up to date.
+     * 
+     * @return List of Images for this project
+     */
+    Collection getAllImages();
 }

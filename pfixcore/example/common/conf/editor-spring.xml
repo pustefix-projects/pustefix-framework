@@ -41,6 +41,9 @@
     <property name="includeFactoryService">
       <ref bean="includefactory"/>
     </property>
+    <property name="imageFactoryService">
+      <ref bean="imagefactory"/>
+    </property>
     <property name="projectsFilePath">
       <value>servletconf/projects.xml</value>
     </property>

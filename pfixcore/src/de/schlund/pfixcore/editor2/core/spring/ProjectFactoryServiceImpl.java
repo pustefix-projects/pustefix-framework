@@ -69,6 +69,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private IncludeFactoryService includefactory;
 
+    private ImageFactoryService imagefactory;
+
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
     }
@@ -91,6 +93,10 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     public void setIncludeFactoryService(IncludeFactoryService includefactory) {
         this.includefactory = includefactory;
+    }
+
+    public void setImageFactoryService(ImageFactoryService imagefactory) {
+        this.imagefactory = imagefactory;
     }
 
     public void setProjectsFilePath(String path) {
@@ -147,8 +153,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             }
             String projectDependFile = tempNode.getNodeValue();
             ProjectImpl project = new ProjectImpl(variantfactory, themefactory,
-                    pagefactory, includefactory, projectName, projectComment,
-                    projectDependFile);
+                    pagefactory, includefactory, imagefactory, projectName,
+                    projectComment, projectDependFile);
             this.projects.put(projectName, project);
             this.generatorToProjectNameMap.put(project.getTargetGenerator()
                     .getName(), projectName);

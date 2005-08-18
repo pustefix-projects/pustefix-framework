@@ -21,7 +21,6 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -30,7 +29,6 @@ import org.w3c.dom.Element;
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
-import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
@@ -58,16 +56,7 @@ public class ImagesResourceImpl implements ImagesResource {
         if (project == null) {
             return false;
         }
-        HashSet allimages = new HashSet();
-        for (Iterator i = project.getAllPages().iterator(); i.hasNext();) {
-            Page page = (Page) i.next();
-            try {
-                allimages.addAll(page.getPageTarget()
-                        .getImageDependencies(true));
-            } catch (EditorParsingException e) {
-                // Ignore exception and continue
-            }
-        }
+        Collection allimages = project.getAllImages();
         for (Iterator i = allimages.iterator(); i.hasNext();) {
             Image image = (Image) i.next();
             if (image.getPath().equals(path)) {
@@ -96,12 +85,7 @@ public class ImagesResourceImpl implements ImagesResource {
                 this.context).getSelectedProject();
 
         if (project != null) {
-            TreeSet allimages = new TreeSet();
-            for (Iterator i = project.getAllPages().iterator(); i.hasNext();) {
-                Page page = (Page) i.next();
-                allimages.addAll(page.getPageTarget()
-                        .getImageDependencies(true));
-            }
+            TreeSet allimages = new TreeSet(project.getAllImages());
             HashMap directoryNodes = new HashMap();
             for (Iterator i = allimages.iterator(); i.hasNext();) {
                 Image image = (Image) i.next();

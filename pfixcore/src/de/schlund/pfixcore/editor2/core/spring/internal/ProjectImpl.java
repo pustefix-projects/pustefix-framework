@@ -33,6 +33,7 @@ import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
+import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
@@ -77,6 +78,8 @@ public class ProjectImpl extends AbstractProject {
 
     private IncludeFactoryService includefactory;
 
+    private ImageFactoryService imagefactory;
+
     /**
      * Creates a new Project object
      * 
@@ -91,7 +94,8 @@ public class ProjectImpl extends AbstractProject {
      */
     public ProjectImpl(VariantFactoryService variantfactory,
             ThemeFactoryService themefactory, PageFactoryService pagefactory,
-            IncludeFactoryService includefactory, String name, String comment,
+            IncludeFactoryService includefactory,
+            ImageFactoryService imagefactory, String name, String comment,
             String dependFile) throws EditorInitializationException {
         this.projectName = name;
         this.projectComment = comment;
@@ -99,6 +103,7 @@ public class ProjectImpl extends AbstractProject {
         this.themefactory = themefactory;
         this.pagefactory = pagefactory;
         this.includefactory = includefactory;
+        this.imagefactory = imagefactory;
 
         Navigation navi;
         try {
@@ -346,6 +351,18 @@ public class ProjectImpl extends AbstractProject {
             }
         }
         return includes;
+    }
+
+    public Collection getAllImages() {
+        HashSet images = new HashSet();
+        for (Iterator i = this.tgen.getDependencyRefCounter()
+                .getDependenciesOfType(DependencyType.IMAGE).iterator(); i
+                .hasNext();) {
+            AuxDependency auxdep = (AuxDependency) i.next();
+            images.add(this.imagefactory.getImage(auxdep.getPath()
+                    .getRelative()));
+        }
+        return images;
     }
 
 }
