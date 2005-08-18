@@ -143,18 +143,13 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     }
 
     public IncludePart createPart(String name) {
-        IncludePart part;
-        part = this.getPart(name);
-        if (part != null) {
-            return part;
-        }
         synchronized (cache) {
             if (!this.cache.containsKey(name)) {
                 IncludePart incPart = createIncludePartInstance(name);
                 this.cache.put(name, incPart);
             }
-        }
-        return (IncludePart) this.cache.get(name);
+            return (IncludePart) this.cache.get(name);
+        }   
     }
 
     public boolean hasPart(String name) {

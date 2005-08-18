@@ -23,8 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.TransformerException;
@@ -57,7 +57,7 @@ import de.schlund.pfixxml.util.XPath;
 public abstract class CommonIncludePartImpl extends AbstractIncludePart {
     private IncludeFile file;
 
-    private Hashtable cache;
+    private HashMap cache;
 
     private ThemeFactoryService themefactory;
 
@@ -78,7 +78,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
         this.backup = backup;
         this.name = partName;
         this.file = file;
-        this.cache = new Hashtable();
+        this.cache = new HashMap();
     }
 
     /**
@@ -139,9 +139,6 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariant(de.schlund.pfixcore.editor2.core.dom.Theme)
      */
     public IncludePartThemeVariant getThemeVariant(Theme theme) {
-        if (this.cache.containsKey(theme)) {
-            return (IncludePartThemeVariant) this.cache.get(theme);
-        }
         synchronized (this.cache) {
             if (!this.cache.containsKey(theme)) {
                 if (this.getContentXML() == null) {
@@ -161,8 +158,8 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
                 IncludePartThemeVariant incPartVariant = createIncludePartThemeVariant(theme);
                 this.cache.put(theme, incPartVariant);
             }
+            return (IncludePartThemeVariant) this.cache.get(theme);
         }
-        return (IncludePartThemeVariant) this.cache.get(theme);
     }
 
     /*
@@ -195,17 +192,13 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
     }
 
     public IncludePartThemeVariant createThemeVariant(Theme theme) {
-        IncludePartThemeVariant variant = this.getThemeVariant(theme);
-        if (variant != null) {
-            return variant;
-        }
         synchronized (cache) {
             if (!this.cache.containsKey(theme)) {
-                variant = createIncludePartThemeVariant(theme);
+                IncludePartThemeVariant variant = createIncludePartThemeVariant(theme);
                 this.cache.put(theme, variant);
             }
+            return (IncludePartThemeVariant) this.cache.get(theme);
         }
-        return (IncludePartThemeVariant) this.cache.get(theme);
     }
 
     public boolean hasThemeVariant(Theme theme) {
@@ -330,7 +323,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
                         Logger.getLogger(this.getClass()).error(err, e);
                         throw new EditorIOException(err, e);
                     }
-                    
+
                     // Fore cache refresh
                     this.getIncludeFile().getContentXML(true);
 
