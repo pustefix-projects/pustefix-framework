@@ -78,9 +78,39 @@
     </variant>
   </pageflow>
   
+  <pageflow name="jstestorder" final="scriptingoverview">
+    <flowstep name="jstest"/>
+    <flowstep name="overview" />
+  </pageflow>  
+  
+  <pageflow name="bshtestorder" final="scriptingoverview">
+    <flowstep name="bshtest"/>
+    <flowstep name="overview" />
+  </pageflow>
+  
   <!-- *** PageRequests and associated properties *** -->
   
-  <pagerequest name="test"/>
+  <pagerequest name="scriptingoverview"/>
+  
+  <pagerequest name="bshtest">
+    <input>
+      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptableTShirtBsh"/>
+    </input>
+    <output>
+      <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
+      <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </output>    
+  </pagerequest>
+  
+  <pagerequest name="jstest">
+    <input>
+      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptableTShirtJs"/>
+    </input>
+    <output>
+      <resource node="counter" class="de.schlund.pfixcore.example.ContextCounter"/>
+      <resource node="togglepic" class="de.schlund.pfixcore.example.ContextTogglePic"/>
+    </output>    
+  </pagerequest>
   
   <pagerequest name="home">
     <default>
@@ -100,6 +130,7 @@
         <resource node="trouser" class="de.schlund.pfixcore.example.ContextTrouser"/>
       </output>
     </variant>
+    
   </pagerequest>
   
   <pagerequest name="order">
@@ -155,6 +186,8 @@
     <prop name="contexttrouser.feature.2">Windproof</prop>
 
     <!--<prop name="context.startinterceptor.001">de.schlund.pfixcore.example.SampleStartIC</prop>-->
+    
+    <prop name="iwrappercontainer">de.schlund.pfixcore.workflow.app.ScriptableIWrapperContainer</prop>
     
   </properties>
 
