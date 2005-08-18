@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+          For the following tests to work, you must have some additional libraries
+          in your classpath that don't come bundled with pustefix. 
+        </center>
+      
+        <ul>
+          <li>
+            <pfx:button page="jstest" pageflow="jstestorder">Javascript-Test</pfx:button> (needs 
+            <pfx:elink href="http://www.mozilla.org/rhino/download.html">Rhino</pfx:elink>, 
+            but no later version than 1.5R3)
+          </li>
+          <li>
+            <pfx:button page="bshtest" pageflow="bshtestorder">Beanshell-Test</pfx:button> (needs 
+            <pfx:elink href="http://beanshell.org/download.html">Beanshell</pfx:elink>,
+            it's best to use the 'all-inclusive' distribution)
+          </li>
+        </ul>
+      
+
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>

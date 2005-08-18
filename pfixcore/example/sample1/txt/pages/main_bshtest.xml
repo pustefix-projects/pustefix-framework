@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:pfx="http://www.schlund.de/pustefix/core">
+
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+          <pfx:forminput name="main" target="_top">
+            <center>
+              <pfx:include href="sample1/txt/pages/main_order.xml" part="shirt"/>
+              <br/>
+              <table width="400">
+                <tr valign="bottom">
+                  <td align="right" nowrap="nowrap" width="100%">
+                    <pfx:xinp type="submit" value="Submit"/>
+                  </td>
+                </tr>
+              </table>
+            </center>
+          </pfx:forminput>      
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>
