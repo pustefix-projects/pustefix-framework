@@ -35,11 +35,11 @@ import de.schlund.pfixcore.workflow.*;
  */
 
 public abstract class SampleRes {
-    private final static String AINFO   = "de.schlund.pfixcore.example.ContextAdultInfo";
-    private final static String TROUSER = "de.schlund.pfixcore.example.ContextTrouser";
-    private final static String TSHIRT  = "de.schlund.pfixcore.example.ContextTShirt";
-    private final static String COUNTER = "de.schlund.pfixcore.example.ContextCounter";
-    private final static String PIC     = "de.schlund.pfixcore.example.ContextTogglePic";
+    public final static String AINFO   = "de.schlund.pfixcore.example.ContextAdultInfo";
+    public final static String TROUSER = "de.schlund.pfixcore.example.ContextTrouser";
+    public final static String TSHIRT  = "de.schlund.pfixcore.example.ContextTShirt";
+    public final static String COUNTER = "de.schlund.pfixcore.example.ContextCounter";
+    public final static String PIC     = "de.schlund.pfixcore.example.ContextTogglePic";
     
     public static ContextAdultInfo getContextAdultInfo(Context context) {
         return (ContextAdultInfo) context.getContextResourceManager().getResource(AINFO);
