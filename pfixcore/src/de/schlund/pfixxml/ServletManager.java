@@ -73,6 +73,9 @@ public abstract class ServletManager extends HttpServlet {
     private   static       String TIMESTAMP_ID                  = "";
     private   static       int    INC_ID                        = 0;
 
+    //FIXME NS should be removed, is just here for legacy reasons, the real thing is in SessionAdmin
+    public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
+
     private boolean          cookie_security_not_enforced = false;
     private SessionAdmin     sessionadmin                 = SessionAdmin.getInstance();
     private Category         LOGGER_VISIT                 = Category.getInstance("LOGGER_VISIT");

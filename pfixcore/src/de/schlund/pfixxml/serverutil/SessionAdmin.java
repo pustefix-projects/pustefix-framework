@@ -32,12 +32,12 @@ import org.apache.log4j.*;
 public class SessionAdmin implements HttpSessionBindingListener {
     public  static String       LISTENER       = "__SESSION_LISTENER__"; 
     public  static String       PARENT_SESS_ID = "__PARENT_SESSION_ID__";
+    public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     private static SessionAdmin instance       = new SessionAdmin();
     private        Category     CAT            = Category.getInstance(SessionAdmin.class.getName());
     private        HashMap      sessioninfo    = new HashMap();
     private        HashMap      parentinfo     = new HashMap();
     private        HashMap      parentinfo_rev = new HashMap();
-    public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     
     private SessionAdmin() {}
 
