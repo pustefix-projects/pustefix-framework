@@ -56,7 +56,6 @@ import org.apache.log4j.Category;
 
 public abstract class ServletManager extends HttpServlet {
     public    static final String VISIT_ID                      = "__VISIT_ID__";
-    public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     public    static final String PROP_LOADINDEX                = "__PROPERTIES_LOAD_INDEX";
     private   static final String STORED_REQUEST                = "__STORED_PFIXSERVLETREQUEST__";
     private   static final String SESSION_ID_URL                = "__SESSION_ID_URL__";
@@ -163,7 +162,7 @@ public abstract class ServletManager extends HttpServlet {
         if (req.isRequestedSessionIdValid()) {
             session        = req.getSession(false);
             has_session    = true;
-            Boolean secure = (Boolean) session.getAttribute(SESSION_IS_SECURE);
+            Boolean secure = (Boolean) session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
             CAT.debug("*** Found valid session with ID " + session.getId());
             // Much of the advanced security depends on having cookies enabled.  We need to make
             // sure that this isn't defeated by just disabling cookies.  So we mark every session
@@ -436,7 +435,7 @@ public abstract class ServletManager extends HttpServlet {
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting " + SessionHelper.SESSION_ID_URL + "  to " + session.getAttribute(SessionHelper.SESSION_ID_URL));
         CAT.debug("*** Setting SECURE flag");
-        session.setAttribute(SESSION_IS_SECURE, Boolean.TRUE);
+        session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.TRUE);
         session.setAttribute(STORED_REQUEST, preq);
 
         Cookie cookie = getSecureSessionCookie(req, session.getId());
@@ -477,7 +476,7 @@ public abstract class ServletManager extends HttpServlet {
         }
         session.setAttribute(SessionHelper.SESSION_ID_URL,SessionHelper.getURLSessionId(req));
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
-        session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
+        session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to insecure SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);
@@ -492,7 +491,7 @@ public abstract class ServletManager extends HttpServlet {
         session.setAttribute(SessionHelper.SESSION_ID_URL, SessionHelper.getURLSessionId(req));
         session.setAttribute(CHECK_FOR_RUNNING_SSL_SESSION, parentid);
         CAT.debug("*** Setting INSECURE flag in session (Id: " + session.getId() + ")");
-        session.setAttribute(SESSION_IS_SECURE, Boolean.FALSE);
+        session.setAttribute(SessionAdmin.SESSION_IS_SECURE, Boolean.FALSE);
         session.setAttribute(STORED_REQUEST, preq);
         CAT.debug("===> Redirecting to SSL URL with session (Id: " + session.getId() + ")");
         String redirect_uri = SessionHelper.encodeURL("https", req.getServerName(), req);

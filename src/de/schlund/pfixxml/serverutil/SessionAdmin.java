@@ -21,6 +21,7 @@ package de.schlund.pfixxml.serverutil;
 
 import java.util.*;
 import javax.servlet.http.*;
+
 import org.apache.log4j.*;
 
 /**
@@ -36,6 +37,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
     private        HashMap      sessioninfo    = new HashMap();
     private        HashMap      parentinfo     = new HashMap();
     private        HashMap      parentinfo_rev = new HashMap();
+    public    static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     
     private SessionAdmin() {}
 
@@ -142,4 +144,20 @@ public class SessionAdmin implements HttpSessionBindingListener {
     public static SessionAdmin getInstance() {
         return instance;
     }
+
+    public String getExternalSessionId(HttpSession session) {
+        String result = "NOSUCHSESSION";
+        if (session != null) { 
+            Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);
+            String  parentid = (String) session.getAttribute(PARENT_SESS_ID); 
+            if (secure != null && secure.booleanValue() && parentid != null) {
+                result = parentid;
+            } else if (secure == null || !secure.booleanValue()) {
+                result = session.getId();
+            }
+        }
+        return result;
+    }
+
+
 }

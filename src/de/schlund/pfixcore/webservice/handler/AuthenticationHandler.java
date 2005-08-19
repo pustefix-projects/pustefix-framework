@@ -11,7 +11,7 @@ import de.schlund.pfixcore.workflow.ContextResourceManager;
 
 import de.schlund.pfixcore.webservice.*;
 import de.schlund.pfixcore.webservice.config.*;
-import de.schlund.pfixxml.ServletManager;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class AuthenticationHandler extends AbstractHandler {
 
@@ -44,7 +44,7 @@ public class AuthenticationHandler extends AbstractHandler {
                 HttpServletRequest req=this.getServletRequest(messageContext);
                 if(srvConf.getSSLForce() && !req.getScheme().equals("https")) throw AxisFault.makeFault(new Exception("Authentication failed: SSL connection required"));
                 if(req.getScheme().equals("https")) {
-                    Boolean secure=(Boolean)session.getAttribute(ServletManager.SESSION_IS_SECURE);
+                    Boolean secure=(Boolean)session.getAttribute(SessionAdmin.SESSION_IS_SECURE);
                     if(secure==null || !secure.booleanValue()) throw AxisFault.makeFault(new Exception("Authentication failed: No secure session"));
                 }
                 Context pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");

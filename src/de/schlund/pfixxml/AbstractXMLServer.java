@@ -667,19 +667,12 @@ public abstract class AbstractXMLServer extends ServletManager {
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
 
-        String session_to_link_from_external = "NOSUCHSESSION";
-        if (session != null) { 
-            Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);
-            String  parentid = (String) session.getAttribute(SessionAdmin.PARENT_SESS_ID); 
-            if (secure != null && secure.booleanValue() && parentid != null) {
-                session_to_link_from_external = parentid;
-            } else if (secure == null || !secure.booleanValue()) {
-                session_to_link_from_external = session.getId();
-            }
-        }
+        String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref",session_to_link_from_external);
         return paramhash;
     }
+    
+    
 
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
