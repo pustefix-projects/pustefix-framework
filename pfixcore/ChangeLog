@@ -1,3 +1,14 @@
+2005-08-19  Niels Schelbach  <niels@schlund.de>
+	Refactored method to get insecure SessionID for external publishing purpose and moved it from 
+	AbstractXMLServer to SessionAdmin
+
+	Modified:
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java 
+
+
 2005-08-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java (loadConfig): make sure to add " default" to end
