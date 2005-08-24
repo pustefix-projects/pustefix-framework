@@ -1,3 +1,7 @@
+2005-08-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFlow): typo. Fow=>Flow
+
 2005-08-19  Niels Schelbach  <niels@schlund.de>
 	Refactored method to get insecure SessionID for external publishing purpose and moved it from 
 	AbstractXMLServer to SessionAdmin
