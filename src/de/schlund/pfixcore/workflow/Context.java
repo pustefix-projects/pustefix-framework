@@ -335,7 +335,7 @@ public class Context implements AppContext {
      *
      * @return a <code>PageFlow</code> value
      */
-    public PageFlow getCurrentPageFow() {
+    public PageFlow getCurrentPageFlow() {
         return currentpageflow;
     }
 

@@ -187,6 +187,7 @@
     <ixsl:apply-templates select="$pfx_scode/node()"/>
   </xsl:template>
 
+  
   <xsl:template match="pfx:forminput">
     <xsl:variable name="send-to-page" select="@send-to-page"/>
     <xsl:variable name="theframe">
@@ -1090,7 +1091,7 @@
   <!-- further warning. Please don't use them in new code -->
 
 
-  <!-- not really deprecated, but pfx:checkfield is more fexible. On the other hand, this is shorter -->
+  <!-- DEPRECATED, pfx:checkfield is more flexible. On the other hand, this is shorter -->
   <!-- to write in many common cases. -->
   
   <xsl:template match="pfx:label" name="pfx:label">
@@ -1119,10 +1120,13 @@
         </xsl:if>
       </ixsl:choose>
     </ixsl:if>
+    <cus:documentation>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
   </xsl:template>
 
 
-  <!-- DEPRECATED -->
+  <!-- DEPRECATED. Please, never ever use this... -->
   <xsl:template match="pfx:dynoptions">
     <!-- $pfx_name will be set in the parent select -->
     <ixsl:for-each select="{@optionpath}/option">
@@ -1194,7 +1198,7 @@
     </cus:documentation>
   </xsl:template>
   
-  <!-- DEPRECATED -->
+  <!-- DEPRECATED! Please, don't ever use this -->
   <xsl:template match="pfx:xinp[@type='dynselect']">
     <xsl:variable name="name" select="string(@name)"/>
     <select name="{$name}">
