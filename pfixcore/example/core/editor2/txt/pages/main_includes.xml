@@ -90,7 +90,6 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-        <pfx:editconsole/>
       </lang>
     </product>
   </part>
