@@ -1,3 +1,8 @@
+2005-08-25  Thomas Stieler  <stieler@schlund.de>
+
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: added method for sending email with headers
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: removed method for sending email with bcc recipients
+
 2005-08-24  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFlow): typo. Fow=>Flow
