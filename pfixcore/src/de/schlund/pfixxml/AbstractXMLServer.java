@@ -506,7 +506,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (flow != null) {
                 logbuff.append("|" + flow);
             }
-            logbuff.append("|" + getdomtime + "|" + handletime);
+            // logbuff.append("|" + getdomtime + "|" + handletime);
             LOGGER_TRAIL.warn(logbuff.toString());
         }
 
