@@ -1,3 +1,9 @@
+2005-08-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): no longer accept a "level" attribute.
+	* src/de/schlund/pfixcore/workflow/Context.java: put the "level" for errors and pagemessages into the 
+	"error" or "message" tag, not to the pfx:include child.
+
 2005-08-25  Thomas Stieler  <stieler@schlund.de>
 
 	* src/de/schlund/pfixcore/util/email/EmailSender.java: added method for sending email with headers

@@ -1059,8 +1059,11 @@ public class Context implements AppContext {
                 while (iter.hasNext()) {
                     StatusCodeInfo sci = (StatusCodeInfo) iter.next();
                     Element        msg = doc.createElement("message");
-                    Element        inc = ResultDocument.createIncludeFromStatusCode(doc, properties, sci.getStatusCode(), sci.getArgs(), sci.getLevel());
+                    Element        inc = ResultDocument.createIncludeFromStatusCode(doc, properties, sci.getStatusCode(), sci.getArgs());
                     msg.appendChild(inc);
+                    if (sci.getLevel() != null) {
+                        msg.setAttribute("level", sci.getLevel());
+                    }
                     messagesElem.appendChild(msg);
                     
                     LOG.debug("Added PageMessage for level " + sci.getLevel() + " with args " + sci.getArgs());
