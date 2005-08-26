@@ -754,8 +754,8 @@
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
           <ixsl:when test="not($pfx_scode)"><xsl:value-of select="@class"/></ixsl:when>
-          <ixsl:when test="not($pfx_level)"><xsl:value-of select="@class"/> PfxError PfxInputRadioError</ixsl:when>
-          <ixsl:otherwise><xsl:value-of select="@class"/> PfxError PfxInputRadioError PfxErrorLevel_<ixsl:value-of select="string($pfx_level)"/></ixsl:otherwise>
+          <ixsl:when test="not($pfx_level)"><xsl:value-of select="@class"/> PfxError PfxInputCheckError</ixsl:when>
+          <ixsl:otherwise><xsl:value-of select="@class"/> PfxError PfxInputCheckError PfxErrorLevel_<ixsl:value-of select="string($pfx_level)"/></ixsl:otherwise>
         </ixsl:choose>
       </ixsl:variable>
       <ixsl:attribute name="class"><ixsl:value-of select="string($pfx_class)"/></ixsl:attribute>
