@@ -102,10 +102,13 @@ public class ResultDocument {
     }
 
     public void addStatusCode(Properties props, StatusCode code, String[] args, String level, String field) {
-        Element elem  = ResultDocument.createIncludeFromStatusCode(doc, props, code, args, level);
+        Element elem  = ResultDocument.createIncludeFromStatusCode(doc, props, code, args);
         Element param = doc.createElement("error");
         param.setAttribute("name", field);
         param.appendChild(elem);
+        if (level != null) {
+            param.setAttribute("level", level);
+        }
         formerrors.appendChild(param);
     }
 
@@ -134,14 +137,14 @@ public class ResultDocument {
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code) {
-        return createIncludeFromStatusCode(doc, props, code, null, null);
+        return createIncludeFromStatusCode(doc, props, code, null);
     }
 
     public Element createIncludeFromStatusCode(Properties props, StatusCode code, String[] args) {
-        return createIncludeFromStatusCode(doc, props, code, args, null);
+        return createIncludeFromStatusCode(doc, props, code, args);
     }
 
-    public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args, String level) {
+    public static Element createIncludeFromStatusCode(Document thedoc, Properties props, StatusCode code, String[] args) {
         String  incfile = (String) props.get("statuscodefactory.messagefile");
         String  part    = code.getStatusCodeId();
         Element include = thedoc.createElementNS(ResultDocument.PFIXCORE_NS, "pfx:include");
@@ -153,9 +156,6 @@ public class ResultDocument {
                 arg.setAttribute("value", args[i]);
                 include.appendChild(arg);
             }
-        }
-        if (level != null) {
-            include.setAttribute("level", level);
         }
         return include;
     }
