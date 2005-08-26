@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludeFile;
@@ -57,7 +57,10 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
 
     private Document xmlCache;
 
-    protected abstract IncludePart createIncludePartInstance(String name);
+    private long currentSerial = 0;
+
+    protected abstract IncludePart createIncludePartInstance(String name,
+            Element el, long serial);
 
     public CommonIncludeFileImpl(FileSystemService filesystem,
             PathResolverService pathresolver, String path) {
@@ -100,16 +103,17 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
                 if (xml == null) {
                     return null;
                 }
+                Element el = null;
                 try {
-                    if (!XPath.test(xml, "part[@name='" + name + "']")) {
-                        return null;
-                    }
+                    el = (Element) XPath.selectNode(xml, "part[@name='" + name
+                            + "']");
                 } catch (TransformerException e) {
                     // Should NEVER happen
                     Logger.getLogger(this.getClass()).error("XPath error!", e);
                     return null;
                 }
-                IncludePart incPart = createIncludePartInstance(name);
+                IncludePart incPart = createIncludePartInstance(name, el, this
+                        .getSerial());
                 this.cache.put(name, incPart);
                 return incPart;
             }
@@ -131,7 +135,13 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
         }
         synchronized (this.filesystem.getLock(xmlFile)) {
             try {
-                return this.filesystem.readXMLDocumentFromFile(xmlFile);
+                synchronized (this.cache) {
+                    this.xmlCache = this.filesystem
+                            .readXMLDocumentFromFile(xmlFile);
+                    this.lastModTime = xmlFile.lastModified();
+                    this.currentSerial++;
+                    return this.xmlCache;
+                }
             } catch (SAXException e) {
                 Logger.getLogger(this.getClass()).warn(e);
                 return null;
@@ -145,11 +155,11 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     public IncludePart createPart(String name) {
         synchronized (cache) {
             if (!this.cache.containsKey(name)) {
-                IncludePart incPart = createIncludePartInstance(name);
+                IncludePart incPart = createIncludePartInstance(name, null, -1);
                 this.cache.put(name, incPart);
             }
             return (IncludePart) this.cache.get(name);
-        }   
+        }
     }
 
     public boolean hasPart(String name) {
@@ -165,19 +175,21 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
                 xml = xmlDoc.getDocumentElement();
             }
             if (xml != null) {
-                try {
-                    List nlist = XPath.select(xml, "part/@name");
-                    for (Iterator i = nlist.iterator(); i.hasNext();) {
-                        String partName = ((Node) i.next()).getNodeValue();
-                        if (!this.cache.containsKey(partName)) {
-                            IncludePart incPart = createIncludePartInstance(partName);
-                            this.cache.put(partName, incPart);
+                NodeList nlist = xml.getChildNodes();
+                for (int i = 0; i < nlist.getLength(); i++) {
+                    Node n = nlist.item(i);
+                    if (n.getNodeType() == Node.ELEMENT_NODE) {
+                        Element el = (Element) n;
+                        if (el.getNodeName().equals("part")
+                                && el.hasAttribute("name")) {
+                            String partName = el.getAttribute("name");
+                            if (!this.cache.containsKey(partName)) {
+                                IncludePart incPart = createIncludePartInstance(
+                                        partName, el, this.getSerial());
+                                this.cache.put(partName, incPart);
+                            }
                         }
                     }
-                } catch (TransformerException e) {
-                    // Should NEVER happen
-                    // Log and go on
-                    Logger.getLogger(this.getClass()).error("XPath error!", e);
                 }
             }
 
@@ -186,6 +198,15 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
             // static version to iterate over.
             HashSet temp = new HashSet(this.cache.values());
             return temp;
+        }
+    }
+
+    public long getSerial() {
+        synchronized (this.cache) {
+            // Check for changes on filesystem
+            this.getContentXML();
+            
+            return this.currentSerial;
         }
     }
 

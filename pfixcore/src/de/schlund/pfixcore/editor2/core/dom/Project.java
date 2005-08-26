@@ -103,13 +103,29 @@ public interface Project {
      * @return List of IncludePartThemeVariants for this project
      */
     Collection getAllIncludeParts();
-    
+
     /**
-     * Returns a {@link Collection} of all {@link Image}
-     * objects, which are used by this project. This list may not be complete
-     * unless all pages of this project are up to date.
+     * Returns a {@link Collection} of all {@link Image} objects, which are used
+     * by this project. This list may not be complete unless all pages of this
+     * project are up to date.
      * 
      * @return List of Images for this project
      */
     Collection getAllImages();
+
+    /**
+     * Finds an IncludePartThemeVariant using the supplied identifiers
+     * 
+     * @param file
+     *            (relative) path to the file that contains the include part
+     * @param part
+     *            Name of the part
+     * @param theme
+     *            Name of the theme
+     * @return The corresponding IncludePartThemeVariant or <code>null</code>
+     *         if the specified part does not exist or is not used by this
+     *         project
+     */
+    IncludePartThemeVariant findIncludePartThemeVariant(String file,
+            String part, String theme);
 }

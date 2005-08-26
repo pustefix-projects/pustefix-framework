@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -50,13 +51,28 @@ public class PustefixTargetUpdateServiceImpl implements
 
     private boolean firstRunDone;
 
+    private boolean isEnabled = false;
+
+    private long startupDelay = 0;
+
+    public void setEnabled(boolean flag) {
+        this.isEnabled = flag;
+    }
+
+    public void setStartupDelay(long delay) {
+        this.startupDelay = delay;
+    }
+
     public PustefixTargetUpdateServiceImpl() {
         this.lowPriorityQueue = new ArrayList();
         this.highPriorityQueue = new ArrayList();
         this.lock = new Object();
         this.targetList = new HashSet();
         this.firstRunDone = false;
-        Thread thread = new Thread(this);
+    }
+
+    public void init() {
+        Thread thread = new Thread(this, "pustefix-target-update");
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -80,17 +96,38 @@ public class PustefixTargetUpdateServiceImpl implements
             Logger.getLogger(this.getClass()).warn(msg);
             return;
         }
-        synchronized (this.lock) {
-            if (!this.targetList.contains(target)) {
-                this.targetList.add(target);
-                this.lowPriorityQueue.add(target);
-                this.firstRunDone = false;
-                this.lock.notify();
+        if (this.isEnabled) {
+            synchronized (this.lock) {
+                if (!this.targetList.contains(target)) {
+                    this.targetList.add(target);
+                    this.lowPriorityQueue.add(target);
+                    this.firstRunDone = false;
+                    this.lock.notify();
+                }
             }
         }
     }
 
     public void run() {
+        // Wait for delay
+        if (this.startupDelay > 0) {
+            long startTime = Calendar.getInstance().getTimeInMillis();
+            long currentTime = Calendar.getInstance().getTimeInMillis();
+            ;
+            do {
+                long waitTime = this.startupDelay + startTime - currentTime;
+                Object waitLock = new Object();
+                synchronized (waitLock) {
+                    try {
+                        waitLock.wait(waitTime);
+                    } catch (InterruptedException e) {
+                        // Ignore interruption
+                    }
+                }
+                currentTime = Calendar.getInstance().getTimeInMillis();
+            } while (currentTime < (startTime + this.startupDelay));
+        }
+
         while (true) {
             ArrayList lowCopy;
             ArrayList highCopy;
@@ -113,39 +150,45 @@ public class PustefixTargetUpdateServiceImpl implements
 
                 }
             }
-            while (!lowCopy.isEmpty()) {
-                Target target = (Target) lowCopy.get(0);
-                try {
-                    target.getValue();
-                } catch (TargetGenerationException e) {
-                    String msg = "Generation of target "
-                            + target.getTargetKey() + " failed!";
-                    Logger.getLogger(this.getClass()).warn(msg);
-                }
-                lowCopy.remove(0);
-                synchronized (this.lock) {
-                    this.lowPriorityQueue.remove(0);
-                    if (!this.highPriorityQueue.isEmpty()) {
-                        break;
+
+            // Do automatic regeneration only if enabled
+            if (this.isEnabled) {
+                while (!lowCopy.isEmpty()) {
+                    Target target = (Target) lowCopy.get(0);
+                    try {
+                        target.getValue();
+                    } catch (TargetGenerationException e) {
+                        String msg = "Generation of target "
+                                + target.getTargetKey() + " failed!";
+                        Logger.getLogger(this.getClass()).warn(msg);
                     }
-                    if (this.firstRunDone) {
-                        try {
-                            // Wait a second to make sure
-                            // background generation loop
-                            // does not consume to much
-                            // CPU time
-                            this.lock.wait(1000);
-                        } catch (InterruptedException e) {
-                            // Ignore interruption and continue
+                    lowCopy.remove(0);
+                    synchronized (this.lock) {
+                        this.lowPriorityQueue.remove(0);
+                        if (!this.highPriorityQueue.isEmpty()) {
+                            break;
+                        }
+                        if (this.firstRunDone) {
+                            try {
+                                // Wait a second to make sure
+                                // background generation loop
+                                // does not consume to much
+                                // CPU time
+                                this.lock.wait(1000);
+                            } catch (InterruptedException e) {
+                                // Ignore interruption and continue
+                            }
                         }
                     }
                 }
             }
 
             synchronized (this.lock) {
-                if (this.lowPriorityQueue.isEmpty()) {
-                    this.lowPriorityQueue.addAll(this.targetList);
-                    this.firstRunDone = true;
+                if (this.isEnabled) {
+                    if (this.lowPriorityQueue.isEmpty()) {
+                        this.lowPriorityQueue.addAll(this.targetList);
+                        this.firstRunDone = true;
+                    }
                 }
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
@@ -158,5 +201,4 @@ public class PustefixTargetUpdateServiceImpl implements
             }
         }
     }
-
 }

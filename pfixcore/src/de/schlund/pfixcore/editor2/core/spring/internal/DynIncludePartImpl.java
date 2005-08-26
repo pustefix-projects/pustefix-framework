@@ -21,6 +21,8 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
@@ -52,8 +54,9 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
             ConfigurationService configuration, BackupService backup,
             FileSystemService filesystem, PathResolverService pathresolver,
             SecurityManagerService securitymanager, String partName,
-            IncludeFile file) {
-        super(themefactory, filesystem, pathresolver, backup, partName, file);
+            IncludeFile file, Element el, long serial) {
+        super(themefactory, filesystem, pathresolver, backup, partName, file,
+                el, serial);
         this.configuration = configuration;
         this.backup = backup;
         this.filesystem = filesystem;

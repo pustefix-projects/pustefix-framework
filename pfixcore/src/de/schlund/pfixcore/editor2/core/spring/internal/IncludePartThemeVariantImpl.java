@@ -68,8 +68,6 @@ public class IncludePartThemeVariantImpl extends
 
     private ImageFactoryService imagefactory;
 
-    private AuxDependency auxdep;
-
     private SecurityManagerService securitymanager;
 
     public IncludePartThemeVariantImpl(ProjectFactoryService projectfactory,
@@ -87,8 +85,10 @@ public class IncludePartThemeVariantImpl extends
         this.themefactory = themefactory;
         this.imagefactory = imagefactory;
         this.securitymanager = securitymanager;
+    }
 
-        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependency(
+    private AuxDependency getAuxDependency() {
+        return AuxDependencyFactory.getInstance().getAuxDependency(
                 DependencyType.TEXT,
                 PathFactory.getInstance().createPath(
                         this.getIncludePart().getIncludeFile().getPath()),
@@ -103,7 +103,7 @@ public class IncludePartThemeVariantImpl extends
     public Collection getIncludeDependencies(boolean recursive)
             throws EditorParsingException {
         HashSet includes = new HashSet();
-        Collection childs = this.auxdep.getChildrenForAllThemes();
+        Collection childs = this.getAuxDependency().getChildrenForAllThemes();
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
@@ -126,7 +126,7 @@ public class IncludePartThemeVariantImpl extends
     public Collection getImageDependencies(boolean recursive)
             throws EditorParsingException {
         HashSet images = new HashSet();
-        Collection childs = this.auxdep.getChildrenForAllThemes();
+        Collection childs = this.getAuxDependency().getChildrenForAllThemes();
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
@@ -151,8 +151,8 @@ public class IncludePartThemeVariantImpl extends
      */
     public Collection getAffectedPages() {
         HashSet pageinfos = new HashSet();
-        for (Iterator i = this.auxdep.getAffectedTargets().iterator(); i
-                .hasNext();) {
+        for (Iterator i = this.getAuxDependency().getAffectedTargets()
+                .iterator(); i.hasNext();) {
             de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
                     .next();
             pageinfos.addAll(pfixTarget.getPageInfos());
@@ -169,7 +169,9 @@ public class IncludePartThemeVariantImpl extends
                 variant = variantfactory.getVariant(pageinfo.getVariant());
             }
             Page page = project.getPage(pageinfo.getName(), variant);
-            pages.add(page);
+            if (page != null) {
+                pages.add(page);
+            }
         }
 
         return pages;
@@ -185,8 +187,8 @@ public class IncludePartThemeVariantImpl extends
             themesArray.add(theme.getName());
         }
 
-        Collection childs = this.auxdep.getChildrenForThemes(new Themes(
-                (String[]) themesArray.toArray(new String[0])));
+        Collection childs = this.getAuxDependency().getChildrenForThemes(
+                new Themes((String[]) themesArray.toArray(new String[0])));
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
@@ -211,8 +213,8 @@ public class IncludePartThemeVariantImpl extends
             themesArray.add(theme.getName());
         }
 
-        Collection childs = this.auxdep.getChildrenForThemes(new Themes(
-                (String[]) themesArray.toArray(new String[0])));
+        Collection childs = this.getAuxDependency().getChildrenForThemes(
+                new Themes((String[]) themesArray.toArray(new String[0])));
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {

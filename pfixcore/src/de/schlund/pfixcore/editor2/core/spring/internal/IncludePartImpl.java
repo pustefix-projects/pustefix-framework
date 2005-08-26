@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
@@ -48,8 +50,8 @@ public class IncludePartImpl extends CommonIncludePartImpl {
             IncludeFactoryService includefactory, FileSystemService filesystem,
             PathResolverService pathresolver, BackupService backup,
             SecurityManagerService securitymanager, String partName,
-            IncludeFile file) {
-        super(themefactory, filesystem, pathresolver, backup, partName, file);
+            IncludeFile file, Element el, long serial) {
+        super(themefactory, filesystem, pathresolver, backup, partName, file, el, serial);
         this.includefactory = includefactory;
         this.securitymanager = securitymanager;
     }

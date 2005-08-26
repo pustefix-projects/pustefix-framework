@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractProject;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
@@ -43,6 +44,7 @@ import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
@@ -363,6 +365,27 @@ public class ProjectImpl extends AbstractProject {
                     .getRelative()));
         }
         return images;
+    }
+
+    public IncludePartThemeVariant findIncludePartThemeVariant(String file,
+            String part, String theme) {
+        AuxDependency auxdep = AuxDependencyFactory
+                .getInstance()
+                .getAuxDependency(DependencyType.TEXT,
+                        PathFactory.getInstance().createPath(file), part, theme);
+        if (this.tgen.getDependencyRefCounter().getAllDependencies().contains(
+                auxdep)) {
+            try {
+                return this.includefactory.getIncludePartThemeVariant(auxdep);
+            } catch (EditorParsingException e) {
+                String msg = "Failed to get include part " + part + ":" + theme
+                        + "@" + file + "!";
+                Logger.getLogger(this.getClass()).warn(msg, e);
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
 }

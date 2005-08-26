@@ -21,18 +21,17 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import javax.xml.transform.TransformerException;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludePart;
@@ -55,6 +54,8 @@ import de.schlund.pfixxml.util.XPath;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonIncludePartImpl extends AbstractIncludePart {
+    private final static String XML_THEME_TAG_NAME = "product";
+
     private IncludeFile file;
 
     private HashMap cache;
@@ -69,9 +70,16 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
 
     private BackupService backup;
 
+    private Node cacheXML = null;
+
+    private long cacheSerial = -1;
+
+    private long cacheXMLSerial = -1;
+
     public CommonIncludePartImpl(ThemeFactoryService themefactory,
             FileSystemService filesystem, PathResolverService pathresolver,
-            BackupService backup, String partName, IncludeFile file) {
+            BackupService backup, String partName, IncludeFile file,
+            Element el, long serial) {
         this.themefactory = themefactory;
         this.filesystem = filesystem;
         this.pathresolver = pathresolver;
@@ -79,6 +87,8 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
         this.name = partName;
         this.file = file;
         this.cache = new HashMap();
+        this.cacheXML = el;
+        this.cacheXMLSerial = serial;
     }
 
     /**
@@ -117,19 +127,29 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getContentXML()
      */
     public Node getContentXML() {
-        if (this.getIncludeFile().getContentXML() == null) {
-            return null;
-        }
-        Node parentXml = this.getIncludeFile().getContentXML()
-                .getDocumentElement();
-        try {
-            return XPath.selectNode(parentXml, "part[@name='" + this.getName()
-                    + "']");
-        } catch (TransformerException e) {
-            // This should never happen, so log error, and do like
-            // nothing happened
-            Logger.getLogger(this.getClass()).error("XPath error", e);
-            return null;
+        synchronized (this.cache) {
+            if (this.cacheXML != null
+                    && this.cacheXMLSerial == this.getIncludeFile().getSerial()) {
+                return this.cacheXML;
+            } else {
+                long newSerial = this.getIncludeFile().getSerial();
+                Document fileXml = this.getIncludeFile().getContentXML();
+                if (fileXml == null) {
+                    return null;
+                }
+                Node parentXml = fileXml.getDocumentElement();
+                try {
+                    this.cacheXML = XPath.selectNode(parentXml, "part[@name='"
+                            + this.getName() + "']");
+                } catch (TransformerException e) {
+                    // This should never happen, so log error, and do like
+                    // nothing happened
+                    Logger.getLogger(this.getClass()).error("XPath error", e);
+                    this.cacheXML = null;
+                }
+                this.cacheXMLSerial = newSerial;
+                return this.cacheXML;
+            }
         }
     }
 
@@ -140,25 +160,17 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
      */
     public IncludePartThemeVariant getThemeVariant(Theme theme) {
         synchronized (this.cache) {
-            if (!this.cache.containsKey(theme)) {
-                if (this.getContentXML() == null) {
+            if (this.cache.containsKey(theme)) {
+                return (IncludePartThemeVariant) this.cache.get(theme);
+            } else {
+                if (!this.hasThemeVariant(theme)) {
                     return null;
+                } else {
+                    IncludePartThemeVariant incPartVariant = createIncludePartThemeVariant(theme);
+                    this.cache.put(theme, incPartVariant);
+                    return incPartVariant;
                 }
-                try {
-                    if (!XPath.test(this.getContentXML(), "product[@name='"
-                            + theme.getName() + "']")) {
-                        return null;
-                    }
-                } catch (TransformerException e) {
-                    // Should NEVER happen
-                    // So if it does, assume variant for theme is not existing
-                    Logger.getLogger(this.getClass()).error("XPath error!", e);
-                    return null;
-                }
-                IncludePartThemeVariant incPartVariant = createIncludePartThemeVariant(theme);
-                this.cache.put(theme, incPartVariant);
             }
-            return (IncludePartThemeVariant) this.cache.get(theme);
         }
     }
 
@@ -168,36 +180,56 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariants()
      */
     public Collection getThemeVariants() {
-        List nlist;
-        if (this.getContentXML() == null) {
-            return new ArrayList();
+        synchronized (this.cache) {
+            this.refreshCache();
+            return new HashSet(this.cache.values());
         }
-        try {
-            nlist = XPath.select(this.getContentXML(), "product/@name");
-        } catch (TransformerException e) {
-            // This should never happen, so log error and do like
-            // nothing happened
-            Logger.getLogger(this.getClass()).error("XPath error", e);
-            return new ArrayList();
-        }
+    }
 
-        HashSet variants = new HashSet();
-        for (Iterator i = nlist.iterator(); i.hasNext();) {
-            String themeName = ((Node) i.next()).getNodeValue();
-            Theme theme = this.themefactory.getTheme(themeName);
-            variants.add(this.getThemeVariant(theme));
-        }
+    private void refreshCache() {
+        synchronized (this.cache) {
+            if (this.getIncludeFile().getSerial() == this.cacheSerial) {
+                return;
+            }
+            long newSerial = this.getIncludeFile().getSerial();
+            Node xml = this.getContentXML();
 
-        return variants;
+            // Reset cache
+            this.cache.clear();
+            if (xml == null) {
+                return;
+            }
+
+            NodeList nlist = xml.getChildNodes();
+            for (int i = 0; i < nlist.getLength(); i++) {
+                Node n = nlist.item(i);
+                if (n.getNodeType() == Node.ELEMENT_NODE
+                        && n.getNodeName().equals(XML_THEME_TAG_NAME)) {
+                    Element el = (Element) n;
+                    String themeName = el.getAttribute("name");
+                    if (themeName != null) {
+                        Theme theme = this.themefactory.getTheme(themeName);
+                        this.cache.put(theme, this
+                                .createIncludePartThemeVariant(theme));
+                    }
+                }
+            }
+            
+            this.cacheSerial = newSerial;
+        }
     }
 
     public IncludePartThemeVariant createThemeVariant(Theme theme) {
         synchronized (cache) {
-            if (!this.cache.containsKey(theme)) {
-                IncludePartThemeVariant variant = createIncludePartThemeVariant(theme);
+            IncludePartThemeVariant variant = (IncludePartThemeVariant) this.cache
+                    .get(theme);
+            if (variant != null) {
+                return variant;
+            } else {
+                variant = this.createIncludePartThemeVariant(theme);
                 this.cache.put(theme, variant);
+                return variant;
             }
-            return (IncludePartThemeVariant) this.cache.get(theme);
         }
     }
 

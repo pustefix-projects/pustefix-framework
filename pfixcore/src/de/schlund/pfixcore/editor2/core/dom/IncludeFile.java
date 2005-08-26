@@ -100,4 +100,13 @@ public interface IncludeFile extends Comparable {
      *         <code>null</code> if file is not yet existing.
      */
     Document getContentXML(boolean forceUpdate);
+
+    /**
+     * Returns a number that is incremented each time a changed version of this
+     * file is loaded. Please note that this serial is not persistent through
+     * restarts of the application.
+     * 
+     * @return Number identifying the current version
+     */
+    long getSerial();
 }

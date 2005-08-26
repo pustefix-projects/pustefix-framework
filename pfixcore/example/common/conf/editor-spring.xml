@@ -44,6 +44,7 @@
     <property name="imageFactoryService">
       <ref bean="imagefactory"/>
     </property>
+    <!-- Relative path to central projects configuration file -->
     <property name="projectsFilePath">
       <value>servletconf/projects.xml</value>
     </property>
@@ -205,7 +206,16 @@
   <bean id="session" class="de.schlund.pfixcore.editor2.core.spring.PustefixSessionServiceImpl">      
   </bean>
   
-  <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl">      
+  <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
+    <!-- Set to false to disable automatic target regeneration -->
+    <property name="enabled">
+      <value>true</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after startup, before
+         regeneration of any target is started                 -->
+    <property name="startupDelay">
+      <value>120000</value>
+    </property>
   </bean>
   
   <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">

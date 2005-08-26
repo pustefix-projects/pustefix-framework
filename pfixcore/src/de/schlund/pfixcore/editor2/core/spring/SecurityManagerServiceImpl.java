@@ -60,7 +60,7 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
     public boolean mayEditIncludePartThemeVariant(IncludePartThemeVariant part) {
         for (Iterator i = part.getAffectedPages().iterator(); i.hasNext();) {
             Page page = (Page) i.next();
-            if (!mayEditIncludePartForProject(page.getProject()))
+            if (page != null && !mayEditIncludePartForProject(page.getProject()))
                 return false;
         }
         return true;

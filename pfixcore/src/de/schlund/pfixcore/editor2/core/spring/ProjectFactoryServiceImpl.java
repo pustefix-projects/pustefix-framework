@@ -190,12 +190,14 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     }
 
     public Project getProjectByPustefixTargetGenerator(TargetGenerator tgen) {
+        this.checkInitialized();
         return this.getProjectByName((String) this.generatorToProjectNameMap
                 .get(tgen.getName()));
     }
 
     public Project getProjectByPustefixTargetGeneratorName(
             String targetGenerator) {
+        this.checkInitialized();
         return this.getProjectByName((String) this.generatorToProjectNameMap
                 .get(targetGenerator));
     }

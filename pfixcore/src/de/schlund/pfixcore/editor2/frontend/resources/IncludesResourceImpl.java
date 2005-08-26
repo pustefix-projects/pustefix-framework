@@ -45,18 +45,8 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
 
     protected IncludePartThemeVariant internalSelectIncludePart(
             Project project, String path, String part, String theme) {
-        IncludePartThemeVariant variant = null;
-        for (Iterator i = project.getAllIncludeParts().iterator(); i.hasNext();) {
-            IncludePartThemeVariant include = (IncludePartThemeVariant) i
-                    .next();
-            if (include.getIncludePart().getIncludeFile().getPath()
-                    .equals(path)
-                    && include.getIncludePart().getName().equals(part)
-                    && include.getTheme().getName().equals(theme)) {
-                variant = include;
-                break;
-            }
-        }
+        IncludePartThemeVariant variant = project.findIncludePartThemeVariant(
+                path, part, theme);
         return variant;
     }
 

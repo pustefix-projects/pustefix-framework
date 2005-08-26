@@ -18,6 +18,8 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
+import org.w3c.dom.Element;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
@@ -57,9 +59,9 @@ public class IncludeFileImpl extends CommonIncludeFileImpl {
         this.securitymanager = securitymanager;
     }
 
-    protected IncludePart createIncludePartInstance(String name) {
+    protected IncludePart createIncludePartInstance(String name, Element el, long serial) {
         return new IncludePartImpl(themefactory, includefactory, filesystem,
-                pathresolver, backup, securitymanager, name, this);
+                pathresolver, backup, securitymanager, name, this, el, serial);
     }
 
 }
