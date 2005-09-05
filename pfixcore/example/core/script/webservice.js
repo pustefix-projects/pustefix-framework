@@ -448,8 +448,9 @@ SOAP_SimpleSerializer.prototype.serialize=function(value,name,typeInfo,writer,ct
 }
 //deserialize(typeInfo,element)
 SOAP_SimpleSerializer.prototype.deserialize=function(typeInfo,element) {
-  if(!element.firstChild) return;
-  return element.firstChild.nodeValue;
+  var val="";
+  for(var i=0;i<element.childNodes.length;i++) val+=element.childNodes[i].nodeValue;
+  return val; 
 }
 
 
