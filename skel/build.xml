@@ -584,7 +584,7 @@ or delete the DOCTYPE definition -->
   <target name="apache_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/apache.conf from servletconf/projects.xml with core/build/create_apacheconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
-     outfile="${dir.projects}/servletconf/tomcat/apache.conf"
+     outfile="${dir.tomcat}/apache.conf"
      style="${dir.projects}/core/build/create_apacheconf.xsl"
      >
       <param name="docroot"   expression="${dir.docroot}"/>
@@ -598,7 +598,7 @@ or delete the DOCTYPE definition -->
   <target name="jk_conf" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/jk.conf from servletconf/projects.xml with core/build/create_jkconf.xsl">
     <pfx-xslt
      infile="${dir.projects}/servletconf/projects.xml"
-     outfile="${dir.projects}/servletconf/tomcat/jk.conf"
+     outfile="${dir.tomcat}/jk.conf"
      style="${dir.projects}/core/build/create_jkconf.xsl"
      >
       <param name="docroot"   expression="${dir.docroot}"/>
@@ -758,15 +758,19 @@ or delete the DOCTYPE definition -->
   <target name="clean-webservice">
     <delete dir="${dir.projects}/.webservice"/>
   </target>
-    
-  <target name="webapp" depends="ant-tasks">
+
+  <!-- all: depends on a readily built project -->
+  <target name="webapp" depends="all, webapp.dir, webapp.tomcat.opt"/>
+	
+  <target name="webapp.init" depends="ant-tasks">
     <fail unless="webapp.name" message="please provide property webapp.name"/> 
-    <!--<property name="webapp.name" value="sample1"/>-->
     <property name="engine.dir" location="${basedir}/dist/webapps"/>
     <property name="host.dir" location="${engine.dir}/${webapp.name}"/>
     <property name="webapp.dir" location="${host.dir}/xml"/>
-    
-    
+    <property name="webapp.tomcat.dir" location="${basedir}/dist/tomcat"/>
+  </target>    
+
+  <target name="webapp.dir" depends="webapp.init">
     <delete dir="${host.dir}"/>
     <mkdir dir="${host.dir}"/> 
     <mkdir dir="${webapp.dir}"/> 
@@ -781,11 +785,7 @@ or delete the DOCTYPE definition -->
         <fileset dir="${dir.build}">
         </fileset>
     </copy>
-   <!-- 
-    <exec executable="sh">
-      <arg line="-c &quot;ln -s ${dir.build} ${webapp.dir}/WEB-INF/classes&quot;"/>
-    </exec>
-    -->
+
     <xslt style="${dir.projects}/core/build/create_webapp_projectsxml.xsl" in="${dir.projects}/servletconf/projects.xml"
      out="${webapp.dir}/projects.xml">
         <param name="projectname"  expression="${webapp.name}"/>    
@@ -800,7 +800,6 @@ or delete the DOCTYPE definition -->
         </fileset>    
     </copy>
    
-    
     <pfx-webxml
       style="${dir.projects}/core/build/create_webxml.xsl"
       srcdir="${webapp.dir}"
@@ -818,28 +817,37 @@ or delete the DOCTYPE definition -->
     <move todir="${webapp.dir}/WEB-INF" file="${host.dir}/WEB-INF/web.xml"/>
     <delete dir="${host.dir}/WEB-INF/"/>
    
-    
-    <antcall target="prepare-tomcatng"/>
-
     <antcall target="-webapp.context">
       <param name="file" value="${host.dir}/context-main.xml"/>   
       <param name="path" value="/xml"/>
       <param name="docbase" value="."/>
     </antcall>   
-
   </target>
  
   <target name="-webapp.context">
   </target>
     
-  <target name="prepare-tomcatng">
-    <property name="tomcatng.dir" location="${basedir}/dist/tomcat"/>
+  <target name="webapp.tomcat.opt" depends="webapp.init" >
+    <available file="${webapp.tomcat.dir}/bin/catalina.sh" type="file" property="webapp.tomcat.exists" />
+    <antcall target="webapp.tomcat.missing"/>
+  </target>
+  <target name="webapp.tomcat.missing" unless="webapp.tomcat.exists">
+    <antcall target="webapp.tomcat"/>
+  </target>
+
+  <target name="webapp.tomcat" depends="webapp.init">
     <antcall target="tomcat.dir">
-      <param name="dir.tomcat" value="${tomcatng.dir}"/>
+      <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
+    </antcall> 
+    <antcall target="apache_conf">
+      <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
+    </antcall> 
+    <antcall target="jk_conf">
+      <param name="dir.tomcat" value="${webapp.tomcat.dir}"/>
     </antcall> 
     <pfx-xslt
      infile="${webapp.dir}/projects.xml"
-     outfile="${tomcatng.dir}/conf/server.xml"
+     outfile="${webapp.tomcat.dir}/conf/server.xml"
      style="${dir.projects}/core/build/create_webapp_serverxml.xsl"
      >
       <param name="docroot"   expression="${engine.dir}"/>
@@ -852,10 +860,9 @@ or delete the DOCTYPE definition -->
       <param name="portbase"   expression="${portbase.tomcat}"/>
     </pfx-xslt>
    
-   
     <apply executable="chmod" os="Linux">
       <arg line="a+x"/>
-      <fileset dir="${tomcatng.dir}" includes="**/*.sh"/>
+      <fileset dir="${webapp.tomcat.dir}" includes="**/*.sh"/>
     </apply>
     
   </target>   
