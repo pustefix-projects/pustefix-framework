@@ -142,6 +142,14 @@ public interface IncludePartThemeVariant extends Comparable {
     Collection getAffectedPages();
 
     /**
+     * Returns projects which are using this IncludePart. These are all projects
+     * which contain at least one page returned by {@link #getAffectedPages()}.
+     * 
+     * @return All projects using this IncludePart
+     */
+    Collection getAffectedProjects();
+
+    /**
      * Returns the MD5 checksum of the serialized XML code. This checksum can
      * for example be used to check, whether the include part has been changed.
      * If the part does not yet have any content, the special string "0" is

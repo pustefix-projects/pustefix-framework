@@ -85,4 +85,8 @@ public class DynIncludePartThemeVariantImpl extends
         return new ArrayList();
     }
 
+    public Collection getAffectedProjects() {
+        return new ArrayList();
+    }
+
 }

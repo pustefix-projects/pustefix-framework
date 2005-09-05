@@ -48,6 +48,7 @@ import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.Themes;
 
 /**
@@ -241,5 +242,17 @@ public class IncludePartThemeVariantImpl extends
     protected void securityCheckEditIncludePartThemeVariant()
             throws EditorSecurityException {
         this.securitymanager.checkEditIncludePartThemeVariant(this);
+    }
+
+    public Collection getAffectedProjects() {
+        HashSet projects = new HashSet();
+        for (Iterator i = this.getAuxDependency().getAffectedTargetGenerators().iterator(); i.hasNext();) {
+            TargetGenerator tgen = (TargetGenerator) i.next();
+            Project project = this.projectfactory.getProjectByPustefixTargetGenerator(tgen);
+            if (project != null) {
+                projects.add(project);
+            }
+        }
+        return projects;
     }
 }
