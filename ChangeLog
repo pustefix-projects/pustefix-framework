@@ -1,3 +1,9 @@
+2005-09-05  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/script/webservice.js: SimpleSerializer now iterates over all element child nodes and 
+	concats the node values to a single one (necessary cause Firefox splits strings > 4096 and inserts
+	multiple DOM nodes).
+
 2005-09-05  Michael Hartmeier  <mhm@schlund.de>
 
 	* skel/build.xml: polish webapp target
