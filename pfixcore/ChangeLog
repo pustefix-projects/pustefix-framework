@@ -1,3 +1,7 @@
+2005-09-05  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: polish webapp target
+
 2005-08-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument): append timing info for getDom and handleDocument
