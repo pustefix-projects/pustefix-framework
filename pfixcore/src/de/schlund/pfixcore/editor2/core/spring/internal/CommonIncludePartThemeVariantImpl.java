@@ -280,6 +280,8 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 Page page = (Page) i.next();
                 page.registerForUpdate();
             }
+            
+            // TODO Schuppi: Suche einbauen
         }
     }
 
