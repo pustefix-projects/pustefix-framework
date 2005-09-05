@@ -588,10 +588,6 @@
         <name>pfx:option</name>
         <description>option tag</description>        
       </children>
-      <children>
-        <name>pfx:dynoptions</name>
-        <description>option tags given via the result tree</description>        
-      </children>
       <example>
         <input>
           <xmlcode>
@@ -640,11 +636,6 @@
     </option>
     <cus:documentation>
       <description>Creates an "option" formelement.</description>
-      <param required="0">
-        <name>name</name>
-        <values><string/></values>
-        <description>name attribute of the option</description>
-      </param>
       <param required="0">
         <name>value</name>
         <values><string/></values>
