@@ -229,5 +229,14 @@
       <ref bean="securitymanager"/>
     </property>
   </bean>
+	
+<bean id="lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
+	<property name="queueIdle">
+		<value>1000</value>
+	</property>	  
+	<property name="reAdjustIdle">
+		<value>10000</value>
+	</property>	  
+</bean>
 					
 </beans>
