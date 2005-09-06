@@ -148,6 +148,7 @@
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
       <resource node="includes" class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
+		  <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
     </output>
   </pagerequest>
   
