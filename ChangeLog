@@ -1,3 +1,8 @@
+2005-09-06  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java, ./example/core/build/create_webapp_projectsxml.xsl:
+        Remove docroot parameter for true webapps, FactoryInit uses webapp's docroot.
+
 2005-09-05  Martin Leidig  <mleidig@schlund.de>
 
 	* example/core/script/webservice.js: SimpleSerializer now iterates over all element child nodes and 
