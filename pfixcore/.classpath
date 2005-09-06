@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="lib/axis-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis-ant-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-1.4.3.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
