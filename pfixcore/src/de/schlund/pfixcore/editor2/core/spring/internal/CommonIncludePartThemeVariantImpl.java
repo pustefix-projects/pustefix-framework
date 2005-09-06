@@ -44,6 +44,9 @@ import de.schlund.pfixcore.editor2.core.spring.BackupService;
 import de.schlund.pfixcore.editor2.core.spring.ConfigurationService;
 import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
+import de.schlund.pfixcore.lucefix.PfixQueueManager;
+import de.schlund.pfixcore.lucefix.Tripel;
+import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -281,7 +284,11 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 page.registerForUpdate();
             }
             
-            // TODO Schuppi: Suche einbauen
+            try {
+                PfixQueueManager.getInstance(null).queue(new Tripel(getTheme().getName(), getIncludePart().getName(),getIncludePart().getIncludeFile().getPath(),Tripel.Type.EDITORUPDATE));
+            } catch (XMLException e) {
+                Logger.getLogger(this.getClass()).error("error queueing tripel " + getIncludePart().getIncludeFile().getPath() + "|" + getIncludePart().getName() + "|" + getTheme().getName());
+            }
         }
     }
 
