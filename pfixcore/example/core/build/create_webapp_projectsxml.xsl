@@ -33,6 +33,6 @@
   </xsl:template>
   
   
-  <xsl:template match="/projects/project/servlet/init-param[param-name/text() = 'pustefix.docroot']/param-value/text()"><xsl:value-of select="$docroot"/></xsl:template>
+  <xsl:template match="/projects/project/servlet/init-param[param-name/text() = 'pustefix.docroot']"><!-- no docroot specified in true webapps --></xsl:template>
   
 </xsl:transform>
