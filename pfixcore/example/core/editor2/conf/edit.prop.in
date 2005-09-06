@@ -35,6 +35,9 @@
     </resource>
 		<resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
+	  <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
+		  <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+	  </resource>
   </context>
   
   <pageflow name="EditorFlow">
@@ -160,6 +163,16 @@
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
       <resource node="dynincludes" class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
     </output>
+  </pagerequest>
+	
+  <pagerequest name="search">
+	  <state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
+	  <input>
+		  <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
+	  </input>
+	  <output>
+		  <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+	  </output>
   </pagerequest>
     
   <pagerequest name="logout">
