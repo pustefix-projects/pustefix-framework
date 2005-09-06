@@ -368,6 +368,7 @@ or delete the DOCTYPE definition -->
 
   <target name="realclean" depends="clean, clean-jni, realclean-core">
     <delete dir="${dir.projects}/.cache"/>
+    <delete dir="${dir.projects}/.index"/>
     <delete dir="${dir.tomcat}"/>
   </target>
 
