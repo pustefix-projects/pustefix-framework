@@ -109,7 +109,7 @@
                 <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
                 <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@product"/></pfx:argument>
                 <pfx:command name="SELWRP">selectinclude</pfx:command>
-		<pfx:command name="SELWRP">upload</pfx:command>
+				<pfx:command name="SELWRP">upload</pfx:command>
               </pfx:button>
               <br/>
             </ixsl:for-each>
