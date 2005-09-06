@@ -46,6 +46,7 @@
         <prop name="apploader.package.include.1">de.schlund.pfixcore.example</prop>
         <prop name="apploader.package.include.2">de.schlund.pfixcore.editor</prop>
         <prop name="apploader.package.include.3">de.skelexamples</prop>
+		<prop name="apploaded.package.include.4">de.schlund.pfixcore.lucefix</prop>
         
         <!--add packages which shouldn't be reloadable (even though their parent packages are)-->
         <!--<prop name="apploader.package.exclude.1">de.schlund.pfixcore.example.foo</prop>-->
