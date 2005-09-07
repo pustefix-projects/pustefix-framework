@@ -176,9 +176,12 @@ public class PfixQueueManager implements Runnable {
             size = Math.abs(size);
             stopLoop = System.currentTimeMillis();
             long needed = stopLoop - startLoop;
-            // if (needed > 10)
-            LOG.debug(needed + "ms | " + added + " new docs, " + updated + " updated docs, " + removed
-                    + " deleted docs | indexsize: " + (size));
+            if (added != 0 || updated != 0 || removed != 0) {
+                LOG.debug(needed + "ms | " + added + " new docs, " + updated + " updated docs, " + removed
+                        + " deleted docs | indexsize: " + (size) + " | cacheratio: " + cache.getFound() + "/"
+                        + cache.getMissed());
+            }
+            cache.resetStatistic();
 
             try {
                 Thread.sleep(waitms);

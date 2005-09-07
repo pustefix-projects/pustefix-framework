@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.apache.log4j.Category;
 import org.apache.lucene.document.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -45,6 +46,7 @@ import de.schlund.pfixxml.PathFactory;
  */
 public class DocumentCache {
     private Map cache;
+    private static Category LOG = Category.getInstance(DocumentCache.class);
 
     public DocumentCache() {
         cache = new Hashtable();
@@ -56,8 +58,12 @@ public class DocumentCache {
 
     public Document getDocument(String path, Type type) throws FileNotFoundException, IOException, SAXException {
         // look in cache
+//        LOG.debug("looking for " + path);
         Document retval = lookup(path);
-        if (retval == null) {
+        if (retval != null) {
+            found++;
+        }else{
+            missed++;
             String filename = stripAddition(path);
             // file was not scanned
             flush(); 
@@ -125,4 +131,19 @@ public class DocumentCache {
         }
         return handler.getScannedDocumentsAsVector();
     }
+    
+    // statistic stuff
+    private int found = 0, missed = 0;
+    protected void resetStatistic(){
+        found = missed = 0;
+    }
+
+    protected int getFound() {
+        return found;
+    }
+
+    protected int getMissed() {
+        return missed;
+    }
+    
 }
