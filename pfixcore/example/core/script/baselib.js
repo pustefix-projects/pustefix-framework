@@ -33,7 +33,7 @@ __js_png.hasActiveX = function()
   return e != null;
 };
 
-if (document.all && navigator.platform == "Win32" && !window.opera && typeof document.body.style.filter != "undefined" && __js_png.hasActiveX())
+if (document.all && navigator.platform == "Win32" && /MSIE (5\.5)|[6789]/.test(navigator.userAgent) && !window.opera && typeof document.body.style.filter != "undefined" && __js_png.hasActiveX())
 {
   __js_png.fix = function()
   {
