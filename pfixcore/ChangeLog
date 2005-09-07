@@ -1,3 +1,8 @@
+2005-09-07  Sebastian Werner  <sw@schlund.de>
+
+	* example/core/xsl/include.xsl.in, example/core/script/baselib.js:
+	Added alpha transparency support for mshtml <=6
+
 2005-09-06  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java, ./example/core/build/create_webapp_projectsxml.xsl:
