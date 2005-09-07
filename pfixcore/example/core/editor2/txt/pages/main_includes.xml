@@ -98,6 +98,11 @@
     <product name="default">
       <lang name="default">
 		<ixsl:if test="count(/formresult/lucefix/hit) &gt; 0">
+			<div class="editor_includes_sidebar_content">
+			<div class="editor_includes_sidebar_directory">
+					<div class="editor_includes_sidebar_directory_title">
+						<b>Last Search:</b>
+					</div>
 			<ixsl:for-each select="/formresult/lucefix/hit">
 				<pfx:button>
 					<ixsl:value-of select="@filename"/>/<ixsl:value-of select="@part"/>/<ixsl:value-of select="@product"/>
@@ -108,6 +113,7 @@
 					<pfx:command name="SELWRP">upload</pfx:command>
 				</pfx:button><br/>
 			</ixsl:for-each>
+            </div></div>
 		</ixsl:if>
         <ixsl:for-each select="/formresult/includes">
           <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>

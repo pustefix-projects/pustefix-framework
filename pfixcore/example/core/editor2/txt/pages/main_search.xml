@@ -60,11 +60,11 @@
                      <td nowrap="nowrap"><pfx:xinp name="lucefix.Tags" type="text"/></td>
                     </tr>
                     <tr>
-                      <td><b><pfx:label name="lucefix.Attribkeys">Attribkeys:</pfx:label></b></td>
+                      <td><b><pfx:label name="lucefix.Attribkeys">Attributekeys:</pfx:label></b></td>
                      <td nowrap="nowrap"><pfx:xinp name="lucefix.Attribkeys" type="text"/></td>
                     </tr>
                     <tr>
-                      <td><b><pfx:label name="lucefix.Attribvalues">Attribvalues:</pfx:label></b></td>
+                      <td><b><pfx:label name="lucefix.Attribvalues">Attributevalues:</pfx:label></b></td>
                      <td nowrap="nowrap"><pfx:xinp name="lucefix.Attribvalues" type="text"/></td>
                     </tr></table>
 <!--            </pfx:layer> -->
@@ -102,15 +102,14 @@
                     <td>
             matches for <ixsl:value-of select="/formresult/lucefix/@lastQuery"/>:<br/>
             <ixsl:for-each select="/formresult/lucefix/hit">
-              <ixsl:value-of select="@path"/> - score: <ixsl:value-of select="@score"/> - 
               <pfx:button page="includes">
-                link
+                <ixsl:value-of select="@path"/>
                 <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@filename"/></pfx:argument>
                 <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
                 <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@product"/></pfx:argument>
                 <pfx:command name="SELWRP">selectinclude</pfx:command>
 				<pfx:command name="SELWRP">upload</pfx:command>
-              </pfx:button>
+              </pfx:button> - score: <ixsl:value-of select="@score"/>
               <br/>
             </ixsl:for-each>
                     </td>
