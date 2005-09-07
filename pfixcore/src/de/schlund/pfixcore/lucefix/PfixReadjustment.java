@@ -21,12 +21,17 @@ package de.schlund.pfixcore.lucefix;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.apache.log4j.Category;
 import org.apache.lucene.document.DateField;
@@ -89,6 +94,8 @@ public class PfixReadjustment implements Runnable {
             indexSize = newDocs = knownDocsSize = deleteDocs = numDocs = 0;
 
             startLoop = System.currentTimeMillis();
+            List<Tripel> tripelsToIndex = new Vector<Tripel>();
+            
             try {
                 jobDone = false;
                 try {
@@ -113,7 +120,8 @@ public class PfixReadjustment implements Runnable {
                         Tripel element = (Tripel) iter.next();
                         element.setType(Tripel.Type.INSERT);
                         newDocs++;
-                        queue.queue(element);
+                        tripelsToIndex.add(element);
+//                        queue.queue(element);
                     }
                     jobDone = true;
                 }
@@ -149,7 +157,8 @@ public class PfixReadjustment implements Runnable {
                                 // ts differs
                                 pfixTripel.setType(Tripel.Type.INSERT);
                                 newDocs++;
-                                queue.queue(pfixTripel);
+                                tripelsToIndex.add(pfixTripel);
+//                                queue.queue(pfixTripel);                                
                             }
                         } else {
                             // part not needed anymore
@@ -169,8 +178,15 @@ public class PfixReadjustment implements Runnable {
                         element.setType(Tripel.Type.INSERT);
                         // LOG.debug("adding " + element + " to queue (INDEX)");
                         newDocs++;
-                        queue.queue(element);
+                        tripelsToIndex.add(element);
+//                        queue.queue(element);
                     }
+                    
+                    Collections.sort(tripelsToIndex);
+                    for (Tripel tripel : tripelsToIndex) {
+                        queue.queue(tripel);
+                    }
+                    
                     stopAddLoop = System.currentTimeMillis();
                 }
             } catch (XMLException e) {
