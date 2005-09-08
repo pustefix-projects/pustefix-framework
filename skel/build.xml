@@ -821,7 +821,11 @@ or delete the DOCTYPE definition -->
       <param name="file" value="${host.dir}/context-main.xml"/>   
       <param name="path" value="/xml"/>
       <param name="docbase" value="."/>
-    </antcall>   
+    </antcall>
+  	
+  	<war destfile="${webapp.dir}/../../xml.war" webxml="${webapp.dir}/WEB-INF/web.xml">
+  		<fileset dir="${webapp.dir}"/>
+  	</war>
   </target>
  
   <target name="-webapp.context">

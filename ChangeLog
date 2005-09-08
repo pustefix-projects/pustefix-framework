@@ -1,3 +1,7 @@
+2005-09-06  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: webapp target builds war file
+
 2005-09-07  Sebastian Werner  <sw@schlund.de>
 
 	* example/core/xsl/include.xsl.in, example/core/script/baselib.js:
