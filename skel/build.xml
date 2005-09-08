@@ -797,6 +797,10 @@ or delete the DOCTYPE definition -->
             <include name="common/**"/>
             <include name="${webapp.name}/**"/>
             <include name=".cache/${webapp.name}/**"/>
+
+            <!-- ralf's "new project" tool is excluded because it contains absolute paths -->
+            <exclude name="common/conf/newprjlog.xml*"/>
+            <exclude name="common/conf/newproject.prop*"/>
         </fileset>    
     </copy>
    
