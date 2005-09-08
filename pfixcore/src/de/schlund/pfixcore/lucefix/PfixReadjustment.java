@@ -89,125 +89,148 @@ public class PfixReadjustment implements Runnable {
             try {
                 Thread.sleep(waitms);
             } catch (InterruptedException e) {}
-
-            startLoop = stopLoop = startCollect = stopCollect = startIndexLoop = stopIndexLoop = startAddLoop = stopAddLoop = 0;
-            indexSize = newDocs = knownDocsSize = deleteDocs = numDocs = 0;
-
-            startLoop = System.currentTimeMillis();
-            List<Tripel> tripelsToIndex = new Vector<Tripel>();
             
-            try {
-                jobDone = false;
-                try {
-                    startCollect = System.currentTimeMillis();
-                    partsKnownByPustefix = getUsedTripels();
-                    stopCollect = System.currentTimeMillis();
-                    collectTime = stopCollect - startCollect;
-                    knownDocsSize = partsKnownByPustefix.size();
-                } catch (Exception e1) {
-                    LOG.error("error while getting known tripels", e1);
-                    e1.printStackTrace();
-                    continue;
-                }
+            synchronized (PfixQueueManager.getInstance(null).mutex) {
+                // prevents PfixReadjustment to feed the queue while
+                // PfixQueuemanager is still working
+
+                startLoop = stopLoop = startCollect = stopCollect = startIndexLoop = stopIndexLoop = startAddLoop = stopAddLoop = 0;
+                indexSize = newDocs = knownDocsSize = deleteDocs = numDocs = 0;
+
+                startLoop = System.currentTimeMillis();
+                List<Tripel> tripelsToIndex = new Vector<Tripel>();
 
                 queue = PfixQueueManager.getInstance(null);
                 try {
-                    reader = IndexReader.open(LUCENE_DATA);
-                } catch (IOException ioe) {
-                    LOG.warn("broken or nonexistant database -> will queue ALL known parts");
-
-                    for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
-                        Tripel element = (Tripel) iter.next();
-                        element.setType(Tripel.Type.INSERT);
-                        newDocs++;
-                        tripelsToIndex.add(element);
-//                        queue.queue(element);
+                    jobDone = false;
+                    try {
+                        startCollect = System.currentTimeMillis();
+                        partsKnownByPustefix = getUsedTripels();
+                        stopCollect = System.currentTimeMillis();
+                        collectTime = stopCollect - startCollect;
+                        knownDocsSize = partsKnownByPustefix.size();
+                    } catch (Exception e1) {
+                        LOG.error("error while getting known tripels", e1);
+                        e1.printStackTrace();
+                        continue;
                     }
-                    jobDone = true;
-                }
-                if (!jobDone) {
-                    numDocs = reader.numDocs();
-                    startIndexLoop = System.currentTimeMillis();
-                    docloop: for (int i = 0; i < numDocs; i++) {
-                        Document currentdoc;
-                        try {
-                            currentdoc = reader.document(i);
-                        } catch (RuntimeException e) {
-                            // this happens if we want to access a deleted
-                            // document -> continue
-                            continue docloop;
-                        }
 
-                        // check if needed
-                        String path = currentdoc.get(PreDoc.PATH);
-                        Tripel pfixTripel = null;
-                        loop: for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
+                    try {
+                        reader = IndexReader.open(LUCENE_DATA);
+                    } catch (IOException ioe) {
+                        LOG
+                                .warn("broken or nonexistant database -> will queue ALL known parts");
+
+                        for (Iterator iter = partsKnownByPustefix.iterator(); iter
+                                .hasNext();) {
                             Tripel element = (Tripel) iter.next();
-                            if (element.getPath().equals(path)) {
-                                pfixTripel = element;
-                                break loop;
+                            element.setType(Tripel.Type.INSERT);
+                            newDocs++;
+                            tripelsToIndex.add(element);
+                            // queue.queue(element);
+                        }
+                        jobDone = true;
+                    }
+                    if (!jobDone) {
+                        numDocs = reader.numDocs();
+                        startIndexLoop = System.currentTimeMillis();
+                        docloop: for (int i = 0; i < numDocs; i++) {
+                            Document currentdoc;
+                            try {
+                                currentdoc = reader.document(i);
+                            } catch (RuntimeException e) {
+                                // this happens if we want to access a deleted
+                                // document -> continue
+                                continue docloop;
                             }
+
+                            // check if needed
+                            String path = currentdoc.get(PreDoc.PATH);
+                            Tripel pfixTripel = null;
+                            loop: for (Iterator iter = partsKnownByPustefix
+                                    .iterator(); iter.hasNext();) {
+                                Tripel element = (Tripel) iter.next();
+                                if (element.getPath().equals(path)) {
+                                    pfixTripel = element;
+                                    break loop;
+                                }
+                            }
+
+                            if (pfixTripel != null) {
+                                // checkTs
+                                File f = PathFactory.getInstance().createPath(
+                                        currentdoc.get(PreDoc.FILENAME))
+                                        .resolve();
+
+                                if (f.lastModified() != DateField
+                                        .stringToTime(currentdoc
+                                                .get(PreDoc.LASTTOUCH))) {
+                                    // ts differs
+                                    pfixTripel.setType(Tripel.Type.INSERT);
+                                    newDocs++;
+                                    tripelsToIndex.add(pfixTripel);
+                                    // queue.queue(pfixTripel);
+                                }
+                            } else {
+                                // part not needed anymore
+                                Tripel newTripel = new Tripel(currentdoc
+                                        .get(PreDoc.PATH), Tripel.Type.DELETE);
+                                deleteDocs++;
+                                queue.queue(newTripel);
+                            }
+                            partsKnownByPustefix.remove(pfixTripel);
+                        }
+                        stopIndexLoop = System.currentTimeMillis();
+
+                        // now partsKnownByPustefix only contains parts which
+                        // are
+                        // NOT indexed...
+                        startAddLoop = System.currentTimeMillis();
+                        for (Iterator iter = partsKnownByPustefix.iterator(); iter
+                                .hasNext();) {
+                            Tripel element = (Tripel) iter.next();
+                            element.setType(Tripel.Type.INSERT);
+                            // LOG.debug("adding " + element + " to queue
+                            // (INDEX)");
+                            newDocs++;
+                            tripelsToIndex.add(element);
+                            // queue.queue(element);
                         }
 
-                        if (pfixTripel != null) {
-                            // checkTs
-                            File f = PathFactory.getInstance().createPath(currentdoc.get(PreDoc.FILENAME)).resolve();
-
-                            if (f.lastModified() != DateField.stringToTime(currentdoc.get(PreDoc.LASTTOUCH))) {
-                                // ts differs
-                                pfixTripel.setType(Tripel.Type.INSERT);
-                                newDocs++;
-                                tripelsToIndex.add(pfixTripel);
-//                                queue.queue(pfixTripel);                                
-                            }
-                        } else {
-                            // part not needed anymore
-                            Tripel newTripel = new Tripel(currentdoc.get(PreDoc.PATH), Tripel.Type.DELETE);
-                            deleteDocs++;
-                            queue.queue(newTripel);
-                        }
-                        partsKnownByPustefix.remove(pfixTripel);
+                        stopAddLoop = System.currentTimeMillis();
                     }
-                    stopIndexLoop = System.currentTimeMillis();
-
-                    // now partsKnownByPustefix only contains parts which are
-                    // NOT indexed...
-                    startAddLoop = System.currentTimeMillis();
-                    for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
-                        Tripel element = (Tripel) iter.next();
-                        element.setType(Tripel.Type.INSERT);
-                        // LOG.debug("adding " + element + " to queue (INDEX)");
-                        newDocs++;
-                        tripelsToIndex.add(element);
-//                        queue.queue(element);
-                    }
-                    
-                    Collections.sort(tripelsToIndex);
-                    for (Tripel tripel : tripelsToIndex) {
-                        queue.queue(tripel);
-                    }
-                    
-                    stopAddLoop = System.currentTimeMillis();
+                } catch (IOException ioe) {
+                    LOG.fatal("error reading index", ioe);
                 }
-            } catch (XMLException e) {
-                LOG.error("xmlexception in " + this.getClass().getName(), e);
-            } catch (IOException ioe) {
-                LOG.fatal("error reading index", ioe);
-            }
-            stopLoop = System.currentTimeMillis();
-            long needed = stopLoop - startLoop;
-            // if (needed > 10)
-            LOG.debug(needed + "ms (getUsedTripels(): " + collectTime + "ms (" + knownDocsSize + "u) indexloop: "
-                    + (stopIndexLoop - startIndexLoop) + "|" + (stopAddLoop - startAddLoop) + "ms (" + numDocs
-                    + "u), added " + newDocs + "+" + deleteDocs + " queueitems");
+                
 
-            try {
-                if (reader != null) {
-                    reader.close();
-                    reader = null;
+                Collections.sort(tripelsToIndex);
+                for (Tripel tripel : tripelsToIndex) {
+                    queue.queue(tripel);
                 }
-            } catch (IOException e) {
-                LOG.error("error while closing reader", e);
+
+                
+                
+                stopLoop = System.currentTimeMillis();
+                long needed = stopLoop - startLoop;
+                if (newDocs != 0 || deleteDocs != 0) {
+                    LOG.debug(needed + "ms (getUsedTripels(): " + collectTime
+                            + "ms (" + knownDocsSize + "u) indexloop: "
+                            + (stopIndexLoop - startIndexLoop) + "|"
+                            + (stopAddLoop - startAddLoop) + "ms (" + numDocs
+                            + "u), added " + newDocs + "+" + deleteDocs
+                            + " queueitems");
+                }
+
+                try {
+                    if (reader != null) {
+                        reader.close();
+                        reader = null;
+                    }
+                } catch (IOException e) {
+                    LOG.error("error while closing reader", e);
+                }
+
             }
         }
     }
