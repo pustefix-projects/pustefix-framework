@@ -235,7 +235,7 @@
 		<value>1000</value>
 	</property>	  
 	<property name="reAdjustIdle">
-		<value>10000</value>
+		<value>300000</value>
 	</property>	  
 </bean>
 					
