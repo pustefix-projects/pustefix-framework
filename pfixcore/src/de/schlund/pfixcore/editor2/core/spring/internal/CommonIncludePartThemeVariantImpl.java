@@ -284,11 +284,8 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 page.registerForUpdate();
             }
             
-            try {
-                PfixQueueManager.getInstance(null).queue(new Tripel(getTheme().getName(), getIncludePart().getName(),getIncludePart().getIncludeFile().getPath(),Tripel.Type.EDITORUPDATE));
-            } catch (XMLException e) {
-                Logger.getLogger(this.getClass()).error("error queueing tripel " + getIncludePart().getIncludeFile().getPath() + "|" + getIncludePart().getName() + "|" + getTheme().getName());
-            }
+            PfixQueueManager.getInstance(null).queue(new Tripel(getTheme().getName(), getIncludePart().getName(),getIncludePart().getIncludeFile().getPath(),Tripel.Type.EDITORUPDATE));
+           
         }
     }
 
