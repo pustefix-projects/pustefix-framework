@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.Vector;
 
 import org.apache.log4j.Category;
@@ -39,6 +41,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.lucefix.Tripel.Type;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.XMLException;
 
@@ -56,7 +59,8 @@ public class PfixQueueManager implements Runnable {
 
     public static String lucene_data_path;
 
-    private Queue queue = null;
+//    private Queue queue = null;
+    private Queue<Tripel> queue = new LinkedList<Tripel>();
 
     private DocumentCache cache = null;
 
@@ -66,7 +70,7 @@ public class PfixQueueManager implements Runnable {
 
     private IndexWriter writer = null;
 
-    private Collection documents2write = null;
+    private Collection<Document> documents2write = null;
 
     private int waitms = -1;
 
@@ -84,8 +88,8 @@ public class PfixQueueManager implements Runnable {
         lucene_data_path = PathFactory.getInstance().createPath(".index")
                 .resolve().getAbsolutePath();
 
-        queue = new Queue();
-        documents2write = new Vector();
+//        queue = new Queue();
+        documents2write = new Vector<Document>();
     }
 
     /*
@@ -101,7 +105,7 @@ public class PfixQueueManager implements Runnable {
 
                 startLoop = System.currentTimeMillis();
                 added = updated = removed = size = 0;
-                while ((current = queue.next()) != null) {
+                queueloop: while ((current = queue.poll()) != null) {
                     try {
                         if (current.getType() == Tripel.Type.INSERT
                                 || current.getType() == Tripel.Type.EDITORUPDATE) {
@@ -124,11 +128,8 @@ public class PfixQueueManager implements Runnable {
                                 // current queued is NOT indexed
                                 Document newdoc = cache.getDocument(current);
                                 if (newdoc == null) {
-                                    LOG
-                                            .warn("wanted to work on "
-                                                    + current
-                                                    + " but there is no part for it...");
-                                    break;
+//                                    LOG.debug("wanted to work on " + current + " but there is no part for it...");
+                                    continue queueloop;
                                 }
                                 documents2write.add(newdoc);
                                 added++;
@@ -140,9 +141,10 @@ public class PfixQueueManager implements Runnable {
                                 // File f = new File(current.getPath());
                                 if (f.lastModified() == DateField
                                         .stringToTime(hits.doc(0).get(
-                                                "lasttouch")))
+                                                "lasttouch"))){
                                     cache.remove(hits.doc(0));
-                                else {
+                                    LOG.debug("TS is ok, discarding action: " + term);
+                                } else {
                                     // ts differs, remove outdaten from index
                                     // and
                                     // add the new
@@ -153,6 +155,8 @@ public class PfixQueueManager implements Runnable {
                                     reader.delete(term);
                                     updated++;
                                 }
+                            } else {
+                                LOG.error("multihit for unique term: " + term);
                             }
                         } else if (current.getType() == Tripel.Type.DELETE) {
                             if (reader == null)
@@ -183,11 +187,9 @@ public class PfixQueueManager implements Runnable {
                         if (writer == null)
                             writer = new IndexWriter(lucene_data_path,
                                     analyzer, false);
-                        for (Iterator iter = documents2write.iterator(); iter
-                                .hasNext();) {
-                            Document element = (Document) iter.next();
-                            if (element != null)
-                                writer.addDocument(element);
+                        
+                        for (Document doc : documents2write) {
+                            writer.addDocument(doc);
                         }
                         writer.optimize();
                         writer.close();
@@ -248,7 +250,7 @@ public class PfixQueueManager implements Runnable {
 
     public void queue(Tripel newTripel) {
         synchronized (queue) {
-            queue.add(newTripel);
+            queue.offer(newTripel);
         }
     }
 }

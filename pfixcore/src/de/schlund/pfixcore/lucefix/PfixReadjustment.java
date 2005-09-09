@@ -83,7 +83,7 @@ public class PfixReadjustment implements Runnable {
 
         long collectTime = 0;
 
-        int indexSize, knownDocsSize, newDocs, deleteDocs, numDocs;
+        int knownDocsSize, newDocs, deleteDocs, numDocs;
 
         while (true) {
             try {
@@ -95,10 +95,10 @@ public class PfixReadjustment implements Runnable {
                 // PfixQueuemanager is still working
 
                 startLoop = stopLoop = startCollect = stopCollect = startIndexLoop = stopIndexLoop = startAddLoop = stopAddLoop = 0;
-                indexSize = newDocs = knownDocsSize = deleteDocs = numDocs = 0;
+                newDocs = knownDocsSize = deleteDocs = numDocs = 0;
 
                 startLoop = System.currentTimeMillis();
-                List<Tripel> tripelsToIndex = new Vector<Tripel>();
+                Set<Tripel> tripelsToIndex = new TreeSet<Tripel>();
 
                 queue = PfixQueueManager.getInstance(null);
                 try {
@@ -118,16 +118,15 @@ public class PfixReadjustment implements Runnable {
                     try {
                         reader = IndexReader.open(LUCENE_DATA);
                     } catch (IOException ioe) {
-                        LOG
-                                .warn("broken or nonexistant database -> will queue ALL known parts");
+                        LOG.warn("broken or nonexistant database -> will queue ALL known parts");
 
-                        for (Iterator iter = partsKnownByPustefix.iterator(); iter
-                                .hasNext();) {
+                        for (Iterator iter = partsKnownByPustefix.iterator(); iter.hasNext();) {
                             Tripel element = (Tripel) iter.next();
                             element.setType(Tripel.Type.INSERT);
                             newDocs++;
-                            tripelsToIndex.add(element);
-                            // queue.queue(element);
+                            if (!tripelsToIndex.add(element)){
+                                LOG.debug("duplicated insert");
+                            }
                         }
                         jobDone = true;
                     }
@@ -161,16 +160,18 @@ public class PfixReadjustment implements Runnable {
                                 File f = PathFactory.getInstance().createPath(
                                         currentdoc.get(PreDoc.FILENAME))
                                         .resolve();
-
                                 if (f.lastModified() != DateField
                                         .stringToTime(currentdoc
                                                 .get(PreDoc.LASTTOUCH))) {
                                     // ts differs
                                     pfixTripel.setType(Tripel.Type.INSERT);
+                                    LOG.debug("TS differs: " + pfixTripel);
                                     newDocs++;
-                                    tripelsToIndex.add(pfixTripel);
-                                    // queue.queue(pfixTripel);
+                                    if (!tripelsToIndex.add(pfixTripel)){
+                                        LOG.debug("duplicated insert " + pfixTripel);
+                                    }
                                 }
+                                partsKnownByPustefix.remove(pfixTripel);
                             } else {
                                 // part not needed anymore
                                 Tripel newTripel = new Tripel(currentdoc
@@ -178,7 +179,7 @@ public class PfixReadjustment implements Runnable {
                                 deleteDocs++;
                                 queue.queue(newTripel);
                             }
-                            partsKnownByPustefix.remove(pfixTripel);
+                            
                         }
                         stopIndexLoop = System.currentTimeMillis();
 
@@ -193,7 +194,9 @@ public class PfixReadjustment implements Runnable {
                             // LOG.debug("adding " + element + " to queue
                             // (INDEX)");
                             newDocs++;
-                            tripelsToIndex.add(element);
+                            if (!tripelsToIndex.add(element)){
+                                LOG.debug("duplicated insert " + element);
+                            }
                             // queue.queue(element);
                         }
 
@@ -203,8 +206,9 @@ public class PfixReadjustment implements Runnable {
                     LOG.fatal("error reading index", ioe);
                 }
                 
-
-                Collections.sort(tripelsToIndex);
+// its a treeset, it is already sorted :)
+//                Collections.sort(tripelsToIndex);
+//                Collections.
                 for (Tripel tripel : tripelsToIndex) {
                     queue.queue(tripel);
                 }
@@ -237,7 +241,7 @@ public class PfixReadjustment implements Runnable {
 
 
     private Set<Tripel> getUsedTripels() throws Exception {
-        Set<Tripel> retval = new HashSet<Tripel>();
+        Set<Tripel> retval = new TreeSet<Tripel>();
 
         ProjectFactoryService projectFactory = SpringBeanLocator.getProjectFactoryService();
         for (Iterator i = projectFactory.getProjects().iterator(); i.hasNext();) {
