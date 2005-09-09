@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.lucefix;
 
 import java.io.IOException;
+import java.util.Vector;
 
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
@@ -43,11 +44,10 @@ public class ContextSearchImpl implements ContextSearch {
     private static PerFieldAnalyzerWrapper analyzer   = PreDoc.ANALYZER;
 
     private Context                        context;
-    private Hits                           hits;
     private Query                          lastQuery;
-    private boolean                        smallScope = true;
-
-
+    private Hit[] hits;
+    
+    
 
     public void search(String content, String tags, String attribkey, String attribvalue, String comments)
             throws IOException, ParseException {
@@ -59,10 +59,11 @@ public class ContextSearchImpl implements ContextSearch {
         if (attribkey != null) query.add(QueryParser.parse(attribkey, PreDoc.ATTRIBKEYS, analyzer), true, false);
         if (attribvalue != null) query.add(QueryParser.parse(attribvalue, PreDoc.ATTRIBVALUES, analyzer), true, false);
         if (comments != null) query.add(QueryParser.parse(comments, PreDoc.COMMENTS, analyzer), true, false);
-        hits = searcher.search(query);
+        Hits hits = searcher.search(query);
+        transformHits(hits);
         lastQuery = query;     
     }
-
+    
     private static String[] splitPath(String input) {
         String[] retval = new String[3];
         int letzterSlash = input.lastIndexOf("/");
@@ -73,45 +74,57 @@ public class ContextSearchImpl implements ContextSearch {
         return retval;
     }
 
-
-
-
     public void init(Context context) throws Exception {
         this.context = context;
         reset();
     }
-
-    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
+    private void transformHits(Hits hits) throws IOException {
         ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
         Project currentProject = pcon.getSelectedProject();
+        
+        Document doc;
+        Vector<Hit> temp = new Vector<Hit>();
+        String[] token;
+        for (int i = 0; i < hits.length(); i++){
+            doc = hits.doc(i);
+            token = splitPath(doc.get(PreDoc.PATH));
+            if (currentProject.findIncludePartThemeVariant(token[0],token[1],token[2]) == null) continue;
+            temp.add(new Hit(doc,hits.score(i)));
+        }
+        this.hits = temp.toArray(new Hit[0]);
+    }
+    public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
 
         if (hits != null) {
-            int hitSize = hits.length();
+//            int hitSize = hits.length;
             Element newelem;
-            Document doc;
-            for (int i = 0; i < hitSize; i++) {
-                doc = hits.doc(i);
-                String[] tokens = splitPath(doc.get(PreDoc.PATH));
-
-                if (smallScope) {
-                    // ignore hits from different projects
-                    if (currentProject.findIncludePartThemeVariant(tokens[0], tokens[1], tokens[2]) == null) continue;
-                }
-
-
+            for (Hit doc : hits) {
                 newelem = resdoc.createSubNode(elem, "hit");
-                newelem.setAttribute("index", i + "");
-                newelem.setAttribute("contents", doc.get(PreDoc.CONTENTS));
-                newelem.setAttribute("comments", doc.get(PreDoc.COMMENTS));
-                newelem.setAttribute("tags", doc.get(PreDoc.TAGS));
-                newelem.setAttribute("attribkeys", doc.get(PreDoc.ATTRIBKEYS));
-                newelem.setAttribute("attribvalues", doc.get(PreDoc.ATTRIBVALUES));
-                newelem.setAttribute("filename", doc.get(PreDoc.FILENAME));
-                newelem.setAttribute("path", doc.get(PreDoc.PATH));
-                newelem.setAttribute("score", hits.score(i) + "");
-                newelem.setAttribute("product", tokens[2]);
-                newelem.setAttribute("part", tokens[1]);
+                newelem.setAttribute("score", doc.getScore()+"");
+                newelem.setAttribute("filename", doc.getFilename());
+                newelem.setAttribute("part", doc.getPartname());
+                newelem.setAttribute("product", doc.getProductname());
+                newelem.setAttribute("path", doc.getPath());
+                
             }
+//            for (int i = 0; i < hitSize; i++) {
+//                doc = hits.doc(i);
+//                String[] tokens = splitPath(doc.get(PreDoc.PATH));
+//
+//
+//                newelem = resdoc.createSubNode(elem, "hit");
+//                newelem.setAttribute("index", i + "");
+//                newelem.setAttribute("contents", doc.get(PreDoc.CONTENTS));
+//                newelem.setAttribute("comments", doc.get(PreDoc.COMMENTS));
+//                newelem.setAttribute("tags", doc.get(PreDoc.TAGS));
+//                newelem.setAttribute("attribkeys", doc.get(PreDoc.ATTRIBKEYS));
+//                newelem.setAttribute("attribvalues", doc.get(PreDoc.ATTRIBVALUES));
+//                newelem.setAttribute("filename", doc.get(PreDoc.FILENAME));
+//                newelem.setAttribute("path", doc.get(PreDoc.PATH));
+//                newelem.setAttribute("score", hits.score(i) + "");
+//                newelem.setAttribute("product", tokens[2]);
+//                newelem.setAttribute("part", tokens[1]);
+//            }
         }
         if (lastQuery != null) elem.setAttribute("lastQuery", lastQuery.toString());
 
@@ -121,5 +134,64 @@ public class ContextSearchImpl implements ContextSearch {
         hits = null;
         lastQuery = null;
     }
+    private class Hit{
+        private double score;
+        private String filename;
+        private String partname;
+        private String productname;
+        
+        /**
+         * @param filename
+         * @param partname
+         * @param productname
+         * @param score
+         */
+        public Hit(String filename, String partname, String productname, double score) {
+            this.filename = filename;
+            this.partname = partname;
+            this.productname = productname;
+            this.score = score;
+        }
+        public Hit(Document lucenedoc, double score){
+            String[] token = splitPath(lucenedoc.get(PreDoc.PATH));
+            this.filename = token[0];
+            this.partname = token[1];
+            this.productname = token[2];
+            this.score = score;
+        }
+        public String getFilename() {
+            return filename;
+        }
+        public void setFilename(String filename) {
+            this.filename = filename;
+        }
+        public String getPartname() {
+            return partname;
+        }
+        public void setPartname(String partname) {
+            this.partname = partname;
+        }
+        public String getProductname() {
+            return productname;
+        }
+        public void setProductname(String productname) {
+            this.productname = productname;
+        }
+        public double getScore() {
+            return score;
+        }
+        public void setScore(double score) {
+            this.score = score;
+        }
+        public String getPath(){
+            StringBuffer sb = new StringBuffer(getFilename());
+            sb.append("/");
+            sb.append(getPartname());
+            sb.append("/");
+            sb.append(getProductname());
+            return sb.toString();
+        }
+    }
+
 
 }
