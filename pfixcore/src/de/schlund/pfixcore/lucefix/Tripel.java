@@ -126,5 +126,4 @@ public class Tripel implements Comparable{
         }
         return result;
     }
-
 }
