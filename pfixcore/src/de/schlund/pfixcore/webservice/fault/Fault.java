@@ -7,6 +7,7 @@
 package de.schlund.pfixcore.webservice.fault;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
@@ -112,8 +113,11 @@ public class Fault {
 		sb.append(":");
 		sb.append(srvReq.getServerPort());
 		sb.append(srvReq.getRequestURI());
-		sb.append(Constants.SESSION_PREFIX);
-		sb.append(srvReq.getSession(false).getId());
+		HttpSession session=srvReq.getSession(false);
+		if(session!=null) {
+			sb.append(Constants.SESSION_PREFIX);
+			sb.append(session.getId());
+		}
 		String s=srvReq.getQueryString();
 		if(s!=null&&!s.equals("")) {
 			sb.append("?");

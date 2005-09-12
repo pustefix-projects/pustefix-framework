@@ -7,7 +7,6 @@
 package de.schlund.pfixcore.webservice.fault;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
