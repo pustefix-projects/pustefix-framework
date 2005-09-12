@@ -1,24 +1,20 @@
 package de.schlund.pfixcore.webservice.handler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.namespace.QName;
 
+import de.schlund.pfixcore.webservice.Constants;
+import de.schlund.pfixcore.webservice.WebServiceContext;
+import de.schlund.pfixcore.webservice.config.Configuration;
+import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
-
-import de.schlund.pfixcore.webservice.*;
-import de.schlund.pfixcore.webservice.config.*;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 
 public class AuthenticationHandler extends AbstractHandler {
-
-  private static long next_message_id = 1;
-  private String wsdlURL = null;
-  private QName  serviceQName = null;
-  private QName  portQName = null;
 
   public AuthenticationHandler() {
     super();
@@ -29,7 +25,7 @@ public class AuthenticationHandler extends AbstractHandler {
     if (target == null) {
         target = new String();
     }
-    long time=0;
+   
     if (!messageContext.getPastPivot()) {
         //handle request
         WebServiceContext context=getWebServiceContext(messageContext);

@@ -3,34 +3,38 @@
  */
 package de.schlund.pfixcore.webservice.generate;
 
-import org.apache.axis.deployment.wsdd.WSDDDocument;
-import org.apache.axis.deployment.wsdd.WSDDHandler;
-import org.apache.axis.deployment.wsdd.WSDDRequestFlow;
-import org.apache.axis.deployment.wsdd.WSDDResponseFlow;
-import org.apache.axis.deployment.wsdd.WSDDService;
-
-import org.apache.tools.ant.AntClassLoader;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
-import org.w3c.dom.*;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import javax.xml.transform.*;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
+import org.apache.axis.deployment.wsdd.WSDDDocument;
+import org.apache.axis.deployment.wsdd.WSDDHandler;
+import org.apache.axis.deployment.wsdd.WSDDRequestFlow;
+import org.apache.axis.deployment.wsdd.WSDDResponseFlow;
+import org.apache.axis.deployment.wsdd.WSDDService;
+import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import de.schlund.pfixcore.webservice.config.*;
+import de.schlund.pfixcore.webservice.config.ConfigProperties;
+import de.schlund.pfixcore.webservice.config.Configuration;
+import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
+import de.schlund.pfixcore.webservice.config.ServiceConfig;
 
 /**
  * WebServiceTask.java
@@ -41,8 +45,6 @@ import de.schlund.pfixcore.webservice.config.*;
  */
 public class WebServiceTask extends Task {
    
-    private String msg;
-
     private String fqdn;
     private File tmpdir;
     private File prjdir;
@@ -198,7 +200,7 @@ public class WebServiceTask extends Task {
                         String wsName=conf.getName();
                         String wsItf=conf.getInterfaceName();
                         String wsImpl=conf.getImplementationName();
-                        String wsItfPkg=getPackageName(wsItf);
+                        //String wsItfPkg=getPackageName(wsItf);
                         
                         //Get service specific webservice scope
                         String wsDeployScope=deployScope;
@@ -224,13 +226,13 @@ public class WebServiceTask extends Task {
                                 checkInterface(wsItf);
                             
                                 wsdlCnt++;
-                                String wsNS=null;
-                                if(shortNamespaces) wsNS=createShortNamespace(wsName);
-                                else wsNS=createLongNamespace(wsItf);
+                                //String wsNS=null;
+                                //if(shortNamespaces) wsNS=createShortNamespace(wsName);
+                                //else wsNS=createLongNamespace(wsItf);
                                 Java2Wsdl task=new Java2Wsdl();
                                 task.setOutput(wsdlFile);
                                 task.setClassName(wsItf);
-                                task.setNamespace(wsNS);
+                                //task.setNamespace(wsNS);
                                 task.setLocation(wsUrl+"/"+wsName);
                                 task.setImplClassName(conf.getImplementationName());
                                 //task.addNamespaceMapping("de.schlund.pfixcore.example.webservices",wsNS);
@@ -376,6 +378,7 @@ public class WebServiceTask extends Task {
             }
         }
     
+        /**
         private String createShortNamespace(String id) {
             StringBuffer ns=new StringBuffer();
             ns.append("urn:");
@@ -399,6 +402,7 @@ public class WebServiceTask extends Task {
             }
             return ns.toString();
         }
+        */
         
         private void initTmpDir() throws BuildException {
             if(!tmpdir.exists()) {
@@ -489,17 +493,6 @@ public class WebServiceTask extends Task {
         private Class getArrayType(Class clazz) {
         	if(clazz.isArray()) return getArrayType(clazz.getComponentType());
             else return clazz;
-        }
-        
-        
-        private boolean delete(File file) {
-            if(file.isDirectory()) {
-                File[] files=file.listFiles();
-                for(int i=0;i<files.length;i++) {
-                    delete(files[i]);
-                }
-            }
-            return file.delete();
         }
         
         private Document loadDoc(File file) throws BuildException {

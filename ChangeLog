@@ -1,3 +1,9 @@
+2005-09-12  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/webservice/*: General code cleanup	
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Added special error handling for
+	Axis-internal and low-level exceptions (e.g. "Premature end of file")
+
 2005-09-06  Michael Hartmeier  <mhm@schlund.de>
 
 	* skel/build.xml: webapp target builds war file

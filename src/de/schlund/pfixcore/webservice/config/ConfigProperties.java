@@ -6,10 +6,15 @@ package de.schlund.pfixcore.webservice.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.*;
-import java.util.regex.*;
-
-import org.apache.log4j.Category;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ConfigProperties.java 
@@ -19,9 +24,6 @@ import org.apache.log4j.Category;
  * @author mleidig
  */
 public class ConfigProperties {
-
-    private Category CAT=Category.getInstance(getClass().getName());
-    private boolean DEBUG=CAT.isDebugEnabled();
     
     private File[] propFiles;
     private Properties properties;

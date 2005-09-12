@@ -100,6 +100,7 @@ public class Wsdl2Js {
         return null;
     }
     
+    /**
     private SOAPBody getSOAPBody(BindingOutput binding) {
         Iterator it=binding.getExtensibilityElements().iterator();
         while(it.hasNext()) {
@@ -111,6 +112,7 @@ public class Wsdl2Js {
         }
         return null;
     }
+    */
     
     public void generate() throws Exception {
         
@@ -154,7 +156,7 @@ public class Wsdl2Js {
                     if(soapBinding==null) throw new Exception("No soap binding found for binding "+binding.getQName());
                     String style=soapBinding.getStyle();
                     
-                    PortType portType=binding.getPortType();
+                    //PortType portType=binding.getPortType();
                     Iterator bopIt=binding.getBindingOperations().iterator();
                     while(bopIt.hasNext()) {
                         BindingOperation bop=(BindingOperation)bopIt.next();
