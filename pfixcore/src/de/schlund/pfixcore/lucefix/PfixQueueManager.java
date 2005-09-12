@@ -101,7 +101,7 @@ public class PfixQueueManager implements Runnable {
         int added, updated, removed, size;
         cache = new DocumentCache();
         while (true) {
-            synchronized (mutex) {
+//            synchronized (mutex) {
 
                 startLoop = System.currentTimeMillis();
                 added = updated = removed = size = 0;
@@ -221,11 +221,10 @@ public class PfixQueueManager implements Runnable {
                             + cache.getMissed());
                 }
                 cache.resetStatistic();
-            }
+//            }
             try {
                 Thread.sleep(waitms);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
         }
     }
 

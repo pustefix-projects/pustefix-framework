@@ -90,7 +90,7 @@ public class PfixReadjustment implements Runnable {
                 Thread.sleep(waitms);
             } catch (InterruptedException e) {}
             
-            synchronized (PfixQueueManager.getInstance(null).mutex) {
+//            synchronized (PfixQueueManager.getInstance(null).mutex) {
                 // prevents PfixReadjustment to feed the queue while
                 // PfixQueuemanager is still working
 
@@ -235,7 +235,7 @@ public class PfixReadjustment implements Runnable {
                     LOG.error("error while closing reader", e);
                 }
 
-            }
+//            }
         }
     }
 
