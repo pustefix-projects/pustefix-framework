@@ -1,3 +1,8 @@
+2005-09-12  Sebastian Werner  <sw@schlund.de>
+
+        * example/core/xsl/include.xsl.in
+        Minor Bugfix, Fix XSL runtime error, removed try-catch block
+
 2005-09-12  Martin Leidig <mleidig@schlund.de>
 
 	* src/de/schlund/pfixcore/webservice/*: General code cleanup	
