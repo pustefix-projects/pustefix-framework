@@ -42,6 +42,7 @@ public class PfixEngine {
     public void init() throws XMLException{
         PfixQueueManager pq = PfixQueueManager.getInstance(queueIdle);
         Thread queueT = new Thread(pq, "lucefix-queue");
+        queueT.setPriority(Thread.MIN_PRIORITY);
         PfixReadjustment pr = PfixReadjustment.getInstance(reAdjustIdle);
         Thread readjustT = new Thread(pr, "lucefix-readjustment");
         readjustT.setPriority(Thread.MIN_PRIORITY);
