@@ -33,16 +33,19 @@ __js_png.hasActiveX = function()
   return e != null;
 };
 
-if (document.all && navigator.platform == "Win32" && /MSIE (5\.5)|[6789]/.test(navigator.userAgent) && !window.opera && typeof document.body.style.filter != "undefined" && __js_png.hasActiveX())
+if (document.all && navigator.platform == "Win32" && /MSIE (5\.5)|[6789]/.test(navigator.userAgent) && !window.opera && __js_png.hasActiveX())
 {
   __js_png.fix = function()
   {
-    var t = window.event.srcElement;
-    
-    if (t.src.indexOf("blank") == -1)
+    try
     {
-      t.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + t.src + "',sizingMethod='scale')";
-      t.src = "/core/img/blank.gif";    
+      var t = window.event.srcElement;
+    
+      if (t.src.indexOf("blank") == -1 && t.runtimeStyle)
+      {
+        // t.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + t.src + "',sizingMethod='scale')";
+        // t.src = "/core/img/blank.gif";    
+      };
     };
   };
 }
