@@ -1,3 +1,7 @@
+2005-09-12  Thomas Stieler  <stieler@schlund.de>
+
+        * src/de/schlund/pfixxml/DerefServer.java: Added writing of logfile       
+
 2005-09-12  Sebastian Werner  <sw@schlund.de>
 
         * example/core/xsl/include.xsl.in
