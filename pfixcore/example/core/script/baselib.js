@@ -46,7 +46,8 @@ if (document.all && navigator.platform == "Win32" && /MSIE (5\.5)|[6789]/.test(n
         // t.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + t.src + "',sizingMethod='scale')";
         // t.src = "/core/img/blank.gif";    
       };
-    };
+    }
+    catch(ex) {};
   };
 }
 else
