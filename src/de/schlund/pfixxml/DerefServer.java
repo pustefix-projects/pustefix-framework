@@ -148,6 +148,7 @@ public class DerefServer extends ServletManager {
                 link = preq.getScheme() + "://" + preq.getServerName() + ":" + preq.getServerPort() + link;
             }
             CAT.debug("===> Relocate to link: " + link);
+            DEREFLOG.info(preq.getServerName() + "|" + link + "|" + preq.getRequest().getHeader("Referer"));
             res.setHeader("Expires", "Mon, 26 Jul 1997 05:00:00 GMT");
             res.setHeader("Pragma", "no-cache");
             res.setHeader("Cache-Control", "no-cache, no-store, private, must-revalidate");
