@@ -12,7 +12,7 @@ or delete the DOCTYPE definition -->
   <property name="uid"                      value="${env.USER}"/>
   <property name="build.compiler"           value="modern"/>
   <property name="build.compiler.emacs"     value="true"/>
-  <property name="javac.source"             value="1.4"/>
+  <property name="javac.source"             value="1.5"/>
   <property name="javac.encoding"           value="iso8859-1"/>
   <property name="name.jnipkg"              value="jni.tar.gz"/>
   <property name="name.cvsautotag"          value="CVS_AUTOTAG"/>
@@ -106,7 +106,7 @@ or delete the DOCTYPE definition -->
 
   <path id="cp.classpath">
     <fileset dir="${dir.lib}" includes="*.jar"/>
-    <fileset dir="${dir.projects}" includes="servletconf/tomcat/common/lib/servlet-api.jar"/>
+    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="endorsed/xercesImpl.jar lib/servlet-api.jar"/>
     <pathelement location="${dir.build}"/>
   </path>
 
@@ -654,7 +654,6 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.strip"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
-    <antcall target="tomcat.jmx"/>
   </target>
 
   <target name="tomcat.extract">
@@ -721,11 +720,6 @@ or delete the DOCTYPE definition -->
     </genkey>
   </target>
 
-  <target name="tomcat.jmx">
-    <!-- work-around bug 29056 -->
-    <copy file="lib/jmxri-1.2.1.jar" tofile="${dir.tomcat}/bin/jmx.jar" overwrite="true"/>
-  </target>
-
   <target name="webservice-config" depends="ant-tasks" description="creates webservice.conf">
     <pfx-xslt
       style="${dir.projects}/core/build/create_webservice.xsl"
@@ -761,7 +755,7 @@ or delete the DOCTYPE definition -->
 
   <!-- all: depends on a readily built project -->
   <target name="webapp" depends="all, webapp.dir, webapp.tomcat.opt"/>
-	
+    
   <target name="webapp.init" depends="ant-tasks">
     <fail unless="webapp.name" message="please provide property webapp.name"/> 
     <property name="engine.dir" location="${basedir}/dist/webapps"/>
@@ -826,10 +820,10 @@ or delete the DOCTYPE definition -->
       <param name="path" value="/xml"/>
       <param name="docbase" value="."/>
     </antcall>
-  	
-  	<war destfile="${webapp.dir}/../../xml.war" webxml="${webapp.dir}/WEB-INF/web.xml">
-  		<fileset dir="${webapp.dir}"/>
-  	</war>
+    
+    <war destfile="${webapp.dir}/../../xml.war" webxml="${webapp.dir}/WEB-INF/web.xml">
+        <fileset dir="${webapp.dir}"/>
+    </war>
   </target>
  
   <target name="-webapp.context">
