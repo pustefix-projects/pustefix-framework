@@ -1,3 +1,10 @@
+2005-09-19  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: java 1.5 source
+	* lib/jmxremote-1.0.1_03.jar lib/jmxri-1.2.1.jar lib/xml-apis.jar lib/xercesImpl-2.6.2.j
+	    removed - included in Java 1.5
+	* lib/mail-1.3.3.jar: update to latest release
+
 2005-09-13  Sebastian Werner  <sw@schlund.de>
 
         * example/core/script/baselib.js:
