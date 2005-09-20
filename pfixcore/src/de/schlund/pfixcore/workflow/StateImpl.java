@@ -20,6 +20,7 @@
 package de.schlund.pfixcore.workflow;
 
 import de.schlund.pfixcore.util.PropertiesUtils;
+import de.schlund.pfixcore.util.StateUtils;
 import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
@@ -40,25 +41,7 @@ public abstract class StateImpl implements State {
     private static final String HEADER        = "responseheader";
     private static final String def_mime      = "text/html";
 
-    public final boolean isDirectTrigger(Context context, PfixServletRequest preq) {
-        RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        return (!context.flowIsRunning() && (context.jumpToPageIsRunning() || sdreq == null || !sdreq.isTrue()));
-    }
-    
-    public final boolean isSubmitTrigger(Context context, PfixServletRequest preq) {
-        RequestParam sdreq = preq.getRequestParam(SENDDATA);
-        return (isSubmitTriggerAny(context, sdreq));
-    }
-    
-    public final boolean isSubmitAuthTrigger(Context context, PfixServletRequest preq) {
-        RequestParam sdreq = preq.getRequestParam(SENDAUTHDATA);
-        return (isSubmitTriggerAny(context, sdreq));
-    }
-    
-    private boolean isSubmitTriggerAny(Context context, RequestParam sdreq) {
-        return (!context.flowIsRunning() && !context.finalPageIsRunning() &&
-                !context.jumpToPageIsRunning() && sdreq != null && sdreq.isTrue());
-    }
+
 
     // You may want to overwrite this 
     public boolean isAccessible(Context context, PfixServletRequest preq) throws Exception {
