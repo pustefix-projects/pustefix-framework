@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <make project="sample1"
       lang="en_GB">
 
@@ -14,6 +15,7 @@
       <page name="overview" handler="/xml/config" accesskey="S"/>
     </page>
     
+    <page name="scripting" handler="/xml/config"/>
     <page name="encoding" handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
 
@@ -35,6 +37,7 @@
   <standardpage name="home"     xml="sample1/xml/two_frames.xml" variant="baz"/>
   <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>
   <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
+  <standardpage name="scripting" xml="sample1/xml/two_frames.xml"/>
 
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>

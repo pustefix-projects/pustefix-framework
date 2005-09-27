@@ -62,6 +62,9 @@
               </ixsl:for-each>
             </table>
           </pfx:forminput>
+          <p>
+            <h3><pfx:button page="scripting">SCRIPTING Test</pfx:button></h3>
+          </p>
           <br/>
           <pfx:include part="buttons"/>
           <br/>

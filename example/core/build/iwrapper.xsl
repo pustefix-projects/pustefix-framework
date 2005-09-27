@@ -13,6 +13,7 @@
   remove the "occurance" stuff herein, once it can be expected anyone has updated its files
   to the new spelling. Mind to update schema file.
   -->
+  <xsl:variable name="ihandlerClassStr" select="/iwrp:interface/iwrp:ihandler/@class" />
   
   <xsl:template match="iwrp:interface" ><xsl:param name="extends">
   <xsl:if test="iwrp:interface/iwrp:param/@occurance">
@@ -55,7 +56,13 @@ public class <xsl:value-of select="$classname"/> extends <xsl:value-of select="$
 
     public <xsl:value-of select="$classname"/>() {<xsl:choose>
       <xsl:when test="/iwrp:interface/iwrp:ihandler">
-        handler = IHandlerFactory.getInstance().getIHandler("<xsl:value-of select="/iwrp:interface/iwrp:ihandler/@class"/>");</xsl:when>
+        <xsl:choose>
+          <xsl:when test="starts-with($ihandlerClassStr, 'script:')">
+        handler = new de.schlund.pfixcore.scripting.ScriptingIHandler("<xsl:value-of select="substring-after($ihandlerClassStr, 'script:')" />"); </xsl:when>
+          <xsl:otherwise>
+        handler = IHandlerFactory.getInstance().getIHandler("<xsl:value-of select="/iwrp:interface/iwrp:ihandler/@class"/>");</xsl:otherwise>
+        </xsl:choose>      
+        </xsl:when>
       <xsl:otherwise>
         super();</xsl:otherwise>
     </xsl:choose>
