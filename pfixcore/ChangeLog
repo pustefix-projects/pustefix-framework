@@ -1,3 +1,16 @@
+2005-09-27  Benjamin Reitzammer <benjamin@schlund.de>
+
+  * Implemented scripting support for IHandlers
+     see http://pustefix.oss.schlund.de/index.php?pagename=PustefixScripting
+     for more information
+  * src/de/schlund/pfixcore/scripting/* added 
+  * src/de/schlund/pfixcore/example/iwrapper/ScriptingTShirt.iwrp added 
+  * example/sample1/script/* added 
+  * example/sample1/txt/pages/main_scripting.xml added 
+  * lib/bsf-2.3.0.jar added 
+  * lib/js-1.5R3.jar added 
+  * example/core/build/iwrapper.xsl changed to allow definition of scripted IHandlers 
+
 2005-09-19  Michael Hartmeier  <mhm@schlund.de>
 
 	* skel/build.xml: java 1.5 source
