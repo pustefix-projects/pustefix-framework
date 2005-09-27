@@ -155,6 +155,11 @@
       <lang name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of size/color is out of stock.</lang>
     </product>
   </part>
+  <part name="pfixcore.example.tshirt.SCRIPTING_SUCCESS">
+    <product name="default">
+      <lang name="default">You're one lucky pal. The Scripting framework is working (for now) and finally checked it out!</lang>
+    </product>
+  </part>
   <part name="pfixcore.generator.MISSING_PARAM">
     <product name="default">
       <lang name="default">This parameter is mandatory.</lang>

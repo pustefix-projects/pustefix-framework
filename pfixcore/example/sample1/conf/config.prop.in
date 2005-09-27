@@ -144,6 +144,15 @@
     <!-- </properties> -->
   </pagerequest>
   
+  <pagerequest name="scripting">
+    <input>
+      <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt"/>
+    </input>
+    <output>
+      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </output>
+  </pagerequest>  
+  
   <properties>
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
