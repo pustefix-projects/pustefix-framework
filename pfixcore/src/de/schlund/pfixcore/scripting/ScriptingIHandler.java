@@ -101,9 +101,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean prerequisitesMet(Context context) throws Exception {
         init();
-        
-        Object value = bsfEngine.call(null, "prerequisitesMet", new Object[]{context});
-        return ((Boolean) value).booleanValue();        
+        return exec("prerequisitesMet", context);
     }
     
     
@@ -111,9 +109,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean isActive(Context context) throws Exception {
         init();
-        
-        Object value = bsfEngine.call(null, "isActive", new Object[]{context});
-        return ((Boolean) value).booleanValue();
+        return exec("isActive", context);
     }
     
     
@@ -121,9 +117,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean needsData(Context context) throws Exception {
         init();
-        
-        Object value = bsfEngine.call(null, "needsData", new Object[]{context});
-        return ((Boolean) value).booleanValue();
+        return exec("needsData", context);
     }
     
     
@@ -207,8 +201,28 @@ public class ScriptingIHandler implements IHandler{
     
     
     // ============ private Helper methods ============
-
     
+    
+    /**
+     * 
+     */
+    private boolean exec(String methodName, Context context) throws Exception {
+        Boolean bool = null;
+        try {
+            bool = (Boolean) bsfEngine.call(null, methodName, new Object[] {context});
+        } catch (ClassCastException ex) {
+            throw new BSFException(BSFException.REASON_EXECUTION_ERROR,
+                                   scriptName(path)+".methodName() returned no boolean value! "+ex.getMessage());
+        } 
+        
+        if ( bool == null )
+            throw new BSFException(BSFException.REASON_EXECUTION_ERROR,
+                                   scriptName(path)+"."+methodName+"() returned null Boolean value!");
+        
+        return bool.booleanValue();
+    }
+    
+     
     /**
      */
     private String copy(InputStream input) throws IOException {
@@ -223,6 +237,16 @@ public class ScriptingIHandler implements IHandler{
         }
         
         return output.toString();
+    }
+    
+    
+    /**
+     */
+    private String scriptName(String path) {
+        int indexDot = path.lastIndexOf(".");
+        int indexBegin = path.lastIndexOf("/") != -1 ? path.lastIndexOf("/") : "script:".length();
+        
+        return path.substring(indexBegin, indexDot); 
     }
     
 }
