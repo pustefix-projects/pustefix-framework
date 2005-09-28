@@ -1,3 +1,8 @@
+2005-09-28  Michael Hartmeier <mhm@schlund.de>
+
+  * skel/build.xml, src/de/schlund/pfixcore/util/Merge.java:
+  generalized merge target to support product merging
+
 2005-09-27  Benjamin Reitzammer <benjamin@schlund.de>
 
   * Implemented scripting support for IHandlers
