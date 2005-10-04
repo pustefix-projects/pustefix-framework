@@ -199,6 +199,12 @@
     <appender-ref ref="LOGGER_APPLOADER"/>
   </category>
   
+  <category name="de.schlund.pfixxml.perflogging" additivity="false">
+    <priority value="WARN"/>
+    <appender-ref ref="PFXPERF"/>
+  </category>
+
+  
   <category name="de.schlund.pfixcore.webservice" additivity="false">
     <cus:choose>
       <cus:test mode="prod">
