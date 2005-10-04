@@ -59,6 +59,7 @@
       <active>true</active>
       <class>de.schlund.pfixxml.CacheStatisticServlet</class> 
     </servlet>
+    
   </project>
 
   <!-- some common definitions that are shared between all projects -->
