@@ -1,3 +1,16 @@
+2005-10-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added customization support for Tomcat's default 'web.xml' to the build process.
+	After extracting Tomcat the new target 'tomcat.defaultwebxml' is called, which
+	transforms the default 'web.xml' using the stylesheet 'create_defaultwebxml.xsl'.
+	At the moment the stylesheet only sets the 'listings' init parameter of the
+	default servlet to 'false' (disabling directory listings) and leaves the rest
+	unchanged.
+
+	* skel/build.xml: Added new target 'tomcat.defaultwebxml'
+	* example/core/build/create_defaultwebxml.xsl: Added file
+
+
 2005-10-04  Joerg Haecker <haecker@schlund.de>
 	en/disable performance-logging with JMX
 	* src/de/schlund/pfixxml/jmx/JmxServer[MBean].java: 

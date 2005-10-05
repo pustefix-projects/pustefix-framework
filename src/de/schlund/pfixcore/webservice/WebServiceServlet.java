@@ -197,7 +197,7 @@ public class WebServiceServlet extends AxisServlet {
         		sendBadRequest(req,res,res.getWriter());
         	}
         } catch(Throwable t) {
-        	LOG.warn(t);
+        	LOG.warn("Error while processing webservice request.",t);
         	throw new ServletException("Error while processing webservice request.",t);
         } finally {
         	setCurrentFault(null);

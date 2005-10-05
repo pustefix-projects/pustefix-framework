@@ -660,6 +660,7 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.strip"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
+    <antcall target="tomcat.defaultwebxml"/>
   </target>
 
   <target name="tomcat.extract">
@@ -724,6 +725,13 @@ or delete the DOCTYPE definition -->
         <param name="C"  value="DE"/>
       </dname>
     </genkey>
+  </target>
+
+  <target name="tomcat.defaultwebxml">
+    <xslt in="${dir.tomcat}/conf/web.xml" 
+          out="${dir.tomcat}/conf/web.xml.new"
+          style="${dir.projects}/core/build/create_defaultwebxml.xsl"/>
+    <move file="${dir.tomcat}/conf/web.xml.new" tofile="${dir.tomcat}/conf/web.xml"/>
   </target>
 
   <target name="webservice-config" depends="ant-tasks" description="creates webservice.conf">
