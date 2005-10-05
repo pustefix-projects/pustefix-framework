@@ -7,21 +7,21 @@
 
 2005-09-28  Michael Hartmeier <mhm@schlund.de>
 
-  * skel/build.xml, src/de/schlund/pfixcore/util/Merge.java:
-  generalized merge target to support product merging
+	* skel/build.xml, src/de/schlund/pfixcore/util/Merge.java:
+	generalized merge target to support product merging
 
 2005-09-27  Benjamin Reitzammer <benjamin@schlund.de>
 
-  * Implemented scripting support for IHandlers
-     see http://pustefix.oss.schlund.de/index.php?pagename=PustefixScripting
-     for more information
-  * src/de/schlund/pfixcore/scripting/* added 
-  * src/de/schlund/pfixcore/example/iwrapper/ScriptingTShirt.iwrp added 
-  * example/sample1/script/* added 
-  * example/sample1/txt/pages/main_scripting.xml added 
-  * lib/bsf-2.3.0.jar added 
-  * lib/js-1.5R3.jar added 
-  * example/core/build/iwrapper.xsl changed to allow definition of scripted IHandlers 
+	* Implemented scripting support for IHandlers
+	  see http://pustefix.oss.schlund.de/index.php?pagename=PustefixScripting
+	  for more information
+	* src/de/schlund/pfixcore/scripting/* added 
+	* src/de/schlund/pfixcore/example/iwrapper/ScriptingTShirt.iwrp added 
+	* example/sample1/script/* added 
+	* example/sample1/txt/pages/main_scripting.xml added 
+	* lib/bsf-2.3.0.jar added 
+	* lib/js-1.5R3.jar added 
+	* example/core/build/iwrapper.xsl changed to allow definition of scripted IHandlers 
 
 2005-09-19  Michael Hartmeier  <mhm@schlund.de>
 
@@ -32,17 +32,17 @@
 
 2005-09-13  Sebastian Werner  <sw@schlund.de>
 
-        * example/core/script/baselib.js:
+	* example/core/script/baselib.js:
 	Commented out new png handling, does not work this way
 
 2005-09-12  Thomas Stieler  <stieler@schlund.de>
 
-        * src/de/schlund/pfixxml/DerefServer.java: Added writing of logfile       
+	* src/de/schlund/pfixxml/DerefServer.java: Added writing of logfile       
 
 2005-09-12  Sebastian Werner  <sw@schlund.de>
 
-        * example/core/xsl/include.xsl.in
-        Minor Bugfix, Fix XSL runtime error, removed try-catch block
+	* example/core/xsl/include.xsl.in
+	Minor Bugfix, Fix XSL runtime error, removed try-catch block
 
 2005-09-12  Martin Leidig <mleidig@schlund.de>
 
@@ -62,7 +62,7 @@
 2005-09-06  Michael Hartmeier  <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/FactoryInitServlet.java, ./example/core/build/create_webapp_projectsxml.xsl:
-        Remove docroot parameter for true webapps, FactoryInit uses webapp's docroot.
+	Remove docroot parameter for true webapps, FactoryInit uses webapp's docroot.
 
 2005-09-05  Martin Leidig  <mleidig@schlund.de>
 
