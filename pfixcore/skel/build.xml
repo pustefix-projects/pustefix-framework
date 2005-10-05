@@ -110,7 +110,7 @@ or delete the DOCTYPE definition -->
     <pathelement location="${dir.build}"/>
   </path>
 
-  <target name="init" depends="properties, init-data">
+  <target name="init" depends="properties, init-data, defaultwebxml">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
@@ -660,7 +660,6 @@ or delete the DOCTYPE definition -->
     <antcall target="tomcat.strip"/>
     <antcall target="tomcat.user"/>
     <antcall target="tomcat.cert"/>
-    <antcall target="tomcat.defaultwebxml"/>
   </target>
 
   <target name="tomcat.extract">
@@ -727,7 +726,15 @@ or delete the DOCTYPE definition -->
     </genkey>
   </target>
 
-  <target name="tomcat.defaultwebxml">
+
+  <target name="defaultwebxml-check">
+    <uptodate property="upd.defaultwebxml" targetfile="${dir.tomcat}/conf/web.xml">
+      <srcfiles dir="${dir.tomcat}/conf" includes="server.xml"/>
+      <srcfiles dir="${dir.projects}/core/build" includes="create_defaultwebxml.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="defaultwebxml" depends="defaultwebxml-check" unless="upd.defaultwebxml">
     <xslt in="${dir.tomcat}/conf/web.xml" 
           out="${dir.tomcat}/conf/web.xml.new"
           style="${dir.projects}/core/build/create_defaultwebxml.xsl"/>
