@@ -1,3 +1,10 @@
+2005-10-06  Martin Leidig  <mleidig@schlund.de>
+	
+	Added offline building support for 'defaultwebxml' target.
+	* example/core/schema/catalog.xml: Added webapp DTD entry.
+	* example/core/schema/web-app_2_3.dtd: Added webapp DTD.
+	* skel/build.xml: Use pfx-xslt task (with XML catalog).
+
 2005-10-05  Martin Leidig  <mleidig@schlund.de>
 
 	* skel/build.xml: Renamed target 'tomcat.defaultwebxml' to 'defaultwebxml' and
