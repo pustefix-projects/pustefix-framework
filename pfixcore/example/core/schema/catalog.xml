@@ -17,4 +17,5 @@
    <system systemId="http://pustefix.sourceforge.net/interfacewrapper200403.xsd" uri="interfacewrapper200403.xsd"/>
   -->
   <!--<uri name="http://pustefix.sourceforge.net/interfacewrapper200401.xsd" uri="file:///home/adam/workspace/pfixcore/example/core/schema/interfacewrapper200401.xsd"/>-->
+  <system systemId="http://java.sun.com/dtd/web-app_2_3.dtd" uri="web-app_2_3.dtd"/>
 </catalog>

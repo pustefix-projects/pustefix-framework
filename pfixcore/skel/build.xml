@@ -110,7 +110,7 @@ or delete the DOCTYPE definition -->
     <pathelement location="${dir.build}"/>
   </path>
 
-  <target name="init" depends="properties, init-data, defaultwebxml">
+  <target name="init" depends="properties, init-data">
     <mkdir dir="${dir.build}"/>
     <mkdir dir="${dir.src}"/>
     <echo message="using machine=${machine} fqdn=${fqdn}" level="verbose"/>
@@ -525,7 +525,7 @@ or delete the DOCTYPE definition -->
     </pfx-xslt>
   </target>
 
-  <target name="web_xml" depends="ant-tasks, projects_xml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
+  <target name="web_xml" depends="ant-tasks, projects_xml, defaultwebxml" description="creates servletconf/tomcat/webapps/**/WEB-INF/web.xml">
     <!-- old target name in Makefile was "zoneprops" -->
     <pfx-webxml
       style="${dir.projects}/core/build/create_webxml.xsl"
@@ -734,11 +734,17 @@ or delete the DOCTYPE definition -->
     </uptodate>
   </target>
 
-  <target name="defaultwebxml" depends="defaultwebxml-check" unless="upd.defaultwebxml">
-    <xslt in="${dir.tomcat}/conf/web.xml" 
-          out="${dir.tomcat}/conf/web.xml.new"
-          style="${dir.projects}/core/build/create_defaultwebxml.xsl"/>
-    <move file="${dir.tomcat}/conf/web.xml.new" tofile="${dir.tomcat}/conf/web.xml"/>
+  <target name="defaultwebxml" depends="defaultwebxml-check,ant-tasks" unless="upd.defaultwebxml">
+    <move file="${dir.tomcat}/conf/web.xml" tofile="${dir.tomcat}/conf/web.xml.tmp"/>
+    <pfx-xslt
+      style="${dir.projects}/core/build/create_defaultwebxml.xsl"
+      srcdir="${dir.tomcat}/conf"
+      destdir="${dir.tomcat}/conf"
+      includes="web.xml.tmp"
+      extension=""
+      validate="${validate}"
+      catalogfile="${catalogfile}"
+    />
   </target>
 
   <target name="webservice-config" depends="ant-tasks" description="creates webservice.conf">
