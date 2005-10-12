@@ -86,6 +86,8 @@ public class PfixReadjustment implements Runnable {
         int knownDocsSize, newDocs, deleteDocs, numDocs;
 
         while (true) {
+            int counter = 0;
+            
             try {
                 Thread.sleep(waitms);
             } catch (InterruptedException e) {}
@@ -134,6 +136,19 @@ public class PfixReadjustment implements Runnable {
                         numDocs = reader.numDocs();
                         startIndexLoop = System.currentTimeMillis();
                         docloop: for (int i = 0; i < numDocs; i++) {
+                            
+                            // wait some time
+                            if (counter == 10){
+                                try{
+                                    Thread.sleep(100);
+                                }catch(InterruptedException ie){
+                                    // do nothing
+                                }
+                                counter = 0;
+                            }else{
+                                counter++;
+                            }
+                            
                             Document currentdoc;
                             try {
                                 currentdoc = reader.document(i);
