@@ -1,5 +1,5 @@
 <make project="editor"
-      lang="en">
+      lang="en_US">
   
   <navigation>
     <page name="editoruserauth"    handler="/xml/edit"/>
