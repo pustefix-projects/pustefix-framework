@@ -67,9 +67,10 @@ public class EditorCommonsFactory {
     }
     
     public synchronized void init(Properties properties) throws Exception {
-        commonfiles = new HashSet(PropertiesUtils.selectProperties(properties,
-                "editorcommonsfactory.includefile").values());
+        commonfiles = new HashSet(PropertiesUtils.selectProperties(properties, "editorcommonsfactory.includefile").values());
+        commonfiles.addAll(PropertiesUtils.selectProperties(properties, "partindex.scodefile").values());
     }
+    
     private synchronized void realInit() throws Exception {
         String str;
         

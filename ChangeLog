@@ -1,3 +1,38 @@
+2005-10-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/util/statuscodes/PartIndex.java (PartFile): new inner class. Holds a file that
+	contains statuscodes and the file modification time when the file was loaded last.
+	(Module): rewrote to handle more than one statuscode file. Initialises the StatusCodes with
+	part name and path to their origin file.
+
+	* src/de/schlund/util/statuscodes/StatusCode.java (StatusCode): constructor now needs
+	an additional Path argument to the corresponding include part file.
+	(getStatusCodePath): new method.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): don't get the 
+	path to the statuscode's include part from a property but from the SCode itself.
+
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java: 
+	(init): automatically use all defined partindex statuscode files.
+
+	* skel/projects/common/conf/factory.prop.in: 
+	* example/common/conf/factory.prop.in: add partindex.scodefile entries. 
+	There's no need any more to repeat them in "editorcommonsfactory.includefile", they are 
+	automatically used there. Only other, non-StatusCode dynamic include files should be added
+	via editorcommonsfactory.includefile.
+
+	* skel/projects/common/conf/pustefix.prop.in:
+	* example/common/conf/pustefix.prop.in:  remove statuscodefactory.messagefile
+
+	* example/common/dyntxt/statusmessages.xml (Module): removed, splitted into the next 
+	two new files. Only the "core" one is relevant for pustefix skeleton environments 
+	* example/sample1/dyntxt/statusmessages.xml (Module): new.
+	* example/core/dyntxt/statusmessages.xml (Module): new.
+
+	* example/sample1/txt/pages/main_scripting.xml: cosmetics
+
+	* example/core/xsl/forminput.xsl.in: common/dyntxt => core/dyntxt in a deprecated template
+
 2005-10-06  Martin Leidig  <mleidig@schlund.de>
 	
 	Added offline building support for 'defaultwebxml' target.
