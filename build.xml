@@ -162,7 +162,7 @@ or delete the DOCTYPE definition -->
     <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
       <tarfileset dir="${dir.projects}/core" prefix="core"/>
-      <tarfileset dir="${dir.projects}/common/" prefix="core/tmp"/>
+<!--       <tarfileset dir="${dir.projects}/common/" prefix="core/tmp"/> -->
     </tar>
     <delete file="${dir.projects}/core/${name.cvsautotag}"/>
   </target>

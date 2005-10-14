@@ -23,7 +23,7 @@
     
     <!-- part index -->
     <prop name="partindex.reloadchanges">true</prop>
-    <prop name="partindex.scodefile.1">core/dyntxt/statusmessages.xml</prop>
+    <prop name="partindex.scodefile.1">common/dyntxt/statusmessages-core-merged.xml</prop>
     <prop name="partindex.scodefile.2">common/dyntxt/statusmessages.xml</prop>
 
     <!-- EditorCommonsFactory -->
