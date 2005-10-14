@@ -19,11 +19,14 @@
 
 package de.schlund.util.statuscodes;
 
+import de.schlund.pfixcore.util.PropertiesUtils;
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +41,12 @@ import org.w3c.dom.Document;
 public class PartIndex {
     private final static Category  LOG      = Category.getInstance(PartIndex.class.getName());
     private final static PartIndex instance = new PartIndex();
-    private final static String    MESSAGES = "common/dyntxt/statusmessages.xml";
+    private final static String    MESSAGES = "partindex.scodefile";
     private final static String    DO_CHECK = "partindex.reloadchanges";
     
-    private Map       codes;
-    private File      src;
-    private long      mtime = -1;
-    private boolean   docheck = false;
+    private HashMap    codes = new HashMap();
+    private PartFile[] src;
+    private boolean    docheck = false;
     
     public static PartIndex getInstance() {
         return instance;
@@ -59,44 +61,89 @@ public class PartIndex {
         } else {
             docheck = false;
         }
-        src = PathFactory.getInstance().createPath(MESSAGES).resolve();
-        addAll(src);
+
+        HashMap scmap   = PropertiesUtils.selectProperties(props, MESSAGES);
+        HashSet scfiles = new HashSet(scmap.values());
+        
+        src = new PartFile[scfiles.size()];
+
+        int i = 0;
+        for (Iterator iter = scfiles.iterator(); iter.hasNext();) {
+            src[i++] = new PartFile(PathFactory.getInstance().createPath((String) iter.next()));
+        }
+        
+        addAll();
     }
 
     //--
     public StatusCode lookup(String name) throws TransformerException {
-        if (src != null && src.lastModified() > mtime) {
-            addAll(src);
+        if (docheck) {
+            addAll();
         }
 
         return (StatusCode) codes.get(name);
     }
     
-    public synchronized void addAll(File src) throws TransformerException {
-        if (src.lastModified() > mtime) {
-            addAll(Xml.parse(src));
+    public synchronized void addAll() throws TransformerException {
+        for (int i = 0; i < src.length; i++) {
+            PartFile onesrc = src[i];
+            if (onesrc.wantUpdate()) {
+                onesrc.updateMtime();
+                addAll(onesrc);
+            }
         }
     }
     
-    public synchronized void addAll(Document doc) throws TransformerException {
-        HashMap  tmp = new HashMap();
+    public synchronized void addAll(PartFile pfile) throws TransformerException {
+        HashMap  tmp    = new HashMap();
         List     lst;
         Iterator iter;
         Attr     attr;
         String   key;
-            
-        LOG.debug("\n\n**** Loading StatusCode file " + src + " ****\n");
+        Path     scpath = pfile.getPath();
+        Document doc    = Xml.parse(pfile.getSCFile());
+        
+        LOG.debug("**** Loading StatusCode file " + scpath.getRelative() + " ****");
         lst = XPath.select(doc, "/include_parts/part[product/@name='default']/@name");
         iter = lst.iterator();
         while (iter.hasNext()) {
             attr = (Attr) iter.next();
             key = attr.getValue();
             if (!tmp.containsKey(key)) {
-                tmp.put(key, new StatusCode(key));
+                tmp.put(key, new StatusCode(key, scpath));
             }
         }
-        codes = tmp;
-        mtime = src.lastModified();
-        LOG.info(codes.size() + " StatusCodes loaded");
+        
+        codes.putAll(tmp);
+
+        LOG.info(tmp.size() + " StatusCodes loaded");
+    }
+
+    private class PartFile {
+        Path path;
+        File scfile;
+        long mtime = -1;
+        
+        public PartFile(Path path) {
+            this.path = path;
+            scfile = path.resolve();
+        }
+
+        boolean wantUpdate() {
+            return (scfile.lastModified() > mtime);
+        }
+
+        void updateMtime() {
+            mtime = scfile.lastModified();
+        }
+        
+        Path getPath() {
+            return path;
+        }
+
+        File getSCFile() {
+            return scfile;
+        }
+        
     }
 }

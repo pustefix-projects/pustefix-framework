@@ -1250,7 +1250,7 @@
             <td>
               <ixsl:attribute name="class">core_pagemessage_header_<ixsl:value-of select="@level"/></ixsl:attribute>
               <ixsl:call-template name="pfx:include">
-                <ixsl:with-param name="href" select="'common/dyntxt/statusmessages.xml'" />
+                <ixsl:with-param name="href" select="'core/dyntxt/statusmessages.xml'" />
                 <ixsl:with-param name="part" select="concat('pfixcore.pagemessages.level.', @level)"/>
               </ixsl:call-template>
             </td>
