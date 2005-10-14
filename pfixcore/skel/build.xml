@@ -389,14 +389,14 @@ or delete the DOCTYPE definition -->
       <fileset refid="id.fs.pfixcore_data_tgz"/>
     </untar>
     <antcall target="merge"/>
-    <delete dir="${dir.projects}/core/tmp"/>
+<!--     <delete dir="${dir.projects}/core/tmp"/> -->
     <touch file="${dir.projects}/core/TIMESTAMP"></touch>
   </target>
 
   <target name="merge">
-    <property name="merge.src" location="${dir.projects}/core/tmp/dyntxt/statusmessages.xml"/>
+    <property name="merge.src" location="${dir.projects}/core/dyntxt/statusmessages.xml"/>
     <property name="merge.srcPath" location="/include_parts/part/product[@name='default']/lang[@name='default']"/>
-    <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages.xml"/>
+    <property name="merge.dest" location="${dir.projects}/common/dyntxt/statusmessages-core-merged.xml"/>
     <java classname="de.schlund.pfixcore.util.Merge" fork="true" classpathref="cp.classpath">
       <arg file="${merge.src}"/>
       <arg value="${merge.srcPath}"/>
