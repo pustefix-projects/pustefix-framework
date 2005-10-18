@@ -1,0 +1,27 @@
+import de.schlund.pfixcore.util.StateUtil;
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.util.statuscodes.StatusCodeFactory;
+
+
+
+isAccessible(context, preq) {
+    return true;
+}
+    
+    
+needsData(context, preq) {
+    var ct = context.getContextResourceManager().getResource("de.schlund.pfixcore.example.ContextTShirt");
+    return ct.needsData();
+}
+    
+    
+getDocument(Context context, PfixServletRequest preq) throws Exception {
+    context.prohibitContinue();
+    
+    var scode = new StatusCodeFactory("pfixcore.example.tshirt").getStatusCode("SCRIPTING_SUCCESS");
+    context.addPageMessage(scode);   
+    
+    return StateUtil.createDefaultResultDocument(context);
+}
+    
