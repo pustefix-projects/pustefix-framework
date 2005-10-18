@@ -19,7 +19,8 @@
 
 package de.schlund.pfixcore.workflow;
 
-import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.PfixServletRequest;
+import de.schlund.pfixxml.ResultDocument;
 
 public interface State {
     public final static String SENDDATA     = "__sendingdata";

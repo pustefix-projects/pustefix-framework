@@ -22,17 +22,8 @@ package de.schlund.pfixcore.scripting;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.PathFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.util.Map;
-import java.util.Hashtable;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -46,16 +37,6 @@ import org.apache.log4j.Logger;
 public class ScriptingIHandler implements IHandler{
   
     private static Logger LOG = Logger.getLogger(ScriptingIHandler.class);
-  
-  
-    /**
-     * keyed by the path as String, if it's a resource (starts with File.pathSeparator)
-     * value is a String, if it's a source (script stored in file), value is
-     * an Object array, consisting of two elements, with the first being the lastMod
-     * (as Long object) time of the file, when it was stored in the cache and the 
-     * second the script as a String object.
-     */
-    private static final Map scriptCache = new Hashtable();
   
     /**
      */
@@ -101,7 +82,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean prerequisitesMet(Context context) throws Exception {
         init();
-        return exec("prerequisitesMet", context);
+        return ScriptingUtil.exec(bsfEngine, "prerequisitesMet", new Object[] {context});
     }
     
     
@@ -109,7 +90,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean isActive(Context context) throws Exception {
         init();
-        return exec("isActive", context);
+        return ScriptingUtil.exec(bsfEngine, "isActive", new Object[] {context});
     }
     
     
@@ -117,7 +98,7 @@ public class ScriptingIHandler implements IHandler{
      */
     public boolean needsData(Context context) throws Exception {
         init();
-        return exec("needsData", context);
+        return ScriptingUtil.exec(bsfEngine, "needsData", new Object[] {context});
     }
     
     
@@ -131,122 +112,15 @@ public class ScriptingIHandler implements IHandler{
             
             String lang = BSFManager.getLangFromFilename(path);
       
-            String script = path.startsWith("/") ? getResource(path) : getSource(path);
-            
             BSFManager manager = new BSFManager();
             manager.declareBean("LOG", LOG, Logger.class);
-            manager.exec(lang, path, 0, 0, script);
+            manager.exec(lang, path, 0, 0, ScriptingUtil.getScript(path));
             
             bsfEngine = manager.loadScriptingEngine(lang);
             
             init = true;
         }
             
-    }
-    
-    
-    /**
-     */
-    protected String getSource(String path) throws IOException {
-      
-        String script = null;
-        File file = PathFactory.getInstance().createPath(path).resolve();
-        
-        if ( scriptCache.containsKey(path) ) {
-            Object[] cacheEntry = (Object[]) scriptCache.get(path);
-            
-            long lastMod = ((Long) cacheEntry[0]).longValue();
-            if ( file.lastModified() <= lastMod ) {
-                LOG.debug("Returning Script from cache for path '"+path+"', lastMod: "+lastMod);
-                script = (String) cacheEntry[1];
-            }
-        } 
-        
-        if ( script == null ) {
-            LOG.debug("Fetching Script for path '"+path+"' from file");
-            script = copy(new FileInputStream(file));
-            scriptCache.put(path, new Object[] {new Long(file.lastModified()), script});
-        }
-        
-        return script;
-    }    
-        
-        
-    /**
-     * @return never null
-     */
-    protected String getResource(String path) throws IOException {
-      
-        String script = null;
-        
-        if ( scriptCache.containsKey(path) ) {
-          
-            LOG.debug("Returning Script from cache for path '"+path);
-            script = (String) scriptCache.get(path); 
-            
-        } else {
-          
-            LOG.debug("Fetching Script from classpath for path '"+path);
-          
-            InputStream stream = path.getClass().getResourceAsStream(path);
-            if ( stream == null )
-                throw new IOException("No Resource found for '"+path+"'");
-              
-            script = copy(stream);
-            scriptCache.put(path, script);
-        }
-        
-        return script;
-    }
-    
-    
-    // ============ private Helper methods ============
-    
-    
-    /**
-     * 
-     */
-    private boolean exec(String methodName, Context context) throws Exception {
-        Boolean bool = null;
-        try {
-            bool = (Boolean) bsfEngine.call(null, methodName, new Object[] {context});
-        } catch (ClassCastException ex) {
-            throw new BSFException(BSFException.REASON_EXECUTION_ERROR,
-                                   scriptName(path)+".methodName() returned no boolean value! "+ex.getMessage());
-        } 
-        
-        if ( bool == null )
-            throw new BSFException(BSFException.REASON_EXECUTION_ERROR,
-                                   scriptName(path)+"."+methodName+"() returned null Boolean value!");
-        
-        return bool.booleanValue();
-    }
-    
-     
-    /**
-     */
-    private String copy(InputStream input) throws IOException {
-        
-        InputStreamReader reader = new InputStreamReader(input);
-        StringWriter output = new StringWriter();
-        
-        char[] buffer = new char[4096];
-        int n = 0;
-        while ( -1 != (n = reader.read(buffer)) ) {
-            output.write(buffer, 0, n);
-        }
-        
-        return output.toString();
-    }
-    
-    
-    /**
-     */
-    private String scriptName(String path) {
-        int indexDot = path.lastIndexOf(".");
-        int indexBegin = path.lastIndexOf("/") != -1 ? path.lastIndexOf("/") : "script:".length();
-        
-        return path.substring(indexBegin, indexDot); 
     }
     
 }
