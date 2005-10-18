@@ -87,7 +87,18 @@
         </xsl:if>
         <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:text>.classname=</xsl:text>
         <xsl:choose>
-          <xsl:when test="./state"><xsl:value-of select="./state/@class"/></xsl:when>
+          <xsl:when test="./state">
+            <xsl:variable name="stateClassStr" select="./state/@class" />
+            <xsl:choose>
+              <xsl:when test="starts-with($stateClassStr, 'script:')">
+                <xsl:text>de.schlund.pfixcore.scripting.ScriptingState>&#xa;</xsl:text>
+                <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:value-of select="concat('.SCRIPTINGSTATE_SRC=', substring-after($stateClassStr, 'script:'))"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="./state/@class"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>
           <xsl:when test="./ihandler">
             <xsl:choose>
               <xsl:when test="/properties/servletinfo/defaultihandlerstate">
@@ -538,7 +549,18 @@
       </xsl:otherwise>
     </xsl:choose>
     <xsl:choose>
-      <xsl:when test="$nodes/prop:state"><xsl:value-of select="$nodes/prop:state/@class"/></xsl:when>
+      <xsl:when test="$nodes/prop:state">
+        <xsl:variable name="stateClassStr" select="$nodes/prop:state/@class" />
+        <xsl:choose>
+          <xsl:when test="starts-with($stateClassStr, 'script:')">
+            <xsl:text>de.schlund.pfixcore.scripting.ScriptingState&#xa;</xsl:text>
+            <xsl:text>pagerequest.</xsl:text><xsl:value-of select="$name"/><xsl:value-of select="concat('.SCRIPTINGSTATE_SRC_PATH=', substring-after($stateClassStr, 'script:'))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$nodes/prop:state/@class"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
       <xsl:when test="$nodes/prop:input">
         <xsl:choose>
           <xsl:when test="//prop:servletinfo/prop:defaultihandlerstate">
@@ -897,5 +919,27 @@
 <!--
 Local Variables:
 mode: xsl
-End:
+End
+
+
+  <xsl:template match="prop:editmode">
+    <xsl:variable name="applicable"><xsl:call-template name="prop:modeApplicable"></xsl:call-template></xsl:variable>
+    <xsl:text>xmlserver.noeditmodeallowed=</xsl:text>
+    <xsl:choose>
+      <xsl:when test="$applicable = 'true'">
+        <xsl:choose>
+          <xsl:when test="@allow = 'true'">false</xsl:when>
+          <xsl:otherwise>true</xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <xsl:when test="@allow = 'true'">true</xsl:when>
+          <xsl:otherwise>false</xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text>&#xa;</xsl:text>
+  </xsl:template>
+:
 -->

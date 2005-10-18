@@ -16,6 +16,7 @@
     </page>
     
     <page name="scripting" handler="/xml/config"/>
+    <page name="scriptingstate" handler="/xml/config"/>
     <page name="encoding" handler="/xml/config"/>
     <page name="test"     handler="/xml/config"/>
 
@@ -38,6 +39,7 @@
   <standardpage name="order"    xml="sample1/xml/two_frames.xml"/>
   <standardpage name="overview" xml="sample1/xml/two_frames.xml"/>
   <standardpage name="scripting" xml="sample1/xml/two_frames.xml"/>
+  <standardpage name="scriptingstate" xml="sample1/xml/two_frames.xml"/>
 
   <standardpage name="encoding" xml="sample1/xml/one_frame.xml"/>
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>

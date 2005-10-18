@@ -144,6 +144,13 @@
     <!-- </properties> -->
   </pagerequest>
   
+  <pagerequest name="scriptingstate">
+    <state class="script:sample1/script/ScriptingState.bsh" />
+    <output>
+      <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
+    </output>
+  </pagerequest>  
+  
   <pagerequest name="scripting">
     <input>
       <interface prefix="shirt" class="de.schlund.pfixcore.example.iwrapper.ScriptingTShirt"/>

@@ -34,7 +34,7 @@
   </part>
   <part name="pfixcore.example.tshirt.SCRIPTING_SUCCESS">
     <product name="default">
-      <lang name="default">You're one lucky pal. The Scripting framework is working (for now) and finally checked it out!</lang>
+      <lang name="default">You're one lucky pal. The Scripting framework is working (for now) and you finally checked it out!</lang>
     </product>
   </part>
 </include_parts>

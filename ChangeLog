@@ -1,3 +1,19 @@
+2005-10-18  Benjamin Reitzammer <benjamin@schlund.de>
+
+  * Added scripting support for States
+  * added lib/bsh-2.0b4.jar
+  * added example/sample1/txt/pages/main_scriptingstate.xml
+  * added example/sample1/txt/script/ScriptingState.bsh
+  * added src/de/schlund/pfixcore/scripting/ScriptingState.java
+  * added src/de/schlund/pfixcore/scripting/ScriptingUtil.java
+  * added src/de/schlund/pfixcore/util/StateUtil.java
+  * move most code from src/de/schlund/pfixcore/workflow/StateImpl.java to
+    static methods in src/de/schlund/pfixcore/util/StateUtil.java to make them 
+    universally useful inside scripting states
+  * refactored src/de/schlund/pfixcore/scripting/ScriptingIHandler.java to use
+    new methods in ScriptingUtil.java
+  * changed example/core/build/create_propfiles.xsl to allow script: class definitions
+
 2005-10-14  Jens Lautenbacher  <jtl@schlund.de>
 
 	* skel/build.xml: merge core/dyntxt/statusmessages.xml into common/dyntxt/statusmessages-core-merged.xml
