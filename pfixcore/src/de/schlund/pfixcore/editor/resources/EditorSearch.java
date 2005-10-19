@@ -38,10 +38,10 @@ import org.apache.oro.text.regex.*;
  */
 
 public interface EditorSearch extends ContextResource {
-    StatusCode SCODE_RESET   = StatusCodeFactory.getInstance().getStatusCode("pfixcore.editor.search.S_RESET");
-    StatusCode SCODE_RUNNING = StatusCodeFactory.getInstance().getStatusCode("pfixcore.editor.search.S_RUNNING");
-    StatusCode SCODE_OK      = StatusCodeFactory.getInstance().getStatusCode("pfixcore.editor.search.S_OK");
-    StatusCode SCODE_INT     = StatusCodeFactory.getInstance().getStatusCode("pfixcore.editor.search.S_INT");
+    StatusCode SCODE_RESET   = StatusCodeLib.PFIXCORE_EDITOR_SEARCH_S_RESET;
+    StatusCode SCODE_RUNNING = StatusCodeLib.PFIXCORE_EDITOR_SEARCH_S_RUNNING;
+    StatusCode SCODE_OK      = StatusCodeLib.PFIXCORE_EDITOR_SEARCH_S_OK;
+    StatusCode SCODE_INT     = StatusCodeLib.PFIXCORE_EDITOR_SEARCH_S_INT;
     String     INCLUDE       = "include";
     String     COMMON        = "common";
     

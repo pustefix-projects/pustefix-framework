@@ -88,9 +88,7 @@ public class CommonsHandler extends EditorStdHandler {
                 }
             }
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.commons");
-            StatusCode        scode = sfac.getStatusCode("COMMONPATH_UNDEF");
-            includes.addSCodePath(scode);
+            includes.addSCodePath(StatusCodeLib.PFIXCORE_EDITOR_COMMONS_COMMONPATH_UNDEF);
         }
     }
 

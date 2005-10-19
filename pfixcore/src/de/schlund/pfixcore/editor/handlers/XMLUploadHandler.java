@@ -40,6 +40,7 @@ import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,7 +100,6 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
         String backfile = upl.getBackup();
 
         if (doupl != null && doupl.booleanValue() == true) {
-            StatusCodeFactory sfac = new StatusCodeFactory("pfixcore.editor.includesupload");
             Object LOCK = FileLockFactory.getInstance().getLockObj(currpath);
             String content = null;
             Node impnode = null;
@@ -141,8 +141,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                     msg += " [" + format.format(now) + "]";
                     CAT.warn("PARSE ERROR: " + e.toString());
                     upl.setStringValExceptionMsg(msg);
-                    StatusCode scode = sfac.getStatusCode("PARSE_ERR");
-                    upl.addSCodeContent(scode);
+                    upl.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
 
                     return;
                 }
@@ -166,8 +165,7 @@ public abstract class XMLUploadHandler extends EditorStdHandler {
                     } catch (DOMException e) {
                         CAT.warn("IMPORT ERROR: " + e.toString());
                         upl.setStringValExceptionMsg(e.getMessage());
-                        StatusCode scode = sfac.getStatusCode("PARSE_ERR");
-                        upl.addSCodeContent(scode);
+                        upl.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
                         return;
                     }
 

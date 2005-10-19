@@ -1,18 +1,81 @@
+2005-10-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java (Module): added. New ant task used
+	to generate a class de.schlund.util.statuscodes.StatusCodeLib that holds public static fields 
+	for all known StatusCodes. This gives us compile time check for unknown StatusCodes and of course
+	completion in IDEs.
+
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java (testStatusCode): changed
+	to no longer get StatusCodes from PartIndex, but instead look at the generated 
+	StatusCodeLib class via reflection if a StatusCode exists.
+	(getStatusCode): no longer need to catch transfomer exceptions
+
+	* src/de/schlund/util/statuscodes/PartIndex.java (Module): removed. no longer needed to
+	dynamically load StatusCodes.
+
+	* skel/build.xml: new target scgenerate to generate a list of
+	public static final fields of all StatusCodes known.  make targets
+	"compile" and "compile-xml" depend on it. make "scgenerate" depend
+	on "propfiles"
+
+	* example/core/dyntxt/statusmessages.xml: one more scode, fixed a description text
+
+	* skel/projects/common/conf/factory.prop.in: 
+	* example/common/conf/factory.prop.in: remove starting of PartIndex
+	factory, remove no longer used partindex.reloadchanges
+	property. partindex.scodefile.* stays as it is. In the skel version of factory.prop.in,
+	use the new definitions from the example versions for perfstat.
+
+	* build.xml: inlcude GenerateSCodes in the classes to build as ant tasks
+
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java : cosmetics
+
+	* src/de/schlund/pfixcore/example/TrouserHandler.java : 
+	* src/de/schlund/pfixcore/example/TShirtHandler.java : 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java : 
+	* src/de/schlund/pfixcore/editor/resources/EditorSearch.java : 
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/UserForEditHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/TargetsHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ProductSelectHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/AddUserHandler.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToByte.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToFloat.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/FloatRange.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/IntegerRange.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java : 
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java : 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: use StatusCodes from generated StatusCodeLib class.
+
 2005-10-18  Benjamin Reitzammer <benjamin@schlund.de>
 
-  * Added scripting support for States
-  * added lib/bsh-2.0b4.jar
-  * added example/sample1/txt/pages/main_scriptingstate.xml
-  * added example/sample1/txt/script/ScriptingState.bsh
-  * added src/de/schlund/pfixcore/scripting/ScriptingState.java
-  * added src/de/schlund/pfixcore/scripting/ScriptingUtil.java
-  * added src/de/schlund/pfixcore/util/StateUtil.java
-  * move most code from src/de/schlund/pfixcore/workflow/StateImpl.java to
-    static methods in src/de/schlund/pfixcore/util/StateUtil.java to make them 
-    universally useful inside scripting states
-  * refactored src/de/schlund/pfixcore/scripting/ScriptingIHandler.java to use
-    new methods in ScriptingUtil.java
-  * changed example/core/build/create_propfiles.xsl to allow script: class definitions
+	* Added scripting support for States	
+	* added lib/bsh-2.0b4.jar
+	* added example/sample1/txt/pages/main_scriptingstate.xml
+	* added example/sample1/txt/script/ScriptingState.bsh
+	* added src/de/schlund/pfixcore/scripting/ScriptingState.java
+	* added src/de/schlund/pfixcore/scripting/ScriptingUtil.java
+	* added src/de/schlund/pfixcore/util/StateUtil.java
+	* move most code from src/de/schlund/pfixcore/workflow/StateImpl.java to
+	  static methods in src/de/schlund/pfixcore/util/StateUtil.java to make them 
+	  universally useful inside scripting states
+	* refactored src/de/schlund/pfixcore/scripting/ScriptingIHandler.java to use
+	  new methods in ScriptingUtil.java
+	* changed example/core/build/create_propfiles.xsl to allow script: class definitions
 
 2005-10-14  Jens Lautenbacher  <jtl@schlund.de>
 

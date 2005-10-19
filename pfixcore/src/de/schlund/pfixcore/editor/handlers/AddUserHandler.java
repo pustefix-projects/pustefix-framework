@@ -18,12 +18,11 @@
  */
 
 package de.schlund.pfixcore.editor.handlers;
-import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.editor.EditorPageUpdater;
-import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorProductFactory;
+import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.auth.EditorUserInfo;
 import de.schlund.pfixcore.editor.auth.GlobalPermissions;
 import de.schlund.pfixcore.editor.auth.NoSuchUserException;
@@ -37,6 +36,8 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
+import org.apache.log4j.Category;
 
 /**
  * Handler for adding new users to the Pustefix CMS. 
@@ -54,7 +55,6 @@ public class AddUserHandler implements IHandler {
         AddUser                adduser = (AddUser) wrapper;
         EditorSessionStatus    esess   = EditorRes.getEditorSessionStatus(crm);
         String                 newid   = adduser.getId();
-        StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.editor.adduser");
 
         EditorUserInfo tmp = null;
         try {
@@ -64,8 +64,7 @@ public class AddUserHandler implements IHandler {
             
             if(CAT.isDebugEnabled())
                 CAT.debug("User '"+newid+"' already exists. Abort.");
-            StatusCode scode = sfac.getStatusCode("USER_EXISTS");
-            adduser.addSCodeId(scode);
+            adduser.addSCodeId(StatusCodeLib.PFIXCORE_EDITOR_ADDUSER_USER_EXISTS);
         } catch(NoSuchUserException e) {
             if(CAT.isDebugEnabled()) {
                 CAT.debug("Creating new user '"+newid+"' with default permissions");

@@ -41,23 +41,21 @@ public class TrouserHandler implements IHandler {
     private Category  CAT  = Category.getInstance(this.getClass().getName());
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        Trouser                trouser = (Trouser) wrapper;
-        ContextTrouser         ct      = SampleRes.getContextTrouser(context);
-        StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.example.trouser");
-        Integer                color   = trouser.getColor();
-        String                 size    = trouser.getSize();
-        Integer[]              feature = trouser.getFeature();
+        Trouser        trouser = (Trouser) wrapper;
+        ContextTrouser ct      = SampleRes.getContextTrouser(context);
+        Integer        color   = trouser.getColor();
+        String         size    = trouser.getSize();
+        Integer[]      feature = trouser.getFeature();
 
         // Sample Check: reject a certain combination
         if (feature != null && color.equals(new Integer(2))) {
             HashSet set = new HashSet(Arrays.asList(feature));
             if (set.contains(new Integer(1))) {
                 // The combination of feature 1 and color No. 2 is invalid (maybe out of stock) 
-                StatusCode scode = sfac.getStatusCode("FEATURECOLOR_OUTOF_STOCK");
                 String[]   args  = new String[2];
                 args[0] = "1";
                 args[1] = "2";
-                trouser.addSCodeWithArgsColor(scode, args);
+                trouser.addSCodeWithArgsColor(StatusCodeLib.PFIXCORE_EXAMPLE_TROUSER_FEATURECOLOR_OUTOF_STOCK, args);
                 return;
             }
         }

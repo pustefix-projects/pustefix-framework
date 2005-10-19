@@ -18,7 +18,6 @@
  */
 
 package de.schlund.pfixcore.editor.handlers;
-import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.editor.EditorUser;
 import de.schlund.pfixcore.editor.auth.NoSuchUserException;
@@ -31,6 +30,8 @@ import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
+import org.apache.log4j.Category;
 
 /**
  * UserAuthHandler.java
@@ -60,7 +61,6 @@ public class UserAuthHandler implements IHandler {
         String                 user    = auth.getUser();
         String                 pass    = auth.getPass();
         boolean                loginok = esess.getLoginAllowed();
-        StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.editor.auth");
         
         if(CAT.isDebugEnabled())       
             CAT.debug("Doing login for user '"+user+"'");
@@ -70,13 +70,13 @@ public class UserAuthHandler implements IHandler {
         try {
             editor_user = EditorUser.logIn(user, pass);
         } catch (WrongPasswordException e) {
-            auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            auth.addSCodeUser(StatusCodeLib.PFIXCORE_EDITOR_AUTH_WRONG_USER_OR_PASS);
             if (CAT.isDebugEnabled())
                 CAT.debug("Login for user '"+user+"' denied: Wrong password.");
             
             return;
         } catch (NoSuchUserException e) {
-            auth.addSCodeUser(sfac.getStatusCode("WRONG_USER_OR_PASS"));
+            auth.addSCodeUser(StatusCodeLib.PFIXCORE_EDITOR_AUTH_WRONG_USER_OR_PASS);
             if(CAT.isDebugEnabled())
                 CAT.debug("Login for user '"+user+"' denied: User does not exist.");
             
@@ -96,7 +96,7 @@ public class UserAuthHandler implements IHandler {
                 if(CAT.isDebugEnabled())
                     CAT.debug("Login for user '"+user+"' successfull. Saving user in session. User logged in.");
             } else {
-                auth.addSCodeUser(sfac.getStatusCode("NO_LOGIN_ALLOWED"));    
+                auth.addSCodeUser(StatusCodeLib.PFIXCORE_EDITOR_AUTH_NO_LOGIN_ALLOWED);    
                 if(CAT.isDebugEnabled())
                     CAT.debug("Login for user '"+user+"' denied: Login currently not allowed.");
             }

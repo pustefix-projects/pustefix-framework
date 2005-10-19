@@ -61,9 +61,7 @@ public class ImagesHandler extends EditorStdHandler {
         if (allimg.contains(image)) {
             esess.setCurrentImage(image);
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.images");
-            StatusCode        scode = sfac.getStatusCode("IMAGE_UNDEF");
-            images.addSCodePath(scode);
+            images.addSCodePath(StatusCodeLib.PFIXCORE_EDITOR_IMAGES_IMAGE_UNDEF);
         }
     }
 

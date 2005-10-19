@@ -64,9 +64,7 @@ public class PagesHandler extends EditorStdHandler {
             }
             esess.setCurrentPage(newpage);
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.pages");
-            StatusCode        scode = sfac.getStatusCode("PAGE_UNDEF");
-            pages.addSCodePage(scode);
+            pages.addSCodePage(StatusCodeLib.PFIXCORE_EDITOR_PAGES_PAGE_UNDEF);
         }
     }
     

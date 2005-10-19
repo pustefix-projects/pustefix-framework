@@ -59,9 +59,7 @@ public class TargetsHandler extends EditorStdHandler {
             }
             esess.setCurrentTarget(currtarget);
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.targets");
-            StatusCode        scode = sfac.getStatusCode("TARGET_UNDEF");
-            targets.addSCodeTarget(scode);
+            targets.addSCodeTarget(StatusCodeLib.PFIXCORE_EDITOR_TARGETS_TARGET_UNDEF);
         }
     }
     

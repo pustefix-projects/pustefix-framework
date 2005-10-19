@@ -143,9 +143,7 @@ public class IncludesHandler extends EditorStdHandler {
 //                 }
 //             }
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.includes");
-            StatusCode        scode = sfac.getStatusCode("INCLUDE_UNDEF");
-            includes.addSCodePath(scode);
+            includes.addSCodePath(StatusCodeLib.PFIXCORE_EDITOR_INCLUDES_INCLUDE_UNDEF);
         }
         if (PERF_LOGGER.isInfoEnabled()) {
             long length = System.currentTimeMillis() - start_time;

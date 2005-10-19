@@ -68,7 +68,6 @@ public class ImagesUploadHandler extends EditorStdHandler {
         Boolean                haveupl  = upload.getHaveUpload();
         AuxDependency          aux      = esess.getCurrentImage();
         Path                   path     = aux.getPath();
-        StatusCodeFactory      sfac     = new StatusCodeFactory("pfixcore.editor.imagesupload");
         StatusCode             scode    = null;
         Boolean                backup   = upload.getHaveBackup();
         String                 backfile = upload.getBackup();
@@ -126,24 +125,24 @@ public class ImagesUploadHandler extends EditorStdHandler {
                     EDITOR.warn("IMG: " + esess.getUser().getId() + ": " + path);
                 } else {
                     if (to_suff.equals(".gif")) {
-                        scode = sfac.getStatusCode("IMAGEUPL_WRONGTYPEGIF");
+                        scode = StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEGIF;
                     } else if (to_suff.equals(".jpg")) {
-                        scode = sfac.getStatusCode("IMAGEUPL_WRONGTYPEJPG");
+                        scode = StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEJPG;
                     } else if (to_suff.equals(".png")) {
-                        scode = sfac.getStatusCode("IMAGEUPL_WRONGTYPEPNG");
+                        scode = StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPEPNG;
                     } else {
-                        scode = sfac.getStatusCode("IMAGEUPL_WRONGTYPE");
+                        scode = StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_WRONGTYPE;
                     }
                 }
             } else {
-                scode = sfac.getStatusCode("IMAGEUPL_NOFILE");
+                scode = StatusCodeLib.PFIXCORE_EDITOR_IMAGESUPLOAD_IMAGEUPL_NOFILE;
             }
             
             if (scode != null) {
                 upload.addSCodeHaveUpload(scode);
             }
         } else {
-            if(CAT.isDebugEnabled())
+            if (CAT.isDebugEnabled())
                 CAT.debug("This seems NOT to be a real image upload");
         }
     }
