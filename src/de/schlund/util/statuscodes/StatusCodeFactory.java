@@ -51,7 +51,7 @@ public class StatusCodeFactory {
     }
 
     public StatusCode testStatusCode(String code) {
-        String     fieldname = getPart(code).replace('.', '_').toUpperCase();
+        String     fieldname = getPart(code).replace('.', '_').replace(':', '_').toUpperCase();
         StatusCode scode     = null;
 
         try {
