@@ -150,12 +150,17 @@
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_DOUBLE">
     <product name="default">
-      <lang name="default">The entered value is no valid double number.</lang>
+      <lang name="default">The entered value is no valid double float number.</lang>
     </product>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_INTEGER">
     <product name="default">
       <lang name="default">The entered value is no valid integer number.</lang>
+    </product>
+  </part>
+  <part name="pfixcore.generator.caster.ERR_TO_LONG">
+    <product name="default">
+      <lang name="default">The entered value is no valid long integer number.</lang>
     </product>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_BYTE">

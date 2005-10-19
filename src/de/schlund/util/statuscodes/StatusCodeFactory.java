@@ -20,6 +20,7 @@
 package de.schlund.util.statuscodes;
 
 import javax.xml.transform.TransformerException;
+import java.lang.reflect.Field;
 
 public class StatusCodeFactory {
     private final static StatusCodeFactory instance = new StatusCodeFactory();
@@ -49,8 +50,22 @@ public class StatusCodeFactory {
         }
     }
 
-    public StatusCode testStatusCode(String code) throws TransformerException {
-        return (StatusCode) PartIndex.getInstance().lookup(getPart(code));
+    public StatusCode testStatusCode(String code) {
+        String     fieldname = getPart(code).replace('.', '_').toUpperCase();
+        StatusCode scode     = null;
+
+        try {
+            Field field = StatusCodeLib.class.getField(fieldname);
+            scode = (StatusCode) field.get(null);
+        } catch (NoSuchFieldException e) {
+            //
+        } catch (SecurityException e) {
+            //
+        } catch (IllegalAccessException e) {
+            //
+        }
+
+        return scode;
     }
 
     public boolean statusCodeExists(String code) throws TransformerException {
@@ -60,11 +75,7 @@ public class StatusCodeFactory {
     public StatusCode getStatusCode(String code) throws StatusCodeException {
         StatusCode scode;
 
-        try {
-            scode = testStatusCode(code);
-        } catch (TransformerException e) {
-            throw new StatusCodeException("StatusCodeFactory, statusmessages.xml couldn't be parsed");
-        }
+        scode = testStatusCode(code);
         if (scode == null) {
             throw new StatusCodeException("StatusCodeFactory, StatusCode [" + getPart(code) + "] not defined");
         }

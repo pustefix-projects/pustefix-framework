@@ -39,7 +39,7 @@ public class ToDouble extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
 
     public ToDouble() {
-        scode = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.caster.ERR_TO_DOUBLE");
+        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_DOUBLE;
     }
     
     public void put_scode_casterror(String fqscode) {

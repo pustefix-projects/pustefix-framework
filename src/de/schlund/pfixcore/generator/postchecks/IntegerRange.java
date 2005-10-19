@@ -41,8 +41,8 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
     
     
     public IntegerRange() {
-        scode_small = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.postcheck.INTEGER_TOO_SMALL");
-        scode_big   = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.postcheck.INTEGER_TOO_BIG");
+        scode_small = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_INTEGER_TOO_SMALL;
+        scode_big   = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_INTEGER_TOO_BIG;
     }
 
     public void put_scode_too_small(String fqscode) {

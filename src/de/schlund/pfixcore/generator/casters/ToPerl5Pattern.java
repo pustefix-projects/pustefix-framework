@@ -43,7 +43,7 @@ public class ToPerl5Pattern extends SimpleCheck implements IWrapperParamCaster {
     private        StatusCode     scode;
     
     public ToPerl5Pattern() {
-        scode = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.caster.ERR_TO_P5PATTERN");
+        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_P5PATTERN;
     }
     
     public void put_scode_casterror(String fqscode) {

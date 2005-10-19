@@ -23,6 +23,7 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
 
@@ -39,11 +40,10 @@ import org.w3c.dom.Element;
 
 public class ContextCounterImpl implements ContextResource, ContextCounter {
 
-    private Boolean           showcounter = Boolean.FALSE;
-    private int               counter     = 0;
-    private Category          CAT         = Category.getInstance(this.getClass().getName());
-    private StatusCodeFactory sfac        = new StatusCodeFactory("pfixcore.example.counter");
-    private Context           context;
+    private Boolean  showcounter = Boolean.FALSE;
+    private int      counter     = 0;
+    private Category CAT         = Category.getInstance(this.getClass().getName());
+    private Context  context;
     
     public void init(Context context) {
         this.context = context;
@@ -75,12 +75,12 @@ public class ContextCounterImpl implements ContextResource, ContextCounter {
     private void checkValue() {
         // demo of pageMessage feature
         if (counter > 9 ) {
-            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_9"), new String[] {""+counter}, "error");
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_9, new String[] {""+counter}, "error");
             context.prohibitContinue();
         } else if (counter > 5 ) {
-            context.addPageMessage(sfac.getStatusCode("WARN_GREATER_5"), new String[] {""+counter}, "warn");
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_WARN_GREATER_5, new String[] {""+counter}, "warn");
         } else if (counter > 3 ) {
-            context.addPageMessage(sfac.getStatusCode("INFO_GREATER_3"), new String[] {""+counter}, "info");
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EXAMPLE_COUNTER_INFO_GREATER_3, new String[] {""+counter}, "info");
         }
     }
 

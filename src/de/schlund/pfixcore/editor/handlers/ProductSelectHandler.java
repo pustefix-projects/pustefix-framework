@@ -48,9 +48,7 @@ public class ProductSelectHandler implements IHandler {
         if (ep != null) {
             esess.setProduct(ep);
         } else {
-            StatusCodeFactory sfac  = new StatusCodeFactory("pfixcore.editor.productselect");
-            StatusCode        scode = sfac.getStatusCode("UNKNOWN_PRODUCT");
-            prod.addSCodeName(scode);
+            prod.addSCodeName(StatusCodeLib.PFIXCORE_EDITOR_PRODUCTSELECT_UNKNOWN_PRODUCT);
         }
     }
 

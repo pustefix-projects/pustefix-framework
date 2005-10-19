@@ -170,7 +170,7 @@ or delete the DOCTYPE definition -->
           />
 
   <target name="compile-xml"
-          depends="propfiles, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
+          depends="propfiles, scgenerate, targetdefs, web_xml, stylesheets, pfixlog_xml, apache_conf, jk_conf, workers_prop, server_xml, webservice"
           description="performs xslt transformations in dir.projects"
           />
 
@@ -191,7 +191,7 @@ or delete the DOCTYPE definition -->
     <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
-  <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile" description="compiles all .java files">
+  <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile, scgenerate" description="compiles all .java files">
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
@@ -401,6 +401,14 @@ or delete the DOCTYPE definition -->
       <arg file="${merge.src}"/>
       <arg value="${merge.srcPath}"/>
       <arg file="${merge.dest}"/>
+    </java>
+  </target>
+
+  <target name="scgenerate" depends="propfiles">
+    <java classname="de.schlund.pfixcore.util.GenerateSCodes" fork="true" classpathref="cp.classpath">
+      <arg value="${dir.src}/de/schlund/util/statuscodes/StatusCodeLib.java"/>
+      <arg value="${dir.projects}/common/conf/factory.prop"/>
+      <arg value="${dir.projects}"/>
     </java>
   </target>
   

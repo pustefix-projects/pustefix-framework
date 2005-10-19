@@ -39,7 +39,7 @@ public class ToFile extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
 
     public ToFile() {
-        scode = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.caster.ERR_TO_FILE");
+        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_FILE;
     }
 
     public void put_scode_casterror(String fqscode) {

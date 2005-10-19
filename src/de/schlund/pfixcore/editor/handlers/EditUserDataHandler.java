@@ -18,10 +18,7 @@
  */
 
 package de.schlund.pfixcore.editor.handlers;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.editor.EditorProduct;
 import de.schlund.pfixcore.editor.EditorProductFactory;
@@ -39,6 +36,10 @@ import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.util.statuscodes.StatusCode;
 import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
+import java.util.HashMap;
+import java.util.Iterator;
+import org.apache.log4j.Category;
 
 /**
  * Handler for changing user data.
@@ -56,7 +57,7 @@ public class EditUserDataHandler implements IHandler {
         EditUserData           data   = (EditUserData) wrapper;
         EditorUser             curr   = esess.getUser();
         EditorUserInfo         euser  = esess.getUserForEdit();
-        StatusCodeFactory      sfac   = new StatusCodeFactory("pfixcore.editor.userdata");
+        //StatusCodeFactory      sfac   = new StatusCodeFactory("pfixcore.editor.userdata");
         boolean                commit = true;
         
         String name  = data.getName();
@@ -74,8 +75,7 @@ public class EditUserDataHandler implements IHandler {
             crypt = UnixCrypt.crypt(pass1);
         } else if (pass1 != null && !pass1.equals(pass2)) {
             commit = false;
-            StatusCode scode = sfac.getStatusCode("PWD_NO_MATCH");
-            data.addSCodePass1(scode);
+            data.addSCodePass1(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_PWD_NO_MATCH);
         }
 
         if (commit) {

@@ -50,18 +50,16 @@ import de.schlund.pfixxml.util.Xml;
  */
 
 public class EditorCommonsFactory {
-    private static final Category               CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
-    private static final EditorCommonsFactory   instance = new EditorCommonsFactory();
-    private        TreeSet                allincs  = new TreeSet();
-    private        HashMap                incfiles = new HashMap();
-    private        HashSet                commonfiles;
-    private        boolean                inited   = false;
+    private static final Category             CAT      = Category.getInstance(EditorCommonsFactory.class.getName());
+    private static final EditorCommonsFactory instance = new EditorCommonsFactory();
+    private        TreeSet                    allincs  = new TreeSet();
+    private        HashMap                    incfiles = new HashMap();
+    private        HashSet                    commonfiles;
+    private        boolean                    inited   = false;
     
     private EditorCommonsFactory() {
     }
 
-    /** TODO: passing docroot is ugly because it's not needed in most cases: get rid 
-        of the singleton ... */
     public static EditorCommonsFactory getInstance() {
         return instance;
     }
@@ -75,7 +73,6 @@ public class EditorCommonsFactory {
         String str;
         
         if (!inited) {
-            ;
             for (Iterator iter = commonfiles.iterator(); iter.hasNext();) {
                 str = (String) iter.next();
                 readFile(PathFactory.getInstance().createPath(str));

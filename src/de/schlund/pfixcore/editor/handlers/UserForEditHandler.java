@@ -45,15 +45,13 @@ public class UserForEditHandler implements IHandler {
         EditorUser             curr   = esess.getUser();
         UserForEdit            toedit = (UserForEdit) wrapper;
         String                 user   = toedit.getUser();
-        EditorUserInfo          eduser = EditorUser.getUserInfoByLogin(user);
-        StatusCodeFactory      sfac   = new StatusCodeFactory("pfixcore.editor.userforedit");
+        EditorUserInfo         eduser = EditorUser.getUserInfoByLogin(user);
         
         if (curr.getUserInfo().isAdmin()) {
             if (eduser != null) {
                 esess.setUserForEdit(eduser);
             } else {
-                StatusCode scode = StatusCodeFactory.getInstance().getStatusCode("USER_UNDEF");
-                toedit.addSCodeUser(scode);
+                toedit.addSCodeUser(StatusCodeLib.PFIXCORE_EDITOR_USERFOREDIT_USER_UNDEF);
             }
         } else {
             esess.setUserForEdit(curr.getUserInfo()); // normal users can only edit their own data.

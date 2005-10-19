@@ -40,17 +40,15 @@ public class TShirtHandler implements IHandler {
     private Category  CAT  = Category.getInstance(this.getClass().getName());
     
     public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
-        TShirt                 tshirt  = (TShirt) wrapper;
-        ContextTShirt          ct      = SampleRes.getContextTShirt(context);
-        StatusCodeFactory      sfac    = new StatusCodeFactory("pfixcore.example.tshirt");
-        Integer                color   = tshirt.getColor();
-        String                 size    = tshirt.getSize();
-        Integer[]              feature = tshirt.getFeature();
+        TShirt        tshirt  = (TShirt) wrapper;
+        ContextTShirt ct      = SampleRes.getContextTShirt(context);
+        Integer       color   = tshirt.getColor();
+        String        size    = tshirt.getSize();
+        Integer[]     feature = tshirt.getFeature();
 
         if (size.equals("L") && color.equals(new Integer(2))) {
             // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
-            StatusCode scode = sfac.getStatusCode("SIZECOLOR_OUTOF_STOCK");
-            tshirt.addSCodeSize(scode, new String[]{"L", "2"}, "note");
+            tshirt.addSCodeSize(StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SIZECOLOR_OUTOF_STOCK, new String[]{"L", "2"}, "note");
             return;
         }
 
