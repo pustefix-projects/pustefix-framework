@@ -118,7 +118,7 @@ public class GenerateSCodes {
                 for (int i = 0; i < list.getLength() ; i++) {
                     Element node      = (Element) list.item(i);
                     String  name      = node.getAttribute("name");
-                    String  classname = name.replace('.', '_').toUpperCase();
+                    String  classname = name.replace('.', '_').replace(':', '_').toUpperCase();
                     writer.write("  public static final StatusCode " + classname +
                                  " = new StatusCode(\"" + name + "\", PathFactory.getInstance().createPath(\"" + inpath.getRelative() + "\"));\n");
                 }
