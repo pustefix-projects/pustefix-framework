@@ -77,7 +77,7 @@
       <!-- This is only for mod_jk A matching sample workers.prop file will be generated, but may need -->
       <!-- additional customization. Clustering will not work out of the box. -->
       <jkmount>router</jkmount>
-      <defaulthost>admcore.<cus:fqdn/></defaulthost>
+      <defaulthost>admskel.<cus:fqdn/></defaulthost>
       <jvmroute>foo</jvmroute>
     </tomcat>
     <apache>
