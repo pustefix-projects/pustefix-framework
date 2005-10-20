@@ -4,7 +4,9 @@
   <properties>
     
     <!-- shared properties for the pustefix projects -->
-    <prop name="derefserver.signkey">987foobarbaz123</prop>
+
+    <!-- IMPORTANT! Set this property to some random value! -->
+    <!-- <prop name="derefserver.signkey">123456secret</prop> -->
     
     <!-- dump of the whole session on Exception -->
     <prop name="servlet.sessiondumponerror">true</prop>
