@@ -1,5 +1,10 @@
 2005-10-20  Jens Lautenbacher  <jtl@schlund.de>
 
+	* skel/build.xml: changed to put all generated src files (.iwrp=>.java, StatusCodeLib) into
+	their own top level directory "gensrc" (accessible in ant as ${dir.gensr}). 
+	The ant target "clean" simply removes this directory, the compile target has this directory 
+	as an addition component of the src path. 
+
 	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java (RequestDataImpl): use the root name 
 	of the pagerequest for the page name, not the name (or commands for variant pages wouldn't work)
 

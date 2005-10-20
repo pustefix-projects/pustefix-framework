@@ -1,4 +1,5 @@
 build.properties
+gensrc
 xrefdb
 dist
 apidocs

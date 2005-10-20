@@ -19,6 +19,7 @@ or delete the DOCTYPE definition -->
   <property name="debugopts"                value="-Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000"/>
   <property name="gen"                      value="**/depend.xml"/>
   <property name="dir.src"                  location="src"/>
+  <property name="dir.gensrc"               location="gensrc"/>
   <property name="dir.build"                location="build"/>
   <property name="dir.lib"                  location="lib"/>
   <property name="dir.skel"                 location="skel"/>
@@ -188,12 +189,12 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="generate-src" depends="ant-tasks, pre-compile" description="generates interfaces wrappers by transforming .iwrp to .java files">
-    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.src}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
+    <pfx-iwrp srcdir="${dir.src}" includes="**/*.iwrp" destdir="${dir.gensrc}" extension=".java" style="${dir.projects}/core/build/iwrapper.xsl" excludes="${excludes.src}" validate="${validate}" catalogfile="${catalogfile}"/>
   </target>
 
   <target name="compile" depends="tomcat.dir.opt, generate-src, jni, depend, pre-compile, scgenerate" description="compiles all .java files">
     <javac
-     srcdir="${dir.src}"
+     srcdir="${dir.src}:${dir.gensrc}"
      destdir="${dir.build}"
      debug="${debug}"
      debuglevel="${debuglevel}"
@@ -317,14 +318,8 @@ or delete the DOCTYPE definition -->
 
   <target name="clean" depends="clean-project, clean-webapps, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
     <delete dir="${dir.build}" />
-    <!-- Delete *.java files created from *.iwrp files -->
-    <delete>
-      <fileset dir="${dir.src}" includes="**/*.java">
-        <present present="both" targetdir="${dir.src}">
-          <mapper type="glob" from="*.java" to="*.iwrp"/>
-        </present>
-      </fileset>
-    </delete>
+    <!-- Delete *.java files created from some kind source files (e.g. .iwrp files) -->
+    <delete dir="${dir.gensrc}" />
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
 
@@ -406,7 +401,7 @@ or delete the DOCTYPE definition -->
 
   <target name="scgenerate" depends="propfiles">
     <java classname="de.schlund.pfixcore.util.GenerateSCodes" fork="true" classpathref="cp.classpath">
-      <arg value="${dir.src}/de/schlund/util/statuscodes/StatusCodeLib.java"/>
+      <arg value="${dir.gensrc}/de/schlund/util/statuscodes/StatusCodeLib.java"/>
       <arg value="${dir.projects}/common/conf/factory.prop"/>
       <arg value="${dir.projects}"/>
     </java>
