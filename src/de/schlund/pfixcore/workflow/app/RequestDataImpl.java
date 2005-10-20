@@ -19,15 +19,16 @@
 
 package de.schlund.pfixcore.workflow.app;
 
-import java.util.HashMap;
-import java.util.Iterator;
 
-import org.apache.log4j.Category;
 
 import de.schlund.pfixcore.generator.RequestData;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixcore.workflow.PageRequest;
 import de.schlund.pfixxml.PfixServletRequest;
 import de.schlund.pfixxml.RequestParam;
+import java.util.HashMap;
+import java.util.Iterator;
+import org.apache.log4j.Category;
 
 /**
  * Implementation of the RequestData interface.
@@ -48,7 +49,7 @@ public class RequestDataImpl implements RequestData {
     private static final String SYNT_PREFIX = "__SYNT:";
     
     public RequestDataImpl (Context context, PfixServletRequest preq) {
-        page = context.getCurrentPageRequest().getName();
+        page = context.getCurrentPageRequest().getRootName();
         initData(preq);
     }
 

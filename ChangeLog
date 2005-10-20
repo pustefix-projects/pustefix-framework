@@ -1,3 +1,8 @@
+2005-10-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java (RequestDataImpl): use the root name 
+	of the pagerequest for the page name, not the name (or commands for variant pages wouldn't work)
+
 2005-10-19  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (Module): added. New ant task used
