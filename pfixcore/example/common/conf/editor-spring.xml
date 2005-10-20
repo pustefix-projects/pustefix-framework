@@ -9,14 +9,14 @@
                 during initialization and will stop working!           -->
   <bean id="usermanagement" class="de.schlund.pfixcore.editor2.core.spring.UserManagementServiceImpl" init-method="init">
     <property name="fileSystemService">
-		  <ref bean="filesystem"/>
-	  </property>
+      <ref bean="filesystem"/>
+    </property>
     <property name="pathResolverService">
-		  <ref bean="pathresolver"/>
-	  </property>
+      <ref bean="pathresolver"/>
+    </property>
     <property name="projectFactoryService">
-	    <ref bean="projectfactory"/>
-	  </property>
+      <ref bean="projectfactory"/>
+    </property>
     <property name="securityManagerService">
       <ref bean="securitymanager"/>
     </property>
@@ -216,6 +216,16 @@
     <property name="startupDelay">
       <value>120000</value>
     </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets during the first run   -->
+    <property name="firstRunDelay">
+      <value>0</value>
+    </property>
+    <!-- Delay (in milliseconds) to wait after each generation step,
+         only applied to low priority targets after the first run   -->
+    <property name="nthRunDelay">
+      <value>1000</value>
+    </property>
   </bean>
   
   <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
@@ -230,13 +240,13 @@
     </property>
   </bean>
 	
-<bean id="lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
-	<property name="queueIdle">
-		<value>1000</value>
-	</property>	  
-	<property name="reAdjustIdle">
-		<value>300000</value>
-	</property>	  
-</bean>
+  <bean id="lucefix" class="de.schlund.pfixcore.lucefix.PfixEngine" init-method="init">
+    <property name="queueIdle">
+      <value>1000</value>
+    </property>	  
+    <property name="reAdjustIdle">
+      <value>300000</value>
+    </property>	  
+  </bean>
 					
 </beans>

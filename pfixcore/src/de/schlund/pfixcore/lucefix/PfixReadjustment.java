@@ -140,7 +140,7 @@ public class PfixReadjustment implements Runnable {
                             // wait some time
                             if (counter == 10){
                                 try{
-                                    Thread.sleep(1000);
+                                    Thread.sleep(10000);
                                 }catch(InterruptedException ie){
                                     // do nothing
                                 }

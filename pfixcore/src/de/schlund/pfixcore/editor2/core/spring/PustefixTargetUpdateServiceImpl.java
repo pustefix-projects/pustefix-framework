@@ -54,6 +54,10 @@ public class PustefixTargetUpdateServiceImpl implements
     private boolean isEnabled = false;
 
     private long startupDelay = 0;
+    
+    private long firstRunDelay = 0;
+    
+    private long nthRunDelay = 1000;
 
     public void setEnabled(boolean flag) {
         this.isEnabled = flag;
@@ -61,6 +65,14 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setStartupDelay(long delay) {
         this.startupDelay = delay;
+    }
+    
+    public void setFirstRunDelay(long delay) {
+        this.firstRunDelay = delay;
+    }
+    
+    public void setNthRunDelay(long delay) {
+        this.nthRunDelay = delay;
     }
 
     public PustefixTargetUpdateServiceImpl() {
@@ -168,13 +180,24 @@ public class PustefixTargetUpdateServiceImpl implements
                         if (!this.highPriorityQueue.isEmpty()) {
                             break;
                         }
-                        if (this.firstRunDone) {
+                        if (this.firstRunDone && this.nthRunDelay > 0) {
                             try {
                                 // Wait a second to make sure
                                 // background generation loop
                                 // does not consume to much
                                 // CPU time
-                                this.lock.wait(1000);
+                                this.lock.wait(this.nthRunDelay);
+                            } catch (InterruptedException e) {
+                                // Ignore interruption and continue
+                            }
+                        }
+                        if (!this.firstRunDone && this.firstRunDelay > 0) {
+                            try {
+                                // Wait a second to make sure
+                                // background generation loop
+                                // does not consume to much
+                                // CPU time
+                                this.lock.wait(this.firstRunDelay);
                             } catch (InterruptedException e) {
                                 // Ignore interruption and continue
                             }
