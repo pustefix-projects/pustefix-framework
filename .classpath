@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="skelexamples" kind="src" path="src"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests/junit"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry sourcepath="PFX_ANT_SRC" kind="var" path="PFX_ANT_LIB"/>
@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="example/servletconf/tomcat/common/endorsed/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/js-1.5R3.jar"/>
+	<classpathentry kind="src" path="gensrc"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
