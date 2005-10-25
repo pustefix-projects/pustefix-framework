@@ -5,7 +5,7 @@
   <product name="default">
 <lang name="default">
         <center>
-<img src="http://lucene.apache.org/java/docs/images/lucene_green_300.gif"/>
+<!--<img src="http://lucene.apache.org/java/docs/images/lucene_green_300.gif"/>-->
           <pfx:forminput>
             <br/>
             <table border="0">
@@ -96,7 +96,12 @@
                       select="@product"/></pfx:argument>
                   <pfx:command name="SELWRP">selectinclude</pfx:command>
                   <pfx:command name="SELWRP">upload</pfx:command>
-                </pfx:button></td><td class="{$class}"><ixsl:value-of select="@score"/>
+                </pfx:button></td><td class="{$class}">
+                <pfx:image src="/core/editor2/img/score.png" height="10">
+                  <ixsl:attribute name="alt"><ixsl:value-of select="@score"/></ixsl:attribute>
+                  <ixsl:attribute name="title"><ixsl:value-of select="@score"/></ixsl:attribute>
+                  <ixsl:attribute name="width"><ixsl:value-of select="round(number(@score) * 100)"/></ixsl:attribute>
+                </pfx:image>
                 </td></tr>
             </ixsl:for-each>
                     </table>
@@ -112,6 +117,7 @@
                 </ixsl:when>
               </ixsl:choose>
           </pfx:forminput>
+          <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image src="/core/editor2/img/lucene.png" border="0"/></pfx:elink>
         </center>
       </lang>
 </product></part>
