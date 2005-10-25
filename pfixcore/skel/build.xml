@@ -12,7 +12,7 @@ or delete the DOCTYPE definition -->
   <property name="uid"                      value="${env.USER}"/>
   <property name="build.compiler"           value="modern"/>
   <property name="build.compiler.emacs"     value="true"/>
-  <property name="javac.source"             value="1.4"/>
+  <property name="javac.source"             value="1.5"/>
   <property name="javac.encoding"           value="iso8859-1"/>
   <property name="name.jnipkg"              value="jni.tar.gz"/>
   <property name="name.cvsautotag"          value="CVS_AUTOTAG"/>
