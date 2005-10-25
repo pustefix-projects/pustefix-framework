@@ -22,6 +22,10 @@ import org.apache.axis.deployment.wsdd.WSDDHandler;
 import org.apache.axis.deployment.wsdd.WSDDRequestFlow;
 import org.apache.axis.deployment.wsdd.WSDDResponseFlow;
 import org.apache.axis.deployment.wsdd.WSDDService;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -70,6 +74,13 @@ public class WebServiceTask extends Task {
         if(!(srcdir.exists()&&srcdir.isDirectory())) throw new BuildException("Source directory '"+srcdir+"' doesn't exist.");
         if(builddir==null) throw new BuildException("No build directory specified.");
         if(!(builddir.exists()&&builddir.isDirectory())) throw new BuildException("Build directory '"+builddir+"' doesn't exist.");
+    }
+    
+    public void init() {
+        ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
+        Logger logger=Logger.getRootLogger();
+        logger.setLevel((Level)Level.ERROR);
+        logger.addAppender(appender);
     }
     
     public void execute() throws BuildException {
