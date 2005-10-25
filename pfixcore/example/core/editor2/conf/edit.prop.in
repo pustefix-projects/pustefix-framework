@@ -172,6 +172,7 @@
 		  <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
 	  </input>
 	  <output>
+      <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
 		  <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
 	  </output>
   </pagerequest>
