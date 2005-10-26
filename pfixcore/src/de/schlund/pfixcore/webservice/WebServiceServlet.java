@@ -216,17 +216,6 @@ public class WebServiceServlet extends AxisServlet {
         }
     }
     
-    private static String getServiceName(HttpServletRequest req) {
-        String service=req.getPathInfo();
-        if(service==null) throw new IllegalArgumentException("No service name found.");
-        int ind=service.lastIndexOf('/');
-        if(ind<0) throw new IllegalArgumentException("No service name found.");
-        else {
-            if(!((service.length()-ind)>1)) throw new IllegalArgumentException("No service name found.");
-            return service.substring(ind+1);
-        }
-    }
-    
     public void doGet(HttpServletRequest req,HttpServletResponse res) throws ServletException,IOException {
         HttpSession session=req.getSession(false);
         PrintWriter writer = res.getWriter();
