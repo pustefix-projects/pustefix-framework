@@ -45,7 +45,7 @@ public class ToDate extends SimpleCheck implements IWrapperParamCaster {
     }
     
     public void put_scode_casterror(String fqscode) {
-        scode = StatusCodeFactory.getInstance().getStatusCode(fqscode);
+        scode = StatusCodeLib.getStatusCodeByName(fqscode);
     }
 
     public void put_format(String fmtstr) {

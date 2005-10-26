@@ -82,7 +82,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     }
 
     public void setCustomSCode(String scode) {
-        missing = new StatusCodeInfo(StatusCodeFactory.getInstance().getStatusCode(scode), null, null);
+        missing = new StatusCodeInfo(StatusCodeLib.getStatusCodeByName(scode), null, null);
     }
 
     public void setParamCaster(IWrapperParamCaster caster) {
