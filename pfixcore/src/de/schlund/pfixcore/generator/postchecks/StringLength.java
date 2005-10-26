@@ -21,7 +21,6 @@ package de.schlund.pfixcore.generator.postchecks;
 import de.schlund.pfixcore.generator.IWrapperParamPostCheck;
 import de.schlund.pfixcore.generator.SimpleCheck;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
