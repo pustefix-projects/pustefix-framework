@@ -39,7 +39,6 @@ import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 import de.schlund.util.statuscodes.StatusCodeLib;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

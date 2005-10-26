@@ -22,6 +22,11 @@
       <lang name="de_*">Bitte geben Sie ihr Alter an</lang>
     </product>
   </part>
+  <part name="pfixcore.example.home.NO_AGE">
+    <product name="default">
+      <lang name="default">Please answer yes or no!</lang>
+    </product>
+  </part>
   <part name="pfixcore.example.trouser.FEATURECOLOR_OUTOF_STOCK">
     <product name="default">
       <lang name="default">The combination <b><pfx:argref pos="1"/>/<pfx:argref pos="2"/></b> of features/color is out of stock.</lang>

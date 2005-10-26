@@ -35,7 +35,6 @@ import de.schlund.pfixcore.util.UnixCrypt;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResourceManager;
 import de.schlund.util.statuscodes.StatusCode;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 import de.schlund.util.statuscodes.StatusCodeLib;
 import java.util.HashMap;
 import java.util.Iterator;

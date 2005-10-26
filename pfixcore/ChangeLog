@@ -1,3 +1,29 @@
+2005-10-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java (run): use the convertToFieldName method of StatusCode
+	(createHeader): also print out the definition of the two new methods getStatusCodeByName(String name[, boolean optional])
+
+	* src/de/schlund/util/statuscodes/StatusCode.java (convertToFieldName): new method, contains the
+	conversion of part name to field name (uppercase, ".:"=>"_" ...)
+
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java (getInstance): removed.
+
+	* src/de/schlund/pfixcore/example/iwrapper/AdultInfo.iwrp (Module): 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToByte.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToFloat.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java (Module): 
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java (Module): 
+	* src/de/schlund/pfixcore/generator/postchecks/FloatRange.java (Module): 
+	* src/de/schlund/pfixcore/generator/postchecks/IntegerRange.java (Module): 
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java (Module): 
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java (Module): changed accordingly
+
 2005-10-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* started 0.8.7-pre

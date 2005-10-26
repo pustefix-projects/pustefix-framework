@@ -49,7 +49,7 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     }
 
     public void put_scode_nomatch(String fqscode) {
-        scode = StatusCodeFactory.getInstance().getStatusCode(fqscode);
+        scode = StatusCodeLib.getStatusCodeByName(fqscode);
     }
     
     public void check(RequestParam[] value) {

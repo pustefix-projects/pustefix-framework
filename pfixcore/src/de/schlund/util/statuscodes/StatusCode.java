@@ -41,4 +41,9 @@ public class StatusCode {
     public String toString() {
         return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodePath().getRelative();
     }
+
+    public static String convertToFieldName(String part) {
+        return part.replace('.', '_').replace(':', '_').toUpperCase();
+    }
+
 }

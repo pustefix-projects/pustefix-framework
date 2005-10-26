@@ -46,11 +46,11 @@ public class IntegerRange extends SimpleCheck implements IWrapperParamPostCheck 
     }
 
     public void put_scode_too_small(String fqscode) {
-        scode_small = StatusCodeFactory.getInstance().getStatusCode(fqscode);
+        scode_small = StatusCodeLib.getStatusCodeByName(fqscode);
     }
 
     public void put_scode_too_big(String fqscode) {
-        scode_big = StatusCodeFactory.getInstance().getStatusCode(fqscode);
+        scode_big = StatusCodeLib.getStatusCodeByName(fqscode);
     }
 
     public void put_range(String param) {

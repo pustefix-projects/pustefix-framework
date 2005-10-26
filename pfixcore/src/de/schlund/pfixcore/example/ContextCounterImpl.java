@@ -22,7 +22,6 @@ package de.schlund.pfixcore.example;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixcore.workflow.ContextResource;
 import de.schlund.pfixxml.ResultDocument;
-import de.schlund.util.statuscodes.StatusCodeFactory;
 import de.schlund.util.statuscodes.StatusCodeLib;
 import org.apache.log4j.Category;
 import org.w3c.dom.Element;
