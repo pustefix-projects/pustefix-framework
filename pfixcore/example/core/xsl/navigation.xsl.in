@@ -361,126 +361,6 @@
     </cus:documentation>
   </xsl:template>
 
-  <xsl:template match="pfx:jsbutton">
-    <xsl:param name="act_src">
-      <xsl:choose>
-        <xsl:when test="@active">
-          <xsl:value-of select="@active"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@omover"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:param>
-    <xsl:param name="inv_src">
-      <xsl:choose>
-        <xsl:when test="@invisible">
-          <xsl:value-of select="@invisible"/>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:value-of select="@omout"/>
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:param>
-    <script language="JavaScript">
-      <ixsl:comment>
-        top.__js_allButtons["<xsl:value-of select="@name"/>"] =
-        new top.__js_button("<xsl:value-of select="@omout"/>","<xsl:value-of select="@omover"/>");
-        //</ixsl:comment>
-    </script>
-    <xsl:call-template name="pfx:button_impl">
-      <xsl:with-param name="normal">
-        <img border="0">
-          <xsl:attribute name="src"><xsl:value-of select="@omout"/></xsl:attribute>
-          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-          <xsl:call-template name="pfx:image_geom_impl">
-            <xsl:with-param name="src"><xsl:value-of select="@omout"/></xsl:with-param>
-          </xsl:call-template>
-        </img>
-      </xsl:with-param>
-      <xsl:with-param name="active">
-        <img border="0" alt="{@alt}">
-          <xsl:attribute name="src"><xsl:value-of select="$act_src"/></xsl:attribute>
-          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-          <xsl:call-template name="pfx:image_geom_impl">
-            <xsl:with-param name="src"><xsl:value-of select="$act_src"/></xsl:with-param>
-          </xsl:call-template>
-        </img>
-      </xsl:with-param>
-      <xsl:with-param name="invisible">
-        <img border="0" alt="{@alt}">
-          <xsl:attribute name="src"><xsl:value-of select="$inv_src"/></xsl:attribute>
-          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-          <xsl:call-template name="pfx:image_geom_impl">
-            <xsl:with-param name="src"><xsl:value-of select="$inv_src"/></xsl:with-param>
-          </xsl:call-template>
-        </img>
-      </xsl:with-param>
-      <xsl:with-param name="accesskey" select="@accesskey"/>
-      <xsl:with-param name="normalclass"><xsl:value-of select="@normalclass"/></xsl:with-param>
-      <xsl:with-param name="activeclass"><xsl:value-of select="@activeclass"/></xsl:with-param>
-      <xsl:with-param name="invisibleclass"><xsl:value-of select="@invisibleclass"/></xsl:with-param>
-      <xsl:with-param name="omover">top.__js_moveover(document,'<xsl:value-of select="@name"/>'); return true</xsl:with-param>
-      <xsl:with-param name="omout">top.__js_moveout(document,'<xsl:value-of select="@name"/>')</xsl:with-param>
-      <xsl:with-param name="args" select="./pfx:argument"/>
-      <xsl:with-param name="cmds" select="./pfx:command"/>
-      <xsl:with-param name="anchors" select="./pfx:anchor"/>
-      <xsl:with-param name="nodata" select="@nodata"/>
-      <xsl:with-param name="buttpage" select="@page"/>
-      <xsl:with-param name="frame" select="@frame"/>
-      <xsl:with-param name="target" select="@target"/>
-      <xsl:with-param name="pageflow" select="@pageflow"/>
-      <xsl:with-param name="jumptopage" select="@jumptopage"/>
-      <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
-      <xsl:with-param name="startwithflow" select="@startwithflow"/>
-      <xsl:with-param name="mode" select="@mode"/>
-      <xsl:with-param name="forcestop" select="@forcestop"/>
-      <xsl:with-param name="popup" select="@popup"/>
-      <xsl:with-param name="popupwidth" select="@popupwidth"/>
-      <xsl:with-param name="popupheight" select="@popupheight"/>
-      <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
-      <xsl:with-param name="popupid" select="@popupid"/>
-    </xsl:call-template>
-    <cus:documentation>
-
-      <description>
-        Similar to the &lt;pfx:button&gt;, but it uses JavaScript
-        mouse-over and mouse-out events to create a rollover image.
-      </description>
-      <param required="0">
-        <name>onmout</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>Name of the mouse-out picture</description>
-      </param>
-      <param required="0">
-        <name>omnover</name>
-        <description>Name of the mouse-over picture</description>
-        <standard></standard>
-        <possible_values></possible_values>
-      </param>
-      <param required="0">
-        <name>accesskey</name>
-        <standard></standard>
-        <possible_values></possible_values>
-        <description>This attribute sets an accesskey in the generated link. Note that you can add a default attribute "accesskey"
-        in the navigation structure for the page.</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:jsbutton name="NameOfButton" omout="NameMouseOutPicture"   omover="NameMouseOverPicture" page="PageName"/></xmlcode>
-        </input>
-        <output>
-          "User visible part" (some javascript code is also generated)
-          <xmlcode>
-            <a target="_parent" class="core_button_normal" onmouseover="top.__js_moveover(document,'NameOfButton'); return true" onmouseout="top.__js_moveout(document,'NameOfButton')" href="/PageName;jsessionid=12345.foo?__frame=_top">
-              <img border="0" src="NameMouseOutPicture" name="NameOfButton"/>
-            </a>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
-  </xsl:template>
 
   <xsl:template match="pfx:url">
     <xsl:call-template name="pfx:button_impl" >
@@ -712,7 +592,6 @@
       </xsl:otherwise>
     </xsl:choose>
     <cus:documentation>
-
       <description>Called by &lt;pfx:button&gt; and &lt;pfx:jsbutton&gt;</description>
     </cus:documentation>
   </xsl:template>
@@ -878,6 +757,101 @@
     </cus:documentation>
   </xsl:template>
 
+
+
+  
+
+  <!-- ************************************************************************************************************* -->
+  <!-- ****************************   NOTE NOTE NOTE NOTE NOTE NOTE NOTE NOTE ************************************** -->
+  <!-- ************************************************************************************************************* -->
+  <!-- All the following templates are DEPRECATED and may be removed any time in the future without -->
+  <!-- further warning. Please don't use them in new code -->
+
+  <xsl:template match="pfx:jsbutton">
+    <xsl:param name="act_src">
+      <xsl:choose>
+        <xsl:when test="@active">
+          <xsl:value-of select="@active"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@omover"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
+    <xsl:param name="inv_src">
+      <xsl:choose>
+        <xsl:when test="@invisible">
+          <xsl:value-of select="@invisible"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="@omout"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:param>
+    <script language="JavaScript">
+      <ixsl:comment>
+        top.__js_allButtons["<xsl:value-of select="@name"/>"] =
+        new top.__js_button("<xsl:value-of select="@omout"/>","<xsl:value-of select="@omover"/>");
+        //</ixsl:comment>
+    </script>
+    <xsl:call-template name="pfx:button_impl">
+      <xsl:with-param name="normal">
+        <img border="0">
+          <xsl:attribute name="src"><xsl:value-of select="@omout"/></xsl:attribute>
+          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+          <xsl:call-template name="pfx:image_geom_impl">
+            <xsl:with-param name="src"><xsl:value-of select="@omout"/></xsl:with-param>
+          </xsl:call-template>
+        </img>
+      </xsl:with-param>
+      <xsl:with-param name="active">
+        <img border="0" alt="{@alt}">
+          <xsl:attribute name="src"><xsl:value-of select="$act_src"/></xsl:attribute>
+          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+          <xsl:call-template name="pfx:image_geom_impl">
+            <xsl:with-param name="src"><xsl:value-of select="$act_src"/></xsl:with-param>
+          </xsl:call-template>
+        </img>
+      </xsl:with-param>
+      <xsl:with-param name="invisible">
+        <img border="0" alt="{@alt}">
+          <xsl:attribute name="src"><xsl:value-of select="$inv_src"/></xsl:attribute>
+          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+          <xsl:call-template name="pfx:image_geom_impl">
+            <xsl:with-param name="src"><xsl:value-of select="$inv_src"/></xsl:with-param>
+          </xsl:call-template>
+        </img>
+      </xsl:with-param>
+      <xsl:with-param name="accesskey" select="@accesskey"/>
+      <xsl:with-param name="normalclass"><xsl:value-of select="@normalclass"/></xsl:with-param>
+      <xsl:with-param name="activeclass"><xsl:value-of select="@activeclass"/></xsl:with-param>
+      <xsl:with-param name="invisibleclass"><xsl:value-of select="@invisibleclass"/></xsl:with-param>
+      <xsl:with-param name="omover">top.__js_moveover(document,'<xsl:value-of select="@name"/>'); return true</xsl:with-param>
+      <xsl:with-param name="omout">top.__js_moveout(document,'<xsl:value-of select="@name"/>')</xsl:with-param>
+      <xsl:with-param name="args" select="./pfx:argument"/>
+      <xsl:with-param name="cmds" select="./pfx:command"/>
+      <xsl:with-param name="anchors" select="./pfx:anchor"/>
+      <xsl:with-param name="nodata" select="@nodata"/>
+      <xsl:with-param name="buttpage" select="@page"/>
+      <xsl:with-param name="frame" select="@frame"/>
+      <xsl:with-param name="target" select="@target"/>
+      <xsl:with-param name="pageflow" select="@pageflow"/>
+      <xsl:with-param name="jumptopage" select="@jumptopage"/>
+      <xsl:with-param name="jumptopageflow" select="@jumptopageflow"/>
+      <xsl:with-param name="startwithflow" select="@startwithflow"/>
+      <xsl:with-param name="mode" select="@mode"/>
+      <xsl:with-param name="forcestop" select="@forcestop"/>
+      <xsl:with-param name="popup" select="@popup"/>
+      <xsl:with-param name="popupwidth" select="@popupwidth"/>
+      <xsl:with-param name="popupheight" select="@popupheight"/>
+      <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
+      <xsl:with-param name="popupid" select="@popupid"/>
+    </xsl:call-template>
+    <cus:documentation>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
+  </xsl:template>
+
   <xsl:template match="pfx:wizardnavigation">
     <ixsl:choose>
       <ixsl:when test="/formresult/iwrappergroups/@lastindex = 0">
@@ -888,16 +862,7 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-
-      <description>will be documentated later</description>
-      <children>
-        <name>pfx:group</name>
-        <description></description>
-      </children>
-      <children>
-        <name>pfx:flat</name>
-        <description></description>
-      </children>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
 
@@ -940,28 +905,7 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-
-      <description>will be documentated later</description>
-      <children>
-        <name>pfx:active</name>
-        <description></description>
-      </children>
-      <children>
-        <name>pfx:inactive</name>
-        <description></description>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:wizardprevious>
-              <pfx:active>&lt;&lt;Previous</pfx:active>
-              <pfx:inactive>&lt;&lt; Previous</pfx:inactive>
-            </pfx:wizardprevious>
-          </xmlcode>
-        </input>
-        <output>
-        </output>
-      </example>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
 
@@ -975,33 +919,7 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-
-      <description>will be documentated later</description>
-      <children>
-        <name>pfx:active</name>
-        <description></description>
-      </children>
-      <children>
-        <name>pfx:inactive</name>
-        <description></description>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:wizardnext>
-              <pfx:active>
-                <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Next &gt;&gt;">
-                  <pfx:command name="SELGRP">NEXT</pfx:command>
-                </pfx:xinp>
-              </pfx:active>
-              <pfx:inactive>Next &gt;&gt;</pfx:inactive>
-            </pfx:wizardnext>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode></xmlcode>
-        </output>
-      </example>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
 
@@ -1015,31 +933,7 @@
       </ixsl:otherwise>
     </ixsl:choose>
     <cus:documentation>
-
-      <description>will be documentated later</description>
-      <children>
-        <name>pfx:active</name>
-        <description></description>
-      </children>
-      <children>
-        <name>pfx:inactive</name>
-        <description></description>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:wizardfinish>
-              <pfx:active>
-                <pfx:xinp onclick="top.__js_progress_start_show_work(1);" type="submit" value="Finish"/>
-              </pfx:active>
-              <pfx:inactive>Finish</pfx:inactive>
-            </pfx:wizardfinish>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode></xmlcode>
-        </output>
-      </example>
+      <description>DEPRECATED. DON'T USE IT.</description>
     </cus:documentation>
   </xsl:template>
 

@@ -39,7 +39,7 @@ public class ToBoolean extends SimpleCheck implements IWrapperParamCaster {
     private StatusCode scode;
 
     public ToBoolean() {
-        scode = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.caster.ERR_TO_BOOLEAN");
+        scode = StatusCodeLib.PFIXCORE_GENERATOR_CASTER_ERR_TO_BOOLEAN;
     }
     
     public void put_scode_casterror(String fqscode) {

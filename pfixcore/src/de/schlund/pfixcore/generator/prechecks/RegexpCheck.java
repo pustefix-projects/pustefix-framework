@@ -41,7 +41,7 @@ public class RegexpCheck  extends SimpleCheck implements IWrapperParamPreCheck {
     private        StatusCode scode;
     
     public RegexpCheck() {
-        scode = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.precheck.REGEXP_NO_MATCH");
+        scode = StatusCodeLib.PFIXCORE_GENERATOR_PRECHECK_REGEXP_NO_MATCH;
     }
 
     public void put_regexp(String regexp) {

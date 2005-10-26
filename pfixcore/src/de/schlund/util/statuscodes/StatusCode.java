@@ -19,18 +19,26 @@
 
 package de.schlund.util.statuscodes;
 
+import de.schlund.pfixxml.util.Path;
+
 public class StatusCode {
     private final String part;
-
-    protected StatusCode(String part) { 
+    private final Path path;
+    
+    protected StatusCode(String part, Path path) { 
         this.part = part;
+        this.path = path;
     }
 
     public String getStatusCodeId() { 
         return part;
     }
 
+    public Path getStatusCodePath() {
+        return path;
+    }
+
     public String toString() {
-        return "StatusCode:" + getStatusCodeId();
+        return "StatusCode:" + getStatusCodeId() + "@" + getStatusCodePath().getRelative();
     }
 }

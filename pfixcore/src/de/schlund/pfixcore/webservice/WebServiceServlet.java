@@ -3,30 +3,44 @@
  */
 package de.schlund.pfixcore.webservice;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.axis.AxisEngine;
 import org.apache.axis.AxisFault;
 import org.apache.axis.ConfigurationException;
-import org.apache.axis.AxisEngine;
-import org.apache.axis.MessageContext;
 import org.apache.axis.description.OperationDesc;
 import org.apache.axis.description.ServiceDesc;
 import org.apache.axis.transport.http.AxisServlet;
-import org.apache.axis.utils.ClassUtils;
 import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
-import de.schlund.pfixcore.webservice.config.*;
+import de.schlund.pfixcore.webservice.config.ConfigProperties;
+import de.schlund.pfixcore.webservice.config.Configuration;
+import de.schlund.pfixcore.webservice.config.GlobalServiceConfig;
+import de.schlund.pfixcore.webservice.config.ServiceConfig;
 import de.schlund.pfixcore.webservice.fault.Fault;
 import de.schlund.pfixcore.webservice.fault.FaultHandler;
-import de.schlund.pfixcore.webservice.monitor.*;
+import de.schlund.pfixcore.webservice.monitor.Monitor;
+import de.schlund.pfixcore.webservice.monitor.MonitorHistory;
+import de.schlund.pfixcore.webservice.monitor.MonitorRecord;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.loader.AppLoader;
@@ -40,15 +54,14 @@ import de.schlund.pfixxml.loader.AppLoader;
  */
 public class WebServiceServlet extends AxisServlet {
 
-    private Category CAT=Category.getInstance(getClass().getName());
-    private boolean DEBUG=CAT.isDebugEnabled();
-    
-    private static final String MONITOR_XSL="core/xsl/wsmonitor.xsl";
+    private Category LOG=Logger.getLogger(getClass().getName());
+    private boolean DEBUG=LOG.isDebugEnabled();
     
     private WebServiceContext wsc;
     private ClassLoader currentLoader;
     
     private static ThreadLocal currentFault=new ThreadLocal();
+    private static ThreadLocal currentRequest=new ThreadLocal();
     
     public static void setCurrentFault(Fault fault) {
         currentFault.set(fault);
@@ -56,6 +69,14 @@ public class WebServiceServlet extends AxisServlet {
     
     public static Fault getCurrentFault() {
         return (Fault)currentFault.get();
+    }
+    
+    public static void setCurrentRequest(HttpServletRequest request) {
+        currentRequest.set(request);
+    }
+    
+    public static HttpServletRequest getCurrentRequest() {
+        return (HttpServletRequest)currentRequest.get();
     }
 
     
@@ -86,7 +107,7 @@ public class WebServiceServlet extends AxisServlet {
                 wsc.setAttribute(Monitor.class.getName(),monitor);
             }
         } catch(Exception x) {
-            CAT.error("Can't get web service configuration",x);
+            LOG.error("Can't get web service configuration",x);
             throw new ServletException("Can't get web service configuration",x);
         }
     }
@@ -120,7 +141,7 @@ public class WebServiceServlet extends AxisServlet {
            	Thread.currentThread().setContextClassLoader(newLoader);
             synchronized(this) {
             	if(newLoader!=currentLoader) {
-            		if(DEBUG) CAT.debug("Reload Axis Engine.");
+            		if(DEBUG) LOG.debug("Reload Axis Engine.");
             		//ClassUtils.setDefaultClassLoader(newLoader);
             		Thread.currentThread().setContextClassLoader(newLoader);
             		currentLoader=newLoader;
@@ -132,45 +153,66 @@ public class WebServiceServlet extends AxisServlet {
             }
         }
         
+        try {
+        	setCurrentFault(null);
+        	setCurrentRequest(req);
         
-        String serviceName=getServiceName(req);
-        Configuration config=wsc.getConfiguration();
-        ServiceConfig srvConf=config.getServiceConfig(serviceName);
-        HttpSession session=req.getSession(false);
-        Context pfxContext=null;
-        if(session!=null) pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
+        	String serviceName=getServiceName(req);
+        	Configuration config=wsc.getConfiguration();
+        	ServiceConfig srvConf=config.getServiceConfig(serviceName);
+        	HttpSession session=req.getSession(false);
+        	Context pfxContext=null;
+        	if(session!=null) pfxContext=(Context)session.getAttribute(srvConf.getContextName()+"__CONTEXT__");
         
-        if(DEBUG) CAT.debug("Process webservice request: "+req.getPathInfo());
-        if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
-            if(DEBUG) CAT.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
-            HttpServletResponse response=res;
-            String reqID=req.getParameter(Constants.PARAM_REQUEST_ID);
-            if(DEBUG) if(reqID!=null) CAT.debug("contains requestID parameter: "+reqID);
-            String insPI=req.getParameter("insertpi");
-            if(insPI!=null) response=new InsertPIResponseWrapper(res);
-            if(DEBUG) if(insPI!=null) CAT.debug("contains insertpi parameter");
-            if(pfxContext!=null) {
-                synchronized(pfxContext) {
-                    super.doPost(new SOAPActionRequestWrapper(req),response);
-                }
-            } else {
-                super.doPost(new SOAPActionRequestWrapper(req),response);
-            }
-        } else if(req.getHeader(Constants.HEADER_SOAP_ACTION)!=null) {
-            if(DEBUG) CAT.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
-            String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
-            if(DEBUG) if(reqID!=null) CAT.debug("contains requestID header: "+reqID);
-            if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
-            if(pfxContext!=null) {
-                synchronized(pfxContext) {
-                    super.doPost(req,res);
-                }
-            } else {
-                super.doPost(req,res);
-            }
-        } else {
-            if(DEBUG) CAT.debug("no SOAPAction header, no soapmessage parameter -> bad request");
-            sendBadRequest(req,res,res.getWriter());
+        	if(DEBUG) LOG.debug("Process webservice request: "+req.getPathInfo());
+        	if(req.getHeader(Constants.HEADER_SOAP_ACTION)==null && req.getParameter(Constants.PARAM_SOAP_MESSAGE)!=null) {
+        		if(DEBUG) LOG.debug("no SOAPAction header, but soapmessage parameter -> iframe method");
+        		HttpServletResponse response=res;
+        		String reqID=req.getParameter(Constants.PARAM_REQUEST_ID);
+        		if(DEBUG) if(reqID!=null) LOG.debug("contains requestID parameter: "+reqID);
+        		String insPI=req.getParameter("insertpi");
+        		if(insPI!=null) response=new InsertPIResponseWrapper(res);
+        		if(DEBUG) if(insPI!=null) LOG.debug("contains insertpi parameter");
+        		if(pfxContext!=null) {
+        			synchronized(pfxContext) {
+        				super.doPost(new SOAPActionRequestWrapper(req),response);
+        			}
+        		} else {
+        			super.doPost(new SOAPActionRequestWrapper(req),response);
+        		}
+        	} else if(req.getHeader(Constants.HEADER_SOAP_ACTION)!=null) {
+        		if(DEBUG) LOG.debug("found SOAPAction header, but no soapmessage parameter -> xmlhttprequest version");
+        		String reqID=req.getHeader(Constants.HEADER_REQUEST_ID);
+        		if(DEBUG) if(reqID!=null) LOG.debug("contains requestID header: "+reqID);
+        		if(reqID!=null) res.setHeader(Constants.HEADER_REQUEST_ID,reqID);
+        		if(pfxContext!=null) {
+        			synchronized(pfxContext) {
+        				super.doPost(req,res);
+        			}
+        		} else {
+        			super.doPost(req,res);
+        		}
+        	} else {
+        		if(DEBUG) LOG.debug("no SOAPAction header, no soapmessage parameter -> bad request");
+        		sendBadRequest(req,res,res.getWriter());
+        	}
+        } catch(Throwable t) {
+        	LOG.warn("Error while processing webservice request.",t);
+        	throw new ServletException("Error while processing webservice request.",t);
+        } finally {
+        	setCurrentFault(null);
+        	setCurrentRequest(null);
+        }
+    }
+    
+    private static String getServiceName(HttpServletRequest req) {
+        String service=req.getPathInfo();
+        if(service==null) throw new IllegalArgumentException("No service name found.");
+        int ind=service.lastIndexOf('/');
+        if(ind<0) throw new IllegalArgumentException("No service name found.");
+        else {
+            if(!((service.length()-ind)>1)) throw new IllegalArgumentException("No service name found.");
+            return service.substring(ind+1);
         }
     }
     
@@ -250,25 +292,61 @@ public class WebServiceServlet extends AxisServlet {
     }
     
     protected void processAxisFault(AxisFault axisFault) {
-        Fault fault=WebServiceServlet.getCurrentFault();
-        Throwable t=axisFault.getCause();
-        if(t!=null) CAT.error("Exception while processing request",t);
-        String serviceName=fault.getServiceName();
-        Configuration config=wsc.getConfiguration();
-        ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
-        FaultHandler faultHandler=serviceConfig.getFaultHandler();
-        if(faultHandler==null) {
-            GlobalServiceConfig globalConfig=config.getGlobalServiceConfig();
-            faultHandler=globalConfig.getFaultHandler();
-        }
-        if(faultHandler!=null) {
-            fault.setThrowable(t);
-            faultHandler.handleFault(fault);
-            axisFault.setFaultString(fault.getFaultString());
+        Fault fault=getCurrentFault();
+        if(fault==null) {
+        	HttpServletRequest req=getCurrentRequest();
+        	LOG.warn(dumpRequest(req,true));
+        	Throwable t=axisFault.getCause();
+            if(t!=null) LOG.warn(t,t);
+        } else {
+        	Throwable t=axisFault.getCause();
+        	if(t!=null) LOG.error("Exception while processing request",t);
+        	String serviceName=fault.getServiceName();
+        	Configuration config=wsc.getConfiguration();
+        	ServiceConfig serviceConfig=config.getServiceConfig(serviceName);
+        	FaultHandler faultHandler=serviceConfig.getFaultHandler();
+        	if(faultHandler==null) {
+        		GlobalServiceConfig globalConfig=config.getGlobalServiceConfig();
+        		faultHandler=globalConfig.getFaultHandler();
+        	}
+        	if(faultHandler!=null) {
+        		fault.setThrowable(t);
+        		faultHandler.handleFault(fault);
+        		axisFault.setFaultString(fault.getFaultString());
+        	}
         }
         axisFault.removeFaultDetail(org.apache.axis.Constants.QNAME_FAULTDETAIL_STACKTRACE);
     }
 
+    private String dumpRequest(HttpServletRequest srvReq,boolean showHeaders) {
+		StringBuffer sb=new StringBuffer();
+		sb.append(srvReq.getScheme());
+		sb.append("://");
+		sb.append(srvReq.getServerName());
+		sb.append(":");
+		sb.append(srvReq.getServerPort());
+		sb.append(srvReq.getRequestURI());
+		HttpSession session=srvReq.getSession(false);
+		if(session!=null) {
+			sb.append(Constants.SESSION_PREFIX);
+			sb.append(session.getId());
+		}
+		String s=srvReq.getQueryString();
+		if(s!=null&&!s.equals("")) {
+			sb.append("?");
+			sb.append(s);
+		}
+		sb.append("\n");
+		if(showHeaders) {
+			Enumeration headers=srvReq.getHeaderNames();
+			while(headers.hasMoreElements()) {
+				String header=(String)headers.nextElement();
+				String value=srvReq.getHeader(header);
+				sb.append(header+": "+value+"\n");
+			}
+		}
+		return sb.toString();
+	}
     
     public void sendAdmin(HttpServletRequest req,HttpServletResponse res,PrintWriter writer) {
       
@@ -277,11 +355,10 @@ public class WebServiceServlet extends AxisServlet {
           
             ClassLoader newLoader=loader.getAppClassLoader();
             if(newLoader!=null) {
-                ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
+                //ClassLoader currentLoader=Thread.currentThread().getContextClassLoader();
                
                 Thread.currentThread().setContextClassLoader(newLoader);
-                
-                
+             
             }
            
         }

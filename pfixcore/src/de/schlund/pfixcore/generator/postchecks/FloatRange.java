@@ -42,8 +42,8 @@ public class FloatRange extends SimpleCheck implements IWrapperParamPostCheck {
     private float      upper;
     
     public FloatRange() {
-        scode_small = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.postcheck.FLOAT_TOO_SMALL");
-        scode_big   = StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.postcheck.FLOAT_TOO_BIG");
+        scode_small = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_FLOAT_TOO_SMALL;
+        scode_big   = StatusCodeLib.PFIXCORE_GENERATOR_POSTCHECK_FLOAT_TOO_BIG;
     }
 
     public void put_scode_too_small(String fqscode) {

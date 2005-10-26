@@ -1,19 +1,18 @@
 package de.schlund.pfixcore.webservice.generate;
 
-import org.apache.axis.wsdl.fromJava.Emitter;
-
 import java.io.File;
 import java.util.HashMap;
-import org.apache.axis.tools.ant.wsdl.*;
+
+import org.apache.axis.wsdl.fromJava.Emitter;
 
 public class Java2Wsdl {
     
-    private String namespace = "";
+    //private String namespace = "";
     private HashMap namespaceMap = new HashMap();
     private String location = "";
     private String output = "." ;
     private String className = "." ;
-    private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
+    //private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
     private String style="rpc";
     private String use="encoded";
     private String implClassName;
@@ -52,9 +51,11 @@ public class Java2Wsdl {
         this.className = parameter;
     }
     
+    /**
     public void setNamespace(String parameter) {
         this.namespace = parameter;
     }
+    */
     
     public void addNamespaceMapping(String pkg,String ns) {
         namespaceMap.put(pkg,ns);

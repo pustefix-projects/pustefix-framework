@@ -19,7 +19,9 @@ import java.util.List;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PerfStatistic {
-    private HashMap category_map = new HashMap(); 
+    private HashMap<String, HashMap<String, int[]>> category_map = 
+        new HashMap<String, HashMap<String, int[]>>(); 
+    
     
     private static PerfStatistic instance = new PerfStatistic();
     
@@ -35,7 +37,7 @@ public class PerfStatistic {
     }
         
    synchronized void reset() {
-       category_map = new HashMap();
+       category_map = new HashMap<String, HashMap<String, int[]>>();
    }
 
     /**
@@ -43,67 +45,31 @@ public class PerfStatistic {
      */
    synchronized void process(PerfEvent pe) {
       
-       List intervals = IntervalFactory.getInstance().getIntervalForCategory(pe.getCategory());
+       List<Interval> intervals = IntervalFactory.getInstance().getIntervalForCategory(pe.getCategory());
         
         if(!category_map.containsKey(pe.getCategory())) {
-            category_map.put(pe.getCategory(), new HashMap());
+            category_map.put(pe.getCategory(), new HashMap<String, int[]>());
         }
         
-        HashMap identity_map = (HashMap) category_map.get(pe.getCategory());
+        HashMap<String, int[]> identity_map = category_map.get(pe.getCategory());
         
         if(!identity_map.containsKey(pe.getIdentifier())) {
             int[] c = createCount(intervals.size());
             identity_map.put(pe.getIdentifier(), c);
         }
         
-        int[] count = (int[])identity_map.get(pe.getIdentifier()); 
+        int[] count = identity_map.get(pe.getIdentifier()); 
         int index = search(pe.getDuration(), intervals);
         count[index]++;
     }
     
    synchronized String toXML() {
         StringBuffer sb = new StringBuffer(1024);
-       
-        sb.append("<perf>").append("\n");
+        if(category_map.isEmpty()) return "";
         
-        sb.append("<status>").append("\n");
-        sb.append("<enabled>").append(PerfLogging.getInstance().isPerfLogggingEnabled()).
-        append("</enabled>").append("\n");
-        sb.append("<active>").append(PerfLogging.getInstance().isPerfLoggingActive()).
-        append("</active>").append("\n");
+        Formatter v = new XMLFormatter();
+        format(sb, v);
         
-        sb.append("</status").append("\n");
-        
-       
-        
-        for(Iterator i = category_map.keySet().iterator(); i.hasNext();) {
-            String category = (String) i.next();
-            sb.append("<category name=\""+category+"\">").append("\n");
-            
-            HashMap identity_map = (HashMap)category_map.get(category);
-            
-            for(Iterator j = identity_map.keySet().iterator(); j.hasNext(); ) {
-                String identfier = (String) j.next();
-                sb.append("<id name=\""+identfier+"\">").append("\n");
-                
-                int[] cc = (int[]) identity_map.get(identfier);
-                
-                List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
-                
-                int count = 0;
-                for(Iterator k = intervals.iterator(); k.hasNext();) {
-                    Interval interval = (Interval) k.next();
-                    sb.append("<count from=\""+interval.getFrom()+
-                               "\" to=\""+interval.getUntil()+  
-                               "\">"+cc[count++]+"</count>").append("\n");
-                }
-                sb.append("</id>").append("\n");
-            }
-            
-            
-            sb.append("</category>").append("\n");
-        }
-        sb.append("</perf>").append("\n");
         return sb.toString();
     }
    
@@ -111,44 +77,67 @@ public class PerfStatistic {
         StringBuffer sb = new StringBuffer(1024);
         if(category_map.isEmpty()) return "";
         
-        sb.append("\n----------------------------------------------"); 
-        sb.append("\n*** Performance ***").append("\n");
+        Formatter v = new StringFormatter();
+        format(sb, v);
         
+        return sb.toString();
+    }
+
+
+    /**
+     * @param sb
+     */
+    private void format(StringBuffer sb, Formatter v) {
+        v.printHeader(sb);
         for(Iterator i = category_map.keySet().iterator(); i.hasNext();) {
             String category = (String) i.next();
-            sb.append(category).append("\n");
-            
-            HashMap identity_map = (HashMap)category_map.get(category);
-            
+            v.categoryStart(sb, category);
+            HashMap identity_map = category_map.get(category);
             for(Iterator j = identity_map.keySet().iterator(); j.hasNext(); ) {
                 String identfier = (String) j.next();
-                
                 int[] cc = (int[]) identity_map.get(identfier);
-                
                 List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
                 
                 int count = 0;
                 int total = getTotal(category, identfier);
-                sb.append("\t"+identfier+"["+total+"]"+":").append("\n");
+                
+                v.identfierStart(sb, identfier, total);
+                
                 for(Iterator k = intervals.iterator(); k.hasNext();) {
                     Interval interval = (Interval) k.next();
-                    if(cc[count] > 0) {
-                        int per = total == 0 ? total : (cc[count] * 100 / total);
-                        sb.append("\t\t["+interval.getFrom()+
-                               "-"+interval.getUntil()+"]"+  
-                               "=>"+cc[count]+"|"+per).append("\n");
-                    }
+                   // if(cc[count] > 0) {
+                        int per = getPercent(cc, count, total);
+                        v.formatCountElement(sb, cc, count, interval, per);
+                   // }
                     count++;
-                }                
+                }
+                v.identierEnd(sb);
             }
+            v.catgeoryStop(sb);
         }
-        sb.append("----------------------------------------------\n");
-        return sb.toString();
+        v.printFooter(sb);
+        
+    }
+
+
+    
+   
+
+
+    /**
+     * @param cc
+     * @param count
+     * @param total
+     * @return
+     */
+    private int getPercent(int[] cc, int count, int total) {
+        int per = total == 0 ? total : (cc[count] * 100 / total);
+        return per;
     }
     
     
     private int getTotal(String category, String ident) {
-        HashMap identity_map = (HashMap)category_map.get(category);
+        HashMap identity_map = category_map.get(category);
         int[] cc = (int[]) identity_map.get(ident);
         List intervals = IntervalFactory.getInstance().getIntervalForCategory(category);
         int count = 0;
@@ -206,4 +195,92 @@ public class PerfStatistic {
         return index;
     }
 
+}
+
+interface Formatter {
+     void printHeader(StringBuffer sb);
+     void printFooter(StringBuffer sb);
+    void formatCountElement(StringBuffer sb, int[] cc, int count, Interval interval, int per);
+     void identfierStart(StringBuffer sb, String id, int total);
+     void identierEnd(StringBuffer sb);
+     void categoryStart(StringBuffer sb, String category);
+     void catgeoryStop(StringBuffer sb);
+}
+
+class StringFormatter implements Formatter {
+   
+    
+    public void printHeader(StringBuffer sb) {
+       sb.append("\n----------------------------------------------"); 
+       sb.append("\n*** Performance ***").append("\n");
+   }
+
+    public void formatCountElement(StringBuffer sb, int[] cc, int count, Interval interval, int per) {
+        sb.append("\t\t["+interval.getFrom()+
+                   "-"+interval.getUntil()+"]"+  
+                   "=>"+cc[count]+"|"+per).append("\n");
+    }
+
+    public void identfierStart(StringBuffer sb, String identifier, int total) {
+        sb.append("\t"+identifier+"["+total+"]"+":");
+    }
+
+    public void categoryStart(StringBuffer sb, String category) {
+        sb.append(category);
+    }
+
+    public void identierEnd(StringBuffer sb) {
+        sb.append("\n");
+    }
+
+    public void catgeoryStop(StringBuffer sb) {
+        sb.append("\n");
+    }
+
+    public void printFooter(StringBuffer sb) {
+        sb.append("----------------------------------------------\n");
+    }
+}
+
+class XMLFormatter implements Formatter {
+
+    public void printHeader(StringBuffer sb) {
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<perf>").append("\n");
+        sb.append("<status>").append("\n");
+        sb.append("<enabled>").append(PerfLogging.getInstance().isPerfLogggingEnabled()).
+        append("</enabled>").append("\n");
+        sb.append("<active>").append(PerfLogging.getInstance().isPerfLoggingActive()).
+        append("</active>").append("\n");
+        
+        sb.append("</status>").append("\n");
+    }
+
+    public void printFooter(StringBuffer sb) {
+        sb.append("</perf>").append("\n");
+    }
+
+    public void formatCountElement(StringBuffer sb, int[] cc, int count, Interval interval, int per) {
+        sb.append("<count from=\""+interval.getFrom()+
+                "\" to=\""+interval.getUntil()+
+                "\" per=\""+per+
+                "\">"+cc[count++]+"</count>").append("\n");
+    }
+
+    public void identfierStart(StringBuffer sb, String id, int total) {
+        sb.append("<id name=\""+id+"\"  total=\""+total+"\">").append("\n");
+    }
+
+    public void identierEnd(StringBuffer sb) {
+        sb.append("</id>").append("\n");
+    }
+
+    public void categoryStart(StringBuffer sb, String category) {
+        sb.append("<category name=\""+category+"\">").append("\n");
+    }
+
+    public void catgeoryStop(StringBuffer sb) {
+        sb.append("</category>").append("\n");
+    }
+    
 }

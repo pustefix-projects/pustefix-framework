@@ -2,15 +2,11 @@
 <standardprops xmlns="http://pustefix.sourceforge.net/properties200401" xmlns:cus="http://www.schlund.de/pustefix/customize" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pustefix.sourceforge.net/properties200401 http://pustefix.sourceforge.net/properties200401.xsd" version="1.0">
   
   <properties>
-    
-    <!-- This will be the only place in a future version where docroot is referenced! -->
-    <prop name="pustefix.docroot"><cus:docroot/></prop>
-    
+        
     <prop name="pustefix.log4j.config">common/conf/pfixlog.xml</prop>
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
-    <prop name="factory.initialize.01">de.schlund.util.statuscodes.PartIndex</prop>
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.03">de.schlund.pfixcore.editor.auth.AuthManagerFactory</prop>
     <prop name="factory.initialize.04">de.schlund.pfixcore.editor.EditorProductFactory</prop>
@@ -21,18 +17,21 @@
     <prop name="factory.initialize.09">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <prop name="factory.initialize.10">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
     
+    <!-- part index -->
+    <prop name="partindex.scodefile.1">common/dyntxt/statusmessages-core-merged.xml</prop>
+    <prop name="partindex.scodefile.2">common/dyntxt/statusmessages.xml</prop>
+    
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="targetcache.cachecapacity">50</prop>
     <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="includecache.cachecapacity">50</prop>
     
-    
     <!--SPCacheStatistic-->
     <prop name="cachestatistic.queuesize">60</prop>
     <prop name="cachestatistic.queueticks">60000</prop><!--1 minute-->
     
-    <!-- AuthManagerFactory -->
+    <!-- EditorUserFactory -->
     <prop name="editoruserfactory.userdata">common/conf/userdata.xml</prop>
     
     <!-- EditorProductFactory -->
@@ -43,9 +42,6 @@
     </choose>
     <prop name="editorproductfactory.productdata">servletconf/projects.xml</prop>
     
-    <!-- EditorCommonsFactory -->
-    <prop name="editorcommonsfactory.includefile.1">common/dyntxt/statusmessages.xml</prop>
-    
     <!--ExceptionHandler-->
     <prop name="exceptionhandler.propertyfile">common/conf/exceptionhandler.prop</prop>
     
@@ -53,22 +49,16 @@
     <prop name="apploader.propertyfile">common/conf/apploader.prop</prop>
     
     <!--PerfStat-->
-    <prop name="perfstat.IHANDLER_IS_ACTIVE">3</prop>
-    <prop name="perfstat.IHANDLER_NEEDS_DATA">3</prop>
-    <prop name="perfstat.IHANDLER_PREREQUISITES_MET">3</prop>
-    <prop name="perfstat.CONTEXTRESOURCE_INSERT_STATUS">5</prop>
-    <prop name="perfstat.CONTEXTRESOURCE_OBSERVER_UPDATE">0</prop>
-    <prop name="perfstat.PAGE_IS_ACCESSIBLE">10</prop>
-    <prop name="perfstat.PAGE_NEEDS_DATA">10</prop>
-    <prop name="perfstat.PAGE_HANDLE_SUBMITTED_DATA">300</prop>
-    <prop name="perfstat.PAGE_INIT_IWRAPPERS">5</prop>
-    <prop name="perfstat.PAGE_RETRIEVE_CURRENT_STATUS">5</prop>
-    <prop name="perfstat.CONTEXT_CREATE_NAVI_COMPLETE">25</prop>
-    <prop name="perfstat.CONTEXT_CREATE_NAVI_REUSE">2</prop>
-    <prop name="perfstat.XMLSERVER_HANDLE_DOCUMENT">0</prop>
-    <prop name="perfstat.XMLSERVER_GET_DOM">0</prop>
-    <prop name="perfstat.XMLSERVER_CALL_PROCESS">0</prop>
-    <prop name="perfstat.XMLSERVER_PRE_PROCESS">0</prop>
+    <!-- size of buffer for perfevents --> 
+    <prop name="perflogging.buffersize">2000</prop>
+    <!-- schedule for dumping perf statistic into logfile -->
+    <prop name="perflogging.logwrite">20000</prop>
+    <!-- is perflogging enabled -->
+    <prop name="perflogging.enabled">1</prop>
+    <!-- start perflogging automatically -->
+    <prop name="perflogging.autostart">0</prop>
+    <!-- max time a the put-thread will wait when putting perfevent into a full buffer -->
+    <prop name="perflogging.offermaxwait">5</prop>
     
   </properties>
 </standardprops>

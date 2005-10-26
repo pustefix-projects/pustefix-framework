@@ -35,10 +35,11 @@ import com.icl.saxon.expr.NodeSetValue;
 import com.icl.saxon.expr.StandaloneContext;
 import com.icl.saxon.om.NodeEnumeration;
 import com.icl.saxon.om.NodeInfo;
+import com.sun.org.apache.xpath.internal.XPathAPI;
 
 
 /**
- *  Evaluates XPath-expressions. Some ugly reflection stuff to work with jdk 1.4 and 1.5.
+ *  Evaluates XPath-expressions. 
  */
 public class XPath {
     // TODO: use java.xml.xpath if we've completed transition to java 1.5 ...
@@ -107,8 +108,8 @@ public class XPath {
     //--
 
     private static List saxonSelect(Node context, String xpath) throws TransformerException {
-        List result;
-        result = new ArrayList();
+        List<Object> result;
+        result = new ArrayList<Object>();
         NodeInfo   cNode   = (NodeInfo) context;
         Expression exp     = Expression.make(xpath, new StandaloneContext());
         Context    ctx = new Context();
@@ -127,12 +128,12 @@ public class XPath {
      * @return &lt;{@link Node}&gt;List
      */
     public static List xalanSelect(Node context, String xpath) throws TransformerException {
-        List result;
+        List<Object> result;
         NodeIterator iter;
         Node node;
 
-        result = new ArrayList();
-        iter = (NodeIterator) doInvoke(SELECT, context, xpath);
+        result = new ArrayList<Object>();
+        iter = XPathAPI.selectNodeIterator(context, xpath);
         while (true) {
             node = iter.nextNode();
             if (node == null) {
@@ -143,45 +144,8 @@ public class XPath {
         return result;
     }
 
-    //-- jdk 1.4/1.5 switch
-
-    private static final Method SELECT;
-    private static final Method EVAL;
-    private static final Method BOOL;
-
-    static {
-        Class cls;
-        Class xobject;
-        
-        try {
-            // jdk 1.5
-            cls = Class.forName("com.sun.org.apache.xpath.internal.XPathAPI");
-            xobject = Class.forName("com.sun.org.apache.xpath.internal.objects.XObject");
-        } catch (ClassNotFoundException e) {
-            try {
-                // jdk 1.4
-                cls = Class.forName("org.apache.xpath.XPathAPI");
-                xobject = Class.forName("org.apache.xpath.objects.XObject");
-            } catch (ClassNotFoundException f) {
-                throw new RuntimeException(f);
-            }
-        }
-        try {
-            SELECT = cls.getMethod("selectNodeIterator", new Class[] { Node.class, String.class });
-            EVAL = cls.getMethod("eval", new Class[] { Node.class, String.class });
-            BOOL = xobject.getMethod("bool", Misc.NO_CLASSES);
-        } catch (SecurityException g) {
-            throw new RuntimeException(g);
-        } catch (NoSuchMethodException g) {
-            throw new RuntimeException(g);
-        }
-    }
-
     public static boolean xalanTest(Node context, String test) throws TransformerException {
-        Object xobject;
-        
-        xobject = doInvoke(EVAL, context, test);
-        return ((Boolean) doInvoke(BOOL, xobject, Misc.NO_OBJECTS)).booleanValue();
+        return XPathAPI.eval(context, test).bool();
     }
     
     private static Object doInvoke(Method meth, Node node, String xpath) throws TransformerException {

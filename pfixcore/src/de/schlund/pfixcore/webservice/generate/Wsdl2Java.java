@@ -31,9 +31,8 @@ public class Wsdl2Java {
     private String typeMappingVersion = TypeMappingVersionEnum.DEFAULT_VERSION;
     private long timeout = 45000;
     private File  namespaceMappingFile=null;
-    private String username=null;
-    private String password=null;
-    private String pkgName=null;
+    
+    //private String pkgName=null;
     
     private final static String SCOPE_11_CLASS="org.apache.axis.enum.Scope";
     private final static String SCOPE_12_CLASS="org.apache.axis.constants.Scope";
@@ -231,9 +230,11 @@ public class Wsdl2Java {
         this.namespaceMappingFile = namespaceMappingFile;
     }
 
+    /**
     public void setPackageName(String pkgName) {
         this.pkgName=pkgName;
     }
+    */
     
 }
 

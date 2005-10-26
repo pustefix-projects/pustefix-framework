@@ -109,9 +109,14 @@ public class FactoryInitServlet extends HttpServlet implements Reloader {
     public void init(ServletConfig Config) throws ServletException {
         super.init(Config);
         Properties properties = new Properties(System.getProperties());
+        // old webapps specify docroot -- true webapps don't 
         String     docrootstr = Config.getInitParameter(PROP_DOCROOT);
         if (docrootstr == null || docrootstr.equals("")) {
-            throw new ServletException("*** FATAL: Need the docroot property as init parameter! ***");
+            docrootstr = Config.getServletContext().getRealPath(".");
+            if (!docrootstr.endsWith("/.")) {
+                throw new IllegalStateException(docrootstr);
+            }
+            docrootstr = docrootstr.substring(0, docrootstr.length() - 1);
         }
         String     confname   = Config.getInitParameter("servlet.propfile");
         if (confname != null) {

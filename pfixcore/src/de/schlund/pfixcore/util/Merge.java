@@ -22,54 +22,50 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.xml.transform.TransformerException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
 
 public class Merge {
     public static void main(String[] args) throws Exception {
-        if (args.length != 4) {
-            throw new IOException("expected 2 arguments, got " + args.length);
+        if (args.length != 3) {
+            throw new IOException("expected 3 arguments, got " + args.length);
         }
-        new Merge(new File(args[0]), new File(args[1]), args[2], args[3]).run();
+        new Merge(new File(args[0]), args[1], new File(args[2])).run();
     }
     
     //-- 
     
-    private final File envFile;
-    private final File coreFile;
-    private final String removePath;
-    private final String addPath;
+    private final File src;
+    private final String srcPath;
+    private final File dest;
     
-    public Merge(File envFile, File coreFile, String removePath, String addPath) throws IOException {
-        this.envFile = envFile;
-        this.coreFile = coreFile;
-        this.removePath = removePath;
-        this.addPath = addPath;
+    public Merge(File src, String srcPath, File dest) throws IOException {
+        this.src = src;
+        this.srcPath = srcPath;
+        this.dest = dest;
     }
     
     public void run() throws SAXException, IOException, TransformerException {
-        Document envDoc;
-        Document coreDoc;
-        List tmp;
+        Document destDoc;
+        List nodes;
         int overwrite;
         
-        System.out.println("Merge " + coreFile + " into" + envFile);
-        envDoc = Xml.parseMutable(envFile);
-        coreDoc = Xml.parseMutable(coreFile);
-        tmp = XPath.select(envDoc, removePath);
-        System.out.println("  remove " + tmp.size());
-        remove(tmp);
-        remove(XPath.select(envDoc, "/include_parts/part/product[count(lang) = 0]"));
-        remove(XPath.select(envDoc, "/include_parts/part[count(product) = 0]"));
-        tmp = XPath.select(coreDoc, addPath);
-        overwrite = add(tmp, envDoc);
-        System.out.println("  add " + tmp.size() + ", overwriting "+ overwrite);
-        Xml.serialize(envDoc, envFile, true, true);
+        System.out.println("Merge " + src + " into" + dest);
+        destDoc = Xml.parseMutable(dest);
+        remove(XPath.select(destDoc, "/include_parts/part/product[count(lang) = 0]"));
+        remove(XPath.select(destDoc, "/include_parts/part[count(product) = 0]"));
+        nodes = XPath.select(Xml.parseMutable(src), srcPath);
+        overwrite = add(nodes, destDoc);
+        System.out.println("  add " + nodes.size() + ", overwriting " + overwrite);
+        Xml.serialize(destDoc, dest, true, true);
     }
 
     private int add(List lst, Document dest) throws TransformerException {
@@ -92,6 +88,9 @@ public class Merge {
         
         product = (Element) lang.getParentNode();
         part = (Element) product.getParentNode();
+        ensureElement(lang, "lang");
+        ensureElement(product, "product");
+        ensureElement(part, "part");
         return addLang(getName(part), getName(product), lang, dest);
     }
 
@@ -104,8 +103,8 @@ public class Merge {
         boolean overwrite;
         
         all = XPath.selectNode(dest, "/include_parts");
-        destPart = getElement(all, "part", partName);
-        destProduct = getElement(destPart, "product", productName);
+        destPart = getOrCreate(all, "part", partName);
+        destProduct = getOrCreate(destPart, "product", productName);
         overwrite = removeLang(destProduct, getName(lang));
         newNode = dest.importNode(lang, true);
         first = destProduct.getFirstChild();
@@ -117,6 +116,12 @@ public class Merge {
         return overwrite;
     }
 
+    private void ensureElement(Element ele, String name) {
+        if (!name.equals(ele.getTagName())) {
+            throw new IllegalArgumentException("illegal elememt: expected " + name + ", found " + ele.getTagName());
+        }
+    }
+    
     private boolean removeLang(Element product, String langName) throws TransformerException {
         Node lang;
         
@@ -128,7 +133,7 @@ public class Merge {
         return false;
     }
 
-    private Element getElement(Node root, String element, String name) throws TransformerException {
+    private Element getOrCreate(Node root, String element, String name) throws TransformerException {
         Element result;
         
         result = (Element) XPath.selectNode(root, element + "[@name = '" + name + "']");

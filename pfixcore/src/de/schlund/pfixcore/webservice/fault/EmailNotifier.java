@@ -15,12 +15,12 @@ import de.schlund.pfixcore.util.email.EmailSenderException;
 
 public class EmailNotifier extends Thread {
 	
-	private Logger LOG=Logger.getLogger(getClass().getName());
+	Logger LOG=Logger.getLogger(getClass().getName());
 	
 	private static EmailNotifier instance=new EmailNotifier();
 	
 	private NotifierThread thread;
-	private ArrayList emailQueue;
+	ArrayList emailQueue;
 	
 	private EmailNotifier() {
 		emailQueue=new ArrayList();

@@ -1,3 +1,274 @@
+2005-10-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* started 0.8.7-pre
+
+	* released 0.8.6
+
+2005-10-20  Jens Lautenbacher  <jtl@schlund.de>
+
+	* skel/build.xml: changed to put all generated src files (.iwrp=>.java, StatusCodeLib) into
+	their own top level directory "gensrc" (accessible in ant as ${dir.gensr}). 
+	The ant target "clean" simply removes this directory, the compile target has this directory 
+	as an addition component of the src path. 
+
+	* src/de/schlund/pfixcore/workflow/app/RequestDataImpl.java (RequestDataImpl): use the root name 
+	of the pagerequest for the page name, not the name (or commands for variant pages wouldn't work)
+
+2005-10-19  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/GenerateSCodes.java (Module): added. New ant task used
+	to generate a class de.schlund.util.statuscodes.StatusCodeLib that holds public static fields 
+	for all known StatusCodes. This gives us compile time check for unknown StatusCodes and of course
+	completion in IDEs.
+
+	* src/de/schlund/util/statuscodes/StatusCodeFactory.java (testStatusCode): changed
+	to no longer get StatusCodes from PartIndex, but instead look at the generated 
+	StatusCodeLib class via reflection if a StatusCode exists.
+	(getStatusCode): no longer need to catch transfomer exceptions
+
+	* src/de/schlund/util/statuscodes/PartIndex.java (Module): removed. no longer needed to
+	dynamically load StatusCodes.
+
+	* skel/build.xml: new target scgenerate to generate a list of
+	public static final fields of all StatusCodes known.  make targets
+	"compile" and "compile-xml" depend on it. make "scgenerate" depend
+	on "propfiles"
+
+	* example/core/dyntxt/statusmessages.xml: one more scode, fixed a description text
+
+	* skel/projects/common/conf/factory.prop.in: 
+	* example/common/conf/factory.prop.in: remove starting of PartIndex
+	factory, remove no longer used partindex.reloadchanges
+	property. partindex.scodefile.* stays as it is. In the skel version of factory.prop.in,
+	use the new definitions from the example versions for perfstat.
+
+	* build.xml: inlcude GenerateSCodes in the classes to build as ant tasks
+
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java : cosmetics
+
+	* src/de/schlund/pfixcore/example/TrouserHandler.java : 
+	* src/de/schlund/pfixcore/example/TShirtHandler.java : 
+	* src/de/schlund/pfixcore/example/ContextCounterImpl.java : 
+	* src/de/schlund/pfixcore/editor/resources/EditorSearch.java : 
+	* src/de/schlund/pfixcore/editor/handlers/XMLUploadHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/UserForEditHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/UserAuthHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/TargetsHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ProductSelectHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/PagesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/IncludesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesUploadHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/ImagesHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/EditUserDataHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/CommonsHandler.java : 
+	* src/de/schlund/pfixcore/editor/handlers/AddUserHandler.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToByte.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToDate.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToDouble.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToFile.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToFloat.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToInteger.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToLong.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToPerl5Pattern.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/FloatRange.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/IntegerRange.java : 
+	* src/de/schlund/pfixcore/generator/postchecks/StringLength.java : 
+	* src/de/schlund/pfixcore/generator/prechecks/RegexpCheck.java : 
+	* src/de/schlund/pfixcore/generator/casters/ToBoolean.java : 
+	* src/de/schlund/pfixcore/generator/IWrapperParam.java: use StatusCodes from generated StatusCodeLib class.
+
+2005-10-18  Benjamin Reitzammer <benjamin@schlund.de>
+
+	* Added scripting support for States	
+	* added lib/bsh-2.0b4.jar
+	* added example/sample1/txt/pages/main_scriptingstate.xml
+	* added example/sample1/txt/script/ScriptingState.bsh
+	* added src/de/schlund/pfixcore/scripting/ScriptingState.java
+	* added src/de/schlund/pfixcore/scripting/ScriptingUtil.java
+	* added src/de/schlund/pfixcore/util/StateUtil.java
+	* move most code from src/de/schlund/pfixcore/workflow/StateImpl.java to
+	  static methods in src/de/schlund/pfixcore/util/StateUtil.java to make them 
+	  universally useful inside scripting states
+	* refactored src/de/schlund/pfixcore/scripting/ScriptingIHandler.java to use
+	  new methods in ScriptingUtil.java
+	* changed example/core/build/create_propfiles.xsl to allow script: class definitions
+
+2005-10-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* skel/build.xml: merge core/dyntxt/statusmessages.xml into common/dyntxt/statusmessages-core-merged.xml
+
+	* skel/projects/common/dyntxt/statusmessages.xml (Module): is now empty.
+
+	* build.xml: remove inclusion of common subdirectory in data file.
+
+	* skel/projects/common/dyntxt/statusmessages-core-merged.xml (Module): new file in all 
+	environments: CAUTION! this must be copied when updating old environments! SCodes from core
+	will be merged into this file.
+
+	* src/de/schlund/util/statuscodes/PartIndex.java (PartFile): new inner class. Holds a file that
+	contains statuscodes and the file modification time when the file was loaded last.
+	(Module): rewrote to handle more than one statuscode file. Initialises the StatusCodes with
+	part name and path to their origin file.
+
+	* src/de/schlund/util/statuscodes/StatusCode.java (StatusCode): constructor now needs
+	an additional Path argument to the corresponding include part file.
+	(getStatusCodePath): new method.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): don't get the 
+	path to the statuscode's include part from a property but from the SCode itself.
+
+	* src/de/schlund/pfixcore/editor/EditorCommonsFactory.java: 
+	(init): automatically use all defined partindex statuscode files.
+
+	* skel/projects/common/conf/factory.prop.in: 
+	* example/common/conf/factory.prop.in: add partindex.scodefile entries. 
+	There's no need any more to repeat them in "editorcommonsfactory.includefile", they are 
+	automatically used there. Only other, non-StatusCode dynamic include files should be added
+	via editorcommonsfactory.includefile.
+
+	* skel/projects/common/conf/pustefix.prop.in:
+	* example/common/conf/pustefix.prop.in:  remove statuscodefactory.messagefile
+
+	* example/common/dyntxt/statusmessages.xml (Module): removed, splitted into the next 
+	two new files. Only the "core" one is relevant for pustefix skeleton environments 
+	* example/sample1/dyntxt/statusmessages.xml (Module): new.
+	* example/core/dyntxt/statusmessages.xml (Module): new.
+
+	* example/sample1/txt/pages/main_scripting.xml: cosmetics
+
+	* example/core/xsl/forminput.xsl.in: common/dyntxt/statusmessages.xml => common/dyntxt/statusmessages-core-merged.xml 
+	in a deprecated template
+	
+
+2005-10-06  Martin Leidig  <mleidig@schlund.de>
+	
+	Added offline building support for 'defaultwebxml' target.
+	* example/core/schema/catalog.xml: Added webapp DTD entry.
+	* example/core/schema/web-app_2_3.dtd: Added webapp DTD.
+	* skel/build.xml: Use pfx-xslt task (with XML catalog).
+
+2005-10-05  Martin Leidig  <mleidig@schlund.de>
+
+	* skel/build.xml: Renamed target 'tomcat.defaultwebxml' to 'defaultwebxml' and
+	placed it after the init-data target (so that 'create_defaultwebxml.xsl' is 
+	already extracted).
+
+2005-10-05  Martin Leidig  <mleidig@schlund.de>
+
+	Added customization support for Tomcat's default 'web.xml' to the build process.
+	After extracting Tomcat the new target 'tomcat.defaultwebxml' is called, which
+	transforms the default 'web.xml' using the stylesheet 'create_defaultwebxml.xsl'.
+	At the moment the stylesheet only sets the 'listings' init parameter of the
+	default servlet to 'false' (disabling directory listings) and leaves the rest
+	unchanged.
+
+	* skel/build.xml: Added new target 'tomcat.defaultwebxml'
+	* example/core/build/create_defaultwebxml.xsl: Added file
+
+2005-10-04  Joerg Haecker <haecker@schlund.de>
+	en/disable performance-logging with JMX
+	* src/de/schlund/pfixxml/jmx/JmxServer[MBean].java: 
+	interface and implementation
+	* src/de/schlund/pfixxml/perflogging:
+	ready to be used wth JMX
+
+2005-09-28  Michael Hartmeier <mhm@schlund.de>
+
+	* skel/build.xml, src/de/schlund/pfixcore/util/Merge.java:
+	generalized merge target to support product merging
+
+2005-09-27  Benjamin Reitzammer <benjamin@schlund.de>
+
+	* Implemented scripting support for IHandlers
+	  see http://pustefix.oss.schlund.de/index.php?pagename=PustefixScripting
+	  for more information
+	* src/de/schlund/pfixcore/scripting/* added 
+	* src/de/schlund/pfixcore/example/iwrapper/ScriptingTShirt.iwrp added 
+	* example/sample1/script/* added 
+	* example/sample1/txt/pages/main_scripting.xml added 
+	* lib/bsf-2.3.0.jar added 
+	* lib/js-1.5R3.jar added 
+	* example/core/build/iwrapper.xsl changed to allow definition of scripted IHandlers 
+
+2005-09-19  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: java 1.5 source
+	* lib/jmxremote-1.0.1_03.jar lib/jmxri-1.2.1.jar lib/xml-apis.jar lib/xercesImpl-2.6.2.j
+	    removed - included in Java 1.5
+	* lib/mail-1.3.3.jar: update to latest release
+
+2005-09-13  Sebastian Werner  <sw@schlund.de>
+
+	* example/core/script/baselib.js:
+	Commented out new png handling, does not work this way
+
+2005-09-12  Thomas Stieler  <stieler@schlund.de>
+
+	* src/de/schlund/pfixxml/DerefServer.java: Added writing of logfile       
+
+2005-09-12  Sebastian Werner  <sw@schlund.de>
+
+	* example/core/xsl/include.xsl.in
+	Minor Bugfix, Fix XSL runtime error, removed try-catch block
+
+2005-09-12  Martin Leidig <mleidig@schlund.de>
+
+	* src/de/schlund/pfixcore/webservice/*: General code cleanup	
+	* src/de/schlund/pfixcore/webservice/WebServiceServlet.java: Added special error handling for
+	Axis-internal and low-level exceptions (e.g. "Premature end of file")
+
+2005-09-06  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: webapp target builds war file
+
+2005-09-07  Sebastian Werner  <sw@schlund.de>
+
+	* example/core/xsl/include.xsl.in, example/core/script/baselib.js:
+	Added alpha transparency support for mshtml <=6
+
+2005-09-06  Michael Hartmeier  <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/FactoryInitServlet.java, ./example/core/build/create_webapp_projectsxml.xsl:
+	Remove docroot parameter for true webapps, FactoryInit uses webapp's docroot.
+
+2005-09-05  Martin Leidig  <mleidig@schlund.de>
+
+	* example/core/script/webservice.js: SimpleSerializer now iterates over all element child nodes and 
+	concats the node values to a single one (necessary cause Firefox splits strings > 4096 and inserts
+	multiple DOM nodes).
+
+2005-09-05  Michael Hartmeier  <mhm@schlund.de>
+
+	* skel/build.xml: polish webapp target
+
+2005-08-26  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument): append timing info for getDom and handleDocument
+	to the traillog.
+
+	* src/de/schlund/pfixxml/ResultDocument.java (createIncludeFromStatusCode): no longer accept a "level" attribute.
+	* src/de/schlund/pfixcore/workflow/Context.java: put the "level" for errors and pagemessages into the 
+	"error" or "message" tag, not to the pfx:include child.
+
+2005-08-25  Thomas Stieler  <stieler@schlund.de>
+
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: added method for sending email with headers
+	* src/de/schlund/pfixcore/util/email/EmailSender.java: removed method for sending email with bcc recipients
+
+2005-08-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/workflow/Context.java (getCurrentPageFlow): typo. Fow=>Flow
+
+2005-08-19  Niels Schelbach  <niels@schlund.de>
+	Refactored method to get insecure SessionID for external publishing purpose and moved it from 
+	AbstractXMLServer to SessionAdmin
+
+	Modified:
+	* src/de/schlund/pfixcore/webservice/handler/AuthenticationHandler.java
+	* src/de/schlund/pfixxml/AbstractXMLServer.java
+	* src/de/schlund/pfixxml/ServletManager.java
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java 
+
 2005-08-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetGenerator.java (loadConfig): make sure to add " default" to end

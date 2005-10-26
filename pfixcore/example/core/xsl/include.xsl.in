@@ -435,8 +435,13 @@
       <xsl:call-template name="pfx:image_geom_impl">
         <xsl:with-param name="src" select="$real_src"/>
       </xsl:call-template>
+      <xsl:if test="translate(substring($real_src, string-length($real_src)-2), 'PNG', 'png') = 'png'">
+        <xsl:attribute name="onreadystatechange">__js_png.fix()</xsl:attribute>
+      </xsl:if>
+            
       <xsl:apply-templates/>
     </img>
+    
     <cus:documentation>
       <responsible>JTL</responsible>
       <description>

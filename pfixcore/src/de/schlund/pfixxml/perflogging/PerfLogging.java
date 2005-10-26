@@ -38,9 +38,7 @@ public class PerfLogging {
     private boolean perfActive = false;
     private BoundedBufferWrapper boundedBuffer;
     private PerfEventTakeThread perfEventTakeThread;
-    private LogFileWriterThread logFileWriterThread;
-    private Timer logFileWriterThreadTimer;
-    private int logFileWriterThreadSchedule = 0;
+  
     
     private PerfLogging() {}
     
@@ -79,29 +77,15 @@ public class PerfLogging {
         } else {
             wait = Integer.parseInt(prop_offerwait);
         }
-        
-        
-        
         boundedBuffer = new BoundedBufferWrapper(size, wait);
         
-        
         String prop_autostart = props.getProperty(PROP_AUTOSTART, OFF);
-        
-        String prop_logwrite = props.getProperty(PROP_LOG_WRITE);
-        
-        if(prop_logwrite == null || prop_logwrite.length() < 1 ) {
-            LOG.warn("Property "+PROP_LOG_WRITE+" not found. Using default: "+DEFAULT_LOG_WRITE);
-            logFileWriterThreadSchedule = DEFAULT_LOG_WRITE;
-        } else {
-            logFileWriterThreadSchedule = Integer.parseInt(prop_logwrite);
-        }
         
         if(LOG.isInfoEnabled()) {
             StringBuffer sb = new StringBuffer();
             sb.append("After init: \n").
                 append("Enabled: "+perfLoggingEnabled+"\n").
                 append("Active: "+perfActive+"\n").
-                append("logFileSchedule: "+logFileWriterThreadSchedule+"\n").
                 append("Buffersize: "+size+"\n").
                 append("Bufferwait: "+wait+"\n");
             LOG.info(sb.toString());
@@ -116,24 +100,24 @@ public class PerfLogging {
         
     }
     
-    boolean isPerfLogggingEnabled() {
+    public boolean isPerfLogggingEnabled() {
         return perfLoggingEnabled;
     }
     
-    boolean isPerfLoggingActive() {
+    public boolean isPerfLoggingActive() {
         return perfActive;
     }
     
-    synchronized void activatePerflogging() {
+    public synchronized void activatePerflogging() {
         if(!perfLoggingEnabled) {
             LOG.warn("Perflogging is disabled");
+            return;
         }
         if(!perfActive) {
             LOG.info("Activating perflogging");
             boundedBuffer.init();
             PerfEventPut.getInstance().setBuffer(boundedBuffer);
             startPerfEventTakeThread();
-            startLogFileWriterThread();
             perfActive = true;
             LOG.info("Perflogging now active");
         } else {
@@ -141,28 +125,23 @@ public class PerfLogging {
         }
     }
     
-    synchronized void inactivatePerflogging() {
+    public synchronized String inactivatePerflogging() {
         if(!perfLoggingEnabled) {
             LOG.warn("Perflogging is disabled");
+            return null;
         }
         if(perfActive) {
             LOG.info("Inactivating perflogging");
-            
+            perfActive = false;
+            String xml = PerfStatistic.getInstance().toXML();
             PerfStatistic.getInstance().reset();
             stopPerfEventTakeThread();
-            stopLogFileWriterThread();
-            perfActive = false;
             boundedBuffer.reset();
-            
+            return xml;
         } else {
             LOG.info("perflogging already inactive");
+            return null;
         }
-    }
-    
-    synchronized void triggerDump() {
-        LogFileWriterThread logFileWriter = new LogFileWriterThread();
-        // run in same thread 
-        logFileWriter.run();
     }
     
     private void startPerfEventTakeThread() {
@@ -176,18 +155,7 @@ public class PerfLogging {
         perfEventTakeThread.interrupt();
     }
     
-    private void startLogFileWriterThread() {
-        LOG.info("Scheduling logFileWriterThread. New timer and new thread");
-        logFileWriterThreadTimer = new Timer();
-        logFileWriterThread = new LogFileWriterThread();
-        logFileWriterThreadTimer.schedule(logFileWriterThread, 
-                logFileWriterThreadSchedule, logFileWriterThreadSchedule);
-    }
-    
-    private void stopLogFileWriterThread() {
-        LOG.info("Canceling existing timer for logFileWriterThread");
-        logFileWriterThreadTimer.cancel();
-    }
+  
     
  
 }

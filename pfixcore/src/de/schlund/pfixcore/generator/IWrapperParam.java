@@ -50,7 +50,7 @@ public class IWrapperParam implements IWrapperParamCheck, IWrapperParamDefinitio
     private ArrayList           postcheck      = new ArrayList();
     private HashSet             scodeinfos     = new HashSet();
     private Category            CAT            = Category.getInstance(this.getClass().getName());
-    private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeFactory.getInstance().getStatusCode("pfixcore.generator.MISSING_PARAM"), null, null);  
+    private StatusCodeInfo      missing        = new StatusCodeInfo(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM, null, null);  
     private boolean             inrequest      = false;
     
     public IWrapperParam(String name, boolean multiple, boolean optional, RequestParam[] defaultval) {

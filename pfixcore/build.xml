@@ -15,7 +15,7 @@ or delete the DOCTYPE definition -->
   <!-- additional properties -->
   <property name="dir.dist"               location="dist"/>
   <property name="file.jnipkg"            location="${dir.jni}/${name.jnipkg}"/>
-  <property name="project.version"        value="0.8.6-pre" description="the version to use for pfixcore-*.*"/>
+  <property name="project.version"        value="0.8.7-pre" description="the version to use for pfixcore-*.*"/>
   <property name="dir.toconf"             value="${dir.projects}/common/conf/"/>
   <property name="name.pfixcore_jar"      value="${project.name}-${project.version}.jar"/>
   <property name="file.pfixcore_jar"      location="${dir.dist}/${name.pfixcore_jar}"/>
@@ -55,7 +55,7 @@ or delete the DOCTYPE definition -->
     <javac
      srcdir="${dir.src}"
      destdir="${dir.build}"
-     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/generate/*.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
+     includes="de/schlund/pfixcore/util/Xslt*.java, de/schlund/pfixcore/util/GenerateSCodes.java, de/schlund/pfixcore/util/*Task.java, de/schlund/pfixxml/util/StringUtil.java, de/schlund/pfixcore/webservice/config/*.java, de/schlund/pfixcore/webservice/generate/*.java, de/schlund/pfixxml/loader/ObjectBuilder.java"
      debug="${debug}"
      classpathref="cp.classpath"
      sourcepath="${dir.src}"
@@ -162,7 +162,7 @@ or delete the DOCTYPE definition -->
     <copy file="${dir.metainf}/${name.cvsautotag}" tofile="${dir.projects}/core/${name.cvsautotag}"/>
     <tar destfile="${file.pfixcore_data_tgz}" compression="gzip">
       <tarfileset dir="${dir.projects}/core" prefix="core"/>
-      <tarfileset dir="${dir.projects}/common/" prefix="core/tmp"/>
+<!--       <tarfileset dir="${dir.projects}/common/" prefix="core/tmp"/> -->
     </tar>
     <delete file="${dir.projects}/core/${name.cvsautotag}"/>
   </target>
@@ -172,6 +172,7 @@ or delete the DOCTYPE definition -->
     <jar destfile="${file.pfixcore_jar}">
       <fileset dir="${basedir}" includes="META-INF/**"/>
       <fileset dir="${dir.build}">
+        <exclude name="de/schlund/util/statuscodes/StatusCodeLib.class"/>
         <exclude name="de/schlund/pfixcore/example/iwrapper/DemoText.class"/>
         <exclude name="de/schlund/pfixcore/example/ContextDemoText.class"/>
         <exclude name="de/schlund/pfixcore/example/ContextDemoTextImpl.class"/>

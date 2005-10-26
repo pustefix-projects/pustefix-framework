@@ -53,6 +53,7 @@ import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.perflogging.PerfLogging;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 import de.schlund.pfixxml.util.Path;
@@ -235,4 +236,22 @@ public class JmxServer implements JmxServerMBean {
         }
         return info.getSession();
     }
+
+    public boolean isPerfLoggingEnabled() {
+        return PerfLogging.getInstance().isPerfLogggingEnabled();
+    }
+
+    public boolean isPerfLoggingRunning() {
+        return PerfLogging.getInstance().isPerfLoggingActive();
+    }
+
+    public void startPerfLogging() {
+        PerfLogging.getInstance().activatePerflogging();
+    }
+
+    public String stopPerfLogging() {
+        return PerfLogging.getInstance().inactivatePerflogging();
+    }
+
+   
 }

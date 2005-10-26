@@ -7,7 +7,6 @@
     
     <!-- List of all factories to init -->
     <prop name="factory.initialize.00">de.schlund.pfixxml.loader.AppLoader</prop>
-    <prop name="factory.initialize.01">de.schlund.util.statuscodes.PartIndex</prop>
     <prop name="factory.initialize.02">de.schlund.pfixxml.targets.SPCacheFactory</prop>
     <prop name="factory.initialize.03">de.schlund.pfixxml.exceptionhandler.ExceptionHandler</prop>
     <prop name="factory.initialize.04">de.schlund.pfixxml.targets.cachestat.SPCacheStatistic</prop>
@@ -16,14 +15,17 @@
     <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
     
     <!-- part index -->
-    <prop name="partindex.reloadchanges">true</prop>
+    <prop name="partindex.scodefile.1">core/dyntxt/statusmessages.xml</prop>
+    <prop name="partindex.scodefile.2">sample1/dyntxt/statusmessages.xml</prop>
+    
+    <!-- EditorCommonsFactory -->
+    <!-- <prop name="editorcommonsfactory.includefile.1">someotherdynamicincludefile.xml</prop> -->
     
     <!-- SPCacheFactory -->
     <prop name="targetcache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="targetcache.cachecapacity">50</prop>
     <prop name="includecache.cacheclass">de.schlund.pfixxml.targets.LRUCache</prop>
     <prop name="includecache.cachecapacity">50</prop>
-    
     
     <!--SPCacheStatistic-->
     <prop name="cachestatistic.queuesize">60</prop>

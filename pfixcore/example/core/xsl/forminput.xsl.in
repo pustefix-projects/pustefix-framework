@@ -187,6 +187,7 @@
     <ixsl:apply-templates select="$pfx_scode/node()"/>
   </xsl:template>
 
+  
   <xsl:template match="pfx:forminput">
     <xsl:variable name="send-to-page" select="@send-to-page"/>
     <xsl:variable name="theframe">
@@ -587,10 +588,6 @@
         <name>pfx:option</name>
         <description>option tag</description>        
       </children>
-      <children>
-        <name>pfx:dynoptions</name>
-        <description>option tags given via the result tree</description>        
-      </children>
       <example>
         <input>
           <xmlcode>
@@ -639,11 +636,6 @@
     </option>
     <cus:documentation>
       <description>Creates an "option" formelement.</description>
-      <param required="0">
-        <name>name</name>
-        <values><string/></values>
-        <description>name attribute of the option</description>
-      </param>
       <param required="0">
         <name>value</name>
         <values><string/></values>
@@ -753,8 +745,8 @@
       <ixsl:variable name="pfx_class">
         <ixsl:choose>
           <ixsl:when test="not($pfx_scode)"><xsl:value-of select="@class"/></ixsl:when>
-          <ixsl:when test="not($pfx_level)"><xsl:value-of select="@class"/> PfxError PfxInputRadioError</ixsl:when>
-          <ixsl:otherwise><xsl:value-of select="@class"/> PfxError PfxInputRadioError PfxErrorLevel_<ixsl:value-of select="string($pfx_level)"/></ixsl:otherwise>
+          <ixsl:when test="not($pfx_level)"><xsl:value-of select="@class"/> PfxError PfxInputCheckError</ixsl:when>
+          <ixsl:otherwise><xsl:value-of select="@class"/> PfxError PfxInputCheckError PfxErrorLevel_<ixsl:value-of select="string($pfx_level)"/></ixsl:otherwise>
         </ixsl:choose>
       </ixsl:variable>
       <ixsl:attribute name="class"><ixsl:value-of select="string($pfx_class)"/></ixsl:attribute>
@@ -1090,7 +1082,7 @@
   <!-- further warning. Please don't use them in new code -->
 
 
-  <!-- not really deprecated, but pfx:checkfield is more fexible. On the other hand, this is shorter -->
+  <!-- DEPRECATED, pfx:checkfield is more flexible. On the other hand, this is shorter -->
   <!-- to write in many common cases. -->
   
   <xsl:template match="pfx:label" name="pfx:label">
@@ -1119,10 +1111,13 @@
         </xsl:if>
       </ixsl:choose>
     </ixsl:if>
+    <cus:documentation>
+      <description>DEPRECATED. DON'T USE IT.</description>
+    </cus:documentation>
   </xsl:template>
 
 
-  <!-- DEPRECATED -->
+  <!-- DEPRECATED. Please, never ever use this... -->
   <xsl:template match="pfx:dynoptions">
     <!-- $pfx_name will be set in the parent select -->
     <ixsl:for-each select="{@optionpath}/option">
@@ -1194,7 +1189,7 @@
     </cus:documentation>
   </xsl:template>
   
-  <!-- DEPRECATED -->
+  <!-- DEPRECATED! Please, don't ever use this -->
   <xsl:template match="pfx:xinp[@type='dynselect']">
     <xsl:variable name="name" select="string(@name)"/>
     <select name="{$name}">
@@ -1255,7 +1250,7 @@
             <td>
               <ixsl:attribute name="class">core_pagemessage_header_<ixsl:value-of select="@level"/></ixsl:attribute>
               <ixsl:call-template name="pfx:include">
-                <ixsl:with-param name="href" select="'common/dyntxt/statusmessages.xml'" />
+                <ixsl:with-param name="href" select="'common/dyntxt/statusmessages-core-merged.xml'" />
                 <ixsl:with-param name="part" select="concat('pfixcore.pagemessages.level.', @level)"/>
               </ixsl:call-template>
             </td>

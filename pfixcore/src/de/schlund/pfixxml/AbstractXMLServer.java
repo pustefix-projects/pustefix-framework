@@ -385,33 +385,18 @@ public abstract class AbstractXMLServer extends ServletManager {
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
         }
-        currtime = System.currentTimeMillis();
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         if (session != null && session.getAttribute(SESS_LANG) != null) {
             params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
         }
-        handleDocument(preq, res, spdoc, params, doreuse);
-        handletime = System.currentTimeMillis() - currtime;
-        if (isInfoEnabled()) {
-            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
-        }
-        try {
-            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
-                OutputStream       out          = res.getOutputStream();
-                OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
-                writer.write("\n<!-- PRE_PROC: " + preproctime +
-                             " GET_DOM: " + getdomtime +
-                             " HDL_DOC: " + handletime + " -->");
-                writer.flush();
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-
+        handleDocument(preq, res, spdoc, params, doreuse, preproctime, getdomtime);
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
+                                  SPDocument spdoc, Properties params, boolean doreuse,
+                                  long preproctime, long getdomtime) throws Exception {
+        long currtime = System.currentTimeMillis();
+        
         // Check the document for supplied headers...
         HashMap headers = spdoc.getResponseHeader();
         if (headers.size() != 0) {
@@ -504,6 +489,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         render(spdoc, getRendering(preq), res, paramhash, stylesheet);
         // }
         
+        long handletime = System.currentTimeMillis() - currtime;
+        
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
@@ -519,11 +506,27 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (flow != null) {
                 logbuff.append("|" + flow);
             }
+            logbuff.append("|" + getdomtime + "|" + handletime);
             LOGGER_TRAIL.warn(logbuff.toString());
         }
-        
-        
+
         pe.save();
+        
+        if (isInfoEnabled()) {
+            CAT.info(">>> Complete handleDocument(...) took " + handletime + "ms");
+        }
+        try {
+            if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
+                OutputStream       out          = res.getOutputStream();
+                OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
+                writer.write("\n<!-- PRE_PROC: " + preproctime +
+                             " GET_DOM: " + getdomtime +
+                             " HDL_DOC: " + handletime + " -->");
+                writer.flush();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
     }
     
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
@@ -667,19 +670,12 @@ public abstract class AbstractXMLServer extends ServletManager {
         paramhash.put(TargetGenerator.XSLPARAM_TG, targetconf.getRelative());
         paramhash.put(TargetGenerator.XSLPARAM_TKEY, VALUE_NONE);
 
-        String session_to_link_from_external = "NOSUCHSESSION";
-        if (session != null) { 
-            Boolean secure   = (Boolean) session.getAttribute(SESSION_IS_SECURE);
-            String  parentid = (String) session.getAttribute(SessionAdmin.PARENT_SESS_ID); 
-            if (secure != null && secure.booleanValue() && parentid != null) {
-                session_to_link_from_external = parentid;
-            } else if (secure == null || !secure.booleanValue()) {
-                session_to_link_from_external = session.getId();
-            }
-        }
+        String session_to_link_from_external = SessionAdmin.getInstance().getExternalSessionId(session);
         paramhash.put("__external_session_ref",session_to_link_from_external);
         return paramhash;
     }
+    
+    
 
     private String extractStylesheetFromSPDoc(SPDocument spdoc) {
         // First look if the pagename is set
