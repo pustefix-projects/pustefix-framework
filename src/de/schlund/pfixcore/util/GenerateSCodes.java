@@ -22,6 +22,7 @@ import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
+import de.schlund.util.statuscodes.StatusCode;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -118,7 +119,7 @@ public class GenerateSCodes {
                 for (int i = 0; i < list.getLength() ; i++) {
                     Element node      = (Element) list.item(i);
                     String  name      = node.getAttribute("name");
-                    String  classname = name.replace('.', '_').replace(':', '_').toUpperCase();
+                    String  classname = StatusCode.convertToFieldName(name);
                     writer.write("  public static final StatusCode " + classname +
                                  " = new StatusCode(\"" + name + "\", PathFactory.getInstance().createPath(\"" + inpath.getRelative() + "\"));\n");
                 }
@@ -138,8 +139,31 @@ public class GenerateSCodes {
         writer.write("\n");
         writer.write("package de.schlund.util.statuscodes;\n");
         writer.write("import de.schlund.pfixxml.PathFactory;\n");
+        writer.write("import java.lang.reflect.Field;\n");
         writer.write("\n");
         writer.write("public class StatusCodeLib {\n");
+        writer.write("    public static StatusCode getStatusCodeByName(String name) throws StatusCodeException {\n");
+        writer.write("        return getStatusCodeByName(name, false);\n");
+        writer.write("    }\n");        
+        writer.write("\n");        
+        writer.write("    public static StatusCode getStatusCodeByName(String name, boolean optional) throws StatusCodeException {\n");
+        writer.write("        String     fieldname = StatusCode.convertToFieldName(name);\n");
+        writer.write("        StatusCode scode     = null;\n");
+        writer.write("        try {\n");
+        writer.write("            Field field = StatusCodeLib.class.getField(fieldname);\n");
+        writer.write("            scode = (StatusCode) field.get(null);\n");
+        writer.write("        } catch (NoSuchFieldException e) {\n");
+        writer.write("            //\n");
+        writer.write("        } catch (SecurityException e) {\n");
+        writer.write("            //\n");
+        writer.write("        } catch (IllegalAccessException e) {\n");
+        writer.write("            //\n");
+        writer.write("        }\n");
+        writer.write("        if (scode == null && optional == false) {\n");
+        writer.write("            throw new StatusCodeException(\"StatusCode \" + name + \" is not defined.\");\n");
+        writer.write("        }\n");
+        writer.write("        return scode;\n");
+        writer.write("    }\n");
     }
 
 }
