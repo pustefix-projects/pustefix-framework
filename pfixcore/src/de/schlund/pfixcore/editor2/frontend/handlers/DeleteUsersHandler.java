@@ -25,7 +25,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.DeleteUsers;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles user removal
@@ -43,8 +43,7 @@ public class DeleteUsersHandler implements IHandler {
                 EditorResourceLocator.getUsersResource(context).deleteUsers(
                         usernames);
             } catch (EditorUserNotExistingException e) {
-                input.addSCodeUsername(StatusCodeFactory.getInstance()
-                        .getStatusCode("pfixcore.GEN_ERROR"));
+                input.addSCodeUsername(StatusCodeLib.PFIXCORE_GEN_ERROR);
             }
         }
     }

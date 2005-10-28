@@ -23,7 +23,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.CommonBranchIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles common include part branching
@@ -39,25 +39,18 @@ public abstract class CommonBranchIncludePartHandler implements IHandler {
         CommonBranchIncludePart input = (CommonBranchIncludePart) wrapper;
         if (input.getAction().equals("create")) {
             if (input.getTheme() == null || input.getTheme().equals("")) {
-                input.addSCodeAction(StatusCodeFactory.getInstance()
-                        .getStatusCode("pfixcore.generator.MISSING_PARAM"));
+                input.addSCodeAction(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM);
                 return;
             }
             if (!this.getResource(context).createAndSelectBranch(
                     input.getTheme())) {
                 input
-                        .addSCodeAction(StatusCodeFactory
-                                .getInstance()
-                                .getStatusCode(
-                                        "pfixcore.editor.includes.BRANCH_CREATE_FAILED"));
+                        .addSCodeAction(StatusCodeLib.PFIXCORE_EDITOR_INCLUDES_BRANCH_CREATE_FAILED);
             }
         } else if (input.getAction().equals("delete")) {
             if (!this.getResource(context).deleteSelectedBranch()) {
                 input
-                        .addSCodeAction(StatusCodeFactory
-                                .getInstance()
-                                .getStatusCode(
-                                        "pfixcore.editor.includes.BRANCH_DELETE_FAILED"));
+                        .addSCodeAction(StatusCodeLib.PFIXCORE_EDITOR_INCLUDES_BRANCH_DELETE_FAILED);
             }
         }
     }

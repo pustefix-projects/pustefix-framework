@@ -23,7 +23,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.SelectTarget;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles target selection
@@ -37,8 +37,7 @@ public class SelectTargetHandler implements IHandler {
         SelectTarget input = (SelectTarget) wrapper;
         if (!EditorResourceLocator.getTargetsResource(context).selectTarget(
                 input.getTargetName())) {
-            input.addSCodeTargetName(StatusCodeFactory.getInstance()
-                    .getStatusCode("pfixcore.editor.targets.TARGET_UNDEF"));
+            input.addSCodeTargetName(StatusCodeLib.PFIXCORE_EDITOR_TARGETS_TARGET_UNDEF);
         }
     }
 
