@@ -1,3 +1,37 @@
+2005-10-28  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* Merged new editor:
+	  src/de/schlund/pfixcore/editor2/*
+	  src/de/schlund/pfixcore/lucefix/*
+	  example/core/editor2/*
+	  example/common/editor-spring.xml
+	
+	* Removed old editor:
+	  src/de/schlund/pfixcore/editor/*
+	  example/core/editor/*
+	  
+	* Adjusted configuration files for new editor:
+	  example/common/conf/apploader.prop.in
+	  example/common/conf/factory.prop.in
+	  example/common/conf/pfixlog.xml.in
+	  example/common/conf/userdata.xml
+	  example/core/prjtemplates/project.tmpl
+	  skel/projects/common/conf/apploader.prop.in
+	  skel/projects/common/conf/factory.prop.in
+	  skel/projects/common/conf/pfixlog.xml.in
+	  skel/projects/common/conf/userdata.xml
+	  skel/projects/servletconf/projects.xml.in
+	
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java:
+	  Using collection interfaces instead of concrete implementations
+	  
+	* src/de/schlund/pfixxml/targets/cachestat/SPCacheStatistic.java:
+	  Changed code to remove dependency on editor.
+	  
+	* src/de/schlund/pfixxml/util/Path.java:
+	  Removed unused constructors and optimized code to save memory
+	
+
 2005-10-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (run): use the convertToFieldName method of StatusCode

@@ -12,19 +12,19 @@
   <project name="cmscore">
     <active>true</active>
     <comment>CMS for Pfixcore</comment>
-    <depend>core/editor/conf/depend.xml</depend>
+    <depend>core/editor2/conf/depend.xml</depend>
     <virtualhost><cus:fqdn/></virtualhost>
     <servername>cmscore.<cus:fqdn/></servername>
     <serveralias>cmscore.<cus:machine/></serveralias>
     <defpath>/xml/edit</defpath>
-    <passthrough>core/editor/img</passthrough>
+    <passthrough>core/editor2/img</passthrough>
     <ports>
       <port number="80"/>
     </ports>
     <servlet name="edit" useineditor="true">
       <active>true</active>
       <class>de.schlund.pfixxml.ContextXMLServer</class>
-      <propfile>core/editor/conf/config.prop</propfile>
+      <propfile>core/editor2/conf/edit.prop</propfile>
     </servlet>
     <servlet name="deref">
       <active>true</active>
@@ -65,6 +65,11 @@
   <!-- some common definitions that are shared between all projects -->
   
   <common>
+    <!-- prefix to namespace url mappings to be used in pages xml -->
+    <namespaces>
+      <namespace-declaration prefix="pfx" url="http://www.schlund.de/pustefix/core"/>
+      <namespace-declaration prefix="ixsl" url="http://www.w3.org/1999/XSL/Transform"/>
+    </namespaces>
     <commonpropfile>common/conf/pustefix.prop</commonpropfile>
     <documentation>
       <doc_file>core/xsl/navigation.xsl.in</doc_file>

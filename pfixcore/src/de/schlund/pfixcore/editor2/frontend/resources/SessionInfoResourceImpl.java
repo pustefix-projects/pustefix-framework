@@ -1,0 +1,93 @@
+/*
+ * This file is part of PFIXCORE.
+ *
+ * PFIXCORE is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * PFIXCORE is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with PFIXCORE; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package de.schlund.pfixcore.editor2.frontend.resources;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.w3c.dom.Element;
+
+import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.serverutil.SessionAdmin;
+import de.schlund.pfixxml.serverutil.SessionInfoStruct;
+
+public class SessionInfoResourceImpl implements SessionInfoResource {
+
+    public void init(Context context) throws Exception {
+        // Do nothing
+    }
+
+    public void insertStatus(ResultDocument resdoc, Element elem)
+            throws Exception {
+        SessionAdmin sessadmin = SessionAdmin.getInstance();
+        DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (Iterator i = sessadmin.getAllSessionIds().iterator(); i.hasNext();) {
+            String sessId = (String) i.next();
+            try {
+                SessionInfoStruct info = sessadmin.getInfo(sessId);
+                if (info != null) {
+                    Element sessionNode = resdoc.createSubNode(elem, "session");
+                    sessionNode.setAttribute("id", info.getSessionIdURI());
+                    sessionNode.setAttribute("created", dateformat
+                            .format(new Date(info.getData().getCreation())));
+                    sessionNode.setAttribute("lastAccess", dateformat
+                            .format(new Date(info.getData().getLastAccess())));
+                    sessionNode.setAttribute("requestCount", Long.toString(info
+                            .getNumberOfHits()));
+
+                    Collection trail = info.getTraillog();
+                    SessionInfoStruct.TrailElement lastStep = null;
+                    Element stepNode = null;
+                    for (Iterator i2 = trail.iterator(); i2.hasNext();) {
+                        SessionInfoStruct.TrailElement step = (SessionInfoStruct.TrailElement) i2
+                                .next();
+                        if (lastStep != null
+                                && lastStep.getStylesheetname().equals(
+                                        step.getStylesheetname())
+                                && lastStep.getServletname().equals(
+                                        step.getServletname())) {
+                            stepNode.setAttribute("counter", Integer
+                                    .toString(Integer.parseInt(stepNode
+                                            .getAttribute("counter")) + 1));
+                        } else {
+                            stepNode = resdoc
+                                    .createSubNode(sessionNode, "step");
+                            stepNode.setAttribute("stylesheet", step
+                                    .getStylesheetname());
+                            stepNode.setAttribute("counter", "1");
+                        }
+                        lastStep = step;
+                    }
+                }
+            } catch (IllegalStateException e) {
+                // Ignore and go on
+            }
+        }
+    }
+
+    public void reset() throws Exception {
+        // Do nothing
+    }
+
+}

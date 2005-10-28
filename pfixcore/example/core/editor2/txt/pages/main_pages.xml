@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
+               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+  
+  <part name="content">
+    <product name="default">
+      <lang name="default">
+        <center>
+          <pfx:checkerror>
+            <br/>
+            <table class="core_errorbox_table" width="200">
+              <tr>
+                <td class="core_errorlabel_text">
+                  Error!
+                </td>
+                <td class="core_errortext">
+                  <pfx:checkfield name="selectpage.PageName">
+                    <pfx:scode/>
+                  </pfx:checkfield>
+                </td>
+              </tr>
+            </table>
+          </pfx:checkerror>
+        </center>
+        <ixsl:choose>
+          <ixsl:when test="/formresult/pages/currentpage">
+            <pfx:include part="displaycurrentpage"/>
+            <pfx:include part="displaytargets"/>
+            <ixsl:for-each select="/formresult/pages/currentpage/includes">
+              <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
+            </ixsl:for-each>
+            <ixsl:for-each select="/formresult/pages/currentpage/images">
+              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
+            </ixsl:for-each>
+          </ixsl:when>
+          <ixsl:otherwise>
+            <center>
+              <br/>
+              <div class="editor_main_emph">
+                Please select a page from the list on the left
+              </div>
+            </center>
+          </ixsl:otherwise>
+        </ixsl:choose>
+      </lang>
+    </product>
+  </part>
+
+  <part name="sidebar">
+    <product name="default">
+      <lang name="default">
+        <table width="100%" class="editor_sidebar_content">
+          <ixsl:for-each select="/formresult/pages//page">
+            <tr>
+              <td>
+                <ixsl:if test="@selected='true'">
+                  <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
+                </ixsl:if>
+                <a>
+                  <ixsl:attribute name="name"><ixsl:value-of select="./@name"/></ixsl:attribute>
+                </a>
+                <ixsl:variable name="ind">
+                  <ixsl:for-each select="ancestor::page">&#160;&#160;&#160;&#160;&#160;</ixsl:for-each>
+                </ixsl:variable>
+                <ixsl:copy-of select="$ind"/>
+                <pfx:button page="pages" mode="force">
+                  <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
+                  <pfx:argument name="selectpage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
+                  <pfx:anchor   frame="leftnavi"><ixsl:value-of select="@name"/></pfx:anchor>
+                  <ixsl:value-of select="@name"/><ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
+                </pfx:button>
+              </td>
+              <td class="editor_dim" nowrap="nowrap" width="1%">[<ixsl:value-of select="@handler"/>]</td>
+            </tr>
+          </ixsl:for-each>
+        </table>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="displaycurrentpage">
+    <product name="default">
+      <lang name="default">
+        <div class="editor_main_emph" align="right">
+          [PAGE: <ixsl:value-of select="/formresult/pages/currentpage/@name"/>]
+        </div>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
+  <part name="displaytargets">
+    <product name="default">
+      <lang name="default">
+        <table><tr><td class="editor_main_emph">XML/XSL dependency tree:</td></tr></table>
+        <table width="100%" class="editor_box">
+          <ixsl:for-each select="/formresult/pages/currentpage/targets//target">
+            <ixsl:variable name="count"><ixsl:value-of select="count(ancestor::target)"/></ixsl:variable>
+            <ixsl:variable name="ind">
+              <ixsl:for-each select="ancestor::target">&#160;&#160;&#160;&#160;&#160;</ixsl:for-each>
+            </ixsl:variable>
+            <tr>
+              <td nowrap="nowrap">
+                <ixsl:copy-of select="$ind"/>
+                <pfx:button page="targets" target="_top" frame="_top">
+                  <pfx:argument name="selecttarget.TargetName"><ixsl:value-of select="@name"/></pfx:argument>
+                  <pfx:anchor   frame="left_navi">
+                    <ixsl:choose>
+                      <ixsl:when test="$count = 0"><ixsl:value-of select="@name"/></ixsl:when>
+                      <ixsl:otherwise><ixsl:value-of select="ancestor::target[position() = $count]/@name"/></ixsl:otherwise>
+                    </ixsl:choose>
+                  </pfx:anchor>
+                  <ixsl:value-of select="@name"/>
+                </pfx:button>
+              </td> 
+              <td align="right">
+                [<ixsl:value-of select="@type"/><ixsl:if test="@leaf='true'">_leaf</ixsl:if>]
+              </td>
+            </tr>
+          </ixsl:for-each>
+        </table>
+        <br/>
+      </lang>
+    </product>
+  </part>
+  
+</include_parts>
+
+<!--
+Local Variables:
+mode: xml
+End:
+-->

@@ -30,21 +30,9 @@ public class Path implements Comparable {
     public static final File ROOT = new File(SEP); // TODO: windows
     public static final File HERE = new File(System.getProperty("user.dir"));
     public static final File USER = new File(System.getProperty("user.home"));
-    
-    public static Path create(File file) {
-        File root = file.getAbsoluteFile().getParentFile();
-        if (root == null) {
-            root = ROOT;
-        }
-        return create(root, file.getName());
-    }
-
-    public static Path create(String path) {
-        return create(new File(path));
-    }
 
     public static Path create(File base, String relative) {
-        return new Path(base.getAbsoluteFile(), relative);
+        return new Path(base, relative);
     }
 
     public static String getRelativeString(File base, String absolute) {
