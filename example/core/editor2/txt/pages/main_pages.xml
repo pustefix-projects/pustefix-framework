@@ -63,7 +63,7 @@
                   <ixsl:for-each select="ancestor::page">&#160;&#160;&#160;&#160;&#160;</ixsl:for-each>
                 </ixsl:variable>
                 <ixsl:copy-of select="$ind"/>
-                <pfx:button page="pages" mode="force">
+                <pfx:button page="pages" mode="force" pageflow="EditorPageFlow">
                   <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
                   <pfx:argument name="selectpage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
                   <pfx:anchor   frame="leftnavi"><ixsl:value-of select="@name"/></pfx:anchor>
