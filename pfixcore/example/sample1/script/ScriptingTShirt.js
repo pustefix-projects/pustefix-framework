@@ -1,5 +1,5 @@
 
-importClass(Packages.de.schlund.util.statuscodes.StatusCodeFactory);
+importClass(Packages.de.schlund.util.statuscodes.StatusCodeLib);
 
 // the LOG object is predefined (declared in BSF terms) in every script 
 LOG.debug("Initializing ScriptingTShirt.js in script itself");
@@ -10,7 +10,7 @@ function handleSubmittedData(context, wrapper) {
     
     if ( wrapper.size == "L" && wrapper.color == 2 ) {
         // The combination size "L" and color No. "2" is considered invalid (maybe out of stock) 
-        var scode = new StatusCodeFactory("pfixcore.example.tshirt").getStatusCode("SIZECOLOR_OUTOF_STOCK");
+        var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SIZECOLOR_OUTOF_STOCK;
         wrapper.addSCodeSize(scode, ["L", "2"], "note");
         return;
     }
@@ -26,7 +26,7 @@ function handleSubmittedData(context, wrapper) {
         // the user decided to NOT check any checkbox in the UI (this makes defaults work)
     }
     
-    var scode = new StatusCodeFactory("pfixcore.example.tshirt").getStatusCode("SCRIPTING_SUCCESS");
+    var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SCRIPTING_SUCCESS;
     context.addPageMessage(scode);
 }
 
