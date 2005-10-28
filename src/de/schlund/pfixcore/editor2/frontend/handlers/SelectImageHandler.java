@@ -23,7 +23,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.SelectImage;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles image selection
@@ -37,8 +37,7 @@ public class SelectImageHandler implements IHandler {
         SelectImage input = (SelectImage) wrapper;
         if (!EditorResourceLocator.getImagesResource(context).selectImage(
                 input.getPath())) {
-            input.addSCodePath(StatusCodeFactory.getInstance().getStatusCode(
-                    "pfixcore.editor.images.IMAGE_UNDEF"));
+            input.addSCodePath(StatusCodeLib.PFIXCORE_EDITOR_IMAGES_IMAGE_UNDEF);
         }
     }
 

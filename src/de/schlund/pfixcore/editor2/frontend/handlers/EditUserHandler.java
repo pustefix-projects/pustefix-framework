@@ -31,7 +31,7 @@ import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.util.UnixCrypt;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles user edit
@@ -43,24 +43,20 @@ public class EditUserHandler implements IHandler {
     public void handleSubmittedData(Context context, IWrapper wrapper)
             throws Exception {
         EditUser input = (EditUser) wrapper;
-        StatusCodeFactory scfac = StatusCodeFactory.getInstance();
         String name = null;
         String section = null;
         String phone = null;
         name = input.getName();
         if (name == null) {
-            input.addSCodeName(scfac
-                    .getStatusCode("pfixcore.generator.MISSING_PARAM"));
+            input.addSCodeName(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM);
         }
         section = input.getSection();
         if (section == null) {
-            input.addSCodeSection(scfac
-                    .getStatusCode("pfixcore.generator.MISSING_PARAM"));
+            input.addSCodeSection(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM);
         }
         phone = input.getPhone();
         if (phone == null) {
-            input.addSCodePhone(scfac
-                    .getStatusCode("pfixcore.generator.MISSING_PARAM"));
+            input.addSCodePhone(StatusCodeLib.PFIXCORE_GENERATOR_MISSING_PARAM);
         }
         EditorUser user = EditorResourceLocator.getUsersResource(context)
                 .getSelectedUser();
@@ -71,14 +67,12 @@ public class EditUserHandler implements IHandler {
                     user.setCryptedPassword(UnixCrypt.crypt(pwd));
                 } else {
                     input
-                            .addSCodePassword(scfac
-                                    .getStatusCode("pfixcore.editor.userdata.PWD_NO_MATCH"));
+                            .addSCodePassword(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_PWD_NO_MATCH);
                     return;
                 }
             } else if (input.getPasswordRepeat() != null) {
                 input
-                        .addSCodePassword(scfac
-                                .getStatusCode("pfixcore.editor.userdata.PWD_NO_MATCH"));
+                        .addSCodePassword(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_PWD_NO_MATCH);
                 return;
             }
             user.setFullname(name);
@@ -123,8 +117,7 @@ public class EditUserHandler implements IHandler {
 
             EditorResourceLocator.getUsersResource(context)
                     .updateSelectedUser();
-            context.addPageMessage(scfac
-                    .getStatusCode("pfixcore.editor.userdata.CHANGES_SAVED"));
+            context.addPageMessage(StatusCodeLib.PFIXCORE_EDITOR_USERDATA_CHANGES_SAVED);
         }
 
     }

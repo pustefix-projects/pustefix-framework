@@ -25,7 +25,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.SelectUser;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles user selection
@@ -42,8 +42,7 @@ public class SelectUserHandler implements IHandler {
                 EditorResourceLocator.getUsersResource(context)
                         .createAndSelectUser(input.getUsername());
             } catch (EditorDuplicateUsernameException e) {
-                input.addSCodeUsername(StatusCodeFactory.getInstance()
-                        .getStatusCode("pfixcore.editor.adduser.USER_EXISTS"));
+                input.addSCodeUsername(StatusCodeLib.PFIXCORE_EDITOR_ADDUSER_USER_EXISTS);
             }
         } else {
             if (SpringBeanLocator.getSecurityManagerService().mayAdmin()

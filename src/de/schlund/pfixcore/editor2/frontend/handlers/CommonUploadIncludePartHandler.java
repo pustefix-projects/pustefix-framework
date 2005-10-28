@@ -29,7 +29,7 @@ import de.schlund.pfixcore.editor2.frontend.wrappers.CommonUploadIncludePart;
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.workflow.Context;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 /**
  * Handles common include part upload
@@ -57,33 +57,21 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
                             .getColumnNumber());
                     input
                             .addSCodeContent(
-                                    StatusCodeFactory
-                                            .getInstance()
-                                            .getStatusCode(
-                                                    "pfixcore.editor.includesupload.PARSE_ERR_WITH_DETAILS"),
+                                    StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR_WITH_DETAILS,
                                     new String[] { line, column }, null);
                 } else {
                     input
-                            .addSCodeContent(StatusCodeFactory
-                                    .getInstance()
-                                    .getStatusCode(
-                                            "pfixcore.editor.includesupload.PARSE_ERR"));
+                            .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
                 }
             } catch (EditorIncludeHasChangedException e) {
                 input.setHash(e.getNewHash());
                 input.setContent(e.getMerged());
                 input
-                        .addSCodeContent(StatusCodeFactory
-                                .getInstance()
-                                .getStatusCode(
-                                        "pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED"));
+                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);
                 return;
             } catch (EditorException e) {
                 input
-                        .addSCodeContent(StatusCodeFactory
-                                .getInstance()
-                                .getStatusCode(
-                                        "pfixcore.editor.includesupload.GEN_ERR"));
+                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_GEN_ERR);
                 return;
             }
         }
