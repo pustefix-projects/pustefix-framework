@@ -1,7 +1,7 @@
 import de.schlund.pfixcore.util.StateUtil;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.PfixServletRequest;
-import de.schlund.util.statuscodes.StatusCodeFactory;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 
 
@@ -19,7 +19,7 @@ needsData(context, preq) {
 getDocument(Context context, PfixServletRequest preq) throws Exception {
     context.prohibitContinue();
     
-    var scode = new StatusCodeFactory("pfixcore.example.tshirt").getStatusCode("SCRIPTING_SUCCESS");
+    var scode = StatusCodeLib.PFIXCORE_EXAMPLE_TSHIRT_SCRIPTING_SUCCESS;
     context.addPageMessage(scode);   
     
     return StateUtil.createDefaultResultDocument(context);
