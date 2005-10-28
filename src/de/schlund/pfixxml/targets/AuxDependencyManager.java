@@ -220,7 +220,7 @@ public class AuxDependencyManager {
                 if (parent_product != null) 
                     depaux.setAttribute("parent_product", parent_product);
             }
-            TreeSet children = aux.getChildren(target);
+            Set children = aux.getChildren(target);
             if (children != null && children.size() > 0) {
                 saveIt(name, doc, root, children, aux);
             }
@@ -234,7 +234,7 @@ public class AuxDependencyManager {
         }
         
         // Now iterate over all children of aux recursively and check if any of them is parent.
-        TreeSet children = aux.getChildren(target);
+        Set children = aux.getChildren(target);
         if (children != null) {
             for (Iterator i = children.iterator(); i.hasNext();) {
                 AuxDependency child = (AuxDependency) i.next();

@@ -28,5 +28,7 @@
 	<classpathentry kind="lib" path="lib/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/js-1.5R3.jar"/>
 	<classpathentry kind="src" path="gensrc"/>
+	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/lucene-1.4.3.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
