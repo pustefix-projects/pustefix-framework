@@ -46,6 +46,7 @@
             </tr>
         </table>
 <!--        <pfx:layer name="standard" visible="true"> -->
+		  <pfx:label name="lucefix.Doit"/>
           <table class="editor_box">
                     <tr>
                       <td><b><pfx:label name="lucefix.Contents">Contents:</pfx:label></b></td>
