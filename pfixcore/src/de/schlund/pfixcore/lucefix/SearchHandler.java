@@ -19,16 +19,21 @@
 
 package de.schlund.pfixcore.lucefix;
 
+import java.io.IOException;
+
+import org.apache.lucene.queryParser.ParseException;
+
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
 import de.schlund.pfixcore.lucefix.wrappers.Search;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class SearchHandler implements IHandler {
 
     private static final String CSEARCH = "de.schlund.pfixcore.lucefix.ContextSearch";
 
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws Exception {
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws ParseException{
 
 
         ContextSearch csearch = (ContextSearch) context.getContextResourceManager().getResource(CSEARCH);
@@ -38,10 +43,18 @@ public class SearchHandler implements IHandler {
         if (search.getDoit() != null && search.getDoit().booleanValue()) {
             String content = search.getContents();
             String tags = search.getTags();
+            if (tags != null){
+            	// replace ":" with "\:"
+            	tags = tags.replace(":", "\\:");
+            }
             String attribKey = search.getAttribkeys();
             String attribValue = search.getAttribvalues();
             String comments = search.getComments();
-            csearch.search(content, tags, attribKey, attribValue, comments);
+            try {
+				csearch.search(content, tags, attribKey, attribValue, comments);
+			} catch (IOException e) {
+				search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_INDEX_NOT_INITED);
+			} 
         }
     }
 

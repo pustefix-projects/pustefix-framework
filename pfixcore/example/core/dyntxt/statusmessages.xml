@@ -246,6 +246,11 @@
       <lang name="default">The entered value contains invalid characters or is otherwise invalid.</lang>
     </product>
   </part>
+  <part name="pfixcore.lucefix.INDEX_NOT_INITED">
+    <product name="default">
+      <lang name="default">Index is not initialized. Please wait some minutes before using search</lang>
+    </product>
+  </part>
   <!-- please note that level names in part names are _always_ lowercase -->
   <part name="pfixcore.pagemessages.level.error">
     <product name="default">

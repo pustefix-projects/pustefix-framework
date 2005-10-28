@@ -88,7 +88,7 @@ public class ContextSearchImpl implements ContextSearch {
         for (int i = 0; i < hits.length(); i++){
             doc = hits.doc(i);
             token = splitPath(doc.get(PreDoc.PATH));
-            if (currentProject.findIncludePartThemeVariant(token[0],token[1],token[2]) == null) continue;
+            if (currentProject != null && currentProject.findIncludePartThemeVariant(token[0],token[1],token[2]) == null) continue;
             temp.add(new Hit(doc,hits.score(i)));
         }
         this.hits = temp.toArray(new Hit[0]);
