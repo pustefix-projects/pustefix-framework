@@ -62,6 +62,7 @@ public class XsltWebXmlTask extends XsltGenericTask {
         dbFactory.setValidating(false);
     }
 
+
     protected void doTransformations() {
         StringBuffer tmp = new StringBuffer(100);
         tmp.append("Created web.xml for ");
@@ -107,12 +108,17 @@ public class XsltWebXmlTask extends XsltGenericTask {
                 log("Using "+in+" as sourcefile for web.xml transformation", Project.MSG_DEBUG);
                 getTransformer().setParameter(new XsltParam("prjname", name));
                 getTransformer().setParameter(new XsltParam("projectsxmlfile", projectsFile.getPath()));
-                String outdir = "webapps/" + name + "/WEB-INF";
-                File webinfdir = new File(getDestdir(), outdir);
+                String outdir    = "webapps/" + name + "/WEB-INF";
+                File   webinfdir = new File(getDestdir(), outdir);
                 webinfdir.mkdirs();
-                outname = "web.xml";
-                out = new File(webinfdir,outname);
-                count = doTransformationMaybe();
+                outname          = "web.xml";
+                out              = new File(webinfdir,outname);
+                count            = doTransformationMaybe();
+                if (count == 0 && (out.lastModified() < projectsFile.lastModified())) {
+                    doTransformation();
+                    count = 1;
+                }
+
                 if ( count > 0 ) {
                     if ( created > 0 ) {
                         tmp.append(", ");
