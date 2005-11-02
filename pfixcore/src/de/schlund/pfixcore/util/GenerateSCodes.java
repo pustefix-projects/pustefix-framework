@@ -70,8 +70,8 @@ public class GenerateSCodes {
         scfiles          = new HashSet<Path>();
         
         HashSet<String> propfiles = new HashSet<String>(PropertiesUtils.selectProperties(prop, SCODEFILES).values());
-        for (Iterator<String> iter = propfiles.iterator(); iter.hasNext();) {
-            String tmp = iter.next();
+
+        for (String tmp: propfiles) {
             //System.out.println("**** scfile: " + tmp);
             scfiles.add(pfac.createPath(tmp));
         }
@@ -94,8 +94,8 @@ public class GenerateSCodes {
         }
 
         
-        for (Iterator<Path> iter = scfiles.iterator(); iter.hasNext();) {
-            File tmp = iter.next().resolve();
+        for (Path path: scfiles) {
+            File tmp = path.resolve();
             //System.out.println("**** look at " + tmp.getCanonicalPath());
             if (tmp.exists() && tmp.lastModified() > targetmodtime) {
                 dogen = true;
@@ -110,10 +110,8 @@ public class GenerateSCodes {
             Writer writer = new OutputStreamWriter(new FileOutputStream(dest), "ascii");
             createHeader(writer);
             
-            for (Iterator<Path> iter = scfiles.iterator(); iter.hasNext();) {
-                Path   inpath   = iter.next();
-                File   input    = inpath.resolve();
-
+            for (Path inpath: scfiles) {
+                File     input = inpath.resolve();
                 Document doc   = Xml.parse(input);
                 NodeList list  = doc.getElementsByTagName("part");
                 for (int i = 0; i < list.getLength() ; i++) {
