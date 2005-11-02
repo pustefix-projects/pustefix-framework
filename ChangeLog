@@ -1,3 +1,8 @@
+2005-11-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/XsltWebXmlTask.java (doTransformations): fix to 
+	also redo the web.xml files when the projects.xml file is newer.
+
 2005-10-28  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* Merged new editor:
