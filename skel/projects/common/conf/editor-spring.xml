@@ -226,6 +226,11 @@
     <property name="nthRunDelay">
       <value>1000</value>
     </property>
+    <!-- Delay (in milliseconds) to wait after each completed generation cycle,
+         only applied to low priority targets -->
+    <property name="completeRunDelay">
+      <value>1800000</value>
+    </property>
   </bean>
   
   <bean id="backup" class="de.schlund.pfixcore.editor2.core.spring.BackupServiceImpl">
