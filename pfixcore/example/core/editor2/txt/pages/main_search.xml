@@ -88,7 +88,7 @@
             </ixsl:variable>
               <tr><td class="{$class}">
                 <pfx:button page="includes">
-                  <ixsl:value-of select="@path"/>
+				  <ixsl:value-of select="@filename"/>/<ixsl:value-of select="@product"/>@<ixsl:value-of select="@part"/>
                   <pfx:argument name="selectinclude.Path"><ixsl:value-of
                       select="@filename"/></pfx:argument>
                   <pfx:argument name="selectinclude.Part"><ixsl:value-of
