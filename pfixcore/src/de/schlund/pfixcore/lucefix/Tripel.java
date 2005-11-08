@@ -45,14 +45,14 @@ public class Tripel implements Comparable{
         this.filename = filename;
         this.type = Type.INSERT;
     }
-    public Tripel(String fillpath, Type type){
-        int schnippel2 = fillpath.lastIndexOf("/");
-        int schnippel1 = fillpath.lastIndexOf("/",schnippel2-1);
-        filename = fillpath.substring(0,schnippel1);
-        part = fillpath.substring(schnippel1+1,schnippel2);
-        product = fillpath.substring(schnippel2+1,fillpath.length());
+    public Tripel(String fullpath, Type type){
+        int schnippel2 = fullpath.lastIndexOf("/");
+        int schnippel1 = fullpath.lastIndexOf("/",schnippel2-1);
+        filename = fullpath.substring(0,schnippel1);
+        part = fullpath.substring(schnippel1+1,schnippel2);
+        product = fullpath.substring(schnippel2+1,fullpath.length());
         this.type = type;
-    }    
+    }
     public Type setType(Type newType) {
         Type retval = type;
         type = newType;
