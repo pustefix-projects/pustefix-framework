@@ -26,7 +26,9 @@ or delete the DOCTYPE definition -->
   <property name="dir.jni"                  location="${dir.lib}/jni"/>
   <property name="dir.metainf"              location="META-INF"/>
   <property name="dir.projects"             location="projects"/>
-  <property name="dir.docroot"              location="${dir.projects}"                                        description="document root for tomcat, defaults to dir.projects"/>
+  <property name="dir.docroot"              location="${dir.projects}" description="document root for tomcat, defaults to dir.projects"/>
+  <property name="dir.src.modules"          location="modules"/>
+  <property name="dir.extract.modules"      location="${dir.projects}/modules"/>
   <property name="file.projects_xml"        location="${dir.projects}/servletconf/projects.xml"/>
   <property name="validate"                 value="dynamic"/>
   <property name="catalogfile"              location="${dir.projects}/core/schema/catalog.xml"/>
@@ -318,13 +320,17 @@ or delete the DOCTYPE definition -->
     <delete file="ant.dtd"/>
   </target>
 
-  <target name="clean" depends="clean-project, clean-webapps, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
+  <target name="clean" depends="clean-modules, clean-project, clean-webapps, clean-webservice" description="deletes ${dir.build}, directory trees and all .java files generated from .iwrp files in ${dir.src}">
     <delete dir="${dir.build}" />
     <!-- Delete *.java files created from some kind source files (e.g. .iwrp files) -->
     <delete dir="${dir.gensrc}" />
     <delete file="${dir.metainf}/${name.cvsautotag}"/>
   </target>
 
+  <target name="clean-modules" description="deletes files from ${dir.extract.modules}">
+      <delete dir="${dir.extract.modules}"/>
+  </target>
+  
   <target name="clean-project" description="deletes files from ${dir.projects}">
     <mkdir dir="${dir.webapps}"/>
     <delete>
@@ -372,6 +378,13 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.projects}/core"/>
   </target>
         
+  <target name="extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
+    <echo>Unpacking *.jar-Modules from ${dir.src.modules}</echo>
+    <unjar dest="${dir.extract.modules}">
+      <fileset dir="${dir.src.modules}" includes="*.jar" />
+    </unjar>
+  </target>
+  
   <target name="init-data-check" unless="pfx.force">
     <!-- extract only if pfixcore-data.jar is newer than dir ${dir.projects}/core -->
     <uptodate property="upd.init-data">
@@ -380,7 +393,7 @@ or delete the DOCTYPE definition -->
     </uptodate>
   </target>
 
-  <target name="init-data" depends="init-data-check" unless="upd.init-data">
+  <target name="init-data" depends="extract-modules, init-data-check" unless="upd.init-data">
     <delete dir="${dir.projects}/core"/>
     <untar dest="${dir.projects}" compression="gzip" overwrite="true">
       <fileset refid="id.fs.pfixcore_data_tgz"/>
