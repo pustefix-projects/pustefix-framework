@@ -37,7 +37,13 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
+import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.targets.DependencyType;
+import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 
 public class ContextSearchImpl implements ContextSearch {
 
@@ -47,11 +53,49 @@ public class ContextSearchImpl implements ContextSearch {
     private Query                          lastQuery;
     private Hit[] hits;
     
+    String content, tags, attribkey, attribvalue, comments;
+    
     
 
-    public void search(String content, String tags, String attribkey, String attribvalue, String comments)
+	public void resetData() {
+		content = null;
+		tags = null;
+		attribkey = null;
+		attribvalue = null;
+		comments = null;
+		hits = null;
+		lastQuery = null;
+	}
+    
+    public String getAttribkey() {
+		return attribkey;
+	}
+
+	public String getAttribvalue() {
+		return attribvalue;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void search(String content, String tags, String attribkey, String attribvalue, String comments)
             throws IOException, ParseException {
         IndexReader reader = IndexReader.open(PfixQueueManager.lucene_data_path);
+        this.content = content;
+        this.tags = tags;
+        this.attribkey = attribkey;
+        this.attribvalue = attribvalue;
+        this.comments = comments;
+        
         IndexSearcher searcher = new IndexSearcher(reader);
         BooleanQuery query = new BooleanQuery();
         if (content != null) query.add(QueryParser.parse(content, PreDoc.CONTENTS, analyzer), true, false);
@@ -81,22 +125,28 @@ public class ContextSearchImpl implements ContextSearch {
     private void transformHits(Hits hits) throws IOException {
         ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
         Project currentProject = pcon.getSelectedProject();
+        String currentProjectName = currentProject != null ? currentProject.getName() : null;
+        long tsStart = System.currentTimeMillis();
         
         Document doc;
         Vector<Hit> temp = new Vector<Hit>();
         String[] token;
         for (int i = 0; i < hits.length(); i++){
             doc = hits.doc(i);
+            
+            
             token = splitPath(doc.get(PreDoc.PATH));
-            if (currentProject != null && currentProject.findIncludePartThemeVariant(token[0],token[1],token[2]) == null) continue;
+            if (currentProject != null && currentProject.hasIncludePart(token[0],token[1],token[2]) == false){
+            	continue;
+            }
             temp.add(new Hit(doc,hits.score(i)));
         }
+        long tsStop = System.currentTimeMillis();
         this.hits = temp.toArray(new Hit[0]);
     }
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
 
         if (hits != null) {
-//            int hitSize = hits.length;
             Element newelem;
             for (Hit doc : hits) {
                 newelem = resdoc.createSubNode(elem, "hit");
@@ -107,24 +157,6 @@ public class ContextSearchImpl implements ContextSearch {
                 newelem.setAttribute("path", doc.getPath());
                 
             }
-//            for (int i = 0; i < hitSize; i++) {
-//                doc = hits.doc(i);
-//                String[] tokens = splitPath(doc.get(PreDoc.PATH));
-//
-//
-//                newelem = resdoc.createSubNode(elem, "hit");
-//                newelem.setAttribute("index", i + "");
-//                newelem.setAttribute("contents", doc.get(PreDoc.CONTENTS));
-//                newelem.setAttribute("comments", doc.get(PreDoc.COMMENTS));
-//                newelem.setAttribute("tags", doc.get(PreDoc.TAGS));
-//                newelem.setAttribute("attribkeys", doc.get(PreDoc.ATTRIBKEYS));
-//                newelem.setAttribute("attribvalues", doc.get(PreDoc.ATTRIBVALUES));
-//                newelem.setAttribute("filename", doc.get(PreDoc.FILENAME));
-//                newelem.setAttribute("path", doc.get(PreDoc.PATH));
-//                newelem.setAttribute("score", hits.score(i) + "");
-//                newelem.setAttribute("product", tokens[2]);
-//                newelem.setAttribute("part", tokens[1]);
-//            }
         }
         if (lastQuery != null) elem.setAttribute("lastQuery", lastQuery.toString());
 
@@ -134,6 +166,9 @@ public class ContextSearchImpl implements ContextSearch {
         hits = null;
         lastQuery = null;
     }
+    
+    
+    
     private class Hit{
         private double score;
         private String filename;
@@ -194,4 +229,5 @@ public class ContextSearchImpl implements ContextSearch {
     }
 
 
+    
 }

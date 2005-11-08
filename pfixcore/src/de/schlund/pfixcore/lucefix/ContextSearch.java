@@ -29,4 +29,11 @@ public interface ContextSearch extends ContextResource {
     
     public void search(String content, String tags, String attribkey, String attribvalue, String comments) throws IOException, ParseException;
 
+    public String getAttribkey();
+	public String getAttribvalue();
+	public String getComments();
+	public String getContent() ;
+	public String getTags() ;
+
+	public void resetData();
 }

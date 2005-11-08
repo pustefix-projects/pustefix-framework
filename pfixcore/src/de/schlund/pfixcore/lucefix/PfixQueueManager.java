@@ -52,30 +52,17 @@ import de.schlund.pfixxml.XMLException;
 public class PfixQueueManager implements Runnable {
 
     private static PfixQueueManager _instance = null;
-
     private static Category LOG = Logger.getLogger((PfixQueueManager.class));
-
     public static final String WAITMS_PROP = "lucefix.queueidle";
-
     public static String lucene_data_path;
-
-//    private Queue queue = null;
     private Queue<Tripel> queue = new LinkedList<Tripel>();
-
     private DocumentCache cache = null;
-
     private IndexReader reader = null;
-
     private IndexSearcher searcher = null;
-
     private IndexWriter writer = null;
-
     private Collection<Document> documents2write = null;
-
     private int waitms = -1;
-
     private Analyzer analyzer = PreDoc.ANALYZER;
-
     protected Object mutex = new Object();
 
     /**
@@ -88,7 +75,6 @@ public class PfixQueueManager implements Runnable {
         lucene_data_path = PathFactory.getInstance().createPath(".index")
                 .resolve().getAbsolutePath();
 
-//        queue = new Queue();
         documents2write = new Vector<Document>();
     }
 
@@ -101,8 +87,6 @@ public class PfixQueueManager implements Runnable {
         int added, updated, removed, size;
         cache = new DocumentCache();
         while (true) {
-//            synchronized (mutex) {
-
                 startLoop = System.currentTimeMillis();
                 added = updated = removed = size = 0;
                 queueloop: while ((current = queue.poll()) != null) {
@@ -128,6 +112,7 @@ public class PfixQueueManager implements Runnable {
                                 // current queued is NOT indexed
                                 Document newdoc = cache.getDocument(current);
                                 if (newdoc == null) {
+//                                	this just happens too often to log it
 //                                    LOG.debug("wanted to work on " + current + " but there is no part for it...");
                                     continue queueloop;
                                 }

@@ -43,11 +43,8 @@ public class PfixEngine {
         PfixQueueManager pq = PfixQueueManager.getInstance(queueIdle);
         Thread queueT = new Thread(pq, "lucefix-queue");
         queueT.setPriority(Thread.MIN_PRIORITY);
-        PfixReadjustment pr = PfixReadjustment.getInstance(reAdjustIdle);
-        Thread readjustT = new Thread(pr, "lucefix-readjustment");
-        readjustT.setPriority(Thread.MIN_PRIORITY);
+        PfixReadjustment pr = PfixReadjustment.getInstance();
         
         queueT.start();
-        readjustT.start();
     }
 }

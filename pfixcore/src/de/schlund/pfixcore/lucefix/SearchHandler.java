@@ -31,47 +31,68 @@ import de.schlund.util.statuscodes.StatusCodeLib;
 
 public class SearchHandler implements IHandler {
 
-    private static final String CSEARCH = "de.schlund.pfixcore.lucefix.ContextSearch";
+	private static final String CSEARCH = "de.schlund.pfixcore.lucefix.ContextSearch";
 
-    public void handleSubmittedData(Context context, IWrapper wrapper) throws ParseException{
+	public void handleSubmittedData(Context context, IWrapper wrapper)
+			throws ParseException {
 
+		ContextSearch csearch = (ContextSearch) context
+				.getContextResourceManager().getResource(CSEARCH);
+		Search search = (Search) wrapper;
 
-        ContextSearch csearch = (ContextSearch) context.getContextResourceManager().getResource(CSEARCH);
-        Search search = (Search) wrapper;
-
-
-        if (search.getDoit() != null && search.getDoit().booleanValue()) {
-            String content = search.getContents();
-            String tags = search.getTags();
-            if (tags != null){
-            	// replace ":" with "\:"
-            	tags = tags.replace(":", "\\:");
-            }
-            String attribKey = search.getAttribkeys();
-            String attribValue = search.getAttribvalues();
-            String comments = search.getComments();
-            try {
+		if (search.getDoit() != null && search.getDoit().booleanValue()) {
+			String content = search.getContents();
+			String tags = search.getTags();
+			if (tags != null) {
+				// replace ":" with "\:" - needed for searching for "pfx:button"
+				tags = tags.replace(":", "\\:");
+			}
+			String attribKey = search.getAttribkeys();
+			String attribValue = search.getAttribvalues();
+			String comments = search.getComments();
+			try {
 				csearch.search(content, tags, attribKey, attribValue, comments);
 			} catch (IOException e) {
-				search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_INDEX_NOT_INITED);
-			} 
-        }
-    }
+				search
+						.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_INDEX_NOT_INITED);
+			}
+		}
+	}
 
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
-        // TODO Auto-generated method stub
+	public void retrieveCurrentStatus(Context context, IWrapper wrapper)
+			throws Exception {
+		ContextSearch csearch = (ContextSearch) context
+				.getContextResourceManager().getResource(CSEARCH);
+		Search search = (Search) wrapper;
 
-    }
+		String tmp;
 
-    public boolean isActive(Context context) throws Exception {
-        return true;
-    }
+		if ((tmp = csearch.getAttribkey()) != null) {
+			search.setAttribkeys(tmp);
+		}
+		if ((tmp = csearch.getAttribvalue()) != null) {
+			search.setAttribvalues(tmp);
+		}
+		if ((tmp = csearch.getContent()) != null) {
+			search.setContents(tmp);
+		}
+		if ((tmp = csearch.getComments()) != null) {
+			search.setComments(tmp);
+		}
+		if ((tmp = csearch.getTags()) != null) {
+			search.setTags(tmp);
+		}
+	}
 
-    public boolean needsData(Context context) throws Exception {
-        return false;
-    }
+	public boolean isActive(Context context) throws Exception {
+		return true;
+	}
 
-    public boolean prerequisitesMet(Context context) throws Exception {
-        return true;
-    }
+	public boolean needsData(Context context) throws Exception {
+		return false;
+	}
+
+	public boolean prerequisitesMet(Context context) throws Exception {
+		return true;
+	}
 }
