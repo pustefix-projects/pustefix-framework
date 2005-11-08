@@ -24,6 +24,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.lucefix.PfixReadjustment;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
@@ -213,6 +214,12 @@ public class PustefixTargetUpdateServiceImpl implements
                         this.firstRunDone = true;
                     }
                 }
+                
+                // All low priority targets (usually all targets)
+                // have been updates, so trigger regeneration of
+                // search index
+                PfixReadjustment.getInstance().readjust();
+                
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
                     try {
