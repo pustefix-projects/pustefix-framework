@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  *
  */
 
-public class TargetGenerator {
+public class TargetGenerator implements Comparable{
     public static final String XSLPARAM_TG   = "__target_gen";
     public static final String XSLPARAM_TKEY = "__target_key";
     public static final String CACHEDIR      = ".cache";
@@ -681,4 +681,11 @@ public class TargetGenerator {
         }
         return attr.getValue();
     }
+
+	public int compareTo(Object o) {
+		TargetGenerator cmp = (TargetGenerator)o;
+		return cmp.getName().compareTo(this.getName());
+	}
+    
+    
 }
