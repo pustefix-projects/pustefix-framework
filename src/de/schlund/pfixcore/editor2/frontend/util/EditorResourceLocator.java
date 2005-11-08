@@ -26,6 +26,7 @@ import de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource;
 import de.schlund.pfixcore.editor2.frontend.resources.SessionResource;
 import de.schlund.pfixcore.editor2.frontend.resources.TargetsResource;
 import de.schlund.pfixcore.editor2.frontend.resources.UsersResource;
+import de.schlund.pfixcore.lucefix.ContextSearch;
 import de.schlund.pfixcore.workflow.Context;
 
 /**
@@ -129,5 +130,9 @@ public abstract class EditorResourceLocator {
     public final static UsersResource getUsersResource(Context context) {
         return (UsersResource) context.getContextResourceManager().getResource(
                 UsersResource.class.getName());
+    }
+    
+    public final static ContextSearch getContextSearch(Context context){
+    	return (ContextSearch) context.getContextResourceManager().getResource(ContextSearch.class.getName());
     }
 }
