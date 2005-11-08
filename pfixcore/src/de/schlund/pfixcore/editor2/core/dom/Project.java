@@ -128,4 +128,13 @@ public interface Project {
      */
     IncludePartThemeVariant findIncludePartThemeVariant(String file,
             String part, String theme);
+    
+    /**
+     * Finds out if the given IncludePart is part of this <code>Project</code>. 
+     * @param file (relative) path to the file that contains the include part
+     * @param part Name of the part
+     * @param theme Name of the theme
+     * @return
+     */
+    boolean hasIncludePart(String file, String part, String theme);
 }

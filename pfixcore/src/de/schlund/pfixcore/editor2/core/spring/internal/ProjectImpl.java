@@ -387,5 +387,12 @@ public class ProjectImpl extends AbstractProject {
             return null;
         }
     }
+	public boolean hasIncludePart(String file, String part, String theme) {
+		AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,PathFactory.getInstance().createPath(file), part, theme);
+		TreeSet generators = aux.getAffectedTargetGenerators();
+
+		return generators.contains(this.tgen);
+	}
+
 
 }
