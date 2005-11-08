@@ -51,6 +51,8 @@ public class PustefixTargetUpdateServiceImpl implements
     private Object lock;
 
     private boolean firstRunDone;
+    
+    private boolean waitingForRefill;
 
     private boolean isEnabled = false;
 
@@ -59,6 +61,8 @@ public class PustefixTargetUpdateServiceImpl implements
     private long firstRunDelay = 0;
     
     private long nthRunDelay = 1000;
+    
+    private long completeRunDelay = 600000;
 
     public void setEnabled(boolean flag) {
         this.isEnabled = flag;
@@ -75,6 +79,10 @@ public class PustefixTargetUpdateServiceImpl implements
     public void setNthRunDelay(long delay) {
         this.nthRunDelay = delay;
     }
+    
+    public void setCompleteRunDelay(long delay) {
+        this.completeRunDelay = delay;
+    }
 
     public PustefixTargetUpdateServiceImpl() {
         this.lowPriorityQueue = new ArrayList();
@@ -82,6 +90,7 @@ public class PustefixTargetUpdateServiceImpl implements
         this.lock = new Object();
         this.targetList = new HashSet();
         this.firstRunDone = false;
+        this.waitingForRefill = false;
     }
 
     public void init() {
@@ -168,8 +177,21 @@ public class PustefixTargetUpdateServiceImpl implements
             if (this.isEnabled) {
                 while (!lowCopy.isEmpty()) {
                     Target target = (Target) lowCopy.get(0);
+                    boolean needsUpdate;
                     try {
-                        target.getValue();
+                        needsUpdate = target.needsUpdate();
+                    } catch (Exception e) {
+                        // Remove target from queue without generating it
+                        lowCopy.remove(0);
+                        synchronized(this.lock) {
+                            this.lowPriorityQueue.remove(0);
+                        }
+                        continue;
+                    }
+                    try {
+                        if (needsUpdate) {
+                            target.getValue();
+                        }
                     } catch (TargetGenerationException e) {
                         String msg = "Generation of target "
                                 + target.getTargetKey() + " failed!";
@@ -187,7 +209,9 @@ public class PustefixTargetUpdateServiceImpl implements
                                 // background generation loop
                                 // does not consume to much
                                 // CPU time
-                                this.lock.wait(this.nthRunDelay);
+                                if (needsUpdate) {
+                                    this.lock.wait(this.nthRunDelay);
+                                }
                             } catch (InterruptedException e) {
                                 // Ignore interruption and continue
                             }
@@ -198,7 +222,9 @@ public class PustefixTargetUpdateServiceImpl implements
                                 // background generation loop
                                 // does not consume to much
                                 // CPU time
-                                this.lock.wait(this.firstRunDelay);
+                                if (needsUpdate) {
+                                    this.lock.wait(this.firstRunDelay);
+                                }
                             } catch (InterruptedException e) {
                                 // Ignore interruption and continue
                             }
@@ -209,16 +235,38 @@ public class PustefixTargetUpdateServiceImpl implements
 
             synchronized (this.lock) {
                 if (this.isEnabled) {
-                    if (this.lowPriorityQueue.isEmpty()) {
-                        this.lowPriorityQueue.addAll(this.targetList);
+                    if (this.lowPriorityQueue.isEmpty() && !waitingForRefill) {
                         this.firstRunDone = true;
+                        
+                        // All low priority targets (usually all targets)
+                        // have been updates, so trigger regeneration of
+                        // search index
+                        PfixReadjustment.getInstance().readjust();
+                        
+                        // Delay refill of low priority queue
+                        // in order to keep down system load
+                        this.waitingForRefill = true;                        
+                        Runnable refillTool = new Runnable() {
+                            public void run() {
+                                try {
+                                    Thread.sleep(completeRunDelay);
+                                } catch (InterruptedException e) {
+                                    // Ignore
+                                }
+                                synchronized(lock) {
+                                    lowPriorityQueue.addAll(targetList);
+                                    waitingForRefill = false;
+                                    lock.notifyAll();
+                                }
+                            }
+                        };
+                        Thread toolThread = new Thread(refillTool, "target-update-refill");
+                        toolThread.run();
+                        
                     }
                 }
                 
-                // All low priority targets (usually all targets)
-                // have been updates, so trigger regeneration of
-                // search index
-                PfixReadjustment.getInstance().readjust();
+                // 
                 
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
