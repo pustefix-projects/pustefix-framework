@@ -67,8 +67,15 @@ public class PfixReadjustment implements Runnable {
      * @param idletime
      * @throws XMLException
      */
-    public PfixReadjustment(Integer idletime) throws XMLException {
+    public PfixReadjustment(Integer idletime) {
         waitms = idletime;
+    }
+    
+    /**
+     * Checks list of include parts for changes and updates search index.
+     */
+    public void readjust() {
+        // To be coded by Schuppi
     }
 
     /*
@@ -272,13 +279,26 @@ public class PfixReadjustment implements Runnable {
 
         return retval;
     }
-
+    
+    /**
+     * Returns singleton which must have been initialized ealier. 
+     * 
+     * @return Instance of PfixReadjustment
+     * @throws RuntimeException if singleton has not been initialized yet
+     */
+    public static synchronized PfixReadjustment getInstance() {
+        if (_instance == null) {
+            throw new RuntimeException("PfixReadjustment has to be initialized first!");
+        }
+        return _instance;
+    }
+    
     /**
      * @param idletime
      * @return
      * @throws XMLException
      */
-    public static synchronized PfixReadjustment getInstance(Integer idletime) throws XMLException {
+    public static synchronized PfixReadjustment getInstance(Integer idletime) {
         if (_instance == null) _instance = new PfixReadjustment(idletime);
         return _instance;
     }
