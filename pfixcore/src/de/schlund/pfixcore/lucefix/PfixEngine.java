@@ -29,22 +29,18 @@ import de.schlund.pfixxml.XMLException;
  */
 public class PfixEngine {
 
-    private int queueIdle, reAdjustIdle;
+    private int queueIdle;
 
     public void setQueueIdle(int queueIdle) {
         this.queueIdle = queueIdle;
     }
 
-    public void setReAdjustIdle(int reAdjustIdle) {
-        this.reAdjustIdle = reAdjustIdle;
-    }
-
-    public void init() throws XMLException{
+    public void init() throws XMLException {
         PfixQueueManager pq = PfixQueueManager.getInstance(queueIdle);
         Thread queueT = new Thread(pq, "lucefix-queue");
         queueT.setPriority(Thread.MIN_PRIORITY);
         PfixReadjustment pr = PfixReadjustment.getInstance();
-        
+
         queueT.start();
     }
 }
