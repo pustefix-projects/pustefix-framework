@@ -1,3 +1,9 @@
+2005-11-09  Ralf Rapude <rapude@schlund.de>
+
+	* due to different changes newproject.sh doesn't generate proper
+	new projects. Therefore some fixes and also a new template 
+	(core/prjtemplates/page.tmpl) have been committed.
+	
 2005-11-08  Benjamin Reitzammer <benjamin@schlund.de>
 
 	* skel/build-skel.xml - added build-tasks for modules mechanism. All *.jar files 
