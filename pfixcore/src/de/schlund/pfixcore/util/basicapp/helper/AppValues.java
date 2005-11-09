@@ -81,10 +81,14 @@ public final class AppValues {
     public static final String CFGFILESUFFIN = ".prop.in";
     /** default name for pages */
     public static final String PAGEDEFAULT   = "home";
+    /** prefix for pages to be displayes */
+    public static final String PAGEDEFPREFIX = "main_";
+    /** and also the pages Suffix */
+    public static final String PAGEDEFSUFFIX  = ".xml";
     /** All those values as an array */
     public static final String[] TEMPLATEARR   = {"config.tmpl", 
             "depend.tmpl", "frame.tmpl", "project.tmpl", 
-            "skin.tmpl", "metatags.tmpl"};
+            "skin.tmpl", "metatags.tmpl", "page.tmpl"};
     
     
     /** All Template strings */
@@ -95,6 +99,7 @@ public final class AppValues {
     public static final String PROJECT_TMPL    = "project.tmpl";
     public static final String SKIN_TMPL       = "skin.tmpl";
     public static final String METATAGS_TMPL   = "metatags.tmpl";
+    public static final String PAGE_TMPL       = "page.tmpl";
     
     /** The template folder */   
     public static final String TEMPLFOLDERPATH = "core/prjtemplates/";

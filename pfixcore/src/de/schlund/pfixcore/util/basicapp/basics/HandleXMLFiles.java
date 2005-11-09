@@ -20,6 +20,9 @@ package de.schlund.pfixcore.util.basicapp.basics;
 
 import java.io.File;
 import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -37,8 +40,8 @@ import de.schlund.pfixcore.util.basicapp.objects.ServletObject;
 import de.schlund.pfixcore.util.basicapp.projectdom.ConfigXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.DependXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.FrameXmlDom;
+import de.schlund.pfixcore.util.basicapp.projectdom.PageXmlDom;
 import de.schlund.pfixcore.util.basicapp.projectdom.ProjectXmlDom;
-import de.schlund.pfixxml.util.Xml;
 
 
 /**
@@ -59,7 +62,8 @@ public class HandleXMLFiles {
     private String pathToConf  = null;
     /** The project name */
     private String projectName = null;
-    
+    /** The path to the pages folder */
+    private String pathToPages = null;
     
     /** 
      * Constructor just initializes an Project Object
@@ -81,7 +85,7 @@ public class HandleXMLFiles {
         // setting basicpaths
         pathToTmpl         = AppValues.BASICPATH + AppValues.TEMPLFOLDERPATH;
         pathToConf         = AppValues.BASICPATH + projectName + AppValues.CONFFOLDER;
-        StringBuffer buffy = new StringBuffer();
+        pathToPages        = AppValues.BASICPATH + projectName + AppValues.PATHTO_PAGES;
         Document domDoc    = null; 
         
         // loop through all necessary files needed to create a project
@@ -131,6 +135,19 @@ public class HandleXMLFiles {
                 wrtDoc                   =AppValues.METATAGSXSL;
             }
             
+            // the page will appear in myproject/txt/pages
+            else if (tmpDoc.equals(AppValues.PAGE_TMPL)) {
+                for (int j = 0; j < project.getServletList().size(); j++) {
+                    int giveAway = j + 1;
+                    wrtDoc              = AppValues.PAGEDEFPREFIX + 
+                                          AppValues.PAGEDEFAULT + giveAway +
+                                          AppValues.PAGEDEFSUFFIX;
+                    PageXmlDom pageDom = new PageXmlDom(project, domDoc, giveAway);
+                    domDoc             = pageDom.getDom();
+                    writeXmlFile(domDoc, wrtDoc);
+                }
+            }
+            
             // writing the dom to a file
             writeXmlFile(domDoc, wrtDoc);
         }
@@ -143,16 +160,18 @@ public class HandleXMLFiles {
      * @return A dom
      */
     private Document readDom(String currentDoc) {
-        Document doc;
+        System.out.println("Try to read the dom of the given Document: " + currentDoc);
         
         try {
-            System.out.println("Try to read the dom of the given Document: " + currentDoc);
-            doc = Xml.parseMutable(currentDoc);
+            DocumentBuilder myBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc              = myBuilder.parse(currentDoc);
             System.out.println("Transforming into dom has been successfull");
             return doc;
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException e) {
             LOG.debug(e.getMessage(), e);
         } catch (IOException e) {
+            LOG.debug(e.getMessage(), e);
+        } catch (SAXException e) {
             LOG.debug(e.getMessage(), e);
         }
         return null;
@@ -199,6 +218,8 @@ public class HandleXMLFiles {
             } else if (fileName.equals(AppValues.DEPENDXMLIN)) {
                 file = new File(pathToConf + fileName);
                 
+            } else if (fileName.startsWith(AppValues.PAGEDEFPREFIX)) {
+                file = new File(pathToPages + fileName);
               // or maybe also the project.xml.in
             } else if (fileName.equals(AppValues.PROJECTXMLIN)) {
                 file = new File(pathToConf + fileName);
@@ -211,6 +232,8 @@ public class HandleXMLFiles {
                 file = new File(buffy.toString() + fileName);
                 buffy.setLength(0);
             }
+            
+            
             
             // the output will happen anyway ;o)
             Result result = new StreamResult(file);
