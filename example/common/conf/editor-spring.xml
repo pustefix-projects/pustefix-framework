@@ -181,8 +181,8 @@
       <ref bean="pathresolver"/>
     </property>
     <property name="projectsFilePath">
-		<value>servletconf/projects.xml</value>
-	</property>	  
+      <value>servletconf/projects.xml</value>
+    </property>	  
   </bean>
 
   <bean id="securitymanager" class="de.schlund.pfixcore.editor2.core.spring.SecurityManagerServiceImpl">
@@ -224,7 +224,7 @@
     <!-- Delay (in milliseconds) to wait after each generation step,
          only applied to low priority targets after the first run   -->
     <property name="nthRunDelay">
-      <value>1000</value>
+      <value>100</value>
     </property>
     <!-- Delay (in milliseconds) to wait after each completed generation cycle,
          only applied to low priority targets -->
