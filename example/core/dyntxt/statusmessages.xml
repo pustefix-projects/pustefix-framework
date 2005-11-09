@@ -256,6 +256,11 @@
      <lang name="default">Wildcards must not be used as first character in a query</lang>
    </product>
   </part>
+  <part name="pfixcore.lucefix.TOO_MANY_CLAUSES">
+	  <product name="default">
+		  <lang name="default">Expression too imprecise</lang>		  
+	  </product>
+  </part>
   <!-- please note that level names in part names are _always_ lowercase -->
   <part name="pfixcore.pagemessages.level.error">
     <product name="default">
