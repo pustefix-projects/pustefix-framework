@@ -22,6 +22,7 @@ package de.schlund.pfixcore.lucefix;
 import java.io.IOException;
 
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanQuery;
 
 import de.schlund.pfixcore.generator.IHandler;
 import de.schlund.pfixcore.generator.IWrapper;
@@ -33,13 +34,11 @@ public class SearchHandler implements IHandler {
 
     private static final String CSEARCH = "de.schlund.pfixcore.lucefix.ContextSearch";
 
-    public void handleSubmittedData(Context context, IWrapper wrapper)
-        throws ParseException {
-        
-        ContextSearch csearch = (ContextSearch) context
-            .getContextResourceManager().getResource(CSEARCH);
+    public void handleSubmittedData(Context context, IWrapper wrapper) throws ParseException {
+
+        ContextSearch csearch = (ContextSearch) context.getContextResourceManager().getResource(CSEARCH);
         Search search = (Search) wrapper;
-        
+
         if (search.getDoit() != null && search.getDoit().booleanValue()) {
             String content = search.getContents();
             String tags = search.getTags();
@@ -54,18 +53,18 @@ public class SearchHandler implements IHandler {
                 csearch.search(content, tags, attribKey, attribValue, comments);
             } catch (IOException e) {
                 search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_INDEX_NOT_INITED);
+            } catch (BooleanQuery.TooManyClauses tmce) {
+                search.addSCodeDoit(StatusCodeLib.PFIXCORE_LUCEFIX_TOO_MANY_CLAUSES);
             }
         }
     }
-    
-    public void retrieveCurrentStatus(Context context, IWrapper wrapper)
-        throws Exception {
-        ContextSearch csearch = (ContextSearch) context
-            .getContextResourceManager().getResource(CSEARCH);
+
+    public void retrieveCurrentStatus(Context context, IWrapper wrapper) throws Exception {
+        ContextSearch csearch = (ContextSearch) context.getContextResourceManager().getResource(CSEARCH);
         Search search = (Search) wrapper;
-        
+
         String tmp;
-        
+
         if ((tmp = csearch.getAttribkey()) != null) {
             search.setAttribkeys(tmp);
         }
@@ -82,15 +81,15 @@ public class SearchHandler implements IHandler {
             search.setTags(tmp);
         }
     }
-    
+
     public boolean isActive(Context context) throws Exception {
         return true;
     }
-    
+
     public boolean needsData(Context context) throws Exception {
         return false;
     }
-    
+
     public boolean prerequisitesMet(Context context) throws Exception {
         return true;
     }
