@@ -249,9 +249,6 @@
     <property name="queueIdle">
       <value>1000</value>
     </property>	  
-    <property name="reAdjustIdle">
-      <value>300000</value>
-    </property>	  
   </bean>
 					
 </beans>
