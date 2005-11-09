@@ -1,9 +1,9 @@
 2005-11-08  Benjamin Reitzammer <benjamin@schlund.de>
 
-  * skel/build-skel.xml - added build-tasks for modules mechanism. All *.jar files 
-    located in modules-directory are automatically unjarred into projects/modules.
-    It's best to pack the files in the modules *.jar files into their own direcotory
-    so they don't incidentally overwrite files from other modules
+	* skel/build-skel.xml - added build-tasks for modules mechanism. All *.jar files 
+	located in modules-directory are automatically unjarred into projects/modules.
+	It's best to pack the files in the modules *.jar files into their own direcotory
+	so they don't incidentally overwrite files from other modules
 
 2005-11-02  Jens Lautenbacher  <jtl@schlund.de>
 
