@@ -1,3 +1,11 @@
+2005-11-14  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (registerTargetForUpdate): 
+	commented out the whole synchronized block for now, because it dead locks. Need to investigate further.
+
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java (handleSubmittedData): 
+	need to set the hash value in the wrapper to the new value!
+
 2005-11-14  Sonja Pieper <spieper@schlund.de>
 	* Changes to package: src/de/schlund/pfixxml/perflogging/
 	added a method to return the original performance data structure

@@ -79,13 +79,14 @@ public abstract class CommonIncludesResourceImpl implements
 
     public void insertStatus(ResultDocument resdoc, Element elem)
             throws Exception {
-        Project project = EditorResourceLocator.getProjectsResource(context)
-                .getSelectedProject();
+        // System.out.println("In IS");
+        Project project = EditorResourceLocator.getProjectsResource(context).getSelectedProject();
         if (project != null) {
             this.renderAllIncludes(resdoc, elem, project);
         }
 
         if (this.selectedIncludePart != null) {
+            // System.out.println("In IS: HASH: " + this.selectedIncludePart.getMD5());
             Element currentInclude = resdoc.createSubNode(elem,
                     "currentinclude");
             currentInclude.setAttribute("path", this.selectedIncludePart
