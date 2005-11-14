@@ -1,3 +1,15 @@
+2005-11-14  Sonja Pieper <spieper@schlund.de>
+	* Changes to package: src/de/schlund/pfixxml/perflogging/
+	added a method to return the original performance data structure
+	to enable projects using perflogging to perform faster operations
+	to analyze or store data
+
+	* Changes to package: src/de/schlund/pfixxml/jmx/
+	added a method to the JmxServer MBean to add the new 
+	functionality from src/de/schlund/pfixxml/perflogging/ to
+	the jmx interface
+
+
 2005-11-09  Ralf Rapude <rapude@schlund.de>
 
 	* due to different changes newproject.sh doesn't generate proper

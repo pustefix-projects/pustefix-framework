@@ -6,6 +6,7 @@
  */
 package de.schlund.pfixxml.perflogging;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 
@@ -138,6 +139,25 @@ public class PerfLogging {
             stopPerfEventTakeThread();
             boundedBuffer.reset();
             return xml;
+        } else {
+            LOG.info("perflogging already inactive");
+            return null;
+        }
+    }
+    
+    public synchronized Map inactivatePerfloggingMap() {
+        if(!perfLoggingEnabled) {
+            LOG.warn("Perflogging is disabled");
+            return null;
+        }
+        if(perfActive) {
+            LOG.info("Inactivating perflogging");
+            perfActive = false;
+            Map map = PerfStatistic.getInstance().toMap();
+            PerfStatistic.getInstance().reset();
+            stopPerfEventTakeThread();
+            boundedBuffer.reset();
+            return map;
         } else {
             LOG.info("perflogging already inactive");
             return null;

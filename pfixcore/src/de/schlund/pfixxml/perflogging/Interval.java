@@ -12,7 +12,7 @@ package de.schlund.pfixxml.perflogging;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-class Interval {
+public class Interval {
     private long from;
     private long until;
     
@@ -39,11 +39,11 @@ class Interval {
         return ret;
     }
     
-    long getFrom() {
+    public long getFrom() {
         return from;
     }
     
-    long getUntil() {
+    public long getUntil() {
         return until;
     }
     
