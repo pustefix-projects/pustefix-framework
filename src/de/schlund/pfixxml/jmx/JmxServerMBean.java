@@ -21,6 +21,7 @@ package de.schlund.pfixxml.jmx;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.ObjectName;
 
@@ -40,4 +41,5 @@ public interface JmxServerMBean {
     public boolean isPerfLoggingRunning();
     public void startPerfLogging();
     public String stopPerfLogging();
+    public Map<String, Map<String, int[]>> stopPerfLoggingMap();
 }

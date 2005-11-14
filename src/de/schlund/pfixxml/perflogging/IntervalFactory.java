@@ -29,11 +29,11 @@ public class IntervalFactory {
     
     
     
-    static IntervalFactory getInstance() {
+    public static IntervalFactory getInstance() {
         return instance;
     }
     
-    List<Interval> getIntervalForCategory(String category) {
+    public List<Interval> getIntervalForCategory(String category) {
         if(!interval_category_map.containsKey(category)) {
             List<Interval> intervals = createInterval();
             interval_category_map.put(category, intervals);

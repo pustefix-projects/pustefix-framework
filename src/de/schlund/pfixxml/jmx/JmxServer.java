@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -251,6 +252,10 @@ public class JmxServer implements JmxServerMBean {
 
     public String stopPerfLogging() {
         return PerfLogging.getInstance().inactivatePerflogging();
+    }
+
+    public Map<String, Map<String, int[]>> stopPerfLoggingMap() {
+        return PerfLogging.getInstance().inactivatePerfloggingMap();
     }
 
    

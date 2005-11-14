@@ -9,6 +9,7 @@ package de.schlund.pfixxml.perflogging;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -83,7 +84,12 @@ public class PerfStatistic {
         return sb.toString();
     }
 
-
+    synchronized Map toMap() {        
+        if(category_map.isEmpty()) return null;
+        return category_map;        
+    }
+    
+    
     /**
      * @param sb
      */
