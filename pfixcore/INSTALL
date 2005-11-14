@@ -138,7 +138,3 @@ You could now start building your own applications, but unfortunately
 there is still not much documentation about how to achieve this. Therefore
 I suggest you refer to the mailing list (see pustefix.sf.net).
 
-Just one warning for people trying to use the editor app as an example for their own application:
-The editor "just works", but is quite old, hacked up and in a lot of ways can't be considered a good
-example on how to write a pustefix application. Of course we should rewrite the editor to better
-conform to the pustefix programming model, but this will take time.
