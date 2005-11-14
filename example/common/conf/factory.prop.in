@@ -14,6 +14,16 @@
     <prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
     <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
     
+    <!-- Load all projects on startup when in production mode-->
+    <choose>
+      <test mode="prod">
+        <prop name="factory.initialize.08">de.schlund.pfixxml.ProjectInitFactory</prop>
+        <!-- Specify this property to load only certain projects
+        <prop name="projectinit.projectlist">sample1, webservice</prop>
+        -->
+      </test>
+    </choose>
+    
     <!-- part index -->
     <prop name="partindex.scodefile.1">core/dyntxt/statusmessages.xml</prop>
     <prop name="partindex.scodefile.2">sample1/dyntxt/statusmessages.xml</prop>
