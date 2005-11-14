@@ -66,6 +66,12 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setEnabled(boolean flag) {
         this.isEnabled = flag;
+        
+        // Make sure sleeping thread is awakened
+        // when service is enabled
+        synchronized (this.lock) {
+        	this.lock.notifyAll();
+        }
     }
 
     public void setStartupDelay(long delay) {
@@ -106,10 +112,10 @@ public class PustefixTargetUpdateServiceImpl implements
             Logger.getLogger(this.getClass()).warn(msg);
             return;
         }
-        // synchronized (this.lock) {
-            // this.highPriorityQueue.add(target);
-            // this.lock.notify();
-        // }
+        synchronized (this.lock) {
+            this.highPriorityQueue.add(target);
+            this.lock.notifyAll();
+    	}
     }
 
     public void registerTargetForInitialUpdate(Target target) {
@@ -121,11 +127,9 @@ public class PustefixTargetUpdateServiceImpl implements
         synchronized (this.lock) {
             if (!this.targetList.contains(target)) {
                 this.targetList.add(target);
-                if (this.isEnabled) {
-                    this.lowPriorityQueue.add(target);
-                    this.firstRunDone = false;
-                    this.lock.notify();
-                }
+                this.lowPriorityQueue.add(target);
+                this.firstRunDone = false;
+                this.lock.notifyAll();
             }
         }
     }
@@ -168,9 +172,6 @@ public class PustefixTargetUpdateServiceImpl implements
                     Logger.getLogger(this.getClass()).warn(msg);
                 }
                 highCopy.remove(0);
-                synchronized (this.lock) {
-
-                }
             }
 
             // Do automatic regeneration only if enabled
@@ -249,7 +250,9 @@ public class PustefixTargetUpdateServiceImpl implements
                         Runnable refillTool = new Runnable() {
                             public void run() {
                                 try {
-                                    Thread.sleep(completeRunDelay);
+                                	if (completeRunDelay > 0) {
+                                		Thread.sleep(completeRunDelay);
+                                	}
                                 } catch (InterruptedException e) {
                                     // Ignore
                                 }
@@ -262,12 +265,10 @@ public class PustefixTargetUpdateServiceImpl implements
                         };
                         Thread toolThread = new Thread(refillTool,
                                 "target-update-refill");
-                        toolThread.run();
+                        toolThread.start();
 
                     }
                 }
-
-                // 
 
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
