@@ -51,17 +51,17 @@ public class PustefixTargetUpdateServiceImpl implements
     private Object lock;
 
     private boolean firstRunDone;
-    
+
     private boolean waitingForRefill;
 
     private boolean isEnabled = false;
 
     private long startupDelay = 0;
-    
+
     private long firstRunDelay = 0;
-    
+
     private long nthRunDelay = 1000;
-    
+
     private long completeRunDelay = 600000;
 
     public void setEnabled(boolean flag) {
@@ -71,15 +71,15 @@ public class PustefixTargetUpdateServiceImpl implements
     public void setStartupDelay(long delay) {
         this.startupDelay = delay;
     }
-    
+
     public void setFirstRunDelay(long delay) {
         this.firstRunDelay = delay;
     }
-    
+
     public void setNthRunDelay(long delay) {
         this.nthRunDelay = delay;
     }
-    
+
     public void setCompleteRunDelay(long delay) {
         this.completeRunDelay = delay;
     }
@@ -118,10 +118,10 @@ public class PustefixTargetUpdateServiceImpl implements
             Logger.getLogger(this.getClass()).warn(msg);
             return;
         }
-        if (this.isEnabled) {
-            synchronized (this.lock) {
-                if (!this.targetList.contains(target)) {
-                    this.targetList.add(target);
+        synchronized (this.lock) {
+            if (!this.targetList.contains(target)) {
+                this.targetList.add(target);
+                if (this.isEnabled) {
                     this.lowPriorityQueue.add(target);
                     this.firstRunDone = false;
                     this.lock.notify();
@@ -183,7 +183,7 @@ public class PustefixTargetUpdateServiceImpl implements
                     } catch (Exception e) {
                         // Remove target from queue without generating it
                         lowCopy.remove(0);
-                        synchronized(this.lock) {
+                        synchronized (this.lock) {
                             this.lowPriorityQueue.remove(0);
                         }
                         continue;
@@ -237,15 +237,15 @@ public class PustefixTargetUpdateServiceImpl implements
                 if (this.isEnabled) {
                     if (this.lowPriorityQueue.isEmpty() && !waitingForRefill) {
                         this.firstRunDone = true;
-                        
+
                         // All low priority targets (usually all targets)
                         // have been updates, so trigger regeneration of
                         // search index
                         PfixReadjustment.getInstance().readjust();
-                        
+
                         // Delay refill of low priority queue
                         // in order to keep down system load
-                        this.waitingForRefill = true;                        
+                        this.waitingForRefill = true;
                         Runnable refillTool = new Runnable() {
                             public void run() {
                                 try {
@@ -253,21 +253,22 @@ public class PustefixTargetUpdateServiceImpl implements
                                 } catch (InterruptedException e) {
                                     // Ignore
                                 }
-                                synchronized(lock) {
+                                synchronized (lock) {
                                     lowPriorityQueue.addAll(targetList);
                                     waitingForRefill = false;
                                     lock.notifyAll();
                                 }
                             }
                         };
-                        Thread toolThread = new Thread(refillTool, "target-update-refill");
+                        Thread toolThread = new Thread(refillTool,
+                                "target-update-refill");
                         toolThread.run();
-                        
+
                     }
                 }
-                
+
                 // 
-                
+
                 if (this.highPriorityQueue.isEmpty()
                         && this.lowPriorityQueue.isEmpty()) {
                     try {
