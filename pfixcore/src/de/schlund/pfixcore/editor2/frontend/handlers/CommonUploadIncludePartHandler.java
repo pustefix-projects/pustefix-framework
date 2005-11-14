@@ -41,37 +41,32 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
     protected abstract CommonIncludesResource getResource(Context context);
 
     public void handleSubmittedData(Context context, IWrapper wrapper)
-            throws Exception {
+        throws Exception {
         CommonUploadIncludePart input = (CommonUploadIncludePart) wrapper;
+        // System.out.println("In HSD");
         if (input.getDoUpload() != null && input.getDoUpload().booleanValue()
-                && input.getContent() != null && input.getHash() != null) {
+            && input.getContent() != null && input.getHash() != null) {
+            // System.out.println("In HSD: HASH: " + input.getHash());
             try {
-                this.getResource(context).setContent(input.getContent(),
-                        input.getHash());
+                this.getResource(context).setContent(input.getContent(), input.getHash());
+                input.setHash(this.getResource(context).getMD5());
             } catch (TransformerException e) {
                 Logger.getLogger(this.getClass()).warn(e);
                 if (e.getLocator() != null) {
-                    String line = Integer.toString(e.getLocator()
-                            .getLineNumber());
-                    String column = Integer.toString(e.getLocator()
-                            .getColumnNumber());
-                    input
-                            .addSCodeContent(
-                                    StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR_WITH_DETAILS,
-                                    new String[] { line, column }, null);
+                    String line = Integer.toString(e.getLocator().getLineNumber());
+                    String column = Integer.toString(e.getLocator().getColumnNumber());
+                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR_WITH_DETAILS,
+                                          new String[] { line, column }, null);
                 } else {
-                    input
-                            .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
+                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
                 }
             } catch (EditorIncludeHasChangedException e) {
                 input.setHash(e.getNewHash());
                 input.setContent(e.getMerged());
-                input
-                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);
+                input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_INCLUDE_HAS_CHANGED);
                 return;
             } catch (EditorException e) {
-                input
-                        .addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_GEN_ERR);
+                input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_GEN_ERR);
                 return;
             }
         }

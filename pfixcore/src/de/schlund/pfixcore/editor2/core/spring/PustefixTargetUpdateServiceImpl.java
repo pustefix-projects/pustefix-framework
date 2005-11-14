@@ -106,10 +106,10 @@ public class PustefixTargetUpdateServiceImpl implements
             Logger.getLogger(this.getClass()).warn(msg);
             return;
         }
-        synchronized (this.lock) {
-            this.highPriorityQueue.add(target);
-            this.lock.notify();
-        }
+        // synchronized (this.lock) {
+            // this.highPriorityQueue.add(target);
+            // this.lock.notify();
+        // }
     }
 
     public void registerTargetForInitialUpdate(Target target) {
