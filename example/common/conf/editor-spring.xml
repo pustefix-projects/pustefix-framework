@@ -207,10 +207,6 @@
   </bean>
   
   <bean id="pustefixtargetupdate" class="de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl" init-method="init">
-    <!-- Set to false to disable automatic target regeneration -->
-    <property name="enabled">
-      <value>true</value>
-    </property>
     <!-- Delay (in milliseconds) to wait after startup, before
          regeneration of any target is started                 -->
     <property name="startupDelay">

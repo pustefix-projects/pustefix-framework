@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
 import de.schlund.pfixcore.editor2.core.spring.EditorApplicationContext;
+import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateServiceImpl;
 import de.schlund.pfixxml.PathFactory;
 
 /**
@@ -103,6 +104,27 @@ public final class EditorApplicationContextFactory implements Runnable {
             String err = "Initialization of ApplicationContext for editor failed!";
             Logger.getLogger(this.getClass()).fatal(err, e);
         }
+
+        // Active / deactivate background generation of targets
+        String generatorProp = this.initProps
+                .getProperty("de.schlund.pfixcore.editor2.updatetargets");
+        boolean generatorFlag = false;
+        if (generatorProp == null || generatorProp.equals("1")
+                || generatorProp.equalsIgnoreCase("true")) {
+            generatorFlag = true;
+        }
+
+        // There should be only one instance of the update service,
+        // but you can never be sure enough.
+        // Note that we look for the concrete implementation, not the
+        // interface.
+        String beanNames[] = this.appContext
+                .getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
+        for (int i = 0; i < beanNames.length; i++) {
+            ((PustefixTargetUpdateServiceImpl) this.appContext
+                    .getBean(beanNames[i])).setEnabled(generatorFlag);
+        }
+
         this.initialized = true;
         synchronized (this.initLock) {
             this.initLock.notifyAll();
