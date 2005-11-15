@@ -102,6 +102,9 @@ public class ImagesResourceImpl implements ImagesResource {
                 imageNode.setAttribute("path", path);
                 imageNode.setAttribute("filename", path.substring(path
                         .lastIndexOf("/") + 1));
+                if (image.getLastModTime() == 0) {
+                    imageNode.setAttribute("missing", "true");
+                }
                 if (this.selectedImage != null
                         && image.equals(this.selectedImage)) {
                     imageNode.setAttribute("selected", "true");
