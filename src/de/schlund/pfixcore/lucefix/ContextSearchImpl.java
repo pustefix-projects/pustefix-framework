@@ -122,18 +122,16 @@ public class ContextSearchImpl implements ContextSearch {
         this.context = context;
         reset();
     }
+    
     private void transformHits(Hits hits) throws IOException {
         ProjectsResource pcon = EditorResourceLocator.getProjectsResource(context);
         Project currentProject = pcon.getSelectedProject();
-        String currentProjectName = currentProject != null ? currentProject.getName() : null;
-        long tsStart = System.currentTimeMillis();
         
         Document doc;
         Vector<Hit> temp = new Vector<Hit>();
         String[] token;
         for (int i = 0; i < hits.length(); i++){
-            doc = hits.doc(i);
-            
+            doc = hits.doc(i);            
             
             token = splitPath(doc.get(PreDoc.PATH));
             if (currentProject != null && currentProject.hasIncludePart(token[0],token[1],token[2]) == false){
@@ -141,7 +139,6 @@ public class ContextSearchImpl implements ContextSearch {
             }
             temp.add(new Hit(doc,hits.score(i)));
         }
-        long tsStop = System.currentTimeMillis();
         this.hits = temp.toArray(new Hit[0]);
     }
     public void insertStatus(ResultDocument resdoc, Element elem) throws Exception {
@@ -159,16 +156,13 @@ public class ContextSearchImpl implements ContextSearch {
             }
         }
         if (lastQuery != null) elem.setAttribute("lastQuery", lastQuery.toString());
-
     }
 
     public void reset() throws Exception {
         hits = null;
         lastQuery = null;
     }
-    
-    
-    
+       
     private class Hit{
         private double score;
         private String filename;
@@ -227,7 +221,4 @@ public class ContextSearchImpl implements ContextSearch {
             return sb.toString();
         }
     }
-
-
-    
 }
