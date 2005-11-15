@@ -1,3 +1,7 @@
+2005-11-15  Tim Schuppener <schuppi@schlund.de>
+    * src/de/schlund/pfixcore/lucefix/SearchHandler.java
+      isActive() only with a selected project, otherwise filtering in lucene won`t work
+
 2005-11-15  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/editor2/txt/pages/main_start.xml: logout button no longer submits
