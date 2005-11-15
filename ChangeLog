@@ -2,6 +2,9 @@
 
 	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (setEnabled): 
 	For now, prohibit setting this value to true. Need to do this until setting via props really works.
+	(setEnabled): fixed again
+	(registerTargetForInitialUpdate): remove the isEnabled check
+	(run): also wait low queue is not enabled
 
 2005-11-15  Tim Schuppener <schuppi@schlund.de>
 
