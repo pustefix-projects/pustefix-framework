@@ -6,7 +6,7 @@
   </servletinfo>
   
   <context defaultflow="EditorFlow" authpage="login">
-		<resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
     </resource>
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.SpringHelperResourceImpl">
@@ -30,17 +30,17 @@
     <resource class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.DynIncludesResource"/>
     </resource>
-		<resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResourceImpl">
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResourceImpl">
       <implements class="de.schlund.pfixcore.editor2.frontend.resources.SessionInfoResource"/>
     </resource>
-		<resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
-      <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
-	  <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
-		  <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
-	  </resource>
+    <resource class="de.schlund.pfixcore.editor2.frontend.resources.UsersResourceImpl">
+    <implements class="de.schlund.pfixcore.editor2.frontend.resources.UsersResource"/>   </resource>
+    <resource class="de.schlund.pfixcore.lucefix.ContextSearchImpl">
+      <implements class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </resource>
   </context>
   
-  <pageflow name="EditorFlow">
+  <pageflow name="EditorFlow" final="start">
     <flowstep name="start"/>
     <flowstep name="home"/>
     <flowstep name="logout"/>
@@ -148,7 +148,7 @@
       <resource node="session" class="de.schlund.pfixcore.editor2.frontend.resources.SessionResource"/>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
       <resource node="includes" class="de.schlund.pfixcore.editor2.frontend.resources.IncludesResource"/>
-		  <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
     </output>
   </pagerequest>
   
@@ -167,20 +167,17 @@
   </pagerequest>
 	
   <pagerequest name="search">
-	  <state class="de.schlund.pfixcore.workflow.app.DefaultIWrapperState"/>
-	  <input>
-		  <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
-	  </input>
-	  <output>
+    <input>
+      <interface class="de.schlund.pfixcore.lucefix.wrappers.Search" prefix="lucefix"/>
+    </input>
+    <output>
       <resource node="projects" class="de.schlund.pfixcore.editor2.frontend.resources.ProjectsResource"/>
-		  <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
-	  </output>
+      <resource node="lucefix" class="de.schlund.pfixcore.lucefix.ContextSearch"/>
+    </output>
   </pagerequest>
     
   <pagerequest name="logout">
-    <input>
-      <interface class="de.schlund.pfixcore.editor2.frontend.wrappers.Logout" prefix="logout"></interface>
-    </input>
+    <state class="de.schlund.pfixcore.editor2.frontend.handlers.LogoutState"/>
   </pagerequest>
   
   <pagerequest name="jumptopage">

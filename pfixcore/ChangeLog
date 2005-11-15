@@ -1,3 +1,16 @@
+2005-11-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/core/editor2/txt/pages/main_start.xml: logout button no longer submits
+
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/LogoutState.java (module): new class
+
+	* example/core/editor2/conf/edit.prop.in: fixed accordingly for logout page
+
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/LogoutHandler.java: removed.
+	* src/de/schlund/pfixcore/editor2/frontend/wrappers/Logout.iwrp: removed.
+
+	* example/core/editor2/txt/navigation.xml: cosmetics
+
 2005-11-15  Sebastian Marsching <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java

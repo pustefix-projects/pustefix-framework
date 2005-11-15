@@ -4,8 +4,7 @@
   <part name="logoutbutton">
     <product name="default">
       <lang name="default">
-        <pfx:button page="logout" jumptopage="prodselect" target="_top">
-          <pfx:argument name="logout.Do">1</pfx:argument>Logout</pfx:button>
+        <pfx:button page="logout" target="_top">Logout</pfx:button>
       </lang>
     </product>
   </part>
