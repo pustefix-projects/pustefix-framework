@@ -66,9 +66,9 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setEnabled(boolean flag) {
 
-        // FIXME!
-        // this.isEnabled = flag;
-        this.isEnabled    = false;
+        // System.out.println("***** Target Updater Enabled?: " + flag);
+
+        this.isEnabled = flag;
         
         // Make sure sleeping thread is awakened
         // when service is enabled
@@ -122,19 +122,17 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void registerTargetForInitialUpdate(Target target) {
-        if (this.isEnabled) {
-            if (target == null) {
-                String msg = "Received null pointer as target!";
-                Logger.getLogger(this.getClass()).warn(msg);
-                return;
-            }
-            synchronized (this.lock) {
-                if (!this.targetList.contains(target)) {
-                    this.targetList.add(target);
-                    this.lowPriorityQueue.add(target);
-                    this.firstRunDone = false;
-                    this.lock.notifyAll();
-                }
+        if (target == null) {
+            String msg = "Received null pointer as target!";
+            Logger.getLogger(this.getClass()).warn(msg);
+            return;
+        }
+        synchronized (this.lock) {
+            if (!this.targetList.contains(target)) {
+                this.targetList.add(target);
+                this.lowPriorityQueue.add(target);
+                this.firstRunDone = false;
+                this.lock.notifyAll();
             }
         } 
     }
@@ -276,7 +274,7 @@ public class PustefixTargetUpdateServiceImpl implements
                 }
 
                 if (this.highPriorityQueue.isEmpty()
-                        && this.lowPriorityQueue.isEmpty()) {
+                    && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
                     try {
                         this.lock.wait();
                     } catch (InterruptedException e) {

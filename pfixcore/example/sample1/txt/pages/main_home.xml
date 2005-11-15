@@ -226,40 +226,40 @@
   </part>
 
   <part name="env_info">
-    <product name="default">
-      <lang name="default">
-        <table class="info">
-          <tr>
-            <td>Remote IP</td><td><ixsl:value-of select="$__remote_addr"/></td>
-          </tr>
-          <tr>
-            <td>Request Scheme</td><td><ixsl:value-of select="$__request_scheme"/></td>
-          </tr>
-          <tr>
-            <td>Server name</td><td><ixsl:value-of select="$__server_name"/></td>
-          </tr>
-          <tr>
-            <td>Servletpath</td><td><ixsl:value-of select="$__servletpath"/></td>
-          </tr>
-          <tr>
-            <td>Complete uri</td><td><ixsl:value-of select="$__uri"/></td>
-          </tr>
-          <tr>
-            <td>Query String</td><td><ixsl:value-of select="$__querystring"/></td>
-          </tr>
-          <tr>
-            <td>Session for ext. reference</td><td><ixsl:value-of select="$__external_session_ref"/></td>
-          </tr>
-          <tr>
-            <td>Page name</td><td><ixsl:value-of select="$page"/></td>
-          </tr>
-          <tr>
-            <td>PageFlow name</td><td><ixsl:value-of select="$pageflow"/></td>
-          </tr>
-        </table>
-      </lang>
-    </product>
-  </part>
+    
+  <product name="default">
+<lang name="default">
+  <table class="info">
+    <tr>
+      <td>Remote IP</td><td><ixsl:value-of select="$__remote_addr"/></td>
+    </tr>
+    <tr>
+      <td>Request Scheme</td><td><ixsl:value-of select="$__request_scheme"/></td>
+    </tr>
+    <tr>
+      <td>Server name</td><td><ixsl:value-of select="$__server_name"/></td>
+    </tr>
+    <tr>
+      <td>Servletpath</td><td><ixsl:value-of select="$__servletpath"/></td>
+    </tr>
+    <tr>
+      <td>Complete uri</td><td><ixsl:value-of select="$__uri"/></td>
+    </tr>
+    <tr>
+      <td>Query String</td><td><ixsl:value-of select="$__querystring"/></td>
+    </tr>
+    <tr>
+      <td>Session for ext. reference</td><td><ixsl:value-of select="$__external_session_ref"/></td>
+    </tr>
+    <tr>
+      <td>Page name</td><td><ixsl:value-of select="$page"/></td>
+    </tr>
+    <tr>
+      <td>PageFlow name</td><td><ixsl:value-of select="$pageflow"/></td>
+    </tr>
+  </table>
+</lang>
+</product></part>
   
 
 
