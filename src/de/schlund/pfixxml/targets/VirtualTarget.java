@@ -264,7 +264,18 @@ public abstract class VirtualTarget extends TargetImpl {
                                    tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
         TreeMap   tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
-        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(cachefile)));
+        
+        // Store output in temporary file and overwrite cache file only
+        // when transformation was sucessfully finished
+        File tempFile = File.createTempFile("temp", ".xml");
+                
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(tempFile)));
+        
+        if (!tempFile.renameTo(cachefile)) {
+            throw new RuntimeException("Could not rename temporary file '" +
+                    tempFile + "' to file '" + cachefile + "'!");
+        }
+        
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.
