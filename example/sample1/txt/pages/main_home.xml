@@ -122,10 +122,10 @@
 </product></part>
 
   <part name="yes">
-    <product name="default">
-      <lang name="default">Yes!</lang>
-    </product>
-  </part>
+    
+  <product name="default">
+<lang name="default">Yes!</lang>
+</product></part>
 
   <part name="no">
     <product name="default">
