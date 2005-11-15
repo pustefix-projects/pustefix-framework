@@ -101,7 +101,7 @@ public class PageImpl extends AbstractPage implements MutablePage {
         this.updater = updater;
         // Register page for updating
         updater.registerTargetForInitialUpdate(this.pinfo.getTargetGenerator()
-                .getPageTargetTree().getTargetForPageInfo(this.pinfo));
+                                               .getPageTargetTree().getTargetForPageInfo(this.pinfo));
     }
 
     /*

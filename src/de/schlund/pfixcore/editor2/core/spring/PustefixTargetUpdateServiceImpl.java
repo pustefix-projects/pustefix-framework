@@ -65,7 +65,10 @@ public class PustefixTargetUpdateServiceImpl implements
     private long completeRunDelay = 600000;
 
     public void setEnabled(boolean flag) {
-        this.isEnabled = flag;
+
+        // FIXME!
+        // this.isEnabled = flag;
+        this.isEnabled    = false;
         
         // Make sure sleeping thread is awakened
         // when service is enabled
@@ -119,19 +122,21 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public void registerTargetForInitialUpdate(Target target) {
-        if (target == null) {
-            String msg = "Received null pointer as target!";
-            Logger.getLogger(this.getClass()).warn(msg);
-            return;
-        }
-        synchronized (this.lock) {
-            if (!this.targetList.contains(target)) {
-                this.targetList.add(target);
-                this.lowPriorityQueue.add(target);
-                this.firstRunDone = false;
-                this.lock.notifyAll();
+        if (this.isEnabled) {
+            if (target == null) {
+                String msg = "Received null pointer as target!";
+                Logger.getLogger(this.getClass()).warn(msg);
+                return;
             }
-        }
+            synchronized (this.lock) {
+                if (!this.targetList.contains(target)) {
+                    this.targetList.add(target);
+                    this.lowPriorityQueue.add(target);
+                    this.firstRunDone = false;
+                    this.lock.notifyAll();
+                }
+            }
+        } 
     }
 
     public void run() {
