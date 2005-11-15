@@ -1,8 +1,17 @@
+2005-11-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (setEnabled): 
+	For now, prohibit setting this value to true. Need to do this until setting via props really works.
+
 2005-11-15  Tim Schuppener <schuppi@schlund.de>
-    * src/de/schlund/pfixcore/lucefix/SearchHandler.java
-      isActive() only with a selected project, otherwise filtering in lucene won`t work
+
+	* src/de/schlund/pfixcore/lucefix/SearchHandler.java	
+	isActive() only with a selected project, otherwise filtering in lucene won`t work
 
 2005-11-15  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (registerTargetForInitialUpdate): 
+	put into "if this.isEnabled" bracket - no need to register when no work will be done.
 
 	* example/core/editor2/txt/pages/main_start.xml: logout button no longer submits
 
