@@ -58,7 +58,9 @@ public class PustefixTargetUpdateServiceImpl implements
 
     private long startupDelay = 0;
 
-    private long firstRunDelay = 0;
+    private long highRunDelay = 250;
+
+    private long firstRunDelay = 250;
 
     private long nthRunDelay = 1000;
 
@@ -92,6 +94,10 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setStartupDelay(long delay) {
         this.startupDelay = delay;
+    }
+
+    public void setHighRunDelay(long delay) {
+        this.highRunDelay = delay;
     }
 
     public void setFirstRunDelay(long delay) {
@@ -192,6 +198,11 @@ public class PustefixTargetUpdateServiceImpl implements
                     Logger.getLogger(this.getClass()).warn(msg);
                 }
                 highCopy.remove(0);
+                try {
+                    this.lock.wait(this.highRunDelay);
+                } catch (InterruptedException e) {
+                    // Ignore interruption and continue
+                }
             }
 
             // Do automatic regeneration only if enabled
