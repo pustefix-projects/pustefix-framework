@@ -86,31 +86,29 @@ public final class EditorApplicationContextFactory implements Runnable {
     }
 
     public void run() {
-        String configFile = this.initProps
-                .getProperty("de.schlund.pfixcore.editor2.springconfig");
+        String configFile = this.initProps.getProperty("de.schlund.pfixcore.editor2.springconfig");
 
         if (configFile == null) {
             String err = "Property de.schlund.pfixcore.editor2.springconfig not set!";
             Logger.getLogger(this.getClass()).fatal(err);
         }
         try {
-            EditorApplicationContext context = new EditorApplicationContext(
-                    configFile, PathFactory.getInstance().createPath("")
-                            .getBase().getAbsolutePath());
+            EditorApplicationContext context = 
+                new EditorApplicationContext(configFile, PathFactory.getInstance().createPath("").getBase().getAbsolutePath());
             this.appContext = context;
-            Logger.getLogger(this.getClass()).info(
-                    "Initialized ApplicationContext for editor");
+            Logger.getLogger(this.getClass()).info("Initialized ApplicationContext for editor");
         } catch (RuntimeException e) {
             String err = "Initialization of ApplicationContext for editor failed!";
             Logger.getLogger(this.getClass()).fatal(err, e);
         }
 
         // Active / deactivate background generation of targets
-        String generatorProp = this.initProps
-                .getProperty("de.schlund.pfixcore.editor2.updatetargets");
+        String  generatorProp = this.initProps.getProperty("de.schlund.pfixcore.editor2.updatetargets");
         boolean generatorFlag = false;
-        if (generatorProp == null || generatorProp.equals("1")
-                || generatorProp.equalsIgnoreCase("true")) {
+
+        System.out.println("############ in EACF: generatorProp: " + generatorProp);
+        
+        if (generatorProp == null || generatorProp.equals("1") || generatorProp.equalsIgnoreCase("true")) {
             generatorFlag = true;
         }
 
@@ -118,11 +116,10 @@ public final class EditorApplicationContextFactory implements Runnable {
         // but you can never be sure enough.
         // Note that we look for the concrete implementation, not the
         // interface.
-        String beanNames[] = this.appContext
-                .getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
+        String beanNames[] = this.appContext.getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
         for (int i = 0; i < beanNames.length; i++) {
-            ((PustefixTargetUpdateServiceImpl) this.appContext
-                    .getBean(beanNames[i])).setEnabled(generatorFlag);
+            System.out.println("############ in EACF: calling setEnabled: " + generatorFlag);
+            ((PustefixTargetUpdateServiceImpl) this.appContext.getBean(beanNames[i])).setEnabled(generatorFlag);
         }
 
         this.initialized = true;
