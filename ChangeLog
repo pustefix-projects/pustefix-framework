@@ -3,6 +3,8 @@
 	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (setEnabled): 
 	changed to do nothing at all
 	(setEnabledXXX) new method to do what the old one did
+	(setHighRunDelay): additional delay for high prio. Set to 250ms initially
+	(run) use it.
 
 	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java (Module): 
 	some debug to console for now - will be removed soon
