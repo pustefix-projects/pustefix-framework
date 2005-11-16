@@ -119,7 +119,7 @@ public final class EditorApplicationContextFactory implements Runnable {
         String beanNames[] = this.appContext.getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
         for (int i = 0; i < beanNames.length; i++) {
             System.out.println("############ in EACF: calling setEnabled: " + generatorFlag);
-            ((PustefixTargetUpdateServiceImpl) this.appContext.getBean(beanNames[i])).setEnabled(generatorFlag);
+            ((PustefixTargetUpdateServiceImpl) this.appContext.getBean(beanNames[i])).setEnabledXXX(generatorFlag);
         }
 
         this.initialized = true;

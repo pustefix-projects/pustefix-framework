@@ -1,8 +1,12 @@
 2005-11-16  Jens Lautenbacher  <jtl@schlund.de>
 
-	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (Module): 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (setEnabled): 
+	changed to do nothing at all
+	(setEnabledXXX) new method to do what the old one did
+
 	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java (Module): 
 	some debug to console for now - will be removed soon
+	(run) changed accordingly to the above renaming of methods
 
 	* src/de/schlund/pfixxml/util/Xml.java: revert the changes to this file as they 
 	didn't work with merging the statuscodes in the environments
@@ -53,13 +57,8 @@
 
 	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java
 	(setEnabled): Wake up threads waiting on lock, when enabling service
-<<<<<<< ChangeLog
-    (registerTargetForUpdate): Uncommented synchronized block. 
-	   Changed notify() to notifyAll() call.
-=======
 	(registerTargetForUpdate): Uncommented synchronized block. 
 	Changed notify() to notifyAll() call.
->>>>>>> 1.714
 	(registerTargetForInitialUpdate): Removed check for isEnabled flag.
 	   Changed notify() to notifyAll() call.
 	(run): Replace erroneous toolThread.run() with toolThread.start().

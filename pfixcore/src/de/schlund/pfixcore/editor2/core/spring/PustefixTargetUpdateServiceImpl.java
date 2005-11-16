@@ -66,6 +66,18 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void setEnabled(boolean flag) {
 
+        System.out.println("***** Called from Spring with value: " + flag);
+        System.out.println("***** Doing nothing....: ");
+
+        // Make sure sleeping thread is awakened
+        // when service is enabled
+//         synchronized (this.lock) {
+//         	this.lock.notifyAll();
+//         }
+    }
+
+    public void setEnabledXXX(boolean flag) {
+
         System.out.println("***** Target Updater currently enabled?: " + isEnabled);
         System.out.println("***** New value: " + flag);
 
