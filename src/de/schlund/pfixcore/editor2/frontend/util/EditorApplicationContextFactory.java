@@ -106,7 +106,7 @@ public final class EditorApplicationContextFactory implements Runnable {
         String  generatorProp = this.initProps.getProperty("de.schlund.pfixcore.editor2.updatetargets");
         boolean generatorFlag = false;
 
-        System.out.println("############ in EACF: generatorProp: " + generatorProp);
+        // System.out.println("############ in EACF: generatorProp: " + generatorProp);
         
         if (generatorProp == null || generatorProp.equals("1") || generatorProp.equalsIgnoreCase("true")) {
             generatorFlag = true;
@@ -118,7 +118,7 @@ public final class EditorApplicationContextFactory implements Runnable {
         // interface.
         String beanNames[] = this.appContext.getBeanDefinitionNames(PustefixTargetUpdateServiceImpl.class);
         for (int i = 0; i < beanNames.length; i++) {
-            System.out.println("############ in EACF: calling setEnabled: " + generatorFlag);
+            // System.out.println("############ in EACF: calling setEnabled: " + generatorFlag);
             ((PustefixTargetUpdateServiceImpl) this.appContext.getBean(beanNames[i])).setEnabledXXX(generatorFlag);
         }
 
