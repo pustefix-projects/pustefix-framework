@@ -224,34 +224,34 @@ public class Xml {
      * @param pp pretty print
      */
     public static void serialize(Node node, File file, boolean pp, boolean decl) throws IOException {
-        if (file == null) {
-            throw new IllegalArgumentException("The parameter 'null' is not allowed for the argument 'file'!");
-        }
-        
-        File tempFile = File.createTempFile("temp", ".xml");
-        
-        OutputStream dest = new FileOutputStream(tempFile);
-        
-        doSerialize(node, dest, pp, true);
-        
-        // We append a newline because most editors do so and we want to avoid cvs conflicts.
-        // Note: tailing whitespace is removed when parsing a file, so
-        // it's save to append it here without checking for exiting newlines.
-        dest.write('\n');
-
-        dest.close();
-        
-        if (!tempFile.renameTo(file)) {
-            throw new RuntimeException("Could not rename temporary file '" +
-                                       tempFile + "' to file '" + file + "'!");
-        }
+        serialize(node, file.getPath(), pp, decl);
     }
 
     /**
      * @param pp pretty print
      */
     public static void serialize(Node node, String filename, boolean pp, boolean decl) throws IOException {
-        serialize(node, new File(filename), pp, decl);
+        FileOutputStream dest;
+
+        if (node == null) {
+            throw new IllegalArgumentException("The parameter 'null' is not allowed here! "
+                                               + "Can't serialize a null node to a file!");
+        }
+        if (filename == null || filename.equals("")) {
+            throw new IllegalArgumentException("The parameter 'null' or '\"\"' is not allowed here! "
+                                               + "Can't serialize a document to " + filename + "!");
+        }
+
+        dest = new FileOutputStream(filename);
+
+        doSerialize(node, dest, pp, true);
+
+        // We append a newline because most editors do so and we want to avoid cvs conflicts.
+        // Note: tailing whitespace is removed when parsing a file, so
+        // it's save to append it here without checking for exiting newlines.
+        dest.write('\n');
+
+        dest.close();
     }
 
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {

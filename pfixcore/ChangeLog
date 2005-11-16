@@ -1,5 +1,12 @@
 2005-11-16  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (Module): 
+	* src/de/schlund/pfixcore/editor2/frontend/util/EditorApplicationContextFactory.java (Module): 
+	some debug to console for now - will be removed soon
+
+	* src/de/schlund/pfixxml/util/Xml.java: revert the changes to this file as they 
+	didn't work with merging the statuscodes in the environments
+
 	* src/de/schlund/pfixxml/util/SortedRefCountingCollection.java (Module):
 	* src/de/schlund/pfixxml/util/RefCountingCollectionIterator.java (Module):
 	* src/de/schlund/pfixxml/util/RefCountingCollection.java (Module):
