@@ -1,6 +1,11 @@
 2005-11-17  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/util/Xml.java (Xml::serialize): 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (VirtualTarget::generateValue): 
+	use tempfile in same directory to avoid failure of cross-fs renaming
+
 	* skel/build-skel.xml: removed deletion of .cache from realclean target.
+	add distclean to also kill the cache.
 
 2005-11-16  Jens Lautenbacher  <jtl@schlund.de>
 

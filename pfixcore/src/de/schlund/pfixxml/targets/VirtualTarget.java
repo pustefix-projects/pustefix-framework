@@ -267,10 +267,9 @@ public abstract class VirtualTarget extends TargetImpl {
         
         // Store output in temporary file and overwrite cache file only
         // when transformation was sucessfully finished
-        File tempFile = File.createTempFile("temp", ".xml");
-                
+        File tempFile = new File(cachepath.resolve(), ".#" + key + ".tmp");
         Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(tempFile)));
-        
+
         if (!tempFile.renameTo(cachefile)) {
             throw new RuntimeException("Could not rename temporary file '" +
                     tempFile + "' to file '" + cachefile + "'!");

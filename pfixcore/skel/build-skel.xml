@@ -369,6 +369,10 @@ or delete the DOCTYPE definition -->
     </delete>
   </target>
 
+  <target name="distclean" depends="realclean">
+    <delete dir="${dir.projects}/.cache"/>
+  </target>
+
   <target name="realclean" depends="clean, clean-jni, realclean-core"/>
 
   <target name="realclean-core">
