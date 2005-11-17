@@ -1,3 +1,7 @@
+2005-11-17  Jens Lautenbacher  <jtl@schlund.de>
+
+	* skel/build-skel.xml: removed deletion of .cache from realclean target.
+
 2005-11-16  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (setEnabled): 
