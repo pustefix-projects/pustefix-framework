@@ -369,12 +369,10 @@ or delete the DOCTYPE definition -->
     </delete>
   </target>
 
-  <target name="realclean" depends="clean, clean-jni, realclean-core">
-    <delete dir="${dir.projects}/.cache"/>
-    <delete dir="${dir.tomcat}"/>
-  </target>
+  <target name="realclean" depends="clean, clean-jni, realclean-core"/>
 
   <target name="realclean-core">
+    <delete dir="${dir.tomcat}"/>
     <delete dir="${dir.projects}/core"/>
   </target>
         
@@ -383,6 +381,7 @@ or delete the DOCTYPE definition -->
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>
+    <chmod perm="444"><fileset dir="${dir.extract.modules}" includes="**/*"/></chmod>
   </target>
   
   <target name="init-data-check" unless="pfx.force">
@@ -399,7 +398,7 @@ or delete the DOCTYPE definition -->
       <fileset refid="id.fs.pfixcore_data_tgz"/>
     </untar>
     <antcall target="merge"/>
-<!--     <delete dir="${dir.projects}/core/tmp"/> -->
+    <chmod perm="444"><fileset dir="${dir.projects}/core" includes="**/*"/></chmod>
     <touch file="${dir.projects}/core/TIMESTAMP"></touch>
   </target>
 

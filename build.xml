@@ -78,6 +78,7 @@ or delete the DOCTYPE definition -->
   </target>
         
   <target name="realclean-core"><!-- override target - we don't delete the core directory here -->
+    <delete dir="${dir.tomcat}"/>
     <delete dir="${dir.testskel}"/>
   </target>
     
