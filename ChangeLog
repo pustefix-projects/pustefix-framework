@@ -1,3 +1,15 @@
+2005-11-18  Jens Lautenbacher  <jtl@schlund.de>
+
+	* example/common/conf/editor-spring.xml: changed some delays for better observation during development 
+	* example/common/conf/pfixlog.xml.in: 
+	* skel/projects/common/conf/pfixlog.xml.in: enabled target update logging
+
+	* src/de/schlund/pfixxml/targets/Target.java (Target): 
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (TargetImpl::getFullName): new method
+
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java: cosmetics, logging
+	and fixed a missing synchronize around the delay in the high prio queue.
+
 2005-11-17  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xml.java (Xml::serialize): 

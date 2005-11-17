@@ -38,6 +38,7 @@ public interface Target {
     TreeSet         getPageInfos();
     long            getModTime();
     String          toString();
+    String          getFullName();
     boolean         needsUpdate() throws Exception;
     /**
      * Get the value of the target. Depending on the 
