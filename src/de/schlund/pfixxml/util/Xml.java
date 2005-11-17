@@ -242,16 +242,22 @@ public class Xml {
                                                + "Can't serialize a document to " + filename + "!");
         }
 
-        dest = new FileOutputStream(filename);
+        File finalfile = new File(filename);
+        File tmpfile   = new File(finalfile.getParentFile(), ".#" + finalfile.getName() + ".tmp");
+        dest = new FileOutputStream(tmpfile);
 
         doSerialize(node, dest, pp, true);
 
         // We append a newline because most editors do so and we want to avoid cvs conflicts.
-        // Note: tailing whitespace is removed when parsing a file, so
+        // Note: trailing whitespace is removed when parsing a file, so
         // it's save to append it here without checking for exiting newlines.
         dest.write('\n');
 
         dest.close();
+        if (!tmpfile.renameTo(finalfile)) {
+            throw new RuntimeException("Could not rename temporary file '" +
+                    tmpfile + "' to file '" + finalfile + "'!");
+        }
     }
 
     public static void serialize(Node node, OutputStream dest, boolean pp, boolean decl) throws IOException {
