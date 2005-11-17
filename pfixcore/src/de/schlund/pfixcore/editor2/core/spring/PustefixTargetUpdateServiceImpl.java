@@ -40,48 +40,28 @@ import de.schlund.pfixxml.targets.TargetGenerationException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class PustefixTargetUpdateServiceImpl implements
-        PustefixTargetUpdateService, Runnable {
+public class PustefixTargetUpdateServiceImpl implements PustefixTargetUpdateService, Runnable {
+
     private ArrayList lowPriorityQueue;
-
     private ArrayList highPriorityQueue;
-
-    private HashSet targetList;
-
-    private Object lock;
-
-    private boolean firstRunDone;
-
-    private boolean waitingForRefill;
-
-    private boolean isEnabled = false;
-
-    private long startupDelay = 0;
-
-    private long highRunDelay = 250;
-
-    private long firstRunDelay = 250;
-
-    private long nthRunDelay = 1000;
-
-    private long completeRunDelay = 600000;
-
-    public void setEnabled(boolean flag) {
-
-        System.out.println("***** Called from Spring with value: " + flag);
-        System.out.println("***** Doing nothing....: ");
-
-        // Make sure sleeping thread is awakened
-        // when service is enabled
-//         synchronized (this.lock) {
-//         	this.lock.notifyAll();
-//         }
-    }
+    private HashSet   targetList;
+    private Object    lock;
+    private boolean   firstRunDone;
+    private boolean   waitingForRefill;
+    private boolean   isEnabled        = false;
+    private long      startupDelay     = 0;
+    private long      highRunDelay     = 250;
+    private long      firstRunDelay    = 250;
+    private long      nthRunDelay      = 1000;
+    private long      completeRunDelay = 600000;
+    private Logger    LOG              = Logger.getLogger(this.getClass());
+    
+    public void setEnabled(boolean flag) {}
 
     public void setEnabledXXX(boolean flag) {
 
-        System.out.println("***** Target Updater currently enabled?: " + isEnabled);
-        System.out.println("***** New value: " + flag);
+        LOG.debug("***** Target Updater currently enabled?: " + isEnabled);
+        LOG.debug("***** New value: " + flag);
 
         this.isEnabled = flag;
         
@@ -113,12 +93,12 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public PustefixTargetUpdateServiceImpl() {
-        this.lowPriorityQueue = new ArrayList();
+        this.lowPriorityQueue  = new ArrayList();
         this.highPriorityQueue = new ArrayList();
-        this.lock = new Object();
-        this.targetList = new HashSet();
-        this.firstRunDone = false;
-        this.waitingForRefill = false;
+        this.lock              = new Object();
+        this.targetList        = new HashSet();
+        this.firstRunDone      = false;
+        this.waitingForRefill  = false;
     }
 
     public void init() {
@@ -131,10 +111,11 @@ public class PustefixTargetUpdateServiceImpl implements
     public void registerTargetForUpdate(Target target) {
         if (target == null) {
             String msg = "Received null pointer as target!";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LOG.warn(msg);
             return;
         }
         synchronized (this.lock) {
+            LOG.debug("  + HighPrio target " + target.getFullName());
             this.highPriorityQueue.add(target);
             this.lock.notifyAll();
     	}
@@ -143,12 +124,12 @@ public class PustefixTargetUpdateServiceImpl implements
     public void registerTargetForInitialUpdate(Target target) {
         if (target == null) {
             String msg = "Received null pointer as target!";
-            Logger.getLogger(this.getClass()).warn(msg);
+            LOG.warn(msg);
             return;
         }
-        // System.out.println("*** register for ini update: " + target.getTargetKey() + " ***");
         synchronized (this.lock) {
             if (!this.targetList.contains(target)) {
+                // LOG.debug("  + LowPrio target " + target.getFullName());
                 this.targetList.add(target);
                 this.lowPriorityQueue.add(target);
                 this.firstRunDone = false;
@@ -159,9 +140,10 @@ public class PustefixTargetUpdateServiceImpl implements
 
     public void run() {
         // Wait for delay
+        LOG.debug("*** Starting updater thread ***");
         if (this.startupDelay > 0) {
-            long startTime = Calendar.getInstance().getTimeInMillis();
-            long currentTime = Calendar.getInstance().getTimeInMillis();
+            long startTime = System.currentTimeMillis();
+            long currentTime = System.currentTimeMillis();
             ;
             do {
                 long waitTime = this.startupDelay + startTime - currentTime;
@@ -173,50 +155,52 @@ public class PustefixTargetUpdateServiceImpl implements
                         // Ignore interruption
                     }
                 }
-                currentTime = Calendar.getInstance().getTimeInMillis();
+                currentTime = System.currentTimeMillis();
             } while (currentTime < (startTime + this.startupDelay));
         }
 
         while (true) {
-            // System.out.println("*** In RUN ***");
+            LOG.info("*** Starting updater loop ***");
             ArrayList lowCopy;
             ArrayList highCopy;
             synchronized (this.lock) {
                 lowCopy = (ArrayList) this.lowPriorityQueue.clone();
                 highCopy = (ArrayList) this.highPriorityQueue.clone();
                 this.highPriorityQueue.clear();
-                // System.out.println("*** low: " + lowCopy.size() + " high: " + highCopy.size() + " ***");
             }
+            LOG.debug("*** Starting HighPrio loop");
             while (!highCopy.isEmpty()) {
                 Target target = (Target) highCopy.get(0);
                 try {
-                    // System.out.println("*** high gen: " + target.getTargetKey() + " ***");
+                    LOG.debug("  * Generating HighPrio target " + target.getFullName());
                     target.getValue();
                 } catch (TargetGenerationException e) {
-                    String msg = "Generation of target "
-                        + target.getTargetKey() + " failed!";
-                    Logger.getLogger(this.getClass()).warn(msg);
+                    LOG.warn("*** Exception generating HP " + target.getFullName() + ": " + e.getMessage());
                 }
                 highCopy.remove(0);
-                try {
-                    this.lock.wait(this.highRunDelay);
-                } catch (InterruptedException e) {
-                    // Ignore interruption and continue
+                synchronized(this.lock) {
+                    try {
+                        this.lock.wait(this.highRunDelay);
+                    } catch (InterruptedException e) {
+                        LOG.debug("*** Interrupted while waiting in HighPrio loop");
+                        // Ignore interruption and continue
+                    }
                 }
             }
+            LOG.debug("*** End of HighPrio loop");
 
             // Do automatic regeneration only if enabled
             if (this.isEnabled) {
                 // System.out.println("*** in low loop ***");
+                LOG.debug("*** Starting LowPrio loop");
                 while (!lowCopy.isEmpty()) {
-                    // System.out.println("*** low is not empty ***");
                     Target target = (Target) lowCopy.get(0);
                     boolean needsUpdate;
-                    // System.out.println("*** low: checking target " + target.getTargetKey() + " ***");
                     try {
                         needsUpdate = target.needsUpdate();
                     } catch (Exception e) {
                         // Remove target from queue without generating it
+                        LOG.warn("*** Exception checking LP " + target.getFullName() + ": " + e.getMessage());
                         lowCopy.remove(0);
                         synchronized (this.lock) {
                             this.lowPriorityQueue.remove(0);
@@ -225,62 +209,47 @@ public class PustefixTargetUpdateServiceImpl implements
                     }
                     try {
                         if (needsUpdate) {
-                            // System.out.println("*** low: generating target " + target.getTargetKey() + " ***");
+                            LOG.debug("  * Generating LowPrio target " + target.getFullName());
                             target.getValue();
                         }
                     } catch (TargetGenerationException e) {
-                        String msg = "Generation of target "
-                                + target.getTargetKey() + " failed!";
-                        Logger.getLogger(this.getClass()).warn(msg);
+                        LOG.warn("*** Exception generating LP " + target.getFullName() + ": " + e.getMessage());
                     }
                     lowCopy.remove(0);
                     synchronized (this.lock) {
                         this.lowPriorityQueue.remove(0);
                         if (!this.highPriorityQueue.isEmpty()) {
+                            LOG.debug("*** Leaving LP loop for doing HP targets");
                             break;
                         }
-                        if (this.firstRunDone && this.nthRunDelay > 0) {
-                            try {
-                                // Wait a second to make sure
-                                // background generation loop
-                                // does not consume to much
-                                // CPU time
-                                if (needsUpdate) {
-                                    // System.out.println("*** low: wating (nth) " + nthRunDelay + " ***");
-                                    this.lock.wait(this.nthRunDelay);
-                                }
-                            } catch (InterruptedException e) {
-                                // Ignore interruption and continue
+
+                        if (needsUpdate) {
+                            // If a target has been generated, wait for some time.
+                            long delay = nthRunDelay;
+                            if (!this.firstRunDone) {
+                                delay = firstRunDelay;
                             }
-                        }
-                        if (!this.firstRunDone && this.firstRunDelay > 0) {
-                            try {
-                                // Wait a second to make sure
-                                // background generation loop
-                                // does not consume to much
-                                // CPU time
-                                if (needsUpdate) {
-                                    // System.out.println("*** low: wating (1st) " + firstRunDelay + " ***");
-                                    this.lock.wait(this.firstRunDelay);
+                            if (delay > 0) {
+                                try {
+                                    this.lock.wait(delay);
+                                } catch (InterruptedException e) {
+                                    LOG.debug("*** Interrupted while waiting after generating target in LowPrio loop");
                                 }
-                            } catch (InterruptedException e) {
-                                // Ignore interruption and continue
                             }
                         }
                     }
                 }
+                LOG.debug("*** End of LowPrio loop");
             }
 
             synchronized (this.lock) {
                 if (this.isEnabled) {
-                    // System.out.println("*** in low prio after loop ***");
                     if (this.lowPriorityQueue.isEmpty() && !waitingForRefill) {
                         this.firstRunDone = true;
 
                         // All low priority targets (usually all targets)
-                        // have been updates, so trigger regeneration of
+                        // have been updated, so trigger regeneration of
                         // search index
-                        // System.out.println("*** start index ***");
                         PfixReadjustment.getInstance().readjust();
 
                         // Delay refill of low priority queue
@@ -289,13 +258,14 @@ public class PustefixTargetUpdateServiceImpl implements
                         Runnable refillTool = new Runnable() {
                                 public void run() {
                                     try {
-                                	if (completeRunDelay > 0) {
+                                        if (completeRunDelay > 0) {
                                             Thread.sleep(completeRunDelay);
-                                	}
+                                        }
                                     } catch (InterruptedException e) {
                                         // Ignore
                                     }
                                     synchronized (lock) {
+                                        LOG.debug("##### Adding target list to LowPrio queue");
                                         lowPriorityQueue.addAll(targetList);
                                         waitingForRefill = false;
                                         lock.notifyAll();
@@ -304,17 +274,19 @@ public class PustefixTargetUpdateServiceImpl implements
                             };
                         Thread toolThread = new Thread(refillTool, "target-update-refill");
                         toolThread.start();
-                        
                     }
                 }
 
-                if (this.highPriorityQueue.isEmpty()
-                    && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
+                if (this.highPriorityQueue.isEmpty() && (!this.isEnabled || this.lowPriorityQueue.isEmpty())) {
                     try {
+                        LOG.debug("*** Going to Sleep...\n");
                         this.lock.wait();
                     } catch (InterruptedException e) {
+                        LOG.debug("*** Interrupted while sleeping...");
                         // Ignore exception
                     }
+                } else {
+                    LOG.debug("*** HP or LP queue still not empty - continue directly");
                 }
             }
         }

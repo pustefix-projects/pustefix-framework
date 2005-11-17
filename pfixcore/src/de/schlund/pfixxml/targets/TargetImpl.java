@@ -78,6 +78,10 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         return targetkey;
     }
 
+    public String getFullName() {
+        return generator.getName() + "@" + targetkey;
+    }
+    
     /**
      * @see de.schlund.pfixxml.targets.Target#getTargetGenerator()
      */
