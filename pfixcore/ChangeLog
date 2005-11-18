@@ -43,7 +43,7 @@
 	* src/de/schlund/pfixxml/util/RefCountingCollectionIterator.java (Module):
 	* src/de/schlund/pfixxml/util/RefCountingCollection.java (Module):
 	Implementation of the Collection interface that stores for each
-	member an counter - adding the same element again increases,
+	member a counter - adding the same element again increases,
 	removing it decreases the counter, until it reaches 0, at which point the whole 
 	element is removed from the collection.
 
