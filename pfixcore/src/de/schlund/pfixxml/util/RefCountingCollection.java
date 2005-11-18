@@ -29,11 +29,13 @@ import java.util.TreeMap;
  * A collection that stores a counter for each object. adding the same Object more than once will
  * increase the counter, removing it will decrease the counter until it reaches 0, in that case the
  * whole entry will be removed from the map. This implementation is backed by a HashMap, use
- * SortedRefCountingCollection for and implementation that uses a TreeMap.
+ * SortedRefCountingCollection for an implementation that uses a TreeMap.
  *
  * Note that the iterator that is given will iterate over the distinct elements, regardless of their
  * cardinality. The Iterator is implemented by the class RefCountingCollectionIterator, which
- * features the additional method remove(int count) which works like removing from the collection itself.
+ * features the additional method remove(int count) which works like removing from the collection
+ * itself, while the usual Iterator.remove() will remove the whole element, regardles of cardinality
+ * to be consistent with next() and hasNext().
  *
  * Created: Wed Nov 16 00:18:45 2005
  *
