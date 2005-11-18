@@ -56,10 +56,7 @@ public class PustefixTargetUpdateServiceImpl implements PustefixTargetUpdateServ
     private long      completeRunDelay = 600000;
     private Logger    LOG              = Logger.getLogger(this.getClass());
     
-    public void setEnabled(boolean flag) {}
-
-    public void setEnabledXXX(boolean flag) {
-
+    public void enableAutoUpdating(boolean flag) {
         LOG.debug("***** Target Updater currently enabled?: " + isEnabled);
         LOG.debug("***** New value: " + flag);
 
