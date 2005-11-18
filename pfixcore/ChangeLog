@@ -1,5 +1,8 @@
 2005-11-18  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/util/RefCountingCollection.java (removeElement): new method, 
+	removes complete element aka remove(object, coll.getCardinality(object)).
+
 	* src/de/schlund/pfixxml/util/*RefCountingCollection*.java: license 
 
 	* example/common/conf/editor-spring.xml: changed some delays for better observation during development 

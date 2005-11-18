@@ -86,6 +86,13 @@ public class RefCountingCollection<E> implements Collection<E> {
         return true;
     }
 
+    public final boolean removeElement(final E object) {
+        if (!contains(object)) {
+            return false;
+        }
+        return remove(object, map.get(object));
+    }
+
     public final boolean remove(final E object, int cardinality) {
         if (cardinality < 0) {
             throw new RuntimeException("Can't remove an element with a negative cardinality");
