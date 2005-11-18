@@ -1,3 +1,9 @@
+2005-11-18  Michael Hartmeier <mhm@schlund.de>
+        * skel/build-skel.xml, src/de/schlund/pfixxml/util/Path.java,
+	tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
+	tests/junit/de/schlund/pfixxml/util/XsltTest.java:
+	test target to run unit tests
+
 2005-11-18  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/RefCountingCollection.java (removeElement): new method, 

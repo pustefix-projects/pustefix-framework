@@ -8,18 +8,22 @@ package de.schlund.pfixxml.util;
 
 import java.io.File;
 import java.io.StringWriter;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
+
+import junit.framework.TestCase;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import com.icl.saxon.om.AbstractNode;
 import com.icl.saxon.om.NodeInfo;
-import junit.framework.TestCase;
 
 public class XsltTest extends TestCase {
     //-- make sure we have several bug fixes
@@ -43,7 +47,6 @@ public class XsltTest extends TestCase {
         StreamResult result;
         StringWriter writer;
         Document doc;
-        String str;
 
         // Xml.serialize does *not* encode urls, thus, I have to use Saxon's stream serialization  
         writer = new StringWriter();
@@ -71,7 +74,7 @@ public class XsltTest extends TestCase {
         Templates trafo;
         
         doc    = Xml.parse(new File(PREFIX + xml));
-        trafo  = Xslt.loadTemplates(Path.create(new File(PREFIX + xsl)));
+        trafo  = Xslt.loadTemplates(Path.create(PREFIX + xsl));
         Xslt.transform(doc, trafo, null, result);
     }
     

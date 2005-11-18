@@ -6,11 +6,16 @@
  */
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.util.*;
 import java.io.File;
+
 import junit.framework.TestCase;
+
 import org.w3c.dom.Document;
+
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
 
 public class TargetGeneratorTest extends TestCase {
     // TODO
@@ -101,7 +106,7 @@ public class TargetGeneratorTest extends TestCase {
         file = File.createTempFile("depend", "xml", new File("example"));
         file.deleteOnExit();
         Xml.serialize(doc, file, true, true);
-        gen = new TargetGenerator(Path.create(file));
+        gen = new TargetGenerator(Path.create(file.getPath()));
         return gen;
     }
 }
