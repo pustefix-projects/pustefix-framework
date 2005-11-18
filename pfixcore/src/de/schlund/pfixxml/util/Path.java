@@ -31,6 +31,10 @@ public class Path implements Comparable {
     public static final File HERE = new File(System.getProperty("user.dir"));
     public static final File USER = new File(System.getProperty("user.home"));
 
+    public static Path create(String relative) {
+        return create(HERE, relative);
+    }
+    
     public static Path create(File base, String relative) {
         return new Path(base, relative);
     }

@@ -916,7 +916,51 @@ or delete the DOCTYPE definition -->
     </apply>
     
   </target>   
- 
+
+
+  <property name="dir.test.src" location="tests/junit"/>
+  <property name="dir.test.classes" location="build/test-classes"/>
+  <property name="dir.test.report" location="build/test-reports"/>
+  <target name="test" depends="test.compile">
+    <mkdir dir="${dir.test.report}"/>
+    <junit dir="./" printSummary="yes" fork="true" haltonerror="true">
+      <sysproperty key="basedir" value="."/>
+      <formatter type="xml"/>
+      <formatter type="plain"/>
+      <classpath>
+        <path refid="cp.classpath"/>
+        <pathelement path="${dir.build}"/>
+        <pathelement path="${dir.test.classes}"/>
+      </classpath>
+      <batchtest todir="${dir.test.report}">
+        <fileset dir="${dir.test.src}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+  <target name="test.compile" depends="compile">
+    <mkdir dir="${dir.test.classes}"/>
+    <javac
+     srcdir="${dir.test.src}"
+     destdir="${dir.test.classes}"
+     debug="${debug}"
+     debuglevel="${debuglevel}"
+     classpathref="cp.classpath"
+     source="${javac.source}"
+     nowarn="${javac.nowarn}"
+     encoding="${javac.encoding}"
+     >
+      <classpath>
+        <path refid="cp.classpath"/>
+        <pathelement path="${dir.build}"/>
+      </classpath>
+    </javac>
+    <available file="res" type="dir" property="has.resources" />
+    <antcall target="resources"/>
+  </target>
+
+   
     
   <description>
     Targets
