@@ -192,54 +192,56 @@ public class PustefixTargetUpdateServiceImpl implements PustefixTargetUpdateServ
             // Do automatic regeneration only if enabled
             if (this.isEnabled) {
                 // System.out.println("*** in low loop ***");
-                LOG.debug("*** Starting LowPrio loop");
-                while (!lowCopy.isEmpty()) {
-                    Target target = (Target) lowCopy.get(0);
-                    boolean needsUpdate;
-                    try {
-                        needsUpdate = target.needsUpdate();
-                    } catch (Exception e) {
-                        // Remove target from queue without generating it
-                        LOG.warn("*** Exception checking LP " + target.getFullName() + ": " + e.getMessage());
+                if (!lowCopy.isEmpty()) {
+                    LOG.debug("*** Starting LowPrio loop");
+                    while (!lowCopy.isEmpty()) {
+                        Target target = (Target) lowCopy.get(0);
+                        boolean needsUpdate;
+                        try {
+                            needsUpdate = target.needsUpdate();
+                        } catch (Exception e) {
+                            // Remove target from queue without generating it
+                            LOG.warn("*** Exception checking LP " + target.getFullName() + ": " + e.getMessage());
+                            lowCopy.remove(0);
+                            synchronized (this.lock) {
+                                this.lowPriorityQueue.remove(0);
+                            }
+                            continue;
+                        }
+                        try {
+                            if (needsUpdate) {
+                                LOG.debug("  * Generating LowPrio target " + target.getFullName());
+                                target.getValue();
+                            }
+                        } catch (TargetGenerationException e) {
+                            LOG.warn("*** Exception generating LP " + target.getFullName() + ": " + e.getMessage());
+                        }
                         lowCopy.remove(0);
                         synchronized (this.lock) {
                             this.lowPriorityQueue.remove(0);
-                        }
-                        continue;
-                    }
-                    try {
-                        if (needsUpdate) {
-                            LOG.debug("  * Generating LowPrio target " + target.getFullName());
-                            target.getValue();
-                        }
-                    } catch (TargetGenerationException e) {
-                        LOG.warn("*** Exception generating LP " + target.getFullName() + ": " + e.getMessage());
-                    }
-                    lowCopy.remove(0);
-                    synchronized (this.lock) {
-                        this.lowPriorityQueue.remove(0);
-                        if (!this.highPriorityQueue.isEmpty()) {
-                            LOG.debug("*** Leaving LP loop for doing HP targets");
-                            break;
-                        }
-
-                        if (needsUpdate) {
-                            // If a target has been generated, wait for some time.
-                            long delay = nthRunDelay;
-                            if (!this.firstRunDone) {
-                                delay = firstRunDelay;
+                            if (!this.highPriorityQueue.isEmpty()) {
+                                LOG.debug("*** Leaving LP loop for doing HP targets");
+                                break;
                             }
-                            if (delay > 0) {
-                                try {
-                                    this.lock.wait(delay);
-                                } catch (InterruptedException e) {
-                                    LOG.debug("*** Interrupted while waiting after generating target in LowPrio loop");
+                            
+                            if (needsUpdate) {
+                                // If a target has been generated, wait for some time.
+                                long delay = nthRunDelay;
+                                if (!this.firstRunDone) {
+                                    delay = firstRunDelay;
+                                }
+                                if (delay > 0) {
+                                    try {
+                                        this.lock.wait(delay);
+                                    } catch (InterruptedException e) {
+                                        LOG.debug("*** Interrupted while waiting in LowPrio loop");
+                                    }
                                 }
                             }
                         }
                     }
+                    LOG.debug("*** End of LowPrio loop");
                 }
-                LOG.debug("*** End of LowPrio loop");
             }
 
             synchronized (this.lock) {
