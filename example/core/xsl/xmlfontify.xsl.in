@@ -28,7 +28,12 @@
     <xsl:variable name="dim">
       <xsl:choose>
         <xsl:when test="ancestor-or-self::navigation[1] and generate-id(ancestor-or-self::navigation[1]) = generate-id(/formresult/navigation)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::pageflow[1] and generate-id(ancestor-or-self::pageflow[1]) = generate-id(/formresult/pageflow)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::formhiddenvals[1] and generate-id(ancestor-or-self::formhiddenvals[1]) = generate-id(/formresult/formhiddenvals)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::formerrors[1] and generate-id(ancestor-or-self::formerrors[1]) = generate-id(/formresult/formerrors)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::formvalues[1] and generate-id(ancestor-or-self::formvalues[1]) = generate-id(/formresult/formvalues)">true</xsl:when>
         <xsl:when test="ancestor-or-self::iwrappergroups[1] and generate-id(ancestor-or-self::iwrappergroups[1]) = generate-id(/formresult/iwrappergroups)">true</xsl:when>
+        <xsl:when test="ancestor-or-self::iwrapperinfo[1] and generate-id(ancestor-or-self::iwrapperinfo[1]) = generate-id(/formresult/iwrapperinfo)">true</xsl:when>
         <xsl:otherwise>false</xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
