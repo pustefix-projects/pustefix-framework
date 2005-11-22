@@ -1,5 +1,19 @@
 2005-11-22  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/ServletManager.java (ServletManager::doGet): supply running valid session to doCookieTest
+	or the secure child session when current sessid is invalid, but a parent to a ssl session.
+	(ServletManager::redirectToSecureSSLSession): call createTestCookie (shoudn't do anything most of the time,
+	the cookie name in the session should be present and the cookie itself already set)
+	(ServletManager::redirectToInsecureSSLSession): see above.
+	(ServletManager::forceRedirectBackToInsecureSSL): test against a cokie name from the child session if present,
+	only put the attribute in the current session - create the cookie if nothing is found.
+	(ServletManager::forceNewSessionSameVisit): see above
+	(ServletManager::redirectToSession): create the test cookie
+	(ServletManager::doCookieTest): new argument session needed - this is the sesssion to look for 
+	the name of the test cookie (always of the form __PFIX_TST_12345243345) to check. We only check here,
+	no longer create a test cookie!
+	(ServletManager::createTestCookie): new method. Called whenever we need to make sure that a test cookie has been set.
+
 	* src/de/schlund/pfixxml/util/Xslt.java (FileResolver::resolve): use TargetType
 
 	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java (SessionAdmin::toString): cosmetics
