@@ -542,16 +542,16 @@ public abstract class ServletManager extends HttpServlet {
             for (int i = 0; i < cookies.length ; i++) {
                 Cookie cookie = cookies[i];
                 if (cookie.getName().equals(TEST_COOKIE)) {
-            return true;
+                    return true;
                 }
             }
             CAT.debug("*** Client sends cookies, but not our test cookie! ***");
         }
-            Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
-            probe.setPath("/");
-            res.addCookie(probe);
-            return false;
-        }
+        Cookie probe = new Cookie(TEST_COOKIE, "TRUE");
+        probe.setPath("/");
+        res.addCookie(probe);
+        return false;
+    }
 
     private Cookie getSecureSessionCookie(HttpServletRequest req, String sessionid) {
         Cookie[] cookies = req.getCookies();
