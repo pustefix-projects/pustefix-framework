@@ -9,6 +9,10 @@
     when a TargetGenerator has been supplied. If there is no
     TargetGenerator or if no matching Target can be found, a lookup
     for a file with the supplied name is performed as before.
+    
+    * src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.kjava
+    getContent(): Fixed bug leading to a PatternSyntaxException under certain
+    circumstances
 
 2005-11-18  Michael Hartmeier <mhm@schlund.de>
         * skel/build-skel.xml, src/de/schlund/pfixxml/util/Path.java,
