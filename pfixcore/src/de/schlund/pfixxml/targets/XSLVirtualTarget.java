@@ -56,7 +56,7 @@ public class XSLVirtualTarget extends VirtualTarget {
                                                             File.separator + getTargetKey());
         File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(thepath);
+            return Xslt.loadTemplates(thepath, this.getTargetGenerator());
         } else {
             return null;
         }

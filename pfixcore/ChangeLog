@@ -1,3 +1,15 @@
+2005-11-22  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+    * src/de/schlund/pfixxml/targets/XSLVirtualTarget.java:
+    Changed loadTemplates() call in getValueFromDiscCache() to supply
+    the corresponding TargetGenerator as an additional argument
+    
+    * src/de/schlund/pfixxml/util/Xslt.java:
+    Changed inner FileResolver class to lookup an URI as a target name
+    when a TargetGenerator has been supplied. If there is no
+    TargetGenerator or if no matching Target can be found, a lookup
+    for a file with the supplied name is performed as before.
+
 2005-11-18  Michael Hartmeier <mhm@schlund.de>
         * skel/build-skel.xml, src/de/schlund/pfixxml/util/Path.java,
 	tests/junit/de/schlund/pfixxml/targets/TargetGeneratorTest.java
