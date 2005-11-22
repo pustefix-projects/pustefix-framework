@@ -42,8 +42,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
     private SessionAdmin() {}
 
     public String toString() {
-        String allsess ="[Number of active Sessions: " + sessioninfo.keySet().size() + "]\n";
-        return allsess;
+        return "[Number of active Sessions: " + sessioninfo.keySet().size() + "]";
     }
     
     public void registerSession(HttpSession sess, String serverName, String remoteAddr) {
