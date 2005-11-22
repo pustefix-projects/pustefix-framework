@@ -80,7 +80,8 @@ public abstract class CommonIncludesResourceImpl implements
     public void insertStatus(ResultDocument resdoc, Element elem)
             throws Exception {
         // System.out.println("In IS");
-        Project project = EditorResourceLocator.getProjectsResource(context).getSelectedProject();
+        Project project = EditorResourceLocator.getProjectsResource(context)
+                .getSelectedProject();
         if (project != null) {
             this.renderAllIncludes(resdoc, elem, project);
         }
@@ -351,10 +352,14 @@ public abstract class CommonIncludesResourceImpl implements
                 temporaryCount = 0;
             }
         }
-        Pattern pattern = Pattern.compile("^ {" + spaceCount + "}",
-                Pattern.MULTILINE);
-        Matcher matcher = pattern.matcher(output2);
-        return matcher.replaceAll("");
+        if (spaceCount > 0) {
+            Pattern pattern = Pattern.compile("^ {" + spaceCount + "}",
+                    Pattern.MULTILINE);
+            Matcher matcher = pattern.matcher(output2);
+            return matcher.replaceAll("");
+        } else {
+            return output2.toString();
+        }
     }
 
     private String unicodeTranslate(char c) {
