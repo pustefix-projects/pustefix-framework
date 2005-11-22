@@ -1,5 +1,7 @@
 2005-11-22  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/util/Xslt.java (FileResolver::resolve): use TargetType
+
 	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java (SessionAdmin::toString): cosmetics
 
 2005-11-22  Joerg Haecker <haecker@schlund.de>

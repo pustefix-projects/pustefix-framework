@@ -18,6 +18,16 @@
  */
 package de.schlund.pfixxml.util;
 
+
+
+
+
+import com.icl.saxon.TransformerFactoryImpl;
+import com.icl.saxon.tinytree.TinyDocumentImpl;
+import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetGenerator;
 import java.io.File;
 import java.io.StringReader;
 import java.net.URI;
@@ -25,7 +35,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -38,18 +47,10 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
-
 import org.apache.log4j.Category;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
-import com.icl.saxon.TransformerFactoryImpl;
-import com.icl.saxon.tinytree.TinyDocumentImpl;
-
-import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.targets.Target;
-import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetGenerator;
+import de.schlund.pfixxml.targets.TargetType;
 
 public class Xslt {
     private static final Category           CAT        = Category.getInstance(Xslt.class.getName());
@@ -189,33 +190,23 @@ public class Xslt {
             
             if (tgen != null) {
                 Target target = tgen.getTarget(path);
-                if (target != null) {
+                if (target != null && (target.getType() == TargetType.XML_VIRTUAL || target.getType() == TargetType.XML_LEAF)) {
                     Document dom;
                     try {
-                        Object tval = target.getValue();
-                        if (tval != null && tval instanceof Document) {
-                            dom = (Document) tval;
-                        } else {
-                            throw new TransformerException("Target '"
-                                    + target.getTargetKey()
-                                    + "' referenced by stylesheet"
-                                    + " is not a XML target!");
-                        }
+                        dom = (Document) target.getValue();
                     } catch (TargetGenerationException e) {
-                        throw new TransformerException(
-                                "Could not generate target '"
-                                        + target.getTargetKey()
-                                        + "' included by stylesheet!", e);
+                        throw new TransformerException("Could not generate target '" + target.getTargetKey()
+                                                       + "' included by stylesheet!", e);
                     }
                     Source source = new DOMSource(dom);
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId("file://" + PathFactory.getInstance().createPath(tgen.getDisccachedir().getRelative() + File.separator + path).resolve().getAbsolutePath());
+                    source.setSystemId("file://" + PathFactory.getInstance().createPath(tgen.getDisccachedir().getRelative() +
+                                                                                        File.separator + path).resolve().getAbsolutePath());
                     return source;
                 }
             }
-            
             
             try {
                 file = Path.create(root, path).resolve();
