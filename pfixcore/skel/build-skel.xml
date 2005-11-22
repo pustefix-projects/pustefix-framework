@@ -328,7 +328,7 @@ or delete the DOCTYPE definition -->
   </target>
 
   <target name="clean-modules" description="deletes files from ${dir.extract.modules}">
-      <delete dir="${dir.extract.modules}"/>
+      <delete dir="${dir.extract.modules}" failonerror="false"/>
   </target>
   
   <target name="clean-project" description="deletes files from ${dir.projects}">
@@ -382,6 +382,7 @@ or delete the DOCTYPE definition -->
         
   <target name="extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
     <echo>Unpacking *.jar-Modules from ${dir.src.modules}</echo>
+    <mkdir dir="${dir.extract.modules}"/>
     <unjar dest="${dir.extract.modules}">
       <fileset dir="${dir.src.modules}" includes="*.jar" />
     </unjar>

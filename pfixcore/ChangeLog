@@ -1,3 +1,7 @@
+2005-11-22  Joerg Haecker <haecker@schlund.de>
+	
+	* skel/build-skel.xml: fixed problems with modules dir
+
 2005-11-22  Sebastian Marsching <sebastian.marsching@1und1.de>
 
     * src/de/schlund/pfixxml/targets/XSLVirtualTarget.java:
