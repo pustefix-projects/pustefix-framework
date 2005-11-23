@@ -185,12 +185,12 @@ public class AuxDependency implements Comparable {
         }
     }
 
-    public String toStringShort() {
-        return "["+ getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]";
+    public String toString() {
+        return "[AUX/" + getType() + " "  + getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]";
     }
     
-    public String toString() {
-        StringBuffer retval = new StringBuffer("[AUXDEP: " + getType() + " " + getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]\n");
+    public String fullDescription() {
+        StringBuffer retval = new StringBuffer(toString() + "\n");
         if (!themes_children.isEmpty()) {
             retval.append("        -------------- Children: --------------\n");
             for (Iterator i = themes_children.keySet().iterator(); i.hasNext();) {
