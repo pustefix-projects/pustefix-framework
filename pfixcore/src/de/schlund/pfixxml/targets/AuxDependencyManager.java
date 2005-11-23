@@ -158,8 +158,17 @@ public class AuxDependencyManager {
             for (Iterator i = auxset.iterator(); i.hasNext(); ) {
                 AuxDependency aux  = (AuxDependency) i.next();
                 if (aux.getType().isDynamic()) {
-                    aux.resetTargetDependency(target);
                     i.remove();
+                }
+            }
+        }
+
+        HashSet allaux = refcounter.getDependenciesForTarget(target);
+        if (allaux != null) {
+            for (Iterator i = allaux.iterator(); i.hasNext();) {
+                AuxDependency aux  = (AuxDependency) i.next();
+                if (aux.getType().isDynamic()) {
+                    aux.resetTargetDependency(target);
                 }
             }
         }
