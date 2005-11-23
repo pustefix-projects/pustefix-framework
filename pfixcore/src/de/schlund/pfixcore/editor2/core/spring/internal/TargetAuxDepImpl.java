@@ -257,6 +257,10 @@ public class TargetAuxDepImpl extends AbstractTarget {
                 }
             }
 
+            public boolean themeOverridesTheme(Theme t1, Theme t2) {
+                return false;
+            }
+
         };
     }
 

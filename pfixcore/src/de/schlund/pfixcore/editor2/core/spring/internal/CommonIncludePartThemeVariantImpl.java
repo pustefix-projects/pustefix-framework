@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractIncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
@@ -46,7 +47,6 @@ import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.lucefix.PfixQueueManager;
 import de.schlund.pfixcore.lucefix.Tripel;
-import de.schlund.pfixxml.XMLException;
 import de.schlund.pfixxml.util.MD5Utils;
 import de.schlund.pfixxml.util.XPath;
 import de.schlund.pfixxml.util.Xml;
@@ -94,12 +94,12 @@ public abstract class CommonIncludePartThemeVariantImpl extends
      */
     protected abstract void securityCheckEditIncludePartThemeVariant()
             throws EditorSecurityException;
-    
+
     /**
      * Override to implement ChangeLog entries
      */
     protected abstract void writeChangeLog();
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -269,7 +269,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     theme.appendChild(doc.importNode(child, true));
                 }
             }
-            
+
             // Log change
             this.writeChangeLog();
 
@@ -282,18 +282,50 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 Logger.getLogger(this.getClass()).error(err, e);
                 throw new EditorIOException(err, e);
             }
-            
+
             // Force refresh of file cache
             this.getIncludePart().getIncludeFile().getContentXML(true);
 
             // Register affected pages for regeneration
+            Page affectedpage = null;
             for (Iterator i = this.getAffectedPages().iterator(); i.hasNext();) {
                 Page page = (Page) i.next();
                 page.registerForUpdate();
+                affectedpage = page;
             }
-            
-            PfixQueueManager.getInstance(null).queue(new Tripel(getTheme().getName(), getIncludePart().getName(),getIncludePart().getIncludeFile().getPath(),Tripel.Type.EDITORUPDATE));
-           
+
+            // Regenerate exactly ONE affected page synchronously
+            // to make sure changes in the dependency tree are
+            // visible at once
+            if (affectedpage != null) {
+                affectedpage.update();
+            } else {
+                // This theme branch does not have any affected pages,
+                // probably because it was just created - so look for
+                // pages using other branches, which will use this branch
+                // when being regenerated
+                pageloop: for (Iterator i = this.getIncludePart()
+                        .getThemeVariants().iterator(); i.hasNext();) {
+                    IncludePartThemeVariant iv = (IncludePartThemeVariant) i
+                            .next();
+                    for (Iterator i2 = iv.getAffectedPages().iterator(); i2
+                            .hasNext();) {
+                        Page p = (Page) i2.next();
+                        if (p.getThemes().themeOverridesTheme(this.getTheme(),
+                                iv.getTheme())) {
+                            p.update();
+                            break pageloop;
+                        }
+                    }
+                }
+            }
+
+            PfixQueueManager.getInstance(null).queue(
+                    new Tripel(getTheme().getName(),
+                            getIncludePart().getName(), getIncludePart()
+                                    .getIncludeFile().getPath(),
+                            Tripel.Type.EDITORUPDATE));
+
         }
     }
 

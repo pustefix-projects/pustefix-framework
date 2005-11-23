@@ -38,6 +38,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixcore.workflow.Navigation;
@@ -98,7 +99,8 @@ public class ProjectImpl extends AbstractProject {
     public ProjectImpl(VariantFactoryService variantfactory,
             ThemeFactoryService themefactory, PageFactoryService pagefactory,
             IncludeFactoryService includefactory,
-            ImageFactoryService imagefactory, String name, String comment,
+            ImageFactoryService imagefactory,
+            PustefixTargetUpdateService updater, String name, String comment,
             String dependFile) throws EditorInitializationException {
         this.projectName = name;
         this.projectComment = comment;
@@ -128,6 +130,9 @@ public class ProjectImpl extends AbstractProject {
             throw new EditorInitializationException(err, e);
         }
         this.tgen = gen;
+
+        // Register target generator for updates
+        updater.registerTargetGeneratorForUpdateLoop(tgen);
 
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
@@ -388,12 +393,15 @@ public class ProjectImpl extends AbstractProject {
             return null;
         }
     }
-	public boolean hasIncludePart(String file, String part, String theme) {
-		AuxDependency aux = AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT,PathFactory.getInstance().createPath(file), part, theme);
-		TreeSet generators = aux.getAffectedTargetGenerators();
 
-		return generators.contains(this.tgen);
-	}
+    public boolean hasIncludePart(String file, String part, String theme) {
+        AuxDependency aux = AuxDependencyFactory
+                .getInstance()
+                .getAuxDependency(DependencyType.TEXT,
+                        PathFactory.getInstance().createPath(file), part, theme);
+        TreeSet generators = aux.getAffectedTargetGenerators();
 
+        return generators.contains(this.tgen);
+    }
 
 }

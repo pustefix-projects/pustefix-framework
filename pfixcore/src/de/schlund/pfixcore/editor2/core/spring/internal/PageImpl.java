@@ -31,6 +31,7 @@ import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
  * Implementation of Page using classes from PFIXCORE
@@ -99,9 +100,6 @@ public class PageImpl extends AbstractPage implements MutablePage {
         this.childPages = new ArrayList();
         this.pinfo = pinfo;
         this.updater = updater;
-        // Register page for updating
-        updater.registerTargetForInitialUpdate(this.pinfo.getTargetGenerator()
-                                               .getPageTargetTree().getTargetForPageInfo(this.pinfo));
     }
 
     /*
@@ -192,6 +190,15 @@ public class PageImpl extends AbstractPage implements MutablePage {
     public void registerForUpdate() {
         this.updater.registerTargetForUpdate(this.pinfo.getTargetGenerator()
                 .getPageTargetTree().getTargetForPageInfo(this.pinfo));
+    }
+
+    public void update() {
+        try {
+            this.pinfo.getTargetGenerator().getPageTargetTree()
+                    .getTargetForPageInfo(this.pinfo).getValue();
+        } catch (TargetGenerationException e) {
+            // Ignore errors during target generation
+        }
     }
 
 }

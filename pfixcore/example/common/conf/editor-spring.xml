@@ -44,6 +44,9 @@
     <property name="imageFactoryService">
       <ref bean="imagefactory"/>
     </property>
+    <property name="pustefixTargetUpdateService">
+      <ref bean="pustefixtargetupdate"/>
+    </property>
     <!-- Relative path to central projects configuration file -->
     <property name="projectsFilePath">
       <value>servletconf/projects.xml</value>

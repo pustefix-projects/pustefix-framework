@@ -1,5 +1,42 @@
 2005-11-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* example/common/conf/editor-spring.xml: Added property "pustefixTargetUpdateService" to "projectfactory"
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java (registerTargetForInitialUpdate): 
+	Removed method as it is no longer used
+	(registerTargetGeneratorForUpdateLoop): Implemented method from interface
+	(run): Changed code to get list of all targets from target generators on
+	each pass instead of using initial target list.
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateService.java (registerTargetForInitialUpdate): 
+	Removed method as it is no longer needed
+	(registerTargetGeneratorForUpdateLoop):  Added method for registering a target generator
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java (setPustefixTargetUpdateService):
+	Added property for reference to target updater
+	(init): Adapted call to ProjectImpl constructor to match new signature
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ThemeListImpl.java (themeOverridesTheme): Implemented
+	method from interface
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getThemes): Adapted internal 
+	ThemeList implementation to be compatible with changed interface
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: Adapted internal 
+	ThemeList implementation to be compatible with changed interface
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java (ProjectImpl): Registering
+	TargetGenerator with update service when creating project object
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/PageImpl.java (PageImpl): Removed code 
+	for registering page with update service
+	(update): Implemented method from interface
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/ThemeList.java (themeOverridesTheme): Added method for testing 
+	the precedence of a theme over another one
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/Page.java (update): Added method to support synchronous updates
+	
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java (writeChangeLog): 
 	Added method for writing ChangeLog entries
 	(replaceFile): Added call to writeChangeLog() method
@@ -13,6 +50,7 @@
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java (setXML): 
 	Added call to protected method writeChangeLog() which creates an editor
 	ChangeLog entry in the child classes
+	(setXML): Update exactly one page synchronously in order to make changes visible
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java
 	setContent(): Use Xml.parseStringMutable() instead of
