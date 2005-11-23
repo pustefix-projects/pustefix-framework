@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
@@ -246,13 +248,21 @@ public class IncludePartThemeVariantImpl extends
 
     public Collection getAffectedProjects() {
         HashSet projects = new HashSet();
-        for (Iterator i = this.getAuxDependency().getAffectedTargetGenerators().iterator(); i.hasNext();) {
+        for (Iterator i = this.getAuxDependency().getAffectedTargetGenerators()
+                .iterator(); i.hasNext();) {
             TargetGenerator tgen = (TargetGenerator) i.next();
-            Project project = this.projectfactory.getProjectByPustefixTargetGenerator(tgen);
+            Project project = this.projectfactory
+                    .getProjectByPustefixTargetGenerator(tgen);
             if (project != null) {
                 projects.add(project);
             }
         }
         return projects;
+    }
+
+    protected void writeChangeLog() {
+        Logger.getLogger("LOGGER_EDITOR").warn(
+                "TXT: " + this.securitymanager.getPrincipal().getName() + ": "
+                        + this.toString());
     }
 }

@@ -21,6 +21,8 @@ package de.schlund.pfixcore.editor2.core.spring.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
@@ -87,6 +89,12 @@ public class DynIncludePartThemeVariantImpl extends
 
     public Collection getAffectedProjects() {
         return new ArrayList();
+    }
+
+    protected void writeChangeLog() {
+        Logger.getLogger("LOGGER_EDITOR").warn(
+                "DYNTXT: " + this.securitymanager.getPrincipal().getName()
+                        + ": " + this.toString());
     }
 
 }

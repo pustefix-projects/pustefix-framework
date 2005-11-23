@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import de.schlund.pfixcore.editor2.core.dom.AbstractImage;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -107,12 +109,15 @@ public class ImageImpl extends AbstractImage {
         return pages;
     }
 
-public void replaceFile(File newFile) throws EditorIOException,
+    public void replaceFile(File newFile) throws EditorIOException,
             EditorSecurityException {
         this.securitymanager.checkEditImage(this);
         File imageFile = new File(this.pathresolver.resolve(this.getPath()));
 
-        synchronized (this.filesystem.getLock(imageFile)) {            
+        // Log change
+        this.writeChangeLog();
+
+        synchronized (this.filesystem.getLock(imageFile)) {
             File directory = imageFile.getParentFile();
             if (!directory.exists()) {
                 this.filesystem.makeDirectory(directory, true);
@@ -123,7 +128,15 @@ public void replaceFile(File newFile) throws EditorIOException,
             filesystem.copy(newFile, imageFile);
         }
 
-    }    public long getLastModTime() {
+    }
+
+    private void writeChangeLog() {
+        Logger.getLogger("LOGGER_EDITOR").warn(
+                "IMG: " + this.securitymanager.getPrincipal().getName() + ": "
+                        + this.getPath());
+    }
+
+    public long getLastModTime() {
         File file = new File(this.pathresolver.resolve(this.getPath()));
         return file.lastModified();
     }
