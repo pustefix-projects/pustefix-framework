@@ -1,4 +1,19 @@
 2005-11-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java (writeChangeLog): 
+	Added method for writing ChangeLog entries
+	(replaceFile): Added call to writeChangeLog() method
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java (writeChangeLog): 
+	Added method for writing ChangeLog entries
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/DynIncludePartThemeVariantImpl.java (writeChangeLog): 
+	Added method for writing ChangeLog entries
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java (setXML): 
+	Added call to protected method writeChangeLog() which creates an editor
+	ChangeLog entry in the child classes
+
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java
 	setContent(): Use Xml.parseStringMutable() instead of
 	Xml.parseString() as the latter caused problems with namespaces

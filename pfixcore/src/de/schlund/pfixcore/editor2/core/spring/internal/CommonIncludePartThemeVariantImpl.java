@@ -94,7 +94,12 @@ public abstract class CommonIncludePartThemeVariantImpl extends
      */
     protected abstract void securityCheckEditIncludePartThemeVariant()
             throws EditorSecurityException;
-
+    
+    /**
+     * Override to implement ChangeLog entries
+     */
+    protected abstract void writeChangeLog();
+    
     /*
      * (non-Javadoc)
      * 
@@ -264,6 +269,9 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     theme.appendChild(doc.importNode(child, true));
                 }
             }
+            
+            // Log change
+            this.writeChangeLog();
 
             // Save file
             try {
