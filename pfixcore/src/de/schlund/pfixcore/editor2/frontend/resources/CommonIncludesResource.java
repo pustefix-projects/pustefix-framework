@@ -20,6 +20,8 @@ package de.schlund.pfixcore.editor2.frontend.resources;
 
 import javax.xml.transform.TransformerException;
 
+import org.xml.sax.SAXException;
+
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
 import de.schlund.pfixcore.workflow.ContextResource;
@@ -95,7 +97,7 @@ public interface CommonIncludesResource extends ContextResource {
      *             If include part has been changed by another user, while this
      *             user has been editing the part.
      */
-    void setContent(String content, String hash) throws TransformerException,
+    void setContent(String content, String hash) throws SAXException,
             EditorException;
 
     /**
