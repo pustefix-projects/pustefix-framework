@@ -108,6 +108,17 @@ public interface Page extends Comparable {
      * Registers this page for an update. This can be used to recalculate
      * dependencies after something has changed. The update is not processed
      * immediately but asynchronously.
+     * 
+     * @see #update()
      */
     void registerForUpdate();
+    
+    /**
+     * Regenerates the page. This is useful to recalculate the dependencies
+     * after some part being used by this page has been changed.
+     * The regeneration is done synchronously.
+     * 
+     *  @see #registerForUpdate()
+     */
+    void update();
 }

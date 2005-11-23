@@ -433,6 +433,10 @@ public class TargetPfixImpl extends AbstractTarget {
                     }
                 }
 
+                public boolean themeOverridesTheme(Theme t1, Theme t2) {
+                    return false;
+                }
+
             };
         }
     }

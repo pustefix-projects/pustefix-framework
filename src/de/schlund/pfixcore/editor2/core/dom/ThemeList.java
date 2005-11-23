@@ -41,4 +41,18 @@ public interface ThemeList {
      * @return true if specified theme is included in list, false otherwise
      */
     boolean includesTheme(Theme theme);
+
+    /**
+     * Compares the preference of two themes within this list.
+     * This method is used to see, whether t1 would be preferred
+     * over t2.
+     * 
+     * @param t1 the potentially preferred theme
+     * @param t2 the potentially overridden theme
+     * @return <code>true</code> if t1 is found in this list before
+     *         t2. This includes the case when t1 is included in the list
+     *         but t2 is not. <code>false</code> is returned if t1 is not
+     *         in the list or t2 is found before t1.
+     */
+    boolean themeOverridesTheme(Theme t1, Theme t2);
 }

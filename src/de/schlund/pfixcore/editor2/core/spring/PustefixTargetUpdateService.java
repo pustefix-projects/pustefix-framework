@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
  * Service running in background, updating pages when a dependency has changed.
@@ -34,12 +35,10 @@ public interface PustefixTargetUpdateService {
     void registerTargetForUpdate(Target target);
     
     /**
-     * Adds a target to low-priority queue for updating.
-     * This queue is used to do an initial update on all existing
-     * pages without blocking more urgent updates.
+     * Registers a TargetGenerator for periodical updates of its
+     * top-level targets.
      * 
-     * @param page The target to do the update for
-     * @see #registerTargetForUpdate(Page)
+     * @param tgen TargetGenerator to do updates for
      */
-    void registerTargetForInitialUpdate(Target target);
+    void registerTargetGeneratorForUpdateLoop(TargetGenerator tgen);
 }

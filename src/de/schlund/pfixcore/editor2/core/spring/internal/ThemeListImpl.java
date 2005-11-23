@@ -38,11 +38,11 @@ import de.schlund.pfixxml.targets.Themes;
 public class ThemeListImpl implements ThemeList {
     private ArrayList themes;
 
-   /**
-    * Creates a ThemeList object
-    * 
-    * @param themes Themes object as used by the Pustefix generator
-    */
+    /**
+     * Creates a ThemeList object
+     * 
+     * @param themes Themes object as used by the Pustefix generator
+     */
     public ThemeListImpl(ThemeFactoryService themefactory, Themes themes) {
         if (themes.getThemesArr().length == 0) {
             String msg = "Themes array should not be empty!";
@@ -55,12 +55,12 @@ public class ThemeListImpl implements ThemeList {
             this.themes.add(theme);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.editor2.core.dom.ThemeList#getThemes()
      */
     public Collection getThemes() {
-       return new ArrayList(this.themes);
+        return new ArrayList(this.themes);
     }
 
     /* (non-Javadoc)
@@ -70,7 +70,6 @@ public class ThemeListImpl implements ThemeList {
         return this.themes.contains(theme);
     }
 
-    
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -93,14 +92,14 @@ public class ThemeListImpl implements ThemeList {
         }
         return !i2.hasNext();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     public int hashCode() {
         return ("THEMELIST: " + this.toString()).hashCode();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -111,6 +110,23 @@ public class ThemeListImpl implements ThemeList {
             buf.append(theme.getName());
             buf.append(" ");
         }
-        return buf.substring(0, buf.length()-1);
+        return buf.substring(0, buf.length() - 1);
+    }
+
+    public boolean themeOverridesTheme(Theme t1, Theme t2) {
+        if (t1.equals(t2)) {
+            return false;
+        }
+
+        for (Iterator i = this.getThemes().iterator(); i.hasNext();) {
+            Theme t = (Theme) i.next();
+            if (t.equals(t1)) {
+                return true;
+            } else if (t.equals(t2)) {
+                return false;
+            }
+        }
+
+        return false;
     }
 }
