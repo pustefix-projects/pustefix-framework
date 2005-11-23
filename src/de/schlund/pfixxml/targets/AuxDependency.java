@@ -112,13 +112,13 @@ public class AuxDependency implements Comparable {
             } else {
                 affectedtargetgenerators.remove(tgen);
             }
-            TreeSet tmp_children = getChildren(target);
-            for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
-                AuxDependency aux  = (AuxDependency) i.next();
-                if (aux.getType().isDynamic()) {
-                    aux.resetTargetDependency(target);
-                }
-            }
+//             TreeSet tmp_children = getChildren(target);
+//             for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
+//                 AuxDependency aux  = (AuxDependency) i.next();
+//                 if (aux.getType().isDynamic()) {
+//                     aux.resetTargetDependency(target);
+//                 }
+//             }
         }
     }
 

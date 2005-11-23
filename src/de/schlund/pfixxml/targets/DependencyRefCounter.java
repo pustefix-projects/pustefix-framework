@@ -56,6 +56,12 @@ public class DependencyRefCounter {
         }
     }
 
+    public HashSet getDependenciesForTarget(Target target) {
+        synchronized (alldeps) {
+            HashSet tmp = (HashSet) alltargets.get(target);
+            return (tmp == null) ? null : (HashSet) tmp.clone();
+        }
+    }
 
     public void ref(AuxDependency aux, Target target) {
         synchronized (alldeps) {

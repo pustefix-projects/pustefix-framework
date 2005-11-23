@@ -1,3 +1,18 @@
+2005-11-23  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java (AuxDependencyManager::reset): fixed stupid bug.
+	we don't call resetTargetDependency(...) only on the direct children, but on ALL AuxDependencies that are used
+	by the target. For this to work the two changes below needed to be made:
+
+	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java (DependencyRefCounter::getDependenciesForTarget): 
+	new method, return all AuxDependencies the Target uses. 
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java (AuxDependency::resetTargetDependency): we no longer 
+	recurse into the children of the AuxDependency and call resetTargetDependency(...) on them, because the 
+	AuxDependencyManger now loops over ALL AuxDependencies without the need to follow the children tree. 
+	The old behaviour didn't work because it possibly left stale references to targets in AuxDependencies that
+	can no longer be reached by the child tree of the target when it is rebuild.
+
 2005-11-22  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java (ServletManager::doGet): supply running valid session to doCookieTest
