@@ -122,13 +122,13 @@ public class RefCountingCollection<E> implements Collection<E> {
     }
 
     public final String toString() {
-        StringBuffer buff = new StringBuffer();
+        StringBuffer buff = new StringBuffer("[");
         for (Iterator<E> i = iterator(); i.hasNext();) {
             E   key   = i.next();
             int count = getCardinality(key);
             buff.append(key + " [" + count + "] ");
         }
-        buff.append("=> FS: " + fullsize);
+        buff.append(" FS: " + fullsize + "]");
         return buff.toString();
     }
 
