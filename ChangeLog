@@ -1,3 +1,16 @@
+2005-11-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java
+	setContent(): Use Xml.parseStringMutable() instead of
+	Xml.parseString() as the latter caused problems with namespaces
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java
+	setContent(): Throwing SAXException instead of TransformerException due to
+	changes in the implementation (see above)
+	
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludeHandler.java
+	handleSubmittedData(): Handle SAXException instead of TransformerException
+	(see above)
+
 2005-11-23  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/sample1/txt/navigation.xml: cosmetics

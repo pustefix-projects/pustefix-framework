@@ -26,11 +26,10 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -373,8 +372,8 @@ public abstract class CommonIncludesResourceImpl implements
         }
     }
 
-    public void setContent(String content, String hash)
-            throws TransformerException, EditorException {
+    public void setContent(String content, String hash) throws SAXException,
+            EditorException {
         // Check whether hashcode has changed
         if (!this.selectedIncludePart.getMD5().equals(hash)) {
             String newHash = this.getMD5();
@@ -398,7 +397,7 @@ public abstract class CommonIncludesResourceImpl implements
         xmlcode.append(">\n");
         xmlcode.append(content);
         xmlcode.append("\n</part>");
-        Document doc = Xml.parseString(xmlcode.toString());
+        Document doc = Xml.parseStringMutable(xmlcode.toString());
 
         this.selectedIncludePart.setXML(doc.getDocumentElement());
     }

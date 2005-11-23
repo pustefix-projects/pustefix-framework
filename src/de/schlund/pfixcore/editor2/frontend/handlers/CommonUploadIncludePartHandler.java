@@ -18,9 +18,8 @@
 
 package de.schlund.pfixcore.editor2.frontend.handlers;
 
-import javax.xml.transform.TransformerException;
-
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
 import de.schlund.pfixcore.editor2.core.exception.EditorIncludeHasChangedException;
@@ -50,16 +49,9 @@ public abstract class CommonUploadIncludePartHandler implements IHandler {
             try {
                 this.getResource(context).setContent(input.getContent(), input.getHash());
                 input.setHash(this.getResource(context).getMD5());
-            } catch (TransformerException e) {
+            } catch (SAXException e) {
                 Logger.getLogger(this.getClass()).warn(e);
-                if (e.getLocator() != null) {
-                    String line = Integer.toString(e.getLocator().getLineNumber());
-                    String column = Integer.toString(e.getLocator().getColumnNumber());
-                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR_WITH_DETAILS,
-                                          new String[] { line, column }, null);
-                } else {
-                    input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
-                }
+                input.addSCodeContent(StatusCodeLib.PFIXCORE_EDITOR_INCLUDESUPLOAD_PARSE_ERR);
             } catch (EditorIncludeHasChangedException e) {
                 input.setHash(e.getNewHash());
                 input.setContent(e.getMerged());
