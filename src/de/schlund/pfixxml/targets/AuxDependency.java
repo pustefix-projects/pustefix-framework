@@ -20,6 +20,7 @@
 package de.schlund.pfixxml.targets;
 
 import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.RefCountingCollection;
 import java.io.File;
 import java.util.*;
 import org.apache.log4j.Category;
@@ -29,15 +30,15 @@ import org.apache.log4j.Category;
  */
 public class AuxDependency implements Comparable {
     
-    private static Category      CAT = Category.getInstance(AuxDependency.class.getName());
-    private final DependencyType type;
-    private final Path           path;
-    private final String         part;
-    private final String         product;
-    private final int            hashCode;
-    private final TreeSet        affectedtargets;
-    private final HashMap        affectedtargetgenerators;
-    private final HashMap        themes_children;
+    private static Category                              CAT = Category.getInstance(AuxDependency.class.getName());
+    private final DependencyType                         type;
+    private final Path                                   path;
+    private final String                                 part;
+    private final String                                 product;
+    private final int                                    hashCode;
+    private final TreeSet<Target>                        affectedtargets;
+    private final RefCountingCollection<TargetGenerator> affectedtargetgenerators;
+    private final HashMap                                themes_children;
    
     private long last_lastModTime = -1;
     
@@ -49,8 +50,8 @@ public class AuxDependency implements Comparable {
         this.path                     = path;
         this.part                     = part;
         this.product                  = product;
-        this.affectedtargets          = new TreeSet();
-        this.affectedtargetgenerators = new HashMap();
+        this.affectedtargets          = new TreeSet<Target>();
+        this.affectedtargetgenerators = new RefCountingCollection<TargetGenerator>();
         this.themes_children          = new HashMap();
 
         String key    = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
@@ -91,14 +92,12 @@ public class AuxDependency implements Comparable {
     
     public boolean addTargetDependency(VirtualTarget target) {
         synchronized (affectedtargets) {
-            TargetGenerator tgen = target.getTargetGenerator();
-            if (affectedtargetgenerators.containsKey(tgen)) {
-                int count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
-                affectedtargetgenerators.put(tgen, new Integer(++count));
-            } else {
-                affectedtargetgenerators.put(tgen, new Integer(1));
+            TargetGenerator tgen    = target.getTargetGenerator();
+            boolean         changed = affectedtargets.add(target);
+            if (changed) {
+                affectedtargetgenerators.add(tgen);
             }
-            return affectedtargets.add(target);
+            return changed;
         }
     }
 
@@ -106,19 +105,7 @@ public class AuxDependency implements Comparable {
         synchronized (affectedtargets) {
             affectedtargets.remove(target);
             TargetGenerator tgen  = target.getTargetGenerator();
-            int             count = ((Integer) affectedtargetgenerators.get(tgen)).intValue();
-            if (count > 1) {
-                affectedtargetgenerators.put(tgen, new Integer(--count));
-            } else {
-                affectedtargetgenerators.remove(tgen);
-            }
-//             TreeSet tmp_children = getChildren(target);
-//             for (Iterator i = tmp_children.iterator(); i.hasNext(); ) {
-//                 AuxDependency aux  = (AuxDependency) i.next();
-//                 if (aux.getType().isDynamic()) {
-//                     aux.resetTargetDependency(target);
-//                 }
-//             }
+            affectedtargetgenerators.remove(tgen);
         }
     }
 
@@ -198,6 +185,10 @@ public class AuxDependency implements Comparable {
         }
     }
 
+    public String toStringShort() {
+        return "["+ getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]";
+    }
+    
     public String toString() {
         StringBuffer retval = new StringBuffer("[AUXDEP: " + getType() + " " + getPath().getRelative() + "@" + getPart() + "@" + getProduct() + "]\n");
         if (!themes_children.isEmpty()) {
@@ -224,17 +215,17 @@ public class AuxDependency implements Comparable {
         return retval.toString();
     }
     
-    public TreeSet getAffectedTargets() {
+    public TreeSet<Target> getAffectedTargets() {
         synchronized (affectedtargets) {
-            return (TreeSet) affectedtargets.clone();
+            return (TreeSet<Target>) affectedtargets.clone();
         }
     }
 
-    public TreeSet getAffectedTargetGenerators() {
+    public TreeSet<TargetGenerator> getAffectedTargetGenerators() {
         synchronized (affectedtargets) { // Note: this is right, we only change
                                          // affectedtargetgenerators when in synchronized blocks of
                                          // affectedtargets.
-            return new TreeSet(affectedtargetgenerators.keySet());
+            return new TreeSet<TargetGenerator>(affectedtargetgenerators);
         }
     }
 

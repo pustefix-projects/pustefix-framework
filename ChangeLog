@@ -1,5 +1,7 @@
 2005-11-23  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/sample1/txt/navigation.xml: cosmetics
+
 	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java (AuxDependencyManager::reset): fixed stupid bug.
 	we don't call resetTargetDependency(...) only on the direct children, but on ALL AuxDependencies that are used
 	by the target. For this to work the two changes below needed to be made:
@@ -7,11 +9,20 @@
 	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java (DependencyRefCounter::getDependenciesForTarget): 
 	new method, return all AuxDependencies the Target uses. 
 
-	* src/de/schlund/pfixxml/targets/AuxDependency.java (AuxDependency::resetTargetDependency): we no longer 
-	recurse into the children of the AuxDependency and call resetTargetDependency(...) on them, because the 
-	AuxDependencyManger now loops over ALL AuxDependencies without the need to follow the children tree. 
-	The old behaviour didn't work because it possibly left stale references to targets in AuxDependencies that
-	can no longer be reached by the child tree of the target when it is rebuild.
+	* src/de/schlund/pfixxml/targets/AuxDependency.java 
+	(AuxDependency): use generics and RefCountingCollection for the reference count of targetgenerators 
+	(AuxDependency::resetTargetDependency): we no longer recurse into
+	the children of the AuxDependency and call resetTargetDependency(...) on them, because the
+	AuxDependencyManger now loops over ALL AuxDependencies without the
+	need to follow the children tree.  The old behaviour didn't work
+	because it possibly left stale references to targets in
+	AuxDependencies that can no longer be reached by the child tree of
+	the target when it is rebuild.
+	(AuxDependency::toStringShort): new method
+	(AuxDependency::addTargetDependency): fixed a stupid bug with refcounting targetgenerators: Only 
+	increment the generator count when the target has not already been added to the dependency's affectedtarget 
+	list. This way, using the same include more than once on a target will correctly increment the
+	generator ref count only by 1.
 
 2005-11-22  Jens Lautenbacher  <jtl@schlund.de>
 

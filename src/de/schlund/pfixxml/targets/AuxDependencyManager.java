@@ -152,7 +152,17 @@ public class AuxDependencyManager {
 
     public void reset() {
         DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
+        HashSet              allaux     = refcounter.getDependenciesForTarget(target);
         refcounter.unref(target);
+
+        if (allaux != null) {
+            for (Iterator i = allaux.iterator(); i.hasNext();) {
+                AuxDependency aux  = (AuxDependency) i.next();
+                if (aux.getType().isDynamic()) {
+                    aux.resetTargetDependency(target);
+                }
+            }
+        }
 
         synchronized(auxset) {
             for (Iterator i = auxset.iterator(); i.hasNext(); ) {
@@ -163,15 +173,6 @@ public class AuxDependencyManager {
             }
         }
 
-        HashSet allaux = refcounter.getDependenciesForTarget(target);
-        if (allaux != null) {
-            for (Iterator i = allaux.iterator(); i.hasNext();) {
-                AuxDependency aux  = (AuxDependency) i.next();
-                if (aux.getType().isDynamic()) {
-                    aux.resetTargetDependency(target);
-                }
-            }
-        }
     }
 
     public long getMaxTimestamp(boolean willrebuild) {
