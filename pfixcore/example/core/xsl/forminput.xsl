@@ -2,8 +2,7 @@
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-		xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
-                xmlns:cus="http://www.schlund.de/pustefix/customize">
+		xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
   
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
   <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"/>
@@ -29,27 +28,6 @@
         <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checkactive&gt;]</b>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-      <description>If the prefix attribute is given, it
-        checks if the corresponding Handler is active and if this is
-        true, the content will be displayed. If the
-        page attribute is given, it checks if the named page is
-        visible instead. If this is true, the content will be displayed.</description>
-      <param required="1">
-        <name>prefix</name>
-        <values>
-          <string/>
-        </values>
-        <description>The prefix of the observed Handler, according to the configuration file</description>
-      </param>
-      <param required="0">
-        <name>page</name>
-        <values>
-          <string/>
-        </values>
-        <description>The name of the observed page</description>
-      </param>
-    </cus:documentation>  
   </xsl:template>
 
   <xsl:template match="pfx:checknotactive">
@@ -73,27 +51,6 @@
         <b>[Error: You need to specify exactly one of the attributes "prefix" or "page" for &lt;pfx:checknotactive&gt;]</b>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-      <description>If the prefix attribute is given, it
-        checks if the corresponding Handler is NOT active and if this is
-        true, the content will be displayed. If the
-        page attribute is given, it checks if the named page is
-        NOT visible instead. If this is true, the content will be displayed.</description>
-      <param required="1">
-        <name>prefix</name>
-        <values>
-          <string/>
-        </values>
-        <description>The prefix of the observed Handler, according to the configuration file</description>
-      </param>
-      <param required="0">
-        <name>page</name>
-        <values>
-          <string/>
-        </values>
-        <description>The name of the observed page</description>
-      </param>
-    </cus:documentation>  
   </xsl:template> 
 
   <xsl:template match="pfx:checkmessage">
@@ -268,38 +225,6 @@
       </ixsl:for-each>
       <xsl:apply-templates/>
     </form>
-    <cus:documentation>
-      <description>Similar to the html tag &lt;form&gt;
-        action/method are not required. You'll have to put it around all
-        fields that belong to a formular.
-      </description>
-      <param required="0">
-        <name>send-to-page</name>
-        <values><string/></values>
-        <description>
-          Name of the page that should handle the submitted form values.
-          Default is to send the request to the current page.
-        </description>
-      </param>
-      <param required="0">
-        <name>send-to-pageflow</name>
-        <values><string/></values>
-        <description>
-          Name of the page flow that should be selected when the request is submitted.
-          Default is to not select a special page flow.
-        </description>
-      </param>
-      <param required="0">
-        <name>type</name>
-        <values>
-          <oneof>
-            <option default="true"></option>
-            <option>auth</option>
-          </oneof>
-        </values>
-        <description>Setting type to 'auth' will submit the values to authentification handlers</description>
-      </param>
-    </cus:documentation>  
   </xsl:template>
 
   <xsl:template name="generate_coded_input">
@@ -378,67 +303,6 @@
       <xsl:apply-templates/>
     </input>
     <xsl:call-template name="generate_coded_input"/>
-    <cus:documentation>
-      <description>Use an image as a submit button. If you want to change the size, set the params width/height
-      </description>
-      <param required="1">
-        <name>src</name>
-        <values><path/></values>
-        <description>URI of image to embed</description>
-      </param>
-      <param required="1">
-        <name>alt</name>
-        <values><string/></values>
-        <description>Alternate text for user agents that cannot display images</description>
-      </param>
-      <param required="0">
-        <name>exclude-attributes</name>
-        <values><string/></values>
-        <description>String of attribute-names _not_ to copy from context-node</description>
-      </param>
-      <param required="0">
-        <name>jumptopage</name>
-        <values><string/></values>
-        <description>The page to jump to after the state returns control to context. This is a way to select the next page instead of
-        having the context decide it by running a pageflow.
-        </description>
-      </param>
-      <param required="0">
-        <name>jumptopageflow</name>
-        <values><string/></values>
-        <description>
-          The pageflow to use when for the next page as selected by the jumptopage attribute. If jumptopage is not given, this attribute has no effect. 
-        </description>
-      </param>
-      <param required="0">
-        <name>forcestop</name>
-        <values><oneof><option>true</option><option>step</option><option>false</option></oneof></values>
-        <description>
-          <ul>
-            <li>"true": No pageflow will be started, the application will stay on the target page unconditionally.</li>
-            <li>"false" or attribute not given: The application will decide if a pageflow process is to be started or not.
-            This depends on the State or ContextRessource or other classes that may prohibit the pageflow run. Normally you will leave it that way.</li>
-          </ul>
-        </description>
-      </param>
-      <children>
-        <name>pfx:argument</name>
-      </children>
-      <children>
-        <name>pfx:command</name>
-      </children>
-      <children>
-        <name>pfx:anchor</name>
-      </children>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="image" src="/sample1/img/test.gif" /></xmlcode>
-        </input>
-        <output>
-          <xmlcode><input border="0" src="/sample1/img/test.gif" type="image" width="120" height="82"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='submit']">
@@ -458,53 +322,6 @@
       </ixsl:attribute>
     </input>
     <xsl:call-template name="generate_coded_input"/>
-    <cus:documentation>
-      <description>Creates a submit button. A submit button sends all the fields in the corresponding form.</description>
-      <param required="0">
-        <name>jumptopage</name>
-        <values><string/></values>
-        <description>The page to jump to after the state returns control to context. This is a way to select the next page instead of
-        having the context decide it by running a pageflow.
-        </description>
-      </param>
-      <param required="0">
-        <name>jumptopageflow</name>
-        <values><string/></values>
-        <description>
-          The pageflow to use when for the next page as selected by the jumptopage attribute. If jumptopage is not given, this attribute has no effect. 
-        </description>
-      </param>
-      <param required="0">
-        <name>forcestop</name>
-        <values><oneof><option>true</option><option>step</option><option>false</option></oneof></values>
-        <description>
-          <ul>
-            <li>"true": No pageflow will be started, the application will stay on the target page unconditionally.</li>
-            <li>"false" or attribute not given: The application will decide if a pageflow process is to be started or not.
-            This depends on the State or ContextRessource or other classes that may prohibit the pageflow run.
-            Normally you will leave it that way.</li>
-          </ul>
-        </description>
-      </param>
-      <children>
-        <name>pfx:argument</name>
-        <description>Use pfx:argument, if you need Parameters in your href(see pfx:argument)</description>        
-      </children>
-      <children>
-        <name>pfx:command</name>
-      </children>
-      <children>
-        <name>pfx:anchor</name>
-      </children>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="submit" value="Go!"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><input type="submit" value="Go!"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:value"/>
@@ -537,18 +354,6 @@
       </ixsl:attribute>
       <xsl:apply-templates/>
     </input>
-    <cus:documentation>
-      <param required="0">
-        <name>position</name>
-        <values><int default="1"/></values>
-        <description>This is needed for parameters that are defined as multiple, i.e. that one named
-        parameter can occur multiple times. The position attribute let's you specifiy which
-        occurance of a value in the output tree should be used to prefill the input field. Default
-        is to always use the first occurance, other values are integer values to specify the n-th
-        ocurance in the output tree.</description>
-      </param>
-      <description>Creates a html hidden field.</description>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='select']">
@@ -576,42 +381,6 @@
       <ixsl:attribute name="class"><ixsl:value-of select="string($pfx_class)"/></ixsl:attribute>
       <xsl:apply-templates/>
     </select>
-    <cus:documentation>
-      <description>creates a select box form element. The options are given via a list of
-      &lt;pfx:option&gt; or &lt;pfx:dynoptions&gt; child elements.</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the box</description>
-      </param>
-      <children>
-        <name>pfx:option</name>
-        <description>option tag</description>        
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:xinp type="select" name="foo">
-              <pfx:option>baz</pfx:option>
-              <pfx:option>baz_neu</pfx:option>
-              <pfx:dynoptions optionspath="/formresult/foo"/>
-              <pfx:option>baz_old</pfx:option>    
-            </pfx:xinp>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <select name="foo">
-              <option>baz</option>
-              <option>baz_neu</option>
-              <option>BAR</option>
-              <option>BAZ</option>
-              <option>baz_old</option>
-            </select>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>  
   </xsl:template>
 
   <xsl:template match="pfx:option">
@@ -634,22 +403,6 @@
       </ixsl:if>
       <xsl:apply-templates select="./node()"/>
     </option>
-    <cus:documentation>
-      <description>Creates an "option" formelement.</description>
-      <param required="0">
-        <name>value</name>
-        <values><string/></values>
-        <description>value attribute of the option tag.</description>
-      </param>
-      <param required="0">
-        <name>default</name>
-        <values>
-          <oneof><option>true</option><option>false</option></oneof>
-        </values>
-        <description>if set to true, the option is selected by default if no
-        other value is given by the business logic</description>
-      </param>
-    </cus:documentation>  
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='radio']">
@@ -689,41 +442,6 @@
       </ixsl:if>
       <xsl:apply-templates/>
     </input>
-    <cus:documentation>
-      <description>Creates a html radio button. Every radio button in a group has the same name.
-        The attribute "value" should be different for each radio button.
-        All attributes except "type" and "default" will be copied to the resulting html element.
-      </description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the radiobutton</description>
-      </param>
-      <children>
-        <name>pfx:value</name>
-        <description>the value of the radio button (instead of using the value attribute)</description>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:forminput>
-              <pfx:xinp type="radio" name="feldname" value="wert1">My Text to 1</pfx:xinp><br/>
-              <pfx:xinp type="radio" name="feldname" value="wert2">Title  2</pfx:xinp><br/>
-              <pfx:xinp type="radio" name="feldname" value="wert3">Something Point 3</pfx:xinp><br/>
-            </pfx:forminput>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <form method="post" action="baz">
-              <input type="radio" name="feldname" value="wert1"/>My Text to 1<br/>
-              <input type="radio" name="feldname" value="wert2"/>Title  2<br/>
-              <input type="radio" name="feldname" value="wert3"/>Something Point 3<br/>
-            </form>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>  
   </xsl:template>
 
   <xsl:template match="pfx:xinp[@type='check']">
@@ -765,31 +483,6 @@
       </ixsl:if>
       <xsl:apply-templates/>
     </input>
-    <cus:documentation>
-      <description>
-        Creates a check box form element. All attributes given except "type" and "default" will be copied to the final html tag.
-      </description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>Name of the check box</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values>
-          <oneof><option>check</option></oneof>
-        </values>
-        <description></description>
-      </param>
-      <param required="0">
-        <name>default</name>
-        <values>
-          <oneof><option>true</option><option>false</option></oneof>
-        </values>
-        <description>if set to true, the checkbox is checked by default if no
-        other value is mandated by the business logic</description>
-      </param>
-    </cus:documentation>    
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='text']">
@@ -838,47 +531,6 @@
       </ixsl:attribute>
       <xsl:apply-templates/>
     </input>
-    <cus:documentation>
-      <description>
-      Creates a text input field. All attributes given will be copied to the final html tag.</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the input-field</description>
-      </param>
-      <param required="0">
-        <name>maxlength</name>
-        <values><int default="200"/></values>
-        <description>maxlength of the inputfield (chars)</description>
-      </param>
-      <param required="0">
-        <name>size</name>
-        <values><int default="40"/></values>
-        <description>size of the inputfield</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>text</option></oneof></values>
-        <description></description>
-      </param>
-      <param required="0">
-        <name>default</name>
-        <values>
-          <string/>
-        </values>
-        <description>if set to any value, the text field is set this value by default if no
-        other value is given by the business logic</description>
-      </param>
-      <param required="0">
-        <name>position</name>
-        <values><int default="1"/></values>
-        <description>This is needed for parameters that are defined as multiple, i.e. that one named
-        parameter can occur multiple times. The position attribute let's you specifiy which
-        occurance of a value in the output tree should be used to prefill the input field. Default
-        is to always use the first occurance, other values are integer values to specify the n-th
-        ocurance in the output tree.</description>
-      </param>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='password']">
@@ -908,29 +560,6 @@
       </ixsl:attribute>
       <xsl:apply-templates/>
     </input>
-    <cus:documentation>
-      <description>Creates a password input field. The text in this field will be displayed like this: ********</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>name of the password input field</description>
-      </param>
-      <param required="0">
-        <name>maxlength</name>
-        <values><int default="200"/></values>
-        <description>maxlength of the inputfield (chars)</description>
-      </param>
-      <param required="0">
-        <name>size</name>
-        <values><int default="40"/></values>
-        <description>size of the inputfield</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>password</option></oneof></values>
-        <description></description>
-      </param>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:xinp[@type='area']">
@@ -966,47 +595,6 @@
         <ixsl:otherwise><ixsl:value-of select="/formresult/formvalues/param[@name=string($pfx_name)][position() = {$pos}]"/></ixsl:otherwise>
       </ixsl:choose>
     </textarea>
-    <cus:documentation>
-      <description>Creates a html-textarea. All attributes will be copied to the resulting
-      &lt;textarea&gt; html tag</description>
-      <param required="1">
-        <name>name</name>
-        <values><string/></values>
-        <description>Name of the textarea</description>
-      </param>
-      <param required="1">
-        <name>type</name>
-        <values><oneof><option>area</option></oneof></values>
-        <description></description>
-      </param>
-      <param required="0">
-        <name>cols</name>
-        <values><int default="38"/></values>
-        <description>number of cols</description>
-      </param>
-      <param required="0">
-        <name>rows</name>
-        <values><int default="20"/></values>
-        <description>number of rows</description>
-      </param>
-      <param required="0">
-        <name>position</name>
-        <values><int default="1"/></values>
-        <description>This is needed for parameters that are defined as multiple, i.e. that one named
-        parameter can occur multiple times. The position attribute let's you specifiy which
-        occurance of a value in the output tree should be used to prefill the input field. Default
-        is to always use the first occurance, other values are integer values to specify the n-th
-        ocurance in the output tree.</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:xinp type="area" name="foo"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><textarea cols="38" rows="20" name="foo"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>   
   </xsl:template>
 
 
@@ -1111,9 +699,6 @@
         </xsl:if>
       </ixsl:choose>
     </ixsl:if>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
 
@@ -1140,25 +725,16 @@
         <ixsl:apply-templates select="./node()"/>
       </option>
     </ixsl:for-each>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xoutp">
     <ixsl:value-of select="/formresult/formvalues/param[@name='{@name}']"/>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>  
   </xsl:template>
   
   <!-- DEPRECATED -->
   <xsl:template match="pfx:xoutperror">
     <ixsl:apply-templates select="/formresult/formerrors/error[@name='{@name}']"/>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <!-- DEPRECATED -->
@@ -1184,9 +760,6 @@
 	<xsl:apply-templates select="./node()"/>
       </option>
     </xsl:for-each>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
   
   <!-- DEPRECATED! Please, don't ever use this -->
@@ -1222,26 +795,14 @@
 	<xsl:with-param name="name"><xsl:value-of select="$name"/></xsl:with-param>
       </xsl:call-template>
     </select>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <!-- DEPRECATED -->
   <xsl:template match="pfx:paramref">
-    <cus:documentation>
-      <description>DEPRECATED, DON'T USE IT</description>
-    </cus:documentation>
   </xsl:template>
   
   <!-- DEPRECATED -->
   <xsl:template match="pfx:pagemessages">
-    <cus:documentation>
-      <responsible>reitzammer</responsible>
-      <description>
-        displays pagemessages, basically statuscodes that are not bound to a specific form field,
-      </description>
-    </cus:documentation>
     <ixsl:if test="/formresult/pagemessages/message">
       <table id="core_pagemessages_box" border="0" cellpadding="0" cellspacing="0">
         <ixsl:for-each select="/formresult/pagemessages/message">
@@ -1310,9 +871,6 @@
 	</xsl:choose>
       </table>
     </ixsl:if>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation> 
   </xsl:template>
 
   <!-- DEPRECATED -->
@@ -1321,9 +879,6 @@
     <ixsl:if test="/formresult/iwrappergroups/group[@current = 'true' and @name = '{$group}']">
       <xsl:apply-templates/>
     </ixsl:if>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation> 
   </xsl:template> 
   
   <!-- DEPRECATED -->
@@ -1331,9 +886,6 @@
     <ixsl:if test="/formresult/iwrappergroups[not(@groupdisplay = 'true')]">
       <xsl:apply-templates/>
     </ixsl:if>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation> 
   </xsl:template> 
 
   

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <xsl:stylesheet version="1.1"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:cus="http://www.schlund.de/pustefix/customize">
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   
 <!--  this stylesheet defines the default action: copy through unchanged. -->
 <!--  The funny variable defined here (__env) is a very dirty hack to -->

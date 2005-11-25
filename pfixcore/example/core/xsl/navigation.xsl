@@ -2,24 +2,18 @@
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
-                xmlns:cus="http://www.schlund.de/pustefix/customize">
+                xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
   <xsl:namespace-alias stylesheet-prefix="ixsl" result-prefix="xsl"/>
 
   <!-- needed for the template below to work... ughh, bloody hack. -->
-  <xsl:template match="pfx:invisible"></xsl:template>
-  <xsl:template match="pfx:active"></xsl:template>
-  <xsl:template match="pfx:normal"></xsl:template>
-  <xsl:template match="pfx:argument"></xsl:template>
-  <xsl:template match="pfx:command"></xsl:template>
-  <xsl:template match="pfx:anchor"></xsl:template>
-  <xsl:template match="pfx:host">
-    <cus:documentation>
-
-      <description>Always a child of &lt;pfx:elink&gt;. See there for usage information.</description>
-    </cus:documentation>
-  </xsl:template>
+  <xsl:template match="pfx:invisible"/>
+  <xsl:template match="pfx:active"/>
+  <xsl:template match="pfx:normal"/>
+  <xsl:template match="pfx:argument"/>
+  <xsl:template match="pfx:command"/>
+  <xsl:template match="pfx:anchor"/>
+  <xsl:template match="pfx:host"/>
 
   <xsl:template match="pfx:visited">
     <xsl:param name="thepagename"><xsl:value-of select="$page"/></xsl:param>
@@ -38,18 +32,6 @@
     <ixsl:if test="{$page_path}/@visited = '1'">
       <xsl:apply-templates/>
     </ixsl:if>
-    <cus:documentation>
-
-      <description>The content of the tag will be used if the reference page has already been visited</description>
-      <param required="0">
-        <name>page</name>
-        <values><string/></values>
-        <description>Use the page attribute to reference the page to check for the visited status.
-        If this is empty, the value of a supplied xsl:param "pagename" is used or the current pagename if no
-        parameter is supplied.
-        </description>
-      </param>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:unvisited">
@@ -69,17 +51,6 @@
     <ixsl:if test="not({$page_path}/@visited = '1')">
       <xsl:apply-templates/>
     </ixsl:if>
-    <cus:documentation>
-      <description>The content of the tag will be used if the reference page has not already been visited</description>
-      <param required="0">
-        <name>page</name>
-        <values><string/></values>
-        <description>Use the page attribute to reference the page to check for the visited status.
-        If this is empty, the value of a supplied xsl:param "thepagename" is used or the current pagename if no
-        parameter is supplied.
-        </description>
-      </param>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:button">
@@ -159,212 +130,12 @@
       <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
-    <cus:documentation>
-
-      <description>You can use this tag as a switch (for sending formulars) or as a link. The content of this tag will be the link content</description>
-      <param required="0">
-        <name>activeclass</name>
-        <values><string default="core_button_active"/></values>
-        <description>css class in the active mode (that means, when the page the button points to is the current page)</description>
-      </param>
-      <param required="0">
-        <name>normalclass</name>
-        <values><string default="core_button_normal"/></values>
-        <description>css class in the normal mode (that means, it is possible to click the link)</description>
-      </param>
-      <param required="0">
-        <name>invisibleclass</name>
-        <values><string default="core_button_inivisble"/></values>
-        <description>css class in the invisible mode (whenever the link is not clickable, e.g. when the target page is inaccessible)</description>
-      </param>
-      <param required="0">
-        <name>visitedclass</name>
-        <values><string default="core_button_inivisble"/></values>
-        <description>css class in the invisible mode (whenever the link is not clickable, e.g. when the target page is inaccessible)</description>
-      </param>
-      <param required="0">
-        <name>page</name>
-        <values><string/></values>
-        <description>Use the page attribute to jump to another page as
-        defined in the depend.xml.in file. If this is empty, the current page name is used.
-        Note that you need to give the mode=force attribute in this case if you want the button to be clickable.
-        </description>
-      </param>
-      <param required="0">
-        <name>pageflow</name>
-        <values><string/></values>
-        <description>
-          This attribute selects the page flow to use when the request
-          is handled. Default is to not explicitely select a page
-          flow.
-        </description>
-      </param>
-      <param required="0">
-        <name>jumptopage</name>
-        <values><string/></values>
-        <description>The page to jump to after the state returns control to context. This is a way to select the next page instead of
-        having the context decide it by running a pageflow.
-        </description>
-      </param>
-      <param required="0">
-        <name>jumptopageflow</name>
-        <values><string/></values>
-        <description>
-          The pageflow to use when for the next page as selected by the jumptopage attribute. If jumptopage is not given, this attribute has no effect. 
-        </description>
-      </param>
-      <param required="0">
-        <name>mode</name>
-        <values><oneof><option>desc</option><option>force</option></oneof></values>
-        <description>
-          <ul>
-            <li>mode="force": The button is always displayed as a link, and the normalclass css is used.</li>
-            <li>mode="desc" : The button is considered to be in active mode (aka: NOT clickable) not only when the page attribute points to the
-            current page, but also when a subpage of the target page is the current page. The activeclass css is used in this case.</li>
-          </ul>
-        </description>
-      </param>
-      <param required="0">
-        <name>forcestop</name>
-        <values><oneof><option>true</option><option>false</option></oneof></values>
-        <description>
-          <ul>
-            <li>"true": No pageflow will be started, the application will stay on the target page unconditionally.</li>
-            <li>"false" or attribute not given: The application will decide if a pageflow process is to be started or not.
-            This depends on the State or ContextRessource or other classes that may prohibit the pageflow run. Normally you will leave it that way.</li>
-          </ul>
-        </description>
-      </param>
-      <param required="0">
-        <name>target</name>
-        <values><string default="parent"/></values>
-        <description>The target in the frameset</description>
-      </param>
-      <param required="0">
-        <name>frame</name>
-        <values><string/></values>
-        <description>The name of
-        the target frame that should be loaded as defined in the
-        structural xml file for the page. Note that by using @target
-        and @frame you can load a certain frame definition into a
-        different target frame.</description>
-      </param>
-      <param required="0">
-        <name>popup</name>
-        <values><html/></values>
-        <values><oneof><option>true</option><option>false</option></oneof></values>
-        <description>
-          Open link in new window (JavaScript).
-        </description>
-      </param>
-      <param required="0">
-        <name>popupwidth</name>
-        <values><html/></values>
-        <description>Width of the popup window</description>
-      </param>
-      <param required="0">
-        <name>popupheight</name>
-        <values><html/></values>
-        <description>Height of the popup window</description>
-      </param>
-      <param required="0">
-        <name>popupfeatures</name>
-        <values><string/></values>
-        <description>
-          <p>
-            JavaScript <code>window.open()</code>: window-features parameter;
-          </p>
-          Overrides <code>@popupwidth</code> and <code>@popupheight</code>
-        </description>
-      </param>
-      <param required="0">
-        <name>popupid</name>
-        <values><string/></values>
-        <description>
-          The id of the popup window: <strong>deprecated</strong> use <code>@target</code> instead
-        </description>
-      </param>
-      <param required="0">
-        <name>nodata</name>
-        <values><string/></values>
-        <description>This attribute must be given to inhibit the submission of the __submittingdata=1 parameter. Normally the system
-          automatically adds this parameter whenever you use &lt;pfx:argument&gt; tags in the button. Occasionally this is not what you want.
-          Use this attribut to suppress this behaviour.</description>
-      </param>
-      <param required="0">
-        <name>accesskey</name>
-        <values><string/></values>
-        <description>This attribute sets an accesskey in the generated link. Note that you can add a default attribute "accesskey"
-        in the navigation structure for the page.</description>
-      </param>
-      <children>
-        <name>pfx:active</name>
-        <description>content of the link in the active mode (not clickable)</description>
-      </children>
-      <children>
-        <name>pfx:normal</name>
-        <description>content of the link in the normal mode (clickable)</description>
-      </children>
-      <children>
-        <name>pfx:invisible</name>
-        <description>content of the link in the invisible mode (not clickable, because the target page is not accessible)</description>
-      </children>
-      <children>
-        <name>pfx:argument</name>
-        <description>Use &lt;pfx:argument&gt;, if you need to submit parameters to the pustefix system.
-          <xmlcode>
-            <pfx:button page="foo">
-              <pfx:argument name="pic.Toggle">true</pfx:argument>
-              <pfx:argument name="foo">baz</pfx:argument>
-            </pfx:button>
-          </xmlcode>
-        </description>
-      </children>
-      <children>
-        <name>pfx:command</name>
-        <description>Use &lt;pfx:command&gt; to submit special commands to the pustefix system.
-          In almost all cases currently this will be the SELWRP command to select a subset of interface wrappers.
-          <xmlcode>
-            <pfx:button page="foo">
-              <pfx:command name="SELWRP">counter</pfx:command>
-            </pfx:button>
-          </xmlcode>
-        </description>
-      </children>
-      <children>
-        <name>pfx:anchor</name>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:button page="documentation" frame="top" activeclass="active" mode="desc">
-              <pfx:argument name="pic.Toggle">true</pfx:argument>
-              <pfx:argument name="foo">baz</pfx:argument>
-              Link
-            </pfx:button>
-          </xmlcode>
-        </input>
-        <output>
-          If the current page is not "documentation" or any subpage of it:
-          <xmlcode>
-            <a target="_parent" class="core_button_normal"
-               href="/documentation;jsessionid=1234567896.foo?__frame=top&amp;__sendingdata=1&amp;pic.Toggle=true&amp;foo=baz">
-              Link
-            </a>
-          </xmlcode>
-          Any other case will result in this:
-          <xmlcode>
-            <span class="active">Link</span>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
 
   <xsl:template match="pfx:url">
-    <xsl:call-template name="pfx:button_impl" >
-      <xsl:with-param name="urlonly" select="'true'" />
+    <xsl:call-template name="pfx:button_impl">
+      <xsl:with-param name="urlonly" select="'true'"/>
       <xsl:with-param name="args" select="./pfx:argument"/>
       <xsl:with-param name="cmds" select="./pfx:command"/>
       <xsl:with-param name="anchors" select="./pfx:anchor"/>
@@ -379,14 +150,7 @@
       <xsl:with-param name="target" select="@target"/>
       <xsl:with-param name="mode" select="@mode"/>
     </xsl:call-template>
-    <cus:documentation>
-
-      <description>You can use this tag to generate a URL for a pfix application. It's basically the same as
-        the &lt;pf:button&gt; tag, but instead of generating a HTML link,
-        this tag generates just the URL. It accepts the same arguments and parameters as the &lt;pfx:button&gt;
-        tag (except those that are senseless in this context, like popup* and *class and mode).
-      </description>
-    </cus:documentation>
+    
   </xsl:template>
 
   <xsl:template name="pfx:button_impl">
@@ -490,7 +254,7 @@
 
     <xsl:choose>
       <xsl:when test="string($urlonly) = 'true'">
-        <xsl:copy-of select="$fulllink" />
+        <xsl:copy-of select="$fulllink"/>
       </xsl:when>
       <xsl:otherwise>
         <ixsl:choose>
@@ -591,9 +355,6 @@
         </ixsl:choose>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-      <description>Called by &lt;pfx:button&gt; and &lt;pfx:jsbutton&gt;</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:elink">
@@ -664,97 +425,6 @@
         <img src="/core/img/error.gif"/><span class="core_xml_errorbox">Error: Need just one of @href or ./pfx:host child node - both were used</span>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-
-      <description>Creates a link to an external page. If you want
-      to create a dynamic link, leave href blank and
-      use the child:pfx:host
-      </description>
-      <param required="1">
-        <name>href</name>
-        <values><path/></values>
-        <description>protocol and uri of the external link</description>
-      </param>
-      <param required="0">
-        <name>target</name>
-        <values><oneof><option>_popup</option><option>_blank</option><option>_top</option><option>_parent</option></oneof></values>
-        <description>_popup/_blank opens the new page in a popup window. You can also use other targets</description>
-      </param>
-      <param required="0">
-        <name>popup</name>
-        <values><html/></values>
-        <values><oneof><option>true</option><option>false</option></oneof></values>
-        <description>
-          Open link in new window (JavaScript).
-        </description>
-      </param>
-      <param required="0">
-        <name>popupwidth</name>
-        <values><html/></values>
-        <description>Width of the popup window</description>
-      </param>
-      <param required="0">
-        <name>popupheight</name>
-        <values><html/></values>
-        <description>Height of the popup window</description>
-      </param>
-      <param required="0">
-        <name>popupfeatures</name>
-        <values><string/></values>
-        <description>
-          <p>
-            JavaScript <code>window.open()</code>: window-features parameter;
-          </p>
-          Overrides <code>@popupwidth</code> and <code>@popupheight</code>
-        </description>
-      </param>
-      <param required="0">
-        <name>popupid</name>
-        <values><string/></values>
-        <description>
-          name of the popup-window: <strong>deprecated</strong> use <code>@target</code> instead
-        </description>
-      </param>
-      <children>
-        <name>pfx:argument</name>
-        <description>Use pfx:argument, if you need Parameters in your href
-        <xmlcode>
-          <pfx:elink href="foo">
-            <pfx:argument name="pic.Toggle">true</pfx:argument>
-            <pfx:argument name="foo">baz</pfx:argument>
-          </pfx:elink>
-        </xmlcode>
-        </description>
-      </children>
-      <children>
-        <name>pfx:host</name>
-        <description>Always a child of &lt;pfx:elink&gt;. Use &lt;pfx:host&gt;, if you want to
-        create a link to a server whose name can only be computed dynamically at runtime.
-        <xmlcode>
-          <pfx:elink href="http://www.yahoo.de">
-            <pfx:host>&lt;ixsl:value-of select="/formresult/dynhost/text()"/&gt;</pfx:host>
-            Dynamic Link
-          </pfx:elink>
-        </xmlcode>
-        </description>
-      </children>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:elink href="http://www.gimp.org" target="_popup">
-              <pfx:argument name="foo">&lt;ixsl:value-of select="/formresult/foo/@id"/&gt;</pfx:argument>
-              Goto Gimp!
-            </pfx:elink>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <a href="/xml/deref?link=http://www.gimp.org%3ffoo%3dFOOBAR" target="_blank"
-               onclick="return !window.open(this.href,'','toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,screenX=100,screenY=100');">Goto Gimp!</a>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
 
@@ -847,9 +517,6 @@
       <xsl:with-param name="popupfeatures" select="@popupfeatures"/>
       <xsl:with-param name="popupid" select="@popupid"/>
     </xsl:call-template>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardnavigation">
@@ -861,9 +528,6 @@
         <xsl:apply-templates select="./pfx:group/node()"/>
       </ixsl:otherwise>
     </ixsl:choose>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardprevious">
@@ -904,9 +568,6 @@
         </span>
       </ixsl:otherwise>
     </ixsl:choose>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardnext">
@@ -918,9 +579,6 @@
         <xsl:apply-templates select="./pfx:active/node()"/>
       </ixsl:otherwise>
     </ixsl:choose>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:wizardfinish">
@@ -932,9 +590,6 @@
         <xsl:apply-templates select="./pfx:inactive/node()"/>
       </ixsl:otherwise>
     </ixsl:choose>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
 </xsl:stylesheet>

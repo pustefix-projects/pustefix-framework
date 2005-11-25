@@ -89,7 +89,7 @@
         <xsl:with-param name="ssheets"><xsl:value-of select="normalize-space($stylesheets_to_include)"/></xsl:with-param>
       </xsl:call-template>
 
-      <ixsl:output indent="no" >
+      <ixsl:output indent="no">
         <xsl:if test="not($outputmethod = '')">
           <xsl:attribute name="method"><xsl:value-of select="$outputmethod"/></xsl:attribute>
         </xsl:if>
@@ -207,38 +207,9 @@
 
   <!-- this is needed... it allows to "comment out" blocks without loosing them during the trafo steps -->
   <xsl:template match="pfx:rem">
-   <cus:documentation>
-    <responsible>JTL</responsible>
-    <description>
-      Allows to comment out blocks without loosing them during the transformation steps
-    </description>
-  </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:head">
-  <cus:documentation>
-    <responsible>JTL</responsible>
-      <description>creates the HTML head. The javascript library baselib.js will be included automatically</description>
-      <pfx:head>
-        <title>PFIXCORE Sample</title>
-      </pfx:head>
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:head>
-              <title>PFIXCORE Sample</title>
-            </pfx:head>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode><head>
-              <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-              <script language="JavaScript" src="/core/script/baselib.js" type="text/javascript"></script>
-              <title>PFIXCORE Sample</title></head>
-          </xmlcode>
-        </output>
-      </example>
-    </cus:documentation>  
     <head>
       <script language="JavaScript" src="/core/script/baselib.js" type="text/javascript"/>
       <xsl:apply-templates select="./node()"/>
@@ -246,36 +217,6 @@
   </xsl:template>
   
   <xsl:template match="pfx:script">
-  <cus:documentation>
-    <responsible>JTL</responsible>
-      <description>A script block will be inserted. The script type is JavaScript if no language attribute is given. When using
-      complex JavaScript, you better put a  &lt;[CDATA[-Block around your Script, so that the
-      XML-Document can not be destroyed.
-      </description>
-
-       <example>
-        <input>
-          <xmlcode>
-            <pfx:script>
-              function helloWorld() {
-                 alert('Hello World');
-              }
-        
-            </pfx:script>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <script language="JavaScript">
-              function helloWorld() {
-                 alert('Hello World');
-              }
-            </script>
-          </xmlcode>
-        </output>
-      </example>
-      
-   </cus:documentation>   
     <script>
       <xsl:attribute name="language">JavaScript</xsl:attribute>
       <xsl:copy-of select="@*"/>
@@ -286,60 +227,6 @@
   </xsl:template>
   
   <xsl:template match="pfx:frameset">
-  <cus:documentation>
-    <responsible>JTL</responsible>
-      <description>creates a frameset. Standard value for frameborder=0, framespacing=0, border=0. If you want to change
-        the default settings just add the attributes, as all attributes will be copied to the resulting html framset tag.
-      </description>
-
-      <children>
-        <name>pfx:frame</name>
-        <description>See pfx:frame</description>        
-      </children>
-
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:frameset rows="50,*">
-              <pfx:frame name="top_navi">
-                <html>
-                  <head>
-                    <style type="text/css">
-                      <pfx:include href="core/txt/styles.xml" part="standard"/>
-                      ...
-                    </style>
-                  </head>
-                  <body>
-                    <pfx:include href="sample1/txt/navigation.xml" part="top"/>
-                  </body>
-                </html>
-              </pfx:frame>
-              <pfx:frame name="bottom">
-                <html>
-                  <head>
-                    <style type="text/css">
-                      <pfx:include href="core/txt/styles.xml" part="standard"/>
-                    </style>
-                  </head>
-                  <body>
-                    <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
-                  </body>
-                </html>
-              </pfx:frame>
-            </pfx:frameset>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <frameset frameborder="0" framespacing="0" border="0" rows="50,*">
-              <frame scrolling="auto" marginwidth="1" marginheight="1" name="top_navi" src="/xml/config;sessionid=12345.foo?__frame=top_navi&amp;__reuse=0123"/>
-               <frame scrolling="auto" marginwidth="1" marginheight="1" name="bottom" src="/xml/config;jsessionid=12345F.foo?__frame=bottom&amp;__reuse=0123"/>
-            </frameset>
-          </xmlcode>
-        </output>
-      </example>
-  </cus:documentation>
-
     <frameset frameborder="0" framespacing="0" border="0">
       <xsl:copy-of select="./@*"/>
       <xsl:apply-templates select="./pfx:frameset | ./pfx:frame"/>
@@ -347,61 +234,6 @@
   </xsl:template>
   
   <xsl:template match="pfx:frame">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Always a child of pfx:frameset.
-        Inserts a html frame. Standard value for scrolling=auto,
-        marginwidth=1, marginheight=1. If you want to change the default settings,
-        add the attributes as all attributes will be copied to the resulting frame tag. 
-        Note that you don't use a src attribute with pfx:frame! The frame content will be the child nodes of
-        the pfx:frame tag.
-      </description>
-
-      <example>
-        <input>
-          <xmlcode>
-            <pfx:frameset rows="50,*">
-              <pfx:frame name="top_navi">
-                <html>
-                  <head>
-                    <style type="text/css">
-                      <pfx:include href="core/txt/styles.xml" part="standard"/>
-                      ...
-                    </style>
-                  </head>
-                  <body>
-                    <pfx:include href="sample1/txt/navigation.xml" part="top"/>
-                  </body>
-                </html>
-              </pfx:frame>
-              <pfx:frame name="bottom">
-                <html>
-                  <head>
-                    <style type="text/css">
-                      <pfx:include href="core/txt/styles.xml" part="standard"/>
-                    </style>
-                  </head>
-                  <body>
-                    <pfx:maincontent part="content" path="sample1/txt/pages" prefix="main_"/>
-                  </body>
-                </html>
-              </pfx:frame>
-            </pfx:frameset>
-          </xmlcode>
-        </input>
-        <output>
-          <xmlcode>
-            <frameset frameborder="0" framespacing="0" border="0" rows="50,*">
-               <frame scrolling="auto" marginwidth="1" marginheight="1" name="top_navi" src="/xml/config;sessionid=12345.foo?__frame=top_navi&amp;__reuse=0123"/>
-               <frame scrolling="auto" marginwidth="1" marginheight="1" name="bottom" src="/xml/config;jsessionid=12345F.foo?__frame=bottom&amp;__reuse=0123"/>
-            </frameset>
-          </xmlcode>
-        </output>
-      </example>
-
-      
-    </cus:documentation>
-    
     <frame scrolling="auto" marginwidth="1" marginheight="1">
       <xsl:copy-of select="./@*[name()!='noresize']"/>
       <xsl:if test="@noresize!='false'">
@@ -452,11 +284,4 @@
     </xsl:if>
   </xsl:template>
 
-
 </xsl:stylesheet>
-
-<!-- 
-Local Variables: 
-mode: xsl
-End: 
---> 

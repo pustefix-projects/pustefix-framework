@@ -2,8 +2,7 @@
 <xsl:stylesheet version="1.1"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
-                xmlns:cus="http://www.schlund.de/pustefix/customize">
+                xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias">
 
   <xsl:param name="maincontentpath"/>
   
@@ -49,40 +48,9 @@
       <xsl:with-param name="computed_inc">true</xsl:with-param>
       <xsl:with-param name="noerr" select="$noerror"/>      
     </xsl:call-template>
-   <cus:documentation>
-     <responsible>JTL</responsible>
-     <description></description>
-      <param required="0">
-        <name>path</name>
-        <values><path default="PRODUCTNAME/txt/pages"/></values>
-        <description>Path, where the pages are (e.g. productname/txt/pages)
-          <xmlcode><table><tr><td>Hallo</td></tr></table>
-          </xmlcode>
-        </description>
-      </param>
-      <param required="0">
-        <name>prefix</name>
-        <values><string default="main_"/></values>
-        <description>Value of the Prefix.</description>
-      </param>
-      <param required="0">
-        <name>postfix</name>
-        <values><string default=".xml"/></values>
-        <description>Value of the Postfix.</description>
-      </param>
-      <param required="0">
-        <name>part</name>
-        <values><string/></values>
-        <description>The name of the part to include.</description>
-      </param>      
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:editconsole">
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Generates a toolbar when in development mode</description>
-    </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
       <form target="_top">
         <table cellpadding="0" cellspacing="0" border="0">
@@ -128,10 +96,6 @@
   </xsl:template>
 
   <xsl:template match="pfx:webserviceconsole">
-    <cus:documentation>
-      <responsible>mleidig</responsible>
-      <description>Generates a toolbar for web service tools when in development mode</description>
-    </cus:documentation>
     <xsl:if test="$prohibitEdit = 'no'">
       <span>
         Web service tools:
@@ -155,37 +119,6 @@
     <img src="/core/img/blank.gif" width="1" height="1" border="0" alt="">
       <xsl:copy-of select="@*"/>
     </img>
-    <cus:documentation>
-      <description>Inserts a transparent .gif of the specified width and height (default  width=1 height=1)</description>
-      <param required="0">
-        <name>src</name>
-        <values><path default="/core/img/blank.gif"/></values>
-        <description>The Path to the Image. You can also use another Image <xmlcode width="120"><pfx:blank/></xmlcode></description>
-      </param>
-      <param required="0">
-        <name>width</name>
-        <values><html default="1"/></values>
-        <description>Width of the Image</description>
-      </param>
-      <param required="0">
-        <name>height</name>
-        <values><html default="1"/></values>
-        <description>Height of the image</description>
-      </param>
-      <param required="0">
-        <name>border</name>
-        <values><html default="0"/></values>
-        <description>Border</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:blank width="10"/></xmlcode>
-        </input>
-        <output>
-          <xmlcode><img src="/core/img/blank.gif" width="10" height="1" border="0" alt=""/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
 
@@ -201,17 +134,8 @@
   <!-- further warning. Please don't use them in new code -->
 
   
-  <xsl:template match="pfx:on">
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
-  </xsl:template>
-  
-  <xsl:template match="pfx:off">
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
-  </xsl:template>
+  <xsl:template match="pfx:on"/>
+  <xsl:template match="pfx:off"/>
 
   <xsl:template match="pfx:layer">
     <xsl:param name="elem">
@@ -248,9 +172,6 @@
         layer.moveBottom(<xsl:value-of select="@pos-bottom"/>);
       </xsl:if>
     </script>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:switch">
@@ -292,9 +213,6 @@
       return true;</xsl:attribute>
       <xsl:apply-templates/>
     </a>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:layer_check">
@@ -346,9 +264,6 @@
         </script>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
   
   <xsl:template match="pfx:layer_ref">
@@ -372,9 +287,6 @@
       top.__js_getLayer('<xsl:value-of select="$parent"/>').addChild(top.__js_getLayer('<xsl:value-of select="$child"/>'));
       top.__js_getLayer('<xsl:value-of select="$child"/>').addParent(top.__js_getLayer('<xsl:value-of select="$parent"/>'));
     </script>
-    <cus:documentation>
-      <description>DEPRECATED. DON'T USE IT.</description>
-    </cus:documentation>
   </xsl:template>
     
 </xsl:stylesheet>

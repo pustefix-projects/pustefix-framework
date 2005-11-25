@@ -1,5 +1,7 @@
 2005-11-25  Jens Lautenbacher  <jtl@schlund.de>
 
+	* example/core/xsl/*.xsl.in: removed documentation, moved to *.xsl  
+
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java: new class. This will be the centralized
 	location where we hold all target<->AuxDependency relations (will replace DependencyRefCounter and the
 	reference counting of Targets and TargetGenerators in the AuxDependencies themself)
