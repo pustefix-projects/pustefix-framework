@@ -1,3 +1,9 @@
+2005-11-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (getContent): 
+	Fixed a problem causing include parts consisting of only one line not to be displayed correctly
+	in editor.
+
 2005-11-25  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/core/xsl/*.xsl.in: removed documentation, moved to *.xsl  

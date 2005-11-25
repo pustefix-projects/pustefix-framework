@@ -333,6 +333,13 @@ public abstract class CommonIncludesResourceImpl implements
                 lineBuffer.append(output.charAt(i));
             }
         }
+        // Append remaining chars in line buffer
+        // This is necessary as there may still be some
+        // content in the last line, without a newline
+        // at its end
+        if (lineBuffer.length() != 0) {
+            output2.append(lineBuffer);
+        }
 
         // Get minimum number of leading spaces and remove the same
         // number of leading spaces in each line
