@@ -3,7 +3,6 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:ixsl="http://www.w3.org/1999/XSL/TransformOutputAlias"
                 xmlns:pfx="http://www.schlund.de/pustefix/core"
-                xmlns:cus="http://www.schlund.de/pustefix/customize"
                 xmlns:include="xalan://de.schlund.pfixxml.IncludeDocumentExtension"
                 xmlns:image="xalan://de.schlund.pfixxml.ImageThemedSrc"
                 xmlns:geometry="xalan://de.schlund.pfixxml.ImageGeometry"
@@ -124,24 +123,6 @@
   </xsl:template>
 
   <xsl:template match="pfx:attribute">
-    <cus:documentation>
-      <description>This template allows you to create dynamic attributes
-        for every tag that does an apply-templates of it's body.
-      </description>
-      <param required="1">
-        <name>name</name>
-        <description>The name of the attribute</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><foo><pfx:attribute name="bar"><ixsl:value-of select="/baz"/></pfx:attribute></foo></xmlcode>
-        </input>
-        <output>
-          This results in the following code in the final stylesheet:<br/>
-          <xmlcode><foo><ixsl:attribute name="bar"><ixsl:value-of select="/baz"/></ixsl:attribute></foo></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
     <ixsl:attribute name="{@name}">
       <!-- this stupid construct makes sure that only text is copied into the attribute -->
       <ixsl:variable name="tmp"><xsl:apply-templates/></ixsl:variable>
@@ -175,14 +156,6 @@
     <xsl:message>*** Include not found:
       Document = <xsl:value-of select="$href"/>
       Part = <xsl:value-of select="$part"/> ***</xsl:message>
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>
-        Called by &lt;pfx:include&gt;. This template will
-        be executed if an include part cannot be found. Instead a
-        warning-icon and a warning-message will be displayed
-      </description>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template match="pfx:include" name="pfx:include">
@@ -441,45 +414,6 @@
       <xsl:apply-templates/>
     </img>
     
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>
-        Include an image. All attributes are copied into the resulting img tag.
-      </description>
-      <param required="1">
-        <name>src</name>
-        <values><path/></values>
-        <description>URI of image to embed</description>
-      </param>
-      <param required="1">
-        <name>alt</name>
-        <values><string/></values>
-        <description>Alternate text for user agents that cannot display images</description>
-      </param>
-      <param required="0">
-        <name>exclude-attributes</name>
-        <values><string/></values>
-        <description>String of attribute-names _not_ to copy from context-node</description>
-      </param>
-      <param required="0">
-        <name>width</name>
-        <values><html default="auto"/></values>
-        <description>Width (different from the original width)</description>
-      </param>
-      <param required="0">
-        <name>height</name>
-        <values><html default="auto"/></values>
-        <description>Height (different from the original height)</description>
-      </param>
-      <example>
-        <input>
-          <xmlcode><pfx:image src="/sample1/img/test.gif"/></xmlcode>
-        </input> <output>
-          <xmlcode><img alt="" src="/sample1/img/test.gif"
-          width="120" height="82"/></xmlcode>
-        </output>
-      </example>
-    </cus:documentation>
   </xsl:template>
 
   <xsl:template name="pfx:image_geom_impl">
@@ -533,10 +467,6 @@
         </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
-    <cus:documentation>
-      <responsible>JTL</responsible>
-      <description>Called by pfx:image</description>
-    </cus:documentation>
   </xsl:template>
 
 </xsl:stylesheet>
