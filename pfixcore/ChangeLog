@@ -1,5 +1,9 @@
 2005-11-25  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java: new class. This will be the centralized
+	location where we hold all target<->AuxDependency relations (will replace DependencyRefCounter and the
+	reference counting of Targets and TargetGenerators in the AuxDependencies themself)
+
 	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java: fix email address
 
 	* src/de/schlund/pfixxml/targets/Target.java (Target): make sure the interface itself extends Comparable
