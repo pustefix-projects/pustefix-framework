@@ -27,7 +27,7 @@ import java.util.*;
  *
  * Created: Thu Jul 19 21:48:57 2001
  *
- * @author <a href="mailto: "Jens Lautenbacher</a>
+ * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
  *
  */

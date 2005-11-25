@@ -27,7 +27,7 @@ import java.util.TreeSet;
  *
  */
 
-public interface Target {
+public interface Target extends Comparable {
     TargetType      getType();
     String          getTargetKey();
     TargetGenerator getTargetGenerator();
