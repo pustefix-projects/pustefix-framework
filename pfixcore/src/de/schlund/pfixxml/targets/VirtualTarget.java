@@ -126,7 +126,7 @@ public abstract class VirtualTarget extends TargetImpl {
             return true;
         if (xslup || xmlup)
             return true;
-        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp(false) > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime)
             return true;
         return false;
     }
@@ -191,7 +191,7 @@ public abstract class VirtualTarget extends TargetImpl {
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
         storedException = null;
         // check all the auxilliary sources from auxsource
-        tmpmodtime = getAuxDependencyManager().getMaxTimestamp(true);
+        tmpmodtime = getAuxDependencyManager().getMaxTimestamp();
         // if (tmpmodtime > currmodtime) {
         //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
         // }

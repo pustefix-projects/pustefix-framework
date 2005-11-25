@@ -1,3 +1,38 @@
+2005-11-25  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java: fix email address
+
+	* src/de/schlund/pfixxml/targets/Target.java (Target): make sure the interface itself extends Comparable
+
+2005-11-24  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: more generics work. Some cosmetics like moving 
+	methods around.
+	(AuxDependency::removeTargetDependency): renamed from resetTargetDependency(...)
+
+	(AuxDependency::getChildrenForThemes) 
+	(AuxDependency::removeChildren): changed to no longer create empty entries for a Themes list 
+	when not needed and also remove the whole entry whenever the associated Set becomes empty.
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java (AuxDependencyManager::getMaxTimestamp): changed 
+	to no rely on a recursive check over the "top level" AuxDependencies and their children, but instead
+	use the whole set as given from the DependencyRefCounter to iterate over.
+	Also removed bogus boolean argument - it hasn't been used anyway.
+	(AuxDependencyManager::lookForTimestamp): removed 
+	
+	(AuxDependencyManager::reset): changed according to above
+
+	(AuxDependencyManager::saveAuxdepend): also changed to take into account that the recursive
+	stepping through the direct AuxDeps and their children is not reliable. We make sure that at
+	least ever AuxDep is saved to the .aux file once by first using the recursive loop (to save
+	as much as possible from the parent-child relationship) but drag a HashSet of all
+	AuxDeps (as being given by the DependencyRefCounter) along where we remove every handled
+	AuxDep. After that, the potentially remaining AuxDeps in this set will be used to save them
+	to the .aux file, too.
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (VirtualTarget::needsUpdate)
+	(VirtualTarget::getModTimeMaybeUpdate): changed according to above.
+
 2005-11-23  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/common/conf/editor-spring.xml: Added property "pustefixTargetUpdateService" to "projectfactory"
