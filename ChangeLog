@@ -1,3 +1,19 @@
+2005-11-29  Joerg Haecker <haecker@schlund.de>
+
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfo.java:
+	New interface for classes which want to write (perf)data into HTML-Result
+	and into trailllog.
+	* src/de/schlund/pfixxml/perflogging/DefaultAdditionalTrailInfoImpl.java:
+	New Default implementation of AdditionalTrailInfo which returns empty
+	strings.
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfoFactory.java:
+	New singelton for storing implementors of AdditionalTrailInfo.
+	* src/de/schlund/pfixxml/AbstractXMLServer.java(handleDocument): 
+	get additional data from AdditionalTrailInfo implementors and
+	write them into traillog and html.
+	* [example/skel]/common/conf/pustefix.prop.in: added 
+	DefaultAdditionalTrailInfoImpl via property xmlserver.additionalinfo.implementation.
+
 2005-11-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/core/editor2/txt/util_includes.xml: 
