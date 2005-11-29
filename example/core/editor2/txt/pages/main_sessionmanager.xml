@@ -49,6 +49,12 @@
             <td class="editor_head">
               <b>No. of Req.</b>
             </td>
+            <td class="editor_head">
+              <b>Editor user</b>
+            </td>
+            <td class="editor_head">
+              <b>Selected IncludePart</b>
+            </td>
           </tr>
           <ixsl:for-each select="/formresult/sessioninfo/session">
             <ixsl:variable name="class">
@@ -71,10 +77,30 @@
               <td style="padding:1px;">
                 <ixsl:value-of select="./@requestCount"/>
               </td>
+              <td style="padding:1px;">
+                <ixsl:choose>
+                  <ixsl:when test="./@username">
+                    <ixsl:value-of select="./@username"/>
+                  </ixsl:when>
+                  <ixsl:otherwise>
+                    <i>not logged in</i>
+                  </ixsl:otherwise>
+                </ixsl:choose>
+              </td>
+              <td style="padding:1px;">
+                <ixsl:choose>
+                  <ixsl:when test="./@incpart">
+                    <ixsl:value-of select="./@incpart"/>
+                  </ixsl:when>
+                  <ixsl:otherwise>
+                    <i>none</i>
+                  </ixsl:otherwise>
+                </ixsl:choose>
+              </td>
             </tr>
             <tr style="padding:0px;">
               <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
-              <td colspan="4" style="padding:1px;" class="editor_small">
+              <td colspan="6" style="padding:1px;" class="editor_small">
                 <ixsl:for-each select="./step">
                   <ixsl:if test="not(position() = 1)"> -> </ixsl:if>
                   <ixsl:value-of select="@stylesheet"/>

@@ -180,6 +180,26 @@
               </tr>
             </pfx:error>
           </pfx:checkfield>
+          <ixsl:if test="./currentinclude/concurrentedits/user">
+            <tr>
+              <td colspan="2">
+                <table class="editor_box" width="100%">
+                  <tr>
+                    <td>
+                <span class="editor_main_emph">WARNING:</span>
+                The following users are editing this part at the moment:
+                <ixsl:for-each select="./currentinclude/concurrentedits/user">
+                  <i>
+                    <ixsl:value-of select="@username"/>
+                    <ixsl:if test="following-sibling::user">, </ixsl:if>
+                  </i>
+                </ixsl:for-each>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </ixsl:if>
           <tr>
             <td colspan="2" align="right">
               <div id="wfxtb01" style="border:1px solid black"></div>

@@ -25,6 +25,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.SecurityManagerService;
 import de.schlund.pfixcore.editor2.core.spring.UserPasswordAuthenticationService;
 import de.schlund.pfixcore.editor2.core.vo.EditorUser;
+import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
@@ -40,6 +41,10 @@ public class SessionResourceImpl implements SessionResource {
 
     private SecurityManagerService secman;
 
+    private Context context;
+    
+    private boolean inIncludeEditView = false;
+
     public SessionResourceImpl() {
         this.upas = SpringBeanLocator.getUserPasswordAuthenticationService();
         this.secman = SpringBeanLocator.getSecurityManagerService();
@@ -51,19 +56,34 @@ public class SessionResourceImpl implements SessionResource {
             return false;
         }
         this.secman.setPrincipal(user);
+        
+        // Register context with ContextStore
+        ContextStore.getInstance().registerContext(this.context, username);
+        
         return true;
     }
 
     public void logout() {
         secman.setPrincipal(null);
+        
+        // Unregister context
+        ContextStore.getInstance().unregisterContext(this.context);
     }
 
     public boolean isLoggedIn() {
         return (secman.getPrincipal() != null);
     }
+    
+    public void setInIncludeEditView(boolean flag) {
+        this.inIncludeEditView = flag;
+    }
+    
+    public boolean isInIncludeEditView() {
+        return this.inIncludeEditView;
+    }
 
     public void init(Context context) throws Exception {
-        // Do nothing
+        this.context = context;
     }
 
     public void insertStatus(ResultDocument resdoc, Element elem)
