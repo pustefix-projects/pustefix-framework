@@ -42,6 +42,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorIOException;
 import de.schlund.pfixcore.editor2.core.exception.EditorIncludeHasChangedException;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
+import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.DiffUtil;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
@@ -197,6 +198,30 @@ public abstract class CommonIncludesResourceImpl implements
                         "content");
                 contentNode.appendChild(contentNode.getOwnerDocument()
                         .importNode(content, true));
+            }
+
+            // Render other users editing this include part at the same time
+            Element concurrentEditsNode = resdoc.createSubNode(currentInclude,
+                    "concurrentedits");
+            Map<Context, String> contextmap = ContextStore.getInstance()
+                    .getContextMap();
+            for (Iterator i = contextmap.keySet().iterator(); i.hasNext();) {
+                Context foreignCtx = (Context) i.next();
+                if (foreignCtx != this.context
+                        && EditorResourceLocator.getSessionResource(foreignCtx)
+                                .isInIncludeEditView()) {
+                    IncludePartThemeVariant otherSelectedInclude = EditorResourceLocator
+                            .getIncludesResource(foreignCtx)
+                            .getSelectedIncludePart();
+                    if (otherSelectedInclude != null
+                            && otherSelectedInclude
+                                    .equals(this.selectedIncludePart)) {
+                        Element usernameNode = resdoc.createSubNode(
+                                concurrentEditsNode, "user");
+                        usernameNode.setAttribute("username", contextmap
+                                .get(foreignCtx));
+                    }
+                }
             }
         }
     }

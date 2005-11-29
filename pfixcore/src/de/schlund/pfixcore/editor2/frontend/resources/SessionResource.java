@@ -67,4 +67,19 @@ public interface SessionResource extends ContextResource {
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
     boolean setUserLoginsAllowed(boolean flag);
+
+    /**
+     * Returns the flag indicating wheter the user is currently editing some
+     * include part.
+     * 
+     * @return flag indicating whether user is in edit mode
+     */
+    boolean isInIncludeEditView();
+
+    /**
+     * Sets the flag indicating that the user is editing some include part
+     * 
+     * @param flag when <code>true</code>, indicates user in editing some include
+     */
+    void setInIncludeEditView(boolean flag);
 }

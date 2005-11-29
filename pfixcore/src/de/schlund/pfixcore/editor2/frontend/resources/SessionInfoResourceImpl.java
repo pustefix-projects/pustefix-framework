@@ -23,11 +23,16 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
+import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
+import de.schlund.pfixxml.ServletManager;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
 import de.schlund.pfixxml.serverutil.SessionInfoStruct;
 
@@ -42,12 +47,40 @@ public class SessionInfoResourceImpl implements SessionInfoResource {
         SessionAdmin sessadmin = SessionAdmin.getInstance();
         DateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        Map<Context, String> contextmap = ContextStore.getInstance()
+                .getContextMap();
+
         for (Iterator i = sessadmin.getAllSessionIds().iterator(); i.hasNext();) {
             String sessId = (String) i.next();
             try {
                 SessionInfoStruct info = sessadmin.getInfo(sessId);
                 if (info != null) {
                     Element sessionNode = resdoc.createSubNode(elem, "session");
+                    String visitId = (String) info.getSession().getAttribute(
+                            ServletManager.VISIT_ID);
+
+                    // This is very dirty, but there is no other way to do
+                    // this task: We iterate through all known contexts and
+                    // look if one of them has the same visit id as the
+                    // session
+                    for (Iterator j = contextmap.keySet().iterator(); j
+                            .hasNext();) {
+                        Context foreignctx = (Context) j.next();
+                        if (foreignctx.getVisitId().equals(visitId)) {
+                            String username = contextmap.get(foreignctx);
+                            sessionNode.setAttribute("username", username);
+                            if (EditorResourceLocator.getSessionResource(
+                                    foreignctx).isInIncludeEditView()) {
+                                IncludePartThemeVariant incPart = EditorResourceLocator
+                                        .getIncludesResource(foreignctx)
+                                        .getSelectedIncludePart();
+                                if (incPart != null) {
+                                    sessionNode.setAttribute("incpart", incPart
+                                            .toString());
+                                }
+                            }
+                        }
+                    }
                     sessionNode.setAttribute("id", info.getSessionIdURI());
                     sessionNode.setAttribute("created", dateformat
                             .format(new Date(info.getData().getCreation())));

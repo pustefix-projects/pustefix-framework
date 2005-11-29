@@ -220,12 +220,15 @@
     <prop name="context.startinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor</prop>
     <!-- This ContextInterceptor has to be called AFTER all other interceptors -->
     <prop name="context.endinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor</prop>
+    <!-- ContextInterceptor being used to reset edit state flag -->
+    <prop name="context.startinterceptor.2">de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor</prop>
   </properties>
   
   <!-- Not in schema yet
   <interceptors>
     <start>
       <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor"/>
+      <interceptor class="de.schlund.pfixcore.editor2.frontend.util.EditViewResetContextInterceptor"/>
     </start>
     <end>
       <interceptor class="de.schlund.pfixcore.editor2.frontend.util.SpringHelperEndContextInterceptor"/>

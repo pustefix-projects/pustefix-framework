@@ -1,5 +1,39 @@
 2005-11-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* example/core/editor2/txt/util_includes.xml: 
+	Show warning message if other users are viewing / editing one
+	include part at the same time
+	
+	* example/core/editor2/txt/pages/main_sessionmanager.xml: 
+	Added columns for username and selected include part to list of sessions
+	
+	* src/de/schlund/pfixcore/editor2/frontend/util/EditViewResetContextInterceptor.java: 
+	Created an interceptor that resets the flag indicating that an user is
+	editing an include part. This is needed to make sure this flag is unset,
+	whenever a user is switching to another page
+	
+	* src/de/schlund/pfixcore/editor2/frontend/util/ContextStore.java: 
+	Created singleton class storing all contexts which are logged into
+	the editor as keysin a WeakHashMap with the corresponding username as their
+	values..
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionResourceImpl.java: 
+	Implemented methods from interface (see below)
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionResource.java (isUserLoginsAllowed): 
+	Added methods isIncludeEditView() and setIncludeEditView() to interface. These methods
+	are used to set the flag indicating wheter a user is editing an include part
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResourceImpl.java (insertStatus): 
+	Show editor user and include part being edited for a session, if applicable
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (insertStatus): 
+	Added code for showing other users who are editing the same include part
+	
+	* src/de/schlund/pfixcore/editor2/frontend/handlers/CommonUploadIncludePartHandler.java: 
+	Changed handleSubmittedData() and retrieveCurrentStatus() to set a flag 
+	indicating that the user is currently editing an include part
+	
 	* src/de/schlund/pfixcore/editor2/core/vo/EditorUser.java: 
 	Made EditorUser class comparable by comparing the username of the objects
 	
