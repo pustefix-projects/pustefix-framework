@@ -1,3 +1,11 @@
+2005-11-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/vo/EditorUser.java: 
+	Made EditorUser class comparable by comparing the username of the objects
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/UsersResourceImpl.java (insertStatus): 
+	Sorting the list of all users using a TreeSet before generating the XML
+
 2005-11-25  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (getContent): 

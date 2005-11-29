@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import org.w3c.dom.Element;
 
@@ -47,7 +48,8 @@ public class UsersResourceImpl implements UsersResource {
             throws Exception {
         UserManagementService ums = SpringBeanLocator
                 .getUserManagementService();
-        for (Iterator i = ums.getUsers().iterator(); i.hasNext();) {
+        TreeSet users = new TreeSet(ums.getUsers());
+        for (Iterator i = users.iterator(); i.hasNext();) {
             EditorUser user = (EditorUser) i.next();
             Element userNode = resdoc.createSubNode(elem, "user");
             userNode.setAttribute("id", user.getUsername());

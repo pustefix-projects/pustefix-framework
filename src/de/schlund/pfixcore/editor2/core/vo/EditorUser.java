@@ -30,7 +30,7 @@ import de.schlund.pfixcore.editor2.core.dom.Project;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public class EditorUser implements Cloneable {
+public class EditorUser implements Cloneable, Comparable {
     private String username;
 
     private String cryptedPassword;
@@ -253,5 +253,10 @@ public class EditorUser implements Cloneable {
         }
         obj.setSectionName(this.getSectionName());
         return obj;
+    }
+
+    public int compareTo(Object o) {
+        EditorUser u2 = (EditorUser) o;
+        return this.getUsername().compareTo(u2.getUsername());
     }
 }
