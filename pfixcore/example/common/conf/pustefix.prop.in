@@ -35,6 +35,7 @@
     <!-- this defines a named switch ("default" in this case) that a servlet can watch to
        go into adminmode when the switch's status changes to true -->
     <prop name="context.adminmode.default.status">off</prop>
+    <prop name="xmlserver.additionalinfo.implementation">de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</prop>
     
     <choose>
       <test mode="test">

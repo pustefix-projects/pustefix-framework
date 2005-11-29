@@ -50,6 +50,8 @@ import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
+import de.schlund.pfixxml.perflogging.AdditionalTrailInfo;
+import de.schlund.pfixxml.perflogging.AdditionalTrailInfoFactory;
 import de.schlund.pfixxml.perflogging.PerfEvent;
 import de.schlund.pfixxml.perflogging.PerfEventType;
 import de.schlund.pfixxml.serverutil.SessionAdmin;
@@ -110,6 +112,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     private static final String   XSLPARAM_REUSE          = "__reusestamp";
     private static final String   VALUE_NONE              = "__NONE__";
     private static final String   SUFFIX_SAVEDDOM         = "_SAVED_DOM";
+    protected static final String PROP_ADD_TRAIL_INFO     = "xmlserver.additionalinfo.implementation";
     protected static final String PROP_DEPEND             = "xmlserver.depend.xml";
     protected static final String PROP_NAME               = "xmlserver.servlet.name";
     protected static final String PROP_NOEDIT             = "xmlserver.noeditmodeallowed";
@@ -118,6 +121,7 @@ public abstract class AbstractXMLServer extends ServletManager {
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
+    
     
     /**
      * Holds the TargetGenerator which is the XML/XSL Cache for this
@@ -491,6 +495,8 @@ public abstract class AbstractXMLServer extends ServletManager {
         
         long handletime = System.currentTimeMillis() - currtime;
         
+        Object[] add = getAdditionalTrailInfo(params);
+        
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
             logbuff.append(session.getAttribute(VISIT_ID) + "|");
@@ -507,6 +513,9 @@ public abstract class AbstractXMLServer extends ServletManager {
                 logbuff.append("|" + flow);
             }
             logbuff.append("|" + getdomtime + "|" + handletime);
+            for(Object obj : add) {
+                logbuff.append("|"+obj);
+            }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
 
@@ -521,7 +530,13 @@ public abstract class AbstractXMLServer extends ServletManager {
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
                 writer.write("\n<!-- PRE_PROC: " + preproctime +
                              " GET_DOM: " + getdomtime +
-                             " HDL_DOC: " + handletime + " -->");
+                             " HDL_DOC: " + handletime);
+                int count = 0;
+                for(Object obj : add) {
+                    writer.write(" ADD"+count+++": "+obj);
+                }
+                    
+                writer.write("  -->");
                 writer.flush();
             }
         } catch (Exception e) {
@@ -529,6 +544,21 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
     
+    private Object[] getAdditionalTrailInfo(Properties params) throws ServletException {
+        final String add_info = getProperty(PROP_ADD_TRAIL_INFO);
+        AdditionalTrailInfo info = null;
+        try {
+            info = AdditionalTrailInfoFactory.getInstance().getAdditinalTrailInfo(add_info);
+        } catch (ClassNotFoundException e) {
+            throw new ServletException(e);
+        } catch (InstantiationException e) {
+            throw new ServletException(e);
+        } catch (IllegalAccessException e) {
+            throw new ServletException(e);
+        }
+        return info.getData();
+    }
+
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
         TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
         switch (rendering) {
