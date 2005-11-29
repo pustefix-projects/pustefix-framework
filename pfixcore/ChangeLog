@@ -14,6 +14,9 @@
 	* [example/skel]/common/conf/pustefix.prop.in: added 
 	DefaultAdditionalTrailInfoImpl via property xmlserver.additionalinfo.implementation.
 
+	* released pfixcore-0.8.7.jar
+	* started pfixcore-0.8.8-pre
+
 2005-11-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/core/editor2/txt/util_includes.xml: 

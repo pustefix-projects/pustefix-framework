@@ -33,6 +33,7 @@
         <prop name="sessioncleaner.timeout">600</prop>
       </test>
     </choose>
+    <prop name="xmlserver.additionalinfo.implementation">de.schlund.pfixxml.perflogging.DefaultAdditionalTrailInfoImpl</prop>
     
     <!-- this defines a named switch ("default" in this case) that a servlet can watch to
        go into adminmode when the switch's status changes to true -->
