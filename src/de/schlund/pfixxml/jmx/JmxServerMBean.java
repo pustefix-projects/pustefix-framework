@@ -27,7 +27,7 @@ import javax.management.ObjectName;
 
 public interface JmxServerMBean {
 	
-    /* Trail loggong */
+    /* Trail logging */
     public ObjectName startRecording(String sessionId) throws IOException;
     public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix);
     public List getSessions(String serverName, String remoteAddr);
@@ -36,7 +36,7 @@ public interface JmxServerMBean {
     public void addKnownClient(String remoteAddr);
     public void removeKnownClient(String remoteAddr);
     
-    /* Performanve logging */
+    /* Performance logging */
     public boolean isPerfLoggingEnabled();
     public boolean isPerfLoggingRunning();
     public void startPerfLogging();

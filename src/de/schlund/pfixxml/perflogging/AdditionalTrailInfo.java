@@ -1,6 +1,8 @@
 package de.schlund.pfixxml.perflogging;
 
-public interface AdditionalTrailInfo {
-    public Object[] getData();
+import de.schlund.pfixxml.PfixServletRequest;
+import java.util.LinkedHashMap;
 
+public interface AdditionalTrailInfo {
+    LinkedHashMap<String,Object> getData(PfixServletRequest preq);
 }
