@@ -23,7 +23,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixxml.PathFactory;
 
@@ -35,7 +35,7 @@ public class JmxServerFactory {
     public static final int PORT_A = 9334;
     public static final int PORT_B = 9335;
 
-    private static Category LOG = Category.getInstance(JmxServerFactory.class.getName());
+    private static Logger LOG = Logger.getLogger(JmxServerFactory.class);
 
     private static JmxServerFactory instance = new JmxServerFactory();
 
@@ -71,18 +71,14 @@ public class JmxServerFactory {
     }
 
     private static InetAddress getHost() throws UnknownHostException {
-        InetAddress host;
+        String machine;
         
-        host = InetAddress.getLocalHost(); 
-        // TODO: i'd like to use
-        //    getenv("MACHINE")
-        // (instead of the hack below) but it throws an exception in Java 1.4
-        if (host.getHostName().equals("pem.schlund.de")) {
-            host = InetAddress.getByName(System.getProperty("user.name") +
-                    "." + host.getHostName());
-            LOG.debug("hacked host: " + host.getHostName());
+        machine = System.getenv("MACHINE");
+        if (machine != null) {
+            return InetAddress.getByName(machine);
+        } else {
+            return InetAddress.getLocalHost();
         }
-        return host;
     }
     
     private static int getPort(InetAddress host) {
