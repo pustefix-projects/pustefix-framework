@@ -1,5 +1,24 @@
 2005-11-30  Jens Lautenbacher  <jtl@schlund.de>
 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (AbstractXMLServer::initValues): get the 
+	AdditionalTrailInfo object here only once.
+	(AbstractXMLServer::process, AbstractXMLServer::handleDocument): set preproc,handledoc and transformation time
+	as Attributes of the request
+	(AbstractXMLServer::handleDocument): no longer needed to pass preproctime and getdomtime around.
+
+	(AbstractXMLServer::getAdditionalTrailInfo): removed 
+
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfoFactory.java 
+	(AdditionalTrailInfoFactory::getAdditionalTrailInfo): SPELLING :-).   
+	Check exceptions here.
+
+	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfo.java (AdditionalTrailInfo::getData): now takes
+	a PfixServletRequest and returns a HashMap<String, Object>
+	* src/de/schlund/pfixxml/perflogging/DefaultAdditionalTrailInfoImpl.java (DefaultAdditionalTrailInfoImpl::getData): 
+	see above - we also tigger the writing of preproc, handldoc and trafo time here
+
+	* src/de/schlund/pfixxml/jmx/JmxServerMBean.java (Module): spelling
+
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (Module): even more mappings: also 
 	AUX->(AUX) as parent<->child and Target->AUX->(AUX) as parent<->child, but depending on the target.
 	Also implemented all the needed accessor methods.

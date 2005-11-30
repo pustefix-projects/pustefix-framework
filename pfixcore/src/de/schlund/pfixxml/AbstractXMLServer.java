@@ -21,32 +21,8 @@ package de.schlund.pfixxml;
 
 
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.SocketException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Category;
-import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.jmx.JmxServerFactory;
 import de.schlund.pfixxml.jmx.TrailLogger;
@@ -66,6 +42,31 @@ import de.schlund.pfixxml.targets.TargetGeneratorFactory;
 import de.schlund.pfixxml.util.Path;
 import de.schlund.pfixxml.util.Xml;
 import de.schlund.pfixxml.util.Xslt;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
 
 
 /**
@@ -121,6 +122,10 @@ public abstract class AbstractXMLServer extends ServletManager {
     protected static final String PROP_SKIP_GETMODTIME_MU = "targetgenerator.skip_getmodtimemaybeupdate";
     protected static final String PROP_PROHIBITDEBUG      = "xmlserver.prohibitdebug";
     protected static final String PROP_PROHIBITINFO       = "xmlserver.prohibitinfo";
+
+    public static final String PREPROCTIME = "__PREPROCTIME__";
+    public static final String GETDOMTIME  = "__GETDOMTIME__";
+    public static final String TRAFOTIME   = "__TRAFOTIME__";
     
     
     /**
@@ -149,6 +154,8 @@ public abstract class AbstractXMLServer extends ServletManager {
 
     private boolean allowInfo  = true;
     private boolean allowDebug = true;
+
+    private AdditionalTrailInfo addtrailinfo = null;
     
     //~ Methods ....................................................................................
     /**
@@ -218,6 +225,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             }
         }
 
+        String addinfoprop = getProperty(PROP_ADD_TRAIL_INFO);
+        addtrailinfo       = AdditionalTrailInfoFactory.getInstance().getAdditionalTrailInfo(addinfoprop);
         
         if (isInfoEnabled()) {
             StringBuffer sb = new StringBuffer(255);
@@ -346,7 +355,8 @@ public abstract class AbstractXMLServer extends ServletManager {
 
         // Now we will store the time needed from the creation of the request up to now
         preproctime = System.currentTimeMillis() - preq.getCreationTimeStamp();
-       
+        preq.getRequest().setAttribute(PREPROCTIME, preproctime);
+        
         if (spdoc == null) {
             
             // Performace tracking
@@ -388,17 +398,17 @@ public abstract class AbstractXMLServer extends ServletManager {
             // this will remain at -1 when we don't have to enter the businesslogic codepathv
             // (whenever there is a stored spdoc already)
             getdomtime = System.currentTimeMillis() - currtime;
+            preq.getRequest().setAttribute(GETDOMTIME, getdomtime);
         }
         params.put(XSLPARAM_REUSE, "" + spdoc.getTimestamp());
         if (session != null && session.getAttribute(SESS_LANG) != null) {
             params.put(XSLPARAM_LANG, session.getAttribute(SESS_LANG));
         }
-        handleDocument(preq, res, spdoc, params, doreuse, preproctime, getdomtime);
+        handleDocument(preq, res, spdoc, params, doreuse);
     }
 
     protected void handleDocument(PfixServletRequest preq, HttpServletResponse res,
-                                  SPDocument spdoc, Properties params, boolean doreuse,
-                                  long preproctime, long getdomtime) throws Exception {
+                                  SPDocument spdoc, Properties params, boolean doreuse) throws Exception {
         long currtime = System.currentTimeMillis();
         
         // Check the document for supplied headers...
@@ -494,8 +504,9 @@ public abstract class AbstractXMLServer extends ServletManager {
         // }
         
         long handletime = System.currentTimeMillis() - currtime;
+        preq.getRequest().setAttribute(TRAFOTIME, handletime);
         
-        Object[] add = getAdditionalTrailInfo(params);
+        Map<String, Object> addinfo = addtrailinfo.getData(preq);
         
         if (! doreuse && session != null) {
             StringBuffer logbuff = new StringBuffer();
@@ -512,9 +523,8 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (flow != null) {
                 logbuff.append("|" + flow);
             }
-            logbuff.append("|" + getdomtime + "|" + handletime);
-            for(Object obj : add) {
-                logbuff.append("|"+obj);
+            for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                logbuff.append("|" + addinfo.get(keys.next()));
             }
             LOGGER_TRAIL.warn(logbuff.toString());
         }
@@ -528,15 +538,13 @@ public abstract class AbstractXMLServer extends ServletManager {
             if (spdoc.getResponseContentType() == null || spdoc.getResponseContentType().startsWith("text/html")) {
                 OutputStream       out          = res.getOutputStream();
                 OutputStreamWriter writer       = new OutputStreamWriter(out, res.getCharacterEncoding());
-                writer.write("\n<!-- PRE_PROC: " + preproctime +
-                             " GET_DOM: " + getdomtime +
-                             " HDL_DOC: " + handletime);
+                writer.write("\n<!--");
                 int count = 0;
-                for(Object obj : add) {
-                    writer.write(" ADD"+count+++": "+obj);
+                for (Iterator<String> keys = addinfo.keySet().iterator(); keys.hasNext(); ) {
+                    String key = keys.next();
+                    writer.write(" " + key + ": " + addinfo.get(key));
                 }
-                    
-                writer.write("  -->");
+                writer.write(" -->");
                 writer.flush();
             }
         } catch (Exception e) {
@@ -544,21 +552,6 @@ public abstract class AbstractXMLServer extends ServletManager {
         }
     }
     
-    private Object[] getAdditionalTrailInfo(Properties params) throws ServletException {
-        final String add_info = getProperty(PROP_ADD_TRAIL_INFO);
-        AdditionalTrailInfo info = null;
-        try {
-            info = AdditionalTrailInfoFactory.getInstance().getAdditinalTrailInfo(add_info);
-        } catch (ClassNotFoundException e) {
-            throw new ServletException(e);
-        } catch (InstantiationException e) {
-            throw new ServletException(e);
-        } catch (IllegalAccessException e) {
-            throw new ServletException(e);
-        }
-        return info.getData();
-    }
-
     private void render(SPDocument spdoc, int rendering, HttpServletResponse res, TreeMap paramhash, String stylesheet) throws
         TargetGenerationException, IOException, TransformerException, TransformerConfigurationException, TransformerFactoryConfigurationError {
         switch (rendering) {
