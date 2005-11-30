@@ -86,43 +86,42 @@ public class JmxServer implements JmxServerMBean {
         // otherwise, clients cannot instaniate TrailLogger objects:
         server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
         Environment.assertCipher();
-        connector = JMXConnectorServerFactory.newJMXConnectorServer(
-       		createServerURL(host.getHostName(), port), 
-       		Environment.create(keystore.resolve(), true), server);
+        connector = JMXConnectorServerFactory.newJMXConnectorServer(createServerURL(host.getHostName(), port), 
+                                                                    Environment.create(keystore.resolve(), true), server);
         connector.start();
-   	    notifications(connector);
+        notifications(connector);
         LOG.debug("started: " + connector.getAddress());
     }
 
     private static void notifications(JMXConnectorServer connector) {
     	connector.addNotificationListener(new NotificationListener() {
-			public void handleNotification(Notification n, Object arg1) {
-				JMXConnectionNotification cn;
-				JMXMPConnectorServer cs;
-				
-				if (n instanceof JMXConnectionNotification) {
-					cn = (JMXConnectionNotification) n;
-					cs = (JMXMPConnectorServer) n.getSource();
-					LOG.info("connection: " + n.getType() + " " + cn.getConnectionId() + " " + n.getMessage());
-					LOG.info("address: " + cs.getAddress());
-					LOG.info("attributes" + cs.getAttributes());
-				} else {
-					LOG.info("notification " + n.getClass() + ": " + n.getMessage() + " " + arg1);
-					LOG.info("type " + n.getType());
-					LOG.info("source: " + n.getSource());
-				}
-			}}, null, null);
+                public void handleNotification(Notification n, Object arg1) {
+                    JMXConnectionNotification cn;
+                    JMXMPConnectorServer cs;
+                    
+                    if (n instanceof JMXConnectionNotification) {
+                        cn = (JMXConnectionNotification) n;
+                        cs = (JMXMPConnectorServer) n.getSource();
+                        LOG.info("connection: " + n.getType() + " " + cn.getConnectionId() + " " + n.getMessage());
+                        LOG.info("address: " + cs.getAddress());
+                        LOG.info("attributes" + cs.getAttributes());
+                    } else {
+                        LOG.info("notification " + n.getClass() + ": " + n.getMessage() + " " + arg1);
+                        LOG.info("type " + n.getType());
+                        LOG.info("source: " + n.getSource());
+                    }
+                }}, null, null);
     }
 
     private void javaLogging() throws IOException {
-		Logger logger;
-		Handler handler;
-
-		logger = Logger.getLogger("javax.management.remote");
-		logger.setLevel(Level.FINER);
-		handler = new FileHandler("jmx.log");
-		handler.setFormatter(new SimpleFormatter());
-		logger.addHandler(handler);
+        Logger logger;
+        Handler handler;
+        
+        logger = Logger.getLogger("javax.management.remote");
+        logger.setLevel(Level.FINER);
+        handler = new FileHandler("jmx.log");
+        handler.setFormatter(new SimpleFormatter());
+        logger.addHandler(handler);
     }
 
     //-- client authentication
@@ -138,7 +137,7 @@ public class JmxServer implements JmxServerMBean {
     public void removeKnownClient(String remoteAddr) {
         knownClients.remove(remoteAddr);
     }
-
+    
     public ApplicationList getApplicationList(boolean tomcat, String sessionSuffix) {
         File file;
         Document doc;
@@ -165,7 +164,7 @@ public class JmxServer implements JmxServerMBean {
     public static ObjectName createServerName() {
         return createName(JmxServer.class.getName());
     }
-
+    
     // TODO: who's responsible for unregister?
     public ObjectName startRecording(String sessionId) throws IOException {
     	ObjectName name;
@@ -174,14 +173,14 @@ public class JmxServer implements JmxServerMBean {
     	logger = new TrailLogger(TrailLogger.getVisit(getSession(sessionId)));
     	name = createName(TrailLogger.class.getName(), sessionId);
         try {
-			server.registerMBean(logger, name);
-		} catch (InstanceAlreadyExistsException e) {
-			throw new RuntimeException(e);
-		} catch (MBeanRegistrationException e) {
-			throw new RuntimeException(e);
-		} catch (NotCompliantMBeanException e) {
-			throw new RuntimeException(e);
-		}
+            server.registerMBean(logger, name);
+        } catch (InstanceAlreadyExistsException e) {
+            throw new RuntimeException(e);
+        } catch (MBeanRegistrationException e) {
+            throw new RuntimeException(e);
+        } catch (NotCompliantMBeanException e) {
+            throw new RuntimeException(e);
+        }
     	
     	return name;
     }
@@ -201,7 +200,7 @@ public class JmxServer implements JmxServerMBean {
             throw new RuntimeException(e);
         }
     }
-
+    
     //--
     
     public List getSessions(String serverName, String remoteAddr) {
@@ -210,7 +209,7 @@ public class JmxServer implements JmxServerMBean {
         String id;
         List lst;
         SessionInfoStruct info;
-
+        
         lst = new ArrayList();
         admin = SessionAdmin.getInstance();
         iter = admin.getAllSessionIds().iterator();
@@ -237,26 +236,26 @@ public class JmxServer implements JmxServerMBean {
         }
         return info.getSession();
     }
-
+    
     public boolean isPerfLoggingEnabled() {
         return PerfLogging.getInstance().isPerfLogggingEnabled();
     }
-
+    
     public boolean isPerfLoggingRunning() {
         return PerfLogging.getInstance().isPerfLoggingActive();
     }
-
+    
     public void startPerfLogging() {
         PerfLogging.getInstance().activatePerflogging();
     }
-
+    
     public String stopPerfLogging() {
         return PerfLogging.getInstance().inactivatePerflogging();
     }
-
+    
     public Map<String, Map<String, int[]>> stopPerfLoggingMap() {
         return PerfLogging.getInstance().inactivatePerfloggingMap();
     }
-
+    
    
 }

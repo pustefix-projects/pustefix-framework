@@ -34,42 +34,42 @@ public class JmxServerFactory {
     /** don't store this in a config file, because client apps can access values where */
     public static final int PORT_A = 9334;
     public static final int PORT_B = 9335;
-
+    
     private static Logger LOG = Logger.getLogger(JmxServerFactory.class);
-
+    
     private static JmxServerFactory instance = new JmxServerFactory();
-
+    
     public static JmxServerFactory getInstance() {
         return instance;
     }
     
     public static JmxServer getServer() {
     	if (instance.server == null) {
-    		throw new RuntimeException();
+            throw new RuntimeException();
     	}
     	return instance.server;
     }
     
     private JmxServer server;
-
+    
     public JmxServerFactory() {
     	server = null;
     }
     
     public void init(Properties props) throws Exception {
         InetAddress host;
-
+        
         LOG.debug("starting jmx server");
         host = getHost();
         try {
-        	server = new JmxServer();
-        	server.start(host, getPort(host));
+            server = new JmxServer();
+            server.start(host, getPort(host));
         } catch (Exception e) {
             LOG.debug("not started", e);
         }
         LOG.info("started");
     }
-
+    
     private static InetAddress getHost() throws UnknownHostException {
         String machine;
         
