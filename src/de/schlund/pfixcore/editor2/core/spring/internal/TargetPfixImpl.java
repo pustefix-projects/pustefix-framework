@@ -250,17 +250,14 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive)
-            throws EditorParsingException {
+    public Collection getIncludeDependencies(boolean recursive) throws EditorParsingException {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
-            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
-                    .getThemes());
+            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget.getThemes());
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
-                String msg = "Could not get AuxDependencyManager for target "
-                        + this.getName() + "!";
+                String msg = "Could not get AuxDependencyManager for target " + this.getName() + "!";
                 Logger.getLogger(this.getClass()).warn(msg);
                 return new ArrayList();
             }
@@ -268,24 +265,20 @@ public class TargetPfixImpl extends AbstractTarget {
             for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if (auxdep.getType() == DependencyType.TEXT) {
-                    IncludePartThemeVariant variant = this.includefactory
-                            .getIncludePartThemeVariant(auxdep);
+                    IncludePartThemeVariant variant = this.includefactory.getIncludePartThemeVariant(auxdep);
                     deps.add(variant);
                     if (recursive) {
-                        deps.addAll(variant
-                                .getIncludeDependencies(themes, true));
+                        deps.addAll(variant.getIncludeDependencies(themes, true));
                     }
                 }
             }
 
             if (recursive) {
                 if (this.getParentXML() != null) {
-                    deps.addAll(this.getParentXML()
-                            .getIncludeDependencies(true));
+                    deps.addAll(this.getParentXML().getIncludeDependencies(true));
                 }
                 if (this.getParentXSL() != null) {
-                    deps.addAll(this.getParentXSL()
-                            .getIncludeDependencies(true));
+                    deps.addAll(this.getParentXSL().getIncludeDependencies(true));
                 }
             }
 
@@ -319,11 +312,9 @@ public class TargetPfixImpl extends AbstractTarget {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if ((auxdep.getType() == DependencyType.TEXT) && recursive) {
                     IncludePartThemeVariant variant = this.includefactory
-                            .getIncludeFile(auxdep.getPath().getRelative())
-                            .createPart(auxdep.getPart()).createThemeVariant(
-                                    this.themefactory.getTheme(auxdep
-                                            .getProduct()));
-
+                        .getIncludeFile(auxdep.getPath().getRelative())
+                        .createPart(auxdep.getPart()).createThemeVariant(this.themefactory.getTheme(auxdep.getTheme()));
+                    
                     deps.addAll(variant.getImageDependencies(themes, true));
                 } else if (auxdep.getType() == DependencyType.IMAGE) {
                     Image dep = this.imagefactory.getImage(auxdep.getPath()

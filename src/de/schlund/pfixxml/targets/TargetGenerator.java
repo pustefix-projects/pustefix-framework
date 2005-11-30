@@ -48,7 +48,6 @@ public class TargetGenerator implements Comparable{
         
     private static Category               CAT                            = Category.getInstance(TargetGenerator.class.getName());
     private static TargetGenerationReport report                         = new TargetGenerationReport();
-    private DependencyRefCounter          refcounter                     = new DependencyRefCounter();
     private PageTargetTree                pagetree                       = new PageTargetTree();
     private HashMap                       alltargets                     = new HashMap();
     private boolean                       isGetModTimeMaybeUpdateSkipped = false;
@@ -69,7 +68,7 @@ public class TargetGenerator implements Comparable{
     public TargetGenerator(Path confile) throws IOException, SAXException, XMLException {
         File tmp          = confile.resolve();
         this.config_mtime = tmp.lastModified();
-
+        
         Meminfo.print("TG: Before loading " + confile.getRelative());
         loadConfig(confile);
         Meminfo.print("TG: after loading targets for " + confile.getRelative());
@@ -129,11 +128,6 @@ public class TargetGenerator implements Comparable{
         listeners.remove(listener);
     }
     
-    
-    public DependencyRefCounter getDependencyRefCounter() {
-        return refcounter;
-    }
-
     public String toString() {
         return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
     }
@@ -144,13 +138,16 @@ public class TargetGenerator implements Comparable{
     public synchronized boolean tryReinit(Path confile) throws Exception {
         File tmp = confile.resolve();
         if (tmp.lastModified() > config_mtime) {
-            CAT.warn(
-                "\n\n###############################\n"
-                + "#### Reloading depend file: "
-                + confile.getRelative()
-                + "\n"
-                + "###############################\n");
-            refcounter   = new DependencyRefCounter();
+            CAT.warn("\n\n###############################\n"
+                     + "#### Reloading depend file: "
+                     + confile.getRelative()
+                     + "\n"
+                     + "###############################\n");
+            synchronized (alltargets) {
+                if (alltargets != null && !alltargets.isEmpty()) {
+                    TargetDependencyRelation.getInstance().resetAllRelations((Collection<Target>) alltargets.values());
+                }
+            }
             pagetree     = new PageTargetTree();
             alltargets   = new HashMap();
             config_mtime = tmp.lastModified();

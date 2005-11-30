@@ -70,7 +70,4 @@ public final class DependencyType {
         throw new RuntimeException("AuxDep with unknow type '" + type + "'");
     }
         
-    public AuxDependency newInstance(Path path, String part, String product) {
-        return new AuxDependency(this, path, part, product);
-    }
 }// DependencyType

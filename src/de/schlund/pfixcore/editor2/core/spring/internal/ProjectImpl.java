@@ -18,14 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractProject;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
@@ -41,17 +34,25 @@ import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
+import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
+import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of Project using a XML file to read project information during
@@ -347,13 +348,16 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection getAllIncludeParts() {
         HashSet includes = new HashSet();
-        for (Iterator i = this.tgen.getDependencyRefCounter()
-                .getDependenciesOfType(DependencyType.TEXT).iterator(); i
-                .hasNext();) {
+        TreeSet deps     = TargetDependencyRelation.getInstance()
+            .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
+        if (deps == null) {
+            return includes;
+        }
+        
+        for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependency auxdep = (AuxDependency) i.next();
             try {
-                includes.add(this.includefactory
-                        .getIncludePartThemeVariant(auxdep));
+                includes.add(this.includefactory.getIncludePartThemeVariant(auxdep));
             } catch (EditorParsingException e) {
                 // Ignore exception and go on
             }
@@ -363,29 +367,32 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection getAllImages() {
         HashSet images = new HashSet();
-        for (Iterator i = this.tgen.getDependencyRefCounter()
-                .getDependenciesOfType(DependencyType.IMAGE).iterator(); i
-                .hasNext();) {
+        TreeSet deps   = TargetDependencyRelation.getInstance()
+            .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
+        if (deps == null) {
+            return images;
+        }
+        for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependency auxdep = (AuxDependency) i.next();
-            images.add(this.imagefactory.getImage(auxdep.getPath()
-                    .getRelative()));
+            images.add(this.imagefactory.getImage(auxdep.getPath().getRelative()));
         }
         return images;
     }
 
-    public IncludePartThemeVariant findIncludePartThemeVariant(String file,
-            String part, String theme) {
-        AuxDependency auxdep = AuxDependencyFactory
-                .getInstance()
-                .getAuxDependency(DependencyType.TEXT,
-                        PathFactory.getInstance().createPath(file), part, theme);
-        if (this.tgen.getDependencyRefCounter().getAllDependencies().contains(
-                auxdep)) {
+    public IncludePartThemeVariant findIncludePartThemeVariant(String file, String part, String theme) {
+        AuxDependency auxdep = AuxDependencyFactory.getInstance()
+            .getAuxDependency(DependencyType.TEXT, PathFactory.getInstance().createPath(file), part, theme);
+
+        TreeSet deps = TargetDependencyRelation.getInstance().getProjectDependencies(tgen);
+        if (deps == null) {
+            return null;
+        }
+
+        if (deps.contains(auxdep)) {
             try {
                 return this.includefactory.getIncludePartThemeVariant(auxdep);
             } catch (EditorParsingException e) {
-                String msg = "Failed to get include part " + part + ":" + theme
-                        + "@" + file + "!";
+                String msg = "Failed to get include part " + part + ":" + theme + "@" + file + "!";
                 Logger.getLogger(this.getClass()).warn(msg, e);
                 return null;
             }
@@ -395,12 +402,13 @@ public class ProjectImpl extends AbstractProject {
     }
 
     public boolean hasIncludePart(String file, String part, String theme) {
-        AuxDependency aux = AuxDependencyFactory
-                .getInstance()
-                .getAuxDependency(DependencyType.TEXT,
-                        PathFactory.getInstance().createPath(file), part, theme);
-        TreeSet generators = aux.getAffectedTargetGenerators();
-
+        AuxDependency aux = AuxDependencyFactory.getInstance()
+            .getAuxDependency(DependencyType.TEXT, PathFactory.getInstance().createPath(file), part, theme);
+        TreeSet generators = TargetDependencyRelation.getInstance().getAffectedTargetGenerators(aux);
+        if (generators == null) {
+            return false;
+        }
+        
         return generators.contains(this.tgen);
     }
 

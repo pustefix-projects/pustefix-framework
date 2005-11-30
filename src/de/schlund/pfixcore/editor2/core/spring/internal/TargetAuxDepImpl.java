@@ -18,19 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractTarget;
 import de.schlund.pfixcore.editor2.core.dom.AbstractTheme;
@@ -48,7 +36,21 @@ import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.PageInfo;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Implementation of Target using the AuxDependency informationen provided by
@@ -198,13 +200,16 @@ public class TargetAuxDepImpl extends AbstractTarget {
      */
     public Collection getAffectedPages() {
         HashSet pageinfos = new HashSet();
-        for (Iterator i = this.auxdep.getAffectedTargets().iterator(); i
-                .hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
-                    .next();
+        HashSet pages     = new HashSet();
+        Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(auxdep);
+        if (afftargets == null) {
+            return pages;
+        }
+        
+        for (Iterator i = afftargets.iterator(); i.hasNext();) {
+            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i.next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
-        HashSet pages = new HashSet();
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
             String projectName = pageinfo.getTargetGenerator().getName();

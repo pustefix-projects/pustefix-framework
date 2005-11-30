@@ -20,11 +20,19 @@
 package de.schlund.pfixxml.targets;
 
 import de.schlund.pfixxml.PathFactory;
-import de.schlund.pfixxml.util.*;
-import java.io.*;
-import java.util.*;
-import org.apache.log4j.*;
-import org.w3c.dom.*;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xml;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import org.apache.log4j.Category;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * AuxDependencyManager.java
@@ -40,23 +48,12 @@ import org.w3c.dom.*;
 public class AuxDependencyManager {
     private static Category CAT    = Category.getInstance(AuxDependencyManager.class.getName());
     private static String   DEPAUX = "depaux";
-
-    private VirtualTarget  target;
-    private HashSet auxset = new HashSet();
+    private VirtualTarget   target;
     
-    public boolean addChild(AuxDependency aux) {
-        synchronized (auxset) {
-            aux.addTargetDependency(target);
-            return auxset.add(aux);
-        }
-    }
+    public static AuxDependency root = 
+        AuxDependencyFactory.getInstance().
+        getAuxDependency(DependencyType.TEXT,PathFactory.getInstance().createPath("__ROOT__"), "__ROOT__", "__ROOT__");
     
-    public TreeSet getChildren() {
-        synchronized(auxset) {
-            return new TreeSet(auxset);
-        }
-    }
-
     public AuxDependencyManager(Target target) {
         this.target = (VirtualTarget) target;
     }
@@ -83,43 +80,14 @@ public class AuxDependencyManager {
         }
     }
 
-    public synchronized void saveAuxdepend() throws IOException  {
-        CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
-        DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
-        HashSet              allaux     = refcounter.getDependenciesForTarget(target);
-        File                 path       = new File(target.getTargetGenerator().getDisccachedir().resolve(),
-                                                   target.getTargetKey() + ".aux");
-        // Note that the easiest way to ensure that every AuxDependency the target depends on is
-        // saved would be to simply use the allaux set. But this way we would loose the information
-        // on the parent child relation among the AuxDependencies.  The problem here is that this
-        // information is potentially unreliable (think of other targets being in the process of
-        // being build, or other cases where the child list of a AuxDependency is not only
-        // determined by the theme list of the Target that is being build.  To ensure that at least
-        // the needed information for reinitialising the target is being written, we remove from the
-        // allaux set all AuxDependencies that are written in the first "saveIt" call, and then use
-        // the remaining Set to write them out, too, as being directly dependend from the target itself -
-        // which is wrong, but doesn't matter. At least their children - if they exist - will be
-        // written again with the correct relation to their parents.
-        Document auxdoc = Xml.createDocument();
-        Element  root   = auxdoc.createElement("aux");
-        auxdoc.appendChild(root);
-        
-        saveIt(DEPAUX, auxdoc, root, auxset, null, allaux);
-        if (allaux != null && !allaux.isEmpty()) {
-            saveIt(DEPAUX, auxdoc, root, allaux, null, null);
-        }
-
-        Xml.serialize(auxdoc, path, true, true);
-    }
-
     public synchronized void addDependency(DependencyType type, Path path, String part, String product,
                                            Path parent_path, String parent_part, String parent_product) {
         if (path == null) {
             throw new IllegalArgumentException("path null: part=" + part + " product=" + product);
         }
+        
         AuxDependency child  = null;
         AuxDependency parent = null;
-        boolean addtomanager = false;
         
         if (part != null && part.equals("")) part = null;
         if (product != null && product.equals("")) product = null;
@@ -135,33 +103,12 @@ public class AuxDependencyManager {
             CAT.debug("*** Found another AuxDependency as Parent...");
             parent = AuxDependencyFactory.getInstance().
                 getAuxDependency(DependencyType.TEXT, parent_path, parent_part, parent_product);
-
-            // Check for any loops like Parent -> Aux -> Child_A -> ...-> Child_X -> Parent
-            if (!checkLoopFree(parent, child)) {
-                throw new RuntimeException("*** FATAL *** Adding " + child + " to Parent " + parent
-                                           + " for target " + target.getFullName() + " would result in a LOOP!");
-            }
         } else if (parent_path == null && parent_part == null && parent_product == null) {
-            CAT.debug("*** Has no AuxDependency as parent...");
-            addtomanager = true;
+            parent = root;
         }
         
-        if (parent != null || addtomanager) {
-            // we remove the children (if any) of the "child" AuxDependency, because "child" will be processed
-            // now and all current children of "child" will be added again
-            child.removeChildren(target);
-            
-            // Here we make sure that the "child" AuxDep will be added to its parent.
-            // So this is where the parent get's its child map rebuild.
-            // If there's no parent, add it to the manager itself.
-            if (addtomanager) {
-                addChild(child);
-            } else {
-                parent.addChild(child, target);
-            }
-            // finally we take care of refcounting.
-            DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
-            refcounter.ref(child, target);
+        if (parent != null) {
+            TargetDependencyRelation.getInstance().addRelation(parent, child, target);
         } else {
             throw new RuntimeException("*** FATAL *** AuxDep " + child + " for target " + target.getFullName() 
                                        + " with parent path/part/product not all == null or all != null: "
@@ -169,111 +116,91 @@ public class AuxDependencyManager {
         }
     }
 
-    public void reset() {
-        DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
-        HashSet              allaux     = refcounter.getDependenciesForTarget(target);
-        refcounter.unref(target);
-
-        if (allaux != null) {
-            for (Iterator i = allaux.iterator(); i.hasNext();) {
-                AuxDependency aux  = (AuxDependency) i.next();
-                if (aux.getType().isDynamic()) {
-                    aux.removeTargetDependency(target);
-                }
-            }
-        }
-        
-        synchronized(auxset) {
-            for (Iterator i = auxset.iterator(); i.hasNext(); ) {
-                AuxDependency aux  = (AuxDependency) i.next();
-                if (aux.getType().isDynamic()) {
-                    i.remove();
-                }
-            }
-        }
+    public synchronized void reset() {
+        TargetDependencyRelation.getInstance().resetRelation(target);
     }
 
     public long getMaxTimestamp() {
-        DependencyRefCounter refcounter = target.getTargetGenerator().getDependencyRefCounter();
-        HashSet              allaux     = refcounter.getDependenciesForTarget(target);
-        long                 max        = 0;
+        Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
+        long               max    = 0;
+        
         if (allaux != null) {
-            for (Iterator i = allaux.iterator(); i.hasNext();) {
-                AuxDependency aux  = (AuxDependency) i.next();
+            for (Iterator<AuxDependency> i = allaux.iterator(); i.hasNext();) {
+                AuxDependency aux  = i.next();
                 max = Math.max(max, aux.getModTime());
             }
         }
         return max;
     }
+    
 
-    //
-    // Private Stuff
-    //
+    public synchronized void saveAuxdepend() throws IOException  {
+        CAT.info("===> Trying to save aux info of Target '" + target.getTargetKey() + "'");
 
-    private void saveIt(String name, Document doc, Element root, Set in, AuxDependency parent, HashSet allaux) {
-        Path   parent_path    = null;
-        String parent_part    = null;
-        String parent_product = null;
+        Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
+        File               path   = new File(target.getTargetGenerator().getDisccachedir().resolve(),
+                                             target.getTargetKey() + ".aux");
 
-        if (parent != null) {
-            parent_path    = parent.getPath();
-            parent_part    = parent.getPart();
-            parent_product = parent.getProduct();
-        }
+        HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = 
+            TargetDependencyRelation.getInstance().getParentChildMapForTarget(target);
         
-        for (Iterator i = in.iterator(); i.hasNext(); ) {
-            AuxDependency aux = (AuxDependency) i.next();
-            // We remove it from the set of all aux deps so we can later check if every aux dep has
-            // been handled at all. See the explanation in method saveAuxdepend() for more info.
-            if (allaux != null) {
-                allaux.remove(aux);
-            }
-            if (aux.getType().isDynamic()) {
-                Element depaux = doc.createElement(name);
-                String  type;
+        Document auxdoc   = Xml.createDocument();
+        Element  rootelem = auxdoc.createElement("aux");
+        
+        auxdoc.appendChild(rootelem);
+
+        if (parentchild != null) {
+            for (Iterator<AuxDependency> i = parentchild.keySet().iterator(); i.hasNext(); ) {
+                AuxDependency parent       = i.next();
+                Path          parent_path  = null;
+                String        parent_part  = null;
+                String        parent_theme = null;
                 
-                type = aux.getType().getTag();
-                root.appendChild(depaux);
-                depaux.setAttribute("type", type);
-                depaux.setAttribute("path", aux.getPath().getRelative());
-                if (aux.getPart() != null)
-                    depaux.setAttribute("part", aux.getPart());
-                if (aux.getProduct() != null)  
-                    depaux.setAttribute("product", aux.getProduct());
-                if (parent_path != null) 
-                    depaux.setAttribute("parent_path", parent_path.getRelative());
-                if (parent_part != null) 
-                    depaux.setAttribute("parent_part", parent_part);
-                if (parent_product != null) 
-                    depaux.setAttribute("parent_product", parent_product);
-            }
-            Set children = aux.getChildren(target);
-            if (children != null && children.size() > 0) {
-                saveIt(name, doc, root, children, aux, allaux);
-            }
-        }
-    }
-
-    private boolean checkLoopFree(AuxDependency parent, AuxDependency aux) {
-        // The simple loop
-        if (parent == aux) {
-            return false;
-        }
-        
-        // Now iterate over all children of aux recursively and check if any of them is parent.
-        Set children = aux.getChildren(target);
-        if (children != null) {
-            for (Iterator i = children.iterator(); i.hasNext();) {
-                AuxDependency child = (AuxDependency) i.next();
-                if (child.getType() == DependencyType.TEXT) {
-                    if (!checkLoopFree(parent, child)) {
-                        return false;
+                if (parent != root) {
+                    parent_path  = parent.getPath();
+                    parent_part  = parent.getPart();
+                    parent_theme = parent.getTheme();
+                }
+                
+                HashSet<AuxDependency> children = parentchild.get(parent);
+                
+                for (Iterator<AuxDependency> j = children.iterator(); j.hasNext(); ) {
+                    AuxDependency  aux  = j.next();
+                    DependencyType type = aux.getType();
+                    
+                    if (type.isDynamic()) {
+                        Element depaux = auxdoc.createElement(DEPAUX);
+                        rootelem.appendChild(depaux);
+                        depaux.setAttribute("type", type.getTag());
+                        depaux.setAttribute("path", aux.getPath().getRelative());
+                        if (aux.getPart() != null)
+                            depaux.setAttribute("part", aux.getPart());
+                        if (aux.getTheme() != null)  
+                            depaux.setAttribute("product", aux.getTheme());
+                        if (parent_path != null) 
+                            depaux.setAttribute("parent_path", parent_path.getRelative());
+                        if (parent_part != null) 
+                            depaux.setAttribute("parent_part", parent_part);
+                        if (parent_theme != null) 
+                            depaux.setAttribute("parent_product", parent_theme);
                     }
                 }
             }
         }
-
-        return true;
+        Xml.serialize(auxdoc, path, true, true);
     }
 
+    public TreeSet<AuxDependency> getChildren() {
+        HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = 
+            TargetDependencyRelation.getInstance().getParentChildMapForTarget(target);
+
+        TreeSet<AuxDependency> retval = new TreeSet<AuxDependency>();
+        
+        if (parentchild != null && parentchild.get(root) != null) {
+            retval.addAll(parentchild.get(root));
+        }
+        
+        return retval;
+    }
+        
 }// AuxDependencyManager
