@@ -4,6 +4,7 @@
     <product name="default">
       <lang name="default">
         <center>
+          <pfx:include href="sample1/txt/navigation.xml" part="test"/>
           <pfx:forminput target="_top">
             <table width="400">
               <tr>
@@ -105,11 +106,7 @@
   
   <part name="adult">
     
-    <product name="foo">
-      <lang name="default">
-        [FOO] Are you really older than 18 years?
-      </lang>
-    </product>
+    
     <product name="bar">
       <lang name="default">
         [BAR] Are you really older than 18 years?
@@ -118,6 +115,10 @@
   <product name="default">
 <lang name="default">
   [DEF] Are you really older than 18 years?
+</lang>
+</product><product name="foo">
+<lang name="default">
+   <pfx:include part="thefoo"/> AAAAre you really older than 18 years?
 </lang>
 </product></part>
 
@@ -275,4 +276,8 @@
       </lang>
     </product>
   </part>
-</include_parts>
+<part name="thefoo"><product name="default">
+<lang name="default">
+  [FOO]
+</lang>
+</product></part></include_parts>

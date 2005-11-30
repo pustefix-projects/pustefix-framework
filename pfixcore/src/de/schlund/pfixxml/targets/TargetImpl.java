@@ -69,7 +69,6 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     public TargetType getType() {
         return type;
     }
-
     
     /**
      * @see de.schlund.pfixxml.targets.Target#getTargetKey()

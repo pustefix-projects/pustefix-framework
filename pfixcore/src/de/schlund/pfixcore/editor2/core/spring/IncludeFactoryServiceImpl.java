@@ -138,10 +138,9 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     public IncludePartThemeVariant getIncludePartThemeVariant(
             AuxDependency auxdep) throws EditorParsingException {
         if (auxdep.getType() == DependencyType.TEXT) {
-            IncludePartThemeVariant variant = this.includefactory
-                    .getIncludeFile(auxdep.getPath().getRelative()).createPart(
-                            auxdep.getPart()).createThemeVariant(
-                            this.themefactory.getTheme(auxdep.getProduct()));
+            IncludePartThemeVariant variant  = this.includefactory
+                .getIncludeFile(auxdep.getPath().getRelative()).createPart(auxdep.getPart())
+                .createThemeVariant(this.themefactory.getTheme(auxdep.getTheme()));
             return variant;
         } else {
             String err = "Supplied AuxDependency is not of type DependencyType.TEXT!";

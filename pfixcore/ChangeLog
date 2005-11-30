@@ -1,6 +1,70 @@
-2005-11-30  Michael Hartmeier <haecker@schlund.de>
-    * src/de/schlund/pfixxml/jmx/JmxServerFactory.java:
-    use MACHINE environment variable to determin host name
+2005-11-30  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (Module): even more mappings: also 
+	AUX->(AUX) as parent<->child and Target->AUX->(AUX) as parent<->child, but depending on the target.
+	Also implemented all the needed accessor methods.
+	
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java (Module): removed all traces of DependencyRefCounter
+	(TargetGenerator::tryReinit): call TargetDependencyRelation.resetAllRelations(...) for all current targets before 
+	trying to reload the configuration.
+
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
+	* src/de/schlund/pfixxml/targets/Target.java: cosmetics
+
+	* src/de/schlund/pfixxml/targets/DependencyType.java (DependencyType::newInstance): removed method
+
+	* src/de/schlund/pfixxml/targets/DependencyRefCounter.java (Module): remove
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: put all the book keeping into
+	the TargetDependencyRelation class. Use the methods from there and simplify the whole class.
+
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java (AuxDependencyFactory::getAuxDependency): 
+	directly create the new AuxDependency, not via the type object (what stupid idea was that???)
+
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: remove all the book keeping of affected
+	targets, target generators and children. All this is being taken care of by the new
+	TargetDependencyRelation class.
+	
+	* src/de/schlund/pfixcore/util/CheckIncludes.java (CheckIncludes::checkForUnavailableIncludes): 
+	use TargetDependencyRelation
+	(CheckIncludes::checkForUnavailableIncludes): use aux.getTheme()
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (TargetPfixImpl::getImageDependencies): 
+	use aux.getTheme()
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java (TargetAuxDepImpl::getAffectedPages): 
+	use TargetDependencyRelation to get list of affected targets, guard against null values
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java (ProjectImpl::getAllImages): 
+	use TargetDependencyRelation to get the project dependencies for the spezified type. Guard against
+	null values.
+	(ProjectImpl::findIncludePartThemeVariant): ...and to get all project dependencies
+	(ProjectImpl::hasIncludePart): ...and to get the list of affected TargetGenerators
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java 
+	(IncludePartThemeVariantImpl::getIncludeDependencies): use TargetDependencyRelation to get the overall 
+	children for the AuxDependency, guard against null return value.
+	(IncludePartThemeVariantImpl::getImageDependencies): ditto.
+	(IncludePartThemeVariantImpl::getImageDependencies): use aux.getTheme()
+	(IncludePartThemeVariantImpl::getAffectedPages): use TargetDependencyRelation to get affected targets,
+	guard against null value.
+	(IncludePartThemeVariantImpl::getIncludeDependencies): use new getChildrenForThemes helper method
+	(IncludePartThemeVariantImpl::getImageDependencies): ditto.
+	(IncludePartThemeVariantImpl::getImageDependencies): use aux.getTheme()
+	(IncludePartThemeVariantImpl::getAffectedProjects): use TargetDependencyRelation to get affected
+	TargetGenerators. Guard against null value.
+	(IncludePartThemeVariantImpl::getChildrenForThemes): new method to use TargetDependencyRelation to get
+	the children for the given Themes (temporary).
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java (ImageImpl::getAffectedPages): 
+	use TargetDependencyRelation to get affected targets, guard against null return value
+
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java 
+	(IncludeFactoryServiceImpl::getIncludePartThemeVariant): use aux.getTheme()
+
+2005-11-30  Michael Hartmeier <mhm@schlund.de>
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java:
+	use MACHINE environment variable to determin host name
 
 2005-11-29  Joerg Haecker <haecker@schlund.de>
 
@@ -20,7 +84,7 @@
 
 	* released pfixcore-0.8.7.jar
 	* started pfixcore-0.8.8-pre
-
+	
 2005-11-29  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/core/editor2/txt/util_includes.xml: 

@@ -18,12 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 
-import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -50,8 +45,17 @@ import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.Target;
+import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.Themes;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of IncludePartThemeVariant using a DOM tree
@@ -103,10 +107,13 @@ public class IncludePartThemeVariantImpl extends
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive)
-            throws EditorParsingException {
-        HashSet includes = new HashSet();
-        Collection childs = this.getAuxDependency().getChildrenForAllThemes();
+    public Collection getIncludeDependencies(boolean recursive) throws EditorParsingException {
+        HashSet includes  = new HashSet();
+        Collection childs = TargetDependencyRelation.getInstance().
+            getChildrenOverallForAuxDependency(this.getAuxDependency());
+        if (childs == null) {
+            return includes;
+        }
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
@@ -127,20 +134,20 @@ public class IncludePartThemeVariantImpl extends
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getImageDependencies(boolean)
      */
     public Collection getImageDependencies(boolean recursive)
-            throws EditorParsingException {
-        HashSet images = new HashSet();
-        Collection childs = this.getAuxDependency().getChildrenForAllThemes();
+        throws EditorParsingException {
+        HashSet    images = new HashSet();
+        Collection childs = TargetDependencyRelation.getInstance().getChildrenOverallForAuxDependency(this.getAuxDependency());
+        if (childs == null) {
+            return images;
+        }
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(child.getPath()
-                        .getRelative());
+                Image image = this.imagefactory.getImage(child.getPath().getRelative());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
-                IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(child.getPath().getRelative())
-                        .createPart(child.getPart()).createThemeVariant(
-                                themefactory.getTheme(child.getProduct()));
+                IncludePartThemeVariant variant = this.includefactory.getIncludeFile(child.getPath().getRelative())
+                    .createPart(child.getPart()).createThemeVariant(themefactory.getTheme(child.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -153,20 +160,21 @@ public class IncludePartThemeVariantImpl extends
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getAffectedPages()
      */
     public Collection getAffectedPages() {
-        HashSet pageinfos = new HashSet();
-        for (Iterator i = this.getAuxDependency().getAffectedTargets()
-                .iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
-                    .next();
+        HashSet pageinfos  = new HashSet();
+        HashSet pages      = new HashSet();
+        Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(this.getAuxDependency());
+        if (afftargets == null) {
+            return pages;
+        }
+
+        for (Iterator i = afftargets.iterator(); i.hasNext();) {
+            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i.next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
 
-        HashSet pages = new HashSet();
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
-            Project project = projectfactory
-                    .getProjectByPustefixTargetGenerator(pageinfo
-                            .getTargetGenerator());
+            Project project = projectfactory.getProjectByPustefixTargetGenerator(pageinfo.getTargetGenerator());
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
                 variant = variantfactory.getVariant(pageinfo.getVariant());
@@ -180,23 +188,21 @@ public class IncludePartThemeVariantImpl extends
         return pages;
     }
 
-    public Collection getIncludeDependencies(ThemeList themes, boolean recursive)
-            throws EditorParsingException {
+    public Collection getIncludeDependencies(ThemeList themes, boolean recursive) throws EditorParsingException {
         HashSet includes = new HashSet();
-
+        
         ArrayList themesArray = new ArrayList();
         for (Iterator i = themes.getThemes().iterator(); i.hasNext();) {
             Theme theme = (Theme) i.next();
             themesArray.add(theme.getName());
         }
 
-        Collection childs = this.getAuxDependency().getChildrenForThemes(
-                new Themes((String[]) themesArray.toArray(new String[0])));
+        Collection childs = getChildrenForThemes(this.getAuxDependency(),
+                                                 new Themes((String[]) themesArray.toArray(new String[0])));
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
-                IncludePartThemeVariant variant = this.includefactory
-                        .getIncludePartThemeVariant(child);
+                IncludePartThemeVariant variant = this.includefactory.getIncludePartThemeVariant(child);
                 includes.add(variant);
                 if (recursive) {
                     includes.addAll(variant.getIncludeDependencies(true));
@@ -206,8 +212,7 @@ public class IncludePartThemeVariantImpl extends
         return includes;
     }
 
-    public Collection getImageDependencies(ThemeList themes, boolean recursive)
-            throws EditorParsingException {
+    public Collection getImageDependencies(ThemeList themes, boolean recursive) throws EditorParsingException {
         HashSet images = new HashSet();
 
         ArrayList themesArray = new ArrayList();
@@ -216,19 +221,16 @@ public class IncludePartThemeVariantImpl extends
             themesArray.add(theme.getName());
         }
 
-        Collection childs = this.getAuxDependency().getChildrenForThemes(
-                new Themes((String[]) themesArray.toArray(new String[0])));
+        Collection childs = getChildrenForThemes(this.getAuxDependency(),
+                                                 new Themes((String[]) themesArray.toArray(new String[0])));
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(child.getPath()
-                        .getRelative());
+                Image image = this.imagefactory.getImage(child.getPath().getRelative());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
-                IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(child.getPath().getRelative())
-                        .createPart(child.getPart()).createThemeVariant(
-                                themefactory.getTheme(child.getProduct()));
+                IncludePartThemeVariant variant = this.includefactory.getIncludeFile(child.getPath().getRelative())
+                    .createPart(child.getPart()).createThemeVariant(themefactory.getTheme(child.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -248,11 +250,14 @@ public class IncludePartThemeVariantImpl extends
 
     public Collection getAffectedProjects() {
         HashSet projects = new HashSet();
-        for (Iterator i = this.getAuxDependency().getAffectedTargetGenerators()
-                .iterator(); i.hasNext();) {
+        Set     afftgens = TargetDependencyRelation.getInstance().getAffectedTargetGenerators(this.getAuxDependency());
+        if (afftgens == null) {
+            return projects;
+        }
+
+        for (Iterator i = afftgens.iterator(); i.hasNext();) {
             TargetGenerator tgen = (TargetGenerator) i.next();
-            Project project = this.projectfactory
-                    .getProjectByPustefixTargetGenerator(tgen);
+            Project project = this.projectfactory.getProjectByPustefixTargetGenerator(tgen);
             if (project != null) {
                 projects.add(project);
             }
@@ -261,8 +266,34 @@ public class IncludePartThemeVariantImpl extends
     }
 
     protected void writeChangeLog() {
-        Logger.getLogger("LOGGER_EDITOR").warn(
-                "TXT: " + this.securitymanager.getPrincipal().getName() + ": "
-                        + this.toString());
+        Logger.getLogger("LOGGER_EDITOR").warn("TXT: " + this.securitymanager.getPrincipal().getName()
+                                               + ": " + this.toString());
     }
+
+
+    private Set<AuxDependency> getChildrenForThemes(AuxDependency parent, Themes themes) {
+        TreeSet<AuxDependency> retval = TargetDependencyRelation.getInstance().getChildrenOverallForAuxDependency(parent);
+        if (retval == null) {
+            return new TreeSet<AuxDependency>();
+        } else {
+            for (Iterator<AuxDependency> i = retval.iterator(); i.hasNext();) {
+                AuxDependency    aux        = i.next();
+                TreeSet<Target> afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(aux);
+                boolean validaux = false;
+                for (Iterator<Target> j = afftargets.iterator(); j.hasNext();) {
+                    Target target = j.next();
+                    if (target.getThemes() != null && target.getThemes().equals(themes)) {
+                        // aux has an affected target with the right Themes 
+                        validaux = true;
+                        break;
+                    }
+                }
+                if (!validaux) {
+                    i.remove();
+                }
+            }
+            return retval;
+        }
+    }
+
 }

@@ -127,9 +127,13 @@ public class CheckIncludes {
 
     private void checkForUnavailableIncludes(Document result, Element res_root) throws Exception {
         for (Iterator i = generators.keySet().iterator(); i.hasNext();) {
-            String          depend = (String) i.next();
-            TargetGenerator gen    = (TargetGenerator) generators.get(depend);
-            TreeSet         deps   = gen.getDependencyRefCounter().getAllDependencies();
+            String          depend  = (String) i.next();
+            TargetGenerator gen     = (TargetGenerator) generators.get(depend);
+            // TreeSet         deps = gen.getDependencyRefCounter().getAllDependencies();
+            TreeSet         deps    = TargetDependencyRelation.getInstance().getProjectDependencies(gen);
+            if (deps == null) {
+                return;
+            }
 
             for (Iterator j = deps.iterator(); j.hasNext();) {
                 AuxDependency aux = (AuxDependency) j.next();
@@ -153,7 +157,7 @@ public class CheckIncludes {
                     elem.setAttribute("path", path.getRelative());
                     if (aux.getType().equals(DependencyType.TEXT)) {
                         elem.setAttribute("part", aux.getPart());
-                        elem.setAttribute("product", aux.getProduct());
+                        elem.setAttribute("product", aux.getTheme());
                     }
                 }
             }

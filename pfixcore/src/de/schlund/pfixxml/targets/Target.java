@@ -39,7 +39,6 @@ public interface Target extends Comparable {
     long            getModTime();
     String          toString();
     String          getFullName();
-    boolean         needsUpdate() throws Exception;
     /**
      * Get the value of the target. Depending on the 
      * circumstances this will trigger a recursive 
@@ -50,4 +49,5 @@ public interface Target extends Comparable {
      * generation. 
      */
     Object  getValue() throws TargetGenerationException;
+    boolean needsUpdate() throws Exception;
 }

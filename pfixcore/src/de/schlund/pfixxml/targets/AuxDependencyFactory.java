@@ -32,7 +32,7 @@ import de.schlund.pfixxml.util.Path;
 
 public class AuxDependencyFactory {
     private static AuxDependencyFactory instance     = new AuxDependencyFactory();
-    private TreeMap              includeparts = new TreeMap();
+    private TreeMap                     includeparts = new TreeMap();
     
     private AuxDependencyFactory() {}
     
@@ -41,10 +41,10 @@ public class AuxDependencyFactory {
     }
 
     public synchronized AuxDependency getAuxDependency(DependencyType type, Path path, String part, String product) {
-        String        key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
+        String key = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + product;
         AuxDependency ret = (AuxDependency) includeparts.get(key);
         if (ret == null) {
-            ret = type.newInstance(path, part, product);
+            ret = new AuxDependency(type, path, part, product);
             includeparts.put(key, ret);
         }
         return ret;
