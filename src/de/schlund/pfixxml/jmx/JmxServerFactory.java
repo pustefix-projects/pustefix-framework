@@ -63,7 +63,7 @@ public class JmxServerFactory {
         host = getHost();
         try {
             server = new JmxServer();
-            server.start(host, getPort(host));
+            server.start(host, getPort(host, props));
         } catch (Exception e) {
             LOG.debug("not started", e);
         }
@@ -81,15 +81,17 @@ public class JmxServerFactory {
         }
     }
     
-    private static int getPort(InetAddress host) {
+    private static int getPort(InetAddress host, Properties props) {
+        String substring;
         String name;
         
+        substring = props.getProperty("de.schlund.pfixcore.jmx.port2.directory");
         LOG.debug("host: " + host.getHostName());
         LOG.debug("path: " + PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath());
-        if (host.getHostName().startsWith("pustefix")) {
-            LOG.debug("pustefix life port hack");
+        if (substring != null) {
+            LOG.debug("consider alternative port: " + substring);
             name = PathFactory.getInstance().createPath("foo").resolve().getAbsolutePath();
-            if (name.endsWith("/pfixschlund_b/projects/foo")) {
+            if (name.indexOf(substring) != -1) {
                 return PORT_B;
             }
         }
