@@ -1,5 +1,34 @@
 2005-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/frontend/resources/TargetsResourceImpl.java (insertStatus): 
+	Changed call to Target.getImageDependencies() and Target.getIncludeDependencies()
+	to match changed signature
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getType): 
+	Changed methods to match interface and use TargetDependencyRelation where
+	possible
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: 
+	Changed methods to match interface
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java (recurseTarget): 
+	Changed call to target.getAuxDependencies()
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
+	Changed method signatures to honor changes in interface and use the new
+	TargetDependencyRelation to get child dependencies
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/DynIncludePartThemeVariantImpl.java: 
+	Changed method signatures to match changed interface
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/Target.java (getAuxDependencies): 
+	Changed method signature to take no arguments, as the method was only used
+	with a fixed argument of "false"
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludePartThemeVariant.java: 
+	Changed signature of getImageDependencies and getIncludeDependencies methods
+	to take a Target argument instead of ThemeList
+	
 	* example/core/editor2/txt/util_includes.xml: 
 	Added list with existing theme branches of the current include part
 	to include part view

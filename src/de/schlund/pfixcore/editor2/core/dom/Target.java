@@ -97,13 +97,9 @@ public interface Target {
      * does not include the XML and XSL parent, but only those targets whose
      * dependency is defined manually.
      * 
-     * @param recursive
-     *            If set to <code>true</code> all dependendencies, including
-     *            those which are dependencies of other dependencies themselves
-     *            are included in the returned list
      * @return All auxilliary parent targets
      */
-    Collection getAuxDependencies(boolean recursive);
+    Collection getAuxDependencies();
 
     /**
      * Returns all include parts this Target is depending on. The returned

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -57,6 +58,7 @@ import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyManager;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 import de.schlund.pfixxml.targets.VirtualTarget;
 
@@ -211,9 +213,9 @@ public class TargetPfixImpl extends AbstractTarget {
     /*
      * (non-Javadoc)
      * 
-     * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies(boolean)
+     * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies()
      */
-    public Collection getAuxDependencies(boolean recursive) {
+    public Collection getAuxDependencies() {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
@@ -230,16 +232,8 @@ public class TargetPfixImpl extends AbstractTarget {
                 }
             }
 
-            if (recursive) {
-                if (this.getParentXML() != null) {
-                    deps.addAll(this.getParentXML().getAuxDependencies(true));
-                }
-                if (this.getParentXSL() != null) {
-                    deps.addAll(this.getParentXSL().getAuxDependencies(true));
-                }
-            }
-
             return deps;
+
         } else {
             return new ArrayList();
         }
@@ -250,35 +244,54 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive) throws EditorParsingException {
+    public Collection getIncludeDependencies(boolean recursive)
+            throws EditorParsingException {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
-            VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
-            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget.getThemes());
-            AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
-            if (auxmanager == null) {
-                String msg = "Could not get AuxDependencyManager for target " + this.getName() + "!";
-                Logger.getLogger(this.getClass()).warn(msg);
-                return new ArrayList();
-            }
-
-            for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
-                AuxDependency auxdep = (AuxDependency) i.next();
-                if (auxdep.getType() == DependencyType.TEXT) {
-                    IncludePartThemeVariant variant = this.includefactory.getIncludePartThemeVariant(auxdep);
-                    deps.add(variant);
-                    if (recursive) {
-                        deps.addAll(variant.getIncludeDependencies(themes, true));
+            if (recursive) {
+                Set alldeps = TargetDependencyRelation.getInstance()
+                        .getDependenciesForTarget(this.pfixTarget);
+                if (alldeps != null) {
+                    for (Iterator i = alldeps.iterator(); i.hasNext();) {
+                        AuxDependency aux = (AuxDependency) i.next();
+                        if (aux.getType() == DependencyType.TEXT) {
+                            IncludePartThemeVariant variant = this.includefactory
+                                    .getIncludePartThemeVariant(aux);
+                            deps.add(variant);
+                        }
                     }
                 }
-            }
 
-            if (recursive) {
                 if (this.getParentXML() != null) {
-                    deps.addAll(this.getParentXML().getIncludeDependencies(true));
+                    deps.addAll(this.getParentXML()
+                            .getIncludeDependencies(true));
                 }
                 if (this.getParentXSL() != null) {
-                    deps.addAll(this.getParentXSL().getIncludeDependencies(true));
+                    deps.addAll(this.getParentXSL()
+                            .getIncludeDependencies(true));
+                }
+
+            } else {
+                VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+                ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
+                        .getThemes());
+                AuxDependencyManager auxmanager = vtarget
+                        .getAuxDependencyManager();
+                if (auxmanager == null) {
+                    String msg = "Could not get AuxDependencyManager for target "
+                            + this.getName() + "!";
+                    Logger.getLogger(this.getClass()).warn(msg);
+                    return new ArrayList();
+                }
+
+                for (Iterator i = auxmanager.getChildren().iterator(); i
+                        .hasNext();) {
+                    AuxDependency auxdep = (AuxDependency) i.next();
+                    if (auxdep.getType() == DependencyType.TEXT) {
+                        IncludePartThemeVariant variant = this.includefactory
+                                .getIncludePartThemeVariant(auxdep);
+                        deps.add(variant);
+                    }
                 }
             }
 
@@ -300,40 +313,56 @@ public class TargetPfixImpl extends AbstractTarget {
             throws EditorParsingException {
         ArrayList deps = new ArrayList();
         if (this.pfixTarget instanceof VirtualTarget) {
-            VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
-            ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
-                    .getThemes());
-            AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
-            if (auxmanager == null) {
-                return new ArrayList();
-            }
-
-            for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
-                AuxDependency auxdep = (AuxDependency) i.next();
-                if ((auxdep.getType() == DependencyType.TEXT) && recursive) {
-                    IncludePartThemeVariant variant = this.includefactory
-                        .getIncludeFile(auxdep.getPath().getRelative())
-                        .createPart(auxdep.getPart()).createThemeVariant(this.themefactory.getTheme(auxdep.getTheme()));
-                    
-                    deps.addAll(variant.getImageDependencies(themes, true));
-                } else if (auxdep.getType() == DependencyType.IMAGE) {
-                    Image dep = this.imagefactory.getImage(auxdep.getPath()
-                            .getRelative());
-                    deps.add(dep);
-                }
-            }
-
             if (recursive) {
+                Set alldeps = TargetDependencyRelation.getInstance()
+                        .getDependenciesForTarget(this.pfixTarget);
+                if (alldeps != null) {
+                    for (Iterator i = alldeps.iterator(); i.hasNext();) {
+                        AuxDependency auxdep = (AuxDependency) i.next();
+                        if (auxdep.getType() == DependencyType.IMAGE) {
+                            Image img = this.imagefactory.getImage(auxdep
+                                    .getPath().getRelative());
+                            deps.add(img);
+                        }
+                    }
+                }
+
                 if (this.getParentXML() != null) {
                     deps.addAll(this.getParentXML().getImageDependencies(true));
                 }
                 if (this.getParentXSL() != null) {
                     deps.addAll(this.getParentXSL().getImageDependencies(true));
                 }
+
+            } else {
+                VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+                ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
+                        .getThemes());
+                AuxDependencyManager auxmanager = vtarget
+                        .getAuxDependencyManager();
+                if (auxmanager == null) {
+                    String msg = "Could not get AuxDependencyManager for target "
+                            + this.getName() + "!";
+                    Logger.getLogger(this.getClass()).warn(msg);
+                    return new ArrayList();
+                }
+
+                for (Iterator i = auxmanager.getChildren().iterator(); i
+                        .hasNext();) {
+                    AuxDependency auxdep = (AuxDependency) i.next();
+                    if (auxdep.getType() == DependencyType.IMAGE) {
+                        Image img = this.imagefactory.getImage(auxdep.getPath()
+                                .getRelative());
+                        deps.add(img);
+                    }
+                }
             }
 
             return deps;
         } else {
+            String msg = "Page target " + this.getName()
+                    + " is no VirtualTarget!";
+            Logger.getLogger(this.getClass()).warn(msg);
             return new ArrayList();
         }
     }
@@ -430,6 +459,14 @@ public class TargetPfixImpl extends AbstractTarget {
 
             };
         }
+    }
+
+    de.schlund.pfixxml.targets.Target getPfixTarget() {
+        // This package level access method is used by
+        // IncludePartThemeVariantImpl to retrieve
+        // the Pustefix target object when lookup up
+        // dependencies
+        return this.pfixTarget;
     }
 
 }

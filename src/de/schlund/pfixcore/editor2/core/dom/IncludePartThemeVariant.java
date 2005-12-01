@@ -103,10 +103,12 @@ public interface IncludePartThemeVariant extends Comparable {
     /**
      * Returns all include parts this IncludePart is depending on. Actually
      * IncludePartThemeVariant objects are returned to honor the fact, that this
-     * IncludePart depends on a specific version of another IncludePart
+     * IncludePart depends on a specific version of another IncludePart.
+     * This list may very depending on the target for which this part is
+     * rendererd.
      * 
-     * @param themes
-     *            Themes to select the variants for
+     * @param target
+     *            Target to do the lookup for
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
      *            those which are dependencies of other dependencies themselves
@@ -114,14 +116,15 @@ public interface IncludePartThemeVariant extends Comparable {
      * @return All dependend include parts
      * @throws EditorParsingException
      */
-    Collection getIncludeDependencies(ThemeList themes, boolean recursive)
+    Collection getIncludeDependencies(Target target, boolean recursive)
             throws EditorParsingException;
 
     /**
      * Returns all images this Include is depending on.
+     * This list may depend on the given target.
      * 
-     * @param themes
-     *            Themes to select the variants for
+     * @param target
+     *            Target to do the lookup for
      * @param recursive
      *            If set to <code>true</code> all dependendencies, including
      *            those which are dependencies of other dependencies themselves
@@ -130,7 +133,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * @throws EditorParsingException
      * @see Image
      */
-    Collection getImageDependencies(ThemeList themes, boolean recursive)
+    Collection getImageDependencies(Target target, boolean recursive)
             throws EditorParsingException;
 
     /**
