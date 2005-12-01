@@ -173,7 +173,7 @@ public class ProjectImpl extends AbstractProject {
 
     private void recurseTarget(Target target, Map alltargets) {
         alltargets.put(target.getName(), target);
-        for (Iterator i = target.getAuxDependencies(false).iterator(); i
+        for (Iterator i = target.getAuxDependencies().iterator(); i
                 .hasNext();) {
             Target t = (Target) i.next();
             alltargets.put(t.getName(), t);

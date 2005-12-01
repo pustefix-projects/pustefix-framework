@@ -18,7 +18,13 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
@@ -26,7 +32,6 @@ import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
@@ -48,14 +53,6 @@ import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
-import de.schlund.pfixxml.targets.Themes;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import org.apache.log4j.Logger;
 
 /**
  * Implementation of IncludePartThemeVariant using a DOM tree
@@ -107,10 +104,11 @@ public class IncludePartThemeVariantImpl extends
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive) throws EditorParsingException {
-        HashSet includes  = new HashSet();
-        Collection childs = TargetDependencyRelation.getInstance().
-            getChildrenOverallForAuxDependency(this.getAuxDependency());
+    public Collection getIncludeDependencies(boolean recursive)
+            throws EditorParsingException {
+        HashSet includes = new HashSet();
+        Collection childs = TargetDependencyRelation.getInstance()
+                .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return includes;
         }
@@ -134,20 +132,24 @@ public class IncludePartThemeVariantImpl extends
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getImageDependencies(boolean)
      */
     public Collection getImageDependencies(boolean recursive)
-        throws EditorParsingException {
-        HashSet    images = new HashSet();
-        Collection childs = TargetDependencyRelation.getInstance().getChildrenOverallForAuxDependency(this.getAuxDependency());
+            throws EditorParsingException {
+        HashSet images = new HashSet();
+        Collection childs = TargetDependencyRelation.getInstance()
+                .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
             return images;
         }
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(child.getPath().getRelative());
+                Image image = this.imagefactory.getImage(child.getPath()
+                        .getRelative());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
-                IncludePartThemeVariant variant = this.includefactory.getIncludeFile(child.getPath().getRelative())
-                    .createPart(child.getPart()).createThemeVariant(themefactory.getTheme(child.getTheme()));
+                IncludePartThemeVariant variant = this.includefactory
+                        .getIncludeFile(child.getPath().getRelative())
+                        .createPart(child.getPart()).createThemeVariant(
+                                themefactory.getTheme(child.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -160,21 +162,25 @@ public class IncludePartThemeVariantImpl extends
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getAffectedPages()
      */
     public Collection getAffectedPages() {
-        HashSet pageinfos  = new HashSet();
-        HashSet pages      = new HashSet();
-        Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(this.getAuxDependency());
+        HashSet pageinfos = new HashSet();
+        HashSet pages = new HashSet();
+        Set afftargets = TargetDependencyRelation.getInstance()
+                .getAffectedTargets(this.getAuxDependency());
         if (afftargets == null) {
             return pages;
         }
 
         for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i.next();
+            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
+                    .next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
 
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
-            Project project = projectfactory.getProjectByPustefixTargetGenerator(pageinfo.getTargetGenerator());
+            Project project = projectfactory
+                    .getProjectByPustefixTargetGenerator(pageinfo
+                            .getTargetGenerator());
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
                 variant = variantfactory.getVariant(pageinfo.getVariant());
@@ -188,21 +194,18 @@ public class IncludePartThemeVariantImpl extends
         return pages;
     }
 
-    public Collection getIncludeDependencies(ThemeList themes, boolean recursive) throws EditorParsingException {
+    public Collection getIncludeDependencies(
+            de.schlund.pfixcore.editor2.core.dom.Target target,
+            boolean recursive) throws EditorParsingException {
         HashSet includes = new HashSet();
-        
-        ArrayList themesArray = new ArrayList();
-        for (Iterator i = themes.getThemes().iterator(); i.hasNext();) {
-            Theme theme = (Theme) i.next();
-            themesArray.add(theme.getName());
-        }
 
-        Collection childs = getChildrenForThemes(this.getAuxDependency(),
-                                                 new Themes((String[]) themesArray.toArray(new String[0])));
+        Collection childs = getChildrenForTarget(this.getAuxDependency(),
+                target);
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.TEXT) {
-                IncludePartThemeVariant variant = this.includefactory.getIncludePartThemeVariant(child);
+                IncludePartThemeVariant variant = this.includefactory
+                        .getIncludePartThemeVariant(child);
                 includes.add(variant);
                 if (recursive) {
                     includes.addAll(variant.getIncludeDependencies(true));
@@ -212,25 +215,24 @@ public class IncludePartThemeVariantImpl extends
         return includes;
     }
 
-    public Collection getImageDependencies(ThemeList themes, boolean recursive) throws EditorParsingException {
+    public Collection getImageDependencies(
+            de.schlund.pfixcore.editor2.core.dom.Target target,
+            boolean recursive) throws EditorParsingException {
         HashSet images = new HashSet();
 
-        ArrayList themesArray = new ArrayList();
-        for (Iterator i = themes.getThemes().iterator(); i.hasNext();) {
-            Theme theme = (Theme) i.next();
-            themesArray.add(theme.getName());
-        }
-
-        Collection childs = getChildrenForThemes(this.getAuxDependency(),
-                                                 new Themes((String[]) themesArray.toArray(new String[0])));
+        Collection childs = getChildrenForTarget(this.getAuxDependency(),
+                target);
         for (Iterator i = childs.iterator(); i.hasNext();) {
             AuxDependency child = (AuxDependency) i.next();
             if (child.getType() == DependencyType.IMAGE) {
-                Image image = this.imagefactory.getImage(child.getPath().getRelative());
+                Image image = this.imagefactory.getImage(child.getPath()
+                        .getRelative());
                 images.add(image);
             } else if ((child.getType() == DependencyType.TEXT) && recursive) {
-                IncludePartThemeVariant variant = this.includefactory.getIncludeFile(child.getPath().getRelative())
-                    .createPart(child.getPart()).createThemeVariant(themefactory.getTheme(child.getTheme()));
+                IncludePartThemeVariant variant = this.includefactory
+                        .getIncludeFile(child.getPath().getRelative())
+                        .createPart(child.getPart()).createThemeVariant(
+                                themefactory.getTheme(child.getTheme()));
                 images.addAll(variant.getImageDependencies(true));
             }
         }
@@ -250,14 +252,16 @@ public class IncludePartThemeVariantImpl extends
 
     public Collection getAffectedProjects() {
         HashSet projects = new HashSet();
-        Set     afftgens = TargetDependencyRelation.getInstance().getAffectedTargetGenerators(this.getAuxDependency());
+        Set afftgens = TargetDependencyRelation.getInstance()
+                .getAffectedTargetGenerators(this.getAuxDependency());
         if (afftgens == null) {
             return projects;
         }
 
         for (Iterator i = afftgens.iterator(); i.hasNext();) {
             TargetGenerator tgen = (TargetGenerator) i.next();
-            Project project = this.projectfactory.getProjectByPustefixTargetGenerator(tgen);
+            Project project = this.projectfactory
+                    .getProjectByPustefixTargetGenerator(tgen);
             if (project != null) {
                 projects.add(project);
             }
@@ -266,32 +270,24 @@ public class IncludePartThemeVariantImpl extends
     }
 
     protected void writeChangeLog() {
-        Logger.getLogger("LOGGER_EDITOR").warn("TXT: " + this.securitymanager.getPrincipal().getName()
-                                               + ": " + this.toString());
+        Logger.getLogger("LOGGER_EDITOR").warn(
+                "TXT: " + this.securitymanager.getPrincipal().getName() + ": "
+                        + this.toString());
     }
 
-
-    private Set<AuxDependency> getChildrenForThemes(AuxDependency parent, Themes themes) {
-        TreeSet<AuxDependency> retval = TargetDependencyRelation.getInstance().getChildrenOverallForAuxDependency(parent);
+    private Set<AuxDependency> getChildrenForTarget(AuxDependency parent,
+            de.schlund.pfixcore.editor2.core.dom.Target target) {
+        Target pfixTarget;
+        if (target instanceof TargetPfixImpl) {
+            pfixTarget = ((TargetPfixImpl) target).getPfixTarget();
+        } else {
+            return new TreeSet<AuxDependency>();
+        }
+        TreeSet<AuxDependency> retval = TargetDependencyRelation.getInstance()
+                .getChildrenForTargetForAuxDependency(pfixTarget, parent);
         if (retval == null) {
             return new TreeSet<AuxDependency>();
         } else {
-            for (Iterator<AuxDependency> i = retval.iterator(); i.hasNext();) {
-                AuxDependency    aux        = i.next();
-                TreeSet<Target> afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(aux);
-                boolean validaux = false;
-                for (Iterator<Target> j = afftargets.iterator(); j.hasNext();) {
-                    Target target = j.next();
-                    if (target.getThemes() != null && target.getThemes().equals(themes)) {
-                        // aux has an affected target with the right Themes 
-                        validaux = true;
-                        break;
-                    }
-                }
-                if (!validaux) {
-                    i.remove();
-                }
-            }
             return retval;
         }
     }

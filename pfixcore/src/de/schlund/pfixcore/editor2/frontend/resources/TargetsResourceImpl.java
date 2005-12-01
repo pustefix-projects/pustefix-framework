@@ -115,7 +115,7 @@ public class TargetsResourceImpl implements TargetsResource {
                             .next();
                     this.renderInclude(variant, includesNode);
                     allincludes.addAll(variant.getIncludeDependencies(
-                            this.selectedTarget.getThemeList(), true));
+                            this.selectedTarget, true));
                 }
             }
 
@@ -126,8 +126,8 @@ public class TargetsResourceImpl implements TargetsResource {
             for (Iterator i = allincludes.iterator(); i.hasNext();) {
                 IncludePartThemeVariant variant = (IncludePartThemeVariant) i
                         .next();
-                images.addAll(variant.getImageDependencies(this.selectedTarget
-                        .getThemeList(), true));
+                images.addAll(variant.getImageDependencies(this.selectedTarget,
+                        true));
             }
             if (!images.isEmpty()) {
                 Element imagesNode = resdoc.createSubNode(currentTarget,
@@ -164,7 +164,7 @@ public class TargetsResourceImpl implements TargetsResource {
 
         try {
             TreeSet variants = new TreeSet(variant.getIncludeDependencies(
-                    this.selectedTarget.getThemeList(), false));
+                    this.selectedTarget, false));
             for (Iterator i = variants.iterator(); i.hasNext();) {
                 IncludePartThemeVariant variant2 = (IncludePartThemeVariant) i
                         .next();
@@ -196,7 +196,8 @@ public class TargetsResourceImpl implements TargetsResource {
             node.setAttribute("leaf", "false");
             this.renderTarget(target.getParentXML(), node);
             this.renderTarget(target.getParentXSL(), node);
-            for (Iterator i = target.getAuxDependencies(false).iterator(); i.hasNext();) {
+            for (Iterator i = target.getAuxDependencies().iterator(); i
+                    .hasNext();) {
                 Target auxtarget = (Target) i.next();
                 this.renderTarget(auxtarget, node);
             }

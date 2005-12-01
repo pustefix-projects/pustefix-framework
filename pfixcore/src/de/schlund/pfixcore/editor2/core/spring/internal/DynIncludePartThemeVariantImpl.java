@@ -24,8 +24,8 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
+import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
-import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
 import de.schlund.pfixcore.editor2.core.spring.BackupService;
@@ -73,12 +73,12 @@ public class DynIncludePartThemeVariantImpl extends
         return new ArrayList();
     }
 
-    public Collection getIncludeDependencies(ThemeList themes, boolean recursive)
+    public Collection getIncludeDependencies(Target target, boolean recursive)
             throws EditorParsingException {
         return new ArrayList();
     }
 
-    public Collection getImageDependencies(ThemeList themes, boolean recursive)
+    public Collection getImageDependencies(Target target, boolean recursive)
             throws EditorParsingException {
         return new ArrayList();
     }

@@ -166,9 +166,9 @@ public class TargetAuxDepImpl extends AbstractTarget {
     /*
      * (non-Javadoc)
      * 
-     * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies(boolean)
+     * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies()
      */
-    public Collection getAuxDependencies(boolean recursive) {
+    public Collection getAuxDependencies() {
         // Leaf targets don't have dependencies
         return new ArrayList();
     }
