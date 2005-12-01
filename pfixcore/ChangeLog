@@ -1,3 +1,7 @@
+2005-12-01  Michael Hartmeier <mhm@schlund.de>
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java, example/common/conf/factory.prop.in:
+	use alternative jmx port if docroot matches configurable substring
+
 2005-11-30  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (AbstractXMLServer::initValues): get the 
