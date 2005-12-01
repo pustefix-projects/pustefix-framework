@@ -52,9 +52,6 @@
             <td class="editor_head">
               <b>Editor user</b>
             </td>
-            <td class="editor_head">
-              <b>Selected IncludePart</b>
-            </td>
           </tr>
           <ixsl:for-each select="/formresult/sessioninfo/session">
             <ixsl:variable name="class">
@@ -65,35 +62,25 @@
             </ixsl:variable>
             <tr>
               <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
-              <td style="padding:1px;">
+              <td style="padding:1px;" nowrap="nowrap">
                 <ixsl:value-of select="./@id"/>
               </td>
-              <td style="padding:1px;">
+              <td style="padding:1px;" nowrap="nowrap">
                 <ixsl:value-of select="./@created"/>
               </td>
-              <td style="padding:1px;">
+              <td style="padding:1px;" nowrap="nowrap">
                 <ixsl:value-of select="./@lastAccess"/>
               </td>
-              <td style="padding:1px;">
+              <td style="padding:1px;" nowrap="nowrap">
                 <ixsl:value-of select="./@requestCount"/>
               </td>
-              <td style="padding:1px;">
+              <td style="padding:1px;" nowrap="nowrap">
                 <ixsl:choose>
                   <ixsl:when test="./@username">
                     <ixsl:value-of select="./@username"/>
                   </ixsl:when>
                   <ixsl:otherwise>
                     <i>not logged in</i>
-                  </ixsl:otherwise>
-                </ixsl:choose>
-              </td>
-              <td style="padding:1px;">
-                <ixsl:choose>
-                  <ixsl:when test="./@incpart">
-                    <ixsl:value-of select="./@incpart"/>
-                  </ixsl:when>
-                  <ixsl:otherwise>
-                    <i>none</i>
                   </ixsl:otherwise>
                 </ixsl:choose>
               </td>
@@ -108,6 +95,13 @@
                 </ixsl:for-each>
               </td>
             </tr>
+            <ixsl:if test="./@incpart">
+              <tr>
+                <td style="padding-right:10px; color: #993333; text-align: right;" colspan="5">
+                  Currently working on: <ixsl:value-of select="./@incpart"/>
+                </td>
+              </tr>
+            </ixsl:if>
           </ixsl:for-each>
           <tr>
             <td colspan="5">
