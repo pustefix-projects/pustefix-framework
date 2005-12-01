@@ -98,17 +98,12 @@
         <ixsl:choose>
           <ixsl:when test="./currentinclude/@mayEdit='true'">
             <pfx:include part="uploadinclude"/>
-            <ixsl:if test="(./currentinclude/possiblethemes) or ((./currentinclude/@theme != 'default') and (./currentinclude/@mayEdit = 'true'))">
-              <pfx:include part="handlethemebranches"/>
-            </ixsl:if>
           </ixsl:when>
           <ixsl:otherwise>
             <pfx:include part="perm_denied_usedby_other_prods" href="core/editor2/txt/util.xml"/>
-            <ixsl:if test="./currentinclude/possiblethemes">
-              <pfx:include part="handlethemebranches"/>
-            </ixsl:if>
           </ixsl:otherwise>
         </ixsl:choose>
+        <pfx:include part="handlethemebranches"/>
       </lang>
     </product>
   </part>
@@ -124,6 +119,30 @@
               of the include part.
             </td>
           </tr>
+          
+          <ixsl:variable name="currtheme"><ixsl:value-of select="./currentinclude/@theme"/></ixsl:variable>
+          <ixsl:variable name="currpart"><ixsl:value-of select="./currentinclude/@part"/></ixsl:variable>
+          <ixsl:if test="./directory/file/include[@selected='true']/parent::node()/include[(@theme!=$currtheme) and (@part=$currpart)]">
+            <tr><td colspan="2"><hr/></td></tr>
+            <tr>
+              <td colspan="2">
+                Other existing theme branches:
+                <ixsl:for-each select="./directory/file/include[@selected='true']/parent::node()/include[(@theme!=$currtheme) and (@part=$currpart)]">
+                  <pfx:button mode="force" target="_top" frame="_top">
+                    <pfx:command  name="SELWRP">selectinclude</pfx:command>
+                    <pfx:command  name="SELWRP">upload</pfx:command>
+                    <pfx:argument name="selectinclude.Path"><ixsl:value-of select="../@path"/></pfx:argument>
+                    <pfx:argument name="selectinclude.Part"><ixsl:value-of select="./@part"/></pfx:argument>
+                    <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="./@theme"/></pfx:argument>
+                    <pfx:anchor   frame="left_navi"><ixsl:value-of select="../@path"/></pfx:anchor>
+                    <ixsl:value-of select="@theme"/>
+                  </pfx:button>
+                  &#160;
+                </ixsl:for-each>
+              </td>
+            </tr>
+          </ixsl:if>
+
           <ixsl:if test="./currentinclude/possiblethemes">
             <tr><td colspan="2"><hr/></td></tr>
             <tr>

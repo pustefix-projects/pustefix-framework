@@ -1,3 +1,9 @@
+2005-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* example/core/editor2/txt/util_includes.xml: 
+	Added list with existing theme branches of the current include part
+	to include part view
+
 2005-12-01  Michael Hartmeier <mhm@schlund.de>
 	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java, example/common/conf/factory.prop.in:
 	use alternative jmx port if docroot matches configurable substring
