@@ -58,9 +58,9 @@ public abstract class IWrapperImpl implements IWrapper {
     private   String      pagename = null;
     private   String      visitid  = null;
     
-    protected HashMap     params   = null; // single static parameters (of the form PREFIX.NAME)
-    protected HashMap     errors   = null; // errors on single parameters
-    protected HashMap     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
+    protected HashMap<String, IWrapperParam>     params   = null; // single static parameters (of the form PREFIX.NAME)
+    protected HashMap<String, IWrapperParam>     errors   = null; // errors on single parameters
+    protected HashMap<String, IWrapperIndexedParam>     idxprms  = null; // array like indexed parameters (of the form PREFIX.NAME.INDEX)
     protected IHandler    handler  = null; // Make sure that you set the handler in the
                                            // constructor of a derived class
     
@@ -112,9 +112,9 @@ public abstract class IWrapperImpl implements IWrapper {
     }
 
     public final void init(String prefix) throws Exception {
-        params  = new HashMap();
-        errors  = new HashMap();
-        idxprms = new HashMap();
+        params  = new HashMap<String, IWrapperParam>();
+        errors  = new HashMap<String, IWrapperParam>();
+        idxprms = new HashMap<String, IWrapperIndexedParam>();
         this.prefix = prefix;
         registerParams();
     }
