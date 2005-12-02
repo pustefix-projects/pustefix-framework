@@ -74,10 +74,15 @@ public <xsl:if test="not(/iwrp:interface/iwrp:ihandler) and not(@extends)">abstr
     
     protected synchronized void registerParams() {
         super.registerParams();
+        @SuppressWarnings("unused")
         IWrapperParam          pinfo;
+        @SuppressWarnings("unused") 
         IWrapperIndexedParam   pindx;
+        @SuppressWarnings("unused") 
         IWrapperParamCaster    caster;
+        @SuppressWarnings("unused") 
         IWrapperParamPreCheck  pre;
+        @SuppressWarnings("unused") 
         IWrapperParamPostCheck post;
     <xsl:for-each select="/iwrp:interface/iwrp:param">
       <xsl:variable name="freqparam">
