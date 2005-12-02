@@ -107,7 +107,9 @@ public class ImageImpl extends AbstractImage {
                 variant = this.variantfactory.getVariant(pageinfo.getVariant());
             }
             Page page = project.getPage(pageinfo.getName(), variant);
-            pages.add(page);
+            if (page != null) {
+                pages.add(page);
+            }
         }
 
         return pages;

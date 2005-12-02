@@ -1,3 +1,11 @@
+2005-12-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java (getAffectedPages): 
+	Quickfix for NullPointerException: Do not return null pointers in collection
+	of accted pages. Although the cause of this problems lies deeper in
+	ProjectImpl, this should fix the problem so that no exceptions are thrown
+	anymore.
+
 2005-12-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (Module): cosmetics
