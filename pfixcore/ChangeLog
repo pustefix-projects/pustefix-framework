@@ -1,6 +1,8 @@
 2005-12-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (Module): cosmetics
+	(Xslt::loadTemplates): use a new file resolver every time, not only when the
+	factory is created because the tgen argument can be null or != null.
 
 2005-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
