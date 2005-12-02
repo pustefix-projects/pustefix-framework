@@ -170,13 +170,15 @@ public class Xslt {
             this.tgen = tgen;
         }
         /**
-         * Resolve file url relative to root. 
+         * Resolve file url relative to root. Before searching the file system, check
+         * if there is a XML Target defined and use this instead.
          * @param base ignored, always relative to root 
          * */
         public Source resolve(String href, String base) throws TransformerException {
             URI    uri;
             String path;
             File   file;
+
             try {
                 uri = new URI(href);
             } catch (URISyntaxException e) {
@@ -195,7 +197,7 @@ public class Xslt {
                     try {
                         dom = (Document) target.getValue();
                     } catch (TargetGenerationException e) {
-                        throw new TransformerException("Could not generate target '" + target.getTargetKey()
+                        throw new TransformerException("Could not retrieve target '" + target.getTargetKey()
                                                        + "' included by stylesheet!", e);
                     }
                     Source source = new DOMSource(dom);

@@ -1,3 +1,7 @@
+2005-12-02  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (Module): cosmetics
+
 2005-12-01  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/TargetsResourceImpl.java (insertStatus): 
