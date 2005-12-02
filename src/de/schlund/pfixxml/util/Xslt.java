@@ -114,10 +114,11 @@ public class Xslt {
         if (factory == null) {
             // Create a new factory with the correct URIResolver.
             factory = new TransformerFactoryImpl();
-            factory.setURIResolver(new FileResolver(path.getBase(), gen));
             factory.setErrorListener(new PFErrorListener());
             factorymap.put(path.getBase(), factory);
         }
+
+        factory.setURIResolver(new FileResolver(path.getBase(), gen));
         
         try {
             Templates retval = factory.newTemplates(src);
@@ -163,7 +164,7 @@ public class Xslt {
     static class FileResolver implements URIResolver {
     	private static final String SEP = File.separator; 
         private final File          root;
-        private TargetGenerator tgen;
+        private TargetGenerator     tgen;
         
         public FileResolver(File root, TargetGenerator tgen) {
             this.root = root;
@@ -209,7 +210,7 @@ public class Xslt {
                     return source;
                 }
             }
-            
+
             try {
                 file = Path.create(root, path).resolve();
             } catch (IllegalArgumentException e) {
