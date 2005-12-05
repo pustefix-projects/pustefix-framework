@@ -1,3 +1,13 @@
+2005-12-05  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (TargetDependencyRelation::getChildParentMapForTarget)
+	(TargetDependencyRelation::getParentsOverallForAuxDependency)
+	(TargetDependencyRelation::getParentsForTargetForAuxDependency): new methods to handle mapping of child->parent
+	AuxDependencies.
+	
+	(TargetDependencyRelation::addRelation)
+	(TargetDependencyRelation::resetRelation): changes to create/reset the new child->parent relations.
+
 2005-12-02  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java (getAffectedPages): 
