@@ -260,7 +260,7 @@ public class TargetDependencyRelation {
             targettochildparent.put(target, new HashMap<AuxDependency, HashSet<AuxDependency>>());
         }
         if (auxtoparentaux.get(aux) == null) {
-            auxtochildaux.put(aux, new RefCountingCollection<AuxDependency>());
+            auxtoparentaux.put(aux, new RefCountingCollection<AuxDependency>());
         }
 
 
