@@ -376,7 +376,7 @@ public class TargetDependencyRelation {
 //             RefCountingCollection<AuxDependency> allparents = auxtoparentaux.get(child);
 //             for (Iterator<AuxDependency> j = parents.iterator(); j.hasNext();) {
 //                 AuxDependency parent = j.next();
-//                 if (parent.getType().isDynamic()) {
+//                 if (child.getType().isDynamic()) { // YES! child.getType() is correct!
 //                     allparents.remove(parent);
 //                     j.remove();
 //                 }
