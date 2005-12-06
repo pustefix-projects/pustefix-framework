@@ -18,7 +18,14 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractProject;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
@@ -32,12 +39,15 @@ import de.schlund.pfixcore.editor2.core.spring.ImageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.IncludeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PageFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
+import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixcore.workflow.Navigation;
 import de.schlund.pfixcore.workflow.NavigationFactory;
+import de.schlund.pfixcore.workflow.Navigation.NavigationElement;
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.event.ConfigurationChangeEvent;
+import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
 import de.schlund.pfixxml.targets.DependencyType;
@@ -46,13 +56,7 @@ import de.schlund.pfixxml.targets.PageTargetTree;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerator;
 import de.schlund.pfixxml.targets.TargetGeneratorFactory;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeSet;
-import org.apache.log4j.Logger;
+import de.schlund.pfixxml.util.Path;
 
 /**
  * Implementation of Project using a XML file to read project information during
@@ -77,13 +81,15 @@ public class ProjectImpl extends AbstractProject {
 
     private HashMap pagemap;
 
-    private HashMap targetmap;
-
     private TargetGenerator tgen;
 
     private IncludeFactoryService includefactory;
 
     private ImageFactoryService imagefactory;
+
+    private TargetFactoryService targetfactory;
+
+    private Path dependPath;
 
     /**
      * Creates a new Project object
@@ -101,6 +107,7 @@ public class ProjectImpl extends AbstractProject {
             ThemeFactoryService themefactory, PageFactoryService pagefactory,
             IncludeFactoryService includefactory,
             ImageFactoryService imagefactory,
+            TargetFactoryService targetfactory,
             PustefixTargetUpdateService updater, String name, String comment,
             String dependFile) throws EditorInitializationException {
         this.projectName = name;
@@ -110,20 +117,14 @@ public class ProjectImpl extends AbstractProject {
         this.pagefactory = pagefactory;
         this.includefactory = includefactory;
         this.imagefactory = imagefactory;
+        this.targetfactory = targetfactory;
 
-        Navigation navi;
-        try {
-            navi = NavigationFactory.getInstance().getNavigation(dependFile);
-        } catch (Exception e) {
-            String err = "Cannot not load navigation for project " + name + "!";
-            Logger.getLogger(this.getClass()).error(err, e);
-            throw new EditorInitializationException(err, e);
-        }
+        this.dependPath = PathFactory.getInstance().createPath(dependFile);
 
         TargetGenerator gen;
         try {
             gen = TargetGeneratorFactory.getInstance().createGenerator(
-                    PathFactory.getInstance().createPath(dependFile));
+                    this.dependPath);
         } catch (Exception e) {
             String err = "Cannot create TargetGenerator for project " + name
                     + "!";
@@ -135,6 +136,28 @@ public class ProjectImpl extends AbstractProject {
         // Register target generator for updates
         updater.registerTargetGeneratorForUpdateLoop(tgen);
 
+        // Register event listener to be informed about changes
+        // in TargetGenerator
+
+        this.tgen.addListener(new ConfigurationChangeListener() {
+
+            public void configurationChanged(ConfigurationChangeEvent event) {
+                reloadConfig();
+
+            }
+
+        });
+
+        this.pagemap = new HashMap();
+
+        // Load configuration
+        this.reloadConfig();
+    }
+
+    private synchronized void reloadConfig() {
+        Navigation navi = this.getNavigation();
+        TargetGenerator gen = this.getTargetGenerator();
+
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
         HashSet pages = new HashSet();
@@ -143,15 +166,13 @@ public class ProjectImpl extends AbstractProject {
             pages.addAll(this.recurseNavigationElement(navElements[i], null,
                     ptree));
         }
-        this.toppages = pages;
 
         // Create pagename => page map
         HashMap pagemap = new HashMap();
-        for (Iterator i = this.toppages.iterator(); i.hasNext();) {
+        for (Iterator i = pages.iterator(); i.hasNext();) {
             Page page = (Page) i.next();
             this.recursePage(page, pagemap);
         }
-        this.pagemap = pagemap;
 
         // Create collection containing all page objects
         HashSet allpages = new HashSet();
@@ -159,22 +180,16 @@ public class ProjectImpl extends AbstractProject {
             HashMap map = (HashMap) i.next();
             allpages.addAll(map.values());
         }
+
+        this.toppages = pages;
+        this.pagemap = pagemap;
         this.allpages = allpages;
 
-        // Create target map
-        HashMap targets = new HashMap();
-        for (Iterator i = allpages.iterator(); i.hasNext();) {
-            Page p = (Page) i.next();
-            // Recurse over targets
-            this.recurseTarget(p.getPageTarget(), targets);
-        }
-        this.targetmap = targets;
     }
 
     private void recurseTarget(Target target, Map alltargets) {
         alltargets.put(target.getName(), target);
-        for (Iterator i = target.getAuxDependencies().iterator(); i
-                .hasNext();) {
+        for (Iterator i = target.getAuxDependencies().iterator(); i.hasNext();) {
             Target t = (Target) i.next();
             alltargets.put(t.getName(), t);
         }
@@ -244,13 +259,16 @@ public class ProjectImpl extends AbstractProject {
                 }
                 ThemeList pageThemes = new ThemeListImpl(this.themefactory,
                         ptree.getTargetForPageInfo(pinfo).getThemes());
-                MutablePage page = this.pagefactory
-                        .getMutablePage(pageName, pageVariant, pageHandler,
-                                pageThemes, null, this, pinfo);
+                MutablePage page = (MutablePage) this.getPage(pageName,
+                        pageVariant);
                 if (page == null) {
-                    String err = "Page returned by pagefactory is null!";
-                    Logger.getLogger(this.getClass()).error(err);
+                    // Create new page only if there has not been a page
+                    // with the same name and same variant before
+                    page = this.pagefactory.getMutablePage(pageName,
+                            pageVariant, pageHandler, pageThemes, null, this,
+                            pinfo);
                 }
+                page.setHandlerPath(pageHandler);
                 pages.add(page);
                 if (pageVariant == null) {
                     defaultPage = page;
@@ -274,7 +292,7 @@ public class ProjectImpl extends AbstractProject {
                 String err = "Page returned by iteration is null!";
                 Logger.getLogger(this.getClass()).error(err);
             }
-            page.addSubPages(subpages);
+            page.setSubPages(subpages);
         }
 
         return pages;
@@ -339,25 +357,43 @@ public class ProjectImpl extends AbstractProject {
     }
 
     public Target getTarget(String name) {
-        return (Target) this.targetmap.get(name);
+        de.schlund.pfixxml.targets.Target pfixTarget = this.tgen
+                .getTarget(name);
+        if (pfixTarget != null) {
+            return this.targetfactory.getTargetFromPustefixTarget(pfixTarget,
+                    this);
+        }
+        return null;
     }
 
     public TargetGenerator getTargetGenerator() {
         return this.tgen;
     }
 
+    private Navigation getNavigation() {
+        try {
+            return NavigationFactory.getInstance().getNavigation(
+                    this.dependPath.getRelative());
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Could not get navigation object for prokec \""
+                            + this.getName() + "\"!");
+        }
+    }
+
     public Collection getAllIncludeParts() {
         HashSet includes = new HashSet();
-        TreeSet deps     = TargetDependencyRelation.getInstance()
-            .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
+        TreeSet deps = TargetDependencyRelation.getInstance()
+                .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
         if (deps == null) {
             return includes;
         }
-        
+
         for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependency auxdep = (AuxDependency) i.next();
             try {
-                includes.add(this.includefactory.getIncludePartThemeVariant(auxdep));
+                includes.add(this.includefactory
+                        .getIncludePartThemeVariant(auxdep));
             } catch (EditorParsingException e) {
                 // Ignore exception and go on
             }
@@ -367,23 +403,28 @@ public class ProjectImpl extends AbstractProject {
 
     public Collection getAllImages() {
         HashSet images = new HashSet();
-        TreeSet deps   = TargetDependencyRelation.getInstance()
-            .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
+        TreeSet deps = TargetDependencyRelation.getInstance()
+                .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
         if (deps == null) {
             return images;
         }
         for (Iterator i = deps.iterator(); i.hasNext();) {
             AuxDependency auxdep = (AuxDependency) i.next();
-            images.add(this.imagefactory.getImage(auxdep.getPath().getRelative()));
+            images.add(this.imagefactory.getImage(auxdep.getPath()
+                    .getRelative()));
         }
         return images;
     }
 
-    public IncludePartThemeVariant findIncludePartThemeVariant(String file, String part, String theme) {
-        AuxDependency auxdep = AuxDependencyFactory.getInstance()
-            .getAuxDependency(DependencyType.TEXT, PathFactory.getInstance().createPath(file), part, theme);
+    public IncludePartThemeVariant findIncludePartThemeVariant(String file,
+            String part, String theme) {
+        AuxDependency auxdep = AuxDependencyFactory
+                .getInstance()
+                .getAuxDependency(DependencyType.TEXT,
+                        PathFactory.getInstance().createPath(file), part, theme);
 
-        TreeSet deps = TargetDependencyRelation.getInstance().getProjectDependencies(tgen);
+        TreeSet deps = TargetDependencyRelation.getInstance()
+                .getProjectDependencies(tgen);
         if (deps == null) {
             return null;
         }
@@ -392,7 +433,8 @@ public class ProjectImpl extends AbstractProject {
             try {
                 return this.includefactory.getIncludePartThemeVariant(auxdep);
             } catch (EditorParsingException e) {
-                String msg = "Failed to get include part " + part + ":" + theme + "@" + file + "!";
+                String msg = "Failed to get include part " + part + ":" + theme
+                        + "@" + file + "!";
                 Logger.getLogger(this.getClass()).warn(msg, e);
                 return null;
             }
@@ -402,13 +444,16 @@ public class ProjectImpl extends AbstractProject {
     }
 
     public boolean hasIncludePart(String file, String part, String theme) {
-        AuxDependency aux = AuxDependencyFactory.getInstance()
-            .getAuxDependency(DependencyType.TEXT, PathFactory.getInstance().createPath(file), part, theme);
-        TreeSet generators = TargetDependencyRelation.getInstance().getAffectedTargetGenerators(aux);
+        AuxDependency aux = AuxDependencyFactory
+                .getInstance()
+                .getAuxDependency(DependencyType.TEXT,
+                        PathFactory.getInstance().createPath(file), part, theme);
+        TreeSet generators = TargetDependencyRelation.getInstance()
+                .getAffectedTargetGenerators(aux);
         if (generators == null) {
             return false;
         }
-        
+
         return generators.contains(this.tgen);
     }
 

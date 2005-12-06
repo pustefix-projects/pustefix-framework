@@ -23,11 +23,14 @@ package de.schlund.pfixxml.targets;
 
 import de.schlund.pfixcore.util.Meminfo;
 import de.schlund.pfixxml.*;
+import de.schlund.pfixxml.event.ConfigurationChangeEvent;
+import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.w3c.dom.*;
@@ -58,7 +61,9 @@ public class TargetGenerator implements Comparable{
     private String language;
     
     /* All registered TargetGenerationListener */
-    private Set listeners = new HashSet();
+    private Set generationListeners = new HashSet();
+    private Set<ConfigurationChangeListener> configurationListeners = Collections
+            .synchronizedSet(new HashSet<ConfigurationChangeListener>());
 
     // needed during load.
     private int unnamedcount = 0;
@@ -121,13 +126,20 @@ public class TargetGenerator implements Comparable{
     //-- misc
     
     public void addListener(TargetGeneratorListener listener) {
-        listeners.add(listener);
+        generationListeners.add(listener);
     }
     
     public void removeListener(TargetGeneratorListener listener) {
-        listeners.remove(listener);
+        generationListeners.remove(listener);
     }
     
+    public void addListener(ConfigurationChangeListener listener) {
+        configurationListeners.add(listener);
+    }
+    
+    public void removeListener(ConfigurationChangeListener listener) {
+        configurationListeners.remove(listener);
+    }
     public String toString() {
         return "[TG: " + getName() + "; " + alltargets.size() + " targets defined.]";
     }
@@ -152,9 +164,18 @@ public class TargetGenerator implements Comparable{
             alltargets   = new HashMap();
             config_mtime = tmp.lastModified();
             loadConfig(confile);
+            this.fireConfigurationChangeEvent();
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void fireConfigurationChangeEvent() {
+        for (Iterator i = this.configurationListeners.iterator(); i.hasNext();) {
+            ConfigurationChangeListener listener = (ConfigurationChangeListener) i
+                    .next();
+            listener.configurationChanged(new ConfigurationChangeEvent(this));
         }
     }
 
@@ -577,9 +598,9 @@ public class TargetGenerator implements Comparable{
      */
     private boolean needsToStop() {
         boolean result = false;
-        if (listeners.size() > 0) {
+        if (generationListeners.size() > 0) {
             result = true;
-            for (Iterator it=listeners.iterator();it.hasNext();) {
+            for (Iterator it=generationListeners.iterator();it.hasNext();) {
                 TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
                 if (listener.needsStop()) {
                     result = result && true;
@@ -599,7 +620,7 @@ public class TargetGenerator implements Comparable{
      * @param target the finished target
      */
     private void notifyListenerTargetDone(Target target) {
-        for (Iterator it = listeners.iterator();it.hasNext();) {
+        for (Iterator it = generationListeners.iterator();it.hasNext();) {
             TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
             listener.finishedTarget(target);
         }
@@ -611,7 +632,7 @@ public class TargetGenerator implements Comparable{
      * @param tgex the exception!
      */
     private void notifyListenerTargetException(Target target,TargetGenerationException tgex) {
-        for (Iterator it = listeners.iterator();it.hasNext();) {
+        for (Iterator it = generationListeners.iterator();it.hasNext();) {
             TargetGeneratorListener listener = (TargetGeneratorListener) it.next();
             listener.generationException(target,tgex);
         }

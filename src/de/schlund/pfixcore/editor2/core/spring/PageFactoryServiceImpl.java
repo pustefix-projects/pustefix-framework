@@ -19,6 +19,7 @@
 package de.schlund.pfixcore.editor2.core.spring;
 
 import java.util.HashMap;
+
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.ThemeList;
@@ -96,6 +97,8 @@ public class PageFactoryServiceImpl implements PageFactoryService {
 
     private PustefixTargetUpdateService pustefixtargetupdate;
 
+    private ThemeFactoryService themefactory;
+
     public void setTargetFactoryService(TargetFactoryService targetfactory) {
         this.targetfactory = targetfactory;
     }
@@ -103,6 +106,10 @@ public class PageFactoryServiceImpl implements PageFactoryService {
     public void setPustefixTargetUpdateService(
             PustefixTargetUpdateService pustefixtargetupdate) {
         this.pustefixtargetupdate = pustefixtargetupdate;
+    }
+    
+    public void setThemeFactoryService(ThemeFactoryService themefactory) {
+        this.themefactory = themefactory;
     }
 
     public PageFactoryServiceImpl() {
@@ -127,8 +134,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
         synchronized (this.cache) {
             if (!this.cache.containsKey(pk)) {
                 Page page = new PageImpl(this.targetfactory,
-                        this.pustefixtargetupdate, pageName, variant, handler,
-                        themes, parent, project, pinfo);
+                        this.pustefixtargetupdate, this.themefactory, pageName, variant, project);
                 this.cache.put(pk, page);
             }
             return (MutablePage) this.cache.get(pk);

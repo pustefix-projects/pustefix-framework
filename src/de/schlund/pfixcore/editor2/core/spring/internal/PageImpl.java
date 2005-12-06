@@ -30,7 +30,10 @@ import de.schlund.pfixcore.editor2.core.dom.ThemeList;
 import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
+import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
+import de.schlund.pfixcore.workflow.NavigationFactory;
 import de.schlund.pfixxml.targets.PageInfo;
+import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
 /**
@@ -43,21 +46,17 @@ public class PageImpl extends AbstractPage implements MutablePage {
 
     private Variant variant;
 
-    private String handler;
-
-    private ThemeList themes;
-
-    private Project project;
-
-    private Page parentPage;
-
-    private Collection childPages;
-
-    private PageInfo pinfo;
+    private ProjectImpl project;
 
     private TargetFactoryService targetfactory;
 
     private PustefixTargetUpdateService updater;
+
+    private ArrayList childPages = new ArrayList();
+
+    private ThemeFactoryService themefactory;
+
+    private String handlerPath;
 
     /**
      * Creates a page using the specified parameters
@@ -66,40 +65,30 @@ public class PageImpl extends AbstractPage implements MutablePage {
      *            Reference to the TargetFactoryService
      * @param updater
      *            Reference to the PustefixTargetUpdateService
+     * @param themefactory
+     *            Reference to the ThemesFactoryService
      * @param pageName
      *            Name of the page to create (without variant)
      * @param variant
      *            Variant of the page (or <code>null</code> for default)
-     * @param handler
-     *            String describing the handler being used to serve this page
-     * @param themes
-     *            List of the themes being used by this page
-     * @param parent
-     *            Parent of this page in navigation (or <code>null</code> if
-     *            this is a top-level page)
-     * @param childs
-     *            Childs of this page in navigation
      * @param project
      *            Project this page belongs to
-     * @param tgen
-     *            TargetGenerator used for this page's target
-     * @param pinfo
-     *            Used to identify this page within the Pustefix generator
      */
     public PageImpl(TargetFactoryService targetfactory,
-            PustefixTargetUpdateService updater, String pageName,
-            Variant variant, String handler, ThemeList themes, Page parent,
-            Project project, PageInfo pinfo) {
+            PustefixTargetUpdateService updater,
+            ThemeFactoryService themefactory, String pageName, Variant variant,
+            Project project) {
         this.targetfactory = targetfactory;
         this.name = pageName;
         this.variant = variant;
-        this.handler = handler;
-        this.themes = themes;
-        this.project = project;
-        this.parentPage = parent;
-        this.childPages = new ArrayList();
-        this.pinfo = pinfo;
+        
+        // Cast without check
+        // There is no other implementation of Project
+        // and even if there was one, we would have no
+        // chance than throwing an exception
+        this.project = (ProjectImpl) project;
         this.updater = updater;
+        this.themefactory = themefactory;
     }
 
     /*
@@ -126,7 +115,11 @@ public class PageImpl extends AbstractPage implements MutablePage {
      * @see de.schlund.pfixcore.editor2.core.dom.Page#getHandlerPath()
      */
     public String getHandlerPath() {
-        return this.handler;
+        return this.handlerPath;
+    }
+
+    public void setHandlerPath(String path) {
+        this.handlerPath = path;
     }
 
     /*
@@ -135,9 +128,8 @@ public class PageImpl extends AbstractPage implements MutablePage {
      * @see de.schlund.pfixcore.editor2.core.dom.Page#getPageTarget()
      */
     public Target getPageTarget() {
-        return this.targetfactory.getTargetFromPustefixTarget(this.pinfo
-                .getTargetGenerator().getPageTargetTree().getTargetForPageInfo(
-                        this.pinfo), this.getProject());
+        return this.targetfactory.getTargetFromPustefixTarget(this
+                .getPfixTarget(), this.project);
     }
 
     /*
@@ -146,7 +138,8 @@ public class PageImpl extends AbstractPage implements MutablePage {
      * @see de.schlund.pfixcore.editor2.core.dom.Page#getThemes()
      */
     public ThemeList getThemes() {
-        return this.themes;
+        return new ThemeListImpl(this.themefactory, this.getPfixTarget()
+                .getThemes());
     }
 
     /*
@@ -168,37 +161,31 @@ public class PageImpl extends AbstractPage implements MutablePage {
         return pages;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.schlund.pfixcore.editor2.core.dom.Page#getParentPage()
-     */
-    public Page getParentPage() {
-        return this.parentPage;
-    }
-
-    /**
-     * Adds the specified Page objects to the list of sub-pages of this Page
-     * 
-     * @param page
-     *            Collection containing Page objects to add as sub-page
-     */
-    public void addSubPages(Collection pages) {
-        this.childPages.addAll(pages);
+    public void setSubPages(Collection pages) {
+        this.childPages = new ArrayList(pages);
     }
 
     public void registerForUpdate() {
-        this.updater.registerTargetForUpdate(this.pinfo.getTargetGenerator()
-                .getPageTargetTree().getTargetForPageInfo(this.pinfo));
+        this.updater.registerTargetForUpdate(this.getPfixTarget());
     }
 
     public void update() {
         try {
-            this.pinfo.getTargetGenerator().getPageTargetTree()
-                    .getTargetForPageInfo(this.pinfo).getValue();
+            this.getPfixTarget().getValue();
         } catch (TargetGenerationException e) {
             // Ignore errors during target generation
         }
+    }
+
+    private de.schlund.pfixxml.targets.Target getPfixTarget() {
+        return project.getTargetGenerator().getPageTargetTree()
+                .getTargetForPageInfo(
+                        PageInfoFactory.getInstance()
+                                .getPage(
+                                        project.getTargetGenerator(),
+                                        this.getName(),
+                                        (variant == null) ? null : this.variant
+                                                .getName()));
     }
 
 }

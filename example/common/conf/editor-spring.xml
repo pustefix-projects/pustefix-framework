@@ -44,6 +44,9 @@
     <property name="imageFactoryService">
       <ref bean="imagefactory"/>
     </property>
+    <property name="targetFactoryService">
+      <ref bean="targetfactory"/>
+    </property>
     <property name="pustefixTargetUpdateService">
       <ref bean="pustefixtargetupdate"/>
     </property>
@@ -95,6 +98,9 @@
     </property>
     <property name="pustefixTargetUpdateService">
       <ref bean="pustefixtargetupdate"/>
+    </property>
+    <property name="themeFactoryService">
+      <ref bean="themefactory"/>
     </property>
   </bean>
 	

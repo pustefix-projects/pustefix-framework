@@ -73,6 +73,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private PustefixTargetUpdateService updater;
 
+    private TargetFactoryService targetfactory;
+
     public void setPathResolverService(PathResolverService pathresolver) {
         this.pathresolver = pathresolver;
     }
@@ -99,6 +101,10 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     public void setImageFactoryService(ImageFactoryService imagefactory) {
         this.imagefactory = imagefactory;
+    }
+    
+    public void setTargetFactoryService(TargetFactoryService targetfactory) {
+        this.targetfactory = targetfactory;
     }
 
     public void setPustefixTargetUpdateService(
@@ -160,8 +166,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
             }
             String projectDependFile = tempNode.getNodeValue();
             ProjectImpl project = new ProjectImpl(variantfactory, themefactory,
-                    pagefactory, includefactory, imagefactory, updater,
-                    projectName, projectComment, projectDependFile);
+                    pagefactory, includefactory, imagefactory, targetfactory,
+                    updater, projectName, projectComment, projectDependFile);
             this.projects.put(projectName, project);
             this.generatorToProjectNameMap.put(project.getTargetGenerator()
                     .getName(), projectName);

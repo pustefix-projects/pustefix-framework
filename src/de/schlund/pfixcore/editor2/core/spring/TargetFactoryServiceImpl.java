@@ -18,7 +18,10 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
@@ -32,9 +35,9 @@ import de.schlund.pfixxml.targets.AuxDependency;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class TargetFactoryServiceImpl implements TargetFactoryService {
-    private Hashtable cachePfixTarget;
+    private Map cachePfixTarget;
 
-    private Hashtable cacheAuxDepTarget;
+    private Map cacheAuxDepTarget;
 
     private ProjectFactoryService projectfactory;
 
@@ -85,8 +88,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
     }
 
     public TargetFactoryServiceImpl() {
-        this.cachePfixTarget = new Hashtable();
-        this.cacheAuxDepTarget = new Hashtable();
+        this.cachePfixTarget = new WeakHashMap();
+        this.cacheAuxDepTarget = Collections.synchronizedMap(new HashMap());
     }
 
     /*
@@ -97,10 +100,6 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
      */
     public Target getTargetFromPustefixTarget(
             de.schlund.pfixxml.targets.Target pfixTarget, Project project) {
-        // TODO Make sure Target object is unique within the whole installation
-        if (this.cachePfixTarget.containsKey(pfixTarget)) {
-            return (Target) this.cachePfixTarget.get(pfixTarget);
-        }
         synchronized (this.cachePfixTarget) {
             if (!this.cachePfixTarget.containsKey(pfixTarget)) {
                 this.cachePfixTarget.put(pfixTarget, new TargetPfixImpl(
@@ -108,8 +107,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
                         includefactory, themefactory, imagefactory,
                         pathresolver, filesystem, pfixTarget, project));
             }
+            return (Target) this.cachePfixTarget.get(pfixTarget);
         }
-        return (Target) this.cachePfixTarget.get(pfixTarget);
     }
 
     /*
