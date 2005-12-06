@@ -1,5 +1,8 @@
 2005-12-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* example/core/editor2/txt/util_includes.xml: Hide directory tree
+	with include parts by default, to accelerate page loading
+	
 	* example/common/conf/editor-spring.xml: 
 	Added property "targetfactory" to "projectfactory" bean and
 	"themefactory" to "pagefactory" bean

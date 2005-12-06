@@ -11,12 +11,12 @@
           <ixsl:for-each select="./directory">
             <div class="editor_includes_sidebar_directory" id="editor_includes_sidebar_directory_{./@jsId}">
               <div class="editor_includes_sidebar_directory_title">
-                <span class="editor_includes_sidebar_directory_showbutton" onClick="editor_includes_sidebar_show('editor_includes_sidebar_directory_{./@jsId}')" style="display:none">+</span>
-                <span class="editor_includes_sidebar_directory_hidebutton" onClick="editor_includes_sidebar_hide('editor_includes_sidebar_directory_{./@jsId}')">-</span>
+                <span class="editor_includes_sidebar_directory_showbutton" onClick="editor_includes_sidebar_show('editor_includes_sidebar_directory_{./@jsId}')">+</span>
+                <span class="editor_includes_sidebar_directory_hidebutton" onClick="editor_includes_sidebar_hide('editor_includes_sidebar_directory_{./@jsId}')" style="display:none">-</span>
 	              Dir: <b><ixsl:value-of select="@path"/></b>
 	            </div>
               <ixsl:for-each select="./file">
-                <div class="editor_includes_sidebar_file">
+                <div class="editor_includes_sidebar_file" style="display:none">
                   <a>
 	                  <ixsl:attribute name="name"><ixsl:value-of select="@path"/></ixsl:attribute>
 	                </a>
