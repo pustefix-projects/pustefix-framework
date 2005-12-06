@@ -1,3 +1,9 @@
+2005-12-06  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (module):
+	commented the child->parent relation stuff out form now for
+	testing purposes
+
 2005-12-05  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (TargetDependencyRelation::getChildParentMapForTarget)
