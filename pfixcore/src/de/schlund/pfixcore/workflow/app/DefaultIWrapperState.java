@@ -102,7 +102,7 @@ public class DefaultIWrapperState extends StateImpl {
             } else {
                 CAT.debug("    => No error happened during work ...");
                 if (!context.isJumptToPageSet() && container.stayAfterSubmit()) {
-                    CAT.debug("... Container says he wants to stay on this page and context.requestWantsContinue() doesn't object:");
+                    CAT.debug("... Container says he wants to stay on this page and no jumptopage is set:");
                     CAT.debug("    => retrieving current status.");
                     
                     pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
@@ -114,9 +114,9 @@ public class DefaultIWrapperState extends StateImpl {
                     context.prohibitContinue();
                 } else {
                     CAT.debug("... Container says he is ready");
-                    CAT.debug("    => end of submit reached successfully. Asking Context if it can continue:");
+                    CAT.debug("    => end of submit reached successfully. Determine from status of context if we can continue:");
                     if (!canContinue(context)) {
-                        CAT.debug(">>> Context can't continue:");
+                        CAT.debug(">>> We can't continue:");
                         CAT.debug("    => retrieving current status and stay here...");
                         pe = new PerfEvent(PerfEventType.PAGE_RETRIEVECURRENTSTATUS, 
                                 context.getCurrentPageRequest().toString());
@@ -183,7 +183,6 @@ public class DefaultIWrapperState extends StateImpl {
             return true;
         }
         return false;
-
     }
 
     // Eeek, unfortunately we can't use a flyweight here... (somewhere we need to store state after all)
