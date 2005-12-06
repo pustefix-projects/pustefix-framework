@@ -18,7 +18,9 @@
 
 package de.schlund.pfixcore.editor2.core.spring;
 
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +40,7 @@ import de.schlund.pfixxml.targets.DependencyType;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class IncludeFactoryServiceImpl implements IncludeFactoryService {
-    private Hashtable cache;
+    private Map cache;
 
     private ThemeFactoryService themefactory;
 
@@ -101,7 +103,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     }
 
     public IncludeFactoryServiceImpl() {
-        this.cache = new Hashtable();
+        this.cache = Collections.synchronizedMap(new HashMap());
     }
 
     /*
@@ -138,9 +140,10 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     public IncludePartThemeVariant getIncludePartThemeVariant(
             AuxDependency auxdep) throws EditorParsingException {
         if (auxdep.getType() == DependencyType.TEXT) {
-            IncludePartThemeVariant variant  = this.includefactory
-                .getIncludeFile(auxdep.getPath().getRelative()).createPart(auxdep.getPart())
-                .createThemeVariant(this.themefactory.getTheme(auxdep.getTheme()));
+            IncludePartThemeVariant variant = this.includefactory
+                    .getIncludeFile(auxdep.getPath().getRelative()).createPart(
+                            auxdep.getPart()).createThemeVariant(
+                            this.themefactory.getTheme(auxdep.getTheme()));
             return variant;
         } else {
             String err = "Supplied AuxDependency is not of type DependencyType.TEXT!";

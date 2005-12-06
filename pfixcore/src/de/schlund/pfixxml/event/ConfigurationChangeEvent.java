@@ -16,29 +16,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package de.schlund.pfixcore.editor2.core.spring.internal;
+package de.schlund.pfixxml.event;
 
-import java.util.Collection;
+import java.util.EventObject;
 
-import de.schlund.pfixcore.editor2.core.dom.Page;
+import de.schlund.pfixxml.targets.TargetGenerator;
 
 /**
- * Extends the Page interface with a method to add sub-pages
+ * Event signaling that the configuration of the source object has been
+ * changed.
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface MutablePage extends Page {
-    /**
-     * Sets the specified pages as the children of this page
-     * 
-     * @param page Collection containing Page objects to add as sub-pages
-     */
-    public void setSubPages(Collection pages);
-    
-    /**
-     * Set the path to the handler that is used for this page
-     * 
-     * @param path String specifying the path (e.g. "/xml/handler")
-     */
-    public void setHandlerPath(String path);
+public class ConfigurationChangeEvent extends EventObject {
+
+    public ConfigurationChangeEvent(Object source) {
+        super(source);
+    }
 }

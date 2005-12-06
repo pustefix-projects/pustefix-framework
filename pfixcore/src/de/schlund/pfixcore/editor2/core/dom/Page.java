@@ -90,14 +90,6 @@ public interface Page extends Comparable {
     Collection getSubPages();
 
     /**
-     * Returns the page that is the parent of this page in navigation. The
-     * parent is always a page with the default variant.
-     * 
-     * @return Parent page or <code>null</code> if this is a top-level page
-     */
-    Page getParentPage();
-
-    /**
      * Returns whether there is at least one child page
      * 
      * @return Whether child pages are existing

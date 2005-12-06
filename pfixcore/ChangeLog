@@ -1,3 +1,44 @@
+2005-12-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* example/common/conf/editor-spring.xml: 
+	Added property "targetfactory" to "projectfactory" bean and
+	"themefactory" to "pagefactory" bean
+	
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	Added support for event listeners listening for events fired when
+	the configuration of the target generator changes
+	
+	* src/de/schlund/pfixxml/event/ConfigurationChangeListener.java: 
+	Created event listener for configuration change events
+	
+	* src/de/schlund/pfixxml/event/ConfigurationChangeEvent.java: 
+	Created event class for configuration changes
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/TargetFactoryServiceImpl.java: 
+	Removed usage of Hashtable and use HashMap or WeakHashMap instead.
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java: 
+	Added property targetfactory which is set by the Spring application context
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryServiceImpl.java: 
+	Added new property themefactory which receives a reference to the
+	ThemeFactoryService from the Spring application context
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
+	Listen for events from TargetGenerator to be notified when configuration
+	changes (e.g. when a page is added) and recreate pagecache on such an
+	event
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/PageImpl.java: 
+	Changed implementation to use information retrieved from Pustefix core
+	instead of cached information set during initialization
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/MutablePage.java (setHandlerPath): 
+	Added method
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/Page.java (getParentPage):
+	Removed method
+
 2005-12-06  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (module):
