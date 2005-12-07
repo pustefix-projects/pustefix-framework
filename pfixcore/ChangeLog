@@ -1,3 +1,10 @@
+2005-12-07  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/targets/TargetDependencyRelation.java (module):
+	fixed the bug in child->parent mapping.  Nevertheless, it is still
+	commented out, because it takes a lot of memory, and is not used
+	currently anyway (about 100M for around 50000 AuxDependencies!)
+
 2005-12-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/core/editor2/txt/util_includes.xml: Hide directory tree

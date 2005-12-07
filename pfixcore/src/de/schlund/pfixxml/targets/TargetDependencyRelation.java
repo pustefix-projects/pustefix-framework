@@ -371,15 +371,16 @@ public class TargetDependencyRelation {
 
 //         HashMap<AuxDependency, HashSet<AuxDependency>> childparentForTarget = targettochildparent.get(target);
 //         for (Iterator<AuxDependency> i = childparentForTarget.keySet().iterator(); i.hasNext(); ) {
-//             AuxDependency                        child      = i.next();
+//             AuxDependency                        child = i.next();
+//             if (!child.getType().isDynamic()) { // YES! child.getType() here, not parent.getType() in the inner loop is correct!
+//                 continue;
+//             }
 //             HashSet<AuxDependency>               parents    = childparentForTarget.get(child);
 //             RefCountingCollection<AuxDependency> allparents = auxtoparentaux.get(child);
 //             for (Iterator<AuxDependency> j = parents.iterator(); j.hasNext();) {
 //                 AuxDependency parent = j.next();
-//                 if (child.getType().isDynamic()) { // YES! child.getType() is correct!
-//                     allparents.remove(parent);
-//                     j.remove();
-//                 }
+//                 allparents.remove(parent);
+//                 j.remove();
 //             }
 //             if (parents.isEmpty()) {
 //                 i.remove();
