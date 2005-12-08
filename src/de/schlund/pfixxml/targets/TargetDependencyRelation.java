@@ -27,19 +27,33 @@ import java.util.TreeSet;
 import org.apache.log4j.Category;
 
 /**
- * TargetDependencyRelation
+ * TargetDependencyRelation This is a helper singleton class that holds all the "interesting"
+ * relations between targets and AuxDependencies. These relations are build up during the generation
+ * of a target via the addRelation(parent, child, target) method, and reset before gneration of the
+ * target via the resetRelation(target) method.
  *
+ * The relations currently handled are:
+ * 
+ *            Target          -> Set(AuxDependency)         
+ *            AuxDependency   -> Set(Target)
+ *            TargetGenerator -> RefCountingCollection(AuxDependency)
+ *            AuxDependency   -> RefCountingCollection(TargetGenerator)
+ *            Target          -> Map("parent"-AuxDependency->Set("child"-AuxDependency))
+ *            AuxDependency   -> RefCountingCollection("child"-AuxDependency)
+ *            Target          -> Map("child"-AuxDependency->Set("parent"-AuxDependency)) // Commented out currently!
+ *            AuxDependency   -> RefCountingCollection("parent"-AuxDependency) // Commented out currently!
+ *
+ * The last two mappings are not use anywhere and are thus commented out in the code to save memory.
  *
  * Created: Thu Nov 24 13:00:00 2005
  *
  * @author <a href="mailto:jtl@schlund.de">Jens Lautenbacher</a>
  *
- *
  */
 
 public class TargetDependencyRelation {
-    private static Category                 CAT      = Category.getInstance(TargetDependencyRelation.class.getName());
-    private static TargetDependencyRelation instance = new TargetDependencyRelation();
+    private static Category                       CAT      = Category.getInstance(TargetDependencyRelation.class.getName());
+    private static final TargetDependencyRelation instance = new TargetDependencyRelation();
     
     private HashMap<AuxDependency, TreeSet<Target>> allauxs                            = 
         new HashMap<AuxDependency, TreeSet<Target>>();
@@ -60,19 +74,10 @@ public class TargetDependencyRelation {
     
     private TargetDependencyRelation() {}
 
-    public static TargetDependencyRelation getInstance() {
+    public static final TargetDependencyRelation getInstance() {
         return instance;
     }
 
-    // Mapping of aux    -> tgen[N]
-    //            tgen   -> aux[N]
-    //            aux    -> target
-    //            target -> aux 
-    //            target -> aux->auxhchild
-    //            aux    -> auxchild[N]
-    //            target -> aux->auxparents
-    //            aux    -> auxparent[N]
-    
     public synchronized TreeSet<AuxDependency> getAllDependencies() {
         if (allauxs.isEmpty()) {
             return null;
