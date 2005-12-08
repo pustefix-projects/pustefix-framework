@@ -5,4 +5,5 @@ import java.util.LinkedHashMap;
 
 public interface AdditionalTrailInfo {
     LinkedHashMap<String,Object> getData(PfixServletRequest preq);
+    void reset();
 }

@@ -299,6 +299,10 @@ public abstract class AbstractXMLServer extends ServletManager {
         long         preproctime = -1;
         long         getdomtime  = -1;
         long         handletime  = -1;
+        
+        
+        //Reset the additional trail info before processing the request
+        addtrailinfo.reset();
 
         // We look for the request parameter __frame and __reuse.
         // These are needed for possible frame handling by the stylesheet;
@@ -358,7 +362,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         preq.getRequest().setAttribute(PREPROCTIME, preproctime);
         
         if (spdoc == null) {
-            
+                
             // Performace tracking
             PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
             pe.start();

@@ -17,4 +17,8 @@ public class DefaultAdditionalTrailInfoImpl implements AdditionalTrailInfo {
         retval.put("PRE_PROC", ""+pptime);
         return retval;
     }
+    
+    public void reset() {
+        // Nothing to do in default impl
+    }
 }
