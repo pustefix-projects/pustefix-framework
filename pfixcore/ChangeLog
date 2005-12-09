@@ -1,3 +1,10 @@
+2005-12-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (AbstractXMLServer::handleDocument):
+	remove the optimisation(?) to create the tinytree from the xerces
+	dom outside of the saxon transformer - this only made sense for documents that were to be reused, anyway (frames)
+	Removing the stuff allows for avoiding a synchronized block in getting the identity transformer.
+	
 2005-12-08  Joerg Haecker <haecker@schlund.de>
 
 	* src/de/schlund/pfixxml/perflogging/AdditionalTrailInfo.java: added
