@@ -301,7 +301,7 @@ public abstract class AbstractXMLServer extends ServletManager {
         long         handletime  = -1;
         
         
-        //Reset the additional trail info before processing the request
+        // Reset the additional trail info before processing the request
         addtrailinfo.reset();
 
         // We look for the request parameter __frame and __reuse.
