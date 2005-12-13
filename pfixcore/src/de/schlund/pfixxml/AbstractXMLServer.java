@@ -366,7 +366,7 @@ public abstract class AbstractXMLServer extends ServletManager {
             // Performace tracking
             PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_GETDOM);
             pe.start();
-            currtime        = System.currentTimeMillis();
+            currtime = System.currentTimeMillis();
             
             // Now get the document
             spdoc = getDom(preq);
