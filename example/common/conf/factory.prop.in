@@ -13,10 +13,7 @@
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
 
-    <!-- Use alternative jmx port if docroot directory contains this substring -->
-    <prop name="de.schlund.pfixcore.jmx.port2.directory">/pfixschlund_b/projects/</prop>
-    
-    <choose>
+        <choose>
       <test mode="prod">
         <!-- Load all projects on startup when in production mode-->
         <prop name="factory.initialize.07">de.schlund.pfixxml.ProjectInitFactory</prop>
@@ -29,6 +26,18 @@
         <prop name="factory.initialize.07">de.schlund.pfixcore.editor2.frontend.util.EditorApplicationContextFactory</prop>
       </test>
     </choose>
+
+    <!-- JmxServerFactory -->
+    <prop name="de.schlund.pfixcore.jmx.keystore">common/conf/jmxserver.keystore</prop>
+    <prop name="de.schlund.pfixcore.jmx.port.default">9334</prop>
+    <choose>
+      <test mode="prod">
+      </test>
+      <test>
+        <prop name="de.schlund.pfixcore.jmx.servername"><cus:fqdn/></prop>
+      </test>
+    </choose>
+
     
     <!-- ApplicationContext factory for editor -->
     <prop name="de.schlund.pfixcore.editor2.springconfig">common/conf/editor-spring.xml</prop>

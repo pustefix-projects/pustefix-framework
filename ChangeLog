@@ -1,3 +1,29 @@
+2005-12-14  Joerg Haecker <haecker@schlund.de>
+
+	* Changes in package src/de/schlund/pfixxml/jmx
+	* src/de/schlund/pfixxml/jmx/Environment.java (create):
+	set 'jmx.remote.tls.need.client.authentication' to 'false' if not
+	secure.
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: rewrite
+	of port and host confifuration(see below)
+	* src/de/schlund/pfixxml/jmx/JmxServer.java (start): more logging,
+	do only check client cert if a path to keystore is passed.
+	* example/common/conf/factory.prop.in:
+	o removed 'de.schlund.pfixcore.jmx.port2.directory': not needed any more
+	o added property 'de.schlund.pfixcore.jmx.keystore': if set use it,
+	else server will be started without client auth.
+	o added property 'de.schlund.pfixcore.jmx.port.default': if set use
+	it, else scan for properties 'de.schlund.pfixcore.jmx.port.XX' and
+	'de.schlund.pfixcore.jmx.regex.XX'. The value of port XX will be 
+	used when regex.XX mathes to your docroot. Needed when running
+	more than one pustefix-jvm on the same host.
+	o added property 'de.schlund.pfixcore.jmx.servername': if set use it,
+	else start server on localhost.
+	* src/de/schlund/pfixxml/jmx/JMXConnectionListener.java: added
+	* skel/projects/common/conf/factory.prop.in: examples added
+	* src/de/schlund/pfixxml/FactoryInitServlet.java: PROP_DOCROOT now
+	public.
+
 2005-12-09  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (AbstractXMLServer::handleDocument):

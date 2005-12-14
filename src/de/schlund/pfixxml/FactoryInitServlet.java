@@ -55,7 +55,7 @@ import de.schlund.pfixxml.util.Misc;
 public class FactoryInitServlet extends HttpServlet implements Reloader {
 
     //~ Instance/static variables ..................................................................
-    private static String   PROP_DOCROOT = "pustefix.docroot";
+    public static String   PROP_DOCROOT = "pustefix.docroot";
     private static String   PROP_LOG4J   = "pustefix.log4j.config";
     private Object          LOCK         = new Object();
     private static Category CAT          = Category.getInstance(FactoryInitServlet.class.getName());
