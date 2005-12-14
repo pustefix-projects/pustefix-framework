@@ -10,6 +10,7 @@ import java.util.HashMap;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -48,6 +49,8 @@ public class Environment {
             env.put("jmx.remote.tls.enabled.protocols", "TLSv1");
             env.put("jmx.remote.tls.need.client.authentication", "true");
             env.put("jmx.remote.tls.enabled.cipher.suites", CIPHER_SUITE);
+        } else {
+            env.put("jmx.remote.tls.need.client.authentication", "false");
         }
         return env;
     }

@@ -21,17 +21,11 @@ package de.schlund.pfixxml.jmx;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -50,7 +44,7 @@ import javax.management.remote.jmxmp.JMXMPConnectorServer;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.TransformerException;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import de.schlund.pfixxml.PathFactory;
@@ -64,7 +58,7 @@ import de.schlund.pfixxml.util.Xml;
  * Jmx Server, started via factory.init
  */
 public class JmxServer implements JmxServerMBean {
-    private static Category LOG = Category.getInstance(JmxServer.class.getName());
+    private static Logger LOG = Logger.getLogger(JmxServer.class);
 
     private final MBeanServer server;
     private final List knownClients;
@@ -76,21 +70,39 @@ public class JmxServer implements JmxServerMBean {
     
 	//--
     
-    public void start(InetAddress host, int port) throws Exception {
+    public void start(String host, int port, String pathtokeystore) throws Exception {
         JMXConnectorServer connector;
         Path keystore;
         
-        // javaLogging();
-        keystore = PathFactory.getInstance().createPath("common/conf/jmxserver.keystore");
-        server.registerMBean(this, createServerName());
+        
+        final ObjectName createServerName = createServerName();
+        LOG.info("Registering MBean:"+createServerName.getCanonicalName());
+        server.registerMBean(this, createServerName);
         // otherwise, clients cannot instaniate TrailLogger objects:
-        server.registerMBean(this.getClass().getClassLoader(), createName("loader"));
-        Environment.assertCipher();
-        connector = JMXConnectorServerFactory.newJMXConnectorServer(createServerURL(host.getHostName(), port), 
-                                                                    Environment.create(keystore.resolve(), true), server);
+        final ObjectName createName = createName("loader");
+        LOG.info("Registering MBean:"+createName.getCanonicalName());
+        server.registerMBean(this.getClass().getClassLoader(), createName);
+        
+        LOG.info(server.getMBeanCount()+" MBean registered.");
+        
+        Map env = null;
+        if(pathtokeystore != null) {
+            keystore = PathFactory.getInstance().createPath(pathtokeystore);
+            Environment.assertCipher();
+            env = Environment.create(keystore.resolve(), true);
+        }  else {
+            env = Environment.create(null, false);
+        }
+        connector = JMXConnectorServerFactory.newJMXConnectorServer(createServerURL(host, port), 
+                env, server);
+       
+        
+       
         connector.start();
+        connector.addNotificationListener(new JMXConnectionListener(), null, null);
+        LOG.info("started secure=["+new Boolean(pathtokeystore!=null)+"] server on: " + connector.getAddress()+" with attr ["+connector.getAttributes()+"] and env ="+env); 
         notifications(connector);
-        LOG.debug("started: " + connector.getAddress());
+        
     }
 
     private static void notifications(JMXConnectorServer connector) {
@@ -102,18 +114,22 @@ public class JmxServer implements JmxServerMBean {
                     if (n instanceof JMXConnectionNotification) {
                         cn = (JMXConnectionNotification) n;
                         cs = (JMXMPConnectorServer) n.getSource();
-                        LOG.info("connection: " + n.getType() + " " + cn.getConnectionId() + " " + n.getMessage());
-                        LOG.info("address: " + cs.getAddress());
-                        LOG.info("attributes" + cs.getAttributes());
+                        StringBuffer sb = new StringBuffer();
+                        sb.append("connection: " + n.getType() + " " + cn.getConnectionId() + " " + n.getMessage()+"\n");
+                        sb.append("address: " + cs.getAddress()+"\n");
+                        sb.append("attributes" + cs.getAttributes()+"\n");
+                        LOG.info(sb.toString());
                     } else {
-                        LOG.info("notification " + n.getClass() + ": " + n.getMessage() + " " + arg1);
-                        LOG.info("type " + n.getType());
-                        LOG.info("source: " + n.getSource());
+                        StringBuffer sb = new StringBuffer();
+                        sb.append("notification " + n.getClass() + ": " + n.getMessage() + " " + arg1+"\n");
+                        sb.append("type " + n.getType()+"\n");
+                        sb.append("source: " + n.getSource()+"\n");
+                        LOG.info(sb.toString());
                     }
                 }}, null, null);
     }
 
-    private void javaLogging() throws IOException {
+  /*  private void javaLogging() throws IOException {
         Logger logger;
         Handler handler;
         
@@ -122,7 +138,7 @@ public class JmxServer implements JmxServerMBean {
         handler = new FileHandler("jmx.log");
         handler.setFormatter(new SimpleFormatter());
         logger.addHandler(handler);
-    }
+    }*/
 
     //-- client authentication
     
@@ -259,3 +275,4 @@ public class JmxServer implements JmxServerMBean {
     
    
 }
+
