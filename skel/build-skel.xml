@@ -380,7 +380,7 @@ or delete the DOCTYPE definition -->
     <delete dir="${dir.projects}/core"/>
   </target>
         
-  <target name="extract-modules" description="extracts all *.jar files in ${dir.extract.modules}">
+  <target name="extract-modules" depends="clean-modules" description="extracts all *.jar files in ${dir.extract.modules}">
     <echo>Unpacking *.jar-Modules from ${dir.src.modules}</echo>
     <mkdir dir="${dir.extract.modules}"/>
     <unjar dest="${dir.extract.modules}">
