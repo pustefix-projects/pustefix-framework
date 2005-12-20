@@ -199,7 +199,7 @@ public class ContextResourceManager implements Reloader {
      *
      * @return the <code>Iterator</code>
      */
-    protected Iterator getResourceIterator() {
+    public Iterator getResourceIterator() {
         return  resources.values().iterator();
     }
     
