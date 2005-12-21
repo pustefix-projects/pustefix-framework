@@ -19,9 +19,13 @@
 package de.schlund.pfixcore.editor2.frontend.resources;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +36,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import de.schlund.pfixcore.editor2.core.dom.Image;
+import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
@@ -57,6 +62,12 @@ public abstract class CommonIncludesResourceImpl implements
 
     private IncludePartThemeVariant selectedIncludePart;
 
+    private Set<String> openDirectories = Collections
+            .synchronizedSet(new HashSet<String>());
+
+    private Set<String> openFiles = Collections
+            .synchronizedSet(new HashSet<String>());
+
     protected abstract boolean securityMayCreateIncludePartThemeVariant(
             IncludePart includePart, Theme theme);
 
@@ -72,6 +83,12 @@ public abstract class CommonIncludesResourceImpl implements
 
     protected abstract void renderAllIncludes(ResultDocument resdoc,
             Element elem, Project project);
+
+    protected abstract Set<IncludeFile> getIncludeFilesInDirectory(
+            String dirname, Project project);
+
+    protected abstract Set<IncludePartThemeVariant> getIncludePartsInFile(
+            String filename, Project project);
 
     public void init(Context context) throws Exception {
         this.context = context;
@@ -264,12 +281,18 @@ public abstract class CommonIncludesResourceImpl implements
             return false;
         } else {
             this.selectedIncludePart = variant;
+            // Make sure part is visible in navigation
+            this.openFileTree(variant.getIncludePart().getIncludeFile()
+                    .getPath());
             return true;
         }
     }
 
     public void unselectIncludePart() {
         this.selectedIncludePart = null;
+        // Reset tree status, too
+        this.openDirectories.clear();
+        this.openFiles.clear();
     }
 
     public IncludePartThemeVariant getSelectedIncludePart() {
@@ -476,5 +499,60 @@ public abstract class CommonIncludesResourceImpl implements
         }
         this.selectedIncludePart = null;
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource#closeDirectoryTree(java.lang.String)
+     */
+    public void closeDirectoryTree(String name) {
+        this.openDirectories.remove(name);
+        // Close all file tree below this directory
+        for (Iterator i = this.openFiles.iterator(); i.hasNext();) {
+            String file = (String) i.next();
+            String dir = file.substring(0, file.lastIndexOf('/'));
+            if (dir.equals(name)) {
+                i.remove();
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource#closeFileTree(java.lang.String)
+     */
+    public void closeFileTree(String name) {
+        this.openFiles.remove(name);
+    }
+
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource#openDirectoryTree(java.lang.String)
+     */
+    public SortedSet<IncludeFile> openDirectoryTree(String name) {
+        SortedSet<IncludeFile> files = new TreeSet<IncludeFile>(this
+                .getIncludeFilesInDirectory(name, EditorResourceLocator
+                        .getProjectsResource(context).getSelectedProject()));
+        openDirectories.add(name);
+        return files;
+    }
+
+    /* (non-Javadoc)
+     * @see de.schlund.pfixcore.editor2.frontend.resources.CommonIncludesResource#openFileTree(java.lang.String)
+     */
+    public SortedSet<IncludePartThemeVariant> openFileTree(String name) {
+        // Make sure directory is open
+        this.openDirectoryTree(name.substring(0, name.lastIndexOf('/')));
+
+        TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>(
+                this.getIncludePartsInFile(name, EditorResourceLocator
+                        .getProjectsResource(context).getSelectedProject()));
+        openFiles.add(name);
+        return parts;
+    }
+
+    protected boolean isDirectoryOpen(String name) {
+        return openDirectories.contains(name);
+    }
+
+    protected boolean isFileOpen(String name) {
+        return openFiles.contains(name);
     }
 }
