@@ -1,5 +1,8 @@
 2005-12-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* skel/projects/common/conf/editor-spring.xml: Incorporated changes
+	already present in example/common/conf/editor-spring.xml
+	
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java:
 	Added methods used by XMLRPC states to retrieve / set the collapsed/expanded
 	state for the include parts tree.
