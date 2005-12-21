@@ -18,10 +18,13 @@
 
 package de.schlund.pfixcore.editor2.frontend.resources;
 
+import java.util.SortedSet;
+
 import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
+import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.exception.EditorException;
 import de.schlund.pfixcore.workflow.ContextResource;
@@ -115,4 +118,40 @@ public interface CommonIncludesResource extends ContextResource {
      * @return <code>true</code> on success, <code>false</code> otherwise
      */
     boolean deleteSelectedBranch();
+    
+    /**
+     * Marks a directory tree as open and returns a list of all files
+     * within the directory. This method is used by the webservice.
+     * 
+     * @param name pathname of the directory
+     * @return All files in the directory
+     */
+    SortedSet<IncludeFile> openDirectoryTree(String name);
+ 
+    /**
+     * Marks a file tree as open and returns a list of all parts
+     * within the file. If the parent directory is not already open,
+     * it is opened, too. This method is used by the webservice.
+     * 
+     * @param name pathname of the file
+     * @return All parts in the file
+     */
+    SortedSet<IncludePartThemeVariant> openFileTree(String name);
+    
+    /**
+     * 
+     * Marks a directory as closed. Also closes all files within the
+     * directory. This method is used by by the webservice.
+     * 
+     * @param name pathname of the directory
+     */
+    void closeDirectoryTree(String name);
+
+    /**
+     * 
+     * Marks a file as closed. This method is used by by the webservice.
+     * 
+     * @param name pathname of the file
+     */
+    void closeFileTree(String name);
 }

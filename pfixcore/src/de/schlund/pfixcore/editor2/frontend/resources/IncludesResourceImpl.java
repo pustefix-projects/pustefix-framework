@@ -22,10 +22,12 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.w3c.dom.Element;
 
+import de.schlund.pfixcore.editor2.core.dom.IncludeFile;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
@@ -123,10 +125,16 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
                     String jsId = directory.replaceAll("\\.", "_dot_")
                             .replaceAll("/", "_slash_");
                     directoryNode.setAttribute("jsId", jsId);
+                    if (this.isDirectoryOpen(directory)) {
+                        directoryNode.setAttribute("open", "true");
+                    }
                     directoryNodes.put(directory, directoryNode);
                 }
                 fileNode = resdoc.createSubNode(directoryNode, "file");
                 fileNode.setAttribute("path", path);
+                if (this.isFileOpen(path)) {
+                    fileNode.setAttribute("open", "true");
+                }
                 fileNodes.put(path, fileNode);
             }
 
@@ -139,5 +147,38 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
                 includeNode.setAttribute("selected", "true");
             }
         }
+    }
+
+    protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname,
+            Project project) {
+        Collection<IncludePartThemeVariant> parts = project
+                .getAllIncludeParts();
+        TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
+        String compareStr = dirname + "/";
+        for (Iterator i = parts.iterator(); i.hasNext();) {
+            IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+            IncludeFile file = part.getIncludePart().getIncludeFile();
+            String path = file.getPath();
+            path = path.substring(0, path.lastIndexOf('/'));
+            if (path.equals(dirname) && !files.contains(file)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    protected Set<IncludePartThemeVariant> getIncludePartsInFile(
+            String filename, Project project) {
+        Collection<IncludePartThemeVariant> allparts = project
+                .getAllIncludeParts();
+        TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();
+        for (Iterator i = allparts.iterator(); i.hasNext();) {
+            IncludePartThemeVariant part = (IncludePartThemeVariant) i.next();
+            IncludeFile file = part.getIncludePart().getIncludeFile();
+            if (file.getPath().equals(filename)) {
+                parts.add(part);
+            }
+        }
+        return parts;
     }
 }

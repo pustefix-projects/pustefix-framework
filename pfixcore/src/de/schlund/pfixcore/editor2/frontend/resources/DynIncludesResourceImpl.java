@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.w3c.dom.Element;
@@ -111,10 +112,16 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
                 String jsId = dir.replaceAll("\\.", "_dot_").replaceAll("/",
                         "_slash_");
                 directoryNode.setAttribute("jsId", jsId);
+                if (this.isDirectoryOpen(dir)) {
+                    directoryNode.setAttribute("open", "true");
+                }
                 directoryNodes.put(dir, directoryNode);
             }
             Element fileNode = resdoc.createSubNode(directoryNode, "file");
             fileNode.setAttribute("path", path);
+            if (this.isFileOpen(path)) {
+                fileNode.setAttribute("open", "true");
+            }
             TreeSet incParts = new TreeSet(incFile.getParts());
             for (Iterator i2 = incParts.iterator(); i2.hasNext();) {
                 IncludePart incPart = (IncludePart) i2.next();
@@ -134,5 +141,40 @@ public class DynIncludesResourceImpl extends CommonIncludesResourceImpl
                 }
             }
         }
+    }
+
+    protected Set<IncludeFile> getIncludeFilesInDirectory(String dirname,
+            Project project) {
+        TreeSet<IncludeFile> files = new TreeSet<IncludeFile>();
+        String compareStr = dirname + "/";
+        for (Iterator i = SpringBeanLocator.getDynIncludeFactoryService()
+                .getDynIncludeFiles().iterator(); i.hasNext();) {
+            IncludeFile file = (IncludeFile) i.next();
+            String path = file.getPath();
+            path = path.substring(0, path.lastIndexOf('/'));
+            if (path.equals(dirname) && !files.contains(file)) {
+                files.add(file);
+            }
+        }
+        return files;
+    }
+
+    protected Set<IncludePartThemeVariant> getIncludePartsInFile(
+            String filename, Project project) {
+        TreeSet<IncludePartThemeVariant> parts = new TreeSet<IncludePartThemeVariant>();
+        IncludeFile incFile = SpringBeanLocator.getDynIncludeFactoryService()
+                .getIncludeFile(filename);
+        if (incFile != null) {
+            for (Iterator i = incFile.getParts().iterator(); i.hasNext();) {
+                IncludePart part = (IncludePart) i.next();
+                for (Iterator j = part.getThemeVariants().iterator(); j
+                        .hasNext();) {
+                    IncludePartThemeVariant variant = (IncludePartThemeVariant) j
+                            .next();
+                    parts.add(variant);
+                }
+            }
+        }
+        return parts;
     }
 }
