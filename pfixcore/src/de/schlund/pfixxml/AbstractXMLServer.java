@@ -463,13 +463,13 @@ public abstract class AbstractXMLServer extends ServletManager {
         PerfEvent pe = new PerfEvent(PerfEventType.XMLSERVER_HANDLEDOCUMENT, spdoc.getPagename());
         pe.start();
         
-        // if (spdoc.docIsUpdateable()) {
-        if (stylesheet.indexOf("::") > 0) {
-            spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
+        if (spdoc.docIsUpdateable()) {
+            if (stylesheet.indexOf("::") > 0) {
+                spdoc.getDocument().getDocumentElement().setAttribute("used-pv", stylesheet);
+            }
+            spdoc.setDocument(Xml.parse(spdoc.getDocument()));
+            spdoc.setDocIsUpdateable(false);
         }
-        //     spdoc.setDocument(Xml.parse(spdoc.getDocument()));
-        //     spdoc.setDocIsUpdateable(false);
-        // }
 
         if (! doreuse) {
             if (isDebugEnabled()) {
