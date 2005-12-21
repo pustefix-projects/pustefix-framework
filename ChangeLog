@@ -1,5 +1,10 @@
 2005-12-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument): 
+	Reenabled code that creates a Saxon Document from another DOM Document in
+	order to fix strang NullPointerExceptions being thrown by Saxon on
+	pages that use frames
+	
 	* skel/projects/common/conf/editor-spring.xml: Incorporated changes
 	already present in example/common/conf/editor-spring.xml
 	
