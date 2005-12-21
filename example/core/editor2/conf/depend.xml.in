@@ -46,4 +46,13 @@
   <standardpage name="sessionmanager" xml="core/editor2/xml/two_frames_inactive.xml"/>
   <standardpage name="useradmin" xml="core/editor2/xml/two_frames_inactive.xml"/>
   <standardpage name="useredit" xml="core/editor2/xml/two_frames_inactive.xml"/>
+  
+  <standardpage name="ws_includes" xml="core/editor2/xml/webservice.xml">
+    <param name="outputmethod" value="xml"/>
+    <include stylesheet="core/xsl/default_copy.xsl"/>
+  </standardpage>
+  <standardpage name="ws_dynincludes" xml="core/editor2/xml/webservice.xml">
+    <param name="outputmethod" value="xml"/>
+    <include stylesheet="core/xsl/default_copy.xsl"/>
+  </standardpage>
 </make>

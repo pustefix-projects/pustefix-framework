@@ -9,7 +9,7 @@
   td        { font-family: Verdana, Helvetica, Tahoma, Arial, Sans, sans-serif; font-size: 12px; }
 
   .core_errorbox_table   { background-color: #cccccc; }
-  .core_errorlabel_td    { align: left; }
+  .core_errorlabel_td    { text-align: left; }
   .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
   .core_errortext        { font-style: italic; }
 

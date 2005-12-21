@@ -1,3 +1,62 @@
+2005-12-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResource.java:
+	Added methods used by XMLRPC states to retrieve / set the collapsed/expanded
+	state for the include parts tree.
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java: 
+	Added code to store collapsed/expanded state of the include parts tree. This
+	is mainly used to keep the client view state across several requests.
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/DynIncludesResourceImpl.java (getIncludeFilesInDirectory): 
+	Added method which returns all include files in a directory
+	(getIncludePartsInFile): Added method returning all include parts in a file
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (getIncludeFilesInDirectory): 
+	Added method which returns all include files in a directory
+	(getIncludePartsInFile): Added method returning all include parts in a file
+
+	* src/de/schlund/pfixcore/editor2/frontend/webservice/CommonIncludeState.java: 
+	Added abstract base class for state providing XMLRPC methods for interactive
+	javascript (include parts tree).
+	
+	* src/de/schlund/pfixcore/editor2/frontend/webservice/DynamicIncludesState.java: 
+	Added concrete implementation of CommonIncludeState for DynIncludeParts.
+	
+	* src/de/schlund/pfixcore/editor2/frontend/webservice/StaticIncludesState.java: 
+	Added concrete implementation of CommonIncludeState for static IncludeParts
+	
+	* example/core/editor2/conf/depend.xml.in: Added targets for pages
+	ws_includes and ws_dynincludes
+	
+	* example/core/editor2/conf/edit.prop.in: Added page ws_includes
+	and ws_dynincludes needed by javascript / XMLRPC stuff
+	
+	* example/core/editor2/txt/pages/main_dynincludes.xml: Added javascript
+	code to set global variable containing page name.
+	
+	* example/core/editor2/txt/pages/main_includes.xml: Added javascript
+	code to set global variable containing page name.
+	
+	* example/core/editor2/txt/styles.xml: Added styles needed by new 
+	javascript includes tree stuff.	Fixed bug in class ".core_errorlabel_td".
+	
+	* example/core/editor2/txt/util_includes.xml: Display include tree
+	using javascript instead of statically creating complete tree and
+	hiding unneeded parts
+	 
+	* example/core/editor2/xml/webservice.xml: Added simple page
+	master that is used to render output from webservice pages to
+	XML code that can be processed by XMLHttpRequest javascript code.
+	
+	* example/core/script/editor.js: Complete rewrite of 
+	code for include part tree: No an object model that communicates
+	with the server using XMLHttpRequest is being used.
+	
+    * example/core/txt/styles.xml: Fixed bug in class "core_errorlabel_td",
+    which was using the non-existant "align" property instead of
+    "text-align".
+
 2005-12-20 Michael Bruns <michael.bruns@schlund.de>
     * skel/build-skel.xml: fixed target extract-modules
     * src/de/schlund/pfixcore/workflow/ContextResourceManager.java: made getResourceIterator() public

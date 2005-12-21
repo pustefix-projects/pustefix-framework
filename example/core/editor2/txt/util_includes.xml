@@ -5,56 +5,55 @@
       <lang name="default">
         <div class="editor_includes_sidebar_content" id="editor_includes_sidebar_content">
           <div class="editor_includes_sidebar_buttons">
-            (<span onClick="editor_includes_sidebar_showAll()">Show all</span>)
-            (<span onClick="editor_includes_sidebar_hideAll()">Hide all</span>)
+            (<span onClick="pfx_editor_expandAllDirectories()">Expand all</span>)
+            (<span onClick="pfx_editor_collapseAllDirectories()">Collapse all</span>)
           </div>
-          <ixsl:for-each select="./directory">
-            <div class="editor_includes_sidebar_directory" id="editor_includes_sidebar_directory_{./@jsId}">
-              <div class="editor_includes_sidebar_directory_title">
-                <span class="editor_includes_sidebar_directory_showbutton" onClick="editor_includes_sidebar_show('editor_includes_sidebar_directory_{./@jsId}')">+</span>
-                <span class="editor_includes_sidebar_directory_hidebutton" onClick="editor_includes_sidebar_hide('editor_includes_sidebar_directory_{./@jsId}')" style="display:none">-</span>
-	              Dir: <b><ixsl:value-of select="@path"/></b>
-	            </div>
-              <ixsl:for-each select="./file">
-                <div class="editor_includes_sidebar_file" style="display:none">
-                  <a>
-	                  <ixsl:attribute name="name"><ixsl:value-of select="@path"/></ixsl:attribute>
-	                </a>
-                  <b><ixsl:value-of select="substring-after(@path, concat(../@path, '/'))"/></b>
-                  <ixsl:for-each select="./include">
-			              <div class="editor_includes_sidebar_part">
-		                  <ixsl:if test="./@selected='true'">
-                        <ixsl:attribute name="class">editor_includes_sidebar_part_selected</ixsl:attribute>
+          <pfx:script>
+            var pfx_editor_sessid = "<ixsl:value-of select="$__sessid"/>";
+            var pfx_editor_inc_root = new pfx_editor_TreeRoot(document.getElementById("editor_includes_sidebar_content"));
+            var pfx_editor_inc_dir = false;
+            var pfx_editor_inc_file = false;
+            var pfx_editor_inc_part = false;
+            var pfx_editor_scrollElement = false;
+            
+            <ixsl:for-each select="./directory">
+              pfx_editor_inc_dir = new pfx_editor_Directory("<ixsl:value-of select="./@path"/>");
+              <ixsl:if test="./@open">
+                <ixsl:for-each select="./file">
+                  pfx_editor_inc_file = new pfx_editor_File("<ixsl:value-of select="./@path"/>");
+                  <ixsl:if test="./@open='true'">
+                    <ixsl:for-each select="./include">
+                      pfx_editor_inc_part = new pfx_editor_Part(
+                        "<ixsl:value-of select="../@path"/>", 
+                        "<ixsl:value-of select="./@part"/>", 
+                        "<ixsl:value-of select="./@theme"/>",
+                        <ixsl:choose>
+                          <ixsl:when test="./@selected='true'">
+                            true
+                          </ixsl:when>
+                          <ixsl:otherwise>
+                            false
+                          </ixsl:otherwise>
+                        </ixsl:choose>);
+                      pfx_editor_inc_file.appendPart(pfx_editor_inc_part);
+                      <ixsl:if test="./@selected='true'">
+                        window.scrollTo(0, pfx_editor_inc_file.getElement().offsetTop);
+                        pfx_editor_scrollElement = pfx_editor_inc_part.getElement();
                       </ixsl:if>
-                      &#160;&#160;&#160;&#160;
-                      <pfx:button mode="force" target="_top" frame="_top">
-                        <pfx:command  name="SELWRP">selectinclude</pfx:command>
-                        <pfx:command  name="SELWRP">upload</pfx:command>
-                        <pfx:argument name="selectinclude.Path"><ixsl:value-of select="../@path"/></pfx:argument>
-                        <pfx:argument name="selectinclude.Part"><ixsl:value-of select="./@part"/></pfx:argument>
-                        <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="./@theme"/></pfx:argument>
-                        <pfx:anchor   frame="left_navi"><ixsl:value-of select="../@path"/></pfx:anchor>
-                        <ixsl:value-of select="@part"/>
-                      </pfx:button> (<ixsl:value-of select="@theme"/>)
-		                </div>
-			            </ixsl:for-each>
-                </div>
-              </ixsl:for-each>
-            </div>
-          </ixsl:for-each>
+                    </ixsl:for-each>
+                    pfx_editor_inc_file.expand();
+                  </ixsl:if>
+                  pfx_editor_inc_dir.appendFile(pfx_editor_inc_file);
+                </ixsl:for-each>
+                pfx_editor_inc_dir.expand();
+              </ixsl:if>
+              pfx_editor_inc_root.appendDir(pfx_editor_inc_dir);
+            </ixsl:for-each>
+            if (pfx_editor_scrollElement) {
+              window.scrollTo(0, pfx_editor_scrollElement.offsetTop - 50);
+            }
+          </pfx:script>
         </div>
-        <script type="text/javascript">
-          <![CDATA[
-          <!--
-            editor_includes_sidebar_init();
-          ]]>
-            <ixsl:if test="./directory/file/include[@selected='true']">
-              editor_includes_sidebar_show("editor_includes_sidebar_directory_<ixsl:value-of select="./directory[./file/include[@selected='true']]/@jsId"/>");
-            </ixsl:if>
-          <![CDATA[
-          -->
-          ]]>
-        </script>
       </lang>
     </product>
   </part>

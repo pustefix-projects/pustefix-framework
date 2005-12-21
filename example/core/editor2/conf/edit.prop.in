@@ -215,6 +215,20 @@
     </output>
   </pagerequest>
   
+  <pagerequest name="ws_includes">
+    <state class="de.schlund.pfixcore.editor2.frontend.webservice.StaticIncludesState"/>
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+  
+  <pagerequest name="ws_dynincludes">
+    <state class="de.schlund.pfixcore.editor2.frontend.webservice.DynamicIncludesState"/>
+    <properties>
+      <prop name="mimetype">text/xml</prop>
+    </properties>
+  </pagerequest>
+  
   <properties>
     <!-- This ContextInterceptor has to be called BEFORE all other interceptors -->
     <prop name="context.startinterceptor.1">de.schlund.pfixcore.editor2.frontend.util.SpringHelperStartContextInterceptor</prop>

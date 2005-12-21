@@ -320,7 +320,9 @@ div.editor_includes_sidebar_part_selected a {
 }
 
 span.editor_includes_sidebar_directory_showbutton,
-span.editor_includes_sidebar_directory_hidebutton {
+span.editor_includes_sidebar_directory_hidebutton,
+span.editor_includes_sidebar_file_showbutton,
+span.editor_includes_sidebar_file_hidebutton {
   font-weight: bold;
   cursor: pointer;
 }
@@ -435,7 +437,7 @@ div.editor_pagemessages_box {
 
         .core_errorbox_table   { background-color: #f2cf8a;
                                  border-style:groove; border-width:2px;}
-        .core_errorlabel_td    { align: left; }
+        .core_errorlabel_td    { text-align: left; }
         .core_errorlabel_text  { color: #cc0000; font-weight: bold; }
         .core_errortext        { font-style: italic; }
 
