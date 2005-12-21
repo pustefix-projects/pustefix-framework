@@ -1,5 +1,8 @@
 2005-12-21  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getAffectedPages): 
+	Fixed NullPointer exception in logging code
+	
 	* src/de/schlund/pfixxml/AbstractXMLServer.java (handleDocument): 
 	Reenabled code that creates a Saxon Document from another DOM Document in
 	order to fix strang NullPointerExceptions being thrown by Saxon on

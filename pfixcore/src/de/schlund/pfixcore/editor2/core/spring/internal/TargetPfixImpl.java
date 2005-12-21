@@ -396,10 +396,11 @@ public class TargetPfixImpl extends AbstractTarget {
             }
             Page page = project.getPage(pageinfo.getName(), variant);
             if (page == null) {
-                String msg = "Could not get page " + pageinfo.getName()
-                        + " with variant " + variant.getName()
-                        + " from project " + project.getName()
-                        + "! Omitting page!";
+                String msg = "Could not get page "
+                        + pageinfo.getName()
+                        + ((variant != null) ? " with variant "
+                                + variant.getName() : "") + " from project "
+                        + project.getName() + "! Omitting page!";
                 Logger.getLogger(this.getClass()).warn(msg);
                 continue;
             }
