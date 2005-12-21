@@ -215,14 +215,14 @@
     </output>
   </pagerequest>
   
-  <pagerequest name="ws_includes">
+  <pagerequest name="ws_includes" nostore="true">
     <state class="de.schlund.pfixcore.editor2.frontend.webservice.StaticIncludesState"/>
     <properties>
       <prop name="mimetype">text/xml</prop>
     </properties>
   </pagerequest>
   
-  <pagerequest name="ws_dynincludes">
+  <pagerequest name="ws_dynincludes" nostore="true">
     <state class="de.schlund.pfixcore.editor2.frontend.webservice.DynamicIncludesState"/>
     <properties>
       <prop name="mimetype">text/xml</prop>
