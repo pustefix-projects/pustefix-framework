@@ -115,6 +115,9 @@
 			</ixsl:for-each>
             </div></div>
 		</ixsl:if>
+        <pfx:script>
+          var pfx_editor_pagename = "includes";
+        </pfx:script>
         <ixsl:for-each select="/formresult/includes">
           <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
         </ixsl:for-each>

@@ -88,6 +88,9 @@
   <part name="sidebar">
     <product name="default">
       <lang name="default">
+        <pfx:script>
+          var pfx_editor_pagename = "dynincludes";
+        </pfx:script>
         <ixsl:for-each select="/formresult/dynincludes">
           <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
         </ixsl:for-each>
