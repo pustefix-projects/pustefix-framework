@@ -64,13 +64,13 @@
 	code for include part tree: No an object model that communicates
 	with the server using XMLHttpRequest is being used.
 	
-    * example/core/txt/styles.xml: Fixed bug in class "core_errorlabel_td",
-    which was using the non-existant "align" property instead of
-    "text-align".
+	* example/core/txt/styles.xml: Fixed bug in class "core_errorlabel_td",
+	which was using the non-existant "align" property instead of
+	"text-align".
 
 2005-12-20 Michael Bruns <michael.bruns@schlund.de>
-    * skel/build-skel.xml: fixed target extract-modules
-    * src/de/schlund/pfixcore/workflow/ContextResourceManager.java: made getResourceIterator() public
+	* skel/build-skel.xml: fixed target extract-modules
+	* src/de/schlund/pfixcore/workflow/ContextResourceManager.java: made getResourceIterator() public
 
 2005-12-14  Joerg Haecker <haecker@schlund.de>
 
