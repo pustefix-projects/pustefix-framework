@@ -13,12 +13,12 @@
     <prop name="factory.initialize.05">de.schlund.pfixxml.perflogging.PerfLogging</prop>
     <prop name="factory.initialize.06">de.schlund.pfixxml.jmx.JmxServerFactory</prop>
 
-        <choose>
+    <choose>
       <test mode="prod">
         <!-- Load all projects on startup when in production mode-->
         <prop name="factory.initialize.07">de.schlund.pfixxml.ProjectInitFactory</prop>
         <!-- Specify this property to load only certain projects
-        <prop name="projectinit.projectlist">sample1, webservice</prop>
+             <prop name="projectinit.projectlist">sample1, webservice</prop>
         -->
       </test>
       <test>
