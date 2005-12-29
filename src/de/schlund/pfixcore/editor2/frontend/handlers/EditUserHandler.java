@@ -105,7 +105,7 @@ public class EditUserHandler implements IHandler {
                 }
                 boolean isEditIncludes = false;
                 if (input.getEditIncludesPrivilege(project.getName()) != null
-                        && input.getEditImagesPrivilege(project.getName())
+                        && input.getEditIncludesPrivilege(project.getName())
                                 .booleanValue()) {
                     isEditIncludes = true;
                 }
