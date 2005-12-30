@@ -160,6 +160,8 @@
     </output>
   </pagerequest>  
   
+  <pagerequest name="geninc"/>
+  
   <properties>
     <!-- *** some additional properties needed for this application *** -->
     <!-- <prop name="interfacelogging">sample1/log</prop> -->
