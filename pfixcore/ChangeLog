@@ -1,5 +1,21 @@
 2005-12-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* example/sample1/txt/pages/main_home.xml: 
+	Added link to "geninc" page
+	
+	* example/sample1/txt/pages/main_geninc.xml: 
+	Content for page calling the template from generatedruntime.xsl
+	
+	* example/sample1/xsl/generatedruntime.xsl: 
+	Very simple stylesheet included that is processed using customizestylesheet.xsl
+	
+	* example/sample1/conf/depend.xml.in: 
+	Added "geninc" page target and special "generatedruntime.xsl" target
+	as an example how to use a virtual target as an included stylesheet
+	
+	* example/sample1/conf/config.prop.in: 
+	Added "geninc" page for a demonstration of the "generated XSL includes" feature
+	
 	* src/de/schlund/pfixxml/util/Xslt.java (createIdentityTransformer): 
 	Removed synchronized flag as the TransformerFactory.newTransformer() method
 	seems to be usable concurrently by different threads

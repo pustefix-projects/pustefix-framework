@@ -22,6 +22,8 @@
 
     <page name="ssltest"  handler="/xml/secure"/>
     <page name="install"  handler="/xml/download"/>
+    
+    <page name="geninc"  handler="/xml/config"/>
   </navigation>
 
   <standardmaster>
@@ -45,5 +47,14 @@
   <standardpage name="test"     xml="sample1/xml/one_frame.xml"/>
 
   <standardpage name="ssltest"  xml="sample1/xml/one_frame.xml"/>
+  
+  <standardpage name="geninc"   xml="sample1/xml/one_frame.xml">
+    <include stylesheet="generatedruntime.xsl"/>
+  </standardpage>
+  
+  <target name="generatedruntime.xsl" type="xml">
+    <depxml name="sample1/xsl/generatedruntime.xsl"/>
+    <depxsl name="core/xsl/customizestylesheet.xsl"/>
+  </target>
 
 </make>
