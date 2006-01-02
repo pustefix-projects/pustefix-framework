@@ -15,7 +15,11 @@
 <part name="test">
   <product name="default">
     <lang name="default">
-      TESTIT
+      Included part for testing.<br/>
+      Second level nodes from the runtime tree:<br/>
+      <ixsl:for-each select="./*/node()">
+        <i><ixsl:value-of select="name()"/></i><br/>
+      </ixsl:for-each>
     </lang>
   </product>
 </part>
