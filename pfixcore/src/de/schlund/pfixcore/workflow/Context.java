@@ -723,7 +723,7 @@ public class Context implements AppContext {
             }
 
             resdoc = documentFromCurrentStep();
-            if (!prohibitcontinue &&
+            if ( // !prohibitcontinue &&
                 currentpageflow != null && currentpageflow.containsPage(currentpagerequest.getRootName())) {
                 FlowStep step = currentpageflow.getFlowStepForPage(currentpagerequest.getRootName());
                 step.applyActionsOnContinue(this, resdoc);

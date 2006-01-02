@@ -54,7 +54,7 @@
   
   <target name="generatedruntime.xsl" type="xml">
     <depxml name="sample1/xsl/generatedruntime.xsl"/>
-    <depxsl name="core/xsl/customizestylesheet.xsl"/>
+    <depxsl name="metatags.xsl"/>
   </target>
 
 </make>
