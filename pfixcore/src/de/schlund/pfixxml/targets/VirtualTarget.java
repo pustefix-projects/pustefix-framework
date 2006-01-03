@@ -22,6 +22,7 @@ import de.schlund.pfixxml.*;
 import de.schlund.pfixxml.util.*;
 import java.io.*;
 import java.util.*;
+
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.NDC;
@@ -111,8 +112,10 @@ public abstract class VirtualTarget extends TargetImpl {
         long    mymodtime = getModTime();
         long    xmlmod;
         long    xslmod;
+        long    depmod = 0;
         boolean xmlup;
         boolean xslup;
+        boolean depup = false;
         Target  tmp;
 
         tmp    = getXMLSource();
@@ -121,12 +124,21 @@ public abstract class VirtualTarget extends TargetImpl {
         tmp    = getXSLSource();
         xslup  = tmp.needsUpdate();
         xslmod = tmp.getModTime();
-
+        
+        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
+            TargetImpl t = (TargetImpl) i.next();
+            long tmpmodtime = t.getModTimeMaybeUpdate();
+            depmod = Math.max(tmpmodtime, depmod);
+            if (t.needsUpdate()) {
+                depup = true;
+            }
+        }
+        
         if (forceupdate)
             return true;
-        if (xslup || xmlup)
+        if (xslup || xmlup || depup)
             return true;
-        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime || depmod > mymodtime)
             return true;
         return false;
     }
@@ -196,6 +208,14 @@ public abstract class VirtualTarget extends TargetImpl {
         //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
         // }
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        
+        // check target dependencies
+        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
+            TargetImpl t = (TargetImpl) i.next();
+            tmpmodtime = t.getModTimeMaybeUpdate();
+            maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        }
+        
         if ((maxmodtime > getModTime()) || forceupdate) {
             synchronized (this) {
                 if ((maxmodtime > getModTime()) || forceupdate) {
@@ -245,8 +265,8 @@ public abstract class VirtualTarget extends TargetImpl {
             CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" +
                       tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
         }
-        // we reset the auxilliary dependencies here, as they will be rebuild now, too 
-        getAuxDependencyManager().reset();
+        // reset the target dependency list as it will be set up again
+        this.clearTargetDependencies();
         // as the file will be rebuild in the disc cache, we need to make sure that we will load it again
         // when we need it by invalidating the Memcache;
         storeValue(null);

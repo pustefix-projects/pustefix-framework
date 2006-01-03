@@ -20,6 +20,9 @@ package de.schlund.pfixxml.targets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -59,6 +62,8 @@ public abstract class TargetImpl implements TargetRW, Comparable {
     private   boolean              onceLoaded      = false;
     // store  exception occured during transformation here. 
     protected Exception            storedException = null;
+    
+    protected Set                  auxdeptargets   = Collections.synchronizedSet(new HashSet());
     
     //~ Methods ....................................................................................
 
@@ -300,6 +305,19 @@ public abstract class TargetImpl implements TargetRW, Comparable {
         } else {
             SPCacheStatistic.getInstance().registerCacheHit(this);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see de.schlund.pfixxml.targets.TargetRW#registerTargetDependency(de.schlund.pfixxml.targets.Target)
+     */
+    public void registerTargetDependency(Target child) {
+        if (!this.auxdeptargets.contains(child)) {
+            this.auxdeptargets.add(child);
+        }
+    }
+    
+    protected void clearTargetDependencies() {
+        this.auxdeptargets.clear();
     }
     
     

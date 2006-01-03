@@ -22,6 +22,7 @@ package de.schlund.pfixxml.targets;
 import de.schlund.pfixxml.*;
 import java.io.*;
 import java.util.*;
+
 import org.apache.log4j.*;
 
 /**
@@ -70,7 +71,15 @@ public abstract class LeafTarget extends TargetImpl {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
             File doc       = PathFactory.getInstance().createPath(getTargetKey()).resolve();
-            if (doc.lastModified() > mymodtime) {
+            long maxmodtime = doc.lastModified();
+            
+            for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
+                TargetImpl t = (TargetImpl) i.next();
+                long tmpmodtime = t.getModTimeMaybeUpdate();
+                maxmodtime = Math.max(tmpmodtime, maxmodtime);
+            }
+            
+            if (maxmodtime > mymodtime) {
                 return true;
             }
             return false;
@@ -105,6 +114,12 @@ public abstract class LeafTarget extends TargetImpl {
         long maxmodtime = PathFactory.getInstance().createPath(getTargetKey()).resolve().lastModified(); 
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
+        
+        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
+            TargetImpl t = (TargetImpl) i.next();
+            long tmpmodtime = t.getModTimeMaybeUpdate();
+            maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        }
         
         if (maxmodtime > mymodtime) {
             try {

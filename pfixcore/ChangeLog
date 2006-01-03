@@ -1,3 +1,47 @@
+2006-01-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/util/Xslt.java (loadTemplates): Changed
+	method signature to take a TargetsRW object
+	(FileResolver#resolve): Register a dependency with the supplied target
+	for each file / target resolved though this resolver	
+	
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java (getValueFromDiscCache): 
+	Added code to clear list of target dependencies before rebuilding
+	Templates object
+	(getDOM): Implemented method from interface
+	
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java (getValueFromDiscCache): 
+	Added code to clear list of target dependencies before rebuilding
+	Templates object
+	(getDOM): Implemented method from interface
+	
+	* src/de/schlund/pfixxml/targets/XMLVirtualTarget.java (getDOM): 
+	Implemented method from interface
+	
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java (getDOM): 
+	Implemented method from interface
+	
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (needsUpdate): 
+	(getModTimeMaybeUpdate): Added check for changes in dependency 
+	targets (e.g. XSL includes)
+	
+	* src/de/schlund/pfixxml/targets/TargetImpl.java (registerTargetDependency): 
+	Implemented method for registering a Target dependency
+	(clearTargetDependencies): Added method for clearing list of
+	target dependencies
+	
+	* src/de/schlund/pfixxml/targets/LeafTarget.java (getModTimeMaybeUpdate):
+	(needsUpdate): 
+	Added check for changes in dependency targets (e.g. XSL includes)
+		
+	* src/de/schlund/pfixxml/targets/Target.java (getDOM): 
+	Adding method that returns DOM tree for any target type
+	
+	* src/de/schlund/pfixxml/targets/TargetRW.java: Making interface public
+	so that it can be used by the Xslt utility class
+	(registerTargetDependency): Added method to register a dependency on another
+	Target for the current target
+
 2006-01-02  Jens Lautenbacher  <jtl@schlund.de>
 
 	* example/sample1/txt/navigation.xml (Module): 
