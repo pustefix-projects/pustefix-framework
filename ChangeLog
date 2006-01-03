@@ -1,3 +1,11 @@
+2006-01-03  Michael Hartmeier <mhm@schlund.de>
+
+    * switch to tomcat 5.5:
+      o adjust server.xml
+	  o use jdk xerces instead of tomcat xerces (because 5.5 doesn't have one)
+      o specify xsd instead of doctype
+      o xmlValidation="false" - tomcat didn't accept our web.xmls with neither xsd nor dtd
+    
 2006-01-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (loadTemplates): Changed
@@ -813,7 +821,6 @@
 	* src/de/schlund/pfixxml/util/Path.java:
 	  Removed unused constructors and optimized code to save memory
 	
-
 2005-10-26  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/util/GenerateSCodes.java (run): use the convertToFieldName method of StatusCode
@@ -981,7 +988,6 @@
 	* example/core/xsl/forminput.xsl.in: common/dyntxt/statusmessages.xml => common/dyntxt/statusmessages-core-merged.xml 
 	in a deprecated template
 	
-
 2005-10-06  Martin Leidig  <mleidig@schlund.de>
 	
 	Added offline building support for 'defaultwebxml' target.

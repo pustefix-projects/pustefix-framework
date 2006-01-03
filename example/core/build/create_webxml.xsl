@@ -10,9 +10,7 @@
   <xsl:variable name="project" select="document(concat('file://', $projectsxmlfile))/projects/project[@name=$prjname]" />
   <xsl:variable name="common" select="document(concat('file://', $projectsxmlfile))/projects/common" />
 
-  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes"
-	      doctype-public="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-	      doctype-system="http://java.sun.com/dtd/web-app_2_3.dtd"/>
+  <xsl:output method="xml" encoding="ISO-8859-1" indent="yes" />
 
   <xsl:include href="create_lib.xsl"/>
 

@@ -109,7 +109,7 @@ or delete the DOCTYPE definition -->
 
   <path id="cp.classpath">
     <fileset dir="${dir.lib}" includes="*.jar"/>
-    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="endorsed/xercesImpl.jar lib/servlet-api.jar"/>
+    <fileset dir="${dir.projects}/servletconf/tomcat/common" includes="lib/servlet-api.jar"/>
     <pathelement location="${dir.build}"/>
   </path>
 
@@ -686,7 +686,7 @@ or delete the DOCTYPE definition -->
 
   <target name="tomcat.extract">
     <path id="src.path">
-      <fileset dir="lib/tomcat" includes="jakarta-tomcat-*.tar.gz"/>
+      <fileset dir="lib/tomcat" includes="apache-tomcat-*.tar.gz"/>
     </path>
     <pathconvert property="tomcat.bindist" refid="src.path" dirSep="/"/>
     <echo>tomcat dist file: ${tomcat.bindist}</echo>
@@ -697,7 +697,7 @@ or delete the DOCTYPE definition -->
     <property name="dir" location="${dir.tomcat}/.."/>
     <untar src="${tomcat.bindist}" dest="${dir}" compression="gzip"/>
     <path id="dest.path">
-      <dirset dir="${dir}" includes="jakarta-tomcat-*"/>
+      <dirset dir="${dir}" includes="apache-tomcat-*"/>
     </path>
     <pathconvert property="tmp.tomcat" refid="dest.path" dirSep="/"/>
     <echo>tmp directory: ${tmp.tomcat}</echo>

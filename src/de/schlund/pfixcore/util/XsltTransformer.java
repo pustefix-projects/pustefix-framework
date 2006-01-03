@@ -36,12 +36,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.xerces.parsers.SAXParser;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import com.icl.saxon.TransformerFactoryImpl;
+import com.sun.org.apache.xerces.internal.parsers.SAXParser;
 
 /**
  * @author adam

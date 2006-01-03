@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.apache.xml.resolver.Catalog;
 import org.apache.xml.resolver.CatalogManager;
 import org.apache.xml.resolver.readers.OASISXMLCatalogReader;
@@ -31,6 +30,8 @@ import org.apache.xml.resolver.readers.SAXCatalogReader;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
 
 
 /**
