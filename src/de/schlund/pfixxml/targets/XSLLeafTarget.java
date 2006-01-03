@@ -23,8 +23,11 @@ package de.schlund.pfixxml.targets;
 
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.*;
+
 import java.io.File;
 import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.Document;
 
 /**
  * XSLLeafTarget.java
@@ -55,7 +58,25 @@ public class XSLLeafTarget extends LeafTarget {
         Path thepath = PathFactory.getInstance().createPath(getTargetKey());
         File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(thepath); 
+            // reset the target dependency list as they will be set up again
+            this.clearTargetDependencies();
+            
+            return Xslt.loadTemplates(thepath, this); 
+        } else {
+            return null;
+        }
+    }
+
+    public Document getDOM() throws TargetGenerationException {
+        File thefile = PathFactory.getInstance().createPath(getTargetKey()).resolve();
+        if (thefile.exists() && thefile.isFile()) {
+            try {
+                return Xml.parse(thefile);
+            } catch (TransformerException e) {
+                throw new TargetGenerationException(
+                        "Error while reading DOM from disccache for target "
+                                + getTargetKey(), e);
+            }
         } else {
             return null;
         }

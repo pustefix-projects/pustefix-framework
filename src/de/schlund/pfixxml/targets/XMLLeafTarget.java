@@ -25,6 +25,8 @@ import de.schlund.pfixxml.util.*;
 import java.io.File;
 import javax.xml.transform.TransformerException;
 
+import org.w3c.dom.Document;
+
 /**
  * XMLLeafTarget.java
  *
@@ -58,6 +60,10 @@ public class XMLLeafTarget extends LeafTarget {
         } else {
             return null;
         }
+    }
+
+    public Document getDOM() throws TargetGenerationException {
+        return (Document) this.getValue();
     }
 
 }// XMLLeafTarget

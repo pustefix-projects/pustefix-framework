@@ -19,13 +19,14 @@
 
 package de.schlund.pfixxml.targets;
 
-
-
 import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.*;
+
 import java.io.File;
 import java.util.TreeMap;
 import javax.xml.transform.TransformerException;
+
+import org.w3c.dom.Document;
 
 /**
  * XSLVirtualTarget.java
@@ -38,12 +39,13 @@ import javax.xml.transform.TransformerException;
 
 public class XSLVirtualTarget extends VirtualTarget {
 
-    public XSLVirtualTarget(TargetType type, TargetGenerator gen, String key, Themes themes) throws Exception {
-        this.type      = type;
+    public XSLVirtualTarget(TargetType type, TargetGenerator gen, String key,
+            Themes themes) throws Exception {
+        this.type = type;
         this.generator = gen;
         this.targetkey = key;
-        this.themes    = themes;
-        this.params        = new TreeMap();
+        this.themes = themes;
+        this.params = new TreeMap();
         this.auxdepmanager = new AuxDependencyManager(this);
         auxdepmanager.tryInitAuxdepend();
     }
@@ -52,11 +54,34 @@ public class XSLVirtualTarget extends VirtualTarget {
      * @see de.schlund.pfixxml.targets.TargetImpl#getValueFromDiscCache()
      */
     protected Object getValueFromDiscCache() throws TransformerException {
-        Path thepath = PathFactory.getInstance().createPath(getTargetGenerator().getDisccachedir().getRelative() +
-                                                            File.separator + getTargetKey());
+        Path thepath = PathFactory.getInstance().createPath(
+                getTargetGenerator().getDisccachedir().getRelative()
+                        + File.separator + getTargetKey());
         File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            return Xslt.loadTemplates(thepath, this.getTargetGenerator());
+            // reset the target dependency list as they will be set up again
+            this.clearTargetDependencies();
+
+            return Xslt.loadTemplates(thepath, this);
+        } else {
+            return null;
+        }
+    }
+
+    public Document getDOM() throws TargetGenerationException {
+        // Make sure we have an up-to-date version
+        this.getValue();
+        
+        File thefile = new File(getTargetGenerator().getDisccachedir()
+                .resolve(), getTargetKey());
+        if (thefile.exists() && thefile.isFile()) {
+            try {
+                return Xml.parse(thefile);
+            } catch (TransformerException e) {
+                throw new TargetGenerationException(
+                        "Error while reading DOM from disccache for target "
+                                + getTargetKey(), e);
+            }
         } else {
             return null;
         }
