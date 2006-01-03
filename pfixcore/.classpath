@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="lib/axis-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/axis-ant-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/mail-1.3.3.jar"/>
-	<classpathentry kind="lib" path="example/servletconf/tomcat/common/endorsed/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/bsf-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib/js-1.5R3.jar"/>
 	<classpathentry kind="src" path="gensrc"/>

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://java.sun.com/xml/ns/j2ee">
 
-  <xsl:output method="xml" encoding="ISO-8859-1" 
-    doctype-public="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-  	doctype-system="http://java.sun.com/dtd/web-app_2_3.dtd"/>
+  <xsl:output method="xml" encoding="ISO-8859-1" />
 
   <xsl:template match="/">
   	<xsl:apply-templates/>
