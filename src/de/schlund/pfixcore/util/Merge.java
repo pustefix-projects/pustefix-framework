@@ -55,65 +55,64 @@ public class Merge {
     
     public void run() throws SAXException, IOException, TransformerException {
         Document destDoc;
-        List nodes;
-        int overwrite;
+        List<Element> nodes;
+        int modified;
         
         System.out.println("Merge " + src + " into" + dest);
         destDoc = Xml.parseMutable(dest);
         remove(XPath.select(destDoc, "/include_parts/part/product[count(lang) = 0]"));
         remove(XPath.select(destDoc, "/include_parts/part[count(product) = 0]"));
         nodes = XPath.select(Xml.parseMutable(src), srcPath);
-        overwrite = add(nodes, destDoc);
-        System.out.println("  add " + nodes.size() + ", overwriting " + overwrite);
+        modified = merge(nodes, destDoc);
+        System.out.println("  modified: " + modified);
+        System.out.println("  added: " + (nodes.size() - modified));
         Xml.serialize(destDoc, dest, true, true);
     }
 
-    private int add(List lst, Document dest) throws TransformerException {
-        Iterator iter;
-        int overwrite;
+    private int merge(List<Element> src, Document dest) throws TransformerException {
+        int modified;
         
-        overwrite = 0;
-        iter = lst.iterator();
-        while (iter.hasNext()) {
-            if (addLang((Element) iter.next(), dest)) {
-                overwrite++;
+        modified = 0;
+        for (Element element : src) {
+            if (mergeLang(element, dest)) {
+                modified++;
             }
         }
-        return overwrite;
+        return modified;
     }
     
-    private boolean addLang(Element lang, Document dest) throws TransformerException {
+    private boolean mergeLang(Element src, Document dest) throws TransformerException {
         Element part;
         Element product;
         
-        product = (Element) lang.getParentNode();
-        part = (Element) product.getParentNode();
-        ensureElement(lang, "lang");
+        ensureElement(src, "lang");
+        product = (Element) src.getParentNode();
         ensureElement(product, "product");
+        part = (Element) product.getParentNode();
         ensureElement(part, "part");
-        return addLang(getName(part), getName(product), lang, dest);
+        return mergeLang(getName(part), getName(product), src, dest);
     }
 
-    private boolean addLang(String partName, String productName, Element lang, Document dest) throws TransformerException {
+    private boolean mergeLang(String partName, String productName, Element src, Document dest) throws TransformerException {
         Node all;
         Element destPart;
         Element destProduct;
         Node newNode;
         Node first;
-        boolean overwrite;
+        boolean modified;
         
         all = XPath.selectNode(dest, "/include_parts");
         destPart = getOrCreate(all, "part", partName);
         destProduct = getOrCreate(destPart, "product", productName);
-        overwrite = removeLang(destProduct, getName(lang));
-        newNode = dest.importNode(lang, true);
+        modified = removeLang(destProduct, getName(src));
+        newNode = dest.importNode(src, true);
         first = destProduct.getFirstChild();
         if (first != null) {
             destProduct.insertBefore(newNode, first);
         } else {
             destProduct.appendChild(newNode);
         }
-        return overwrite;
+        return modified;
     }
 
     private void ensureElement(Element ele, String name) {
