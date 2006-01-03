@@ -1,89 +1,87 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
-        <center>
-          <pfx:include href="sample1/txt/navigation.xml" part="test"/>
-          <pfx:forminput target="_top">
-            <table width="400">
-              <tr>
-                <td align="left">
-                  <b><big>Confirmation:</big></b>
-                </td>
-              </tr>
-            </table>
-            <table bgcolor="#bbccff" class="boxed" width="400">
-              <tr valign="top">
-                <pfx:checkfield name="info.Adult"><td class="{$pfx_class}"><pfx:include part="adult"/></td></pfx:checkfield>
-                <td>
-                  <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
-                  <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
-                  <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
-                </td>
-              </tr>
-              <errormsg name="info.Adult"/>
-            </table>
-            <table width="400">
-              <tr>
-                <td align="right" nowrap="nowrap">
-                  <pfx:xinp type="submit" value="Go!"/>
-                  <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
-                  <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
-                </td>
-              </tr>
-            </table>
-            <br/>
-
-            <table bgcolor="#bbcc88" class="boxed" id="special">
-              <tr>
-                <td align="left" colspan="2">
-                  <b>Indexed parameter test:</b>
-                </td>
-              </tr>
-              <ixsl:for-each select="/formresult/navigation//page">
-                <tr>
-                  <pfx:checkfield>
-                    <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
-                    <td class="{$pfx_class}" nowrap="nowrap">
-                      <pfx:error><pfx:image src="/core/img/error.gif" style="vertical-align: middle;"/></pfx:error>
-                      FooBar No. <ixsl:value-of select="position()"/>
-                    </td>
-                  </pfx:checkfield>
-                  <td>
-                    <pfx:xinp type="text">
-                      <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
-                      <pfx:default><ixsl:value-of select="@name"/></pfx:default>
-                    </pfx:xinp>
-                  </td>
-                </tr>
-                <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
-              </ixsl:for-each>
-            </table>
-          </pfx:forminput>
-          <p>
-            <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
-          </p>
-          <p>
-            <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
-          </p>
-          <br/>
-          <pfx:include part="buttons"/>
-          <br/>
-          <table cellpadding="10">
-            <tr valign="top">
-              <td>
-                <pfx:include part="env_info"/>
+    
+  <product name="default">
+<lang name="default">
+  <center>
+    <pfx:forminput target="_top">
+      <table width="400">
+        <tr>
+          <td align="left">
+            <b><big>Confirmation:</big></b>
+          </td>
+        </tr>
+      </table>
+      <table bgcolor="#bbccff" class="boxed" width="400">
+        <tr valign="top">
+          <pfx:checkfield name="info.Adult"><td class="{$pfx_class}"><pfx:include part="adult"/></td></pfx:checkfield>
+          <td>
+            <pfx:xinp name="info.Adult" type="radio" value="true"/><pfx:include part="yes"/><br/>
+            <pfx:xinp default="true" name="info.Adult" type="radio" value="false"/><pfx:include part="no"/><br/>
+            <pfx:xinp name="info.Adult" type="radio" value="foobar"/>foobar<br/>
+          </td>
+        </tr>
+        <errormsg name="info.Adult"/>
+      </table>
+      <table width="400">
+        <tr>
+          <td align="right" nowrap="nowrap">
+            <pfx:xinp type="submit" value="Go!"/>
+            <pfx:xinp forcestop="true" type="submit" value="Don't go"/>
+            <pfx:xinp forcestop="step" type="submit" value="Go Step by Step!"/>
+          </td>
+        </tr>
+      </table>
+      <br/>
+      <table bgcolor="#bbcc88" class="boxed" id="special">
+        <tr>
+          <td align="left" colspan="2">
+            <b>Indexed parameter test:</b>
+          </td>
+        </tr>
+        <ixsl:for-each select="/formresult/navigation//page">
+          <tr>
+            <pfx:checkfield>
+              <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+              <td class="{$pfx_class}" nowrap="nowrap">
+                <pfx:error><pfx:image src="/core/img/error.gif" style="vertical-align: middle;"/></pfx:error>
+                FooBar No. <ixsl:value-of select="position()"/>
               </td>
-              <td>
-                <pfx:include part="variant_info"/>
-              </td>
-            </tr>
-          </table>
-        </center>
-      </lang>
-    </product>
-  </part>
+            </pfx:checkfield>
+            <td>
+              <pfx:xinp type="text">
+                <pfx:name>prefix.Value.<ixsl:value-of select="position()"/></pfx:name>
+                <pfx:default><ixsl:value-of select="@name"/></pfx:default>
+              </pfx:xinp>
+            </td>
+          </tr>
+          <errormsg><name>prefix.Value.<ixsl:value-of select="position()"/></name></errormsg>
+        </ixsl:for-each>
+      </table>
+    </pfx:forminput>
+    <p>
+      <h3><pfx:button page="scripting">SCRIPTING IHandler Test</pfx:button></h3>
+    </p>
+    <p>
+      <h3><pfx:button page="scriptingstate">SCRIPTING State Test</pfx:button></h3>
+    </p>
+    <br/>
+    <pfx:include part="buttons"/>
+    <br/>
+    <table cellpadding="10">
+      <tr valign="top">
+        <td>
+          <pfx:include part="env_info"/>
+        </td>
+        <td>
+          <pfx:include part="variant_info"/>
+        </td>
+      </tr>
+    </table>
+  </center>
+</lang>
+</product></part>
   
   <part name="buttons">
     <product name="default">
