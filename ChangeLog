@@ -1,11 +1,11 @@
 2006-01-03  Michael Hartmeier <mhm@schlund.de>
 
-    * switch to tomcat 5.5:
-      o adjust server.xml
+	* switch to tomcat 5.5:
+	  o adjust server.xml
 	  o use jdk xerces instead of tomcat xerces (because 5.5 doesn't have one)
-      o specify xsd instead of doctype
-      o xmlValidation="false" - tomcat didn't accept our web.xmls with neither xsd nor dtd
-    
+	  o specify xsd instead of doctype
+	  o xmlValidation="false" - tomcat didn't accept our web.xmls with neither xsd nor dtd
+
 2006-01-03  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/util/Xslt.java (loadTemplates): Changed
