@@ -1,3 +1,11 @@
+2006-01-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResourceImpl.java (insertStatus): 
+	Add info about user (full name and phone number) to each session entry
+	
+	* example/core/editor2/txt/pages/main_sessionmanager.xml: Show
+	full name and phone number for each user
+
 2006-01-03  Michael Hartmeier <mhm@schlund.de>
 
 	* switch to tomcat 5.5:
@@ -11,7 +19,7 @@
 	* src/de/schlund/pfixxml/util/Xslt.java (loadTemplates): Changed
 	method signature to take a TargetsRW object
 	(FileResolver#resolve): Register a dependency with the supplied target
-	for each file / target resolved though this resolver	
+	for each file / target resolved through this resolver	
 	
 	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java (getValueFromDiscCache): 
 	Added code to clear list of target dependencies before rebuilding

@@ -28,8 +28,10 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.vo.EditorUser;
 import de.schlund.pfixcore.editor2.frontend.util.ContextStore;
 import de.schlund.pfixcore.editor2.frontend.util.EditorResourceLocator;
+import de.schlund.pfixcore.editor2.frontend.util.SpringBeanLocator;
 import de.schlund.pfixcore.workflow.Context;
 import de.schlund.pfixxml.ResultDocument;
 import de.schlund.pfixxml.ServletManager;
@@ -69,6 +71,13 @@ public class SessionInfoResourceImpl implements SessionInfoResource {
                         if (foreignctx.getVisitId().equals(visitId)) {
                             String username = contextmap.get(foreignctx);
                             sessionNode.setAttribute("username", username);
+                            EditorUser userinfo = SpringBeanLocator
+                                    .getUserManagementService().getUser(
+                                            username);
+                            if (userinfo != null) {
+                                sessionNode.setAttribute("userphone", userinfo.getPhoneNumber());
+                                sessionNode.setAttribute("userfullname", userinfo.getFullname());
+                            }
                             if (EditorResourceLocator.getSessionResource(
                                     foreignctx).isInIncludeEditView()) {
                                 IncludePartThemeVariant incPart = EditorResourceLocator
