@@ -78,6 +78,7 @@
                 <ixsl:choose>
                   <ixsl:when test="./@username">
                     <ixsl:value-of select="./@username"/>
+                    (<ixsl:value-of select="./@userfullname"/>, Phone: <ixsl:value-of select="./@userphone"/>)
                   </ixsl:when>
                   <ixsl:otherwise>
                     <i>not logged in</i>
