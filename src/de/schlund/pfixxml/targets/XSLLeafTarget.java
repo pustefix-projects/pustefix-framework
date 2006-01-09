@@ -73,13 +73,12 @@ public class XSLLeafTarget extends LeafTarget {
             try {
                 return Xml.parse(thefile);
             } catch (TransformerException e) {
-                throw new TargetGenerationException(
-                        "Error while reading DOM from disccache for target "
-                                + getTargetKey(), e);
+                throw new TargetGenerationException("Error while reading DOM from disccache for target "
+                                                    + getTargetKey(), e);
             }
         } else {
             return null;
         }
     }
-
+    
 }// XSLLeafTarget
