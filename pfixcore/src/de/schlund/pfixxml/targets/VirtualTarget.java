@@ -126,9 +126,8 @@ public abstract class VirtualTarget extends TargetImpl {
         xslmod = tmp.getModTime();
         
         for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
-            TargetImpl t = (TargetImpl) i.next();
-            long tmpmodtime = t.getModTimeMaybeUpdate();
-            depmod = Math.max(tmpmodtime, depmod);
+            TargetImpl auxtarget = (TargetImpl) i.next();
+            depmod = Math.max(auxtarget.getModTime(), depmod);
             if (t.needsUpdate()) {
                 depup = true;
             }
@@ -138,7 +137,8 @@ public abstract class VirtualTarget extends TargetImpl {
             return true;
         if (xslup || xmlup || depup)
             return true;
-        if ((xmlmod > mymodtime) || (xslmod > mymodtime) || getAuxDependencyManager().getMaxTimestamp() > mymodtime || depmod > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime) ||
+            getAuxDependencyManager().getMaxTimestamp() > mymodtime || depmod > mymodtime)
             return true;
         return false;
     }
