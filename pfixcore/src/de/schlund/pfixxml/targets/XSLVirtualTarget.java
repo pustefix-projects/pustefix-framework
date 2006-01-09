@@ -72,15 +72,13 @@ public class XSLVirtualTarget extends VirtualTarget {
         // Make sure we have an up-to-date version
         this.getValue();
         
-        File thefile = new File(getTargetGenerator().getDisccachedir()
-                .resolve(), getTargetKey());
+        File thefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
         if (thefile.exists() && thefile.isFile()) {
             try {
                 return Xml.parse(thefile);
             } catch (TransformerException e) {
-                throw new TargetGenerationException(
-                        "Error while reading DOM from disccache for target "
-                                + getTargetKey(), e);
+                throw new TargetGenerationException("Error while reading DOM from disccache for target "
+                                                    + getTargetKey(), e);
             }
         } else {
             return null;

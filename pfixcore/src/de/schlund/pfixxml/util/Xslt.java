@@ -175,8 +175,7 @@ public class Xslt {
         private static final String SEP = File.separator;
 
         private final File root;
-
-        private TargetRW parent;
+        private TargetRW   parent;
 
         public FileResolver(File root, TargetRW parent) {
             this.root = root;
@@ -212,30 +211,27 @@ public class Xslt {
                     try {
                         dom = (Document) target.getDOM();
                     } catch (TargetGenerationException e) {
-                        throw new TransformerException(
-                                "Could not retrieve target '"
-                                        + target.getTargetKey()
-                                        + "' included by stylesheet!", e);
+                        throw new TransformerException("Could not retrieve target '"
+                                                       + target.getTargetKey()
+                                                       + "' included by stylesheet!", e);
                     }
                     Source source = new DOMSource(dom);
                     
                     // There is a bug in Saxon 6.5.3 which causes
                     // a NullPointerException to be thrown, if systemId
                     // is not set
-                    source.setSystemId("file://"
-                            + PathFactory.getInstance().createPath(
-                                    target.getTargetGenerator()
-                                            .getDisccachedir().getRelative()
-                                            + File.separator + path).resolve()
-                                    .getAbsolutePath());
+                    source.setSystemId("file://" + PathFactory.getInstance()
+                                       .createPath(target.getTargetGenerator()
+                                                   .getDisccachedir().getRelative()
+                                                   + File.separator + path).resolve()
+                                       .getAbsolutePath());
                     
                     // Register included stylesheet with target
                     parent.registerTargetDependency(target);
-                    
                     return source;
                 }
             }
-
+            
             try {
                 file = Path.create(root, path).resolve();
             } catch (IllegalArgumentException e) {
