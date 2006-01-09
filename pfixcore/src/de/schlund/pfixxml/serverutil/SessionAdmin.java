@@ -35,7 +35,9 @@ public class SessionAdmin implements HttpSessionBindingListener {
     public  static final String SESSION_IS_SECURE             = "__SESSION_IS_SECURE__";
     private static SessionAdmin instance       = new SessionAdmin();
     private        Category     CAT            = Category.getInstance(SessionAdmin.class.getName());
-    private        HashMap      sessioninfo    = new HashMap();
+    /** Maps session to it's id. */
+    private        HashMap<HttpSession, String> sessionid = new HashMap<HttpSession, String>();
+    private        HashMap<String, SessionInfoStruct> sessioninfo = new HashMap<String, SessionInfoStruct>();
     private        HashMap      parentinfo     = new HashMap();
     private        HashMap      parentinfo_rev = new HashMap();
     
@@ -60,6 +62,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
         
         synchronized (sessioninfo) {
             session.setAttribute(LISTENER, this);
+            sessionid.put(session, session.getId());
             sessioninfo.put(session.getId(), info);
         }
         synchronized (parentinfo) {
@@ -92,9 +95,12 @@ public class SessionAdmin implements HttpSessionBindingListener {
     public void valueBound(HttpSessionBindingEvent event) {}
     public void valueUnbound(HttpSessionBindingEvent event) {
         HttpSession session = event.getSession();
-        String      id      = session.getId();
         synchronized (sessioninfo) {
-            SessionInfoStruct sessinf = (SessionInfoStruct) sessioninfo.get(id);
+            // CAUTITION: as of Tomcat 5.5.10, session.getId throws an exception 
+            // (see http://issues.apache.org/bugzilla/show_bug.cgi?id=36994)
+            // This is why we need the sessionid maps.
+            String      id      = sessionid.get(session);
+            SessionInfoStruct sessinf = sessioninfo.get(id);
             if (sessinf != null) {
                 synchronized (parentinfo) {
                     synchronized (parentinfo_rev) {
@@ -109,6 +115,7 @@ public class SessionAdmin implements HttpSessionBindingListener {
                 }
             }
             sessioninfo.remove(id);
+            sessionid.remove(session);
             CAT.debug("\n\n********* Invalidated Session " + id + " *********\n");
         }
     }
