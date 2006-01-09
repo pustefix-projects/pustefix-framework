@@ -1,3 +1,8 @@
+2006-01-09  Michael Hartmeier <mhm@schlund.de>
+
+	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java:
+	fix for Session Already Invalidated exception (thanks to Michael Bruns)
+
 2006-01-06  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/SessionInfoResourceImpl.java (insertStatus): 
