@@ -128,7 +128,7 @@ public abstract class VirtualTarget extends TargetImpl {
         for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
             TargetImpl auxtarget = (TargetImpl) i.next();
             depmod = Math.max(auxtarget.getModTime(), depmod);
-            if (t.needsUpdate()) {
+            if (auxtarget.needsUpdate()) {
                 depup = true;
             }
         }
