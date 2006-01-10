@@ -231,8 +231,13 @@ public class TargetAuxDepImpl extends AbstractTarget {
      */
     public Project getProject() {
         String name = this.getName();
-        String prjName = name.substring(0, name.indexOf("/"));
-        return this.projectfactory.getProjectByName(prjName);
+        if (name.indexOf("/") == -1) {
+            // Do special handling
+            return null;
+        } else {
+            String prjName = name.substring(0, name.indexOf("/"));
+            return this.projectfactory.getProjectByName(prjName);
+        }
     }
 
     public Map getTransformationParameters() {

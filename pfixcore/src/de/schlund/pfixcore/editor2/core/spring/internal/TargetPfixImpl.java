@@ -115,7 +115,6 @@ public class TargetPfixImpl extends AbstractTarget {
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getName()
      */
     public String getName() {
-        // TODO Check whether getTargetKey() really returns "name"
         return this.pfixTarget.getTargetKey();
     }
 
@@ -227,16 +226,23 @@ public class TargetPfixImpl extends AbstractTarget {
             for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if (auxdep.getType() == DependencyType.FILE) {
-                    deps.add(this.targetfactory
-                            .getLeafTargetFromPustefixAuxDependency(auxdep));
+                    de.schlund.pfixxml.targets.Target ptarget = this.pfixTarget
+                            .getTargetGenerator().getTarget(
+                                    auxdep.getPath().getRelative());
+                    if (ptarget != null) {
+                        deps.add(this.targetfactory
+                                .getTargetFromPustefixTarget(ptarget,
+                                        this.project));
+                    } else {
+                        deps
+                                .add(this.targetfactory
+                                        .getLeafTargetFromPustefixAuxDependency(auxdep));
+                    }
                 }
             }
-
-            return deps;
-
-        } else {
-            return new ArrayList();
         }
+
+        return deps;
     }
 
     /*
