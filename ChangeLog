@@ -1,3 +1,23 @@
+2006-01-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* example/core/editor2/txt/pages/main_targets.xml: 
+	Show auxilliary targets in tree, when the are generated targets themselves
+	
+	* example/core/editor2/txt/styles.xml: Added style class for auxiliary targets
+	
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractTarget.java (equals): 
+	Handle getProject() returning null during comparison
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getAuxDependencies): 
+	Prefer use of TargetPfixImpl to TargetAuxDepImpl where possible
+	
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java (getProject): 
+	Handle cases where project name cannot be determined
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/TargetsResourceImpl.java (renderTarget): 
+	Render complete tree for aux-dependencies but set type always to "aux",
+	not regarding the real type
+
 2006-01-09  Michael Hartmeier <mhm@schlund.de>
 
 	* src/de/schlund/pfixxml/serverutil/SessionAdmin.java:

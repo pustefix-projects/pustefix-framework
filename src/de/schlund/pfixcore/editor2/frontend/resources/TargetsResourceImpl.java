@@ -176,6 +176,10 @@ public class TargetsResourceImpl implements TargetsResource {
     }
 
     private void renderTarget(Target target, Element parent) {
+        renderTarget(target, parent, false);
+    }
+
+    private void renderTarget(Target target, Element parent, boolean forceAux) {
         Document doc = parent.getOwnerDocument();
         Element node = doc.createElement("target");
         parent.appendChild(node);
@@ -183,12 +187,16 @@ public class TargetsResourceImpl implements TargetsResource {
         if (this.selectedTarget != null && this.selectedTarget.equals(target)) {
             node.setAttribute("selected", "true");
         }
-        if (target.getType() == TargetType.TARGET_XML) {
-            node.setAttribute("type", "xml");
-        } else if (target.getType() == TargetType.TARGET_XSL) {
-            node.setAttribute("type", "xsl");
-        } else if (target.getType() == TargetType.TARGET_AUX) {
+        if (forceAux) {
             node.setAttribute("type", "aux");
+        } else {
+            if (target.getType() == TargetType.TARGET_XML) {
+                node.setAttribute("type", "xml");
+            } else if (target.getType() == TargetType.TARGET_XSL) {
+                node.setAttribute("type", "xsl");
+            } else if (target.getType() == TargetType.TARGET_AUX) {
+                node.setAttribute("type", "aux");
+            }
         }
         if (target.isLeafTarget()) {
             node.setAttribute("leaf", "true");
@@ -199,7 +207,7 @@ public class TargetsResourceImpl implements TargetsResource {
             for (Iterator i = target.getAuxDependencies().iterator(); i
                     .hasNext();) {
                 Target auxtarget = (Target) i.next();
-                this.renderTarget(auxtarget, node);
+                this.renderTarget(auxtarget, node, true);
             }
         }
     }

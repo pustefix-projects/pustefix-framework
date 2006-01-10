@@ -41,7 +41,7 @@ public abstract class AbstractTarget implements Target {
     public boolean equals(Object obj) {
         if (obj instanceof Target) {
             Target target = (Target) obj;
-            return this.getName().equals(target.getName()) && this.getProject().equals(target.getProject());
+            return this.getName().equals(target.getName()) && ((this.getProject() == null) ? (target.getProject() == null) : this.getProject().equals(target.getProject()));
         } else {
             return false;
         }
@@ -56,6 +56,6 @@ public abstract class AbstractTarget implements Target {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return this.getProject().getName() + "/" + this.getName();
+        return (this.getProject() == null) ? "<null>" : this.getProject().getName() + "/" + this.getName();
     }
 }
