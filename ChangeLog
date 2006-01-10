@@ -1,5 +1,8 @@
 2006-01-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (needsUpdate): 
+	Fixed typo: "t.needsUpdate()" to "auxtarget.needsUpdate()"
+	
 	* example/core/editor2/txt/pages/main_targets.xml: 
 	Show auxilliary targets in tree, when the are generated targets themselves
 	
