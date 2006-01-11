@@ -23,7 +23,11 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
+import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePart;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
+import de.schlund.pfixcore.editor2.core.dom.Page;
+import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.dom.Theme;
 import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
@@ -63,32 +67,32 @@ public class DynIncludePartThemeVariantImpl extends
         this.securitymanager.checkEditDynInclude();
     }
 
-    public Collection getIncludeDependencies(boolean recursive)
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive)
             throws EditorParsingException {
-        return new ArrayList();
+        return new ArrayList<IncludePartThemeVariant>();
     }
 
-    public Collection getImageDependencies(boolean recursive)
+    public Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException {
-        return new ArrayList();
+        return new ArrayList<Image>();
     }
 
-    public Collection getIncludeDependencies(Target target, boolean recursive)
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(Target target, boolean recursive)
             throws EditorParsingException {
-        return new ArrayList();
+        return new ArrayList<IncludePartThemeVariant>();
     }
 
-    public Collection getImageDependencies(Target target, boolean recursive)
+    public Collection<Image> getImageDependencies(Target target, boolean recursive)
             throws EditorParsingException {
-        return new ArrayList();
+        return new ArrayList<Image>();
     }
 
-    public Collection getAffectedPages() {
-        return new ArrayList();
+    public Collection<Page> getAffectedPages() {
+        return new ArrayList<Page>();
     }
 
-    public Collection getAffectedProjects() {
-        return new ArrayList();
+    public Collection<Project> getAffectedProjects() {
+        return new ArrayList<Project>();
     }
 
     protected void writeChangeLog() {

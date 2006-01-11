@@ -44,11 +44,11 @@ import de.schlund.pfixxml.targets.TargetGenerator;
 public class PustefixTargetUpdateServiceImpl implements
         PustefixTargetUpdateService, Runnable {
 
-    private ArrayList lowPriorityQueue;
+    private ArrayList<Target> lowPriorityQueue;
 
-    private ArrayList highPriorityQueue;
+    private ArrayList<Target> highPriorityQueue;
 
-    private HashSet tgenList;
+    private HashSet<TargetGenerator> tgenList;
 
     private Object lock;
 
@@ -104,10 +104,10 @@ public class PustefixTargetUpdateServiceImpl implements
     }
 
     public PustefixTargetUpdateServiceImpl() {
-        this.lowPriorityQueue = new ArrayList();
-        this.highPriorityQueue = new ArrayList();
+        this.lowPriorityQueue = new ArrayList<Target>();
+        this.highPriorityQueue = new ArrayList<Target>();
         this.lock = new Object();
-        this.tgenList = new HashSet();
+        this.tgenList = new HashSet<TargetGenerator>();
         this.firstRunDone = false;
         this.waitingForRefill = false;
     }

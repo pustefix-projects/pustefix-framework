@@ -30,8 +30,7 @@ public abstract class AbstractIncludePart implements IncludePart {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object arg0) {
-        IncludePart part = (IncludePart) arg0;
+    public int compareTo(IncludePart part) {
         int ret;
         ret = this.getIncludeFile().compareTo(part.getIncludeFile());
         if (ret != 0) {

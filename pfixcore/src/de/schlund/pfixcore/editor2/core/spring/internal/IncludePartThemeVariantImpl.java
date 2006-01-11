@@ -104,9 +104,9 @@ public class IncludePartThemeVariantImpl extends
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive)
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive)
             throws EditorParsingException {
-        HashSet includes = new HashSet();
+        HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
         Collection childs = TargetDependencyRelation.getInstance()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
@@ -131,9 +131,9 @@ public class IncludePartThemeVariantImpl extends
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getImageDependencies(boolean)
      */
-    public Collection getImageDependencies(boolean recursive)
+    public Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException {
-        HashSet images = new HashSet();
+        HashSet<Image> images = new HashSet<Image>();
         Collection childs = TargetDependencyRelation.getInstance()
                 .getChildrenOverallForAuxDependency(this.getAuxDependency());
         if (childs == null) {
@@ -161,9 +161,9 @@ public class IncludePartThemeVariantImpl extends
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant#getAffectedPages()
      */
-    public Collection getAffectedPages() {
+    public Collection<Page> getAffectedPages() {
         HashSet pageinfos = new HashSet();
-        HashSet pages = new HashSet();
+        HashSet<Page> pages = new HashSet<Page>();
         Set afftargets = TargetDependencyRelation.getInstance()
                 .getAffectedTargets(this.getAuxDependency());
         if (afftargets == null) {
@@ -194,10 +194,10 @@ public class IncludePartThemeVariantImpl extends
         return pages;
     }
 
-    public Collection getIncludeDependencies(
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(
             de.schlund.pfixcore.editor2.core.dom.Target target,
             boolean recursive) throws EditorParsingException {
-        HashSet includes = new HashSet();
+        HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
 
         Collection childs = getChildrenForTarget(this.getAuxDependency(),
                 target);
@@ -215,10 +215,10 @@ public class IncludePartThemeVariantImpl extends
         return includes;
     }
 
-    public Collection getImageDependencies(
+    public Collection<Image> getImageDependencies(
             de.schlund.pfixcore.editor2.core.dom.Target target,
             boolean recursive) throws EditorParsingException {
-        HashSet images = new HashSet();
+        HashSet<Image> images = new HashSet<Image>();
 
         Collection childs = getChildrenForTarget(this.getAuxDependency(),
                 target);
@@ -250,8 +250,8 @@ public class IncludePartThemeVariantImpl extends
         this.securitymanager.checkEditIncludePartThemeVariant(this);
     }
 
-    public Collection getAffectedProjects() {
-        HashSet projects = new HashSet();
+    public Collection<Project> getAffectedProjects() {
+        HashSet<Project> projects = new HashSet<Project>();
         Set afftgens = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(this.getAuxDependency());
         if (afftgens == null) {

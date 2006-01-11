@@ -29,7 +29,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Image extends Comparable {
+public interface Image extends Comparable<Image> {
     /**
      * Returns the path to the image file (relative to docroot)
      * 
@@ -45,7 +45,7 @@ public interface Image extends Comparable {
      * @return All affected pages of this Target
      * @see Page
      */
-    Collection getAffectedPages();
+    Collection<Page> getAffectedPages();
     
     /**
      * Replaces the current image file with the new one.

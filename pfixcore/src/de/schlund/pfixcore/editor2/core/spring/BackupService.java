@@ -61,7 +61,7 @@ public interface BackupService {
      *            Image to list versions for
      * @return Collection of versions (as {@link String} objects)
      */
-    Collection listImageVersions(Image image);
+    Collection<String> listImageVersions(Image image);
 
     /**
      * Creates a new backup of the supplied include part
@@ -95,5 +95,5 @@ public interface BackupService {
      *            Include Part to list versions for
      * @return Collection of versions (as {@link String} objects)
      */
-    Collection listIncludeVersions(IncludePartThemeVariant include);
+    Collection<String> listIncludeVersions(IncludePartThemeVariant include);
 }

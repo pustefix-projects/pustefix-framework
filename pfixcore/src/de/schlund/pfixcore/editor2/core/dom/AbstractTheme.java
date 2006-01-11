@@ -71,8 +71,7 @@ public abstract class AbstractTheme implements Theme {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object arg0) {
-        Theme theme = (Theme) arg0;
+    public int compareTo(Theme theme) {
         return this.getName().compareTo(theme.getName());
     }
 }

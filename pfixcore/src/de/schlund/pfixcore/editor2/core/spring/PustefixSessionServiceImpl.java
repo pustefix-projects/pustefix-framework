@@ -35,7 +35,7 @@ import de.schlund.pfixcore.workflow.Context;
  */
 public class PustefixSessionServiceImpl implements SessionService,
         PustefixContextService {
-    ThreadLocal context = new ThreadLocal();
+    ThreadLocal<Context> context = new ThreadLocal<Context>();
 
     private SpringHelperResource getHelperResource() {
         if (this.getPustefixContext() == null) {

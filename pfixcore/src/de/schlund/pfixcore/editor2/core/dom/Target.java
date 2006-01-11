@@ -68,15 +68,6 @@ public interface Target {
     Document getContentXML() throws EditorIOException, EditorParsingException;
 
     /**
-     * Returns a map of all parameters being used during the generation (XSLT
-     * transformation) of this Target. The uses parameter names as map keys and
-     * parameter values as map values.
-     * 
-     * @return Map of XSL parameters
-     */
-    Map getTransformationParameters();
-
-    /**
      * Returns parent Target that provides XML for generation of this Target.
      * Each Target (except leaf targets) has a XML parent.
      * 
@@ -99,7 +90,7 @@ public interface Target {
      * 
      * @return All auxilliary parent targets
      */
-    Collection getAuxDependencies();
+    Collection<Target> getAuxDependencies();
 
     /**
      * Returns all include parts this Target is depending on. The returned
@@ -114,7 +105,7 @@ public interface Target {
      * @see IncludePart
      * @see IncludePartThemeVariant
      */
-    Collection getIncludeDependencies(boolean recursive)
+    Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive)
             throws EditorParsingException;
 
     /**
@@ -128,7 +119,7 @@ public interface Target {
      * @throws EditorParsingException
      * @see Image
      */
-    Collection getImageDependencies(boolean recursive)
+    Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException;
 
     /**
@@ -139,7 +130,7 @@ public interface Target {
      * @return All affected pages of this Target
      * @see Page
      */
-    Collection getAffectedPages();
+    Collection<Page> getAffectedPages();
 
     /**
      * Returns parameters used during generation. Map keys are parameter names,
@@ -147,7 +138,7 @@ public interface Target {
      * 
      * @return Parameters used by the XSL processor
      */
-    Map getParameters();
+    Map<String, String> getParameters();
     
     /**
      * Returns a list representing the themes used by this target 

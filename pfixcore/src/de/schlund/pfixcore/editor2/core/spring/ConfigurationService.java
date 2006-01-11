@@ -29,5 +29,5 @@ public interface ConfigurationService {
      * 
      * @return Map of pre-configured prefix-to-namespace-url mappings.
      */
-    Map getPrefixToNamespaceMappings();
+    Map<String, String> getPrefixToNamespaceMappings();
 }

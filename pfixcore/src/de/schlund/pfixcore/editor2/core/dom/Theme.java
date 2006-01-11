@@ -23,7 +23,7 @@ package de.schlund.pfixcore.editor2.core.dom;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Theme extends Comparable {
+public interface Theme extends Comparable<Theme> {
     /**
      * Returns name identifying this Theme
      * 

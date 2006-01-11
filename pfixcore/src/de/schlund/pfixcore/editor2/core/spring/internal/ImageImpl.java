@@ -85,9 +85,9 @@ public class ImageImpl extends AbstractImage {
         return this.path;
     }
 
-    public Collection getAffectedPages() {
-        HashSet pageinfos  = new HashSet();
-        HashSet pages      = new HashSet();
+    public Collection<Page> getAffectedPages() {
+        HashSet<PageInfo> pageinfos  = new HashSet<PageInfo>();
+        HashSet<Page> pages      = new HashSet<Page>();
         Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(this.auxdep);
         if (afftargets == null) {
             return pages;

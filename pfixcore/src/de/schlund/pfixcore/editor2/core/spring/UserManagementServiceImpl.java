@@ -59,14 +59,14 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     private PathResolverService pathresolver;
 
-    private HashMap users;
+    private HashMap<String, EditorUser> users;
 
     private ProjectFactoryService projectfactory;
 
     private boolean initialized;
 
     public UserManagementServiceImpl() {
-        this.users = new HashMap();
+        this.users = new HashMap<String, EditorUser>();
         this.initialized = false;
     }
 
@@ -383,13 +383,13 @@ public class UserManagementServiceImpl implements UserManagementService {
         this.storeToFile();
     }
 
-    public Collection getUsers() {
+    public Collection<EditorUser> getUsers() {
         this.checkInitialized();
         synchronized (this.users) {
-            HashSet users = new HashSet();
+            HashSet<EditorUser> users = new HashSet<EditorUser>();
             for (Iterator i = this.users.values().iterator(); i.hasNext();) {
                 EditorUser user = (EditorUser) i.next();
-                users.add(user.clone());
+                users.add((EditorUser) user.clone());
             }
             return users;
         }

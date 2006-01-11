@@ -47,7 +47,7 @@ import de.schlund.pfixxml.util.XPath;
 public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
     private String path;
 
-    private HashMap cache;
+    private HashMap<String, IncludePart> cache;
 
     private FileSystemService filesystem;
 
@@ -67,7 +67,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
         this.filesystem = filesystem;
         this.pathresolver = pathresolver;
         this.path = path;
-        this.cache = new HashMap();
+        this.cache = new HashMap<String, IncludePart>();
         this.lastModTime = 0;
         this.xmlCache = null;
     }
@@ -166,7 +166,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
         return (this.getPart(name) == null);
     }
 
-    public Collection getParts() {
+    public Collection<IncludePart> getParts() {
         // Make sure all physically existing parts are in cache
         synchronized (this.cache) {
             Document xmlDoc = this.getContentXML();
@@ -196,7 +196,7 @@ public abstract class CommonIncludeFileImpl extends AbstractIncludeFile {
             // Now use cache to return physical and virtual parts
             // Synchronize and copy the values to make sure we return a
             // static version to iterate over.
-            HashSet temp = new HashSet(this.cache.values());
+            HashSet<IncludePart> temp = new HashSet<IncludePart>(this.cache.values());
             return temp;
         }
     }

@@ -58,7 +58,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
 
     private IncludeFile file;
 
-    private HashMap cache;
+    private HashMap<Theme, IncludePartThemeVariant> cache;
 
     private ThemeFactoryService themefactory;
 
@@ -86,7 +86,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
         this.backup = backup;
         this.name = partName;
         this.file = file;
-        this.cache = new HashMap();
+        this.cache = new HashMap<Theme, IncludePartThemeVariant>();
         this.cacheXML = el;
         this.cacheXMLSerial = serial;
     }
@@ -179,10 +179,10 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getThemeVariants()
      */
-    public Collection getThemeVariants() {
+    public Collection<IncludePartThemeVariant> getThemeVariants() {
         synchronized (this.cache) {
             this.refreshCache();
-            return new HashSet(this.cache.values());
+            return new HashSet<IncludePartThemeVariant>(this.cache.values());
         }
     }
 

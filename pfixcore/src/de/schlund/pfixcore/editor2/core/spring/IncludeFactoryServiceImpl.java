@@ -40,7 +40,7 @@ import de.schlund.pfixxml.targets.DependencyType;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class IncludeFactoryServiceImpl implements IncludeFactoryService {
-    private Map cache;
+    private Map<String, IncludeFile> cache;
 
     private ThemeFactoryService themefactory;
 
@@ -103,7 +103,7 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     }
 
     public IncludeFactoryServiceImpl() {
-        this.cache = Collections.synchronizedMap(new HashMap());
+        this.cache = Collections.synchronizedMap(new HashMap<String, IncludeFile>());
     }
 
     /*

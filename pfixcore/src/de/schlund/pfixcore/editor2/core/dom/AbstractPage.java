@@ -28,8 +28,7 @@ public abstract class AbstractPage implements Page {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object o) {
-        Page page = (Page) o;
+    public int compareTo(Page page) {
         int ret = this.getHandlerPath().compareTo(page.getHandlerPath());
         if (ret != 0) {
             return ret;

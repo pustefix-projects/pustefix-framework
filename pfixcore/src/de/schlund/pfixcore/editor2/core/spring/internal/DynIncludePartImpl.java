@@ -74,10 +74,10 @@ public class DynIncludePartImpl extends CommonIncludePartImpl {
         this.securitymanager.checkEditDynInclude();
     }
 
-    public Collection getPossibleThemes() {
+    public Collection<Theme> getPossibleThemes() {
         // For DynIncludes all thinkable themes are possible,
         // so return an empty list
-        return new ArrayList();
+        return new ArrayList<Theme>();
     }
 
 }

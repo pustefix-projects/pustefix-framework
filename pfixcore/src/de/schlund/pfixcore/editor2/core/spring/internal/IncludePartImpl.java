@@ -61,14 +61,14 @@ public class IncludePartImpl extends CommonIncludePartImpl {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.IncludePart#getPossibleThemes()
      */
-    public Collection getPossibleThemes() {
-        HashSet pages = new HashSet();
+    public Collection<Theme> getPossibleThemes() {
+        HashSet<Page> pages = new HashSet<Page>();
         for (Iterator i = this.getThemeVariants().iterator(); i.hasNext();) {
             IncludePartThemeVariant partVar = (IncludePartThemeVariant) i
                     .next();
             pages.addAll(partVar.getAffectedPages());
         }
-        HashSet themes = new HashSet();
+        HashSet<Theme> themes = new HashSet<Theme>();
         for (Iterator i = pages.iterator(); i.hasNext();) {
             Page page = (Page) i.next();
             themes.addAll(page.getThemes().getThemes());

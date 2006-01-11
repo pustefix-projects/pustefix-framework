@@ -18,10 +18,10 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-
-
 import de.schlund.pfixcore.editor2.core.dom.AbstractTarget;
 import de.schlund.pfixcore.editor2.core.dom.AbstractTheme;
+import de.schlund.pfixcore.editor2.core.dom.Image;
+import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
@@ -168,9 +169,9 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies()
      */
-    public Collection getAuxDependencies() {
+    public Collection<Target> getAuxDependencies() {
         // Leaf targets don't have dependencies
-        return new ArrayList();
+        return new ArrayList<Target>();
     }
 
     /*
@@ -178,9 +179,9 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive) {
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive) {
         // Leaf targets don't have dependencies
-        return new ArrayList();
+        return new ArrayList<IncludePartThemeVariant>();
     }
 
     /*
@@ -188,9 +189,9 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getImageDependencies(boolean)
      */
-    public Collection getImageDependencies(boolean recursive) {
+    public Collection<Image> getImageDependencies(boolean recursive) {
         // Leaf targets don't have dependencies
-        return new ArrayList();
+        return new ArrayList<Image>();
     }
 
     /*
@@ -198,16 +199,18 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAffectedPages()
      */
-    public Collection getAffectedPages() {
+    public Collection<Page> getAffectedPages() {
         HashSet pageinfos = new HashSet();
-        HashSet pages     = new HashSet();
-        Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(auxdep);
+        HashSet<Page> pages = new HashSet<Page>();
+        Set afftargets = TargetDependencyRelation.getInstance()
+                .getAffectedTargets(auxdep);
         if (afftargets == null) {
             return pages;
         }
-        
+
         for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i.next();
+            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
+                    .next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
@@ -240,20 +243,15 @@ public class TargetAuxDepImpl extends AbstractTarget {
         }
     }
 
-    public Map getTransformationParameters() {
-        // Leaf target is not generated - so there are no parameters
-        return new HashMap();
-    }
-
-    public Map getParameters() {
-        return new HashMap();
+    public Map<String, String> getParameters() {
+        return new HashMap<String, String>();
     }
 
     public ThemeList getThemeList() {
         return new ThemeList() {
 
-            public Collection getThemes() {
-                ArrayList list = new ArrayList();
+            public List<Theme> getThemes() {
+                ArrayList<Theme> list = new ArrayList<Theme>();
                 list.add(new AbstractTheme("default") {
                 });
                 return list;

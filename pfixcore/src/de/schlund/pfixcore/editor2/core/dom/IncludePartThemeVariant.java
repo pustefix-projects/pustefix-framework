@@ -32,7 +32,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludePartThemeVariant extends Comparable {
+public interface IncludePartThemeVariant extends Comparable<IncludePartThemeVariant> {
     /**
      * Returns theme of this part
      * 
@@ -81,7 +81,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * @return All dependend include parts
      * @throws EditorParsingException
      */
-    Collection getIncludeDependencies(boolean recursive)
+    Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive)
             throws EditorParsingException;
 
     /**
@@ -97,7 +97,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * @throws EditorParsingException
      * @see Image
      */
-    Collection getImageDependencies(boolean recursive)
+    Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException;
 
     /**
@@ -116,8 +116,8 @@ public interface IncludePartThemeVariant extends Comparable {
      * @return All dependend include parts
      * @throws EditorParsingException
      */
-    Collection getIncludeDependencies(Target target, boolean recursive)
-            throws EditorParsingException;
+    Collection<IncludePartThemeVariant> getIncludeDependencies(Target target,
+            boolean recursive) throws EditorParsingException;
 
     /**
      * Returns all images this Include is depending on.
@@ -133,7 +133,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * @throws EditorParsingException
      * @see Image
      */
-    Collection getImageDependencies(Target target, boolean recursive)
+    Collection<Image> getImageDependencies(Target target, boolean recursive)
             throws EditorParsingException;
 
     /**
@@ -142,7 +142,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * @return All pages depending on this IncludePart
      * @see Page
      */
-    Collection getAffectedPages();
+    Collection<Page> getAffectedPages();
 
     /**
      * Returns projects which are using this IncludePart. These are all projects
@@ -150,7 +150,7 @@ public interface IncludePartThemeVariant extends Comparable {
      * 
      * @return All projects using this IncludePart
      */
-    Collection getAffectedProjects();
+    Collection<Project> getAffectedProjects();
 
     /**
      * Returns the MD5 checksum of the serialized XML code. This checksum can

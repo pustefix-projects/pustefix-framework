@@ -31,8 +31,6 @@ import de.schlund.pfixcore.editor2.core.dom.Variant;
 import de.schlund.pfixcore.editor2.core.spring.PustefixTargetUpdateService;
 import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
-import de.schlund.pfixcore.workflow.NavigationFactory;
-import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageInfoFactory;
 import de.schlund.pfixxml.targets.TargetGenerationException;
 
@@ -52,7 +50,7 @@ public class PageImpl extends AbstractPage implements MutablePage {
 
     private PustefixTargetUpdateService updater;
 
-    private ArrayList childPages = new ArrayList();
+    private ArrayList<Page> childPages = new ArrayList<Page>();
 
     private ThemeFactoryService themefactory;
 
@@ -156,13 +154,13 @@ public class PageImpl extends AbstractPage implements MutablePage {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Page#getSubPages()
      */
-    public Collection getSubPages() {
-        HashSet pages = new HashSet(this.childPages);
+    public Collection<Page> getSubPages() {
+        HashSet<Page> pages = new HashSet<Page>(this.childPages);
         return pages;
     }
 
-    public void setSubPages(Collection pages) {
-        this.childPages = new ArrayList(pages);
+    public void setSubPages(Collection<Page> pages) {
+        this.childPages = new ArrayList<Page>(pages);
     }
 
     public void registerForUpdate() {

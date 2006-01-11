@@ -30,8 +30,7 @@ public abstract class AbstractIncludePartThemeVariant implements
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object arg0) {
-        IncludePartThemeVariant variant = (IncludePartThemeVariant) arg0;
+    public int compareTo(IncludePartThemeVariant variant) {
         int ret;
         ret = this.getIncludePart().getIncludeFile().compareTo(variant.getIncludePart().getIncludeFile());
         if (ret != 0) {

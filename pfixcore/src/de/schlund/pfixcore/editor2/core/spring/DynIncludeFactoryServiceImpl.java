@@ -39,7 +39,7 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
 
     private PathResolverService pathresolver;
 
-    private HashMap files;
+    private HashMap<String, IncludeFile> files;
 
     private ThemeFactoryService themefactory;
 
@@ -92,12 +92,12 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
     public void init() {
         File docroot = new File(this.pathresolver.resolve("."));
         File[] directories = docroot.listFiles(FILTER_DIRECTORY);
-        HashSet includeFiles = new HashSet();
+        HashSet<File> includeFiles = new HashSet<File>();
         for (int i = 0; i < directories.length; i++) {
             includeFiles.addAll(this.findIncludeFiles(directories[i], false));
         }
 
-        this.files = new HashMap();
+        this.files = new HashMap<String, IncludeFile>();
 
         for (Iterator i = includeFiles.iterator(); i.hasNext();) {
             File file = (File) i.next();
@@ -110,9 +110,9 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
         }
     }
 
-    private Collection findIncludeFiles(File dir, boolean inDynTxt) {
+    private Collection<File> findIncludeFiles(File dir, boolean inDynTxt) {
         File[] directories = dir.listFiles(FILTER_DIRECTORY);
-        HashSet includeFiles = new HashSet();
+        HashSet<File> includeFiles = new HashSet<File>();
         for (int i = 0; i < directories.length; i++) {
             if (directories[i].getName().equals("dyntxt")) {
                 includeFiles
@@ -131,8 +131,8 @@ public class DynIncludeFactoryServiceImpl implements DynIncludeFactoryService {
         return includeFiles;
     }
 
-    public Collection getDynIncludeFiles() {
-        return new TreeSet(this.files.values());
+    public Collection<IncludeFile> getDynIncludeFiles() {
+        return new TreeSet<IncludeFile>(this.files.values());
     }
 
     public IncludeFile getIncludeFile(String path) {
