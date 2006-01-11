@@ -51,7 +51,7 @@ public interface Project {
      * @return Enumeration containing the page objects of this Project
      * @see Page
      */
-    Collection getAllPages();
+    Collection<Page> getAllPages();
 
     /**
      * Returns all pages of this project which are at the top-level in
@@ -60,7 +60,7 @@ public interface Project {
      * @return Enumeration containing the top-level page objects of this Project
      * @see Page
      */
-    Collection getTopPages();
+    Collection<Page> getTopPages();
 
     /**
      * Returns page belonging to this Project. To retrieve a certain variant of
@@ -83,7 +83,7 @@ public interface Project {
      *            Name of the page
      * @return All variants of the page with name <code>name</code>
      */
-    Collection getPageByName(String name);
+    Collection<Page> getPageByName(String name);
 
     /**
      * Returns target belonging to this project.
@@ -102,7 +102,7 @@ public interface Project {
      * 
      * @return List of IncludePartThemeVariants for this project
      */
-    Collection getAllIncludeParts();
+    Collection<IncludePartThemeVariant> getAllIncludeParts();
 
     /**
      * Returns a {@link Collection} of all {@link Image} objects, which are used
@@ -111,7 +111,7 @@ public interface Project {
      * 
      * @return List of Images for this project
      */
-    Collection getAllImages();
+    Collection<Image> getAllImages();
 
     /**
      * Finds an IncludePartThemeVariant using the supplied identifiers

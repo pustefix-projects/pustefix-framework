@@ -33,7 +33,7 @@ public interface MutablePage extends Page {
      * 
      * @param page Collection containing Page objects to add as sub-pages
      */
-    public void setSubPages(Collection pages);
+    public void setSubPages(Collection<Page> pages);
     
     /**
      * Set the path to the handler that is used for this page

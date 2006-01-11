@@ -27,7 +27,7 @@ import java.util.Collection;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Page extends Comparable {
+public interface Page extends Comparable<Page> {
     /**
      * Returns page name (not including variant name)
      * 
@@ -87,7 +87,7 @@ public interface Page extends Comparable {
      * 
      * @return All child pages
      */
-    Collection getSubPages();
+    Collection<Page> getSubPages();
 
     /**
      * Returns whether there is at least one child page

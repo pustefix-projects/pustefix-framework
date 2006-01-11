@@ -93,7 +93,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
 
     private TargetFactoryService targetfactory;
 
-    private HashMap cache;
+    private HashMap<PageKey, Page> cache;
 
     private PustefixTargetUpdateService pustefixtargetupdate;
 
@@ -113,7 +113,7 @@ public class PageFactoryServiceImpl implements PageFactoryService {
     }
 
     public PageFactoryServiceImpl() {
-        this.cache = new HashMap();
+        this.cache = new HashMap<PageKey, Page>();
     }
 
     /*

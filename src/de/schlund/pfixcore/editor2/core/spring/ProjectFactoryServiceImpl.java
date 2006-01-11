@@ -55,7 +55,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private PageFactoryService pagefactory;
 
-    private HashMap projects;
+    private HashMap<String, Project> projects;
 
     private FileSystemService filesystem;
 
@@ -65,7 +65,7 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
 
     private boolean initialized;
 
-    private HashMap generatorToProjectNameMap;
+    private HashMap<String, String> generatorToProjectNameMap;
 
     private IncludeFactoryService includefactory;
 
@@ -117,8 +117,8 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
     }
 
     public ProjectFactoryServiceImpl() {
-        this.projects = new HashMap();
-        this.generatorToProjectNameMap = new HashMap();
+        this.projects = new HashMap<String, Project>();
+        this.generatorToProjectNameMap = new HashMap<String, String>();
         this.initialized = false;
     }
 
@@ -190,9 +190,9 @@ public class ProjectFactoryServiceImpl implements ProjectFactoryService {
      * 
      * @see de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService#getProjects()
      */
-    public Collection getProjects() {
+    public Collection<Project> getProjects() {
         checkInitialized();
-        return new HashSet(this.projects.values());
+        return new HashSet<Project>(this.projects.values());
     }
 
     private void checkInitialized() {

@@ -53,8 +53,7 @@ public abstract class AbstractIncludeFile implements IncludeFile {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object arg0) {
-        IncludeFile file = (IncludeFile) arg0;
+    public int compareTo(IncludeFile file) {
         return this.getPath().compareTo(file.getPath());
     }
 }

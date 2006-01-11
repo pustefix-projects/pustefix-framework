@@ -38,7 +38,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorInitializationException;
 import de.schlund.pfixxml.util.XPath;
 
 public class ConfigurationServiceImpl implements ConfigurationService {
-    private HashMap map;
+    private HashMap<String, String> map;
     private PathResolverService pathresolver;
     private FileSystemService filesystem;
     private String projectsFile;
@@ -58,7 +58,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public void init() throws FileNotFoundException, SAXException, IOException, ParserConfigurationException, EditorInitializationException {
         Document doc = filesystem.readXMLDocumentFromFile(new File(pathresolver.resolve(projectsFile)));
         List nlist;
-        this.map = new HashMap();
+        this.map = new HashMap<String, String>();
         try {
             nlist = XPath.select(doc.getDocumentElement(), "common/namespaces/namespace-declaration");
         } catch (TransformerException e) {
@@ -85,8 +85,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
-    public Map getPrefixToNamespaceMappings() {
-        return new HashMap(this.map);
+    public Map<String, String> getPrefixToNamespaceMappings() {
+        return new HashMap<String, String>(this.map);
     }
 
 }

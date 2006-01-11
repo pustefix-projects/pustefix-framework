@@ -27,7 +27,7 @@ import org.w3c.dom.Document;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludeFile extends Comparable {
+public interface IncludeFile extends Comparable<IncludeFile> {
     /**
      * Returns path and filename of this IncludeFile (relative to docroot)
      * 
@@ -75,7 +75,7 @@ public interface IncludeFile extends Comparable {
      * 
      * @return Iterator iterating over all parts stored in this file
      */
-    Collection getParts();
+    Collection<IncludePart> getParts();
 
     /**
      * Returns a DOM Document representing the content of this IncludeFile. If

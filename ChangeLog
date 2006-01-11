@@ -1,3 +1,58 @@
+2006-01-11  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractImage.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractIncludeFile.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractIncludePart.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractIncludePartThemeVariant.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractPage.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractTheme.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/AbstractVariant.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Image.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludeFile.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludePart.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/IncludePartThemeVariant.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Page.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Project.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Target.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Theme.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/ThemeList.java: 
+	* src/de/schlund/pfixcore/editor2/core/dom/Variant.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludeFileImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/DynIncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/DynIncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/MutablePage.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/PageImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ThemeListImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/BackupService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/BackupServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ConfigurationServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/DynIncludeFactoryService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/DynIncludeFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/FileSystemServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ImageFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/IncludeFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PageFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/ProjectFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixSessionServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/PustefixTargetUpdateServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/SecurityManagerServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/TargetFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/UserManagementService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/UserManagementServiceImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/vo/EditorGlobalPermissions.java: 
+	* src/de/schlund/pfixcore/editor2/core/vo/EditorProjectPermissions.java: 
+	* src/de/schlund/pfixcore/editor2/core/vo/EditorUser.java: 
+	Using generics for collections where possible to improve type safety
+
 2006-01-10  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (needsUpdate): 

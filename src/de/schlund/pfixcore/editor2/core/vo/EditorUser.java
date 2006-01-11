@@ -43,7 +43,7 @@ public class EditorUser implements Cloneable, Comparable {
 
     private EditorGlobalPermissions globalPermissions;
 
-    private HashMap projectsPermissions;
+    private HashMap<Project, EditorProjectPermissions> projectsPermissions;
 
     /**
      * Contstructor setting all values (except username) to the empty string and
@@ -59,7 +59,7 @@ public class EditorUser implements Cloneable, Comparable {
         this.sectionName = "";
         this.phoneNumber = "";
         this.globalPermissions = new EditorGlobalPermissions();
-        this.projectsPermissions = new HashMap();
+        this.projectsPermissions = new HashMap<Project, EditorProjectPermissions>();
     }
 
     /**
@@ -176,8 +176,8 @@ public class EditorUser implements Cloneable, Comparable {
      * @return List of projects to be used as keys for
      *         {@link #getProjectPermissions(Project)}
      */
-    public Collection getProjectsWithPermissions() {
-        HashSet projects = new HashSet();
+    public Collection<Project> getProjectsWithPermissions() {
+        HashSet<Project> projects = new HashSet<Project>();
         synchronized (this.projectsPermissions) {
             for (Iterator i = this.projectsPermissions.keySet().iterator(); i
                     .hasNext();) {

@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -214,13 +215,13 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAuxDependencies()
      */
-    public Collection getAuxDependencies() {
-        ArrayList deps = new ArrayList();
+    public Collection<Target> getAuxDependencies() {
+        ArrayList<Target> deps = new ArrayList<Target>();
         if (this.pfixTarget instanceof VirtualTarget) {
             VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
-                return new ArrayList();
+                return deps;
             }
 
             for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
@@ -250,9 +251,9 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getIncludeDependencies(boolean)
      */
-    public Collection getIncludeDependencies(boolean recursive)
-            throws EditorParsingException {
-        ArrayList deps = new ArrayList();
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(
+            boolean recursive) throws EditorParsingException {
+        ArrayList<IncludePartThemeVariant> deps = new ArrayList<IncludePartThemeVariant>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
                 Set alldeps = TargetDependencyRelation.getInstance()
@@ -279,15 +280,13 @@ public class TargetPfixImpl extends AbstractTarget {
 
             } else {
                 VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
-                ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
-                        .getThemes());
                 AuxDependencyManager auxmanager = vtarget
                         .getAuxDependencyManager();
                 if (auxmanager == null) {
                     String msg = "Could not get AuxDependencyManager for target "
                             + this.getName() + "!";
                     Logger.getLogger(this.getClass()).warn(msg);
-                    return new ArrayList();
+                    return deps;
                 }
 
                 for (Iterator i = auxmanager.getChildren().iterator(); i
@@ -306,7 +305,7 @@ public class TargetPfixImpl extends AbstractTarget {
             String msg = "Page target " + this.getName()
                     + " is no VirtualTarget!";
             Logger.getLogger(this.getClass()).warn(msg);
-            return new ArrayList();
+            return deps;
         }
     }
 
@@ -315,9 +314,9 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getImageDependencies(boolean)
      */
-    public Collection getImageDependencies(boolean recursive)
+    public Collection<Image> getImageDependencies(boolean recursive)
             throws EditorParsingException {
-        ArrayList deps = new ArrayList();
+        ArrayList<Image> deps = new ArrayList<Image>();
         if (this.pfixTarget instanceof VirtualTarget) {
             if (recursive) {
                 Set alldeps = TargetDependencyRelation.getInstance()
@@ -342,15 +341,13 @@ public class TargetPfixImpl extends AbstractTarget {
 
             } else {
                 VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
-                ThemeList themes = new ThemeListImpl(this.themefactory, vtarget
-                        .getThemes());
                 AuxDependencyManager auxmanager = vtarget
                         .getAuxDependencyManager();
                 if (auxmanager == null) {
                     String msg = "Could not get AuxDependencyManager for target "
                             + this.getName() + "!";
                     Logger.getLogger(this.getClass()).warn(msg);
-                    return new ArrayList();
+                    return deps;
                 }
 
                 for (Iterator i = auxmanager.getChildren().iterator(); i
@@ -369,7 +366,7 @@ public class TargetPfixImpl extends AbstractTarget {
             String msg = "Page target " + this.getName()
                     + " is no VirtualTarget!";
             Logger.getLogger(this.getClass()).warn(msg);
-            return new ArrayList();
+            return deps;
         }
     }
 
@@ -378,9 +375,9 @@ public class TargetPfixImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getAffectedPages()
      */
-    public Collection getAffectedPages() {
+    public Collection<Page> getAffectedPages() {
         Collection pageinfos = this.pfixTarget.getPageInfos();
-        HashSet pages = new HashSet();
+        HashSet<Page> pages = new HashSet<Page>();
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
             if (pageinfo == null) {
@@ -424,16 +421,12 @@ public class TargetPfixImpl extends AbstractTarget {
         return this.project;
     }
 
-    public Map getTransformationParameters() {
-        return this.pfixTarget.getParams();
-    }
-
-    public Map getParameters() {
-        Map map = this.pfixTarget.getParams();
+    public Map<String, String> getParameters() {
+        Map<String, String> map = this.pfixTarget.getParams();
         if (map != null)
             return map;
         else
-            return new HashMap();
+            return new HashMap<String, String>();
     }
 
     public ThemeList getThemeList() {
@@ -445,8 +438,8 @@ public class TargetPfixImpl extends AbstractTarget {
         } else {
             return new ThemeList() {
 
-                public Collection getThemes() {
-                    ArrayList list = new ArrayList();
+                public List<Theme> getThemes() {
+                    ArrayList<Theme> list = new ArrayList<Theme>();
                     list.add(new AbstractTheme("default") {
                     });
                     return list;

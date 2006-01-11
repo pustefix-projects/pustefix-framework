@@ -28,6 +28,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import de.schlund.pfixcore.editor2.core.dom.AbstractProject;
+import de.schlund.pfixcore.editor2.core.dom.Image;
 import de.schlund.pfixcore.editor2.core.dom.IncludePartThemeVariant;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Target;
@@ -75,11 +76,11 @@ public class ProjectImpl extends AbstractProject {
 
     private PageFactoryService pagefactory;
 
-    private Collection toppages;
+    private Collection<Page> toppages;
 
-    private Collection allpages;
+    private Collection<Page> allpages;
 
-    private HashMap pagemap;
+    private Map<String, Map<Variant, Page>> pagemap;
 
     private TargetGenerator tgen;
 
@@ -148,7 +149,7 @@ public class ProjectImpl extends AbstractProject {
 
         });
 
-        this.pagemap = new HashMap();
+        this.pagemap = new HashMap<String, Map<Variant, Page>>();
 
         // Load configuration
         this.reloadConfig();
@@ -160,7 +161,7 @@ public class ProjectImpl extends AbstractProject {
 
         // Create hierarchical tree of pages
         PageTargetTree ptree = gen.getPageTargetTree();
-        HashSet pages = new HashSet();
+        HashSet<Page> pages = new HashSet<Page>();
         NavigationElement[] navElements = navi.getNavigationElements();
         for (int i = 0; i < navElements.length; i++) {
             pages.addAll(this.recurseNavigationElement(navElements[i], null,
@@ -168,16 +169,17 @@ public class ProjectImpl extends AbstractProject {
         }
 
         // Create pagename => page map
-        HashMap pagemap = new HashMap();
+        HashMap<String, Map<Variant, Page>> pagemap = new HashMap<String, Map<Variant, Page>>();
         for (Iterator i = pages.iterator(); i.hasNext();) {
             Page page = (Page) i.next();
             this.recursePage(page, pagemap);
         }
 
         // Create collection containing all page objects
-        HashSet allpages = new HashSet();
-        for (Iterator i = pagemap.values().iterator(); i.hasNext();) {
-            HashMap map = (HashMap) i.next();
+        HashSet<Page> allpages = new HashSet<Page>();
+        for (Iterator<Map<Variant, Page>> i = pagemap.values().iterator(); i
+                .hasNext();) {
+            Map<Variant, Page> map = i.next();
             allpages.addAll(map.values());
         }
 
@@ -185,18 +187,6 @@ public class ProjectImpl extends AbstractProject {
         this.pagemap = pagemap;
         this.allpages = allpages;
 
-    }
-
-    private void recurseTarget(Target target, Map alltargets) {
-        alltargets.put(target.getName(), target);
-        for (Iterator i = target.getAuxDependencies().iterator(); i.hasNext();) {
-            Target t = (Target) i.next();
-            alltargets.put(t.getName(), t);
-        }
-        if (!target.isLeafTarget()) {
-            this.recurseTarget(target.getParentXML(), alltargets);
-            this.recurseTarget(target.getParentXSL(), alltargets);
-        }
     }
 
     /**
@@ -207,12 +197,13 @@ public class ProjectImpl extends AbstractProject {
      * @param allpages
      *            Map to add page objects to
      */
-    private void recursePage(Page page, HashMap allpages) {
-        HashMap pagetable;
+    private void recursePage(Page page,
+            HashMap<String, Map<Variant, Page>> allpages) {
+        Map<Variant, Page> pagetable;
         if (allpages.containsKey(page.getName())) {
-            pagetable = (HashMap) allpages.get(page.getName());
+            pagetable = allpages.get(page.getName());
         } else {
-            pagetable = new HashMap();
+            pagetable = new HashMap<Variant, Page>();
             allpages.put(page.getName(), pagetable);
         }
         pagetable.put(page.getVariant(), page);
@@ -235,9 +226,9 @@ public class ProjectImpl extends AbstractProject {
      * @return Collection containing page objects for all variants of the page
      *         specified by the NavigationElement
      */
-    private Collection recurseNavigationElement(NavigationElement nav,
+    private Collection<Page> recurseNavigationElement(NavigationElement nav,
             Page parent, PageTargetTree ptree) {
-        HashSet pages = new HashSet();
+        HashSet<Page> pages = new HashSet<Page>();
         Page defaultPage = null;
 
         String pageName = nav.getName();
@@ -275,13 +266,14 @@ public class ProjectImpl extends AbstractProject {
                 }
             }
         }
-        HashSet subpages = new HashSet();
+        HashSet<Page> subpages = new HashSet<Page>();
 
         if (nav.hasChildren()) {
             NavigationElement[] elements = nav.getChildren();
             for (int i = 0; i < elements.length; i++) {
-                Collection subpageElements = this.recurseNavigationElement(
-                        elements[i], defaultPage, ptree);
+                Collection<Page> subpageElements = this
+                        .recurseNavigationElement(elements[i], defaultPage,
+                                ptree);
                 subpages.addAll(subpageElements);
             }
         }
@@ -316,8 +308,8 @@ public class ProjectImpl extends AbstractProject {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Project#getAllPages()
      */
-    public Collection getAllPages() {
-        return new HashSet(this.allpages);
+    public Collection<Page> getAllPages() {
+        return new HashSet<Page>(this.allpages);
     }
 
     /*
@@ -325,8 +317,8 @@ public class ProjectImpl extends AbstractProject {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Project#getTopPages()
      */
-    public Collection getTopPages() {
-        return new HashSet(this.toppages);
+    public Collection<Page> getTopPages() {
+        return new HashSet<Page>(this.toppages);
     }
 
     /*
@@ -348,11 +340,11 @@ public class ProjectImpl extends AbstractProject {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Project#getPageByName(java.lang.String)
      */
-    public Collection getPageByName(String name) {
+    public Collection<Page> getPageByName(String name) {
         if (!this.pagemap.containsKey(name)) {
-            return new HashSet();
+            return new HashSet<Page>();
         } else {
-            return new HashSet(((HashMap) this.pagemap.get(name)).values());
+            return new HashSet<Page>(this.pagemap.get(name).values());
         }
     }
 
@@ -381,8 +373,8 @@ public class ProjectImpl extends AbstractProject {
         }
     }
 
-    public Collection getAllIncludeParts() {
-        HashSet includes = new HashSet();
+    public Collection<IncludePartThemeVariant> getAllIncludeParts() {
+        HashSet<IncludePartThemeVariant> includes = new HashSet<IncludePartThemeVariant>();
         TreeSet deps = TargetDependencyRelation.getInstance()
                 .getProjectDependenciesForType(this.tgen, DependencyType.TEXT);
         if (deps == null) {
@@ -401,8 +393,8 @@ public class ProjectImpl extends AbstractProject {
         return includes;
     }
 
-    public Collection getAllImages() {
-        HashSet images = new HashSet();
+    public Collection<Image> getAllImages() {
+        HashSet<Image> images = new HashSet<Image>();
         TreeSet deps = TargetDependencyRelation.getInstance()
                 .getProjectDependenciesForType(this.tgen, DependencyType.IMAGE);
         if (deps == null) {

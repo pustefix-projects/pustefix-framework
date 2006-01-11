@@ -24,7 +24,7 @@ package de.schlund.pfixcore.editor2.core.dom;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface Variant extends Comparable {
+public interface Variant extends Comparable<Variant> {
     /**
      * Returns the full name of this variant. Parts of the name are seperated by
      * a colon.

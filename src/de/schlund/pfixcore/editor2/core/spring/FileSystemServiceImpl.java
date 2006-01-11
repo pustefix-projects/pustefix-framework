@@ -37,10 +37,10 @@ import de.schlund.pfixxml.util.Xml;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class FileSystemServiceImpl implements FileSystemService {
-    private HashMap locks;
+    private HashMap<File, Object> locks;
 
     public FileSystemServiceImpl() {
-        this.locks = new HashMap();
+        this.locks = new HashMap<File, Object>();
     }
 
     public Object getLock(File file) {

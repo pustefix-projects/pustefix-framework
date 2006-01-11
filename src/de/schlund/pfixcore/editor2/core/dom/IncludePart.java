@@ -32,7 +32,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorSecurityException;
  * 
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
-public interface IncludePart extends Comparable {
+public interface IncludePart extends Comparable<IncludePart> {
     /**
      * Returns the name of this IncludePart. The name is used to distinctly
      * identify an IncludePart within an IncludeFile.
@@ -111,7 +111,7 @@ public interface IncludePart extends Comparable {
      * @return All theme variants for this IncludePart
      * @see IncludePartThemeVariant
      */
-    Collection getThemeVariants();
+    Collection<IncludePartThemeVariant> getThemeVariants();
 
     /**
      * Returns a list of all themes, which could be possibly used for this
@@ -121,5 +121,5 @@ public interface IncludePart extends Comparable {
      * @return List of possible themes
      * @see Theme
      */
-    Collection getPossibleThemes();
+    Collection<Theme> getPossibleThemes();
 }

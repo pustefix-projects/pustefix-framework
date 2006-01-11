@@ -100,8 +100,8 @@ public class SecurityManagerServiceImpl implements SecurityManagerService {
 
     public boolean mayCreateIncludePartThemeVariant(IncludePart part,
             Theme theme) {
-        HashSet pages = new HashSet();
-        HashSet themes = new HashSet();
+        HashSet<Page> pages = new HashSet<Page>();
+        HashSet<Theme> themes = new HashSet<Theme>();
         for (Iterator i = part.getThemeVariants().iterator(); i.hasNext();) {
             IncludePartThemeVariant variant = (IncludePartThemeVariant) i
                     .next();

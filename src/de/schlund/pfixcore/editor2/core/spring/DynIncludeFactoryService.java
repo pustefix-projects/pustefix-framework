@@ -33,7 +33,7 @@ public interface DynIncludeFactoryService {
      * 
      * @return List of all DynInclude files
      */
-    Collection getDynIncludeFiles();
+    Collection<IncludeFile> getDynIncludeFiles();
 
     /**
      * Returns the include file for the specified path

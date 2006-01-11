@@ -35,9 +35,9 @@ import de.schlund.pfixxml.targets.AuxDependency;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public class TargetFactoryServiceImpl implements TargetFactoryService {
-    private Map cachePfixTarget;
+    private Map<de.schlund.pfixxml.targets.Target, Target> cachePfixTarget;
 
-    private Map cacheAuxDepTarget;
+    private Map<AuxDependency, Target> cacheAuxDepTarget;
 
     private ProjectFactoryService projectfactory;
 
@@ -88,8 +88,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
     }
 
     public TargetFactoryServiceImpl() {
-        this.cachePfixTarget = new WeakHashMap();
-        this.cacheAuxDepTarget = Collections.synchronizedMap(new HashMap());
+        this.cachePfixTarget = new WeakHashMap<de.schlund.pfixxml.targets.Target, Target>();
+        this.cacheAuxDepTarget = Collections.synchronizedMap(new HashMap<AuxDependency, Target>());
     }
 
     /*

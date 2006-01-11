@@ -56,7 +56,7 @@ public interface ProjectFactoryService {
      * @return List of all editable projects
      * @see Project
      */
-    Collection getProjects();
+    Collection<Project> getProjects();
 
     /**
      * Returns the project that is using target generator with the supplied name

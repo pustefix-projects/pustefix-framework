@@ -97,8 +97,7 @@ public abstract class AbstractVariant implements Variant {
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Object o) {
-        Variant variant = (Variant) o;
+    public int compareTo(Variant variant) {
         return this.getName().compareTo(variant.getName());
     }
 }

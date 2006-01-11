@@ -98,5 +98,5 @@ public interface UserManagementService {
      * 
      * @return List of all users
      */
-    Collection getUsers();
+    Collection<EditorUser> getUsers();
 }

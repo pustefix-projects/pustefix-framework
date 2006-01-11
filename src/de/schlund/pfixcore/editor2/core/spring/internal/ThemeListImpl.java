@@ -19,8 +19,8 @@
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +36,7 @@ import de.schlund.pfixxml.targets.Themes;
  * @see de.schlund.pfixxml.targets.Themes
  */
 public class ThemeListImpl implements ThemeList {
-    private ArrayList themes;
+    private ArrayList<Theme> themes;
 
     /**
      * Creates a ThemeList object
@@ -48,7 +48,7 @@ public class ThemeListImpl implements ThemeList {
             String msg = "Themes array should not be empty!";
             Logger.getLogger(this.getClass()).warn(msg);
         }
-        this.themes = new ArrayList();
+        this.themes = new ArrayList<Theme>();
         String[] array = themes.getThemesArr();
         for (int i = 0; i < array.length; i++) {
             Theme theme = themefactory.getTheme(array[i]);
@@ -59,8 +59,8 @@ public class ThemeListImpl implements ThemeList {
     /* (non-Javadoc)
      * @see de.schlund.pfixcore.editor2.core.dom.ThemeList#getThemes()
      */
-    public Collection getThemes() {
-        return new ArrayList(this.themes);
+    public List<Theme> getThemes() {
+        return new ArrayList<Theme>(this.themes);
     }
 
     /* (non-Javadoc)

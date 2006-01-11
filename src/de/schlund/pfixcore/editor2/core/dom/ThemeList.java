@@ -18,7 +18,7 @@
 
 package de.schlund.pfixcore.editor2.core.dom;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * List of Theme objects. This list always keeps it order, thus allowing a "priorization" of themes.
@@ -32,7 +32,7 @@ public interface ThemeList {
      * 
      * @return All themes in this list
      */
-    Collection getThemes();
+    List<Theme> getThemes();
     
     /**
      * Checks wheter the specified theme is included in this list

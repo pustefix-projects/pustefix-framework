@@ -33,7 +33,7 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
 
     private ProjectFactoryService projectfactory;
 
-    private HashMap cache;
+    private HashMap<String, Image> cache;
 
     private PathResolverService pathresolver;
 
@@ -68,7 +68,7 @@ public class ImageFactoryServiceImpl implements ImageFactoryService {
     }
 
     public ImageFactoryServiceImpl() {
-        this.cache = new HashMap();
+        this.cache = new HashMap<String, Image>();
     }
 
     public Image getImage(String path) {
