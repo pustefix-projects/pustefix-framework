@@ -764,7 +764,7 @@ or delete the DOCTYPE definition -->
       destdir="${dir.tomcat}/conf"
       includes="web.xml.tmp"
       extension=""
-      validate="${validate}"
+      validate="false"
       catalogfile="${catalogfile}"
     />
   </target>
