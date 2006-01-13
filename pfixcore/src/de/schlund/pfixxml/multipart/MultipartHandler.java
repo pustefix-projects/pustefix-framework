@@ -46,6 +46,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Category;
 import org.apache.oro.text.perl.Perl5Util;
 
+import de.schlund.pfixxml.PfixServletRequest;
+
 /**
  *
  *
@@ -53,7 +55,6 @@ import org.apache.oro.text.perl.Perl5Util;
 
 public class MultipartHandler {
 
-    public static final String DEFAULT_DIR = "/tmp";
     public static final String CTYPE_HEADER = "Content-Type";
     public static final String MULTI_FORM_DATA = "multipart/form-data";
     public static final String PARAM_BOUNDARY = "boundary";
@@ -133,7 +134,7 @@ public class MultipartHandler {
         }
 
         if (dir == null) {
-            dir = DEFAULT_DIR;
+            dir = System.getProperty(PfixServletRequest.DEF_PROP_TMPDIR);
         }
         dirFile = new File(dir);
         if (!dirFile.isDirectory()) {
