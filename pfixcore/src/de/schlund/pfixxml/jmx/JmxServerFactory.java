@@ -44,6 +44,7 @@ import de.schlund.pfixxml.PathFactory;
  */
 public class JmxServerFactory {
     /** don't store this in a config file, because client apps can access values where */
+    // Lieber Jörg -- lies doch mal was hier im kommentar steht ^^^ ...
     //public static final int PORT_A = 9334;
     //public static final int PORT_B = 9335;
     
