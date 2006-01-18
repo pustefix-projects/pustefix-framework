@@ -116,8 +116,13 @@ public class IncludesResourceImpl extends CommonIncludesResourceImpl implements
             String path = include.getIncludePart().getIncludeFile().getPath();
             Element fileNode = (Element) fileNodes.get(path);
             if (fileNode == null) {
-                String directory = path.substring(0, path
-                        .lastIndexOf(File.separator));
+                String directory;
+                try {
+                    directory = path.substring(0, path
+                            .lastIndexOf(File.separator));
+                } catch (StringIndexOutOfBoundsException e) {
+                    directory = "/";
+                }
                 Element directoryNode = (Element) directoryNodes.get(directory);
                 if (directoryNode == null) {
                     directoryNode = resdoc.createSubNode(elem, "directory");

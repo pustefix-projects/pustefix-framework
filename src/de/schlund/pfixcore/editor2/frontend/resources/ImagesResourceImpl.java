@@ -90,7 +90,12 @@ public class ImagesResourceImpl implements ImagesResource {
             for (Iterator i = allimages.iterator(); i.hasNext();) {
                 Image image = (Image) i.next();
                 String path = image.getPath();
-                String directory = path.substring(0, path.lastIndexOf("/"));
+                String directory;
+                if (path.lastIndexOf("/") > 0) {
+                    directory = path.substring(0, path.lastIndexOf("/"));
+                } else {
+                    directory = "/";
+                }
                 Element directoryNode = (Element) directoryNodes.get(directory);
                 if (directoryNode == null) {
                     directoryNode = resdoc.createSubNode(elem, "directory");
@@ -100,8 +105,13 @@ public class ImagesResourceImpl implements ImagesResource {
                 Element imageNode = resdoc
                         .createSubNode(directoryNode, "image");
                 imageNode.setAttribute("path", path);
-                imageNode.setAttribute("filename", path.substring(path
-                        .lastIndexOf("/") + 1));
+                String filename;
+                if (path.lastIndexOf("/") > 0 && path.lastIndexOf("/") < path.length()) {
+                    filename = path.substring(path.lastIndexOf("/") + 1);
+                } else {
+                    filename = path;
+                }
+                imageNode.setAttribute("filename", filename);
                 if (image.getLastModTime() == 0) {
                     imageNode.setAttribute("missing", "true");
                 }
@@ -115,8 +125,13 @@ public class ImagesResourceImpl implements ImagesResource {
                         "currentimage");
                 String path = this.selectedImage.getPath();
                 currentImage.setAttribute("path", path);
-                currentImage.setAttribute("filename", path.substring(path
-                        .lastIndexOf("/") + 1));
+                String filename;
+                if (path.lastIndexOf("/") > 0 && path.lastIndexOf("/") < path.length()) {
+                    filename = path.substring(path.lastIndexOf("/") + 1);
+                } else {
+                    filename = path;
+                }
+                currentImage.setAttribute("filename", filename);
                 File imageFile = PathFactory.getInstance().createPath(path)
                         .resolve();
                 long modtime = imageFile.lastModified();
