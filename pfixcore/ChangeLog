@@ -1,3 +1,9 @@
+2006-01-18  Sebastian Marsching <sebastian.marsching@1und1.de>
+	* src/de/schlund/pfixcore/editor2/frontend/resources/ImagesResourceImpl.java (inserStatus):
+        * src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (insertStatus):
+	Fixing StringIndexOutOfBoundException occuring when strange paths
+	(such, not containing any /) are handled
+
 2006-01-09  Jens Lautenbacher  <jtl@schlund.de>
 	(forgot to comitt ChangeLog)
 	* src/de/schlund/pfixxml/targets/VirtualTarget.java (VirtualTarget::needsUpdate): 
