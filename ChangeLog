@@ -1,5 +1,34 @@
 2006-01-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/IncludePartThemeVariantImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/ProjectImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetAuxDepImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/TargetFactoryService.java: 
+	* src/de/schlund/pfixcore/editor2/core/spring/TargetFactoryServiceImpl.java: 
+	* src/de/schlund/pfixcore/util/CheckIncludes.java: 
+	* src/de/schlund/pfixxml/targets/AbstractAuxDependency.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyFactory.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyFile.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyImage.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyInclude.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java: 
+	* src/de/schlund/pfixxml/targets/AuxDependencyTarget.java: 
+	* src/de/schlund/pfixxml/targets/DependencyType.java: 
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	* src/de/schlund/pfixxml/util/Xslt.java: 
+	* src/de/schlund/pfixxml/DependencyTracker.java: 
+	Making AuxDependency an interface and implementing the different types
+	in sub-classes
+	
+	* example/core/build/create_depend.xsl: 
+	Removing <depaux> tags where possible, as these dependencies are now
+	detected automatically
+	
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getAuxDependencies): 
 	Adapting method to retrieve aux targets using AuxDependencyManager
 	

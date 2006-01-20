@@ -19,125 +19,32 @@
 
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.util.Path;
-import de.schlund.pfixxml.util.RefCountingCollection;
-import java.io.File;
-import java.util.Iterator;
-import java.util.TreeSet;
-import org.apache.log4j.Category;
-
 /**
- * Additional dependency besides XML and XSL source.
- * For dependencies of type TARGET, path stores the TargetGenerator and
- * part the target name.
+ * Defines method common to all types of dependencies being registered during
+ * the generation of a target in the Pustefix target generator system.
+ * 
+ * @author Sebastian Marsching <sebastian.marsching@1und1.de>
+ * @see de.schlund.pfixxml.targets.TargetGenerator
+ * @see de.schlund.pfixxml.targets.Target
+ * @see de.schlund.pfixxml.targets.DependencyType
  */
-public class AuxDependency implements Comparable {
+public interface AuxDependency extends Comparable<AuxDependency> {
+    /**
+     * Returns the type of the dependency.
+     * The type is important as it gives information about to which sub-type
+     * a given instance of AuxDependency can be casted.
+     * 
+     * @return type of this dependency
+     */
+    DependencyType getType();
     
-    private static Category      CAT = Category.getInstance(AuxDependency.class.getName());
-    private final DependencyType type;
-    private final Path           path;
-    private final String         part;
-    private final String         theme;
-    private final int            hashCode;
-   
-    private long last_lastModTime = -1;
-    
-    public AuxDependency(DependencyType type, Path path, String part, String theme) {
-        if (path == null) {
-            throw new IllegalArgumentException("Need Path to construct AuxDependency");
-        }
-        this.type  = type;
-        this.path  = path;
-        this.part  = part;
-        this.theme = theme;
-
-        String key    = type.getTag() + "@" + path.getRelative() + "@" + part + "@" + theme;
-        this.hashCode = key.hashCode();
-    }
-
-    public DependencyType getType() { return type; }
-
-    public Path getPath() { return path; }
-
-    public String getPart() { return part; }
-
-    public String getTheme() { return theme; }
-    
-    public long getModTime() {
-        if (this.getType() == DependencyType.TARGET) {
-            Target target = null;
-            try {
-                target = TargetGeneratorFactory.getInstance().createGenerator(this.path).getTarget(this.part);
-            } catch (Exception e) {
-                last_lastModTime = 0;
-            }
-            if (target == null) {
-                last_lastModTime = 0;
-            } else {
-                last_lastModTime = target.getModTime();
-            }
-            return last_lastModTime;
-        } else {
-            File check = path.resolve();
-            if (check.exists() && check.canRead() && check.isFile()) {
-                if (last_lastModTime == 0) {
-                    // We change from the file being checked once to not exist to "it exists now".
-                    // so we need to make sure that all targets using it will be rebuild.
-                    TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
-                    for (Iterator i = targets.iterator(); i.hasNext(); ) {
-                        VirtualTarget target = (VirtualTarget) i.next();
-                        target.setForceUpdate();
-                    }
-                }
-                last_lastModTime = check.lastModified();
-                return last_lastModTime;
-            } else {
-                if (last_lastModTime > 0) {
-                    // The file existed when last check has been made,
-                    // so make sure each target using it is being rebuild
-                    TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
-                    for (Iterator i = targets.iterator(); i.hasNext(); ) {
-                        VirtualTarget target = (VirtualTarget) i.next();
-                        target.setForceUpdate();
-                    }
-                }
-                last_lastModTime = 0;
-                return 0;
-            }
-        }
-    }
-
-    public String toString() {
-        return "[AUX/" + getType() + " " + getPath().getRelative() + "@" + getPart() + "@" + getTheme() + "]";
-    }
-    
-    public int compareTo(Object inobj) {
-        AuxDependency in = (AuxDependency) inobj;
-
-        if (getType().getTag().compareTo(in.getType().getTag()) != 0) {
-            return getType().getTag().compareTo(in.getType().getTag());
-        }
-        if (path.compareTo(in.getPath()) != 0) { 
-            return path.compareTo(in.getPath());
-        }
-        if (cmpOpt(part, in.getPart()) != 0) {
-            return cmpOpt(part, in.getPart());
-        }
-        return cmpOpt(theme, in.getTheme());
-    }
-    
-    private int cmpOpt(String left, String right) {
-        if (left == null) {
-            return right == null? 0 : 1;
-        }
-        if (right == null) {
-            return -1;
-        }
-        return left.compareTo(right);
-    }
-    
-    public int hashCode() {
-        return hashCode;
-    }
-    
-}// AuxDependency
+    /**
+     * Returns a timestamp indicating when this dependency was last changed.
+     * Note that, depending of the type of this dependency, it might have
+     * changed later without being regenerated. Then the time returned will denote
+     * the last time the dependency has been generated.
+     *  
+     * @return Timestamp indicating the last modification
+     */
+    long getModTime();
+}

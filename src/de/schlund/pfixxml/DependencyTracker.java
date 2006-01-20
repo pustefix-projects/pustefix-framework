@@ -87,8 +87,12 @@ public class DependencyTracker {
                       "Project     = " + project + "\n");
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
-        target.getAuxDependencyManager().addDependency(thetype, path, part, product,
-                                                       parent_path, parent_part,
-                                                       parent_product);
+        if (thetype == DependencyType.TEXT) {
+            target.getAuxDependencyManager().addDependencyInclude(path, part, product, parent_path, parent_part, parent_product);
+        } else if (thetype == DependencyType.IMAGE) {
+            target.getAuxDependencyManager().addDependencyImage(path, parent_path, parent_part, parent_product);
+        } else {
+            throw new RuntimeException("Unknown dependency type '" + type + "'!");
+        }
     }
 }

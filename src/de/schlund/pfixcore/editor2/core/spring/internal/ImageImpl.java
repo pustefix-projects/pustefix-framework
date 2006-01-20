@@ -18,8 +18,6 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
-
-
 import de.schlund.pfixcore.editor2.core.dom.AbstractImage;
 import de.schlund.pfixcore.editor2.core.dom.Page;
 import de.schlund.pfixcore.editor2.core.dom.Project;
@@ -76,9 +74,8 @@ public class ImageImpl extends AbstractImage {
         this.filesystem = filesystem;
         this.backup = backup;
         this.path = path;
-        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependency(
-                DependencyType.IMAGE,
-                PathFactory.getInstance().createPath(path), null, null);
+        this.auxdep = AuxDependencyFactory.getInstance().getAuxDependencyImage(
+                PathFactory.getInstance().createPath(path));
     }
 
     public String getPath() {
@@ -86,22 +83,25 @@ public class ImageImpl extends AbstractImage {
     }
 
     public Collection<Page> getAffectedPages() {
-        HashSet<PageInfo> pageinfos  = new HashSet<PageInfo>();
-        HashSet<Page> pages      = new HashSet<Page>();
-        Set     afftargets = TargetDependencyRelation.getInstance().getAffectedTargets(this.auxdep);
+        HashSet<PageInfo> pageinfos = new HashSet<PageInfo>();
+        HashSet<Page> pages = new HashSet<Page>();
+        Set afftargets = TargetDependencyRelation.getInstance()
+                .getAffectedTargets(this.auxdep);
         if (afftargets == null) {
             return pages;
         }
-        
+
         for (Iterator i = afftargets.iterator(); i.hasNext();) {
-            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i.next();
+            de.schlund.pfixxml.targets.Target pfixTarget = (de.schlund.pfixxml.targets.Target) i
+                    .next();
             pageinfos.addAll(pfixTarget.getPageInfos());
         }
 
         for (Iterator i2 = pageinfos.iterator(); i2.hasNext();) {
             PageInfo pageinfo = (PageInfo) i2.next();
             TargetGenerator tgen = pageinfo.getTargetGenerator();
-            Project project = projectfactory.getProjectByPustefixTargetGenerator(tgen);
+            Project project = projectfactory
+                    .getProjectByPustefixTargetGenerator(tgen);
             Variant variant = null;
             if (pageinfo.getVariant() != null) {
                 variant = this.variantfactory.getVariant(pageinfo.getVariant());

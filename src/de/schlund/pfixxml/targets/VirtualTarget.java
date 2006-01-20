@@ -136,14 +136,7 @@ public abstract class VirtualTarget extends TargetImpl {
                 .iterator(); i.hasNext();) {
             AuxDependency aux = (AuxDependency) i.next();
             if (aux.getType() == DependencyType.TARGET) {
-                Target auxtarget = TargetGeneratorFactory.getInstance()
-                        .createGenerator(aux.getPath())
-                        .getTarget(aux.getPart());
-                if (auxtarget == null) {
-                    auxtarget = TargetGeneratorFactory.getInstance()
-                            .createGenerator(aux.getPath())
-                            .createXMLLeafTarget(aux.getPart());
-                }
+                Target auxtarget = ((AuxDependencyTarget) aux).getTarget();
                 depmod = Math.max(auxtarget.getModTime(), depmod);
                 if (auxtarget.needsUpdate()) {
                     depup = true;
@@ -234,14 +227,7 @@ public abstract class VirtualTarget extends TargetImpl {
             if (aux.getType() == DependencyType.TARGET) {
                 Target auxtarget;
                 try {
-                    auxtarget = TargetGeneratorFactory.getInstance()
-                            .createGenerator(aux.getPath()).getTarget(
-                                    aux.getPart());
-                    if (auxtarget == null) {
-                        auxtarget = TargetGeneratorFactory.getInstance()
-                                .createGenerator(aux.getPath())
-                                .createXMLLeafTarget(aux.getPart());
-                    }
+                    auxtarget = ((AuxDependencyTarget) aux).getTarget();
                 } catch (Exception e) {
                     throw new TargetGenerationException("Nested exception", e);
                 }

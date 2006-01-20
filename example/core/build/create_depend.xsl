@@ -38,12 +38,6 @@
       </xsl:call-template>
       <depxml name="core/xsl/master.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
-      <depaux name="core/xsl/default_copy.xsl"/>
-      <depaux name="core/xsl/include.xsl"/>
-      <depaux name="core/xsl/utils.xsl"/>
-      <depaux name="core/xsl/navigation.xsl"/>
-      <depaux name="core/xsl/forminput.xsl"/>
-      <depaux name="{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
       <xsl:apply-templates select="depaux"/>
@@ -61,9 +55,6 @@
       </xsl:call-template>
       <depxml name="core/xsl/metatags.xsl"/>
       <depxsl name="core/xsl/customizemaster.xsl"/>
-      <depaux name="core/xsl/default_copy.xsl"/>
-      <depaux name="core/xsl/include.xsl"/>
-      <depaux name="core/xsl/utils.xsl"/>
       <depaux name="{$project}/conf/depend.xml"/>
       <xsl:call-template name="render_include_ssheets"/>
       <xsl:apply-templates select="param"/>
@@ -97,12 +88,6 @@
       <depxml name="{$thename}.xml"/>
       <depxsl name="master.xsl"/>
       <xsl:if test="./include or /make/global/include">
-        <xsl:for-each select="./include">
-          <depaux name="{@stylesheet}"/>
-        </xsl:for-each>
-        <xsl:for-each select="/make/global/include">
-          <depaux name="{@stylesheet}"/>
-        </xsl:for-each>
         <param name="stylesheets_to_include">
           <xsl:attribute name="value">
             <xsl:for-each select="include">
@@ -194,9 +179,6 @@
   
   <xsl:template name="render_include_ssheets">
     <xsl:if test="./include">
-      <xsl:for-each select="include">
-        <depaux name="{@stylesheet}"/>
-      </xsl:for-each>
       <param name="stylesheets_to_include">
         <xsl:attribute name="value">
           <xsl:for-each select="include">

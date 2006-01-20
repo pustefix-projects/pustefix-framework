@@ -346,7 +346,7 @@ public class TargetGenerator implements Comparable{
             HashSet auxdeps = struct.getDepaux();
             for (Iterator i = auxdeps.iterator(); i.hasNext();) {
                 Path path = (Path) i.next();
-                manager.addDependency(DependencyType.FILE, path, null, null, null, null, null);
+                manager.addDependencyFile(path);
             }
             
             HashMap params = struct.getParams();

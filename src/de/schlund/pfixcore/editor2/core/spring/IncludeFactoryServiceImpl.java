@@ -32,6 +32,7 @@ import de.schlund.pfixcore.editor2.core.exception.EditorParsingException;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludeFileImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.IncludePartThemeVariantImpl;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyInclude;
 import de.schlund.pfixxml.targets.DependencyType;
 
 /**
@@ -103,7 +104,8 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     }
 
     public IncludeFactoryServiceImpl() {
-        this.cache = Collections.synchronizedMap(new HashMap<String, IncludeFile>());
+        this.cache = Collections
+                .synchronizedMap(new HashMap<String, IncludeFile>());
     }
 
     /*
@@ -140,10 +142,11 @@ public class IncludeFactoryServiceImpl implements IncludeFactoryService {
     public IncludePartThemeVariant getIncludePartThemeVariant(
             AuxDependency auxdep) throws EditorParsingException {
         if (auxdep.getType() == DependencyType.TEXT) {
+            AuxDependencyInclude aux = (AuxDependencyInclude) auxdep;
             IncludePartThemeVariant variant = this.includefactory
-                    .getIncludeFile(auxdep.getPath().getRelative()).createPart(
-                            auxdep.getPart()).createThemeVariant(
-                            this.themefactory.getTheme(auxdep.getTheme()));
+                    .getIncludeFile(aux.getPath().getRelative()).createPart(
+                            aux.getPart()).createThemeVariant(
+                            this.themefactory.getTheme(aux.getTheme()));
             return variant;
         } else {
             String err = "Supplied AuxDependency is not of type DependencyType.TEXT!";
