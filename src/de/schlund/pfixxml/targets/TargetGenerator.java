@@ -27,6 +27,7 @@ import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.targets.cachestat.SPCacheStatistic;
 import de.schlund.pfixxml.util.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -67,11 +68,13 @@ public class TargetGenerator implements Comparable{
 
     // needed during load.
     private int unnamedcount = 0;
+    private Path config_path;
     
     //--
     
     public TargetGenerator(Path confile) throws IOException, SAXException, XMLException {
         File tmp          = confile.resolve();
+        this.config_path = confile;
         this.config_mtime = tmp.lastModified();
         
         Meminfo.print("TG: Before loading " + confile.getRelative());
@@ -147,12 +150,12 @@ public class TargetGenerator implements Comparable{
     // *******************************************************************************************
 
     
-    public synchronized boolean tryReinit(Path confile) throws Exception {
-        File tmp = confile.resolve();
+    public synchronized boolean tryReinit() throws Exception {
+        File tmp = this.config_path.resolve();
         if (tmp.lastModified() > config_mtime) {
             CAT.warn("\n\n###############################\n"
                      + "#### Reloading depend file: "
-                     + confile.getRelative()
+                     + this.config_path.getRelative()
                      + "\n"
                      + "###############################\n");
             synchronized (alltargets) {
@@ -163,7 +166,7 @@ public class TargetGenerator implements Comparable{
             pagetree     = new PageTargetTree();
             alltargets   = new HashMap();
             config_mtime = tmp.lastModified();
-            loadConfig(confile);
+            loadConfig(this.config_path);
             this.fireConfigurationChangeEvent();
             return true;
         } else {
@@ -705,5 +708,8 @@ public class TargetGenerator implements Comparable{
 		return cmp.getName().compareTo(this.getName());
 	}
     
+    public Path getConfigPath() {
+        return this.config_path;
+    }
     
 }

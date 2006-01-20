@@ -47,9 +47,10 @@ import com.icl.saxon.TransformerFactoryImpl;
 import com.icl.saxon.tinytree.TinyDocumentImpl;
 
 import de.schlund.pfixxml.PathFactory;
+import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.Target;
 import de.schlund.pfixxml.targets.TargetGenerationException;
-import de.schlund.pfixxml.targets.TargetRW;
+import de.schlund.pfixxml.targets.TargetImpl;
 
 public class Xslt {
     private static final Category CAT = Category.getInstance(Xslt.class
@@ -107,8 +108,8 @@ public class Xslt {
         return loadTemplates(path, null);
     }
 
-    public static synchronized Templates loadTemplates(Path path, TargetRW parent)
-            throws TransformerConfigurationException {
+    public static synchronized Templates loadTemplates(Path path,
+            TargetImpl parent) throws TransformerConfigurationException {
         InputSource input = new InputSource("file://" + path.getBase() + "/"
                 + path.getRelative());
         Source src = new SAXSource(Xml.createXMLReader(), input);
@@ -175,9 +176,10 @@ public class Xslt {
         private static final String SEP = File.separator;
 
         private final File root;
-        private TargetRW   parent;
 
-        public FileResolver(File root, TargetRW parent) {
+        private TargetImpl parent;
+
+        public FileResolver(File root, TargetImpl parent) {
             this.root = root;
             this.parent = parent;
         }
@@ -206,32 +208,39 @@ public class Xslt {
 
             if (parent != null) {
                 Target target = parent.getTargetGenerator().getTarget(path);
-                if (target != null) {
-                    Document dom;
-                    try {
-                        dom = (Document) target.getDOM();
-                    } catch (TargetGenerationException e) {
-                        throw new TransformerException("Could not retrieve target '"
-                                                       + target.getTargetKey()
-                                                       + "' included by stylesheet!", e);
-                    }
-                    Source source = new DOMSource(dom);
-                    
-                    // There is a bug in Saxon 6.5.3 which causes
-                    // a NullPointerException to be thrown, if systemId
-                    // is not set
-                    source.setSystemId("file://" + PathFactory.getInstance()
-                                       .createPath(target.getTargetGenerator()
-                                                   .getDisccachedir().getRelative()
-                                                   + File.separator + path).resolve()
-                                       .getAbsolutePath());
-                    
-                    // Register included stylesheet with target
-                    parent.registerTargetDependency(target);
-                    return source;
+                if (target == null) {
+                    target = parent.getTargetGenerator().createXMLLeafTarget(path);
                 }
+                
+                Document dom;
+                try {
+                    dom = (Document) target.getDOM();
+                } catch (TargetGenerationException e) {
+                    throw new TransformerException(
+                            "Could not retrieve target '"
+                                    + target.getTargetKey()
+                                    + "' included by stylesheet!", e);
+                }
+                Source source = new DOMSource(dom);
+    
+                // There is a bug in Saxon 6.5.3 which causes
+                // a NullPointerException to be thrown, if systemId
+                // is not set
+                source.setSystemId("file://"
+                        + PathFactory.getInstance().createPath(
+                                target.getTargetGenerator()
+                                        .getDisccachedir().getRelative()
+                                        + File.separator + path).resolve()
+                                .getAbsolutePath());
+    
+                // Register included stylesheet with target
+                parent.getAuxDependencyManager().addDependency(
+                        DependencyType.TARGET,
+                        target.getTargetGenerator().getConfigPath(),
+                        target.getTargetKey(), null, null, null, null);
+                return source;
             }
-            
+
             try {
                 file = Path.create(root, path).resolve();
             } catch (IllegalArgumentException e) {

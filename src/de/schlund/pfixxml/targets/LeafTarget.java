@@ -39,7 +39,7 @@ import org.apache.log4j.*;
 public abstract class LeafTarget extends TargetImpl {
     // Set this in the Constructor of derived classes!
     protected SharedLeaf sharedleaf;
-    
+
     public void setXMLSource(Target source) {
         throw new RuntimeException("Can't add a XMLSource to a leaf");
     }
@@ -47,11 +47,11 @@ public abstract class LeafTarget extends TargetImpl {
     public void setXSLSource(Target source) {
         throw new RuntimeException("Can't add a XSLSource to a leaf");
     }
-    
+
     public void addParam(String key, String val) {
         throw new RuntimeException("Can't add a stylesheet parameter to a leaf");
     }
-    
+
     public TreeSet getPageInfos() {
         return sharedleaf.getPageInfos();
     }
@@ -59,27 +59,41 @@ public abstract class LeafTarget extends TargetImpl {
     public void addPageInfo(PageInfo info) {
         sharedleaf.addPageInfo(info);
     }
-    
+
     public long getModTime() {
         synchronized (sharedleaf) {
             return sharedleaf.getModTime();
         }
     }
 
-    
-    public boolean needsUpdate() throws Exception  {
+    public boolean needsUpdate() throws Exception {
         synchronized (sharedleaf) {
             long mymodtime = sharedleaf.getModTime();
-            File doc       = PathFactory.getInstance().createPath(getTargetKey()).resolve();
+            File doc = PathFactory.getInstance().createPath(getTargetKey())
+                    .resolve();
             long maxmodtime = doc.lastModified();
-            
-            for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
-                TargetImpl t = (TargetImpl) i.next();
-                long tmpmodtime = t.getModTimeMaybeUpdate();
-                maxmodtime = Math.max(tmpmodtime, maxmodtime);
+            boolean depup = true;
+
+            for (Iterator i = this.getAuxDependencyManager().getChildren()
+                    .iterator(); i.hasNext();) {
+                AuxDependency aux = (AuxDependency) i.next();
+                if (aux.getType() == DependencyType.TARGET) {
+                    Target auxtarget = TargetGeneratorFactory.getInstance()
+                            .createGenerator(aux.getPath()).getTarget(
+                                    aux.getPart());
+                    if (auxtarget == null) {
+                        auxtarget = TargetGeneratorFactory.getInstance()
+                                .createGenerator(aux.getPath())
+                                .createXMLLeafTarget(aux.getPart());
+                    }
+                    maxmodtime = Math.max(auxtarget.getModTime(), maxmodtime);
+                    if (auxtarget.needsUpdate()) {
+                        depup = true;
+                    }
+                }
             }
-            
-            if (maxmodtime > mymodtime) {
+
+            if (depup || maxmodtime > mymodtime) {
                 return true;
             }
             return false;
@@ -94,7 +108,8 @@ public abstract class LeafTarget extends TargetImpl {
     }
 
     public String toString() {
-        return "[TARGET: " + getType() + " " + getTargetKey() + "@" + getTargetGenerator().getName() + "]";
+        return "[TARGET: " + getType() + " " + getTargetKey() + "@"
+                + getTargetGenerator().getName() + "]";
     }
 
     protected void setModTime(long mtime) {
@@ -109,18 +124,42 @@ public abstract class LeafTarget extends TargetImpl {
         }
     }
 
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
-        long mymodtime  = getModTime(); 
-        long maxmodtime = PathFactory.getInstance().createPath(getTargetKey()).resolve().lastModified(); 
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException,
+            XMLException, IOException {
+        long mymodtime = getModTime();
+        long maxmodtime = PathFactory.getInstance().createPath(getTargetKey())
+                .resolve().lastModified();
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
-        
-        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
-            TargetImpl t = (TargetImpl) i.next();
-            long tmpmodtime = t.getModTimeMaybeUpdate();
-            maxmodtime = Math.max(tmpmodtime, maxmodtime);
+
+        for (Iterator i = this.getAuxDependencyManager().getChildren()
+                .iterator(); i.hasNext();) {
+            AuxDependency aux = (AuxDependency) i.next();
+            if (aux.getType() == DependencyType.TARGET) {
+                long tmpmodtime = 0;
+                Target auxtarget;
+                try {
+                    auxtarget = TargetGeneratorFactory.getInstance()
+                            .createGenerator(aux.getPath()).getTarget(
+                                    aux.getPart());
+                    if (auxtarget == null) {
+                        auxtarget = TargetGeneratorFactory.getInstance()
+                                .createGenerator(aux.getPath())
+                                .createXMLLeafTarget(aux.getPart());
+                    }
+                } catch (Exception e) {
+                    throw new TargetGenerationException("Nested exception", e);
+                }
+                if (auxtarget instanceof TargetImpl) {
+                    tmpmodtime = ((TargetImpl) auxtarget)
+                            .getModTimeMaybeUpdate();
+                } else {
+                    tmpmodtime = auxtarget.getModTime();
+                }
+                maxmodtime = Math.max(tmpmodtime, maxmodtime);
+            }
         }
-        
+
         if (maxmodtime > mymodtime) {
             try {
                 // invalidate Memcache:
@@ -136,5 +175,5 @@ public abstract class LeafTarget extends TargetImpl {
         NDC.pop();
         return getModTime();
     }
-    
+
 }// LeafTarget

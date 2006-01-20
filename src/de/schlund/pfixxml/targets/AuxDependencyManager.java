@@ -48,14 +48,14 @@ import org.w3c.dom.NodeList;
 public class AuxDependencyManager {
     private static Category CAT    = Category.getInstance(AuxDependencyManager.class.getName());
     private static String   DEPAUX = "depaux";
-    private VirtualTarget   target;
+    private TargetImpl   target;
     
     public static AuxDependency root = 
         AuxDependencyFactory.getInstance().
         getAuxDependency(DependencyType.TEXT,PathFactory.getInstance().createPath("__ROOT__"), "__ROOT__", "__ROOT__");
     
     public AuxDependencyManager(Target target) {
-        this.target = (VirtualTarget) target;
+        this.target = (TargetImpl) target;
     }
         
     public synchronized void tryInitAuxdepend() throws Exception {
@@ -120,6 +120,13 @@ public class AuxDependencyManager {
         TargetDependencyRelation.getInstance().resetRelation(target);
     }
 
+    /**
+     * Returns the highest (= newest) timestamp of all aux dependencies
+     * (include parts, images, files) managed through this manager.
+     * This does NOT include any aux targets.
+     * 
+     * @return Timestamp of latest change in any dependency
+     */
     public long getMaxTimestamp() {
         Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
         long               max    = 0;
@@ -127,7 +134,9 @@ public class AuxDependencyManager {
         if (allaux != null) {
             for (Iterator<AuxDependency> i = allaux.iterator(); i.hasNext();) {
                 AuxDependency aux  = i.next();
-                max = Math.max(max, aux.getModTime());
+                if (aux.getType() != DependencyType.TARGET) {
+                    max = Math.max(max, aux.getModTime());
+                }
             }
         }
         return max;
@@ -140,6 +149,12 @@ public class AuxDependencyManager {
         Set<AuxDependency> allaux = TargetDependencyRelation.getInstance().getDependenciesForTarget(target);
         File               path   = new File(target.getTargetGenerator().getDisccachedir().resolve(),
                                              target.getTargetKey() + ".aux");
+        File               dir    = path.getParentFile();
+        
+        // Make sure parent directory is existing (for leaf targets)
+        if (dir != null) {
+            dir.mkdirs();
+        }
 
         HashMap<AuxDependency, HashSet<AuxDependency>> parentchild = 
             TargetDependencyRelation.getInstance().getParentChildMapForTarget(target);

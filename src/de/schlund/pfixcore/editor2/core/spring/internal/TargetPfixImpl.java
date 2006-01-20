@@ -61,6 +61,7 @@ import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
 import de.schlund.pfixxml.targets.TargetGenerationException;
+import de.schlund.pfixxml.targets.TargetImpl;
 import de.schlund.pfixxml.targets.VirtualTarget;
 
 /**
@@ -217,8 +218,8 @@ public class TargetPfixImpl extends AbstractTarget {
      */
     public Collection<Target> getAuxDependencies() {
         ArrayList<Target> deps = new ArrayList<Target>();
-        if (this.pfixTarget instanceof VirtualTarget) {
-            VirtualTarget vtarget = (VirtualTarget) this.pfixTarget;
+        if (this.pfixTarget instanceof TargetImpl) {
+            TargetImpl vtarget = (TargetImpl) this.pfixTarget;
             AuxDependencyManager auxmanager = vtarget.getAuxDependencyManager();
             if (auxmanager == null) {
                 return deps;
@@ -239,6 +240,15 @@ public class TargetPfixImpl extends AbstractTarget {
                                 .add(this.targetfactory
                                         .getLeafTargetFromPustefixAuxDependency(auxdep));
                     }
+                } else if (auxdep.getType() == DependencyType.TARGET) {
+                    de.schlund.pfixxml.targets.Target ptarget = this.pfixTarget
+                            .getTargetGenerator().getTarget(auxdep.getPart());
+                    if (ptarget == null) {
+                        ptarget = this.pfixTarget.getTargetGenerator()
+                                .createXMLLeafTarget(auxdep.getPart());
+                    }
+                    deps.add(this.targetfactory.getTargetFromPustefixTarget(
+                            ptarget, this.project));
                 }
             }
         }

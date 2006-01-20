@@ -36,5 +36,4 @@ public interface TargetRW extends Target {
     void   addPageInfo(PageInfo info);
     Object getCurrValue() throws TransformerException;
     void   storeValue(Object obj);
-    void   registerTargetDependency(Target child);
 }

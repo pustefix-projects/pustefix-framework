@@ -204,11 +204,10 @@ public class TargetsResourceImpl implements TargetsResource {
             node.setAttribute("leaf", "false");
             this.renderTarget(target.getParentXML(), node);
             this.renderTarget(target.getParentXSL(), node);
-            for (Iterator i = target.getAuxDependencies().iterator(); i
-                    .hasNext();) {
-                Target auxtarget = (Target) i.next();
-                this.renderTarget(auxtarget, node, true);
-            }
+        }
+        for (Iterator i = target.getAuxDependencies().iterator(); i.hasNext();) {
+            Target auxtarget = (Target) i.next();
+            this.renderTarget(auxtarget, node, true);
         }
     }
 

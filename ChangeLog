@@ -1,6 +1,58 @@
+2006-01-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/TargetPfixImpl.java (getAuxDependencies): 
+	Adapting method to retrieve aux targets using AuxDependencyManager
+	
+	* src/de/schlund/pfixcore/editor2/frontend/resources/TargetsResourceImpl.java (renderTarget): 
+	Handling dependencies for leaf targets
+	
+	* src/de/schlund/pfixxml/util/Xslt.java: 
+	Adapting FileResolver to store target dependencies within the
+	aux dependency manager of the generated target
+	
+	* src/de/schlund/pfixxml/targets/AuxDependency.java: 
+	Handling aux dependencies of type target	
+	
+	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java (addDependency): 
+	Handling target type dependencies and dependendencies for leaf targets, the
+	latter by creating .aux files within the target generator's cache directory
+	for leaf target files
+	
+	* src/de/schlund/pfixxml/targets/DependencyType.java: 
+	Adding dependency type target
+	
+	* src/de/schlund/pfixxml/targets/LeafTarget.java: 
+	Adding code to manage auxiliary dependencies (like stylesheet includes) in
+	leaf targets
+	
+	* src/de/schlund/pfixxml/targets/TargetGenerator.java: 
+	Changing tryReinit() to always use path to configuration file supplied
+	during construction
+	
+	* src/de/schlund/pfixxml/targets/TargetGeneratorFactory.java (createGenerator): 
+	Adapting call of TargetGenerator#tryReinit() to new signature
+	
+	* src/de/schlund/pfixxml/targets/TargetRW.java: 
+	Removing registerTargetDependency() method as it is not used any more
+	
+	* src/de/schlund/pfixxml/targets/TargetImpl.java: 
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java: 
+	Moving AuxDependencyManager from VirtualTarget to TargetImpl, so that it
+	is available in LeafTarget
+	
+	* src/de/schlund/pfixxml/targets/XMLLeafTarget.java: 
+	Adding dummy AuxDependencyManager to satisfy TargetImpl
+	
+	* src/de/schlund/pfixxml/targets/XSLLeafTarget.java: 
+	* src/de/schlund/pfixxml/targets/XSLVirtualTarget.java: 
+	Using AuxDependencyManager to store target dependencies
+	
+	* src/de/schlund/pfixxml/AbstractXMLServer.java (tryReloadProperties): 
+	Adapting call of TargetGenerator#tryReinit() to new signature
+
 2006-01-18  Sebastian Marsching <sebastian.marsching@1und1.de>
 	* src/de/schlund/pfixcore/editor2/frontend/resources/ImagesResourceImpl.java (inserStatus):
-        * src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (insertStatus):
+	* src/de/schlund/pfixcore/editor2/frontend/resources/IncludesResourceImpl.java (insertStatus):
 	Fixing StringIndexOutOfBoundException occuring when strange paths
 	(such, not containing any /) are handled
 
