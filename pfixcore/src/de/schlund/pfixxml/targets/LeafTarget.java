@@ -78,14 +78,7 @@ public abstract class LeafTarget extends TargetImpl {
                     .iterator(); i.hasNext();) {
                 AuxDependency aux = (AuxDependency) i.next();
                 if (aux.getType() == DependencyType.TARGET) {
-                    Target auxtarget = TargetGeneratorFactory.getInstance()
-                            .createGenerator(aux.getPath()).getTarget(
-                                    aux.getPart());
-                    if (auxtarget == null) {
-                        auxtarget = TargetGeneratorFactory.getInstance()
-                                .createGenerator(aux.getPath())
-                                .createXMLLeafTarget(aux.getPart());
-                    }
+                    Target auxtarget = ((AuxDependencyTarget) aux).getTarget();
                     maxmodtime = Math.max(auxtarget.getModTime(), maxmodtime);
                     if (auxtarget.needsUpdate()) {
                         depup = true;
@@ -137,19 +130,7 @@ public abstract class LeafTarget extends TargetImpl {
             AuxDependency aux = (AuxDependency) i.next();
             if (aux.getType() == DependencyType.TARGET) {
                 long tmpmodtime = 0;
-                Target auxtarget;
-                try {
-                    auxtarget = TargetGeneratorFactory.getInstance()
-                            .createGenerator(aux.getPath()).getTarget(
-                                    aux.getPart());
-                    if (auxtarget == null) {
-                        auxtarget = TargetGeneratorFactory.getInstance()
-                                .createGenerator(aux.getPath())
-                                .createXMLLeafTarget(aux.getPart());
-                    }
-                } catch (Exception e) {
-                    throw new TargetGenerationException("Nested exception", e);
-                }
+                Target auxtarget = ((AuxDependencyTarget) aux).getTarget();
                 if (auxtarget instanceof TargetImpl) {
                     tmpmodtime = ((TargetImpl) auxtarget)
                             .getModTimeMaybeUpdate();

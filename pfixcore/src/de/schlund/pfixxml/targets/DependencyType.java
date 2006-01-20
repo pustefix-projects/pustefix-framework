@@ -35,8 +35,9 @@ public final class DependencyType {
     public static final DependencyType IMAGE  = new DependencyType("image", true);
     public static final DependencyType TARGET = new DependencyType("target", true);
     public static final DependencyType FILE   = new DependencyType("file", false);
+    public static final DependencyType ROOT   = new DependencyType("root", true);
 
-    private static final DependencyType[] typearray = {TEXT, IMAGE, TARGET, FILE}; 
+    private static final DependencyType[] typearray = {TEXT, IMAGE, TARGET, FILE, ROOT}; 
     
     private final String tag;
     private final boolean isDynamic;

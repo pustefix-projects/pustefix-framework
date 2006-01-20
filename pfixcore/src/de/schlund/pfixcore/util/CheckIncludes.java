@@ -137,7 +137,7 @@ public class CheckIncludes {
 
             for (Iterator j = deps.iterator(); j.hasNext();) {
                 AuxDependency aux = (AuxDependency) j.next();
-                if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE)) {
+                if (!unavail.contains(aux) || aux.getType().equals(DependencyType.FILE) || aux.getType().equals(DependencyType.TARGET)) {
                     j.remove();
                 }
             }
@@ -153,11 +153,14 @@ public class CheckIncludes {
                     Element elem = result.createElement("MISSING");
                     prj_elem.appendChild(elem);
                     elem.setAttribute("type", aux.getType().toString());
-                    Path path = aux.getPath();
-                    elem.setAttribute("path", path.getRelative());
                     if (aux.getType().equals(DependencyType.TEXT)) {
-                        elem.setAttribute("part", aux.getPart());
-                        elem.setAttribute("product", aux.getTheme());
+                        AuxDependencyInclude a = (AuxDependencyInclude) aux;
+                        elem.setAttribute("path", a.getPath().getRelative());
+                        elem.setAttribute("part", a.getPart());
+                        elem.setAttribute("product", a.getTheme());
+                    } else if (aux.getType().equals(DependencyType.IMAGE)) {
+                        AuxDependencyImage a = (AuxDependencyImage) aux;
+                        elem.setAttribute("path", a.getPath().getRelative());
                     }
                 }
             }
@@ -176,7 +179,7 @@ public class CheckIncludes {
             
             res_root.appendChild(res_image);
             
-            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.IMAGE, path, null, null);
+            AuxDependency aux =  AuxDependencyFactory.getInstance().getAuxDependencyImage(path);
             if (!includes.contains(aux)) {
                 res_image.setAttribute("UNUSED", "true");
                 continue;
@@ -248,7 +251,7 @@ public class CheckIncludes {
                             res_product.setAttribute("name", product);
                             
                             AuxDependency aux =
-                                AuxDependencyFactory.getInstance().getAuxDependency(DependencyType.TEXT, path, part, product);
+                                AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, product);
                             if (!includes.contains(aux)) {
                                 res_product.setAttribute("UNUSED", "true");
                                 continue;

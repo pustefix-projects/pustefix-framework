@@ -51,6 +51,7 @@ import de.schlund.pfixxml.event.ConfigurationChangeEvent;
 import de.schlund.pfixxml.event.ConfigurationChangeListener;
 import de.schlund.pfixxml.targets.AuxDependency;
 import de.schlund.pfixxml.targets.AuxDependencyFactory;
+import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.PageTargetTree;
@@ -401,7 +402,7 @@ public class ProjectImpl extends AbstractProject {
             return images;
         }
         for (Iterator i = deps.iterator(); i.hasNext();) {
-            AuxDependency auxdep = (AuxDependency) i.next();
+            AuxDependencyImage auxdep = (AuxDependencyImage) i.next();
             images.add(this.imagefactory.getImage(auxdep.getPath()
                     .getRelative()));
         }
@@ -412,7 +413,7 @@ public class ProjectImpl extends AbstractProject {
             String part, String theme) {
         AuxDependency auxdep = AuxDependencyFactory
                 .getInstance()
-                .getAuxDependency(DependencyType.TEXT,
+                .getAuxDependencyInclude(
                         PathFactory.getInstance().createPath(file), part, theme);
 
         TreeSet deps = TargetDependencyRelation.getInstance()
@@ -438,7 +439,7 @@ public class ProjectImpl extends AbstractProject {
     public boolean hasIncludePart(String file, String part, String theme) {
         AuxDependency aux = AuxDependencyFactory
                 .getInstance()
-                .getAuxDependency(DependencyType.TEXT,
+                .getAuxDependencyInclude(
                         PathFactory.getInstance().createPath(file), part, theme);
         TreeSet generators = TargetDependencyRelation.getInstance()
                 .getAffectedTargetGenerators(aux);

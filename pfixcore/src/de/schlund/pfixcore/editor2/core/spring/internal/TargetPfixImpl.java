@@ -56,7 +56,10 @@ import de.schlund.pfixcore.editor2.core.spring.TargetFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.ThemeFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
+import de.schlund.pfixxml.targets.AuxDependencyImage;
 import de.schlund.pfixxml.targets.AuxDependencyManager;
+import de.schlund.pfixxml.targets.AuxDependencyTarget;
 import de.schlund.pfixxml.targets.DependencyType;
 import de.schlund.pfixxml.targets.PageInfo;
 import de.schlund.pfixxml.targets.TargetDependencyRelation;
@@ -228,25 +231,11 @@ public class TargetPfixImpl extends AbstractTarget {
             for (Iterator i = auxmanager.getChildren().iterator(); i.hasNext();) {
                 AuxDependency auxdep = (AuxDependency) i.next();
                 if (auxdep.getType() == DependencyType.FILE) {
-                    de.schlund.pfixxml.targets.Target ptarget = this.pfixTarget
-                            .getTargetGenerator().getTarget(
-                                    auxdep.getPath().getRelative());
-                    if (ptarget != null) {
-                        deps.add(this.targetfactory
-                                .getTargetFromPustefixTarget(ptarget,
-                                        this.project));
-                    } else {
-                        deps
-                                .add(this.targetfactory
-                                        .getLeafTargetFromPustefixAuxDependency(auxdep));
-                    }
+                    deps.add(this.targetfactory
+                            .getLeafTargetFromPustefixAuxDependency((AuxDependencyFile) auxdep));
                 } else if (auxdep.getType() == DependencyType.TARGET) {
-                    de.schlund.pfixxml.targets.Target ptarget = this.pfixTarget
-                            .getTargetGenerator().getTarget(auxdep.getPart());
-                    if (ptarget == null) {
-                        ptarget = this.pfixTarget.getTargetGenerator()
-                                .createXMLLeafTarget(auxdep.getPart());
-                    }
+                    de.schlund.pfixxml.targets.Target ptarget = ((AuxDependencyTarget) auxdep)
+                            .getTarget();
                     deps.add(this.targetfactory.getTargetFromPustefixTarget(
                             ptarget, this.project));
                 }
@@ -335,8 +324,9 @@ public class TargetPfixImpl extends AbstractTarget {
                     for (Iterator i = alldeps.iterator(); i.hasNext();) {
                         AuxDependency auxdep = (AuxDependency) i.next();
                         if (auxdep.getType() == DependencyType.IMAGE) {
-                            Image img = this.imagefactory.getImage(auxdep
-                                    .getPath().getRelative());
+                            Image img = this.imagefactory
+                                    .getImage(((AuxDependencyImage) auxdep)
+                                            .getPath().getRelative());
                             deps.add(img);
                         }
                     }
@@ -364,8 +354,9 @@ public class TargetPfixImpl extends AbstractTarget {
                         .hasNext();) {
                     AuxDependency auxdep = (AuxDependency) i.next();
                     if (auxdep.getType() == DependencyType.IMAGE) {
-                        Image img = this.imagefactory.getImage(auxdep.getPath()
-                                .getRelative());
+                        Image img = this.imagefactory
+                        .getImage(((AuxDependencyImage) auxdep)
+                                .getPath().getRelative());
                         deps.add(img);
                     }
                 }

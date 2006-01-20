@@ -234,10 +234,7 @@ public class Xslt {
                                 .getAbsolutePath());
     
                 // Register included stylesheet with target
-                parent.getAuxDependencyManager().addDependency(
-                        DependencyType.TARGET,
-                        target.getTargetGenerator().getConfigPath(),
-                        target.getTargetKey(), null, null, null, null);
+                parent.getAuxDependencyManager().addDependencyTarget(target.getTargetKey());
                 return source;
             }
 

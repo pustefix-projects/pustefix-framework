@@ -18,6 +18,22 @@
 
 package de.schlund.pfixcore.editor2.core.spring.internal;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 import de.schlund.pfixcore.editor2.core.dom.AbstractTarget;
 import de.schlund.pfixcore.editor2.core.dom.AbstractTheme;
 import de.schlund.pfixcore.editor2.core.dom.Image;
@@ -35,23 +51,9 @@ import de.schlund.pfixcore.editor2.core.spring.FileSystemService;
 import de.schlund.pfixcore.editor2.core.spring.PathResolverService;
 import de.schlund.pfixcore.editor2.core.spring.ProjectFactoryService;
 import de.schlund.pfixcore.editor2.core.spring.VariantFactoryService;
-import de.schlund.pfixxml.targets.AuxDependency;
-import de.schlund.pfixxml.targets.TargetDependencyRelation;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
 import de.schlund.pfixxml.targets.PageInfo;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import de.schlund.pfixxml.targets.TargetDependencyRelation;
 
 /**
  * Implementation of Target using the AuxDependency informationen provided by
@@ -63,7 +65,7 @@ import org.xml.sax.SAXException;
  */
 public class TargetAuxDepImpl extends AbstractTarget {
 
-    private AuxDependency auxdep;
+    private AuxDependencyFile auxdep;
 
     private ProjectFactoryService projectfactory;
 
@@ -86,7 +88,7 @@ public class TargetAuxDepImpl extends AbstractTarget {
     public TargetAuxDepImpl(ProjectFactoryService projectfactory,
             VariantFactoryService variantfactory,
             PathResolverService pathresolver, FileSystemService filesystem,
-            AuxDependency auxdep) {
+            AuxDependencyFile auxdep) {
         this.auxdep = auxdep;
         this.projectfactory = projectfactory;
         this.variantfactory = variantfactory;
@@ -179,7 +181,8 @@ public class TargetAuxDepImpl extends AbstractTarget {
      * 
      * @see de.schlund.pfixcore.editor2.core.dom.Target#getIncludeDependencies(boolean)
      */
-    public Collection<IncludePartThemeVariant> getIncludeDependencies(boolean recursive) {
+    public Collection<IncludePartThemeVariant> getIncludeDependencies(
+            boolean recursive) {
         // Leaf targets don't have dependencies
         return new ArrayList<IncludePartThemeVariant>();
     }

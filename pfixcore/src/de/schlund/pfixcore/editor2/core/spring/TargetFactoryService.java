@@ -20,7 +20,7 @@ package de.schlund.pfixcore.editor2.core.spring;
 
 import de.schlund.pfixcore.editor2.core.dom.Project;
 import de.schlund.pfixcore.editor2.core.dom.Target;
-import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
 
 /**
  * Service providing methods to create Target objects
@@ -44,5 +44,5 @@ public interface TargetFactoryService {
      * @param auxdep AuxDependency object to use
      * @return New Target object
      */
-    Target getLeafTargetFromPustefixAuxDependency(AuxDependency auxdep);
+    Target getLeafTargetFromPustefixAuxDependency(AuxDependencyFile auxdep);
 }

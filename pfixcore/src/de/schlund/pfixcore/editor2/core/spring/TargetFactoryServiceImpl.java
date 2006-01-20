@@ -28,6 +28,7 @@ import de.schlund.pfixcore.editor2.core.dom.Target;
 import de.schlund.pfixcore.editor2.core.spring.internal.TargetAuxDepImpl;
 import de.schlund.pfixcore.editor2.core.spring.internal.TargetPfixImpl;
 import de.schlund.pfixxml.targets.AuxDependency;
+import de.schlund.pfixxml.targets.AuxDependencyFile;
 
 /**
  * Implementation of TargetFactoryService
@@ -89,7 +90,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
 
     public TargetFactoryServiceImpl() {
         this.cachePfixTarget = new WeakHashMap<de.schlund.pfixxml.targets.Target, Target>();
-        this.cacheAuxDepTarget = Collections.synchronizedMap(new HashMap<AuxDependency, Target>());
+        this.cacheAuxDepTarget = Collections
+                .synchronizedMap(new HashMap<AuxDependency, Target>());
     }
 
     /*
@@ -116,7 +118,8 @@ public class TargetFactoryServiceImpl implements TargetFactoryService {
      * 
      * @see de.schlund.pfixcore.editor2.core.spring.TargetFactoryService#createTarget(de.schlund.pfixxml.targets.AuxDependency)
      */
-    public Target getLeafTargetFromPustefixAuxDependency(AuxDependency auxdep) {
+    public Target getLeafTargetFromPustefixAuxDependency(
+            AuxDependencyFile auxdep) {
         // TODO Make sure Target object is unique within the whole installation
         if (this.cacheAuxDepTarget.containsKey(auxdep)) {
             return (Target) this.cacheAuxDepTarget.get(auxdep);
