@@ -341,7 +341,11 @@ public abstract class VirtualTarget extends TargetImpl {
             throw new RuntimeException("Could not rename temporary file '"
                     + tempFile + "' to file '" + cachefile + "'!");
         }
-
+        
+        // Load the target in memcache to make sure all load time
+        // dependencies are being registered
+        this.getCurrValue();
+        
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.

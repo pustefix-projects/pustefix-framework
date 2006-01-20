@@ -59,9 +59,6 @@ public class XSLVirtualTarget extends VirtualTarget {
                         + File.separator + getTargetKey());
         File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
-            // reset the target dependency list as they will be set up again
-            this.getAuxDependencyManager().reset();
-
             return Xslt.loadTemplates(thepath, this);
         } else {
             return null;
