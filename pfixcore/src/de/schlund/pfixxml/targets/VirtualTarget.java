@@ -18,15 +18,23 @@
  */
 package de.schlund.pfixxml.targets;
 
-import de.schlund.pfixxml.*;
-import de.schlund.pfixxml.util.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import javax.xml.transform.*;
+import javax.xml.transform.Templates;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
+
 import org.apache.log4j.NDC;
 import org.w3c.dom.Document;
+
+import de.schlund.pfixxml.XMLException;
+import de.schlund.pfixxml.util.Path;
+import de.schlund.pfixxml.util.Xslt;
 
 /**
  * VirtualTarget.java
@@ -39,14 +47,12 @@ import org.w3c.dom.Document;
  *
  */
 public abstract class VirtualTarget extends TargetImpl {
-    protected long                 modtime       = 0;
-    protected TreeSet              pageinfos     = new TreeSet();
-    protected AuxDependencyManager auxdepmanager = null;
-    protected boolean              forceupdate   = false;
-    
-    public AuxDependencyManager getAuxDependencyManager() {
-        return auxdepmanager; 
-    }
+    protected long modtime = 0;
+
+    protected TreeSet pageinfos = new TreeSet();
+
+    protected boolean forceupdate = false;
+
     /**
      * @see de.schlund.pfixxml.targets.TargetRW#addPageInfo(de.schlund.pfixxml.targets.PageInfo)
      */
@@ -95,7 +101,8 @@ public abstract class VirtualTarget extends TargetImpl {
         if (modtime == 0) {
             synchronized (this) {
                 if (modtime == 0) {
-                    File doc = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+                    File doc = new File(getTargetGenerator().getDisccachedir()
+                            .resolve(), getTargetKey());
                     if (doc.exists() && doc.isFile()) {
                         setModTime(doc.lastModified());
                     }
@@ -109,36 +116,48 @@ public abstract class VirtualTarget extends TargetImpl {
      * @see de.schlund.pfixxml.targets.Target#needsUpdate()
      */
     public boolean needsUpdate() throws Exception {
-        long    mymodtime = getModTime();
-        long    xmlmod;
-        long    xslmod;
-        long    depmod = 0;
+        long mymodtime = getModTime();
+        long xmlmod;
+        long xslmod;
+        long depmod = 0;
         boolean xmlup;
         boolean xslup;
         boolean depup = false;
-        Target  tmp;
+        Target tmp;
 
-        tmp    = getXMLSource();
-        xmlup  = tmp.needsUpdate();
+        tmp = getXMLSource();
+        xmlup = tmp.needsUpdate();
         xmlmod = tmp.getModTime();
-        tmp    = getXSLSource();
-        xslup  = tmp.needsUpdate();
+        tmp = getXSLSource();
+        xslup = tmp.needsUpdate();
         xslmod = tmp.getModTime();
-        
-        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
-            TargetImpl auxtarget = (TargetImpl) i.next();
-            depmod = Math.max(auxtarget.getModTime(), depmod);
-            if (auxtarget.needsUpdate()) {
-                depup = true;
+
+        for (Iterator i = this.getAuxDependencyManager().getChildren()
+                .iterator(); i.hasNext();) {
+            AuxDependency aux = (AuxDependency) i.next();
+            if (aux.getType() == DependencyType.TARGET) {
+                Target auxtarget = TargetGeneratorFactory.getInstance()
+                        .createGenerator(aux.getPath())
+                        .getTarget(aux.getPart());
+                if (auxtarget == null) {
+                    auxtarget = TargetGeneratorFactory.getInstance()
+                            .createGenerator(aux.getPath())
+                            .createXMLLeafTarget(aux.getPart());
+                }
+                depmod = Math.max(auxtarget.getModTime(), depmod);
+                if (auxtarget.needsUpdate()) {
+                    depup = true;
+                }
             }
         }
-        
+
         if (forceupdate)
             return true;
         if (xslup || xmlup || depup)
             return true;
-        if ((xmlmod > mymodtime) || (xslmod > mymodtime) ||
-            getAuxDependencyManager().getMaxTimestamp() > mymodtime || depmod > mymodtime)
+        if ((xmlmod > mymodtime) || (xslmod > mymodtime)
+                || getAuxDependencyManager().getMaxTimestamp() > mymodtime
+                || depmod > mymodtime)
             return true;
         return false;
     }
@@ -151,18 +170,16 @@ public abstract class VirtualTarget extends TargetImpl {
         cache.setValue(this, obj);
     }
 
-  
     public String toString() {
         if (getXMLSource() != null && getXSLSource() != null) {
-            return "[TARGET: " + getType() + " " + getTargetKey()
-                + "@" + getTargetGenerator().getName()
-                + "[" + themes.getId() + "]"
-                + " <" + getXMLSource().getTargetKey() + "> <"
-                + getXSLSource().getTargetKey() + ">]";
+            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
+                    + getTargetGenerator().getName() + "[" + themes.getId()
+                    + "]" + " <" + getXMLSource().getTargetKey() + "> <"
+                    + getXSLSource().getTargetKey() + ">]";
         } else {
-            return "[TARGET: " + getType() + " " + getTargetKey()
-                + "@" + getTargetGenerator().getName()
-                + "[" + themes.getId() + "]]";
+            return "[TARGET: " + getType() + " " + getTargetKey() + "@"
+                    + getTargetGenerator().getName() + "[" + themes.getId()
+                    + "]]";
         }
     }
 
@@ -186,9 +203,10 @@ public abstract class VirtualTarget extends TargetImpl {
     /**
      * @see de.schlund.pfixxml.targets.TargetImpl#getModTimeMaybeUpdate()
      */
-    protected long getModTimeMaybeUpdate() throws TargetGenerationException, XMLException, IOException {
+    protected long getModTimeMaybeUpdate() throws TargetGenerationException,
+            XMLException, IOException {
         // long currmodtime = getModTime();
-        long maxmodtime  = 0;
+        long maxmodtime = 0;
         long tmpmodtime;
         NDC.push("    ");
         TREE.debug("> " + getTargetKey());
@@ -208,14 +226,35 @@ public abstract class VirtualTarget extends TargetImpl {
         //     CAT.warn("### AUX of "  + getTargetKey() + " is newer! " + tmpmodtime + ">" + currmodtime);
         // }
         maxmodtime = Math.max(tmpmodtime, maxmodtime);
-        
+
         // check target dependencies
-        for (Iterator i = this.auxdeptargets.iterator(); i.hasNext();) {
-            TargetImpl t = (TargetImpl) i.next();
-            tmpmodtime = t.getModTimeMaybeUpdate();
-            maxmodtime = Math.max(tmpmodtime, maxmodtime);
+        for (Iterator i = this.getAuxDependencyManager().getChildren()
+                .iterator(); i.hasNext();) {
+            AuxDependency aux = (AuxDependency) i.next();
+            if (aux.getType() == DependencyType.TARGET) {
+                Target auxtarget;
+                try {
+                    auxtarget = TargetGeneratorFactory.getInstance()
+                            .createGenerator(aux.getPath()).getTarget(
+                                    aux.getPart());
+                    if (auxtarget == null) {
+                        auxtarget = TargetGeneratorFactory.getInstance()
+                                .createGenerator(aux.getPath())
+                                .createXMLLeafTarget(aux.getPart());
+                    }
+                } catch (Exception e) {
+                    throw new TargetGenerationException("Nested exception", e);
+                }
+                if (auxtarget instanceof TargetImpl) {
+                    tmpmodtime = ((TargetImpl) auxtarget)
+                            .getModTimeMaybeUpdate();
+                } else {
+                    tmpmodtime = auxtarget.getModTime();
+                }
+                maxmodtime = Math.max(tmpmodtime, maxmodtime);
+            }
         }
-        
+
         if ((maxmodtime > getModTime()) || forceupdate) {
             synchronized (this) {
                 if ((maxmodtime > getModTime()) || forceupdate) {
@@ -223,24 +262,29 @@ public abstract class VirtualTarget extends TargetImpl {
                         generateValue();
                         TREE.debug("  [" + getTargetKey() + ": generated...]");
                     } catch (TransformerException e) {
-                        CAT.error("Error when generating: " + getTargetKey() + " from "
-                                  + getXMLSource().getTargetKey() + " and "
-                                  + getXSLSource().getTargetKey(), e);
+                        CAT.error("Error when generating: " + getTargetKey()
+                                + " from " + getXMLSource().getTargetKey()
+                                + " and " + getXSLSource().getTargetKey(), e);
                         // Now we invalidate the mem- and disc cache to force
                         // a complete rebuild of this target the next try
                         storeValue(null);
                         setModTime(-1);
-                        File cachefile = new File(getTargetGenerator().getDisccachedir().resolve(), getTargetKey());
+                        File cachefile = new File(getTargetGenerator()
+                                .getDisccachedir().resolve(), getTargetKey());
                         if (cachefile.exists()) {
                             cachefile.delete();
                         }
-                        
+
                         TransformerException tex = e;
                         TargetGenerationException targetex = null;
                         if (storedException != null) {
-                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", storedException);
+                            targetex = new TargetGenerationException(
+                                    "Caught transformer exception when doing getModtimeMaybeUpdate",
+                                    storedException);
                         } else {
-                            targetex = new TargetGenerationException("Caught transformer exception when doing getModtimeMaybeUpdate", tex);
+                            targetex = new TargetGenerationException(
+                                    "Caught transformer exception when doing getModtimeMaybeUpdate",
+                                    tex);
                         }
                         targetex.setTargetkey(targetkey);
                         throw targetex;
@@ -254,19 +298,19 @@ public abstract class VirtualTarget extends TargetImpl {
         return getModTime();
     }
 
-    private void generateValue() throws XMLException, TransformerException, IOException {
-        String key          = getTargetKey();
+    private void generateValue() throws XMLException, TransformerException,
+            IOException {
+        String key = getTargetKey();
         Target tmpxmlsource = getXMLSource();
         Target tmpxslsource = getXSLSource();
-        Path   cachepath    = getTargetGenerator().getDisccachedir();
-        File   cachefile    = new File(cachepath.resolve(), key);
+        Path cachepath = getTargetGenerator().getDisccachedir();
+        File cachefile = new File(cachepath.resolve(), key);
         new File(cachefile.getParent()).mkdirs();
         if (CAT.isDebugEnabled()) {
-            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo (" +
-                      tmpxmlsource.getTargetKey() + " / " + tmpxslsource.getTargetKey() + ")");
+            CAT.debug(key + ": Getting " + getType() + " by XSLTrafo ("
+                    + tmpxmlsource.getTargetKey() + " / "
+                    + tmpxslsource.getTargetKey() + ")");
         }
-        // reset the target dependency list as it will be set up again
-        this.clearTargetDependencies();
         // as the file will be rebuild in the disc cache, we need to make sure that we will load it again
         // when we need it by invalidating the Memcache;
         storeValue(null);
@@ -274,27 +318,30 @@ public abstract class VirtualTarget extends TargetImpl {
         //  (as we defer loading until we actually need the doc, which is now).
         //  But the modtime has been taken into account, so those files exists in the disc cache and
         //  are up-to-date: getCurrValue() will finally load these values.
-        Document  xmlobj    = (Document)  ((TargetRW) tmpxmlsource).getCurrValue();
-        Templates templ     = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
-        if (xmlobj == null) 
-            throw new XMLException("**** xml source " +
-                                   tmpxmlsource.getTargetKey() + " (" + tmpxmlsource.getType() + ") doesn't have a value!");
-        if (templ == null) 
-            throw new XMLException("**** xsl source " +
-                                   tmpxslsource.getTargetKey() + " (" + tmpxslsource.getType() + ") doesn't have a value!");
-        TreeMap   tmpparams = getParams();
+        Document xmlobj = (Document) ((TargetRW) tmpxmlsource).getCurrValue();
+        Templates templ = (Templates) ((TargetRW) tmpxslsource).getCurrValue();
+        if (xmlobj == null)
+            throw new XMLException("**** xml source "
+                    + tmpxmlsource.getTargetKey() + " ("
+                    + tmpxmlsource.getType() + ") doesn't have a value!");
+        if (templ == null)
+            throw new XMLException("**** xsl source "
+                    + tmpxslsource.getTargetKey() + " ("
+                    + tmpxslsource.getType() + ") doesn't have a value!");
+        TreeMap tmpparams = getParams();
         tmpparams.put("themes", themes.getId());
-        
+
         // Store output in temporary file and overwrite cache file only
         // when transformation was sucessfully finished
         File tempFile = new File(cachepath.resolve(), ".#" + key + ".tmp");
-        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(new FileOutputStream(tempFile)));
+        Xslt.transform(xmlobj, templ, tmpparams, new StreamResult(
+                new FileOutputStream(tempFile)));
 
         if (!tempFile.renameTo(cachefile)) {
-            throw new RuntimeException("Could not rename temporary file '" +
-                    tempFile + "' to file '" + cachefile + "'!");
+            throw new RuntimeException("Could not rename temporary file '"
+                    + tempFile + "' to file '" + cachefile + "'!");
         }
-        
+
         // Now we need to save the current value of the auxdependencies
         getAuxDependencyManager().saveAuxdepend();
         // and let's update the modification time.
@@ -302,10 +349,8 @@ public abstract class VirtualTarget extends TargetImpl {
         forceupdate = false;
     }
 
-
     public void setForceUpdate() {
         forceupdate = true;
     }
 
-                         
 } // VirtualTarget

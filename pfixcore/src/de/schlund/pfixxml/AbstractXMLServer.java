@@ -250,7 +250,7 @@ public abstract class AbstractXMLServer extends ServletManager {
                 // This is a fake. We also return true when only depend.xml change, but the properties not.
                 // But we can only signal one type of "reload" event with the return value of this method,
                 // so it's better to reload the properties one time too often.
-                return generator.tryReinit(targetconf);
+                return generator.tryReinit();
             } catch (Exception e) {
                 throw new ServletException("When trying to reinit generator: " + e);
             }

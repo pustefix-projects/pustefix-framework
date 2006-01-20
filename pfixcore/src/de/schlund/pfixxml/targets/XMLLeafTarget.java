@@ -47,6 +47,8 @@ public class XMLLeafTarget extends LeafTarget {
         this.themes    = themes;
         Path targetpath = PathFactory.getInstance().createPath(key);
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
+        // Create empty manager to avoid null pointer exceptions
+        this.auxdepmanager = new AuxDependencyManager(this);
     }
 
     /**

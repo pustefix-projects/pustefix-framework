@@ -25,6 +25,9 @@ import de.schlund.pfixxml.PathFactory;
 import de.schlund.pfixxml.util.*;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
@@ -49,6 +52,8 @@ public class XSLLeafTarget extends LeafTarget {
         this.themes    = themes;
         Path targetpath = PathFactory.getInstance().createPath(key);
         this.sharedleaf = SharedLeafFactory.getInstance().getSharedLeaf(targetpath.resolve().getPath());
+        this.auxdepmanager = new AuxDependencyManager(this);
+        this.auxdepmanager.tryInitAuxdepend();
     }
 
     /**
@@ -59,9 +64,19 @@ public class XSLLeafTarget extends LeafTarget {
         File thefile = thepath.resolve();
         if (thefile.exists() && thefile.isFile()) {
             // reset the target dependency list as they will be set up again
-            this.clearTargetDependencies();
+            this.getAuxDependencyManager().reset();
             
-            return Xslt.loadTemplates(thepath, this); 
+            Templates tmpl = Xslt.loadTemplates(thepath, this);
+            
+            // save aux dependencies
+            try {
+
+                this.getAuxDependencyManager().saveAuxdepend();
+            } catch (IOException e) {
+                throw new TransformerException("Error while writing auxdependency information");
+            }
+            
+            return tmpl;
         } else {
             return null;
         }

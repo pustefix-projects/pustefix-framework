@@ -27,7 +27,9 @@ import java.util.TreeSet;
 import org.apache.log4j.Category;
 
 /**
- * Additional dependency besides XML and XSL source. 
+ * Additional dependency besides XML and XSL source.
+ * For dependencies of type TARGET, path stores the TargetGenerator and
+ * part the target name.
  */
 public class AuxDependency implements Comparable {
     
@@ -62,31 +64,46 @@ public class AuxDependency implements Comparable {
     public String getTheme() { return theme; }
     
     public long getModTime() {
-        File check = path.resolve();
-        if (check.exists() && check.canRead() && check.isFile()) {
-            if (last_lastModTime == 0) {
-                // We change from the file being checked once to not exist to "it exists now".
-                // so we need to make sure that all targets using it will be rebuild.
-                TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
-                for (Iterator i = targets.iterator(); i.hasNext(); ) {
-                    VirtualTarget target = (VirtualTarget) i.next();
-                    target.setForceUpdate();
-                }
+        if (this.getType() == DependencyType.TARGET) {
+            Target target = null;
+            try {
+                target = TargetGeneratorFactory.getInstance().createGenerator(this.path).getTarget(this.part);
+            } catch (Exception e) {
+                last_lastModTime = 0;
             }
-            last_lastModTime = check.lastModified();
+            if (target == null) {
+                last_lastModTime = 0;
+            } else {
+                last_lastModTime = target.getModTime();
+            }
             return last_lastModTime;
         } else {
-            if (last_lastModTime > 0) {
-                // The file existed when last check has been made,
-                // so make sure each target using it is being rebuild
-                TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
-                for (Iterator i = targets.iterator(); i.hasNext(); ) {
-                    VirtualTarget target = (VirtualTarget) i.next();
-                    target.setForceUpdate();
+            File check = path.resolve();
+            if (check.exists() && check.canRead() && check.isFile()) {
+                if (last_lastModTime == 0) {
+                    // We change from the file being checked once to not exist to "it exists now".
+                    // so we need to make sure that all targets using it will be rebuild.
+                    TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
+                    for (Iterator i = targets.iterator(); i.hasNext(); ) {
+                        VirtualTarget target = (VirtualTarget) i.next();
+                        target.setForceUpdate();
+                    }
                 }
+                last_lastModTime = check.lastModified();
+                return last_lastModTime;
+            } else {
+                if (last_lastModTime > 0) {
+                    // The file existed when last check has been made,
+                    // so make sure each target using it is being rebuild
+                    TreeSet targets = TargetDependencyRelation.getInstance().getAffectedTargets(this);
+                    for (Iterator i = targets.iterator(); i.hasNext(); ) {
+                        VirtualTarget target = (VirtualTarget) i.next();
+                        target.setForceUpdate();
+                    }
+                }
+                last_lastModTime = 0;
+                return 0;
             }
-            last_lastModTime = 0;
-            return 0;
         }
     }
 

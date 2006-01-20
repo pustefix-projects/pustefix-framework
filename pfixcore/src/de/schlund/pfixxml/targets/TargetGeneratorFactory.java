@@ -46,7 +46,7 @@ public class TargetGeneratorFactory {
                 generator = new TargetGenerator(cfilepath);
                 generatormap.put(key, generator);
             } else {
-                generator.tryReinit(cfilepath);
+                generator.tryReinit();
             }
             return generator;
         } else {
