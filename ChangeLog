@@ -1,3 +1,11 @@
+2006-01-21  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixxml/ServletManager.java (ServletManager::doCookieTest): 
+	check the session if it's already marked and then only look for a test cookie with _any_ value,
+	else we need to make sure the right value is there
+	(ServletManager::createTestCookie): the cookie now always has the same name, the value is a random value.
+	(ServletManager::doGet): no longer to mark the sesison here. 
+
 2006-01-20  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/ImageImpl.java: 
@@ -40,7 +48,7 @@
 	aux dependency manager of the generated target
 	
 	* src/de/schlund/pfixxml/targets/AuxDependency.java: 
-	Handling aux dependencies of type target	
+	Handling aux dependencies of type target
 	
 	* src/de/schlund/pfixxml/targets/AuxDependencyManager.java (addDependency): 
 	Handling target type dependencies and dependendencies for leaf targets, the

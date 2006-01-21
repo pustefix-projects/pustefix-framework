@@ -183,6 +183,8 @@ public abstract class ServletManager extends HttpServlet {
             }
             if (!does_cookies) {
                 CAT.debug("*** Client doesn't use cookies...");
+                // We still need to check if the session itself thinks differently -
+                // this happens e.g. when cookies are disabled in the middle of the session.
                 Boolean need_cookies = (Boolean) session.getAttribute(SESSION_COOKIES_MARKER);
                 if (need_cookies != null && need_cookies.booleanValue()) {
                     if (cookie_security_not_enforced) {
@@ -198,13 +200,7 @@ public abstract class ServletManager extends HttpServlet {
                     CAT.debug("    ... and during the session cookies were DISABLED, too: Let's hope everything is OK...");
                 }
             } else {
-                if (session.getAttribute(SESSION_COOKIES_MARKER) != null &&
-                    ((Boolean) session.getAttribute(SESSION_COOKIES_MARKER)).equals(Boolean.TRUE)) {
-                    CAT.debug("*** Client uses cookies.");
-                } else {
-                    CAT.debug("*** Client uses cookies: Mark the session accordingly.");
-                    session.setAttribute(SESSION_COOKIES_MARKER, Boolean.TRUE);
-                }
+                CAT.debug("*** Client uses cookies.");
             }
             if (has_session) {
                 if (runningUnderSSL(req)) {
@@ -584,23 +580,52 @@ public abstract class ServletManager extends HttpServlet {
         if (sess == null) {
             sess = req.getSession(false);
         }
+        // If in this session the client has been found to do cookies already, don't check the test
+        // cookie value again.  We still have to check if there are any cookies at all (a
+        // test cookie should be there, but maybe the wrong value because another session is
+        // opened in parallel), because we need to guard against clients which supply cookies over
+        // the whole redirect chain, but don't supply cookies on the following request, and we want
+        // to correctly react on people who turn off cookies during the session.
         if (sess != null) {
+            CAT.debug("*** Testing for marked session...");
+            Cookie[] cookies            = req.getCookies();
+            boolean  sessionusescookies = false;
+            Boolean  doescookies        = (Boolean) sess.getAttribute(SESSION_COOKIES_MARKER);
+            if (doescookies != null && doescookies.booleanValue()) {
+                sessionusescookies = true;
+                CAT.debug("    ...session is already marked as using cookies, looking for ANY test cookie...");
+            } else {
+                CAT.debug("    ...session is NOT already marked as using cookies!");
+            }
+            
             String rand = (String) sess.getAttribute(RAND_SESS_COOKIE_VALUE);
             if (rand != null) {
-                CAT.debug("*** Testing for cookie " + TEST_COOKIE + rand + "...");
-                Cookie[] cookies = req.getCookies();
+                CAT.debug("*** Testing for cookie " + TEST_COOKIE + "...");
                 if (cookies != null) {
                     for (int i = 0; i < cookies.length ; i++) {
                         Cookie cookie = cookies[i];
-                        if (cookie.getName().equals(TEST_COOKIE + rand)) {
-                            CAT.debug("    ... found it!");
-                            return true;
+                        if (cookie.getName().equals(TEST_COOKIE)) {
+                            if (sessionusescookies) {
+                                // No need to check the value...
+                                CAT.debug("    ... found it, no need to check the value (because session is marked).");
+                                return true;
+                            } else {
+                                CAT.debug("    ... found it, checking value " + rand);
+                                if (cookie.getValue().equals(rand)) {
+                                    CAT.debug("    ... value matches! Marking session...");
+                                    sess.setAttribute(SESSION_COOKIES_MARKER, Boolean.TRUE);
+                                    return true;
+                                } else {
+                                    CAT.debug("    ... value is WRONG.");
+                                }
+                            }
+                            break;
                         }
                     }
                     CAT.debug("*** Client sends cookies, but not our test cookie! ***");
                 }
             }
-        } 
+        }
         return false;
     }
 
@@ -615,7 +640,7 @@ public abstract class ServletManager extends HttpServlet {
                 rand = Long.toHexString((long) (Math.random() * Long.MAX_VALUE));
                 CAT.debug("*** Creating a random test cookie name: " + rand);
             }
-            Cookie newprobe = new Cookie(TEST_COOKIE + rand, "TRUE");
+            Cookie newprobe = new Cookie(TEST_COOKIE, rand);
             newprobe.setPath("/");
             res.addCookie(newprobe);
             sess.setAttribute(RAND_SESS_COOKIE_VALUE, rand);
