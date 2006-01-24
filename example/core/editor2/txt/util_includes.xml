@@ -8,7 +8,12 @@
             (<span onClick="pfx_editor_expandAllDirectories()">Expand all</span>)
             (<span onClick="pfx_editor_collapseAllDirectories()">Collapse all</span>)
           </div>
-          <pfx:script>
+          <!-- 
+               pfx:script is not used here intentionally:
+               It caused problems with part names containing a double "-".
+               This fix is ugly, but it works...               
+          -->
+          <script language="javascript"><ixsl:text disable-output-escaping="yes"><![CDATA[<!--]]></ixsl:text>
             var pfx_editor_sessid = "<ixsl:value-of select="$__sessid"/>";
             var pfx_editor_inc_root = new pfx_editor_TreeRoot(document.getElementById("editor_includes_sidebar_content"));
             var pfx_editor_inc_dir = false;
@@ -52,7 +57,7 @@
             if (pfx_editor_scrollElement) {
               window.scrollTo(0, pfx_editor_scrollElement.offsetTop - 50);
             }
-          </pfx:script>
+          <ixsl:text disable-output-escaping="yes"><![CDATA[-->]]></ixsl:text></script>
         </div>
       </lang>
     </product>

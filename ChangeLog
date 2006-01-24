@@ -1,3 +1,8 @@
+2006-01-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* example/core/editor2/txt/util_includes.xml: Fixed problem with
+	include part names containing a "--"
+
 2006-01-21  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixxml/ServletManager.java (ServletManager::doCookieTest): 
