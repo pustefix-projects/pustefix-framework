@@ -1,3 +1,9 @@
+2006-01-26  Martin Leidig  <mleidig@schlund.de>
+
+	* ./example/core/build/create_defaultwebxml.xsl: Now works again (also for Tomcat 5.5+).
+	Fixed element matching problem for web-apps version 2.4 (with xsd and namespaces, which
+	were not handled by the old xsl template)
+
 2006-01-24  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* example/core/editor2/txt/util_includes.xml: Fixed problem with
