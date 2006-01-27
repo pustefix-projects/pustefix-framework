@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:j2ee="http://java.sun.com/xml/ns/j2ee" xmlns="http://java.sun.com/xml/ns/j2ee">
+<xsl:stylesheet version="1.1"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:j2ee="http://java.sun.com/xml/ns/j2ee" xmlns="http://java.sun.com/xml/ns/j2ee">
 
   <xsl:output method="xml" encoding="ISO-8859-1" />
 
   <xsl:template match="/">
-  	<xsl:apply-templates/>
+    <xsl:apply-templates/>
   </xsl:template>
   
   <xsl:template match="node()|@*">
@@ -13,7 +15,7 @@
       <xsl:apply-templates/>
     </xsl:copy>
   </xsl:template>
-
+  
   <!-- web-app_2_3.dtd version -->
   <xsl:template match="init-param[param-name='listings']">
     <xsl:element name="init-param" namespace="">
