@@ -79,7 +79,7 @@ public class IWrapperIndexedParam implements IWrapperParamDefinition, Comparable
         String wholename = prefix + "." + name;
         for (Iterator i = req.getParameterNames(); i.hasNext(); ) {
             String pname = (String) i.next();
-            if (pname.startsWith(wholename)) {
+            if (pname.startsWith(wholename + ".")) {
                 // Now initialize the IWrapperParams
                 String idx = pname.substring(wholename.length() + 1);
                 CAT.debug("~~~ Found index: " + idx + " for IndexedParam " + name);

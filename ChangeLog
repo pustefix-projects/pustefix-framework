@@ -1,3 +1,9 @@
+2006-01-27  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java (IWrapperIndexedParam::initValueFromRequest): 
+	we need to check for a parameter name if it starts with "SomeName." not "SomeName" to be sure that we 
+	have a indexed parameter! Shame on me, that's a very old one...
+
 2006-01-26  Martin Leidig  <mleidig@schlund.de>
 
 	* ./example/core/build/create_defaultwebxml.xsl: Now works again (also for Tomcat 5.5+).
