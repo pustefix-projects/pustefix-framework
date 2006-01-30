@@ -326,7 +326,20 @@ public abstract class CommonIncludesResourceImpl implements
         }
         return this.selectedIncludePart.getMD5();
     }
-
+    
+    private boolean checkLineNotEmpty(CharSequence seq) {
+        if (seq.length() == 0) {
+            return false;
+        }
+        for (int i = 0; i < seq.length(); i++) {
+            char c = seq.charAt(i);
+            if (c != ' ') {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public String getContent() {
         if (this.selectedIncludePart == null) {
             return "";
@@ -357,63 +370,8 @@ public abstract class CommonIncludesResourceImpl implements
             char c = serialized.charAt(i);
             output.append(this.unicodeTranslate(c));
         }
-
-        // Remove empty lines
-        StringBuffer lineBuffer = new StringBuffer();
-        StringBuffer output2 = new StringBuffer();
-        for (int i = 0; i < output.length(); i++) {
-            if (output.charAt(i) == '\r') {
-                if (output.charAt(i + 1) == '\n') {
-                    i++;
-                }
-                if (lineBuffer.length() != 0) {
-                    output2.append(lineBuffer);
-                    output2.append('\n');
-                }
-                lineBuffer.delete(0, lineBuffer.length());
-            } else if (output.charAt(i) == '\n') {
-                if (lineBuffer.length() != 0) {
-                    output2.append(lineBuffer);
-                    output2.append('\n');
-                }
-                lineBuffer.delete(0, lineBuffer.length());
-            } else {
-                lineBuffer.append(output.charAt(i));
-            }
-        }
-        // Append remaining chars in line buffer
-        // This is necessary as there may still be some
-        // content in the last line, without a newline
-        // at its end
-        if (lineBuffer.length() != 0) {
-            output2.append(lineBuffer);
-        }
-
-        // Get minimum number of leading spaces and remove the same
-        // number of leading spaces in each line
-        int spaceCount = -1;
-        int temporaryCount = 0;
-        for (int i = 0; i < output2.length(); i++) {
-            char c = output2.charAt(i);
-            if (c == ' ') {
-                temporaryCount++;
-            } else if (c == '\n') {
-                if (spaceCount == -1) {
-                    spaceCount = temporaryCount;
-                } else if (temporaryCount < spaceCount) {
-                    spaceCount = temporaryCount;
-                }
-                temporaryCount = 0;
-            }
-        }
-        if (spaceCount > 0) {
-            Pattern pattern = Pattern.compile("^ {" + spaceCount + "}",
-                    Pattern.MULTILINE);
-            Matcher matcher = pattern.matcher(output2);
-            return matcher.replaceAll("");
-        } else {
-            return output2.toString();
-        }
+        
+        return fixIndention(output, 0);
     }
 
     private String unicodeTranslate(char c) {
@@ -449,9 +407,9 @@ public abstract class CommonIncludesResourceImpl implements
             xmlcode.append(" xmlns:" + prefix + "=\"" + url + "\"");
         }
 
-        xmlcode.append(">\n");
-        xmlcode.append(content);
-        xmlcode.append("\n</part>");
+        xmlcode.append(">");
+        xmlcode.append(fixIndention(content, 6));
+        xmlcode.append("</part>");
         Document doc = Xml.parseStringMutable(xmlcode.toString());
 
         this.selectedIncludePart.setXML(doc.getDocumentElement());
@@ -554,5 +512,98 @@ public abstract class CommonIncludesResourceImpl implements
 
     protected boolean isFileOpen(String name) {
         return openFiles.contains(name);
+    }
+    
+    private int countLeadingSpaces(CharSequence line) {
+        for (int i = 0; i < line.length(); i++) {
+            if (line.charAt(i) != ' ') {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    private String fixIndention(CharSequence input, int targetIndentionLevel) {
+        StringBuffer temp = new StringBuffer();
+        
+        // Iterate over all lines, doing the following tasks
+        // - shorten lines containing only tabs and spaces to empty lines
+        // - calculate number of trailing spaces on all (non-empty) lines
+        // - convert \r and \r\n to \n
+        // - convert \t to double space
+        StringBuffer lineBuffer = new StringBuffer();
+        int maxSpaces = -1;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '\r' && (i + 1) < input.length() && input.charAt(i + 1) == '\n') {
+                i++;
+                c = '\n';
+            }
+            if (c == '\n' || c == '\r' || i == (input.length() - 1)) {
+                // End of line detected
+                // Handle special case where end of line is only end of string
+                if (c != '\n' && c != '\r') {
+                    lineBuffer.append(c);
+                }
+                
+                if (checkLineNotEmpty(lineBuffer)) {
+                    temp.append(lineBuffer);
+                    int spaces = countLeadingSpaces(lineBuffer);
+                    if (maxSpaces == -1) {
+                        maxSpaces = spaces;
+                    } else {
+                        maxSpaces = Math.min(spaces, maxSpaces);
+                    }
+                }
+                temp.append("\n");
+                lineBuffer.setLength(0);
+            } else if (c == '\t') {
+                lineBuffer.append("  ");
+            } else {
+                lineBuffer.append(c);
+            }
+        }
+        
+        // Remove leading empty lines
+        while (temp.length() > 0 && temp.charAt(0) == '\n') {
+            temp.deleteCharAt(0);
+        }
+        
+        // Remove trailing empty lines
+        while (temp.length() > 0 && temp.charAt(temp.length() - 1) == '\n') {
+            temp.deleteCharAt(temp.length() -1);
+        }
+        
+        // Iterate over all lines removing maxSpaces spaces and adding
+        // targetIndentionLevel spaces
+        StringBuffer output = new StringBuffer();
+        StringBuffer spacesToAdd = new StringBuffer();
+        for (int i = 0; i < targetIndentionLevel; i++) {
+            spacesToAdd.append(' ');
+        }
+        for (int i = 0; i < temp.length(); i++) {
+            char c = temp.charAt(i);
+            if (c == '\n' || i == (temp.length() - 1)) {
+                // End of line detected
+                // Handle special case where end of line is only end of string
+                if (c != '\n') {
+                    lineBuffer.append(c);
+                }
+                
+                output.append(spacesToAdd);
+                if (lineBuffer.length() > maxSpaces) {
+                    output.append(lineBuffer.substring(maxSpaces));
+                }
+                output.append("\n");
+                lineBuffer.setLength(0);
+            } else {
+                lineBuffer.append(c);
+            }
+        }
+        
+        // Remove last trailing newline
+        output.deleteCharAt(output.length() -1);
+        
+        return output.toString();
     }
 }
