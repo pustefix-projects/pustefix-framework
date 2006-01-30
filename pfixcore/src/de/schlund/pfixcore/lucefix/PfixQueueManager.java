@@ -135,9 +135,12 @@ public class PfixQueueManager implements Runnable {
                                     // add the new
                                     Document newDoc = cache
                                             .getDocument(current);
+                                    reader.delete(term);
+                                    if (newDoc == null) {
+                                        continue queueloop;
+                                    }
                                     documents2write.add(newDoc);
                                     cache.remove(newDoc);
-                                    reader.delete(term);
                                     updated++;
                                 }
                             } else {
