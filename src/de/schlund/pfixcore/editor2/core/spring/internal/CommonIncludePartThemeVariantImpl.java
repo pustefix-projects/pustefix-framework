@@ -58,7 +58,8 @@ import de.schlund.pfixxml.util.Xml;
  */
 public abstract class CommonIncludePartThemeVariantImpl extends
         AbstractIncludePartThemeVariant {
-
+    private final static String XML_THEME_TAG_NAME = "product";
+    
     private Theme theme;
 
     private IncludePart part;
@@ -129,7 +130,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
             return null;
         }
         try {
-            return XPath.selectNode(parentXml, "product[@name='"
+            return XPath.selectNode(parentXml, XML_THEME_TAG_NAME + "[@name='"
                     + this.getTheme().getName() + "']");
         } catch (TransformerException e) {
             // Should NEVER happen
@@ -195,7 +196,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 // Keep proper indention level
                 temp = doc.createTextNode("\n    ");
                 part.appendChild(temp);
-                theme = doc.createElement("product");
+                theme = doc.createElement(XML_THEME_TAG_NAME);
                 part.appendChild(theme);
                 temp = doc.createTextNode("\n  ");
                 part.appendChild(temp);
@@ -249,7 +250,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     part.appendChild(temp);
                 }
                 try {
-                    theme = (Element) XPath.selectNode(part, "product[@name='"
+                    theme = (Element) XPath.selectNode(part, XML_THEME_TAG_NAME + "[@name='"
                             + this.getTheme().getName() + "']");
                 } catch (TransformerException e) {
                     // Should never happen as a DOM document is always
@@ -260,7 +261,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 }
                 if (theme == null) {
                     // No branch for this theme - create it
-                    theme = doc.createElement("product");
+                    theme = doc.createElement(XML_THEME_TAG_NAME);
                     theme.setAttribute("name", this.getTheme().getName());
                     // Keep indention
                     Node temp = doc.createTextNode("  ");
@@ -275,7 +276,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     // Replace node
                     Node oldTheme = theme;
                     Document parentdoc = oldTheme.getOwnerDocument();
-                    theme = parentdoc.createElement("product");
+                    theme = parentdoc.createElement(XML_THEME_TAG_NAME);
                     theme.setAttribute("name", this.getTheme().getName());
                     Node parent = oldTheme.getParentNode();
                     // Insert at right location to keep indention

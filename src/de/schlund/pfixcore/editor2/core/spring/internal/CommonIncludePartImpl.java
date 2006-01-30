@@ -238,7 +238,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
             return false;
         }
         try {
-            return XPath.test(this.getContentXML(), "product[@name='"
+            return XPath.test(this.getContentXML(), XML_THEME_TAG_NAME + "[@name='"
                     + theme.getName() + "']");
         } catch (TransformerException e) {
             // Should NEVER happen
@@ -325,7 +325,7 @@ public abstract class CommonIncludePartImpl extends AbstractIncludePart {
                     }
                     try {
                         theme = (Element) XPath.selectNode(part,
-                                "product[@name='"
+                                XML_THEME_TAG_NAME + "[@name='"
                                         + variant.getTheme().getName() + "']");
                     } catch (TransformerException e) {
                         // Should never happen as a DOM document is always
