@@ -54,7 +54,7 @@ import de.schlund.pfixxml.util.XPath;
  * @author Sebastian Marsching <sebastian.marsching@1und1.de>
  */
 public abstract class CommonIncludePartImpl extends AbstractIncludePart {
-    private final static String XML_THEME_TAG_NAME = "product";
+    private final static String XML_THEME_TAG_NAME = "theme";
 
     private IncludeFile file;
 

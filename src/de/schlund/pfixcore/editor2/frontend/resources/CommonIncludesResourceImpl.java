@@ -346,7 +346,7 @@ public abstract class CommonIncludesResourceImpl implements
         }
         Node xml = this.selectedIncludePart.getXML();
         if (xml == null) {
-            return "<lang name=\"default\">\n  \n</lang>";
+            return "";
         }
 
         // Make sure xmlns declarations are present in top-level element
