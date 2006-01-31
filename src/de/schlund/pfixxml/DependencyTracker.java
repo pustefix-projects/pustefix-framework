@@ -31,7 +31,7 @@ public class DependencyTracker {
     
     /** xslt extension */
     public static String logImage(Context context, String path,
-                                  String parent_part_in, String parent_product_in,
+                                  String parent_part_in, String parent_theme_in,
                                   String targetGen, String targetKey, String type) throws Exception {
 
         if (targetKey.equals("__NONE__")) {
@@ -42,14 +42,14 @@ public class DependencyTracker {
         TargetGenerator gen       = TargetGeneratorFactory.getInstance().createGenerator(tgen_path);
         VirtualTarget   target    = (VirtualTarget) gen.getTarget(targetKey);
 
-        String parent_path    = "";
-        String parent_part    = "";
-        String parent_product = "";
+        String parent_path  = "";
+        String parent_part  = "";
+        String parent_theme = "";
 
         if (IncludeDocumentExtension.isIncludeDocument(context)) {
-            parent_path     = IncludeDocumentExtension.makeSystemIdRelative(context);
-            parent_part     = parent_part_in;
-            parent_product  = parent_product_in;
+            parent_path  = IncludeDocumentExtension.makeSystemIdRelative(context);
+            parent_part  = parent_part_in;
+            parent_theme = parent_theme_in;
         }
         
         if (target == null) {
@@ -63,7 +63,7 @@ public class DependencyTracker {
         Path relativePath   = PathFactory.getInstance().createPath(path);
         Path relativeParent = parent_path.equals("") ? null : PathFactory.getInstance().createPath(parent_path);
         try {
-            logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_product, target);
+            logTyped(type, relativePath, "", "", relativeParent, parent_part, parent_theme, target);
             return "0";
         } catch (Exception e) {
             CAT.error("Error adding Dependency: ",e); 
@@ -71,26 +71,26 @@ public class DependencyTracker {
         }
     }
     
-    public static void logTyped(String type,Path path, String part, String product,
-                                Path parent_path, String parent_part, String parent_product,
+    public static void logTyped(String type,Path path, String part, String theme,
+                                Path parent_path, String parent_part, String parent_theme,
                                 VirtualTarget target) {
         if (CAT.isDebugEnabled()) {
             String project = target.getTargetGenerator().getName();
             CAT.debug("Adding dependency to AuxdependencyManager :+\n"+
-                      "Type        = " + type + "\n" +
-                      "Path        = " + path.getRelative() + "\n" +
-                      "Part        = " + part + "\n" +
-                      "Product     = " + product + "\n" +
-                      "ParentPath  = " + ((parent_path == null)? "null" : parent_path.getRelative()) + "\n" +
-                      "ParentPart  = " + parent_part + "\n" +
-                      "ParentProd  = " + parent_product + "\n" +
-                      "Project     = " + project + "\n");
+                      "Type       = " + type + "\n" +
+                      "Path       = " + path.getRelative() + "\n" +
+                      "Part       = " + part + "\n" +
+                      "Theme      = " + theme + "\n" +
+                      "ParentPath = " + ((parent_path == null)? "null" : parent_path.getRelative()) + "\n" +
+                      "ParentPart = " + parent_part + "\n" +
+                      "ParentProd = " + parent_theme + "\n" +
+                      "Project    = " + project + "\n");
         }
         DependencyType  thetype   = DependencyType.getByTag(type);
         if (thetype == DependencyType.TEXT) {
-            target.getAuxDependencyManager().addDependencyInclude(path, part, product, parent_path, parent_part, parent_product);
+            target.getAuxDependencyManager().addDependencyInclude(path, part, theme, parent_path, parent_part, parent_theme);
         } else if (thetype == DependencyType.IMAGE) {
-            target.getAuxDependencyManager().addDependencyImage(path, parent_path, parent_part, parent_product);
+            target.getAuxDependencyManager().addDependencyImage(path, parent_path, parent_part, parent_theme);
         } else {
             throw new RuntimeException("Unknown dependency type '" + type + "'!");
         }

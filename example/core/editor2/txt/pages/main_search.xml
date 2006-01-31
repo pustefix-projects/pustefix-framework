@@ -2,8 +2,7 @@
   
   <part name="content">
     
-  <product name="default">
-<lang name="default">
+  <theme name="default">
         <center>
 <!--<img src="http://lucene.apache.org/java/docs/images/lucene_green_300.gif"/>-->
           <pfx:forminput>
@@ -69,7 +68,7 @@
                      <td nowrap="nowrap"><pfx:xinp name="lucefix.Attribvalues" type="text"/></td>
                     </tr>
                     <tr>
-                      <td align="right" colspan="2"><pfx:xinp type="submit" value="Submit" class="editor_submit">
+                      <td align="right" colspan="2"><pfx:xinp class="editor_submit" type="submit" value="Submit">
               <pfx:argument name="lucefix.Doit">true</pfx:argument>
             </pfx:xinp>  </td>
                     </tr>
@@ -77,7 +76,7 @@
             <br/>
               <ixsl:choose>
                 <ixsl:when test="count(/formresult/lucefix/hit) &gt; 0">
-                  <table><tr><td class="editor_main_emph">Matches for &quot;<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>&quot;:</td></tr></table>
+                  <table><tr><td class="editor_main_emph">Matches for "<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>":</td></tr></table>
                   <table class="editor_box">
             <ixsl:for-each select="/formresult/lucefix/hit">
             <ixsl:variable name="class">
@@ -89,16 +88,13 @@
               <tr><td class="{$class}">
                 <pfx:button page="includes">
 				  <ixsl:value-of select="@filename"/>/<ixsl:value-of select="@part"/>@<ixsl:value-of select="@product"/>
-                  <pfx:argument name="selectinclude.Path"><ixsl:value-of
-                      select="@filename"/></pfx:argument>
-                  <pfx:argument name="selectinclude.Part"><ixsl:value-of
-                      select="@part"/></pfx:argument>
-                  <pfx:argument name="selectinclude.Theme"><ixsl:value-of
-                      select="@product"/></pfx:argument>
+                  <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@filename"/></pfx:argument>
+                  <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
+                  <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@product"/></pfx:argument>
                   <pfx:command name="SELWRP">selectinclude</pfx:command>
                   <pfx:command name="SELWRP">upload</pfx:command>
                 </pfx:button></td><td class="{$class}">
-                <pfx:image src="/core/editor2/img/score.png" height="10">
+                <pfx:image height="10" src="/core/editor2/img/score.png">
                   <ixsl:attribute name="alt"><ixsl:value-of select="@score"/></ixsl:attribute>
                   <ixsl:attribute name="title"><ixsl:value-of select="@score"/></ixsl:attribute>
                   <ixsl:attribute name="width"><ixsl:value-of select="round(number(@score) * 100)"/></ixsl:attribute>
@@ -111,17 +107,16 @@
                   <table class="editor_box">
                   <tr>
                     <td colspan="2">
-            <b>No matches for &quot;<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>&quot;</b>
+            <b>No matches for "<ixsl:value-of select="/formresult/lucefix/@lastQuery"/>"</b>
                     </td>
                   </tr>
                     </table>
                 </ixsl:when>
               </ixsl:choose>
           </pfx:forminput>
-          <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image src="/core/editor2/img/lucene.png" border="0"/></pfx:elink>
+          <pfx:elink href="http://lucene.apache.org/" target="_blank"><pfx:image border="0" src="/core/editor2/img/lucene.png"/></pfx:elink>
         </center>
-      </lang>
-</product></part>
+      </theme></part>
 
 
 </include_parts><!--

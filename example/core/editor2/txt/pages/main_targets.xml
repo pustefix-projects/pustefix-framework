@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
-               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
           <pfx:checkerror>
             <br/>
@@ -36,10 +33,10 @@
             </ixsl:for-each>
             <displayauxfiles_of_target/>
             <ixsl:for-each select="/formresult/targets/currenttarget/includes">
-              <pfx:include part="displayincludes" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/targets/currenttarget/images">
-              <pfx:include part="displayimages" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
             </ixsl:for-each>
             <div> 
               <table><tr><td class="editor_main_emph">Content:</td></tr></table>
@@ -55,22 +52,18 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="sidebar">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:include part="displayalltargets"/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayalltargets">
-    <product name="default">
-      <lang name="default">
-        <table width="100%" class="editor_sidebar_content">
+    <theme name="default">
+        <table class="editor_sidebar_content" width="100%">
           <ixsl:for-each select="/formresult/targets/target">
             <ixsl:sort select="@name"/>
             <tr>
@@ -88,9 +81,9 @@
                 <ixsl:if test="@selected='true'">
                   <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
                 </ixsl:if>
-                <pfx:button page="targets" mode="force">
+                <pfx:button mode="force" page="targets">
                   <pfx:argument name="selecttarget.TargetName"><ixsl:value-of select="@name"/></pfx:argument>
-                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                  <pfx:anchor frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                   <span>
                     <ixsl:attribute name="style">font-weight: bold;</ixsl:attribute>
                     <ixsl:value-of select="@name"/>
@@ -111,12 +104,12 @@
 	                    <ixsl:attribute name="class">editor_sidebar_content_sel</ixsl:attribute>
 	                  </ixsl:if>
 	                  <ixsl:variable name="ind">
-	                    <ixsl:for-each select="ancestor::target">&#160;&#160;&#160;&#160;&#160;</ixsl:for-each>
+	                    <ixsl:for-each select="ancestor::target">     </ixsl:for-each>
 	                  </ixsl:variable>
 	                  <ixsl:copy-of select="$ind"/>
-	                  <pfx:button page="targets" mode="force">
+	                  <pfx:button mode="force" page="targets">
 	                    <pfx:argument name="selecttarget.TargetName"><ixsl:value-of select="@name"/></pfx:argument>
-	                    <pfx:anchor   frame="left_navi"><ixsl:value-of select="ancestor::target[position() = $counter]/@name"/></pfx:anchor>
+	                    <pfx:anchor frame="left_navi"><ixsl:value-of select="ancestor::target[position() = $counter]/@name"/></pfx:anchor>
 	                    <span>
 	                      <ixsl:if test="not(./target)">
 	                        <ixsl:attribute name="style">font-style: italic;</ixsl:attribute>
@@ -130,30 +123,26 @@
             </ixsl:for-each>
           </ixsl:for-each>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaycurrenttarget">
-    <product name="default">
-      <lang name="default">
-        <div class="editor_main_emph" align="right">
+    <theme name="default">
+        <div align="right" class="editor_main_emph">
           [TARGET: <ixsl:value-of select="/formresult/targets/currenttarget/@name"/>]
         </div>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaytargetdetails">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table><tr><td class="editor_main_emph">Parents:</td></tr></table>
-        <table width="100%" class="editor_box">
+        <table class="editor_box" width="100%">
           <tr>
             <td>
               <table><tr><td><b>
-                      XML source: <pfx:button page="targets" mode="force">
+                      XML source: <pfx:button mode="force" page="targets">
                         <pfx:argument name="selecttarget.TargetName">
                           <ixsl:value-of select="/formresult/targets//target[@name=/formresult/targets/currenttarget/@name]/target[@type='xml']/@name"/>
                         </pfx:argument>
@@ -163,7 +152,7 @@
             </td> 
             <td>
               <table><tr><td><b>
-                      XSL source: <pfx:button page="targets" mode="force">
+                      XSL source: <pfx:button mode="force" page="targets">
                         <pfx:argument name="selecttarget.TargetName">
                           <ixsl:value-of select="/formresult/targets//target[@name=/formresult/targets/currenttarget/@name]/target[@type='xsl']/@name"/>
                         </pfx:argument>
@@ -177,7 +166,7 @@
         <ixsl:if test="/formresult/targets/currenttarget/param">
           <br/>
           <table><tr><td class="editor_main_emph">Applied parameters:</td></tr></table>
-          <table width="100%" class="editor_box">
+          <table class="editor_box" width="100%">
             <ixsl:for-each select="/formresult/targets/currenttarget/param">
               <ixsl:variable name="class">
                 <ixsl:choose>
@@ -198,15 +187,13 @@
           </table>
         </ixsl:if>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayauxfiles_of_target">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table><tr><td class="editor_main_emph">Additional dependencies:</td></tr></table>
-        <table width="100%" class="editor_box">
+        <table class="editor_box" width="100%">
           <ixsl:for-each select="/formresult/targets//target[@selected='true']">
             <ixsl:if test="position() = 1">
               <ixsl:for-each select="target[@type='aux']">
@@ -222,9 +209,9 @@
                   <td nowrap="nowrap">
                     <ixsl:choose>
                       <ixsl:when test="/formresult/targets//target[@name = $tmpname]/target">
-				                <pfx:button page="targets" mode="force">
+				                <pfx:button mode="force" page="targets">
 				                  <pfx:argument name="selecttarget.TargetName"><ixsl:value-of select="@name"/></pfx:argument>
-				                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+				                  <pfx:anchor frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
 				                  <ixsl:value-of select="@name"/>
 				                </pfx:button>
 				              </ixsl:when>
@@ -239,8 +226,7 @@
           </ixsl:for-each>
         </table>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
 
 </include_parts>

@@ -1,33 +1,31 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
 		<h1>Calculator service</h1>
 		
 		<div>
 		<h2>Pustefix SOAP</h2>
 		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
-		<p><span class="error" id="pfxsoap_error"></span></p>
-		<form name="pfxsoap" action="">
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="pfxsoap_error"/></p>
+		<form action="" name="pfxsoap">
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
-					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
 				</tr>
 				<tr>
-					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
 				</tr>
 				<tr>
-					<td colspan="2" align="center">
-						<input type="button"  onclick="pfxsoapCall('add',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" + "/>
-						<input type="button"  onclick="pfxsoapCall('subtract',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" - "/>
-						<input type="button"  onclick="pfxsoapCall('multiply',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" * "/>
-						<input type="button"  onclick="pfxsoapCall('divide',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" value=" / "/>
+					<td align="center" colspan="2">
+						<input onclick="pfxsoapCall('add',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" + "/>
+						<input onclick="pfxsoapCall('subtract',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" - "/>
+						<input onclick="pfxsoapCall('multiply',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" * "/>
+						<input onclick="pfxsoapCall('divide',document.pfxsoap.i1.value,document.pfxsoap.i2.value);" type="button" value=" / "/>
 					</td>
 				</tr>
 				<tr>
-					<td>Result:</td><td><input type="text" id="pfxsoap_result" readonly="readonly" size="8"/></td>
+					<td>Result:</td><td><input id="pfxsoap_result" readonly="readonly" size="8" type="text"/></td>
 				</tr>
 			</table>	
 		</form>
@@ -36,74 +34,74 @@
 		<div name="gecko_disp" style="display:none">
 		<h2>Mozilla low-level SOAP</h2>
 		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
-		<p><span class="error" id="soap_error"></span></p>
-		<form name="mozsoap" action="">
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="soap_error"/></p>
+		<form action="" name="mozsoap">
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
-					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
 				</tr>
 				<tr>
-					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
 				</tr>
 				<tr>
-					<td colspan="2" align="center">
-						<input type="button"  onclick="mozsoapCall('add',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" + "/>
-						<input type="button"  onclick="mozsoapCall('subtract',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" - "/>
-						<input type="button"  onclick="mozsoapCall('multiply',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" * "/>
-						<input type="button"  onclick="mozsoapCall('divide',document.mozsoap.i1.value,document.mozsoap.i2.value);" value=" / "/>
+					<td align="center" colspan="2">
+						<input onclick="mozsoapCall('add',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" + "/>
+						<input onclick="mozsoapCall('subtract',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" - "/>
+						<input onclick="mozsoapCall('multiply',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" * "/>
+						<input onclick="mozsoapCall('divide',document.mozsoap.i1.value,document.mozsoap.i2.value);" type="button" value=" / "/>
 					</td>
 				</tr>
 				<tr>
-					<td>Result:</td><td><input type="text" id="soap_result" readonly="readonly" size="8"/></td>
+					<td>Result:</td><td><input id="soap_result" readonly="readonly" size="8" type="text"/></td>
 				</tr>
 			</table>	
 		</form>
 		
 		<h2>Mozilla WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
-		<p><span class="error" id="wsdl_error"></span></p>
-		<form name="mozproxy" action="">
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="wsdl_error"/></p>
+		<form action="" name="mozproxy">
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
-					<td>Value 1:</td><td><input type="text" name="i1" value="3" size="8"/></td>
+					<td>Value 1:</td><td><input name="i1" size="8" type="text" value="3"/></td>
 				</tr>
 				<tr>
-					<td>Value 2:</td><td><input type="text" name="i2" value="7" size="8"/></td>
+					<td>Value 2:</td><td><input name="i2" size="8" type="text" value="7"/></td>
 				</tr>
 				<tr>
-					<td colspan="2" align="center">
-						<input type="button"  onclick="wsdlCall('add',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" + "/>
-						<input type="button"  onclick="wsdlCall('subtract',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" - "/>
-						<input type="button"  onclick="wsdlCall('multiply',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" * "/>
-						<input type="button"  onclick="wsdlCall('divide',document.mozproxy.i1.value,document.mozproxy.i2.value);" value=" / "/>
+					<td align="center" colspan="2">
+						<input onclick="wsdlCall('add',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" + "/>
+						<input onclick="wsdlCall('subtract',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" - "/>
+						<input onclick="wsdlCall('multiply',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" * "/>
+						<input onclick="wsdlCall('divide',document.mozproxy.i1.value,document.mozproxy.i2.value);" type="button" value=" / "/>
 					</td>
 				</tr>
 				<tr>
-					<td>Result:</td><td><input type="text" id="wsdl_result" readonly="readonly" size="8"/></td>
+					<td>Result:</td><td><input id="wsdl_result" readonly="readonly" size="8" type="text"/></td>
 				</tr>
 			</table>	
 		</form>
 		
 		<h2>Raw mySOAP over XMLHttpReqeuest</h2>
 		<p>Soap call took <span id="mysoap_time">0</span> ms.</p>
-		<textarea style="font-style:monospace;font-size:8pt" id="mysoap_request" cols="80" rows="10">
-<![CDATA[
-<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
+		<textarea cols="80" id="mysoap_request" rows="10" style="font-style:monospace;font-size:8pt">
+
+&lt;env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/"
               xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"
               env:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
               xmlns:xs="http://www.w3.org/1999/XMLSchema"
-              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">
-   <env:Header/>
-   <env:Body>
-      <a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de">
-         <a0:in0 xsi:type="xs:int">3</a0:in0>
-         <a0:in1 xsi:type="xs:int">7</a0:in1>
-      </a0:multiply>
-   </env:Body>
-</env:Envelope>
-]]>
+              xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"&gt;
+   &lt;env:Header/&gt;
+   &lt;env:Body&gt;
+      &lt;a0:multiply xmlns:a0="urn:webservices.example.pfixcore.schlund.de"&gt;
+         &lt;a0:in0 xsi:type="xs:int"&gt;3&lt;/a0:in0&gt;
+         &lt;a0:in1 xsi:type="xs:int"&gt;7&lt;/a0:in1&gt;
+      &lt;/a0:multiply&gt;
+   &lt;/env:Body&gt;
+&lt;/env:Envelope&gt;
+
 		</textarea>
-		<textarea style="font-style:monospace;font-size:8pt" id="mysoap_response" cols="80" rows="10">
+		<textarea cols="80" id="mysoap_response" rows="10" style="font-style:monospace;font-size:8pt">
 			
 		</textarea>
 		<p>
@@ -113,8 +111,7 @@
 		</div>
 		
 		
-      </lang>
-    </product>
+      </theme>
   </part>
   
   

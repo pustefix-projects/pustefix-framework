@@ -55,10 +55,9 @@ public final class IncludeDocumentExtension {
     //~ Instance/static variables
     // ..................................................................
     private static Category     CAT        = Category.getInstance(IncludeDocumentExtension.class.getName());
-    // private static final String DEF_THEME    = "default";
     private static final String NOTARGET   = "__NONE__";
     private static final String XPPARTNAME = "/include_parts/part[@name='";
-    private static final String XPPRODNAME = "/product[@name = '";
+    private static final String XTHEMENAME = "/theme[@name = '";
     private static final String XPNAMEEND  = "']";
     
     //~ Methods
@@ -77,24 +76,24 @@ public final class IncludeDocumentExtension {
      * @param targetkey
      * @param parent_path
      * @param parent_part
-     * @param parent_product
+     * @param parent_theme
      * @return a list of nodes understood by the current transformer(currently saxon)
      * @throws Exception on all errors
      */
     public static final Object get(Context context, String path_str, String part,
                                    String targetgen, String targetkey,
-                                   String parent_part_in, String parent_product_in, String computed_inc) throws Exception {
+                                   String parent_part_in, String parent_theme_in, String computed_inc) throws Exception {
 
         PathFactory pf              = PathFactory.getInstance();
         String      parent_path_str = "";
         String      parent_part     = "";
-        String      parent_product  = "";
+        String      parent_theme    = "";
         Path        tgen_path       = pf.createPath(targetgen);
         
         if (computed_inc.equals("false") && isIncludeDocument(context)) {
             parent_path_str = makeSystemIdRelative(context);
             parent_part     = parent_part_in;
-            parent_product  = parent_product_in;
+            parent_theme  = parent_theme_in;
         }
 
         if (path_str == null || path_str.equals("")) {
@@ -135,7 +134,7 @@ public final class IncludeDocumentExtension {
             if (!incfile.exists()) {
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 }
                 return errorNode(DEF_THEME);
                 //return new EmptyNodeSet();
@@ -146,7 +145,7 @@ public final class IncludeDocumentExtension {
             } catch (SAXException saxex) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 target.setStoredException(saxex);
                 throw saxex;
             }
@@ -158,7 +157,7 @@ public final class IncludeDocumentExtension {
             } catch (TransformerException e) {
                 if (dolog)
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 throw e;
             }
             length = ns.size();
@@ -167,7 +166,7 @@ public final class IncludeDocumentExtension {
                 CAT.debug("*** Part '" + part + "' is 0 times defined.");
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 }
                 return errorNode(DEF_THEME);
                 //return new EmptyNodeSet();
@@ -175,96 +174,46 @@ public final class IncludeDocumentExtension {
                 // too many parts. Error!
                 if (dolog) {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 }
                 XMLException ex = new XMLException("*** Part '" + part + "' is multiple times defined! Must be exactly 1");
                 target.setStoredException(ex);
                 throw ex;
             }
 
-            // OK, we have found the part. Find the specfic product branch matching the theme fallback list.
+            // OK, we have found the part. Find the specfic theme branch matching the theme fallback list.
             CAT.debug("   => Found part '" +  part + "'");
             
             for (int i = 0; i < themes.length; i++) {
 
                 String curr_theme = themes[i]; 
-                CAT.debug("     => Trying to find product branch for theme '" + curr_theme + "'");
+                CAT.debug("     => Trying to find theme branch for theme '" + curr_theme + "'");
                 
                 try {
-                    ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND + XPPRODNAME + curr_theme + XPNAMEEND);
+                    ns = XPath.select(doc, XPPARTNAME + part + XPNAMEEND + XTHEMENAME + curr_theme + XPNAMEEND);
                 } catch (TransformerException e) {
                     if (dolog)
                         DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                                   parent_path, parent_part, parent_product, target);
+                                                   parent_path, parent_part, parent_theme, target);
                     throw e;
                 }
                 length = ns.size();
                 if (length == 0) {
-//                     // Didn't find the specific product, trying default:
-//                     sb.delete(0, sb.length());
-//                     sb.append(XPPARTNAME).append(part).append(XPNAMEEND).append(XPPRODNAME).
-//                         append(DEF_THEME).append(XPNAMEEND);
-//                     try {
-//                         ns = XPath.select(doc, sb.toString());
-//                     } catch (TransformerException e) {
-//                         if (dolog)
-//                             DependencyTracker.logTyped("text", path, part, DEF_THEME,
-//                                                        parent_path, parent_part, parent_product, target);
-//                         throw e;
-//                     }
-//                     int len = ns.size();
-//                     if (len == 1 | len == 0) {
-//                         // Found one or none default products
-//                         boolean ok = true;
-//                         if (dolog) {
-//                             try {
-//                                 DependencyTracker.logTyped("text", path, part, DEF_THEME,
-//                                                            parent_path, parent_part, parent_product, target);
-//                             } catch (Exception e) { // TODO
-//                                 ok = false;
-//                             }
-//                         }
-//                         if (len == 0) {
-//                             // Specific product and default product not found.
-//                             // Warning!
-//                             sb.delete(0, sb.length());
-//                             sb.append("*** Product '").append(product).
-//                                 append("' is not accessible under part '").append(part).append("@").append(path).
-//                                 append("', and a default product is not defined either.");
-//                             CAT.warn(sb.toString());
-//                             return new EmptyNodeSet();
-//                         } else {
-//                             return ok? ns.get(0) : new EmptyNodeSet();
-//                         }
-//                     } else {
-//                         // too many default products found. Error!
-//                         if (dolog) {
-//                             DependencyTracker.logTyped("text", path, part, DEF_THEME,
-//                                                        parent_path, parent_part, parent_product, target);
-//                         }
-//                         sb.delete(0, sb.length());
-//                         sb.append("*** Part '").append(part).append("' has multiple default product branches! Must be 1.");
-//                         XMLException ex = new XMLException(sb.toString());
-//                         target.setStoredException(ex);
-//                         throw ex;
-//                     }
-
-                    
-                    // Didn't find a product part matching curr_theme, trying next in fallback line
+                    // Didn't find a theme part matching curr_theme, trying next in fallback line
                     if (i < (themes.length - 1)) {
-                        CAT.debug("        Part '" + part + "' has no product branch matching '" + curr_theme + "', trying next theme");
+                        CAT.debug("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', trying next theme");
                     } else {
-                        CAT.warn("        Part '" + part + "' has no product branch matching '" + curr_theme + "', no more theme to try!");
+                        CAT.warn("        Part '" + part + "' has no theme branch matching '" + curr_theme + "', no more theme to try!");
                     }
                     continue;
                 } else if (length == 1) {
-                    CAT.debug("        Found product branch '" + curr_theme + "' => STOP");
+                    CAT.debug("        Found theme branch '" + curr_theme + "' => STOP");
                     // specific theme found
                     boolean ok = true;
                     if (dolog) {
                         try {
                             DependencyTracker.logTyped("text", path, part, curr_theme,
-                                                       parent_path, parent_part, parent_product, target);
+                                                       parent_path, parent_part, parent_theme, target);
                         } catch (Exception e) {
                             // TODO
                             ok = false;
@@ -273,12 +222,12 @@ public final class IncludeDocumentExtension {
                     return ok? (Object) ns.get(0) : errorNode(curr_theme);
                     //return ok? (Object) ns.get(0) : new EmptyNodeSet();
                 } else {
-                    // too many specific products found. Error!
+                    // too many specific themes found. Error!
                     if (dolog) {
                         DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                                   parent_path, parent_part, parent_product, target);
+                                                   parent_path, parent_part, parent_theme, target);
                     }
-                    XMLException ex = new XMLException("*** Product branch '" + curr_theme +
+                    XMLException ex = new XMLException("*** Theme branch '" + curr_theme +
                                                        "' is defined multiple times under part '" + part + "@" + path + "'");
                     target.setStoredException(ex);
                     throw ex;
@@ -290,7 +239,7 @@ public final class IncludeDocumentExtension {
             if (dolog) {
                 try {
                     DependencyTracker.logTyped("text", path, part, DEF_THEME,
-                                               parent_path, parent_part, parent_product, target);
+                                               parent_path, parent_part, parent_theme, target);
                 } catch (Exception e) { // TODO
                     ok = false;
                 }
@@ -300,9 +249,9 @@ public final class IncludeDocumentExtension {
             
         } catch (Exception e) {
             Object[] args = {path_str, part, targetgen, targetkey, 
-                             parent_path_str, parent_part, parent_product};
+                             parent_path_str, parent_part, parent_theme};
             String sb = MessageFormat.format("path={0}|part={1}|targetgen={2}|targetkey={3}|"+
-                                             "parent_path={4}|parent_part={5}|parent_product={6}", args);
+                                             "parent_path={4}|parent_part={5}|parent_theme={6}", args);
             CAT.error("Caught exception in extension function! Params:\n"+ sb+"\n Stacktrace follows.");
             throw e;
         }

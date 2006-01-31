@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform"
-               xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
           <pagemsgs/>
           <pfx:forminput name="main" target="_top">
@@ -31,15 +28,13 @@
               </tr>
             </table>
           </pfx:forminput>
-          <br/>[<pfx:image themed-path="sample1/img" themed-img="test.gif"/>]
+          <br/>[<pfx:image themed-img="test.gif" themed-path="sample1/img"/>]
         </center>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="shirt">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table width="400">
           <tr>
             <td align="left">
@@ -49,7 +44,7 @@
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="shirt.Size"><td nowrap="nowrap" class="{$pfx_class}">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
+            <pfx:checkfield name="shirt.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [S,M,L,XL,XXL]</td></pfx:checkfield>
             <td>
               <pfx:xinp name="shirt.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -64,7 +59,7 @@
           <errormsg name="shirt.Size"/>
           <tr>
             <pfx:checkfield name="shirt.Color">
-              <td nowrap="nowrap" class="{$pfx_class}">Color-No.:</td>
+              <td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td>
             </pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="shirt.Color" size="3" type="text"/>
@@ -83,13 +78,11 @@
           <errormsg name="shirt.Feature"/>
         </table>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="counter">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed">
           <ixsl:choose>
             <ixsl:when test="/formresult/counter/@showcounter = 'false'">
@@ -142,13 +135,11 @@
             <td colspan="2"><i>Add to the Counter <br/>to see the "PageMessages" <br/>feature in action.</i></td>
           </tr>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="pic">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table bgcolor="#bbccff" class="boxed">
           <pfx:checkactive prefix="pic">
             <tr>
@@ -168,14 +159,12 @@
             </tr>
           </ixsl:if>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 
   <part name="trouser">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table width="400">
           <tr>
             <td align="left">
@@ -185,7 +174,7 @@
         </table>
         <table bgcolor="#bbccff" cellpadding="2" cellspacing="0" class="boxed" width="400">
           <tr>
-            <pfx:checkfield name="trouser.Size"><td nowrap="nowrap" class="{$pfx_class}">Size [M,L,XL]:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Size"><td class="{$pfx_class}" nowrap="nowrap">Size [M,L,XL]:</td></pfx:checkfield>
             <td>
               <pfx:xinp name="trouser.Size" type="select">
                 <pfx:option>--- Please Select ---</pfx:option>
@@ -198,7 +187,7 @@
           </tr>
           <errormsg name="trouser.Size"/>
           <tr>
-            <pfx:checkfield name="trouser.Color"><td nowrap="nowrap" class="{$pfx_class}">Color-No.:</td></pfx:checkfield>
+            <pfx:checkfield name="trouser.Color"><td class="{$pfx_class}" nowrap="nowrap">Color-No.:</td></pfx:checkfield>
             <td>
               <pfx:xinp maxlength="3" name="trouser.Color" size="3" type="text"/>
             </td>
@@ -214,8 +203,7 @@
           </tr>
           <errormsg name="trouser.Features"/>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

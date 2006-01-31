@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
-               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
 	        <pfx:checkerror>
 	          <pfx:checkfield name="selectinclude.Path">
@@ -58,7 +55,7 @@
           <ixsl:when test="/formresult/dynincludes/currentinclude">
             <pfx:include part="displaycurrentinclude"/>
             <ixsl:for-each select="/formresult/dynincludes">
-              <pfx:include part="displayincludedetails" href="core/editor2/txt/util_includes.xml"/>
+              <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
             </ixsl:for-each>
             <div>
               <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
@@ -81,32 +78,27 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="sidebar">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:script>
           var pfx_editor_pagename = "dynincludes";
         </pfx:script>
         <ixsl:for-each select="/formresult/dynincludes">
-          <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
+          <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
         </ixsl:for-each>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaycurrentinclude">
-    <product name="default">
-      <lang name="default">
-        <div class="editor_main_emph" align="right">
+    <theme name="default">
+        <div align="right" class="editor_main_emph">
           [DYNINCLUDE: <ixsl:value-of select="/formresult/dynincludes/currentinclude/@part"/>]
         </div>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
 
 </include_parts>

@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="logoutbutton">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:button page="logout" target="_top">Logout</pfx:button>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <div class="info">
         <h1>Hello, <ixsl:value-of select="/formresult/session/user/@fullname"/>.</h1>
 
@@ -26,8 +22,8 @@
             <ixsl:for-each select="/formresult/projects/project">
               <ixsl:sort select="./@name"/>
               <li>
-                <pfx:button normalclass="editor_submit" mode="force" jumptopage="home">
-                  <pfx:command  name="SELWRP">selectproject</pfx:command>
+                <pfx:button jumptopage="home" mode="force" normalclass="editor_submit">
+                  <pfx:command name="SELWRP">selectproject</pfx:command>
                   <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="./@name"/></pfx:argument>
                   <ixsl:value-of select="./@comment"/>
                 </pfx:button>
@@ -42,7 +38,7 @@
           <ul class="jobs">
             <li><pfx:button normalclass="editor_submit" page="sessionmanager">List running sessions</pfx:button></li>
             <li>
-            <pfx:button mode="force" normalclass="editor_submit" jumptopage="useredit" target="_top">
+            <pfx:button jumptopage="useredit" mode="force" normalclass="editor_submit" target="_top">
               <pfx:command name="SELWRP">selectuser</pfx:command>
               <pfx:argument name="selectuser.Username"><ixsl:value-of select="/formresult/session/user/@username"/></pfx:argument>
               Change your data
@@ -73,8 +69,7 @@
             </ul>
           </div>
         </ixsl:if>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

@@ -1,19 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <div class="box">
         <pfx:include part="welcome"/>
         </div>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="welcome">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <h1>What do you want to do?</h1>
         <p>
           Current project: 
@@ -21,7 +17,7 @@
         </p>
         <ul>
           <li>
-            <pfx:button page="pages" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="pages" target="_top">
               Pages
             </pfx:button>
             <br/>
@@ -30,7 +26,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="targets" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="targets" target="_top">
               Targets
             </pfx:button>
             <br/>
@@ -39,7 +35,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="images" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="images" target="_top">
               Images
             </pfx:button>
             <br/>
@@ -48,7 +44,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="includes" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="includes" target="_top">
               Includes
             </pfx:button>
             <br/>
@@ -57,7 +53,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="commons" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="commons" target="_top">
               DynIncludes
             </pfx:button>
             <br/>
@@ -66,7 +62,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="dynincludes" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="dynincludes" target="_top">
               Search
             </pfx:button>
             <br/>
@@ -74,7 +70,7 @@
             <br/><br/>
           </li>
           <li>
-            <pfx:button page="start" normalclass="editor_importantlink" target="_top">
+            <pfx:button normalclass="editor_importantlink" page="start" target="_top">
               <em>Select another project</em>
             </pfx:button>
             <br/>
@@ -82,8 +78,7 @@
             <br/><br/>
           </li>
         </ul>
-      </lang>
-    </product>
+      </theme>
   </part>
 
 </include_parts><!--

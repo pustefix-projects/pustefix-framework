@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:script>
           var base='<ixsl:value-of select="$__uri"/>?__frame=bottom&amp;__sendingdata=1&amp;text.Text=';
           var href=base+'<ixsl:value-of select="/formresult/text/original"/>';
@@ -32,23 +31,23 @@
           <table>
             <tr>
               <td align="left" valign="middle">
-                <pfx:forminput target="_top" method="get">
-                  <pfx:xinp id="text"  name="text.Text" type="text" default="abcdäöüß" onchange="setDynHref(this.value)"/>
-                  <ixsl:text>&#x20;</ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
+                <pfx:forminput method="get" target="_top">
+                  <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                  <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
                 </pfx:forminput>
               </td>
             </tr>
             <tr>
               <td align="left" valign="middle">
-                <pfx:forminput target="_top" method="post">
-                  <pfx:xinp name="text.Text" type="text" default="abcdäöüß" onchange="setDynHref(this.value)"/>
-                  <ixsl:text>&#x20;</ixsl:text><pfx:xinp type="submit" value="Send via POST-method"/>
+                <pfx:forminput method="post" target="_top">
+                  <pfx:xinp default="abcdäöüß" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+                  <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via POST-method"/>
                 </pfx:forminput>
               </td>
             </tr>
             <tr>
               <td align="center">
-                <span style="text-decoration:underline;cursor:pointer;" onclick="callDynHref()">
+                <span onclick="callDynHref()" style="text-decoration:underline;cursor:pointer;">
                   Dynamic GET-Request built from form value by JavaScript
                 </span>
               </td>
@@ -56,15 +55,15 @@
           </table>
           <br/><br/>
           <h3>Send via GET-method with serverside special decoding:</h3>
-          <pfx:forminput target="_top" method="get">
-            <pfx:xinp id="text"  name="text.Text" type="text" default="abcdäöüß" onchange="setDynHref(this.value)"/>
-            <ixsl:text>&#x20;</ixsl:text>
+          <pfx:forminput method="get" target="_top">
+            <pfx:xinp default="abcdäöüß" id="text" name="text.Text" onchange="setDynHref(this.value)" type="text"/>
+            <ixsl:text> </ixsl:text>
             <pfx:xinp name="text.Encoding" type="select">
               <pfx:option value="UTF-8">Decode as UTF-8</pfx:option>
               <pfx:option value="ISO-8859-1">Decode as ISO-8859-1</pfx:option>
               <pfx:option value="none">No special decoding</pfx:option>
             </pfx:xinp>
-            <ixsl:text>&#x20;</ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
+            <ixsl:text> </ixsl:text><pfx:xinp type="submit" value="Send via GET-method"/>
           </pfx:forminput>
           
           <table cellspacing="5">
@@ -78,8 +77,7 @@
             </tr>
           </table>
         </center>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
-               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
 	        <pfx:checkerror>
 	          <pfx:checkfield name="selectinclude.Path">
@@ -58,16 +55,16 @@
           <ixsl:when test="/formresult/includes/currentinclude">
             <pfx:include part="displaycurrentinclude"/>
             <ixsl:for-each select="/formresult/includes">
-              <pfx:include part="displayincludedetails" href="core/editor2/txt/util_includes.xml"/>
+              <pfx:include href="core/editor2/txt/util_includes.xml" part="displayincludedetails"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/includes/currentinclude/pages">
-              <pfx:include part="displayaffectedpages" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/includes/currentinclude/includes">
-              <pfx:include part="displayincludes" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayincludes"/>
             </ixsl:for-each>
             <ixsl:for-each select="/formresult/includes/currentinclude/images">
-              <pfx:include part="displayimages" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayimages"/>
             </ixsl:for-each>
             <div>
               <table><tr><td class="editor_main_emph">Content of whole part:</td></tr></table>
@@ -90,13 +87,11 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="sidebar">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
 		<ixsl:if test="count(/formresult/lucefix/hit) &gt; 0">
 			<div class="editor_includes_sidebar_content">
 			<div class="editor_includes_sidebar_directory">
@@ -119,21 +114,18 @@
           var pfx_editor_pagename = "includes";
         </pfx:script>
         <ixsl:for-each select="/formresult/includes">
-          <pfx:include part="displayallincludes" href="core/editor2/txt/util_includes.xml"/>
+          <pfx:include href="core/editor2/txt/util_includes.xml" part="displayallincludes"/>
         </ixsl:for-each>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaycurrentinclude">
-    <product name="default">
-      <lang name="default">
-        <div class="editor_main_emph" align="right">
+    <theme name="default">
+        <div align="right" class="editor_main_emph">
           [INCLUDE: <ixsl:value-of select="/formresult/includes/currentinclude/@part"/>]
         </div>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
 
 </include_parts>

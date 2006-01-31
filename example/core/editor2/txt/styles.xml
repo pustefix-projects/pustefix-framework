@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="standard">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <!-- Put application specific CSS here -->
 
 body{
@@ -465,8 +463,7 @@ div.editor_pagemessages_box {
         .editor_page_old { font-weight: bold; font-style: italic; color:#aa3333; }
         .editor_small { color: #000000; font-size: 9px;
                         font-family: Verdana, Helvetica, Tahoma, Arial, sans-serif;}
-      </lang>
-    </product>
+      </theme>
     
     
   </part>

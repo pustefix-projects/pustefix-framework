@@ -1,24 +1,21 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
 
 		<h1>TypeTest service</h1>
 		
 		<div>
 			<h2>Pustefix SOAP</h2>
 			<p>Pustefix soap calls took <span id="pfxsoap_time">0</span> ms.</p>
-			<p><span class="error" id="pfxsoap_error"></span></p>
-			<form name="pfxsoap" action="">
-				<input type="button" onclick="pfxsoapCall();" value="Start test"/>
+			<p><span class="error" id="pfxsoap_error"/></p>
+			<form action="" name="pfxsoap">
+				<input onclick="pfxsoapCall();" type="button" value="Start test"/>
 			</form>
-			<p id="out"></p>
+			<p id="out"/>
 		</div>
           
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

@@ -1,280 +1,169 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="pfixcore.GEN_ERROR">
-    <product name="default">
-      <lang name="default">An error happened.</lang>
-    </product>
+    <theme name="default">An error happened.</theme>
   </part>
   <part name="pfixcore.editor.adduser.USER_EXISTS">
-    <product name="default">
-      <lang name="default">This user already exists.</lang>
-    </product>
+    <theme name="default">This user already exists.</theme>
   </part>
   <part name="pfixcore.editor.auth.NO_LOGIN_ALLOWED">
-    <product name="default">
-      <lang name="default">The CMS is currently unavailable.</lang>
-    </product>
+    <theme name="default">The CMS is currently unavailable.</theme>
   </part>
   <part name="pfixcore.editor.auth.WRONG_USER_OR_PASS">
-    <product name="default">
-      <lang name="default">User and Password don't match.</lang>
-    </product>
+    <theme name="default">User and Password don't match.</theme>
   </part>
   <part name="pfixcore.editor.commons.COMMONPATH_UNDEF">
-    <product name="default">
-      <lang name="default">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</lang>
-    </product>
+    <theme name="default">The path of this dynamic include doesn't point to any file marked as holding dynamic includes.</theme>
   </part>
   <part name="pfixcore.editor.images.IMAGE_UNDEF">
-    <product name="default">
-      <lang name="default">This image does not exist.</lang>
-    </product>
+    <theme name="default">This image does not exist.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_GENERR">
-    <product name="default">
-      <lang name="default">General protection fault.</lang>
-    </product>
+    <theme name="default">General protection fault.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_NOFILE">
-    <product name="default">
-      <lang name="default">You must upload a image file (GIF or JPG).</lang>
-    </product>
-    <product name="sample1">
-      <lang name="default">You must upload a image file (GIF or JPG).</lang>
-    </product>
+    <theme name="default">You must upload a image file (GIF or JPG).</theme>
+    <theme name="sample1">You must upload a image file (GIF or JPG).</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPE">
-    <product name="default">
-      <lang name="default">You need to supply a GIF, JPG or PNG image.</lang>
-    </product>
+    <theme name="default">You need to supply a GIF, JPG or PNG image.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEGIF">
-    <product name="default">
-      <lang name="default">This seems to be no GIF image.</lang>
-    </product>
+    <theme name="default">This seems to be no GIF image.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEJPG">
-    <product name="default">
-      <lang name="default">This seems to be no JPG image.</lang>
-    </product>
+    <theme name="default">This seems to be no JPG image.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_WRONGTYPEPNG">
-    <product name="default">
-      <lang name="default">This seems to be no PNG image.</lang>
-    </product>
+    <theme name="default">This seems to be no PNG image.</theme>
   </part>
   <part name="pfixcore.editor.imagesupload.IMAGEUPL_HASCHANGED">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         Image was changed by another user, while you were uploading.
         Do upload again, if you still want to replace the image.
-      </lang>
-    </product>
+      </theme>
   </part>
   <part name="pfixcore.editor.includes.INCLUDE_UNDEF">
-    <product name="default">
-      <lang name="default">This include does not exist.</lang>
-    </product>
+    <theme name="default">This include does not exist.</theme>
   </part>
   <part name="pfixcore.editor.includes.BRANCH_CREATE_FAILED">
-    <product name="default">
-      <lang name="default">Creation of include part branch failed.</lang>
-    </product>
+    <theme name="default">Creation of include part branch failed.</theme>
   </part>
   <part name="pfixcore.editor.includes.BRANCH_DELETE_FAILED">
-    <product name="default">
-      <lang name="default">Removal of include part branch failed.</lang>
-    </product>
+    <theme name="default">Removal of include part branch failed.</theme>
   </part>
   <part name="pfixcore.editor.includesupload.GEN_ERR">
-    <product name="default">
-      <lang name="default">General error.</lang>
-    </product>
+    <theme name="default">General error.</theme>
   </part>
   <part name="pfixcore.editor.includesupload.PARSE_ERR">
-    <product name="default">
-      <lang name="default">Parse error.</lang>
-    </product>
+    <theme name="default">Parse error.</theme>
   </part>
   <part name="pfixcore.editor.includesupload.PARSE_ERR_WITH_DETAILS">
-    <product name="default">
-      <lang name="default">Parse error on line <pfx:argref pos="1"/>, column <pfx:argref pos="2"/>.</lang>
-    </product>
+    <theme name="default">Parse error on line <pfx:argref pos="1"/>, column <pfx:argref pos="2"/>.</theme>
   </part>
   <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED">
-    <product name="default">
-      <lang name="default">The include part has been changed by another user while you were editing. Please merge the changes in the editor box and upload again.</lang>
-    </product>
+    <theme name="default">The include part has been changed by another user while you were editing. Please merge the changes in the editor box and upload again.</theme>
   </part>
   <part name="pfixcore.editor.includesupload.INCLUDE_HAS_CHANGED_RESTORE">
-    <product name="default">
-      <lang name="default">The include part has been changed by another user. If you still want to restore the backup, please do so again.</lang>
-    </product>
+    <theme name="default">The include part has been changed by another user. If you still want to restore the backup, please do so again.</theme>
   </part>
   <part name="pfixcore.editor.pages.PAGE_UNDEF">
-    <product name="default">
-      <lang name="default">This page is unknown.</lang>
-    </product>
+    <theme name="default">This page is unknown.</theme>
   </part>
   <part name="pfixcore.editor.productselect.UNKNOWN_PRODUCT">
-    <product name="default">
-      <lang name="default">Unknown product.</lang>
-    </product>
+    <theme name="default">Unknown product.</theme>
   </part>
   <part name="pfixcore.editor.search.S_INT">
-    <product name="default">
-      <lang name="default">search was interrupted</lang>
-    </product>
+    <theme name="default">search was interrupted</theme>
   </part>
   <part name="pfixcore.editor.search.S_OK">
-    <product name="default">
-      <lang name="default">search finished OK</lang>
-    </product>
+    <theme name="default">search finished OK</theme>
   </part>
   <part name="pfixcore.editor.search.S_RESET">
-    <product name="default">
-      <lang name="default">search is reset/ready</lang>
-    </product>
+    <theme name="default">search is reset/ready</theme>
   </part>
   <part name="pfixcore.editor.search.S_RUNNING">
-    <product name="default">
-      <lang name="default">search is running</lang>
-    </product>
+    <theme name="default">search is running</theme>
   </part>
   <part name="pfixcore.editor.targets.TARGET_UNDEF">
-    <product name="default">
-      <lang name="default">This target is unknown.</lang>
-    </product>
+    <theme name="default">This target is unknown.</theme>
   </part>
   <part name="pfixcore.editor.userdata.PWD_NO_MATCH">
-    <product name="default">
-      <lang name="default">The passwords don't match.</lang>
-    </product>
+    <theme name="default">The passwords don't match.</theme>
   </part>
   <part name="pfixcore.editor.userdata.CHANGES_SAVED">
-    <product name="default">
-      <lang name="default">The changes have been saved.</lang>
-    </product>
+    <theme name="default">The changes have been saved.</theme>
   </part>
   <part name="pfixcore.editor.userforedit.USER_UNDEF">
-    <product name="default">
-      <lang name="default">This userid is not known.</lang>
-    </product>
+    <theme name="default">This userid is not known.</theme>
   </part>
   <part name="pfixcore.generator.MISSING_PARAM">
-    <product name="default">
-      <lang name="default">This parameter is mandatory.</lang>
-    </product>
+    <theme name="default">This parameter is mandatory.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_BOOLEAN">
-    <product name="default">
-      <lang name="default">The entered value is no valid boolean expression.</lang>
-    </product>
+    <theme name="default">The entered value is no valid boolean expression.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_DATE">
-    <product name="default">
-      <lang name="default">The entered value is no valid date.</lang>
-    </product>
+    <theme name="default">The entered value is no valid date.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_FILE">
-    <product name="default">
-      <lang name="default">The entered value is not a valid file.</lang>
-    </product>
+    <theme name="default">The entered value is not a valid file.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_FLOAT">
-    <product name="default">
-      <lang name="default">The entered value is no valid float number.</lang>
-    </product>
+    <theme name="default">The entered value is no valid float number.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_DOUBLE">
-    <product name="default">
-      <lang name="default">The entered value is no valid double float number.</lang>
-    </product>
+    <theme name="default">The entered value is no valid double float number.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_INTEGER">
-    <product name="default">
-      <lang name="default">The entered value is no valid integer number.</lang>
-    </product>
+    <theme name="default">The entered value is no valid integer number.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_LONG">
-    <product name="default">
-      <lang name="default">The entered value is no valid long integer number.</lang>
-    </product>
+    <theme name="default">The entered value is no valid long integer number.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_BYTE">
-    <product name="default">
-      <lang name="default">The entered value is no valid byte number.</lang>
-    </product>
+    <theme name="default">The entered value is no valid byte number.</theme>
   </part>
   <part name="pfixcore.generator.caster.ERR_TO_P5PATTERN">
-    <product name="default">
-      <lang name="default">The entered value is not a valid Perl5 Regexp.</lang>
-    </product>
+    <theme name="default">The entered value is not a valid Perl5 Regexp.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.FLOAT_TOO_BIG">
-    <product name="default">
-      <lang name="default">The entered value is too big.</lang>
-    </product>
+    <theme name="default">The entered value is too big.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.FLOAT_TOO_SMALL">
-    <product name="default">
-      <lang name="default">The entered value is too small.</lang>
-    </product>
+    <theme name="default">The entered value is too small.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.INTEGER_TOO_BIG">
-    <product name="default">
-      <lang name="default">The entered value is too big.</lang>
-    </product>
+    <theme name="default">The entered value is too big.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.INTEGER_TOO_SMALL">
-    <product name="default">
-      <lang name="default">The entered value is too small.</lang>
-    </product>
+    <theme name="default">The entered value is too small.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.STRING_TOO_LONG">
-    <product name="default">
-      <lang name="default">The entered string is too long.</lang>
-    </product>
+    <theme name="default">The entered string is too long.</theme>
   </part>
   <part name="pfixcore.generator.postcheck.STRING_TOO_SHORT">
-    <product name="default">
-      <lang name="default">The entered string is too short.</lang>
-    </product>
+    <theme name="default">The entered string is too short.</theme>
   </part>
   <part name="pfixcore.generator.precheck.REGEXP_NO_MATCH">
-    <product name="default">
-      <lang name="default">The entered value contains invalid characters or is otherwise invalid.</lang>
-    </product>
+    <theme name="default">The entered value contains invalid characters or is otherwise invalid.</theme>
   </part>
   <part name="pfixcore.lucefix.INDEX_NOT_INITED">
-    <product name="default">
-      <lang name="default">Index is not initialized. Please wait some minutes before using search</lang>
-    </product>
+    <theme name="default">Index is not initialized. Please wait some minutes before using search</theme>
   </part>
   <part name="pfixcore.lucefix.PREFIX_WILDCARD_FORBIDDEN">
-   <product name="default">
-     <lang name="default">Wildcards must not be used as first character in a query</lang>
-   </product>
+   <theme name="default">Wildcards must not be used as first character in a query</theme>
   </part>
   <part name="pfixcore.lucefix.TOO_MANY_CLAUSES">
-	  <product name="default">
-		  <lang name="default">Expression too imprecise</lang>		  
-	  </product>
+	  <theme name="default">Expression too imprecise</theme>
   </part>
   <!-- please note that level names in part names are _always_ lowercase -->
   <part name="pfixcore.pagemessages.level.error">
-    <product name="default">
-      <lang name="default">ERROR:</lang>
-    </product>
+    <theme name="default">ERROR:</theme>
   </part>
   <part name="pfixcore.pagemessages.level.info">
-    <product name="default">
-      <lang name="default">NOTE:</lang>
-    </product>
+    <theme name="default">NOTE:</theme>
   </part>
   <part name="pfixcore.pagemessages.level.warn">
-    <product name="default">
-      <lang name="default">WARNING:</lang>
-    </product>
+    <theme name="default">WARNING:</theme>
   </part>
 </include_parts>
