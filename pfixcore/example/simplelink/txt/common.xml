@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 	<!--Append include parts here...-->
 <!--
 	Our navigation for the example is the same for every page.
@@ -7,8 +6,7 @@
 	in both of our pages
 -->
   <part name="topnavi">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
       	<table cellpadding="5">
       	  <tr>
       	  	<td>
@@ -19,7 +17,6 @@
             </td>
           </tr>
         </table>
-    </lang>
-    </product>
+    </theme>
   </part>
 </include_parts>

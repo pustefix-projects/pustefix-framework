@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="top">
     
-  <product name="default">
-    <lang name="default">
+  <theme name="default">
       <ul class="navi">
         <li>
           <pfx:button activeclass="active" normalclass="normal" page="home" target="_top">Home</pfx:button>
@@ -31,8 +30,7 @@
           Leave <em><ixsl:value-of select="/formresult/projects/project[@selected='true']/@comment"/></em>
         </pfx:button>
       </div>
-    </lang>
-  </product></part>
+    </theme></part>
 </include_parts><!--
 Local Variables:
 mode: xml

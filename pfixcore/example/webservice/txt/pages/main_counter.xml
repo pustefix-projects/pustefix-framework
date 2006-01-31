@@ -1,30 +1,28 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
 
-        <div id="service" style="behavior:url(/webservice.htc)"></div>
+        <div id="service" style="behavior:url(/webservice.htc)"/>
 
 		<h1>Counter service</h1>
 		
 		<div>
 		<h2>Pustefix SOAP</h2>
 		<p>Pustefix soap call took <span id="pfxsoap_time">0</span> ms.</p>
-		<p><span class="error" id="pfxsoap_error"></span></p>
-		<form name="pfxsoap" action="">
-			<input type="hidden" name="sid" value="{$__sessid}"/>
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="pfxsoap_error"/></p>
+		<form action="" name="pfxsoap">
+			<input name="sid" type="hidden" value="{$__sessid}"/>
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
 					<td>Counter:</td>
-					<td><input type="text" id="pfxsoap_result" readonly="readonly" size="8"/></td>
-					<td><input type="button" onclick="pfxsoapCall('getValue',null,document.pfxsoap.sid.value);" value="Refresh"/></td>
+					<td><input id="pfxsoap_result" readonly="readonly" size="8" type="text"/></td>
+					<td><input onclick="pfxsoapCall('getValue',null,document.pfxsoap.sid.value);" type="button" value="Refresh"/></td>
 				</tr>
 				<tr>
-					<td></td>
-					<td><input type="text" name="val" value="3" size="8"/></td>
-					<td><input type="button"  onclick="pfxsoapCall('addValue',document.pfxsoap.val.value,document.pfxsoap.sid.value);" value="Add"/></td>
+					<td/>
+					<td><input name="val" size="8" type="text" value="3"/></td>
+					<td><input onclick="pfxsoapCall('addValue',document.pfxsoap.val.value,document.pfxsoap.sid.value);" type="button" value="Add"/></td>
 				</tr>
 			</table>	
 		</form>
@@ -33,37 +31,37 @@
         <div name="gecko_disp" style="display:none">
 		<h2>Mozilla low-level SOAP</h2>
 		<p>Low-level soap call took <span id="soap_time">0</span> ms.</p>
-		<p><span class="error" id="soap_error"></span></p>
-		<form name="mozsoap" action="">
-			<input type="hidden" name="sid" value="{$__sessid}"/>
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="soap_error"/></p>
+		<form action="" name="mozsoap">
+			<input name="sid" type="hidden" value="{$__sessid}"/>
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
 					<td>Counter:</td>
-					<td><input type="text" id="soap_result" readonly="readonly" size="8"/></td>
-					<td><input type="button" onclick="mozsoapCall('getValue',null,document.mozsoap.sid.value);" value="Refresh"/></td>
+					<td><input id="soap_result" readonly="readonly" size="8" type="text"/></td>
+					<td><input onclick="mozsoapCall('getValue',null,document.mozsoap.sid.value);" type="button" value="Refresh"/></td>
 				</tr>
 				<tr>
-					<td></td>
-					<td><input type="text" name="val" value="3" size="8"/></td>
-					<td><input type="button"  onclick="mozsoapCall('addValue',document.mozsoap.val.value,document.mozsoap.sid.value);" value="Add"/></td>
+					<td/>
+					<td><input name="val" size="8" type="text" value="3"/></td>
+					<td><input onclick="mozsoapCall('addValue',document.mozsoap.val.value,document.mozsoap.sid.value);" type="button" value="Add"/></td>
 				</tr>
 			</table>	
 		</form>
 		<h2>Mozilla WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdl_time">0</span> ms.</p>
-		<p><span class="error" id="wsdl_error"></span></p>
-		<form name="mozwsdl" action="">
-			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="wsdl_error"/></p>
+		<form action="" name="mozwsdl">
+			<input name="sid" type="hidden" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
 					<td>Counter:</td>
-					<td><input type="text" id="wsdl_result" readonly="readonly" size="8"/></td>
-					<td><input type="button" onclick="wsdlCall( 'getValue',null,'{$__sessid}')" value="Refresh"/></td>
+					<td><input id="wsdl_result" readonly="readonly" size="8" type="text"/></td>
+					<td><input onclick="wsdlCall( 'getValue',null,'{$__sessid}')" type="button" value="Refresh"/></td>
 				</tr>
 				<tr>
-					<td></td>
-					<td><input type="text" name="val" value="3" size="8"/></td>
-					<td><input type="button"  onclick="wsdlCall( 'addValue', document.mozwsdl.val.value,'{$__sessid}')" value="Add"/></td>
+					<td/>
+					<td><input name="val" size="8" type="text" value="3"/></td>
+					<td><input onclick="wsdlCall( 'addValue', document.mozwsdl.val.value,'{$__sessid}')" type="button" value="Add"/></td>
 				</tr>
 			</table>	
 		</form>
@@ -72,26 +70,25 @@
         <div name="ie_disp" style="display:none">
 		<h2>IE WSDL proxying</h2>
 		<p>Proxying soap call took <span id="wsdlie_time">0</span> ms.</p>
-		<p><span class="error" id="wsdl_error"></span></p>
-		<form name="iewsdl" action="">
-			<input type="hidden" name="sid" value="{substring-after($__sessid,'jsessionid=')}"/>
-			<table cellpadding="5" bgcolor="#b6cfe4">
+		<p><span class="error" id="wsdl_error"/></p>
+		<form action="" name="iewsdl">
+			<input name="sid" type="hidden" value="{substring-after($__sessid,'jsessionid=')}"/>
+			<table bgcolor="#b6cfe4" cellpadding="5">
 				<tr>
 					<td>Counter:</td>
-					<td><input type="text" id="wsdl_result" readonly="readonly" size="8"/></td>
-					<td><input type="button" onclick="__webservices__['Counter'].call( 'getValue')" value="Refresh"/></td>
+					<td><input id="wsdl_result" readonly="readonly" size="8" type="text"/></td>
+					<td><input onclick="__webservices__['Counter'].call( 'getValue')" type="button" value="Refresh"/></td>
 				</tr>
 				<tr>
-					<td></td>
-					<td><input type="text" name="val" value="3" size="8"/></td>
-					<td><input type="button"  onclick="__webservices__['Counter'].call( 'addValue', document.iewsdl.val.value );" value="Add"/></td>
+					<td/>
+					<td><input name="val" size="8" type="text" value="3"/></td>
+					<td><input onclick="__webservices__['Counter'].call( 'addValue', document.iewsdl.val.value );" type="button" value="Add"/></td>
 				</tr>
 			</table>	
 		</form>     
         </div>
           
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

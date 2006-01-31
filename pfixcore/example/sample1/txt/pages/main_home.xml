@@ -2,8 +2,7 @@
   
   <part name="content">
     
-  <product name="default">
-<lang name="default">
+  <theme name="default">
   <center>
     <pfx:forminput target="_top">
       <table width="400">
@@ -80,12 +79,10 @@
       </tr>
     </table>
   </center>
-</lang>
-</product></part>
+</theme></part>
   
   <part name="buttons">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:button page="test" target="_top">
           STARTWITHFLOW test
         </pfx:button>
@@ -100,43 +97,31 @@
         <br/>
         <pfx:button page="geninc">Test generated runtime stylesheet include</pfx:button>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="adult">
     
     
-    <product name="bar">
-      <lang name="default">
+    <theme name="bar">
         [BAR] Are you really older than 18 years?
-      </lang>
-    </product>
-  <product name="default">
-<lang name="default">
+      </theme>
+  <theme name="default">
   [DEF] Are you really older than 18 years?
-</lang>
-</product><product name="foo">
-<lang name="default">
+</theme><theme name="foo">
    <pfx:include part="thefoo"/> AAAAre you really older than 18 years?
-</lang>
-</product></part>
+</theme></part>
 
   <part name="yes">
     
-  <product name="default">
-<lang name="default">Yes!</lang>
-</product></part>
+  <theme name="default">Yes!</theme></part>
 
   <part name="no">
-    <product name="default">
-      <lang name="default">No!</lang>
-    </product>
+    <theme name="default">No!</theme>
   </part>
   
   <part name="inline_test">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:themeselect>
           <pfx:theme name="foo">
             (FOO inline theme)
@@ -161,13 +146,11 @@
           </pfx:lang>
         </pfx:langselect>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="variant_info">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table class="info">
           <tr>
             <td>Requested variant</td>
@@ -222,14 +205,12 @@
             </td>
           </tr>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="env_info">
     
-  <product name="default">
-<lang name="default">
+  <theme name="default">
   <table class="info">
     <tr>
       <td>Remote IP</td><td><ixsl:value-of select="$__remote_addr"/></td>
@@ -259,8 +240,7 @@
       <td>PageFlow name</td><td><ixsl:value-of select="$pageflow"/></td>
     </tr>
   </table>
-</lang>
-</product></part>
+</theme></part>
   
 
 
@@ -270,14 +250,10 @@
   
 
   <part name="XXX">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
   Hallo
-      </lang>
-    </product>
+      </theme>
   </part>
-<part name="thefoo"><product name="default">
-<lang name="default">
+<part name="thefoo"><theme name="default">
   [FOO]
-</lang>
-</product></part></include_parts>
+</theme></part></include_parts>

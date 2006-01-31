@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   <part name="displayincludes">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table><tr><td class="editor_main_emph">Used includes:</td></tr></table>
-        <table width="100%" class="editor_box">
+        <table class="editor_box" width="100%">
           <ixsl:for-each select=".//include">
             <ixsl:variable name="ind">
-              <ixsl:for-each select="ancestor::include">&#160;&#160;&#160;&#160;&#160;</ixsl:for-each>
+              <ixsl:for-each select="ancestor::include">     </ixsl:for-each>
             </ixsl:variable>
             <ixsl:variable name="class">
               <ixsl:choose>
@@ -19,13 +17,13 @@
               <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
               <td nowrap="nowrap">
                 <ixsl:value-of select="$ind"/>
-                <pfx:button page="includes" mode="force" target="_top" frame="_top">
-                  <pfx:command  name="SELWRP" page="includes">selectinclude</pfx:command>
-                  <pfx:command  name="SELWRP" page="includes">upload</pfx:command>
+                <pfx:button frame="_top" mode="force" page="includes" target="_top">
+                  <pfx:command name="SELWRP" page="includes">selectinclude</pfx:command>
+                  <pfx:command name="SELWRP" page="includes">upload</pfx:command>
                   <pfx:argument name="selectinclude.Path"><ixsl:value-of select="@path"/></pfx:argument>
                   <pfx:argument name="selectinclude.Part"><ixsl:value-of select="@part"/></pfx:argument>
                   <pfx:argument name="selectinclude.Theme"><ixsl:value-of select="@theme"/></pfx:argument>
-                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
+                  <pfx:anchor frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                   <ixsl:value-of select="@part"/>
                 </pfx:button> (<ixsl:value-of select="@theme"/>)
               </td>
@@ -36,16 +34,13 @@
           </ixsl:for-each>
         </table>
         <br/>   
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayimages">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table><tr><td class="editor_main_emph">Used images:</td></tr></table>
-        <table width="100%" class="editor_box_alpha" cellpadding="0" cellspacing="0"
-               background="/core/editor2/img/alpha.gif">
+        <table background="/core/editor2/img/alpha.gif" cellpadding="0" cellspacing="0" class="editor_box_alpha" width="100%">
           <ixsl:for-each select="./image">
             <ixsl:variable name="class">
               <ixsl:choose>
@@ -54,12 +49,12 @@
               </ixsl:choose>
             </ixsl:variable>
             <tr valign="top">
-              <td width="50%" nowrap="nowrap">
+              <td nowrap="nowrap" width="50%">
                 <ixsl:attribute name="class"><ixsl:value-of select="$class"/></ixsl:attribute>
-                <pfx:button page="images" target="_top" frame="_top">
-                  <pfx:command  name="SELWRP" page="images">selectimage</pfx:command>
+                <pfx:button frame="_top" page="images" target="_top">
+                  <pfx:command name="SELWRP" page="images">selectimage</pfx:command>
                   <pfx:argument name="selectimage.Path"><ixsl:value-of select="@path"/></pfx:argument>
-                  <pfx:anchor   frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
+                  <pfx:anchor frame="left_navi"><ixsl:value-of select="@path"/></pfx:anchor>
                   <ixsl:value-of select="@path"/>
                 </pfx:button>
               </td>
@@ -79,15 +74,13 @@
           </ixsl:for-each>
         </table>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayaffectedpages">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table><tr><td class="editor_main_emph">Affected pages:</td></tr></table>
-        <table width="100%" class="editor_box">
+        <table class="editor_box" width="100%">
           <ixsl:for-each select="./project">
             <ixsl:sort select="@name"/>
             <ixsl:variable name="theproduct"><ixsl:value-of select="@name"/></ixsl:variable>
@@ -95,34 +88,34 @@
               <tr>
                 <td>
                   <table><tr><td><b>Pages in project  "<i><ixsl:value-of select="/formresult/projects/project[@name=$theproduct]/@comment"/></i>":</b></td></tr></table>
-                  <table width="100%" class="editor_box">
+                  <table class="editor_box" width="100%">
                     <tr>
                       <td>
                         <ixsl:for-each select="./page">
                           <ixsl:sort select="@name"/>
                           <ixsl:choose>
                             <ixsl:when test="/formresult/projects/currentproject/@name = $theproduct">
-                              <pfx:button page="pages" target="_top" frame="_top">
+                              <pfx:button frame="_top" page="pages" target="_top">
                                 <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
                                 <pfx:argument name="selectPage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
-                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <pfx:anchor frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                                 <span>
                                   <ixsl:value-of select="@name"/>
                                   <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
                                 </span>
-                                </pfx:button>&#160;
+                                </pfx:button> 
                             </ixsl:when>
                             <ixsl:otherwise>
-                              <pfx:button page="jumptopage" target="_top" frame="_top">
+                              <pfx:button frame="_top" page="jumptopage" target="_top">
                                 <pfx:argument name="selectproject.ProjectName"><ixsl:value-of select="$theproduct"/></pfx:argument>
                                 <pfx:argument name="selectpage.PageName"><ixsl:value-of select="@name"/></pfx:argument>
                                 <pfx:argument name="selectpage.VariantName"><ixsl:value-of select="@variant"/></pfx:argument>
-                                <pfx:anchor   frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
+                                <pfx:anchor frame="left_navi"><ixsl:value-of select="@name"/></pfx:anchor>
                                 <span>
                                   <ixsl:value-of select="@name"/>
                                   <ixsl:if test="@variant">::<ixsl:value-of select="@variant"/></ixsl:if>
                                 </span>
-                                </pfx:button>&#160;
+                                </pfx:button> 
                             </ixsl:otherwise>
                           </ixsl:choose>
                         </ixsl:for-each>
@@ -135,19 +128,17 @@
           </ixsl:for-each>
         </table>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="perm_denied_usedby_other_prods">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table class="core_errorbox_table" width="100%">
           <tr valign="top">
             <td class="core_errorbox_td">
               <img src="/core/img/error.gif"/>
             </td>
-            <td  class="core_errorlabel_text">
+            <td class="core_errorlabel_text">
               Permission denied!
             </td>
           </tr>
@@ -157,8 +148,7 @@
             </td>
           </tr>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

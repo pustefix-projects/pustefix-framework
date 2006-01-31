@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="logoutbutton">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <ixsl:choose>
           <ixsl:when test="/formresult/session/user/permissions/@admin = 'true'">
             <pfx:button mode="force" page="useradmin" target="_top">
@@ -16,18 +14,16 @@
             </pfx:button>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
           <pfx:forminput target="_top">
             <pfx:include part="displaycurrentuserforedit"/>
             <pfx:checkmessage>
-              <table width="400" class="editor_pagemessages_box">
+              <table class="editor_pagemessages_box" width="400">
                 <ixsl:for-each select="$pfx_allmessages_check">
                   <tr>
                     <td><ixsl:apply-templates/></td>
@@ -246,19 +242,16 @@
             </table>
           </pfx:forminput>
         </center>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaycurrentuserforedit">
-    <product name="default">
-      <lang name="default">
-        <div class="editor_main_emph" align="right">
+    <theme name="default">
+        <div align="right" class="editor_main_emph">
           [USERID: <ixsl:value-of select="/formresult/users/currentuser/@id"/>]
         </div>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts><!--

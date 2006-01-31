@@ -162,7 +162,7 @@
     <xsl:param name="__env"/>
     <xsl:param name="computed_inc">false</xsl:param>
     <xsl:param name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:param>
-    <xsl:param name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:param>
+    <xsl:param name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:param>
     <xsl:param name="noerror"><xsl:value-of select="@noerror"/></xsl:param>
     <xsl:param name="noedit"><xsl:value-of select="@noedit"/></xsl:param>
     <xsl:param name="part"><xsl:value-of select="@part"/></xsl:param>
@@ -199,7 +199,7 @@
         <xsl:variable name="incnodes"
                       select="include:get(string($realpath), string($part),
                               string($__target_gen), string($__target_key),
-                              string($parent_part), string($parent_product), $computed_inc)"/>
+                              string($parent_part), string($parent_theme), $computed_inc)"/>
         <!-- Start image of edited region -->
         <xsl:choose>
           <xsl:when test="$noedit = 'true'"/> <!-- Do NOTHING! -->
@@ -215,7 +215,7 @@
         <!-- -->
         <xsl:variable name="used_theme">
           <xsl:choose>
-            <xsl:when test="$incnodes and $incnodes[name() = 'product' or name() = 'missing']">
+            <xsl:when test="$incnodes and $incnodes[name() = 'theme' or name() = 'missing']">
               <xsl:value-of select="$incnodes/@name"/>
             </xsl:when>
             <xsl:otherwise>
@@ -226,114 +226,10 @@
           </xsl:choose>
         </xsl:variable>
         <xsl:choose>
-          <xsl:when test="$incnodes and $incnodes[name() = 'product']">
-            <xsl:choose>
-              <xsl:when test="$incnodes/lang">
-                <!-- Have lang nodes as children -->
-                <xsl:choose>
-                  <xsl:when test="not($__target_key = '__NONE__')">
-                    <!-- during generation time -->
-                    <xsl:choose>
-                      <xsl:when test="not($incnodes/lang[not(@name = 'default')])">
-                        <xsl:choose>
-                          <xsl:when test="$incnodes/lang[@name = 'default']">
-                            <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
-                              <xsl:with-param name="__env" select="."/>
-                            </xsl:apply-templates>
-                          </xsl:when>
-                          <xsl:when test="not($noerror = 'true')">
-                            <xsl:call-template name="pfx:missinc">
-                              <xsl:with-param name="href" select="$realpath"/>
-                              <xsl:with-param name="part" select="$part"/>
-                            </xsl:call-template>
-                          </xsl:when>
-                        </xsl:choose>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <ixsl:choose>
-                          <xsl:for-each select="$incnodes/lang[not(@name = 'default') and string-length(@name) > 0 and
-                                                not(substring(@name, string-length(@name)) = '*')]">
-                            <ixsl:when test="$lang = '{./@name}'">
-                              <xsl:apply-templates select="./node()">
-                                <xsl:with-param name="__env" select="."/>
-                              </xsl:apply-templates>
-                            </ixsl:when>
-                          </xsl:for-each>
-                          <xsl:for-each select="$incnodes/lang[not(@name = 'default') and string-length(@name) > 1 and
-                                                substring(@name, string-length(@name)) = '*']">
-                            <ixsl:when test="starts-with($lang, '{substring(@name, 0, string-length(@name))}')">
-                              <xsl:apply-templates select="./node()">
-                                <xsl:with-param name="__env" select="."/>
-                              </xsl:apply-templates>
-                            </ixsl:when>
-                          </xsl:for-each>
-                          <xsl:choose>
-                            <xsl:when test="$incnodes/lang[@name = 'default']">
-                              <ixsl:otherwise>
-                                <xsl:apply-templates select="$incnodes/lang[@name = 'default']/node()">
-                                  <xsl:with-param name="__env" select="."/>
-                                </xsl:apply-templates>
-                              </ixsl:otherwise>
-                            </xsl:when>
-                            <xsl:when test="not($noerror = 'true')">
-                              <ixsl:otherwise>
-                                <xsl:call-template name="pfx:missinc">
-                                  <xsl:with-param name="href" select="$realpath"/>
-                                  <xsl:with-param name="part" select="$part"/>
-                                </xsl:call-template>
-                              </ixsl:otherwise>
-                            </xsl:when>
-                          </xsl:choose>
-                        </ixsl:choose>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                    <!-- end of during generation phase -->
-                  </xsl:when>
-                  <xsl:otherwise>
-                    <!-- at runtime -->
-                    <xsl:variable name="commonlangnodes"
-                                  select="$incnodes/lang[string-length(@name) > 1 and
-                                          substring(@name, string-length(@name)) = '*' and
-                                          starts-with($lang, substring(@name, 0, string-length(@name)))]"/>
-                    <xsl:variable name="langnodes" select="$incnodes/lang[@name = $lang]"/>
-                    <xsl:variable name="deflangnodes" select="$incnodes/lang[@name = 'default']"/>
-                    <xsl:choose>
-                      <xsl:when test="$langnodes">
-                        <xsl:apply-templates select="$langnodes/node()">
-                          <xsl:with-param name="__env" select="."/>
-                        </xsl:apply-templates>
-                      </xsl:when>
-                      <xsl:when test="$commonlangnodes">
-                        <xsl:apply-templates select="$commonlangnodes/node()">
-                          <xsl:with-param name="__env" select="."/>
-                        </xsl:apply-templates>
-                      </xsl:when>
-                      <xsl:when test="$deflangnodes">
-                        <xsl:apply-templates select="$deflangnodes/node()">
-                          <xsl:with-param name="__env" select="."/>
-                        </xsl:apply-templates>
-                      </xsl:when>
-                      <xsl:when test="not($noerror = 'true')">
-                        <xsl:call-template name="pfx:missinc">
-                          <xsl:with-param name="href" select="$realpath"/>
-                          <xsl:with-param name="part" select="$part"/>
-                        </xsl:call-template>
-                      </xsl:when>
-                    </xsl:choose>
-                    <!-- end of at runtime -->
-                  </xsl:otherwise>
-                </xsl:choose>
-                <!-- End of have lang nodes as children -->
-              </xsl:when>
-              <xsl:when test="not($noerror = 'true')">
-                <!-- Have no language nodes as child -->
-                <xsl:call-template name="pfx:missinc">
-                  <xsl:with-param name="href" select="$realpath"/>
-                  <xsl:with-param name="part" select="$part"/>
-                </xsl:call-template>
-                <!-- End of have no language nodes as child -->
-              </xsl:when>
-            </xsl:choose>
+          <xsl:when test="$incnodes and $incnodes[name() = 'theme']">
+            <xsl:apply-templates select="$incnodes/node()">
+              <xsl:with-param name="__env" select="."/>
+            </xsl:apply-templates>
           </xsl:when>
           <xsl:when test="not($noerror = 'true')">
             <xsl:call-template name="pfx:missinc">
@@ -375,9 +271,9 @@
       <xsl:when test="($src and not($src = '') and (not($themed-path) or $themed-path = '') and (not($themed-img) or $themed-img = '')) or
                       ((not($src) or $src = '') and $themed-path and not($themed-path = '') and $themed-img and not($themed-img = ''))">
         <xsl:variable name="parent_part"><xsl:value-of select="ancestor::part[position() = 1]/@name"/></xsl:variable>
-        <xsl:variable name="parent_product"><xsl:value-of select="ancestor::product[position() = 1]/@name"/></xsl:variable>
+        <xsl:variable name="parent_theme"><xsl:value-of select="ancestor::theme[position() = 1]/@name"/></xsl:variable>
         <xsl:value-of select="image:getSrc(string($src),string($themed-path),string($themed-img),
-                              string($parent_part),string($parent_product),
+                              string($parent_part),string($parent_theme),
                               string($__target_gen),string($__target_key))"/>
       </xsl:when>
       <xsl:otherwise>

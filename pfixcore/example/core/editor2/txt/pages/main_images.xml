@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:pfx="http://www.schlund.de/pustefix/core"
-               xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
           <pfx:checkerror>
             <pfx:checkfield name="selectimage.Path">
@@ -57,7 +54,7 @@
             <pfx:include part="displaycurrentimage"/>
             <pfx:include part="displayimagedetails"/>
             <ixsl:for-each select="/formresult/images/currentimage/pages">
-              <pfx:include part="displayaffectedpages" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="displayaffectedpages"/>
             </ixsl:for-each>
           </ixsl:when>
           <ixsl:otherwise>
@@ -69,21 +66,17 @@
             </center>
           </ixsl:otherwise>
         </ixsl:choose>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="sidebar">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:include part="displayallimages"/>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="displayallimages">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <table class="editor_sidebar_content editor_sidebar_content_images">
           <ixsl:for-each select="/formresult/images/directory">
             <tr>
@@ -100,11 +93,11 @@
                   <a>
                     <ixsl:attribute name="name"><ixsl:value-of select="./@path"/></ixsl:attribute>
                   </a>
-                  <ixsl:if test="@missing = 'true'"><span class="editor_missing_img">!&#160;</span></ixsl:if>
-                  <pfx:button page="images" frame="_top" target="_top" mode="force">
-                    <pfx:command  name="SELWRP">selectimage</pfx:command>
+                  <ixsl:if test="@missing = 'true'"><span class="editor_missing_img">! </span></ixsl:if>
+                  <pfx:button frame="_top" mode="force" page="images" target="_top">
+                    <pfx:command name="SELWRP">selectimage</pfx:command>
                     <pfx:argument name="selectimage.Path"><ixsl:value-of select="./@path"/></pfx:argument>
-                    <pfx:anchor   frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
+                    <pfx:anchor frame="left_navi"><ixsl:value-of select="./@path"/></pfx:anchor>
                     <ixsl:value-of select="@filename"/>
                   </pfx:button>
                 </td>
@@ -112,44 +105,40 @@
             </ixsl:for-each>
             <ixsl:if test="following-sibling::directory">
               <tr>
-                <td><blank style="display:block;" height="5px"/></td>
+                <td><blank height="5px" style="display:block;"/></td>
               </tr>
             </ixsl:if>
           </ixsl:for-each>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displaycurrentimage">
-    <product name="default">
-      <lang name="default">
-        <div class="editor_main_emph" align="right">
+    <theme name="default">
+        <div align="right" class="editor_main_emph">
           [IMAGE: <ixsl:value-of select="/formresult/images/currentimage/@filename"/>]
         </div>
         <br/>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayimagedetails">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:forminput enctype="multipart/form-data">
-          <pfx:xinp type="hidden" name="__anchor">
+          <pfx:xinp name="__anchor" type="hidden">
             <ixsl:attribute name="value">left_navi|<ixsl:value-of select="/formresult/currentimageinfo/@path"/></ixsl:attribute>
           </pfx:xinp>
           <table width="100%">
             <tr>
-              <td nowrap="nowrap" class="editor_main_emph">Current image: <ixsl:value-of select="/formresult/images/currentimage/@path"/>
+              <td class="editor_main_emph" nowrap="nowrap">Current image: <ixsl:value-of select="/formresult/images/currentimage/@path"/>
               </td>
             </tr>
           </table>
           <ixsl:choose>
             <ixsl:when test="/formresult/images/currentimage/@mayEdit = 'true'">
-              <table width="100%" class="editor_box_alpha" cellspacing="0" background="/core/editor2/img/alpha.gif">
+              <table background="/core/editor2/img/alpha.gif" cellspacing="0" class="editor_box_alpha" width="100%">
                 <tr>
-                  <td align="center" style="padding-top: 10px; padding-bottom: 10px;" colspan="3">
+                  <td align="center" colspan="3" style="padding-top: 10px; padding-bottom: 10px;">
                     <ixsl:choose>
                       <ixsl:when test="/formresult/images/currentimage/@modtime = 0">
                         <span class="editor_missing_img_txt">MISSING IMAGE</span>
@@ -166,30 +155,28 @@
               </table>
             </ixsl:when>
             <ixsl:otherwise>
-              <pfx:include part="perm_denied_usedby_other_prods" href="core/editor2/txt/util.xml"/>
+              <pfx:include href="core/editor2/txt/util.xml" part="perm_denied_usedby_other_prods"/>
             </ixsl:otherwise>
           </ixsl:choose>
         </pfx:forminput>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="uploadimage">
-    <product name="default">
-      <lang name="default">
-        <tr valign="center" class="editor_odd_row">
+    <theme name="default">
+        <tr class="editor_odd_row" valign="center">
           <td align="right">
             <pfx:label name="upload.HaveUpload">New Image:</pfx:label>
           </td>
           <td>
-            <input type="hidden" name="upload.LastModTime">
+            <input name="upload.LastModTime" type="hidden">
               <ixsl:attribute name="value"><ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
             </input>
-            <input type="file" name="upload.ImageFile"/>
+            <input name="upload.ImageFile" type="file"/>
           </td>
           <td align="right">
             <pfx:xinp class="editor_submit" type="submit" value="Upload Image">
-              <pfx:command  name="SELWRP">upload</pfx:command>
+              <pfx:command name="SELWRP">upload</pfx:command>
             </pfx:xinp>
           </td>
         </tr>
@@ -202,18 +189,17 @@
               If you want to return to a previous version of the image, select one of the backups below.
             </td>
             <td align="right" nowrap="nowrap">
-              <input type="hidden" name="restore.LastModTime">
+              <input name="restore.LastModTime" type="hidden">
                 <ixsl:attribute name="value"><ixsl:value-of select="/formresult/images/currentimage/@modtime"/></ixsl:attribute>
               </input>
-              <pfx:xinp type="dynselect" name="restore.Version" optionpath="/formresult/images/currentimage/backups"/>&#160;
+              <pfx:xinp name="restore.Version" optionpath="/formresult/images/currentimage/backups" type="dynselect"/> 
               <pfx:xinp class="editor_submit" type="submit" value="Use Backup">
-                <pfx:command  name="SELWRP">restore</pfx:command>
+                <pfx:command name="SELWRP">restore</pfx:command>
               </pfx:xinp>
             </td>
           </tr>
         </ixsl:if>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts>

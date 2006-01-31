@@ -1,17 +1,13 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
+<?xml version="1.0" encoding="ISO-8859-1"?><include_parts xmlns:ixsl="http://www.w3.org/1999/XSL/Transform" xmlns:pfx="http://www.schlund.de/pustefix/core">
   
   <part name="logoutbutton">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <pfx:button mode="force" page="start" target="_top">Cancel</pfx:button>
-      </lang>
-    </product>
+      </theme>
   </part>
 
   <part name="content">
-    <product name="default">
-      <lang name="default">
+    <theme name="default">
         <center>
           <pfx:forminput target="_top">
             <br/><br/>
@@ -51,7 +47,7 @@
                       </td>
                       <td align="right">
                         <pfx:xinp class="editor_submit" type="submit" value="Create new user">
-                          <pfx:command  name="SELWRP">selectuser</pfx:command>
+                          <pfx:command name="SELWRP">selectuser</pfx:command>
                           <pfx:argument name="__jumptopage">useredit</pfx:argument>
                           <pfx:argument name="selectuser.Create">1</pfx:argument>
                         </pfx:xinp>
@@ -63,14 +59,12 @@
             </table>
           </pfx:forminput>
         </center>
-      </lang>
-    </product>
+      </theme>
   </part>
   
   <part name="displayallusers">
-    <product name="default">
-      <lang name="default">
-        <table cellspacing="0" class="editor_box" width="100%" style="padding:0px;">
+    <theme name="default">
+        <table cellspacing="0" class="editor_box" style="padding:0px;" width="100%">
           <tr>
             <td class="editor_head">
               <b>UserId</b>
@@ -104,32 +98,31 @@
                 <ixsl:value-of select="@section"/> (Phone: <ixsl:value-of select="@phone"/>)
               </td>
               <td align="right" style="padding: 5px">
-                <pfx:button normalclass="editor_submit" jumptopage="useredit" mode="force">
-                  <pfx:command  name="SELWRP">selectuser</pfx:command>
+                <pfx:button jumptopage="useredit" mode="force" normalclass="editor_submit">
+                  <pfx:command name="SELWRP">selectuser</pfx:command>
                   <pfx:argument name="selectuser.Username"><ixsl:value-of select="@id"/></pfx:argument>Edit</pfx:button>
               </td>
               <td align="right" style="padding: 5px">
-                <pfx:xinp type="check" name="delete.Username">
+                <pfx:xinp name="delete.Username" type="check">
                   <ixsl:attribute name="value"><ixsl:value-of select="@id"/></ixsl:attribute>
                 </pfx:xinp>
               </td>
             </tr>
           </ixsl:for-each>
           <tr>
-            <td style="padding: 1px;" colspan="6">
+            <td colspan="6" style="padding: 1px;">
               <hr/>
             </td>
           </tr>
           <tr>
-            <td style="padding: 5px;" colspan="6" align="right">
+            <td align="right" colspan="6" style="padding: 5px;">
               <pfx:xinp class="editor_submit" type="submit" value="Delete selected">
                 <pfx:command name="SELWRP">delete</pfx:command>
               </pfx:xinp>
             </td>
           </tr>
         </table>
-      </lang>
-    </product>
+      </theme>
   </part>
   
 </include_parts><!--
