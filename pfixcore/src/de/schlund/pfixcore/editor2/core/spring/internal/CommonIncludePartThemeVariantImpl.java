@@ -58,7 +58,7 @@ import de.schlund.pfixxml.util.Xml;
  */
 public abstract class CommonIncludePartThemeVariantImpl extends
         AbstractIncludePartThemeVariant {
-    private final static String XML_THEME_TAG_NAME = "product";
+    private final static String XML_THEME_TAG_NAME = "theme";
     
     private Theme theme;
 
