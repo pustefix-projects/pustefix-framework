@@ -44,7 +44,7 @@ public class IncludeFileHandler extends DefaultHandler implements LexicalHandler
         alleDokumente = new Vector();
     }
 
-    private static final String PRODUCT           = "product";
+    private static final String PRODUCT           = "theme";
     private static final String PART              = "part";
     private static final String INCLUDE_PARTS     = "include_parts";
 

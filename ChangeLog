@@ -1,5 +1,6 @@
 2006-01-31  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
+	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartImpl.java: 
 	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java: 
 	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (getContent): 
