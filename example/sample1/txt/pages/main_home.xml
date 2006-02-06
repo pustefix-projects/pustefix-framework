@@ -128,31 +128,31 @@
   
   <part name="inline_test">
     <theme name="default">
-        <pfx:themeselect>
-          <pfx:theme name="foo">
-            (FOO inline theme)
-          </pfx:theme>
-          <pfx:theme name="default">
-            (DEFAULT inline theme)
-          </pfx:theme>
-        </pfx:themeselect>
-        <br/>
-        <pfx:langselect>
-          <pfx:lang name="en_*">
-            (en_* inline lang)
-          </pfx:lang>
-          <pfx:lang name="en_GB">
-            (en_GB inline lang)
-          </pfx:lang>
-          <pfx:lang name="de_DE">
-            (de_DE inline lang)
-          </pfx:lang>
-          <pfx:lang name="default">
-            (default inline lang)
-          </pfx:lang>
-        </pfx:langselect>
-        <br/>
-      </theme>
+      <pfx:themeselect>
+        <pfx:theme name="foo">
+          (FOO inline theme)
+        </pfx:theme>
+        <pfx:theme name="default">
+          (DEFAULT inline theme)
+        </pfx:theme>
+      </pfx:themeselect>
+      <br/>
+      <pfx:langselect>
+        <pfx:lang name="en_*">
+          (en_* inline lang)
+        </pfx:lang>
+        <pfx:lang name="en_GB">
+          (en_GB inline lang)
+        </pfx:lang>
+        <pfx:lang name="de_DE">
+          (de_DE inline lang)
+        </pfx:lang>
+        <pfx:lang name="default">
+          (default inline lang)
+        </pfx:lang>
+      </pfx:langselect>
+      <br/>
+    </theme>
   </part>
   
   <part name="variant_info">
