@@ -297,6 +297,8 @@ public abstract class VirtualTarget extends TargetImpl {
                     + tmpxmlsource.getTargetKey() + " / "
                     + tmpxslsource.getTargetKey() + ")");
         }
+        // we reset the auxilliary dependencies here, as they will be rebuild now, too 
+        getAuxDependencyManager().reset();
         // as the file will be rebuild in the disc cache, we need to make sure that we will load it again
         // when we need it by invalidating the Memcache;
         storeValue(null);

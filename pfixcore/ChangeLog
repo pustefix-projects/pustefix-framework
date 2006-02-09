@@ -1,3 +1,26 @@
+2006-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixxml/targets/VirtualTarget.java (generateValue): 
+	Fixing "unused part does not disappear bug" by adding missing call to 
+	AuxDependencyManager.reset()
+
+2006-02-06  Joerg Haecker <haecker@schlund.de>
+	* src/de/schlund/pfixxml/jmx/JmxServerFactory.java: removed oro regex
+	stuff
+
+2006-01-30  Sebastian Marsching  <sebastian.marsching@1und1.de>
+
+	* src/de/schlund/pfixcore/editor2/frontend/resources/CommonIncludesResourceImpl.java (setContent): 
+	* src/de/schlund/pfixcore/editor2/core/spring/internal/CommonIncludePartThemeVariantImpl.java (setXML):
+	Improved indention in CMS so that files written by CMS look more beautiful
+	when they are directly edited on the filesystem.
+	
+2006-01-30  Sebastian Marsching <sebastian.marsching@1und1.de>
+
+	* Using 0.8.9.1-pre for new version
+
+	* Releasing version 0.8.9
+
 2006-01-27  Jens Lautenbacher  <jtl@schlund.de>
 
 	* src/de/schlund/pfixcore/generator/IWrapperIndexedParam.java (IWrapperIndexedParam::initValueFromRequest): 

@@ -58,7 +58,8 @@ import de.schlund.pfixxml.util.Xml;
  */
 public abstract class CommonIncludePartThemeVariantImpl extends
         AbstractIncludePartThemeVariant {
-
+    private final static String XML_THEME_TAG_NAME = "product";
+    
     private Theme theme;
 
     private IncludePart part;
@@ -129,7 +130,7 @@ public abstract class CommonIncludePartThemeVariantImpl extends
             return null;
         }
         try {
-            return XPath.selectNode(parentXml, "product[@name='"
+            return XPath.selectNode(parentXml, XML_THEME_TAG_NAME + "[@name='"
                     + this.getTheme().getName() + "']");
         } catch (TransformerException e) {
             // Should NEVER happen
@@ -185,10 +186,20 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 }
 
                 part = doc.createElement("part");
+                // Keep proper indention level
+                Node temp = doc.createTextNode("\n  ");
+                root.appendChild(temp);
                 root.appendChild(part);
+                temp = doc.createTextNode("\n");
+                root.appendChild(temp);
                 part.setAttribute("name", this.getIncludePart().getName());
-                theme = doc.createElement("product");
+                // Keep proper indention level
+                temp = doc.createTextNode("\n    ");
+                part.appendChild(temp);
+                theme = doc.createElement(XML_THEME_TAG_NAME);
                 part.appendChild(theme);
+                temp = doc.createTextNode("\n  ");
+                part.appendChild(temp);
                 theme.setAttribute("name", this.getTheme().getName());
             } else {
                 // Do security check
@@ -229,10 +240,17 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     // Part is not yet existing, so create it
                     part = doc.createElement("part");
                     part.setAttribute("name", this.getIncludePart().getName());
+                    // Keep indention
+                    Node temp = doc.createTextNode("  ");
+                    root.appendChild(temp);
                     root.appendChild(part);
+                    temp = doc.createTextNode("\n");
+                    root.appendChild(temp);
+                    temp = doc.createTextNode("\n  ");
+                    part.appendChild(temp);
                 }
                 try {
-                    theme = (Element) XPath.selectNode(part, "product[@name='"
+                    theme = (Element) XPath.selectNode(part, XML_THEME_TAG_NAME + "[@name='"
                             + this.getTheme().getName() + "']");
                 } catch (TransformerException e) {
                     // Should never happen as a DOM document is always
@@ -243,9 +261,14 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                 }
                 if (theme == null) {
                     // No branch for this theme - create it
-                    theme = doc.createElement("product");
+                    theme = doc.createElement(XML_THEME_TAG_NAME);
                     theme.setAttribute("name", this.getTheme().getName());
+                    // Keep indention
+                    Node temp = doc.createTextNode("  ");
+                    part.appendChild(temp);
                     part.appendChild(theme);
+                    temp = doc.createTextNode("\n  ");
+                    part.appendChild(temp);
                 } else {
                     // Branch is already existing, so make a backup
                     this.backup.backupInclude(this);
@@ -253,15 +276,20 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     // Replace node
                     Node oldTheme = theme;
                     Document parentdoc = oldTheme.getOwnerDocument();
-                    theme = parentdoc.createElement("product");
+                    theme = parentdoc.createElement(XML_THEME_TAG_NAME);
                     theme.setAttribute("name", this.getTheme().getName());
                     Node parent = oldTheme.getParentNode();
+                    // Insert at right location to keep indention
+                    Node temp = oldTheme.getNextSibling();
                     parent.removeChild(oldTheme);
-                    parent.appendChild(theme);
+                    parent.insertBefore(theme, temp);
                 }
             }
 
             // Copy over all nodes except attributes to the theme node
+            // Keep indention
+            Node temp = doc.createTextNode("\n");
+            theme.appendChild(temp);
             NodeList nlist = xml.getChildNodes();
             for (int i = 0; i < nlist.getLength(); i++) {
                 Node child = nlist.item(i);
@@ -269,6 +297,8 @@ public abstract class CommonIncludePartThemeVariantImpl extends
                     theme.appendChild(doc.importNode(child, true));
                 }
             }
+            temp = doc.createTextNode("\n    ");
+            theme.appendChild(temp);
 
             // Log change
             this.writeChangeLog();
