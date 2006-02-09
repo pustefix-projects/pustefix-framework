@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <pfx:document xmlns:pfx="http://www.schlund.de/pustefix/core" xmlns:ixsl="http://www.w3.org/1999/XSL/Transform">
-<!-- This page is a frame containing the choosen content -->
   <html>
     <pfx:head>
       <title>A simple link for pustefix</title>
     </pfx:head>
     <body style="padding: 10px;">
-       <pfx:include href="simplelink/txt/common.xml" part="topnavi"/>
-    <pfx:maincontent/>
+      <pfx:include href="simplelink/txt/common.xml" part="topnavi"/>
+      <pfx:maincontent/>
+      <pfx:editconsole/>
     </body>
   </html>
 </pfx:document>
