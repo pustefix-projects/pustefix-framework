@@ -17,7 +17,7 @@
 
   <xsl:template match="incfile">
     <xsl:choose>
-      <xsl:when test="not(./part/product[not(@UNUSED = 'true')])">
+      <xsl:when test="not(./part/theme[not(@UNUSED = 'true')])">
         <clean type="file" path="{@name}"/>
       </xsl:when>
       <xsl:otherwise>
@@ -31,11 +31,11 @@
   <xsl:template match="part">
     <xsl:param name="file"/>
     <xsl:choose>
-      <xsl:when test="not(./product[not(@UNUSED = 'true')])">
+      <xsl:when test="not(./theme[not(@UNUSED = 'true')])">
         <clean type="part" path="{$file}" part="{@name}"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:apply-templates select="./product">
+        <xsl:apply-templates select="./theme">
           <xsl:with-param name="file"><xsl:value-of select="$file"/></xsl:with-param>
           <xsl:with-param name="part"><xsl:value-of select="@name"/></xsl:with-param>
         </xsl:apply-templates>
@@ -43,11 +43,11 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="product">
+  <xsl:template match="theme">
     <xsl:param name="file"/>
     <xsl:param name="part"/>
     <xsl:if test="@UNUSED = 'true'">
-      <clean type="prod" path="{$file}" part="{$part}" prod="{@name}"/>
+      <clean type="theme" path="{$file}" part="{$part}" theme="{@name}"/>
     </xsl:if>
   </xsl:template>
   

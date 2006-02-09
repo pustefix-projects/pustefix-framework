@@ -57,11 +57,11 @@ public class Cleanup{
                     String type = clean.getAttribute("type");
                     String path = clean.getAttribute("path");
                     String part = clean.getAttribute("part");
-                    String prod = clean.getAttribute("prod");
+                    String theme = clean.getAttribute("theme");
                     
                     if (!(path.indexOf("projects/common/txt") > 0) && !(path.indexOf("projects/core/txt") > 0)) {
                         Document doc = (Document) changed.get(path);
-                        if (doc == null && (type.equals("part") || type.equals("prod"))) {
+                        if (doc == null && (type.equals("part") || type.equals("theme"))) {
                             IncludeDocument incdoc = IncludeDocumentFactory.getInstance().
                                 getIncludeDocument(PathFactory.getInstance().createPath(path), true);
                             doc                    = incdoc.getDocument();
@@ -71,8 +71,8 @@ public class Cleanup{
                         }
                         if (type.equals("part")) {
                             cleanPart(doc, path, part);
-                        } else if (type.equals("prod")) {
-                            cleanProd(doc, path, part, prod);
+                        } else if (type.equals("theme")) {
+                            cleanTheme(doc, path, part, theme);
                         } else if (type.equals("file")) {
                             cleanFile(path);
                         } else {
@@ -108,15 +108,15 @@ public class Cleanup{
         }
     }
     
-    private void cleanProd(Document doc, String path, String part, String prod) throws Exception {
-        System.out.println("Killing " + path + " => " + part + " => " + prod);
-        List nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']/product[@name = '" + prod + "']");
+    private void cleanTheme(Document doc, String path, String part, String theme) throws Exception {
+        System.out.println("Killing " + path + " => " + part + " => " + theme);
+        List nl  = XPath.select(doc, "/include_parts/part[@name = '" + part + "']/theme[@name = '" + theme + "']");
         if (nl.size() == 1) {
-            Element prodel = (Element) nl.get(0);
-            Node    parent = prodel.getParentNode();
-            parent.removeChild(prodel);
+            Element themeel = (Element) nl.get(0);
+            Node    parent = themeel.getParentNode();
+            parent.removeChild(themeel);
         } else {
-            System.out.println("More than one matching product " + path + "/" + part + "/" + prod);
+            System.out.println("More than one matching theme " + path + "/" + part + "/" + theme);
         }
     }
 

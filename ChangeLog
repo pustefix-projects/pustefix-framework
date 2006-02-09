@@ -1,3 +1,10 @@
+2006-02-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/util/Cleanup.java (Module): 
+	* src/de/schlund/pfixcore/util/CheckIncludes.java (Module): 
+	* example/core/build/unused.xsl (Module): 
+	* example/core/build/cleanup.xsl (Module): product => theme 
+
 2006-02-09  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* skel/build-skel.xml: 

@@ -37,7 +37,7 @@ import org.w3c.dom.*;
  */
 
 public class CheckIncludes {
-    private static final String XPATH = "/include_parts/part/product";
+    private static final String XPATH = "/include_parts/part/theme";
     
     private HashMap generators       = new HashMap();
     private TreeSet includefilenames = new TreeSet();
@@ -157,7 +157,7 @@ public class CheckIncludes {
                         AuxDependencyInclude a = (AuxDependencyInclude) aux;
                         elem.setAttribute("path", a.getPath().getRelative());
                         elem.setAttribute("part", a.getPart());
-                        elem.setAttribute("product", a.getTheme());
+                        elem.setAttribute("theme", a.getTheme());
                     } else if (aux.getType().equals(DependencyType.IMAGE)) {
                         AuxDependencyImage a = (AuxDependencyImage) aux;
                         elem.setAttribute("path", a.getPath().getRelative());
@@ -234,47 +234,38 @@ public class CheckIncludes {
                     NodeList prodchilds = partelem.getChildNodes();
                     for (int k = 0; k < prodchilds.getLength(); k++) {
                         if (prodchilds.item(k) instanceof Element) {
-                            Element productelem = (Element) prodchilds.item(k);
-                            if (!productelem.getNodeName().equals("product")) {
+                            Element themeelem = (Element) prodchilds.item(k);
+                            if (!themeelem.getNodeName().equals("theme")) {
                                 Element error = result.createElement("ERROR");
                                 res_part.appendChild(error);
-                                error.setAttribute("cause", "invalid node in part (child of part != product): " +
-                                                   path.getRelative() + "/" + partelem.getNodeName() + "/" + productelem.getNodeName());
+                                error.setAttribute("cause", "invalid node in part (child of part != theme): " +
+                                                   path.getRelative() + "/" + partelem.getNodeName() + "/" + themeelem.getNodeName());
                                 continue;
                             }
 
                             String part    = partelem.getAttribute("name");
-                            String product = productelem.getAttribute("name");
+                            String theme = themeelem.getAttribute("name");
 
-                            Element res_product = result.createElement("product");
-                            res_part.appendChild(res_product);
-                            res_product.setAttribute("name", product);
+                            Element res_theme = result.createElement("theme");
+                            res_part.appendChild(res_theme);
+                            res_theme.setAttribute("name", theme);
                             
                             AuxDependency aux =
-                                AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, product);
+                                AuxDependencyFactory.getInstance().getAuxDependencyInclude(path, part, theme);
                             if (!includes.contains(aux)) {
-                                res_product.setAttribute("UNUSED", "true");
+                                res_theme.setAttribute("UNUSED", "true");
                                 continue;
                             } else {
                                 unavail.remove(aux);
                             }
                             
 
-                            NodeList langchilds = productelem.getChildNodes();
+                            NodeList langchilds = themeelem.getChildNodes();
                             for (int l = 0; l < langchilds.getLength(); l++) {
                                 if (langchilds.item(l) instanceof Element) {
                                     Element langelem = (Element) langchilds.item(l);
-                                    if (!langelem.getNodeName().equals("lang")) {
-                                        Element error = result.createElement("ERROR");
-                                        res_product.appendChild(error);
-                                        error.setAttribute("cause", "invalid node in product (child of product != lang): " +
-                                                           path.getRelative() + "/" + partelem.getNodeName() + "/" +
-                                                           productelem.getNodeName() + "/" + langelem.getNodeName());
-                                        continue;
-                                    }
-
                                     Node res_lang = result.importNode(langelem, true); 
-                                    res_product.appendChild(res_lang);
+                                    res_theme.appendChild(res_lang);
                                 }
                             }
                         }
