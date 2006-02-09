@@ -120,11 +120,11 @@ public class PageRequestProperties implements PropertyObject {
                     for (int i = 0; i < variant_arr.length; i++) {
                         String tmp = name + "::" + variant_arr[i];
                         if (pageRequestNameIsDefined(tmp)) {
-                            CAT.debug("=== Found PR for '" + fullname + "' ===");
+                            CAT.debug("=== Found PR for '" + tmp + "' ===");
                             fullname = tmp;
                             break;
                         } else {
-                            CAT.debug("=== PR NOT FOUND for '" + fullname + "' ===");
+                            CAT.debug("=== PR NOT FOUND for '" + tmp + "' ===");
                         }
                     }
                     if (fullname == null) {

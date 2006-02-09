@@ -37,14 +37,14 @@
     
   </context>
 
-<!--   <interceptors> -->
-<!--     <start> -->
-<!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
-<!--     </start> -->
+  <interceptors>
+    <start>
+      <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/>
+    </start>
 <!--     <end> -->
 <!--       <interceptor class="de.schlund.pfixcore.example.SampleStartIC"/> -->
 <!--     </end> -->
-<!--   </interceptors> -->
+  </interceptors>
   
   <!-- <pageflow name="OrderFlow" stopnext="true"> -->
   <pageflow name="OrderFlow" final="home">
@@ -56,7 +56,7 @@
             <action type="jumpto" page="test" pageflow="OrderFlow"/>
           </when>
           <when>
-            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Hi Ho ****"/>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Variant: Default ****"/>
           </when>
         </oncontinue>
       </flowstep>
@@ -70,7 +70,7 @@
             <action type="jumpto" page="test" pageflow="OrderFlow"/>
           </when>
           <when>
-            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** FOO FOO ****"/>
+            <action type="de.schlund.pfixcore.example.MsgFlowStepAction" text="**** Variant: FOO BAR ****"/>
           </when>
         </oncontinue>
       </flowstep>
@@ -96,8 +96,6 @@
       </input>
       <output>
         <resource node="adultinfo" class="de.schlund.pfixcore.example.ContextAdultInfo"/>
-        <resource node="tshirt" class="de.schlund.pfixcore.example.ContextTShirt"/>
-        <resource node="trouser" class="de.schlund.pfixcore.example.ContextTrouser"/>
       </output>
     </variant>
   </pagerequest>
