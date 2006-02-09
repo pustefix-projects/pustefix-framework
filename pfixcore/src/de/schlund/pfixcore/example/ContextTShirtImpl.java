@@ -38,7 +38,7 @@ import de.schlund.pfixcore.util.PropertiesUtils;
  *
  */
 
-public class ContextTShirtImpl implements ContextResource, ContextTShirt{
+public class ContextTShirtImpl implements ContextTShirt{
     private String     size     = null;
     private Integer    color    = null;
     private Integer[]  features = null;

@@ -1,3 +1,14 @@
+2006-02-09  Jens Lautenbacher  <jtl@schlund.de>
+
+	* src/de/schlund/pfixcore/example/SampleStartIC.java: cosmetics
+
+	* src/de/schlund/pfixcore/example/ContextTShirtImpl.java: remove unnecessary interface
+
+	* example/simplepage/*: (mostly) cosmetic fixes
+
+	* src/de/schlund/pfixcore/workflow/PageRequestProperties.java (PageRequestProperties::getVariantMatchingPageRequestName): 
+	fix debugging output
+
 2006-01-31  Sebastian Marsching  <sebastian.marsching@1und1.de>
 
 	* src/de/schlund/pfixcore/lucefix/IncludeFileHandler.java: 
