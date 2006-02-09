@@ -7,14 +7,10 @@
 	in the depend.xml.in
  -->
 
-  <xsl:template match="box">
-    <table style="border: 1px black solid;">
-      <tr>
-        <td>
-          <xsl:value-of select="./basictext"/>
-        </td>
-      </tr>
-    </table>
+  <xsl:template match="basictext">
+    <div style="border: 1px black solid; width: 200px">
+      <xsl:apply-templates/>
+    </div>
   </xsl:template>
 
 
