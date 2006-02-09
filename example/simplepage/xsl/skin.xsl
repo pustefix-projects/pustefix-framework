@@ -8,7 +8,7 @@
  -->
 
   <xsl:template match="basictext">
-    <div style="border: 1px black solid; width: 200px">
+    <div style="text-align: center; border: 1px black solid; width: 200px; padding: 5px;">
       <xsl:apply-templates/>
     </div>
   </xsl:template>

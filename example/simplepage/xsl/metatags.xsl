@@ -8,14 +8,22 @@
  -->
 
   <xsl:template match="quadtext">
-    <table>
+    <table style="padding:0px; border: solid black 1px;" cellspacing="1">
       <tr>
-        <td style="background-color: #ffaaaa;"><basictext><xsl:apply-templates/></basictext></td>
-        <td><basictext><xsl:apply-templates/></basictext></td>
+        <td style="background-color: #ffaaaa; padding:0px">
+          <basictext><xsl:apply-templates/></basictext>
+        </td>
+        <td style="background-color: #aaffaa; padding:0px">
+          <basictext><xsl:apply-templates/></basictext>
+        </td>
       </tr>
       <tr>
-        <td><basictext><xsl:apply-templates/></basictext></td>
-        <td style="background-color: #ffaaaa;"><basictext><xsl:apply-templates/></basictext></td>
+        <td style="background-color: #aaaaff; padding:0px">
+          <basictext><xsl:apply-templates/></basictext>
+        </td>
+        <td style="background-color: #ffffaa; padding:0px">
+          <basictext><xsl:apply-templates/></basictext>
+        </td>
       </tr>
     </table>
   </xsl:template>
