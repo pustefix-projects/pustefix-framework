@@ -2,16 +2,9 @@
 <!-- The text given out on the page. This text is included by the <basictext> tag. -->
   <part name="content">
     <theme name="default">
-      <basictext>
-        A simple page :o)
-      </basictext>
+      <basictext>Some text</basictext>
       <br/>
-      <quadtext>
-        Hallo <b>Joachim</b>!
-      </quadtext>
-      
-      <br/>
-      <pfx:button page="sub1">Nach sub1</pfx:button>
+      <quadtext>Some repeated text</quadtext>
     </theme>
   </part>
 </include_parts>
